@@ -3,50 +3,87 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/lib/supabaseClient";
+import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStatus";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Shield, Zap, TrendingUp, Check } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+
+interface FormElements extends HTMLFormElement {
+  email: HTMLInputElement;
+  password: HTMLInputElement;
+  signupEmail: HTMLInputElement;
+  signupPassword: HTMLInputElement;
+  firstName: HTMLInputElement;
+  lastName: HTMLInputElement;
+}
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { login, register } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
 
-  const handleAuth = (e: FormEvent, isSignUp: boolean) => {
+  const handleAuth = async (e: FormEvent<HTMLFormElement>, isSignUp: boolean) => {
     e.preventDefault();
     setLoading(true);
-    const form = e.target as HTMLFormElement;
-    const formElements = form.elements as any;
+    const form = e.target as FormElements;
 
     try {
       if (isSignUp) {
-        // Inscription
-        const email = formElements.signupEmail.value;
-        const firstName = formElements.firstName.value;
-        const lastName = formElements.lastName.value;
+        // Inscription directe avec Supabase
+        const email = form.signupEmail.value;
+        const password = form.signupPassword.value;
         
-        register(email, firstName, lastName);
-        toast.success("Compte créé avec succès!");
-        navigate("/dashboard");
+        const { data, error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            data: {
+              first_name: form.firstName.value,
+              last_name: form.lastName.value,
+            }
+          }
+        });
+        
+        if (error) throw error;
+        
+        setVerificationEmail(email);
       } else {
-        // Connexion
-        const success = login(formElements.email.value);
-        if (success) {
-          toast.success("Connexion réussie!");
-          navigate("/dashboard");
-        } else {
-          toast.error("Email non trouvé. Veuillez vous inscrire.");
-        }
+        // Connexion avec Supabase
+        const email = form.email.value;
+        const password = form.password.value;
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+        
+        toast.success("Connexion réussie!");
+        console.log('Utilisateur connecté:', data.user);
+        navigate("/dashboard");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur d\'authentification:', error);
-      toast.error("Une erreur est survenue");
+      toast.error(error.message || "Une erreur est survenue");
     } finally {
       setLoading(false);
     }
-    };
+  };
+
+  // Importez le composant EmailVerificationStatus en haut du fichier
+  if (verificationEmail) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
+        <EmailVerificationStatus
+          email={verificationEmail}
+          onBackToLogin={() => setVerificationEmail(null)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
