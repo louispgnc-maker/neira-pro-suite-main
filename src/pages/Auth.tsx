@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,34 +6,59 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { Shield, Zap, TrendingUp, Check } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const { login, register } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const handleAuth = async (e: React.FormEvent, isSignUp: boolean) => {
+  const handleAuth = (e: FormEvent, isSignUp: boolean) => {
     e.preventDefault();
     setLoading(true);
+    const form = e.target as HTMLFormElement;
+    const formElements = form.elements as any;
 
-    // Simulation d'authentification
-    setTimeout(() => {
-      toast.success(isSignUp ? "Compte créé avec succès!" : "Connexion réussie!");
-      navigate("/dashboard");
+    try {
+      if (isSignUp) {
+        // Inscription
+        const email = formElements.signupEmail.value;
+        const firstName = formElements.firstName.value;
+        const lastName = formElements.lastName.value;
+        
+        register(email, firstName, lastName);
+        toast.success("Compte créé avec succès!");
+        navigate("/dashboard");
+      } else {
+        // Connexion
+        const success = login(formElements.email.value);
+        if (success) {
+          toast.success("Connexion réussie!");
+          navigate("/dashboard");
+        } else {
+          toast.error("Email non trouvé. Veuillez vous inscrire.");
+        }
+      }
+    } catch (error) {
+      console.error('Erreur d\'authentification:', error);
+      toast.error("Une erreur est survenue");
+    } finally {
       setLoading(false);
-    }, 1000);
-  };
+    }
+    };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
+      <div className="w-full max-w-md mx-auto mb-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-primary mb-4 shadow-glow">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-primary mb-4 shadow-glow animate-scale-in">
             <span className="text-2xl font-bold text-white">N</span>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
             Neira
           </h1>
-          <p className="text-muted-foreground mt-2">Espace Professionnel Automatisé</p>
+          <p className="text-muted-foreground">Espace Professionnel Automatisé</p>
         </div>
 
         <Tabs defaultValue="login" className="w-full">
@@ -43,7 +68,7 @@ export default function Auth() {
           </TabsList>
 
           <TabsContent value="login">
-            <Card>
+            <Card className="bg-white dark:bg-card shadow-xl border-2">
               <CardHeader>
                 <CardTitle>Connexion</CardTitle>
                 <CardDescription>
@@ -78,7 +103,7 @@ export default function Auth() {
           </TabsContent>
 
           <TabsContent value="signup">
-            <Card>
+            <Card className="bg-white dark:bg-card shadow-xl border-2">
               <CardHeader>
                 <CardTitle>Créer un compte</CardTitle>
                 <CardDescription>
@@ -130,6 +155,71 @@ export default function Auth() {
             </Card>
           </TabsContent>
         </Tabs>
+      </div>
+
+      {/* Features Section - Below Auth */}
+      <div className="w-full max-w-4xl mx-auto mt-16">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-foreground mb-3">
+            Automatisez votre activité professionnelle
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Une plateforme sécurisée qui simplifie votre quotidien, optimise votre temps et celui de vos clients
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="flex flex-col items-center text-center p-8 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-4 shadow-md">
+              <Shield className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="font-bold text-lg text-foreground mb-3">Sécurité des données</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Hébergement en Europe, chiffrement SSL, conformité RGPD
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-8 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-4 shadow-md">
+              <Zap className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="font-bold text-lg text-foreground mb-3">Automatisation intelligente</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Réduisez les tâches répétitives et gagnez du temps
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-8 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border border-success/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-4 shadow-md">
+              <TrendingUp className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="font-bold text-lg text-foreground mb-3">Pensé pour les professionnels</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Gestion des documents, rendez-vous, contacts et statistiques
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-8 p-6 rounded-xl bg-gradient-to-r from-card via-primary/5 to-card border border-border shadow-md">
+          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+            <span>Conforme RGPD</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+            <span>Données sauvegardées</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+            <span>Support dédié</span>
+          </div>
+        </div>
       </div>
     </div>
   );

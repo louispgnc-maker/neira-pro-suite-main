@@ -10,16 +10,19 @@ import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Dashboard() {
+  const { user } = useAuth();
   return (
     <AppLayout>
-      <div className="p-6 space-y-6">
+      <div className="bg-gradient-to-br from-primary/20 via-accent/10 to-background min-h-screen">
+        <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Bienvenue, Jean
+              Bienvenue, {user?.firstName || 'Utilisateur'}
             </h1>
             <p className="text-muted-foreground mt-1">
               Voici un aperçu de votre activité
@@ -83,6 +86,7 @@ export default function Dashboard() {
           <TasksCalendar />
           <RecentClients />
         </div>
+      </div>
       </div>
     </AppLayout>
   );
