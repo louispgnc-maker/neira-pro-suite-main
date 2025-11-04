@@ -2,14 +2,53 @@ import { Send, Copy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
 
-const signatures = [
-  { signer: "Jean Dupont", document: "Acte de vente", lastReminder: "Il y a 3j" },
-  { signer: "Marie Martin", document: "Mandat exclusif", lastReminder: "Il y a 5j" },
-  { signer: "SCI Patrimoine", document: "PV Assemblée", lastReminder: "Il y a 1j" },
-];
+type SignatureRow = {
+  id: string;
+  signer: string;
+  document_name: string;
+  status: string;
+  last_reminder_at: string | null;
+};
 
 export function PendingSignatures() {
+  const { user } = useAuth();
+  const [signatures, setSignatures] = useState<SignatureRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      if (!user) {
+        setSignatures([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("signatures")
+        .select("id,signer,document_name,status,last_reminder_at")
+        .eq("owner_id", user.id)
+        .in("status", ["pending", "awaiting", "en_attente"]) // support several values
+        .order("last_reminder_at", { ascending: false, nullsFirst: true })
+        .limit(3);
+      if (error) {
+        console.error("Erreur chargement signatures:", error);
+        if (isMounted) setSignatures([]);
+      } else if (isMounted) {
+        setSignatures(data as SignatureRow[]);
+      }
+      if (isMounted) setLoading(false);
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
   const handleCopyLink = () => {
     toast.success("Lien copié dans le presse-papier");
   };
@@ -24,30 +63,36 @@ export function PendingSignatures() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {signatures.map((sig, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex-1">
-                <p className="font-medium text-sm">{sig.signer}</p>
-                <p className="text-xs text-muted-foreground">{sig.document}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Dernière relance: {sig.lastReminder}
-                </p>
+          {loading ? (
+            <p className="text-center text-muted-foreground">Chargement…</p>
+          ) : signatures.length === 0 ? (
+            <p className="text-center text-muted-foreground">Aucune signature en attente</p>
+          ) : (
+            signatures.map((sig) => (
+              <div
+                key={sig.id}
+                className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex-1">
+                  <p className="font-medium text-sm">{sig.signer}</p>
+                  <p className="text-xs text-muted-foreground">{sig.document_name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Dernière relance: {sig.last_reminder_at ? new Date(sig.last_reminder_at).toLocaleDateString() : "—"}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={handleCopyLink}>
+                    <Copy className="h-3 w-3 mr-1" />
+                    Copier
+                  </Button>
+                  <Button size="sm" variant="default">
+                    <Send className="h-3 w-3 mr-1" />
+                    Relancer
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={handleCopyLink}>
-                  <Copy className="h-3 w-3 mr-1" />
-                  Copier
-                </Button>
-                <Button size="sm" variant="default">
-                  <Send className="h-3 w-3 mr-1" />
-                  Relancer
-                </Button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </CardContent>
     </Card>
