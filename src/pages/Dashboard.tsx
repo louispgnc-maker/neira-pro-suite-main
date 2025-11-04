@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   return (
     <AppLayout>
       <div className="bg-gradient-to-br from-primary/20 via-accent/10 to-background min-h-screen">
@@ -22,7 +22,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Bienvenue, {user?.firstName || 'Utilisateur'}
+              Bonjour, {profile?.first_name || 'Utilisateur'}
             </h1>
             <p className="text-muted-foreground mt-1">
               Voici un aperçu de votre activité
