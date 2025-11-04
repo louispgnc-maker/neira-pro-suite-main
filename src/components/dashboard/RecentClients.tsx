@@ -61,7 +61,7 @@ export function RecentClients() {
           {loading ? (
             <p className="text-center text-muted-foreground">Chargement…</p>
           ) : clients.length === 0 ? (
-            <p className="text-center text-muted-foreground">Aucun client pour le moment</p>
+            <p className="text-center text-muted-foreground">aucuns clients récents</p>
           ) : (
             clients.map((client) => (
               <div

@@ -98,7 +98,7 @@ export function RecentDocuments() {
             ) : documents.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground">
-                  Aucun document pour le moment
+                  aucuns documents
                 </TableCell>
               </TableRow>
             ) : (

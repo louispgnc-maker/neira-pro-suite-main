@@ -66,7 +66,7 @@ export function PendingSignatures() {
           {loading ? (
             <p className="text-center text-muted-foreground">Chargement…</p>
           ) : signatures.length === 0 ? (
-            <p className="text-center text-muted-foreground">Aucune signature en attente</p>
+            <p className="text-center text-muted-foreground">aucunes signatures</p>
           ) : (
             signatures.map((sig) => (
               <div

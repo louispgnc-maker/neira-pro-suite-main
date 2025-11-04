@@ -14,13 +14,17 @@ create table if not exists public.clients (
 alter table public.clients enable row level security;
 
 -- Only owner can manage their rows
-create policy if not exists "clients_select_own" on public.clients
+drop policy if exists "clients_select_own" on public.clients;
+create policy "clients_select_own" on public.clients
   for select using (owner_id = auth.uid());
-create policy if not exists "clients_insert_own" on public.clients
+drop policy if exists "clients_insert_own" on public.clients;
+create policy "clients_insert_own" on public.clients
   for insert with check (owner_id = auth.uid());
-create policy if not exists "clients_update_own" on public.clients
+drop policy if exists "clients_update_own" on public.clients;
+create policy "clients_update_own" on public.clients
   for update using (owner_id = auth.uid());
-create policy if not exists "clients_delete_own" on public.clients
+drop policy if exists "clients_delete_own" on public.clients;
+create policy "clients_delete_own" on public.clients
   for delete using (owner_id = auth.uid());
 
 create index if not exists clients_owner_idx on public.clients(owner_id);
@@ -38,13 +42,17 @@ create table if not exists public.documents (
 
 alter table public.documents enable row level security;
 
-create policy if not exists "documents_select_own" on public.documents
+drop policy if exists "documents_select_own" on public.documents;
+create policy "documents_select_own" on public.documents
   for select using (owner_id = auth.uid());
-create policy if not exists "documents_insert_own" on public.documents
+drop policy if exists "documents_insert_own" on public.documents;
+create policy "documents_insert_own" on public.documents
   for insert with check (owner_id = auth.uid());
-create policy if not exists "documents_update_own" on public.documents
+drop policy if exists "documents_update_own" on public.documents;
+create policy "documents_update_own" on public.documents
   for update using (owner_id = auth.uid());
-create policy if not exists "documents_delete_own" on public.documents
+drop policy if exists "documents_delete_own" on public.documents;
+create policy "documents_delete_own" on public.documents
   for delete using (owner_id = auth.uid());
 
 create index if not exists documents_owner_idx on public.documents(owner_id);
@@ -63,13 +71,17 @@ create table if not exists public.signatures (
 
 alter table public.signatures enable row level security;
 
-create policy if not exists "signatures_select_own" on public.signatures
+drop policy if exists "signatures_select_own" on public.signatures;
+create policy "signatures_select_own" on public.signatures
   for select using (owner_id = auth.uid());
-create policy if not exists "signatures_insert_own" on public.signatures
+drop policy if exists "signatures_insert_own" on public.signatures;
+create policy "signatures_insert_own" on public.signatures
   for insert with check (owner_id = auth.uid());
-create policy if not exists "signatures_update_own" on public.signatures
+drop policy if exists "signatures_update_own" on public.signatures;
+create policy "signatures_update_own" on public.signatures
   for update using (owner_id = auth.uid());
-create policy if not exists "signatures_delete_own" on public.signatures
+drop policy if exists "signatures_delete_own" on public.signatures;
+create policy "signatures_delete_own" on public.signatures
   for delete using (owner_id = auth.uid());
 
 create index if not exists signatures_owner_idx on public.signatures(owner_id);
@@ -88,13 +100,17 @@ create table if not exists public.tasks (
 
 alter table public.tasks enable row level security;
 
-create policy if not exists "tasks_select_own" on public.tasks
+drop policy if exists "tasks_select_own" on public.tasks;
+create policy "tasks_select_own" on public.tasks
   for select using (owner_id = auth.uid());
-create policy if not exists "tasks_insert_own" on public.tasks
+drop policy if exists "tasks_insert_own" on public.tasks;
+create policy "tasks_insert_own" on public.tasks
   for insert with check (owner_id = auth.uid());
-create policy if not exists "tasks_update_own" on public.tasks
+drop policy if exists "tasks_update_own" on public.tasks;
+create policy "tasks_update_own" on public.tasks
   for update using (owner_id = auth.uid());
-create policy if not exists "tasks_delete_own" on public.tasks
+drop policy if exists "tasks_delete_own" on public.tasks;
+create policy "tasks_delete_own" on public.tasks
   for delete using (owner_id = auth.uid());
 
 create index if not exists tasks_owner_idx on public.tasks(owner_id);
@@ -109,7 +125,8 @@ begin
 end;
 $$;
 
-create trigger if not exists documents_set_updated_at
+drop trigger if exists documents_set_updated_at on public.documents;
+create trigger documents_set_updated_at
 before update on public.documents
 for each row
 execute procedure public.set_updated_at();
