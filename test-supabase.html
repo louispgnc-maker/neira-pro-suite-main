@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase</title>
+</head>
+<body>
+    <h1>Test de connexion Supabase</h1>
+    <div id="result"></div>
+    
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+        
+        const supabaseUrl = 'https://elysrdqujzlbvnjfilvh.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA'
+        
+        try {
+            const supabase = createClient(supabaseUrl, supabaseKey)
+            document.getElementById('result').innerHTML = '<p style="color: green;">✅ Client Supabase créé avec succès!</p>'
+            console.log('Supabase client:', supabase)
+            
+            // Test de connexion
+            supabase.auth.getSession().then(({ data, error }) => {
+                if (error) {
+                    document.getElementById('result').innerHTML += '<p style="color: orange;">⚠️ Erreur auth: ' + error.message + '</p>'
+                } else {
+                    document.getElementById('result').innerHTML += '<p style="color: blue;">ℹ️ Session: ' + (data.session ? 'Connecté' : 'Non connecté') + '</p>'
+                }
+            })
+        } catch (error) {
+            document.getElementById('result').innerHTML = '<p style="color: red;">❌ Erreur: ' + error.message + '</p>'
+            console.error('Erreur:', error)
+        }
+    </script>
+</body>
+</html>
