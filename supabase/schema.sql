@@ -29,6 +29,7 @@ create index if not exists profiles_role_idx on public.profiles(role);
 create table if not exists public.clients (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references auth.users(id) on delete cascade,
+  role text not null default 'avocat', -- 'avocat' | 'notaire' - pour séparer les espaces
   name text not null,
   kyc_status text not null default 'Partiel', -- 'Complet' | 'Partiel'
   missing_info text,
@@ -58,6 +59,7 @@ create index if not exists clients_created_at_idx on public.clients(created_at d
 create table if not exists public.documents (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references auth.users(id) on delete cascade,
+  role text not null default 'avocat', -- 'avocat' | 'notaire' - pour séparer les espaces
   name text not null,
   client_name text,
   status text not null default 'Brouillon', -- 'En cours' | 'Signé' | 'En attente' | 'Brouillon'
@@ -90,6 +92,7 @@ alter table public.documents add column if not exists storage_path text;
 create table if not exists public.signatures (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references auth.users(id) on delete cascade,
+  role text not null default 'avocat', -- 'avocat' | 'notaire' - pour séparer les espaces
   signer text not null,
   document_name text not null,
   status text not null default 'pending', -- 'pending' | 'completed' | 'awaiting' | 'en_attente'
@@ -119,6 +122,7 @@ create index if not exists signatures_last_reminder_idx on public.signatures(las
 create table if not exists public.tasks (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references auth.users(id) on delete cascade,
+  role text not null default 'avocat', -- 'avocat' | 'notaire' - pour séparer les espaces
   title text not null,
   due_date date,
   done boolean not null default false,
