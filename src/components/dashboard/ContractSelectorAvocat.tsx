@@ -17,8 +17,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
 
-// Catégories spécifiques espace avocat
-const categories = [
+// Catégories spécifiques espace avocat (exportées pour réutilisation)
+export const AVOCAT_CONTRACT_CATEGORIES = [
   {
     label: "💼 Droit des affaires / Commercial",
     key: "Droit des affaires / Commercial",
@@ -102,7 +102,7 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
   const verticalBtn = `${base} ${color} h-auto flex-col py-4`;
   const horizontalBtn = `${base} ${color} text-sm px-4 py-2 h-auto flex items-center`;
 
-  const filteredCategories = categories.map((cat) => ({
+  const filteredCategories = AVOCAT_CONTRACT_CATEGORIES.map((cat) => ({
     ...cat,
     contracts: cat.contracts.filter((c) =>
       c.toLowerCase().includes(search.toLowerCase())

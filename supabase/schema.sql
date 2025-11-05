@@ -78,6 +78,7 @@ create table if not exists public.clients (
   situation_fiscale text,
   -- Situation juridique / dossier
   type_dossier text,
+  contrat_souhaite text,
   historique_litiges text,
   pieces_justificatives text,
   -- Consentements et mentions légales

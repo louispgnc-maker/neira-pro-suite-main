@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Upload, ArrowLeft } from "lucide-react";
+import { AVOCAT_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorAvocat";
 
 export default function CreateClientAvocat() {
   const { user } = useAuth();
@@ -57,6 +58,7 @@ export default function CreateClientAvocat() {
 
   // 4. Situation juridique / dossier
   const [typeDossier, setTypeDossier] = useState("");
+  const [contratSouhaite, setContratSouhaite] = useState("");
   const [historiqueLitiges, setHistoriqueLitiges] = useState("");
   const [piecesJustificatives, setPiecesJustificatives] = useState("");
 
@@ -147,8 +149,9 @@ export default function CreateClientAvocat() {
         adresse_professionnelle: adressePro || null,
         siret: siret || null,
         situation_fiscale: situationFiscale || null,
-        // Juridique
-        type_dossier: typeDossier || null,
+  // Juridique
+  type_dossier: typeDossier || null,
+  contrat_souhaite: contratSouhaite || null,
         historique_litiges: historiqueLitiges || null,
         pieces_justificatives: piecesJustificatives || null,
         // Consentements
@@ -357,7 +360,7 @@ export default function CreateClientAvocat() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="typeDossier">Type de dossier</Label>
-                <Select value={typeDossier} onValueChange={setTypeDossier}>
+                <Select value={typeDossier} onValueChange={(val) => { setTypeDossier(val); setContratSouhaite(""); }}>
                   <SelectTrigger id="typeDossier">
                     <SelectValue placeholder="Sélectionner une catégorie..." />
                   </SelectTrigger>
@@ -367,6 +370,24 @@ export default function CreateClientAvocat() {
                     <SelectItem value="Droit immobilier">🏠 Droit immobilier</SelectItem>
                     <SelectItem value="Droit civil / Vie privée">👪 Droit civil / Vie privée</SelectItem>
                     <SelectItem value="Propriété intellectuelle & Numérique">🧠 Propriété intellectuelle & Numérique</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="contratSouhaite">Contrat souhaité</Label>
+                <Select
+                  value={contratSouhaite}
+                  onValueChange={setContratSouhaite}
+                  disabled={!typeDossier}
+                >
+                  <SelectTrigger id="contratSouhaite">
+                    <SelectValue placeholder={typeDossier ? "Sélectionner un contrat..." : "Sélectionner d'abord une catégorie"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(AVOCAT_CONTRACT_CATEGORIES.find(c => (c.key === typeDossier || c.label.includes(typeDossier)))?.contracts || []).map((contract) => (
+                      <SelectItem key={contract} value={contract}>{contract}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
