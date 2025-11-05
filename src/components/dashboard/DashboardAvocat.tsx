@@ -52,16 +52,15 @@ export function DashboardAvocat() {
       const prevYyyy = prevMonth.getFullYear();
       const prevMm = String(prevMonth.getMonth() + 1).padStart(2, "0");
 
-      // Documents en cours (status = 'En cours')
+      // Documents en cours (status = 'En cours') - TOUS les documents en cours
       const docsQuery = supabase
         .from("documents")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "avocat")
-        .eq("status", "En cours")
-        .gte("updated_at", `${yyyy}-${mm}-01`)
-        .lte("updated_at", `${yyyy}-${mm}-31`);
+        .eq("status", "En cours");
 
+      // Documents du mois précédent pour calculer la tendance
       const docsPrevQuery = supabase
         .from("documents")
         .select("id", { count: "exact", head: true })
@@ -71,16 +70,15 @@ export function DashboardAvocat() {
         .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
         .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
 
-      // Signatures en attente
+      // Signatures en attente - TOUTES les signatures en attente
       const sigQuery = supabase
         .from("signatures")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "avocat")
-        .in("status", ["pending", "awaiting", "en_attente"])
-        .gte("updated_at", `${yyyy}-${mm}-01`)
-        .lte("updated_at", `${yyyy}-${mm}-31`);
+        .in("status", ["pending", "awaiting", "en_attente"]);
 
+      // Signatures du mois précédent pour calculer la tendance
       const sigPrevQuery = supabase
         .from("signatures")
         .select("id", { count: "exact", head: true })
