@@ -25,6 +25,23 @@ create policy "profiles_update_own" on public.profiles
 
 create index if not exists profiles_role_idx on public.profiles(role);
 
+-- Trigger to auto-set role to 'avocat' if not provided
+create or replace function public.set_default_role()
+returns trigger language plpgsql as $$
+begin
+  if new.role is null or new.role = '' then
+    new.role = 'avocat';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists profiles_set_default_role on public.profiles;
+create trigger profiles_set_default_role
+before insert on public.profiles
+for each row
+execute procedure public.set_default_role();
+
 -- 1) CLIENTS
 create table if not exists public.clients (
   id uuid primary key default gen_random_uuid(),
