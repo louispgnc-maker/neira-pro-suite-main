@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentDocuments } from "@/components/dashboard/RecentDocuments";
+import { RecentContrats } from "@/components/dashboard/RecentContrats";
 import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
 import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
 import { RecentClients } from "@/components/dashboard/RecentClients";
@@ -239,12 +240,15 @@ export function DashboardNotaire() {
 
         {/* Main Section - full width */}
         <div className="space-y-6">
-          <RecentDocuments 
-            role="notaire"
-            statusColorOverride={{
-              "En cours": "bg-amber-100 text-amber-600 border-amber-200"
-            }} 
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <RecentDocuments 
+              role="notaire"
+              statusColorOverride={{
+                "En cours": "bg-amber-100 text-amber-600 border-amber-200"
+              }} 
+            />
+            <RecentContrats role="notaire" />
+          </div>
           <PendingSignatures role="notaire" />
           <AlertsCompliance />
         </div>

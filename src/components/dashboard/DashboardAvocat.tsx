@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentDocuments } from "@/components/dashboard/RecentDocuments";
+import { RecentContrats } from "@/components/dashboard/RecentContrats";
 import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
 import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
 import { RecentClients } from "@/components/dashboard/RecentClients";
@@ -239,12 +240,15 @@ export function DashboardAvocat() {
 
         {/* Main Section - full width */}
         <div className="space-y-6">
-          <RecentDocuments 
-            role="avocat"
-            statusColorOverride={{
-              "En cours": "bg-blue-100 text-blue-600 border-blue-200"
-            }} 
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <RecentDocuments 
+              role="avocat"
+              statusColorOverride={{
+                "En cours": "bg-blue-100 text-blue-600 border-blue-200"
+              }} 
+            />
+            <RecentContrats role="avocat" />
+          </div>
           <PendingSignatures role="avocat" />
           <AlertsCompliance />
         </div>
