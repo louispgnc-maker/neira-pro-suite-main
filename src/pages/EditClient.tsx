@@ -60,6 +60,27 @@ export default function EditClient() {
   // Notaire-specific family fields
   const [situationMatrimoniale, setSituationMatrimoniale] = useState("");
   const [enfants, setEnfants] = useState<{ nom: string; date_naissance: string }[]>([]);
+  const [situationFamiliale, setSituationFamiliale] = useState<string[]>([]);
+  const [familySearch, setFamilySearch] = useState("");
+  const familleAmberItem = "cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white";
+  
+  // Import options
+  // (Lazy import to avoid circular) - using dynamic require style
+  const FAMILY_OPTIONS = [
+    'Mariage - régime communauté réduite aux acquêts',
+    'Mariage - séparation de biens',
+    'Mariage - communauté universelle',
+    'PACS',
+    'Concubinage',
+    'Divorce en cours',
+    'Divorce prononcé',
+    'Veuf / Veuve',
+    'Séparation',
+    'Enfants communs',
+    'Enfants d’une précédente union',
+    'Sous tutelle / curatelle',
+    'Handicap reconnu (enfant ou conjoint)'
+  ];
 
   const [typeDossier, setTypeDossier] = useState("");
   const [contratSouhaite, setContratSouhaite] = useState("");
@@ -112,6 +133,7 @@ export default function EditClient() {
   setComptesBancairesRaw(Array.isArray(c.comptes_bancaires) ? (c.comptes_bancaires as string[]).join('\n') : '');
   setSituationMatrimoniale(c.situation_matrimoniale || '');
   setEnfants(Array.isArray(c.enfants) ? (c.enfants as any[]).map((e: any) => ({ nom: e.nom || '', date_naissance: e.date_naissance || '' })) : []);
+  setSituationFamiliale(Array.isArray(c.situation_familiale) ? c.situation_familiale : []);
         setTypeDossier(c.type_dossier || '');
         setContratSouhaite(c.contrat_souhaite || '');
         setHistoriqueLitiges(c.historique_litiges || '');
@@ -197,7 +219,8 @@ export default function EditClient() {
         contrat_souhaite: contratSouhaite || null,
         historique_litiges: historiqueLitiges || null,
         situation_matrimoniale: situationMatrimoniale || null,
-        enfants: enfants.filter(e => e.nom || e.date_naissance),
+  enfants: enfants.filter(e => e.nom || e.date_naissance),
+  situation_familiale: situationFamiliale.length ? situationFamiliale : null,
         consentement_rgpd: consentementRGPD,
         signature_mandat: signatureMandat,
       };
@@ -389,9 +412,44 @@ export default function EditClient() {
                 <Input id="situationMatrimoniale" value={situationMatrimoniale} onChange={e => setSituationMatrimoniale(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label>Enfants</Label>
-                <Textarea rows={3} value={enfants.map(e => `${e.nom}${e.date_naissance ? ` — ${e.date_naissance}` : ''}`).join('\n')} onChange={() => { /* read-only summary; manage below */ }} disabled />
-                <div className="text-xs text-muted-foreground">Gestion détaillée non destructrice: les enfants existants sont conservés. Utilisez le bouton ci-dessous pour les éditer.</div>
+                <Label>Options familiales (multi)</Label>
+                <div className="border rounded-md p-2 bg-amber-50 border-amber-200">
+                  <div className="flex items-center mb-2">
+                    <input
+                      type="text"
+                      value={familySearch}
+                      onChange={e => setFamilySearch(e.target.value)}
+                      placeholder="Rechercher..."
+                      className="flex-1 bg-white/70 outline-none text-sm px-2 py-1 rounded border border-amber-200 focus:border-amber-400"
+                    />
+                  </div>
+                  <div className="max-h-48 overflow-y-auto space-y-1">
+                    {FAMILY_OPTIONS.filter(o => o.toLowerCase().includes(familySearch.toLowerCase())).map(opt => {
+                      const checked = situationFamiliale.includes(opt);
+                      return (
+                        <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4"
+                            checked={checked}
+                            onChange={e => {
+                              const isChecked = e.target.checked;
+                              setSituationFamiliale(prev => isChecked ? [...prev, opt] : prev.filter(v => v !== opt));
+                            }}
+                          />
+                          <span>{opt}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {situationFamiliale.length > 0 && (
+                    <div className="mt-2 text-xs text-amber-800">{situationFamiliale.length} sélection(s)</div>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Enfants (lecture seule)</Label>
+                <Textarea rows={3} value={enfants.map(e => `${e.nom}${e.date_naissance ? ` — ${e.date_naissance}` : ''}`).join('\n')} disabled />
               </div>
             </CardContent>
           </Card>

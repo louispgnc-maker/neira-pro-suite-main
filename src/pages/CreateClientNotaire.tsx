@@ -13,6 +13,13 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Upload, ArrowLeft, Plus, X } from "lucide-react";
 import { NOTAIRE_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorNotaire";
+import { FAMILY_OPTIONS } from "@/lib/familyOptions";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface ChildEntry { nom: string; date_naissance: string; }
 interface ContratOption { id: string; name: string; type: string; category: string; }
@@ -47,6 +54,8 @@ export default function CreateClientNotaire() {
 
   // 3. Situation familiale
   const [situationMatrimoniale, setSituationMatrimoniale] = useState("");
+  const [selectedFamily, setSelectedFamily] = useState<string[]>([]);
+  const [familySearch, setFamilySearch] = useState("");
   const [enfants, setEnfants] = useState<ChildEntry[]>([]);
 
   // 4. Situation professionnelle et financière
@@ -154,7 +163,8 @@ export default function CreateClientNotaire() {
         numero_identite: numeroIdentite || null,
         date_expiration_identite: dateExpiration || null,
         id_doc_path: idDocPath,
-        situation_matrimoniale: situationMatrimoniale || null,
+  situation_matrimoniale: situationMatrimoniale || null,
+  situation_familiale: selectedFamily.length ? selectedFamily : null,
         enfants: enfantsClean.length ? enfantsClean : null,
         profession: profession || null,
         employeur: employeur || null,
@@ -317,6 +327,48 @@ export default function CreateClientNotaire() {
               <div className="space-y-2">
                 <Label htmlFor="situationMatrimoniale">Situation matrimoniale</Label>
                 <Input id="situationMatrimoniale" value={situationMatrimoniale} onChange={e => setSituationMatrimoniale(e.target.value)} placeholder="Ex: Mariage sous régime communauté réduite aux acquêts" />
+              </div>
+              <div className="space-y-2">
+                <Label>Options (multi-sélection)</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button type="button" variant="secondary" className="justify-between w-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200">
+                      {selectedFamily.length > 0 ? `${selectedFamily.length} sélection(s)` : 'Sélectionner des options'}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="min-w-[340px] bg-amber-50 border-amber-200" align="start">
+                    <div className="px-2 py-2 border-b border-amber-200 sticky top-0 bg-amber-50 z-10 flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={familySearch}
+                        onChange={(e) => setFamilySearch(e.target.value)}
+                        placeholder="Rechercher..."
+                        className="w-full bg-white/70 outline-none text-sm px-2 py-1 rounded border border-amber-200 focus:border-amber-400"
+                      />
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {FAMILY_OPTIONS.filter(opt => opt.label.toLowerCase().includes(familySearch.toLowerCase())).map(opt => {
+                        const checked = selectedFamily.includes(opt.label);
+                        return (
+                          <DropdownMenuItem
+                            key={opt.key}
+                            className="cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              setSelectedFamily(prev => checked ? prev.filter(l => l !== opt.label) : [...prev, opt.label]);
+                            }}
+                          >
+                            <div className="flex items-center gap-2">
+                              <input type="checkbox" className="h-4 w-4" checked={checked} readOnly />
+                              <span className="text-sm">{opt.label}</span>
+                            </div>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <p className="text-xs text-muted-foreground">Barre de recherche incluse. Cochez plusieurs options si nécessaire.</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">

@@ -26,6 +26,7 @@ interface Client {
   nationalite: string | null;
   sexe: string | null;
   etat_civil: string | null;
+  situation_familiale: string[] | null;
   // Identification
   type_identite: string | null;
   numero_identite: string | null;
@@ -77,7 +78,7 @@ export default function ClientDetail() {
       const { data: c, error } = await supabase
         .from('clients')
         .select(`id,name,role,created_at,kyc_status,missing_info,
-          nom,prenom,date_naissance,lieu_naissance,adresse,telephone,email,nationalite,sexe,etat_civil,
+          nom,prenom,date_naissance,lieu_naissance,adresse,telephone,email,nationalite,sexe,etat_civil,situation_familiale,
           type_identite,numero_identite,date_expiration_identite,id_doc_path,
           profession,employeur,adresse_professionnelle,siret,situation_fiscale,revenus,justificatifs_financiers,comptes_bancaires,
           type_dossier,contrat_souhaite,historique_litiges,situation_matrimoniale,enfants,documents_objet
@@ -225,6 +226,18 @@ export default function ClientDetail() {
                 <div>
                   <div className="text-sm text-muted-foreground">Situation matrimoniale</div>
                   <div className="font-medium">{client.situation_matrimoniale || '-'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Options</div>
+                  {client.situation_familiale && client.situation_familiale.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {client.situation_familiale.map((o, idx) => (
+                        <Badge key={idx} variant="secondary">{o}</Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm">—</div>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Enfants</div>
