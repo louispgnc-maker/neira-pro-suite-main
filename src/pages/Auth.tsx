@@ -101,20 +101,11 @@ export default function Auth() {
 
         if (error) throw error;
         
-        // Fetch user profile to get role
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
-
-        const userRole = profileData?.role || 'avocat';
-        
         toast.success("Connexion réussie!");
-        console.log('Utilisateur connecté:', data.user, 'Rôle:', userRole);
+        console.log('Utilisateur connecté:', data.user, 'Espace sélectionné:', role);
         
-        // Redirect based on role stored in profile
-        if (userRole === 'notaire') {
+        // Redirect based on selected role (not profile role)
+        if (role === 'notaire') {
           navigate("/notaires/dashboard");
         } else {
           navigate("/avocats/dashboard");
