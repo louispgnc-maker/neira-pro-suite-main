@@ -111,9 +111,9 @@ export default function Auth() {
         const userRole = profileData?.role || 'avocat';
         
         toast.success("Connexion réussie!");
-        console.log('Utilisateur connecté:', data.user);
+        console.log('Utilisateur connecté:', data.user, 'Rôle:', userRole);
         
-        // Redirect based on role
+        // Redirect based on role stored in profile
         if (userRole === 'notaire') {
           navigate("/notaires/dashboard");
         } else {

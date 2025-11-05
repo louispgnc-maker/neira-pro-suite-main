@@ -43,12 +43,11 @@ export function DashboardNotaire() {
       const prevYyyy = prevMonth.getFullYear();
       const prevMm = String(prevMonth.getMonth() + 1).padStart(2, "0");
 
-      // Documents en cours (status = 'En cours') - Filtre par role='notaire'
+      // Documents en cours (status = 'En cours')
       const docsQuery = supabase
         .from("documents")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .eq("role", "notaire")
         .eq("status", "En cours")
         .gte("updated_at", `${yyyy}-${mm}-01`)
         .lte("updated_at", `${yyyy}-${mm}-31`);
@@ -57,17 +56,15 @@ export function DashboardNotaire() {
         .from("documents")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .eq("role", "notaire")
         .eq("status", "En cours")
         .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
         .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
 
-      // Signatures en attente - Filtre par role='notaire'
+      // Signatures en attente
       const sigQuery = supabase
         .from("signatures")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .eq("role", "notaire")
         .in("status", ["pending", "awaiting", "en_attente"])
         .gte("updated_at", `${yyyy}-${mm}-01`)
         .lte("updated_at", `${yyyy}-${mm}-31`);
@@ -76,27 +73,24 @@ export function DashboardNotaire() {
         .from("signatures")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .eq("role", "notaire")
         .in("status", ["pending", "awaiting", "en_attente"])
         .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
         .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
 
-      // Clients à relancer (kyc_status = 'Partiel') - Filtre par role='notaire'
+      // Clients à relancer (kyc_status = 'Partiel')
       const clientsQuery = supabase
         .from("clients")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .eq("role", "notaire")
         .eq("kyc_status", "Partiel");
 
-      // Tâches du jour - Filtre par role='notaire'
+      // Tâches du jour
       const dd = String(now.getDate()).padStart(2, "0");
       const dateStr = `${yyyy}-${mm}-${dd}`;
       const tasksQuery = supabase
         .from("tasks")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .eq("role", "notaire")
         .eq("due_date", dateStr);
 
       const [docsRes, docsPrevRes, sigRes, sigPrevRes, clientsRes, tasksRes] = await Promise.allSettled([
