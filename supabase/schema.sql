@@ -76,11 +76,20 @@ create table if not exists public.clients (
   adresse_professionnelle text,
   siret text,
   situation_fiscale text,
+  revenus text,
+  justificatifs_financiers text,
+  comptes_bancaires jsonb,
+  -- Situation familiale (notaire)
+  etat_civil text,
+  situation_matrimoniale text,
+  situation_familiale jsonb,
+  enfants jsonb,
   -- Situation juridique / dossier
   type_dossier text,
   contrat_souhaite text,
   historique_litiges text,
   pieces_justificatives text,
+  documents_objet jsonb,
   -- Consentements et mentions légales
   consentement_rgpd boolean default false,
   signature_mandat boolean default false
