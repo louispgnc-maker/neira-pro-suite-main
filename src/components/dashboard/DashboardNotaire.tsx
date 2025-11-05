@@ -149,7 +149,7 @@ export function DashboardNotaire() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
                 <DropdownMenuItem 
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"
                   onClick={() => navigate("/avocats/dashboard")}
                 >
                   <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ export function DashboardNotaire() {
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"
                   onClick={() => navigate("/notaires/dashboard")}
                 >
                   <div className="flex items-center gap-2">
