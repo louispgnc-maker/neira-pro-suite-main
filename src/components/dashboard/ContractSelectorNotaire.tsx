@@ -162,14 +162,14 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
         ) : (
           filteredCategories.map((cat) => (
             <DropdownMenuSub key={cat.key}>
-              <DropdownMenuSubTrigger className="font-semibold">
+              <DropdownMenuSubTrigger className="font-semibold hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white data-[state=open]:bg-amber-600 data-[state=open]:text-white">
                 {cat.label}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 {cat.contracts.map((contract) => (
                   <DropdownMenuItem 
                     key={contract} 
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"
                     onClick={() => handleContractSelect(contract, cat.key)}
                   >
                     {contract}
