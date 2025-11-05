@@ -122,18 +122,13 @@ export function DashboardNotaire() {
         <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-foreground">
-                Bienvenue dans votre espace {profile?.first_name || 'Utilisateur'}
-              </h1>
-              <Badge className="bg-amber-600 text-white border-0 px-4 py-1.5 text-sm">
-                Espace Notaire
-              </Badge>
-            </div>
-            <p className="text-muted-foreground mt-1">
-              Voici un aperçu de votre activité notariale
-            </p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-foreground">
+              Bienvenue dans votre espace {profile?.first_name || 'Utilisateur'}
+            </h1>
+            <Badge className="bg-amber-600 text-white border-0 px-4 py-1.5 text-sm">
+              Espace Notaire
+            </Badge>
           </div>
           <div className="flex items-center gap-3">
             <Badge className="bg-gradient-primary text-white border-0 px-4 py-1.5">
@@ -143,6 +138,9 @@ export function DashboardNotaire() {
             <Button variant="secondary">Nouveau client</Button>
           </div>
         </div>
+        <p className="text-muted-foreground mt-2">
+          Voici un aperçu de votre activité notariale
+        </p>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
