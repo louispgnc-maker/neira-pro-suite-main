@@ -53,7 +53,7 @@ export default function CreateClientNotaire() {
   const [dateExpiration, setDateExpiration] = useState("");
 
   // 3. Situation familiale
-  const [situationMatrimoniale, setSituationMatrimoniale] = useState("");
+  // Situation matrimoniale supprimée sur demande
   const [selectedFamily, setSelectedFamily] = useState<string[]>([]);
   const [familySearch, setFamilySearch] = useState("");
   const [enfants, setEnfants] = useState<ChildEntry[]>([]);
@@ -163,7 +163,7 @@ export default function CreateClientNotaire() {
         numero_identite: numeroIdentite || null,
         date_expiration_identite: dateExpiration || null,
         id_doc_path: idDocPath,
-  situation_matrimoniale: situationMatrimoniale || null,
+  // situation_matrimoniale: (supprimé)
   situation_familiale: selectedFamily.length ? selectedFamily : null,
         enfants: enfantsClean.length ? enfantsClean : null,
         profession: profession || null,
@@ -263,7 +263,7 @@ export default function CreateClientNotaire() {
                   <Label htmlFor="etatCivil">État civil</Label>
                   <Select value={etatCivil} onValueChange={setEtatCivil}>
                     <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-amber-50 border-amber-200">
                       <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
                       <SelectItem className={itemHover} value="Marié">Marié</SelectItem>
                       <SelectItem className={itemHover} value="Pacsé">Pacsé</SelectItem>
@@ -289,7 +289,7 @@ export default function CreateClientNotaire() {
                   <Label htmlFor="typeIdentite">Type de pièce d'identité</Label>
                   <Select value={typeIdentite} onValueChange={setTypeIdentite}>
                     <SelectTrigger id="typeIdentite"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-amber-50 border-amber-200">
                       <SelectItem className={itemHover} value="CNI">Carte Nationale d'Identité</SelectItem>
                       <SelectItem className={itemHover} value="Passeport">Passeport</SelectItem>
                       <SelectItem className={itemHover} value="Titre de séjour">Titre de séjour</SelectItem>
@@ -324,10 +324,7 @@ export default function CreateClientNotaire() {
               <CardDescription>Mariage / PACS / Enfants</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="situationMatrimoniale">Situation matrimoniale</Label>
-                <Input id="situationMatrimoniale" value={situationMatrimoniale} onChange={e => setSituationMatrimoniale(e.target.value)} placeholder="Ex: Mariage sous régime communauté réduite aux acquêts" />
-              </div>
+              {/* Champ Situation matrimoniale supprimé */}
               <div className="space-y-2">
                 <Label>Options (multi-sélection)</Label>
                 <DropdownMenu>
@@ -454,7 +451,7 @@ export default function CreateClientNotaire() {
                 <Label htmlFor="typeDossier">Type d'acte / dossier</Label>
                 <Select value={typeDossier} onValueChange={(val) => { setTypeDossier(val); setContratSouhaite(''); }}>
                   <SelectTrigger id="typeDossier"><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-amber-50 border-amber-200">
                     {NOTAIRE_CONTRACT_CATEGORIES.map(cat => (
                       <SelectItem className={itemHover} key={cat.key} value={cat.key}>{cat.label}</SelectItem>
                     ))}
@@ -465,7 +462,7 @@ export default function CreateClientNotaire() {
                 <Label htmlFor="contratSouhaite">Acte/Contrat précis</Label>
                 <Select value={contratSouhaite} onValueChange={setContratSouhaite} disabled={!typeDossier}>
                   <SelectTrigger id="contratSouhaite"><SelectValue placeholder={typeDossier ? 'Sélectionner...' : 'Choisir une catégorie d\'abord'} /></SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-amber-50 border-amber-200">
                     {(NOTAIRE_CONTRACT_CATEGORIES.find(c => c.key === typeDossier)?.contracts || []).map(c => (
                       <SelectItem className={itemHover} key={c} value={c}>{c}</SelectItem>
                     ))}

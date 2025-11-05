@@ -30,6 +30,11 @@ export default function EditClient() {
     ? 'bg-amber-600 hover:bg-amber-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
+  const selectContentClass = role === 'notaire' ? 'bg-amber-50 border-amber-200' : '';
+  const selectItemClass = role === 'notaire'
+    ? 'cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white'
+    : 'cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white';
+
   const [loading, setLoading] = useState(false);
   const [idDocFile, setIdDocFile] = useState<File | null>(null);
 
@@ -319,10 +324,10 @@ export default function EditClient() {
                     <SelectTrigger id="sexe">
                       <SelectValue placeholder="Sélectionner..." />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="M">Masculin</SelectItem>
-                      <SelectItem value="F">Féminin</SelectItem>
-                      <SelectItem value="Autre">Autre</SelectItem>
+                    <SelectContent className={selectContentClass}>
+                      <SelectItem className={selectItemClass} value="M">Masculin</SelectItem>
+                      <SelectItem className={selectItemClass} value="F">Féminin</SelectItem>
+                      <SelectItem className={selectItemClass} value="Autre">Autre</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -332,13 +337,13 @@ export default function EditClient() {
                   <Label htmlFor="etatCivil">État civil (Notaire)</Label>
                   <Select value={etatCivil} onValueChange={setEtatCivil}>
                     <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Célibataire">Célibataire</SelectItem>
-                      <SelectItem value="Marié">Marié</SelectItem>
-                      <SelectItem value="Pacsé">Pacsé</SelectItem>
-                      <SelectItem value="Divorcé">Divorcé</SelectItem>
-                      <SelectItem value="Veuf">Veuf</SelectItem>
-                      <SelectItem value="Séparé">Séparé</SelectItem>
+                    <SelectContent className={selectContentClass}>
+                      <SelectItem className={selectItemClass} value="Célibataire">Célibataire</SelectItem>
+                      <SelectItem className={selectItemClass} value="Marié">Marié</SelectItem>
+                      <SelectItem className={selectItemClass} value="Pacsé">Pacsé</SelectItem>
+                      <SelectItem className={selectItemClass} value="Divorcé">Divorcé</SelectItem>
+                      <SelectItem className={selectItemClass} value="Veuf">Veuf</SelectItem>
+                      <SelectItem className={selectItemClass} value="Séparé">Séparé</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -359,10 +364,10 @@ export default function EditClient() {
                     <SelectTrigger id="typeIdentite">
                       <SelectValue placeholder="Sélectionner..." />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CNI">Carte Nationale d'Identité</SelectItem>
-                      <SelectItem value="Passeport">Passeport</SelectItem>
-                      <SelectItem value="Titre de séjour">Titre de séjour</SelectItem>
+                    <SelectContent className={selectContentClass}>
+                      <SelectItem className={selectItemClass} value="CNI">Carte Nationale d'Identité</SelectItem>
+                      <SelectItem className={selectItemClass} value="Passeport">Passeport</SelectItem>
+                      <SelectItem className={selectItemClass} value="Titre de séjour">Titre de séjour</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -493,12 +498,12 @@ export default function EditClient() {
                   <SelectTrigger id="typeDossier">
                     <SelectValue placeholder="Sélectionner une catégorie..." />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Droit des affaires / Commercial">💼 Droit des affaires / Commercial</SelectItem>
-                    <SelectItem value="Droit du travail">👔 Droit du travail</SelectItem>
-                    <SelectItem value="Droit immobilier">🏠 Droit immobilier</SelectItem>
-                    <SelectItem value="Droit civil / Vie privée">👪 Droit civil / Vie privée</SelectItem>
-                    <SelectItem value="Propriété intellectuelle & Numérique">🧠 Propriété intellectuelle & Numérique</SelectItem>
+                  <SelectContent className={selectContentClass}>
+                    <SelectItem className={selectItemClass} value="Droit des affaires / Commercial">💼 Droit des affaires / Commercial</SelectItem>
+                    <SelectItem className={selectItemClass} value="Droit du travail">👔 Droit du travail</SelectItem>
+                    <SelectItem className={selectItemClass} value="Droit immobilier">🏠 Droit immobilier</SelectItem>
+                    <SelectItem className={selectItemClass} value="Droit civil / Vie privée">👪 Droit civil / Vie privée</SelectItem>
+                    <SelectItem className={selectItemClass} value="Propriété intellectuelle & Numérique">🧠 Propriété intellectuelle & Numérique</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -508,9 +513,9 @@ export default function EditClient() {
                   <SelectTrigger id="contratSouhaite">
                     <SelectValue placeholder={typeDossier ? "Sélectionner un contrat..." : "Choisir d'abord une catégorie"} />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className={selectContentClass}>
                     {(AVOCAT_CONTRACT_CATEGORIES.find(c => (c.key === typeDossier || c.label.includes(typeDossier)))?.contracts || []).map((contract) => (
-                      <SelectItem key={contract} value={contract}>{contract}</SelectItem>
+                      <SelectItem className={selectItemClass} key={contract} value={contract}>{contract}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
