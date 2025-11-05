@@ -124,7 +124,7 @@ export function DashboardAvocat() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Bonjour, {profile?.first_name || 'Utilisateur'} (Avocat)
+              Bonjour, {profile?.first_name || 'Utilisateur'} {profile?.role && `(${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)})`}
             </h1>
             <p className="text-muted-foreground mt-1">
               Voici un aperçu de votre activité juridique
