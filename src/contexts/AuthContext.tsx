@@ -7,6 +7,7 @@ interface UserProfile {
   first_name: string;
   last_name: string;
   email: string;
+  role?: string; // 'avocat' | 'notaire'
   created_at?: string;
 }
 
@@ -46,12 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const first_name = meta.first_name ?? existing?.first_name ?? '';
       const last_name = meta.last_name ?? existing?.last_name ?? '';
       const email = u.email ?? existing?.email ?? '';
+      const role = meta.role ?? existing?.role ?? 'avocat'; // Default role is 'avocat'
 
       if (!existing) {
         // Create profile if missing
         const { data: inserted, error: insertError } = await supabase
           .from('profiles')
-          .insert({ id: u.id, email, first_name, last_name })
+          .insert({ id: u.id, email, first_name, last_name, role })
           .select()
           .single();
         if (insertError) {
@@ -61,11 +63,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return inserted as UserProfile;
       }
 
-      // Optionally enrich missing names from metadata
-      if ((!existing.first_name || !existing.last_name) && (first_name || last_name)) {
+      // Optionally enrich missing names/role from metadata
+      if ((!existing.first_name || !existing.last_name || !existing.role) && (first_name || last_name || role)) {
         const { data: updated, error: updateError } = await supabase
           .from('profiles')
-          .update({ first_name, last_name })
+          .update({ first_name, last_name, role })
           .eq('id', u.id)
           .select()
           .single();

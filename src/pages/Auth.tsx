@@ -61,6 +61,7 @@ export default function Auth() {
               data: {
                 first_name: form.firstName.value,
                 last_name: form.lastName.value,
+                role: role, // Pass the selected role to user metadata
               }
             }
           }),
@@ -83,9 +84,24 @@ export default function Auth() {
 
         if (error) throw error;
         
+        // Fetch user profile to get role
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
+        const userRole = profileData?.role || 'avocat';
+        
         toast.success("Connexion réussie!");
         console.log('Utilisateur connecté:', data.user);
-        navigate("/dashboard");
+        
+        // Redirect based on role
+        if (userRole === 'notaire') {
+          navigate("/notaires/dashboard");
+        } else {
+          navigate("/avocats/dashboard");
+        }
       }
     } catch (error: any) {
       console.error('Erreur d\'authentification:', error);

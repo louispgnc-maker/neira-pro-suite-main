@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import AvocatDashboard from "./pages/avocats/Dashboard";
+import NotaireDashboard from "./pages/notaires/Dashboard";
 import Documents from "./pages/Documents";
 import Signatures from "./pages/Signatures";
 import Clients from "./pages/Clients";
@@ -26,7 +28,9 @@ const App = () => (
             <Route path="/" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/avocats/auth" element={<Auth />} />
+            <Route path="/avocats/dashboard" element={<AvocatDashboard />} />
             <Route path="/notaires/auth" element={<Auth />} />
+            <Route path="/notaires/dashboard" element={<NotaireDashboard />} />
             <Route path="/documents" element={<Documents />} />
             <Route path="/signatures" element={<Signatures />} />
             <Route path="/clients" element={<Clients />} />

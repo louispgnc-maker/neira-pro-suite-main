@@ -1,6 +1,30 @@
 -- Minimal app schema for per-account scoping
 -- Run this in Supabase SQL Editor (project: neira) before deploying the frontend changes
 
+-- 0) PROFILES (user metadata and role)
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  email text,
+  first_name text,
+  last_name text,
+  role text not null default 'avocat', -- 'avocat' | 'notaire'
+  created_at timestamptz not null default now()
+);
+
+alter table public.profiles enable row level security;
+
+drop policy if exists "profiles_select_own" on public.profiles;
+create policy "profiles_select_own" on public.profiles
+  for select using (id = auth.uid());
+drop policy if exists "profiles_insert_own" on public.profiles;
+create policy "profiles_insert_own" on public.profiles
+  for insert with check (id = auth.uid());
+drop policy if exists "profiles_update_own" on public.profiles;
+create policy "profiles_update_own" on public.profiles
+  for update using (id = auth.uid());
+
+create index if not exists profiles_role_idx on public.profiles(role);
+
 -- 1) CLIENTS
 create table if not exists public.clients (
   id uuid primary key default gen_random_uuid(),
@@ -144,7 +168,7 @@ create policy "documents_storage_upload_own" on storage.objects
   for insert to authenticated
   with check (
     bucket_id = 'documents'
-    and (storage.foldername(name))[1] = auth.uid()
+    and (storage.foldername(name))[1] = auth.uid()::text
   );
 
 drop policy if exists "documents_storage_read_own" on storage.objects;
@@ -152,7 +176,7 @@ create policy "documents_storage_read_own" on storage.objects
   for select to authenticated
   using (
     bucket_id = 'documents'
-    and (storage.foldername(name))[1] = auth.uid()
+    and (storage.foldername(name))[1] = auth.uid()::text
   );
 
 drop policy if exists "documents_storage_delete_own" on storage.objects;
@@ -160,5 +184,5 @@ create policy "documents_storage_delete_own" on storage.objects
   for delete to authenticated
   using (
     bucket_id = 'documents'
-    and (storage.foldername(name))[1] = auth.uid()
+    and (storage.foldername(name))[1] = auth.uid()::text
   );
