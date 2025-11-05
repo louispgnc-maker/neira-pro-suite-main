@@ -125,7 +125,7 @@ export function DashboardAvocat() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-3xl font-bold text-foreground">
-                Bonjour, {profile?.first_name || 'Utilisateur'} {profile?.role && `(${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)})`}
+                Bonjour, {profile?.first_name || 'Utilisateur'}
               </h1>
               <Badge className="bg-blue-600 text-white border-0 px-4 py-1.5 text-sm">
                 Espace Avocat
