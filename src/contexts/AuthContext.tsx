@@ -83,16 +83,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Vérifie l'état de l'authentification au chargement
+  // Vérifie l'état de l'authentification au chargement (rapide via getSession)
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        setUser(user);
-        
-        if (user) {
-          const ensured = await ensureProfile(user);
-          setProfile(ensured);
+        // getSession est plus rapide (utilise le cache local) que getUser
+        const { data: { session } } = await supabase.auth.getSession();
+        const u = session?.user ?? null;
+        setUser(u);
+
+        if (u) {
+          // Ne bloque pas le rendu: hydrate le profil en arrière-plan
+          ensureProfile(u).then((ensured) => setProfile(ensured)).catch((e) => {
+            console.error('ensureProfile async error:', e);
+          });
         }
       } catch (error) {
         console.error('Erreur lors de la vérification de l\'utilisateur:', error);
@@ -106,8 +110,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
       if (currentUser) {
-        const ensured = await ensureProfile(currentUser);
-        setProfile(ensured);
+        // Mise à jour asynchrone du profil pour éviter les délais UX
+        ensureProfile(currentUser).then((ensured) => setProfile(ensured)).catch((e) => {
+          console.error('ensureProfile async error (state change):', e);
+        });
       } else {
         setProfile(null);
       }

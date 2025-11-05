@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Shield, Zap, TrendingUp, Check } from "lucide-react";
 
+
 interface FormElements extends HTMLFormElement {
   email: HTMLInputElement;
   password: HTMLInputElement;
@@ -21,8 +22,19 @@ interface FormElements extends HTMLFormElement {
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [role, setRole] = useState<string | null>(null); // "avocat" | "notaire"
   const [loading, setLoading] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
+
+  // Utilitaire: évite un "chargement infini" si le réseau ou Supabase ne répond pas
+  const withTimeout = async <T,>(promise: Promise<T>, ms = 7000): Promise<T> => {
+    return await new Promise<T>((resolve, reject) => {
+      const id = setTimeout(() => reject(new Error('TIMEOUT')), ms);
+      promise
+        .then((res) => { clearTimeout(id); resolve(res); })
+        .catch((err) => { clearTimeout(id); reject(err); });
+    });
+  };
 
   const handleAuth = async (e: FormEvent<HTMLFormElement>, isSignUp: boolean) => {
     e.preventDefault();
@@ -30,34 +42,44 @@ export default function Auth() {
     const form = e.target as FormElements;
 
     try {
+      // Retour immédiat si hors ligne
+      if (typeof navigator !== 'undefined' && navigator && navigator.onLine === false) {
+        toast.error("Hors ligne", { description: "Vérifiez votre connexion internet." });
+        return;
+      }
       if (isSignUp) {
         // Inscription directe avec Supabase
         const email = form.signupEmail.value;
         const password = form.signupPassword.value;
         
-        const { data, error } = await supabase.auth.signUp({ 
-          email, 
-          password,
-          options: {
-            data: {
-              first_name: form.firstName.value,
-              last_name: form.lastName.value,
+        type SignUpResponse = Awaited<ReturnType<typeof supabase.auth.signUp>>;
+        const resp: SignUpResponse = await withTimeout<SignUpResponse>(
+          supabase.auth.signUp({ 
+            email, 
+            password,
+            options: {
+              data: {
+                first_name: form.firstName.value,
+                last_name: form.lastName.value,
+              }
             }
-          }
-        });
-        
+          }),
+          7000
+        );
+        const { error } = resp as SignUpResponse;
         if (error) throw error;
-        
         setVerificationEmail(email);
       } else {
         // Connexion avec Supabase
         const email = form.email.value;
         const password = form.password.value;
         
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
+        type SignInResponse = Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>;
+        const resp: SignInResponse = await withTimeout<SignInResponse>(
+          supabase.auth.signInWithPassword({ email, password }),
+          7000
+        );
+        const { data, error } = resp as SignInResponse;
 
         if (error) throw error;
         
@@ -67,13 +89,21 @@ export default function Auth() {
       }
     } catch (error: any) {
       console.error('Erreur d\'authentification:', error);
-      toast.error(error.message || "Une erreur est survenue");
+      if (error?.message === 'TIMEOUT') {
+        toast.error("Connexion trop longue", { description: "Vérifiez votre connexion internet ou réessayez dans un instant." });
+      } else if (error?.message?.toLowerCase?.().includes('email not confirmed')) {
+        toast.error("Email non confirmé", { description: "Veuillez confirmer votre email puis réessayez." });
+      } else if (error?.message?.toLowerCase?.().includes('invalid login credentials')) {
+        toast.error("Identifiants invalides", { description: "Email ou mot de passe incorrect." });
+      } else {
+        toast.error(error.message || "Une erreur est survenue");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Importez le composant EmailVerificationStatus en haut du fichier
+  // Email verification screen
   if (verificationEmail) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
@@ -85,9 +115,10 @@ export default function Auth() {
     );
   }
 
+  // Main page with role selection OR auth forms
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
-      <div className="w-full max-w-md mx-auto mb-8">
+      <div className="w-full max-w-2xl mx-auto mb-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-primary mb-4 shadow-glow animate-scale-in">
             <span className="text-2xl font-bold text-white">N</span>
@@ -95,103 +126,113 @@ export default function Auth() {
           <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
             Neira
           </h1>
-          <p className="text-muted-foreground">Espace Professionnel Automatisé</p>
+          <p className="text-muted-foreground">
+            {role ? (role === "avocat" ? "Espace Avocats" : "Espace Notaires") : "Espace Professionnel Automatisé"}
+          </p>
         </div>
 
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Connexion</TabsTrigger>
-            <TabsTrigger value="signup">Créer un compte</TabsTrigger>
-          </TabsList>
+        {/* Single card containing everything */}
+        <Card className="bg-white dark:bg-card shadow-xl border-2">
+          <CardContent className="pt-6 space-y-6">
+            {/* Role selection buttons inside card */}
+            <div className="flex flex-col items-center gap-4">
+              <Button 
+                size="lg" 
+                className="w-full max-w-md text-xl px-8 py-8 font-bold" 
+                variant={role === "avocat" ? "default" : "outline"}
+                onClick={() => setRole("avocat")}
+              >
+                Espace Avocats
+              </Button>
+              <Button 
+                size="lg" 
+                className="w-full max-w-md text-xl px-8 py-8 font-bold" 
+                variant={role === "notaire" ? "default" : "outline"}
+                onClick={() => setRole("notaire")}
+              >
+                Espace Notaires
+              </Button>
+            </div>
 
-          <TabsContent value="login">
-            <Card className="bg-white dark:bg-card shadow-xl border-2">
-              <CardHeader>
-                <CardTitle>Connexion</CardTitle>
-                <CardDescription>
-                  Accédez à votre espace professionnel
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="nom@cabinet.fr"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Mot de passe</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Connexion..." : "Se connecter"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
+            {/* Show auth forms once role is selected */}
+            {role && (
+              <Tabs defaultValue="login" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="login">Connexion</TabsTrigger>
+                  <TabsTrigger value="signup">Créer un compte</TabsTrigger>
+                </TabsList>
 
-          <TabsContent value="signup">
-            <Card className="bg-white dark:bg-card shadow-xl border-2">
-              <CardHeader>
-                <CardTitle>Créer un compte</CardTitle>
-                <CardDescription>
-                  Commencez votre essai gratuit aujourd'hui
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                <TabsContent value="login" className="space-y-4 mt-4">
+                  <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">Prénom</Label>
+                      <Label htmlFor="email">Email</Label>
                       <Input
-                        id="firstName"
-                        placeholder="Jean"
+                        id="email"
+                        type="email"
+                        placeholder="nom@cabinet.fr"
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Nom</Label>
+                      <Label htmlFor="password">Mot de passe</Label>
                       <Input
-                        id="lastName"
-                        placeholder="Dupont"
+                        id="password"
+                        type="password"
                         required
                       />
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signupEmail">Email</Label>
-                    <Input
-                      id="signupEmail"
-                      type="email"
-                      placeholder="nom@cabinet.fr"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signupPassword">Mot de passe</Label>
-                    <Input
-                      id="signupPassword"
-                      type="password"
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Création..." : "Créer mon compte"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? "Connexion..." : "Se connecter"}
+                    </Button>
+                  </form>
+                </TabsContent>
+
+                <TabsContent value="signup" className="space-y-4 mt-4">
+                  <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">Prénom</Label>
+                        <Input
+                          id="firstName"
+                          placeholder="Jean"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Nom</Label>
+                        <Input
+                          id="lastName"
+                          placeholder="Dupont"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signupEmail">Email</Label>
+                      <Input
+                        id="signupEmail"
+                        type="email"
+                        placeholder="nom@cabinet.fr"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signupPassword">Mot de passe</Label>
+                      <Input
+                        id="signupPassword"
+                        type="password"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? "Création..." : "Créer mon compte"}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Features Section - Below Auth */}

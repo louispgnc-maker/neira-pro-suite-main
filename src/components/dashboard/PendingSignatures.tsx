@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 type SignatureRow = {
   id: string;
@@ -16,6 +17,7 @@ type SignatureRow = {
 
 export function PendingSignatures() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [signatures, setSignatures] = useState<SignatureRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,7 +59,7 @@ export function PendingSignatures() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Signatures en attente</CardTitle>
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/signatures')}>
           Voir tout →
         </Button>
       </CardHeader>

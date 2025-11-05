@@ -59,6 +59,9 @@ create index if not exists documents_owner_idx on public.documents(owner_id);
 create index if not exists documents_updated_at_idx on public.documents(updated_at desc);
 create index if not exists documents_status_idx on public.documents(status);
 
+-- Add storage_path column to link to Supabase Storage path
+alter table public.documents add column if not exists storage_path text;
+
 -- 3) SIGNATURES
 create table if not exists public.signatures (
   id uuid primary key default gen_random_uuid(),
@@ -130,3 +133,32 @@ create trigger documents_set_updated_at
 before update on public.documents
 for each row
 execute procedure public.set_updated_at();
+
+-- 5) STORAGE POLICIES (bucket: documents)
+-- Allow authenticated users to upload/read/delete only in their own folder (first path segment = auth.uid())
+-- Example stored path: <user_id>/timestamp-filename.pdf
+
+-- Enable RLS on storage.objects is managed by Supabase; we add bucket-specific policies
+drop policy if exists "documents_storage_upload_own" on storage.objects;
+create policy "documents_storage_upload_own" on storage.objects
+  for insert to authenticated
+  with check (
+    bucket_id = 'documents'
+    and (storage.foldername(name))[1] = auth.uid()
+  );
+
+drop policy if exists "documents_storage_read_own" on storage.objects;
+create policy "documents_storage_read_own" on storage.objects
+  for select to authenticated
+  using (
+    bucket_id = 'documents'
+    and (storage.foldername(name))[1] = auth.uid()
+  );
+
+drop policy if exists "documents_storage_delete_own" on storage.objects;
+create policy "documents_storage_delete_own" on storage.objects
+  for delete to authenticated
+  using (
+    bucket_id = 'documents'
+    and (storage.foldername(name))[1] = auth.uid()
+  );

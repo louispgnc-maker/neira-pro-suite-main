@@ -7,7 +7,6 @@ import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
 import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
 import { RecentClients } from "@/components/dashboard/RecentClients";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
-import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,7 +16,9 @@ import { useEffect, useState } from "react";
 export default function Dashboard() {
   const { profile, user } = useAuth();
   const [docCount, setDocCount] = useState(0);
+  const [docPrevCount, setDocPrevCount] = useState(0);
   const [pendingSigCount, setPendingSigCount] = useState(0);
+  const [pendingSigPrevCount, setPendingSigPrevCount] = useState(0);
   const [clientsToFollow, setClientsToFollow] = useState(0);
   const [todayTasks, setTodayTasks] = useState(0);
 
@@ -26,25 +27,55 @@ export default function Dashboard() {
     async function loadCounts() {
       if (!user) {
         setDocCount(0);
+        setDocPrevCount(0);
         setPendingSigCount(0);
+        setPendingSigPrevCount(0);
         setClientsToFollow(0);
         setTodayTasks(0);
         return;
       }
+
+      // Dates for current and previous month
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const prevYyyy = prevMonth.getFullYear();
+      const prevMm = String(prevMonth.getMonth() + 1).padStart(2, "0");
 
       // Documents en cours (status = 'En cours')
       const docsQuery = supabase
         .from("documents")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .eq("status", "En cours");
+        .eq("status", "En cours")
+        .gte("updated_at", `${yyyy}-${mm}-01`)
+        .lte("updated_at", `${yyyy}-${mm}-31`);
+
+      const docsPrevQuery = supabase
+        .from("documents")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id)
+        .eq("status", "En cours")
+        .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
+        .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
 
       // Signatures en attente
       const sigQuery = supabase
         .from("signatures")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .in("status", ["pending", "awaiting", "en_attente"]);
+        .in("status", ["pending", "awaiting", "en_attente"])
+        .gte("updated_at", `${yyyy}-${mm}-01`)
+        .lte("updated_at", `${yyyy}-${mm}-31`);
+
+      const sigPrevQuery = supabase
+        .from("signatures")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id)
+        .in("status", ["pending", "awaiting", "en_attente"])
+        .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
+        .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
 
       // Clients à relancer (kyc_status = 'Partiel')
       const clientsQuery = supabase
@@ -53,12 +84,8 @@ export default function Dashboard() {
         .eq("owner_id", user.id)
         .eq("kyc_status", "Partiel");
 
-      // Tâches du jour (optional: from a "tasks" table)
-      // If tasks table doesn't exist, we keep 0; otherwise count tasks with due_date = today
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const dd = String(today.getDate()).padStart(2, "0");
+      // Tâches du jour
+      const dd = String(now.getDate()).padStart(2, "0");
       const dateStr = `${yyyy}-${mm}-${dd}`;
       const tasksQuery = supabase
         .from("tasks")
@@ -66,18 +93,21 @@ export default function Dashboard() {
         .eq("owner_id", user.id)
         .eq("due_date", dateStr);
 
-      const [docsRes, sigRes, clientsRes, tasksRes] = await Promise.allSettled([
+      const [docsRes, docsPrevRes, sigRes, sigPrevRes, clientsRes, tasksRes] = await Promise.allSettled([
         docsQuery,
+        docsPrevQuery,
         sigQuery,
+        sigPrevQuery,
         clientsQuery,
         tasksQuery,
       ]);
 
       if (!isMounted) return;
       setDocCount(docsRes.status === "fulfilled" && docsRes.value.count ? docsRes.value.count : 0);
+      setDocPrevCount(docsPrevRes.status === "fulfilled" && docsPrevRes.value.count ? docsPrevRes.value.count : 0);
       setPendingSigCount(sigRes.status === "fulfilled" && sigRes.value.count ? sigRes.value.count : 0);
+      setPendingSigPrevCount(sigPrevRes.status === "fulfilled" && sigPrevRes.value.count ? sigPrevRes.value.count : 0);
       setClientsToFollow(clientsRes.status === "fulfilled" && clientsRes.value.count ? clientsRes.value.count : 0);
-      // If tasks table is missing, the query will error; we fallback to 0
       setTodayTasks(tasksRes.status === "fulfilled" && tasksRes.value.count ? tasksRes.value.count : 0);
     }
     loadCounts();
@@ -114,13 +144,31 @@ export default function Dashboard() {
             title="Documents en cours"
             value={docCount}
             icon={FileText}
-            trend={{ value: "8%", positive: true }}
+            trend={(() => {
+              const prev = docPrevCount;
+              const curr = docCount;
+              if (prev === 0) return undefined;
+              const pct = Math.round(((curr - prev) / prev) * 100);
+              return {
+                value: `${Math.abs(pct)}%`,
+                positive: pct >= 0,
+              };
+            })()}
           />
           <StatCard
             title="Signatures en attente"
             value={pendingSigCount}
             icon={PenTool}
-            trend={{ value: "3%", positive: false }}
+            trend={(() => {
+              const prev = pendingSigPrevCount;
+              const curr = pendingSigCount;
+              if (prev === 0) return undefined;
+              const pct = Math.round(((curr - prev) / prev) * 100);
+              return {
+                value: `${Math.abs(pct)}%`,
+                positive: pct >= 0,
+              };
+            })()}
           />
           <StatCard
             title="Clients à relancer"
@@ -137,19 +185,11 @@ export default function Dashboard() {
         {/* Quick Actions */}
         <QuickActions />
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - 2/3 width */}
-          <div className="lg:col-span-2 space-y-6">
-            <RecentDocuments />
-            <PendingSignatures />
-          </div>
-
-          {/* Right Column - 1/3 width */}
-          <div className="space-y-6">
-            <OnboardingChecklist />
-            <AlertsCompliance />
-          </div>
+        {/* Main Section - full width */}
+        <div className="space-y-6">
+          <RecentDocuments />
+          <PendingSignatures />
+          <AlertsCompliance />
         </div>
 
         {/* Bottom Grid */}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
@@ -13,6 +14,7 @@ interface EmailVerificationStatusProps {
 export function EmailVerificationStatus({ email, onBackToLogin }: EmailVerificationStatusProps) {
   const [isVerified, setIsVerified] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const navigate = useNavigate();
 
   // Auto-check toutes les 5s pour activer le bouton retour
   useEffect(() => {
@@ -85,7 +87,10 @@ export function EmailVerificationStatus({ email, onBackToLogin }: EmailVerificat
           </Button>
           <Button
             variant="outline"
-            onClick={onBackToLogin}
+            onClick={() => {
+              try { onBackToLogin(); } catch {}
+              navigate('/');
+            }}
             disabled={!isVerified}
             title={!isVerified ? "Activez ce bouton après avoir cliqué sur le lien de confirmation" : undefined}
           >

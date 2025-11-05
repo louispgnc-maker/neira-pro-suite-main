@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 type ClientRow = {
   id: string;
@@ -16,6 +17,7 @@ type ClientRow = {
 
 export function RecentClients() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +54,7 @@ export function RecentClients() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Clients récents / KYC</CardTitle>
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/clients')}>
           Voir tout →
         </Button>
       </CardHeader>

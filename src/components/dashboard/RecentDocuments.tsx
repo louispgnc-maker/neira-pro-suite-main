@@ -19,6 +19,8 @@ import {
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 type DocRow = {
   id: string;
@@ -26,6 +28,7 @@ type DocRow = {
   client_name: string | null;
   status: "Signé" | "En cours" | "Brouillon" | "En attente" | string;
   updated_at: string | null;
+  storage_path: string | null;
 };
 
 const statusColors: Record<string, string> = {
@@ -37,8 +40,71 @@ const statusColors: Record<string, string> = {
 
 export function RecentDocuments() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const viewOrDownload = async (doc: DocRow, mode: 'view' | 'download') => {
+    if (!user) return;
+    if (!doc.storage_path) {
+      toast.error("Aucun fichier associé");
+      return;
+    }
+    const { data, error } = await supabase.storage
+      .from('documents')
+      .createSignedUrl(doc.storage_path, 60);
+    if (error || !data?.signedUrl) {
+      toast.error("Impossible de générer le lien");
+      return;
+    }
+    if (mode === 'view') {
+      window.open(data.signedUrl, '_blank');
+    } else {
+      const a = document.createElement('a');
+      a.href = data.signedUrl;
+      a.download = doc.name || 'document.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  };
+
+  const handleView = (doc: DocRow) => viewOrDownload(doc, 'view');
+  const handleDownload = (doc: DocRow) => viewOrDownload(doc, 'download');
+
+  const handleDelete = async (doc: DocRow) => {
+    if (!user) return;
+    if (!confirm(`Supprimer "${doc.name}" ?`)) return;
+    
+    try {
+      // Supprime le fichier du Storage si storage_path existe
+      if (doc.storage_path) {
+        const { error: storageErr } = await supabase.storage
+          .from('documents')
+          .remove([doc.storage_path]);
+        if (storageErr) {
+          console.error('Erreur suppression storage:', storageErr);
+          // On continue même si le storage échoue (fichier peut-être déjà supprimé)
+        }
+      }
+      
+      // Supprime la ligne de la table documents
+      const { error: dbErr } = await supabase
+        .from('documents')
+        .delete()
+        .eq('id', doc.id)
+        .eq('owner_id', user.id);
+      
+      if (dbErr) throw dbErr;
+      
+      // Met à jour l'état local pour retirer le document de la liste
+      setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
+      toast.success('Document supprimé');
+    } catch (err: any) {
+      console.error('Erreur suppression document:', err);
+      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -51,7 +117,7 @@ export function RecentDocuments() {
       setLoading(true);
       const { data, error } = await supabase
         .from("documents")
-        .select("id,name,client_name,status,updated_at")
+        .select("id,name,client_name,status,updated_at,storage_path")
         .eq("owner_id", user.id)
         .order("updated_at", { ascending: false, nullsFirst: false })
         .limit(5);
@@ -73,7 +139,7 @@ export function RecentDocuments() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Documents récents</CardTitle>
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/documents')}>
           Voir tout →
         </Button>
       </CardHeader>
@@ -122,15 +188,18 @@ export function RecentDocuments() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleView(doc)}>
                           <Eye className="mr-2 h-4 w-4" />
                           Voir
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDownload(doc)}>
                           <Download className="mr-2 h-4 w-4" />
                           Télécharger
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem 
+                          className="text-destructive"
+                          onClick={() => handleDelete(doc)}
+                        >
                           <Trash2 className="mr-2 h-4 w-4" />
                           Supprimer
                         </DropdownMenuItem>
