@@ -52,7 +52,7 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
       <DropdownMenuContent align="end">
         <DropdownMenuItem 
           className={
-            `cursor-pointer ${role === 'avocat' 
+            `cursor-pointer ${role === 'notaire' 
               ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' 
               : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`
           }
@@ -63,7 +63,7 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
         </DropdownMenuItem>
         <DropdownMenuItem 
           className={
-            `cursor-pointer ${role === 'avocat' 
+            `cursor-pointer ${role === 'notaire' 
               ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' 
               : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`
           }
