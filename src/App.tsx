@@ -15,6 +15,7 @@ import Clients from "./pages/Clients";
 import ClientDetail from "./pages/ClientDetail";
 import EditClient from "./pages/EditClient";
 import CreateClientAvocat from "./pages/CreateClientAvocat";
+import CreateClientNotaire from "./pages/CreateClientNotaire";
 import Tasks from "./pages/Tasks";
 import Contrats from "./pages/Contrats";
 import NotFound from "./pages/NotFound";
@@ -50,7 +51,7 @@ const App = () => (
             <Route path="/notaires/documents" element={<Documents />} />
             <Route path="/notaires/signatures" element={<Signatures />} />
             <Route path="/notaires/clients" element={<Clients />} />
-            <Route path="/notaires/clients/create" element={<CreateClientAvocat />} />
+            <Route path="/notaires/clients/create" element={<CreateClientNotaire />} />
             <Route path="/notaires/clients/:id" element={<ClientDetail />} />
             <Route path="/notaires/clients/:id/edit" element={<EditClient />} />
             <Route path="/notaires/tasks" element={<Tasks />} />

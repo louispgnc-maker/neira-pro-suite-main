@@ -25,6 +25,7 @@ interface Client {
   email: string | null;
   nationalite: string | null;
   sexe: string | null;
+  etat_civil: string | null;
   // Identification
   type_identite: string | null;
   numero_identite: string | null;
@@ -36,10 +37,16 @@ interface Client {
   adresse_professionnelle: string | null;
   siret: string | null;
   situation_fiscale: string | null;
+  revenus: string | null;
+  justificatifs_financiers: string | null;
+  comptes_bancaires: string[] | null;
   // Juridique
   type_dossier: string | null;
   contrat_souhaite: string | null;
   historique_litiges: string | null;
+  situation_matrimoniale: string | null;
+  enfants: { nom: string; date_naissance: string | null }[] | null;
+  documents_objet: string[] | null;
 }
 
 interface LinkedContrat { id: string; name: string; category: string; type: string }
@@ -70,12 +77,13 @@ export default function ClientDetail() {
       const { data: c, error } = await supabase
         .from('clients')
         .select(`id,name,role,created_at,kyc_status,missing_info,
-          nom,prenom,date_naissance,lieu_naissance,adresse,telephone,email,nationalite,sexe,
+          nom,prenom,date_naissance,lieu_naissance,adresse,telephone,email,nationalite,sexe,etat_civil,
           type_identite,numero_identite,date_expiration_identite,id_doc_path,
-          profession,employeur,adresse_professionnelle,siret,situation_fiscale,
-          type_dossier,contrat_souhaite,historique_litiges
+          profession,employeur,adresse_professionnelle,siret,situation_fiscale,revenus,justificatifs_financiers,comptes_bancaires,
+          type_dossier,contrat_souhaite,historique_litiges,situation_matrimoniale,enfants,documents_objet
         `)
         .eq('owner_id', user.id)
+        .eq('role', role)
         .eq('id', id)
         .maybeSingle();
       if (error) {
@@ -90,6 +98,7 @@ export default function ClientDetail() {
         .from('client_contrats')
         .select('contrat_id')
         .eq('owner_id', user.id)
+        .eq('role', role)
         .eq('client_id', id);
       if (!linkErr && links && links.length > 0) {
         const ids = links.map((l: any) => l.contrat_id);
@@ -179,6 +188,10 @@ export default function ClientDetail() {
                   <div className="text-sm text-muted-foreground">Sexe</div>
                   <div className="font-medium">{client.sexe || '-'}</div>
                 </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">État civil</div>
+                  <div className="font-medium">{client.etat_civil || '-'}</div>
+                </div>
               </CardContent>
             </Card>
 
@@ -205,7 +218,32 @@ export default function ClientDetail() {
 
             <Card>
               <CardHeader>
-                <CardTitle>3. Situation professionnelle / financière</CardTitle>
+                <CardTitle>3. Situation familiale</CardTitle>
+                <CardDescription>Mariage / PACS / Enfants</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <div className="text-sm text-muted-foreground">Situation matrimoniale</div>
+                  <div className="font-medium">{client.situation_matrimoniale || '-'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Enfants</div>
+                  {client.enfants && client.enfants.length > 0 ? (
+                    <div className="space-y-1">
+                      {client.enfants.map((e, idx) => (
+                        <div key={idx} className="text-sm">{e.nom}{e.date_naissance ? ` — ${e.date_naissance}` : ''}</div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm">—</div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>4. Situation professionnelle / financière</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -228,12 +266,32 @@ export default function ClientDetail() {
                   <div className="text-sm text-muted-foreground">Situation fiscale</div>
                   <div className="font-medium">{client.situation_fiscale || '-'}</div>
                 </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Revenus</div>
+                  <div className="font-medium">{client.revenus || '-'}</div>
+                </div>
+                <div className="md:col-span-2">
+                  <div className="text-sm text-muted-foreground">Comptes bancaires</div>
+                  {client.comptes_bancaires && client.comptes_bancaires.length > 0 ? (
+                    <div className="space-y-1">
+                      {client.comptes_bancaires.map((c, idx) => (
+                        <div key={idx} className="text-sm">{c}</div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="font-medium">-</div>
+                  )}
+                </div>
+                <div className="md:col-span-2">
+                  <div className="text-sm text-muted-foreground">Justificatifs financiers</div>
+                  <div className="font-medium whitespace-pre-wrap">{client.justificatifs_financiers || '-'}</div>
+                </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>4. Situation juridique / dossier</CardTitle>
+                <CardTitle>5. Situation juridique / dossier</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
@@ -247,6 +305,18 @@ export default function ClientDetail() {
                 <div>
                   <div className="text-sm text-muted-foreground">Historique de litiges</div>
                   <div className="font-medium whitespace-pre-wrap">{client.historique_litiges || '-'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Documents liés au dossier</div>
+                  {client.documents_objet && client.documents_objet.length > 0 ? (
+                    <div className="space-y-1">
+                      {client.documents_objet.map((d, idx) => (
+                        <div key={idx} className="text-sm">{d}</div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm">—</div>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Contrats associés</div>

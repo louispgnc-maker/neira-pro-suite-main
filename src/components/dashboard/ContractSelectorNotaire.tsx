@@ -18,7 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
 
-const categories = [
+export const NOTAIRE_CONTRACT_CATEGORIES = [
   {
     label: "🏠 Immobilier",
     key: "Immobilier",
@@ -90,7 +90,7 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
   const horizontalBtn = `${base} ${color} text-sm px-4 py-2 h-auto flex items-center`;
 
   // Filtrer les contrats selon la recherche
-  const filteredCategories = categories.map((cat) => ({
+  const filteredCategories = NOTAIRE_CONTRACT_CATEGORIES.map((cat) => ({
     ...cat,
     contracts: cat.contracts.filter((c) =>
       c.toLowerCase().includes(search.toLowerCase())

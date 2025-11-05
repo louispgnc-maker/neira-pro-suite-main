@@ -42,6 +42,7 @@ export default function EditClient() {
   const [email, setEmail] = useState("");
   const [nationalite, setNationalite] = useState("");
   const [sexe, setSexe] = useState("");
+  const [etatCivil, setEtatCivil] = useState("");
 
   const [typeIdentite, setTypeIdentite] = useState("");
   const [numeroIdentite, setNumeroIdentite] = useState("");
@@ -52,6 +53,13 @@ export default function EditClient() {
   const [adressePro, setAdressePro] = useState("");
   const [siret, setSiret] = useState("");
   const [situationFiscale, setSituationFiscale] = useState("");
+  const [revenus, setRevenus] = useState("");
+  const [justificatifsFinanciers, setJustificatifsFinanciers] = useState("");
+  const [comptesBancairesRaw, setComptesBancairesRaw] = useState("");
+
+  // Notaire-specific family fields
+  const [situationMatrimoniale, setSituationMatrimoniale] = useState("");
+  const [enfants, setEnfants] = useState<{ nom: string; date_naissance: string }[]>([]);
 
   const [typeDossier, setTypeDossier] = useState("");
   const [contratSouhaite, setContratSouhaite] = useState("");
@@ -72,6 +80,7 @@ export default function EditClient() {
         .from('clients')
         .select('*')
         .eq('owner_id', user.id)
+        .eq('role', role)
         .eq('id', id)
         .maybeSingle();
       if (error) {
@@ -89,6 +98,7 @@ export default function EditClient() {
         setEmail(c.email || '');
         setNationalite(c.nationalite || '');
         setSexe(c.sexe || '');
+  setEtatCivil(c.etat_civil || '');
         setTypeIdentite(c.type_identite || '');
         setNumeroIdentite(c.numero_identite || '');
         setDateExpiration(c.date_expiration_identite || '');
@@ -97,6 +107,11 @@ export default function EditClient() {
         setAdressePro(c.adresse_professionnelle || '');
         setSiret(c.siret || '');
         setSituationFiscale(c.situation_fiscale || '');
+  setRevenus(c.revenus || '');
+  setJustificatifsFinanciers(c.justificatifs_financiers || '');
+  setComptesBancairesRaw(Array.isArray(c.comptes_bancaires) ? (c.comptes_bancaires as string[]).join('\n') : '');
+  setSituationMatrimoniale(c.situation_matrimoniale || '');
+  setEnfants(Array.isArray(c.enfants) ? (c.enfants as any[]).map((e: any) => ({ nom: e.nom || '', date_naissance: e.date_naissance || '' })) : []);
         setTypeDossier(c.type_dossier || '');
         setContratSouhaite(c.contrat_souhaite || '');
         setHistoriqueLitiges(c.historique_litiges || '');
@@ -166,6 +181,7 @@ export default function EditClient() {
         email,
         nationalite: nationalite || null,
         sexe: sexe || null,
+        etat_civil: etatCivil || null,
         type_identite: typeIdentite || null,
         numero_identite: numeroIdentite || null,
         date_expiration_identite: dateExpiration || null,
@@ -174,9 +190,14 @@ export default function EditClient() {
         adresse_professionnelle: adressePro || null,
         siret: siret || null,
         situation_fiscale: situationFiscale || null,
+        revenus: revenus || null,
+        justificatifs_financiers: justificatifsFinanciers || null,
+        comptes_bancaires: comptesBancairesRaw.trim() ? comptesBancairesRaw.split(/\n+/).map(l => l.trim()).filter(Boolean) : null,
         type_dossier: typeDossier || null,
         contrat_souhaite: contratSouhaite || null,
         historique_litiges: historiqueLitiges || null,
+        situation_matrimoniale: situationMatrimoniale || null,
+        enfants: enfants.filter(e => e.nom || e.date_naissance),
         consentement_rgpd: consentementRGPD,
         signature_mandat: signatureMandat,
       };
@@ -188,7 +209,8 @@ export default function EditClient() {
         .from('clients')
         .update(updates)
         .eq('id', id)
-        .eq('owner_id', user.id);
+        .eq('owner_id', user.id)
+        .eq('role', role);
       if (upErr) throw upErr;
 
       // Reset and reinsert associations (simple approach)
@@ -196,6 +218,7 @@ export default function EditClient() {
         .from('client_contrats')
         .delete()
         .eq('owner_id', user.id)
+        .eq('role', role)
         .eq('client_id', id);
 
       if (selectedContrats.length > 0) {
@@ -296,6 +319,22 @@ export default function EditClient() {
                   </Select>
                 </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="etatCivil">État civil (Notaire)</Label>
+                  <Select value={etatCivil} onValueChange={setEtatCivil}>
+                    <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Célibataire">Célibataire</SelectItem>
+                      <SelectItem value="Marié">Marié</SelectItem>
+                      <SelectItem value="Pacsé">Pacsé</SelectItem>
+                      <SelectItem value="Divorcé">Divorcé</SelectItem>
+                      <SelectItem value="Veuf">Veuf</SelectItem>
+                      <SelectItem value="Séparé">Séparé</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -342,7 +381,24 @@ export default function EditClient() {
 
           <Card>
             <CardHeader>
-              <CardTitle>3. Situation professionnelle / financière</CardTitle>
+              <CardTitle>3. Situation familiale (Notaire)</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="situationMatrimoniale">Situation matrimoniale</Label>
+                <Input id="situationMatrimoniale" value={situationMatrimoniale} onChange={e => setSituationMatrimoniale(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Enfants</Label>
+                <Textarea rows={3} value={enfants.map(e => `${e.nom}${e.date_naissance ? ` — ${e.date_naissance}` : ''}`).join('\n')} onChange={() => { /* read-only summary; manage below */ }} disabled />
+                <div className="text-xs text-muted-foreground">Gestion détaillée non destructrice: les enfants existants sont conservés. Utilisez le bouton ci-dessous pour les éditer.</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>4. Situation professionnelle / financière</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -369,12 +425,26 @@ export default function EditClient() {
                   <Input id="situationFiscale" value={situationFiscale} onChange={(e) => setSituationFiscale(e.target.value)} />
                 </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="revenus">Revenus (approx.)</Label>
+                  <Input id="revenus" value={revenus} onChange={e => setRevenus(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="comptesBancaires">Comptes bancaires (un par ligne)</Label>
+                  <Textarea id="comptesBancaires" rows={2} value={comptesBancairesRaw} onChange={e => setComptesBancairesRaw(e.target.value)} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="justificatifsFinanciers">Justificatifs financiers (résumé)</Label>
+                <Textarea id="justificatifsFinanciers" rows={2} value={justificatifsFinanciers} onChange={e => setJustificatifsFinanciers(e.target.value)} />
+              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>4. Situation juridique / dossier</CardTitle>
+              <CardTitle>5. Situation juridique / dossier</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
