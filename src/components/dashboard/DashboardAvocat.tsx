@@ -52,23 +52,21 @@ export function DashboardAvocat() {
       const prevYyyy = prevMonth.getFullYear();
       const prevMm = String(prevMonth.getMonth() + 1).padStart(2, "0");
 
-      // Documents en cours (status = 'En cours') - TOUS les documents en cours
+      // Contrats en cours - TOUS les contrats actifs
       const docsQuery = supabase
-        .from("documents")
+        .from("contrats")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
-        .eq("role", "avocat")
-        .eq("status", "En cours");
+        .eq("role", "avocat");
 
-      // Documents du mois précédent pour calculer la tendance
+      // Contrats du mois précédent pour calculer la tendance
       const docsPrevQuery = supabase
-        .from("documents")
+        .from("contrats")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "avocat")
-        .eq("status", "En cours")
-        .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
-        .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
+        .gte("created_at", `${prevYyyy}-${prevMm}-01`)
+        .lte("created_at", `${prevYyyy}-${prevMm}-31`);
 
       // Signatures en attente - TOUTES les signatures en attente
       const sigQuery = supabase
