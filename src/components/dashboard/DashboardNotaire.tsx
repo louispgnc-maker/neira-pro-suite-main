@@ -1,4 +1,5 @@
 import { FileText, PenTool, Users, Clock, ChevronDown, UserPlus, Send } from "lucide-react";
+import { ContractSelectorNotaire } from "@/components/dashboard/ContractSelectorNotaire";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
@@ -173,7 +174,7 @@ export function DashboardNotaire() {
             <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
               ✨ Premium
             </Badge>
-            <Button className="bg-amber-600 hover:bg-amber-700 text-white">Créer un acte</Button>
+            <ContractSelectorNotaire variant="horizontal" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="bg-amber-600 hover:bg-amber-700 text-white">
@@ -188,7 +189,7 @@ export function DashboardNotaire() {
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
                   <Send className="mr-2 h-4 w-4" />
-                  Envoyer la fiche client
+                  Fiche à compléter par le client
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

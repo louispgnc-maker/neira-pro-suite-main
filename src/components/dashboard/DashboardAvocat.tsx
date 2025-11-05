@@ -188,7 +188,7 @@ export function DashboardAvocat() {
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
                   <Send className="mr-2 h-4 w-4" />
-                  Envoyer la fiche client
+                  Fiche à compléter par le client
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
