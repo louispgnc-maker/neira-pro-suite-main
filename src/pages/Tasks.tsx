@@ -30,6 +30,13 @@ export default function Tasks() {
   const location = useLocation();
   const [tasks, setTasks] = useState<TaskRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -45,11 +52,15 @@ export default function Tasks() {
         return;
       }
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from("tasks")
         .select("id,title,description,due_date,done")
         .eq("owner_id", user.id)
         .order("due_date", { ascending: true, nullsFirst: false });
+      if (debounced) {
+        query = query.or(`title.ilike.%${debounced}%,description.ilike.%${debounced}%`);
+      }
+      const { data, error } = await query;
       if (error) {
         console.error("Erreur chargement tâches:", error);
         if (isMounted) setTasks([]);
@@ -62,7 +73,7 @@ export default function Tasks() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, debounced]);
 
   async function toggleDone(taskId: string, currentDone: boolean) {
     const newDone = !currentDone;
@@ -98,17 +109,24 @@ export default function Tasks() {
   return (
     <AppLayout>
       <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1">
             <h1 className="text-3xl font-bold">Tâches</h1>
-            <p className="text-muted-foreground mt-1">
-              Organisez vos tâches et échéances
-            </p>
+            <p className="text-muted-foreground mt-1">Organisez vos tâches et échéances</p>
           </div>
           <Button className={mainButtonColor}>
             <Plus className="mr-2 h-4 w-4" />
             Nouvelle tâche
           </Button>
+        </div>
+        <div className="mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher (titre ou description)…"
+            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+          />
         </div>
 
         {loading ? (

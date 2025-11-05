@@ -24,8 +24,11 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
 
   // Base button style copied from buttonVariants root (without any color / hover so we can fully control)
   const base = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
-  // Fallback if no colorClass provided
-  const fallback = 'bg-primary text-primary-foreground hover:bg-primary/90';
+  // Role-based fallback color if no colorClass provided (ensures consistent hover color per space)
+  // Bouton: on ne change pas la couleur ici (reste mappé par défaut)
+  const fallback = role === 'notaire'
+    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
   const color = colorClass || fallback;
 
   const verticalClasses = `${base} ${color} h-auto flex-col gap-2 py-4 px-4`;
@@ -48,13 +51,23 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem 
-          className="cursor-pointer"
+          className={
+            `cursor-pointer ${role === 'avocat' 
+              ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' 
+              : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`
+          }
           onClick={() => navigate(role === 'notaire' ? '/notaires/clients/create' : '/avocats/clients/create')}
         >
           <UserPlus className="mr-2 h-4 w-4" />
           Remplir une fiche client
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem 
+          className={
+            `cursor-pointer ${role === 'avocat' 
+              ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' 
+              : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`
+          }
+        >
           <Send className="mr-2 h-4 w-4" />
           Fiche à compléter par le client
         </DropdownMenuItem>

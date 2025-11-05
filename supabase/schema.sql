@@ -116,6 +116,36 @@ create table if not exists public.documents (
   role text not null default 'avocat', -- 'avocat' | 'notaire'
   updated_at timestamptz not null default now()
 );
+-- X) CLIENTS <-> CONTRATS association (many-to-many)
+create table if not exists public.client_contrats (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  client_id uuid not null references public.clients(id) on delete cascade,
+  contrat_id uuid not null references public.contrats(id) on delete cascade,
+  role text not null default 'avocat',
+  created_at timestamptz not null default now()
+);
+
+alter table public.client_contrats enable row level security;
+
+drop policy if exists "client_contrats_select_own" on public.client_contrats;
+create policy "client_contrats_select_own" on public.client_contrats
+  for select using (owner_id = auth.uid());
+drop policy if exists "client_contrats_insert_own" on public.client_contrats;
+create policy "client_contrats_insert_own" on public.client_contrats
+  for insert with check (owner_id = auth.uid());
+drop policy if exists "client_contrats_update_own" on public.client_contrats;
+create policy "client_contrats_update_own" on public.client_contrats
+  for update using (owner_id = auth.uid());
+drop policy if exists "client_contrats_delete_own" on public.client_contrats;
+create policy "client_contrats_delete_own" on public.client_contrats
+  for delete using (owner_id = auth.uid());
+
+create index if not exists client_contrats_owner_idx on public.client_contrats(owner_id);
+create index if not exists client_contrats_client_idx on public.client_contrats(client_id);
+create index if not exists client_contrats_contrat_idx on public.client_contrats(contrat_id);
+create index if not exists client_contrats_role_idx on public.client_contrats(role);
+
 
 alter table public.documents enable row level security;
 

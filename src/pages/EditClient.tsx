@@ -6,22 +6,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useRef } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Upload, ArrowLeft } from "lucide-react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { Upload, ArrowLeft, Save } from "lucide-react";
 import { AVOCAT_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorAvocat";
 
-export default function CreateClientAvocat() {
+export default function EditClient() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Détection du rôle
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
@@ -30,11 +29,10 @@ export default function CreateClientAvocat() {
     ? 'bg-amber-600 hover:bg-amber-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
-  // États du formulaire
   const [loading, setLoading] = useState(false);
   const [idDocFile, setIdDocFile] = useState<File | null>(null);
 
-  // 1. Informations personnelles
+  // States same as create
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [dateNaissance, setDateNaissance] = useState("");
@@ -45,177 +43,177 @@ export default function CreateClientAvocat() {
   const [nationalite, setNationalite] = useState("");
   const [sexe, setSexe] = useState("");
 
-  // 2. Identification officielle
   const [typeIdentite, setTypeIdentite] = useState("");
   const [numeroIdentite, setNumeroIdentite] = useState("");
   const [dateExpiration, setDateExpiration] = useState("");
 
-  // 3. Situation professionnelle / financière
   const [profession, setProfession] = useState("");
   const [employeur, setEmployeur] = useState("");
   const [adressePro, setAdressePro] = useState("");
   const [siret, setSiret] = useState("");
   const [situationFiscale, setSituationFiscale] = useState("");
 
-  // 4. Situation juridique / dossier
   const [typeDossier, setTypeDossier] = useState("");
   const [contratSouhaite, setContratSouhaite] = useState("");
   const [historiqueLitiges, setHistoriqueLitiges] = useState("");
-  
-  // Sélection multi de contrats associés
+  const [consentementRGPD, setConsentementRGPD] = useState(false);
+  const [signatureMandat, setSignatureMandat] = useState(false);
+
   type ContratOption = { id: string; name: string; type: string; category: string };
   const [contrats, setContrats] = useState<ContratOption[]>([]);
   const [selectedContrats, setSelectedContrats] = useState<string[]>([]);
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadContrats() {
-      if (!user) return;
-      const { data, error } = await supabase
+    let mounted = true;
+    async function load() {
+      if (!user || !id) return;
+      // Load client
+      const { data: c, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('owner_id', user.id)
+        .eq('id', id)
+        .maybeSingle();
+      if (error) {
+        console.error('Erreur chargement client:', error);
+        toast.error('Impossible de charger le client');
+        return;
+      }
+      if (c && mounted) {
+        setNom(c.nom || '');
+        setPrenom(c.prenom || '');
+        setDateNaissance(c.date_naissance || '');
+        setLieuNaissance(c.lieu_naissance || '');
+        setAdresse(c.adresse || '');
+        setTelephone(c.telephone || '');
+        setEmail(c.email || '');
+        setNationalite(c.nationalite || '');
+        setSexe(c.sexe || '');
+        setTypeIdentite(c.type_identite || '');
+        setNumeroIdentite(c.numero_identite || '');
+        setDateExpiration(c.date_expiration_identite || '');
+        setProfession(c.profession || '');
+        setEmployeur(c.employeur || '');
+        setAdressePro(c.adresse_professionnelle || '');
+        setSiret(c.siret || '');
+        setSituationFiscale(c.situation_fiscale || '');
+        setTypeDossier(c.type_dossier || '');
+        setContratSouhaite(c.contrat_souhaite || '');
+        setHistoriqueLitiges(c.historique_litiges || '');
+        setConsentementRGPD(!!c.consentement_rgpd);
+        setSignatureMandat(!!c.signature_mandat);
+      }
+      // Load contrats
+      const { data, error: cErr } = await supabase
         .from('contrats')
         .select('id,name,type,category')
         .eq('owner_id', user.id)
         .eq('role', role)
         .order('created_at', { ascending: false });
-      if (!isMounted) return;
-      if (error) {
-        console.error('Erreur chargement contrats:', error);
-        setContrats([]);
-      } else {
-        setContrats((data || []) as ContratOption[]);
-      }
+      if (!cErr && mounted) setContrats((data || []) as ContratOption[]);
+
+      // Load links
+      const { data: links } = await supabase
+        .from('client_contrats')
+        .select('contrat_id')
+        .eq('owner_id', user.id)
+        .eq('client_id', id);
+      if (links && mounted) setSelectedContrats(links.map((l: any) => l.contrat_id));
     }
-    loadContrats();
-    return () => { isMounted = false; };
-  }, [user, role]);
+    load();
+    return () => { mounted = false; };
+  }, [user, id, role]);
 
-  // 5. Consentements
-  const [consentementRGPD, setConsentementRGPD] = useState(false);
-  const [signatureMandat, setSignatureMandat] = useState(false);
-
-  const handleFileSelect = () => {
-    fileInputRef.current?.click();
-  };
-
+  const handleFileSelect = () => fileInputRef.current?.click();
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Vérifier que c'est une image ou un PDF
-      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-      if (!validTypes.includes(file.type)) {
-        toast.error("Format non supporté", { description: "Veuillez uploader une image (JPG, PNG) ou un PDF." });
-        return;
-      }
-      setIdDocFile(file);
-      toast.success("Fichier sélectionné", { description: file.name });
+    if (!file) return;
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Format non supporté", { description: "Image (JPG, PNG) ou PDF." });
+      return;
     }
+    setIdDocFile(file);
+    toast.success("Fichier sélectionné", { description: file.name });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!user) {
-      toast.error("Connexion requise");
-      return;
-    }
-
-    // Validation basique
-    if (!nom || !prenom || !email) {
-      toast.error("Champs obligatoires manquants", { description: "Nom, prénom et email sont requis." });
-      return;
-    }
-
-    if (!consentementRGPD) {
-      toast.error("Consentement RGPD requis", { description: "Vous devez accepter le traitement des données." });
-      return;
-    }
+    if (!user || !id) return;
 
     setLoading(true);
-
     try {
       let idDocPath: string | null = null;
-
-      // Upload du document d'identité si présent
       if (idDocFile) {
         const fileName = `${user.id}/${Date.now()}-${idDocFile.name}`;
         const { error: uploadError } = await supabase.storage
           .from('documents')
-          .upload(fileName, idDocFile, {
-            cacheControl: '3600',
-            upsert: false,
-          });
-
-        if (uploadError) {
-          throw new Error(`Erreur upload document: ${uploadError.message}`);
-        }
+          .upload(fileName, idDocFile, { cacheControl: '3600', upsert: false });
+        if (uploadError) throw new Error(uploadError.message);
         idDocPath = fileName;
       }
 
-      // Insérer dans la table clients
-      const { data: insertedClient, error: insertError } = await supabase.from('clients').insert({
+      // Update client
+      const updates: any = {
         owner_id: user.id,
+        role,
         name: `${prenom} ${nom}`,
-        role: role,
-        // Infos personnelles
-        nom: nom,
-        prenom: prenom,
+        nom, prenom,
         date_naissance: dateNaissance || null,
         lieu_naissance: lieuNaissance || null,
         adresse: adresse || null,
         telephone: telephone || null,
-        email: email,
+        email,
         nationalite: nationalite || null,
         sexe: sexe || null,
-        // Identification
         type_identite: typeIdentite || null,
         numero_identite: numeroIdentite || null,
         date_expiration_identite: dateExpiration || null,
-        id_doc_path: idDocPath,
-        // Professionnel
         profession: profession || null,
         employeur: employeur || null,
         adresse_professionnelle: adressePro || null,
         siret: siret || null,
         situation_fiscale: situationFiscale || null,
-    // Juridique
-    type_dossier: typeDossier || null,
-    contrat_souhaite: contratSouhaite || null,
+        type_dossier: typeDossier || null,
+        contrat_souhaite: contratSouhaite || null,
         historique_litiges: historiqueLitiges || null,
-        pieces_justificatives: null,
-        // Consentements
         consentement_rgpd: consentementRGPD,
         signature_mandat: signatureMandat,
-        kyc_status: 'Complet',
-      }).select('id').single();
+      };
+      // Recompute KYC status simply based on essential fields
+      updates.kyc_status = (nom && prenom && email && consentementRGPD) ? 'Complet' : 'Partiel';
+      if (idDocPath) updates.id_doc_path = idDocPath;
 
-      if (insertError) throw insertError;
+      const { error: upErr } = await supabase
+        .from('clients')
+        .update(updates)
+        .eq('id', id)
+        .eq('owner_id', user.id);
+      if (upErr) throw upErr;
 
-      // Associer les contrats sélectionnés
-      if (insertedClient?.id && selectedContrats.length > 0) {
+      // Reset and reinsert associations (simple approach)
+      await supabase
+        .from('client_contrats')
+        .delete()
+        .eq('owner_id', user.id)
+        .eq('client_id', id);
+
+      if (selectedContrats.length > 0) {
         const rows = selectedContrats.map((contratId) => ({
           owner_id: user.id,
-          client_id: insertedClient.id,
+          client_id: id,
           contrat_id: contratId,
-          role: role,
+          role,
         }));
         const { error: linkErr } = await supabase.from('client_contrats').insert(rows);
-        if (linkErr) {
-          console.error('Erreur association contrats:', linkErr);
-          toast.error('Contrats non associés', { description: linkErr.message });
-        }
+        if (linkErr) throw linkErr;
       }
 
-      toast.success("Fiche client créée avec succès !");
-      
-      // Redirection vers la page clients
-      if (role === 'notaire') {
-        navigate('/notaires/clients');
-      } else {
-        navigate('/avocats/clients');
-      }
+      toast.success('Fiche client mise à jour');
+      navigate(role === 'notaire' ? `/notaires/clients/${id}` : `/avocats/clients/${id}`);
     } catch (err: any) {
-      console.error('Erreur création client:', err);
-      toast.error("Erreur lors de la création", { description: err?.message || String(err) });
+      console.error('Erreur mise à jour client:', err);
+      toast.error('Erreur mise à jour', { description: err?.message || String(err) });
     } finally {
       setLoading(false);
     }
@@ -228,20 +226,17 @@ export default function CreateClientAvocat() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients')}
+            onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${id}` : `/avocats/clients/${id}`)}
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Créer une fiche client</h1>
-            <p className="text-muted-foreground mt-1">
-              Remplissez les informations de votre client
-            </p>
+            <h1 className="text-3xl font-bold">Modifier la fiche client</h1>
+            <p className="text-muted-foreground mt-1">Mettez à jour les informations du client</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 1. Informations personnelles */}
           <Card>
             <CardHeader>
               <CardTitle>1. Informations personnelles</CardTitle>
@@ -250,15 +245,14 @@ export default function CreateClientAvocat() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nom">Nom *</Label>
-                  <Input id="nom" value={nom} onChange={(e) => setNom(e.target.value)} required />
+                  <Label htmlFor="nom">Nom</Label>
+                  <Input id="nom" value={nom} onChange={(e) => setNom(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="prenom">Prénom *</Label>
-                  <Input id="prenom" value={prenom} onChange={(e) => setPrenom(e.target.value)} required />
+                  <Label htmlFor="prenom">Prénom</Label>
+                  <Input id="prenom" value={prenom} onChange={(e) => setPrenom(e.target.value)} />
                 </div>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dateNaissance">Date de naissance</Label>
@@ -269,23 +263,20 @@ export default function CreateClientAvocat() {
                   <Input id="lieuNaissance" value={lieuNaissance} onChange={(e) => setLieuNaissance(e.target.value)} />
                 </div>
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="adresse">Adresse postale complète</Label>
+                <Label htmlFor="adresse">Adresse</Label>
                 <Textarea id="adresse" value={adresse} onChange={(e) => setAdresse(e.target.value)} rows={2} />
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="telephone">Numéro de téléphone</Label>
-                  <Input id="telephone" type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} />
+                  <Label htmlFor="telephone">Téléphone</Label>
+                  <Input id="telephone" value={telephone} onChange={(e) => setTelephone(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Adresse e-mail *</Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="nationalite">Nationalité</Label>
@@ -308,16 +299,15 @@ export default function CreateClientAvocat() {
             </CardContent>
           </Card>
 
-          {/* 2. Identification officielle */}
           <Card>
             <CardHeader>
               <CardTitle>2. Identification officielle</CardTitle>
-              <CardDescription>Pièce d'identité du client (KYC)</CardDescription>
+              <CardDescription>Pièce d'identité (KYC)</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="typeIdentite">Type de pièce d'identité</Label>
+                  <Label htmlFor="typeIdentite">Type</Label>
                   <Select value={typeIdentite} onValueChange={setTypeIdentite}>
                     <SelectTrigger id="typeIdentite">
                       <SelectValue placeholder="Sélectionner..." />
@@ -330,39 +320,29 @@ export default function CreateClientAvocat() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="numeroIdentite">Numéro de la pièce</Label>
+                  <Label htmlFor="numeroIdentite">Numéro</Label>
                   <Input id="numeroIdentite" value={numeroIdentite} onChange={(e) => setNumeroIdentite(e.target.value)} />
                 </div>
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="dateExpiration">Date d'expiration</Label>
                 <Input id="dateExpiration" type="date" value={dateExpiration} onChange={(e) => setDateExpiration(e.target.value)} />
               </div>
-
               <div className="space-y-2">
-                <Label>Scan ou photo de la pièce d'identité</Label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,application/pdf"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
+                <Label>Scan / photo de la pièce</Label>
+                <input ref={fileInputRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFileChange} />
                 <Button type="button" variant="outline" onClick={handleFileSelect} className="w-full">
                   <Upload className="mr-2 h-4 w-4" />
                   {idDocFile ? idDocFile.name : "Choisir un fichier"}
                 </Button>
-                <p className="text-xs text-muted-foreground">Formats acceptés: JPG, PNG, PDF</p>
+                <p className="text-xs text-muted-foreground">Formats: JPG, PNG, PDF</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* 3. Situation professionnelle / financière */}
           <Card>
             <CardHeader>
               <CardTitle>3. Situation professionnelle / financière</CardTitle>
-              <CardDescription>Informations sur l'activité du client</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -375,30 +355,26 @@ export default function CreateClientAvocat() {
                   <Input id="employeur" value={employeur} onChange={(e) => setEmployeur(e.target.value)} />
                 </div>
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="adressePro">Adresse professionnelle</Label>
                 <Textarea id="adressePro" value={adressePro} onChange={(e) => setAdressePro(e.target.value)} rows={2} />
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="siret">Numéro SIRET (si entreprise)</Label>
+                  <Label htmlFor="siret">SIRET</Label>
                   <Input id="siret" value={siret} onChange={(e) => setSiret(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="situationFiscale">Revenus / Statut fiscal</Label>
-                  <Input id="situationFiscale" value={situationFiscale} onChange={(e) => setSituationFiscale(e.target.value)} placeholder="Ex: Salarié, TNS..." />
+                  <Label htmlFor="situationFiscale">Situation fiscale</Label>
+                  <Input id="situationFiscale" value={situationFiscale} onChange={(e) => setSituationFiscale(e.target.value)} />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* 4. Situation juridique / dossier */}
           <Card>
             <CardHeader>
               <CardTitle>4. Situation juridique / dossier</CardTitle>
-              <CardDescription>Contexte du dossier à gérer</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -416,16 +392,11 @@ export default function CreateClientAvocat() {
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="contratSouhaite">Contrat souhaité</Label>
-                <Select
-                  value={contratSouhaite}
-                  onValueChange={setContratSouhaite}
-                  disabled={!typeDossier}
-                >
+                <Select value={contratSouhaite} onValueChange={setContratSouhaite} disabled={!typeDossier}>
                   <SelectTrigger id="contratSouhaite">
-                    <SelectValue placeholder={typeDossier ? "Sélectionner un contrat..." : "Sélectionner d'abord une catégorie"} />
+                    <SelectValue placeholder={typeDossier ? "Sélectionner un contrat..." : "Choisir d'abord une catégorie"} />
                   </SelectTrigger>
                   <SelectContent>
                     {(AVOCAT_CONTRACT_CATEGORIES.find(c => (c.key === typeDossier || c.label.includes(typeDossier)))?.contracts || []).map((contract) => (
@@ -436,15 +407,10 @@ export default function CreateClientAvocat() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="historiqueLitiges">Historique de litiges ou affaires en cours</Label>
-                <Textarea id="historiqueLitiges" value={historiqueLitiges} onChange={(e) => setHistoriqueLitiges(e.target.value)} rows={3} />
-              </div>
-
-              <div className="space-y-2">
                 <Label>Contrat(s) associé(s)</Label>
                 <div className="border rounded-md p-2 max-h-56 overflow-y-auto">
                   {contrats.length === 0 ? (
-                    <p className="text-sm text-muted-foreground px-1">Aucun contrat enregistré pour le moment.</p>
+                    <p className="text-sm text-muted-foreground px-1">Aucun contrat enregistré.</p>
                   ) : (
                     <div className="grid grid-cols-1 gap-2">
                       {contrats
@@ -459,9 +425,7 @@ export default function CreateClientAvocat() {
                                 checked={checked}
                                 onChange={(e) => {
                                   const isChecked = e.target.checked;
-                                  setSelectedContrats((prev) =>
-                                    isChecked ? [...prev, c.id] : prev.filter((id) => id !== c.id)
-                                  );
+                                  setSelectedContrats((prev) => isChecked ? [...prev, c.id] : prev.filter((id) => id !== c.id));
                                 }}
                               />
                               <span className="text-sm">
@@ -474,64 +438,19 @@ export default function CreateClientAvocat() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">Sélectionnez un ou plusieurs contrats du site qui concernent ce client.</p>
+                <p className="text-xs text-muted-foreground">Sélectionnez les contrats liés à ce client.</p>
               </div>
+
             </CardContent>
           </Card>
 
-          {/* 5. Consentements et mentions légales */}
-          <Card>
-            <CardHeader>
-              <CardTitle>5. Consentements et mentions légales</CardTitle>
-              <CardDescription>Validation RGPD et signature du mandat</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start space-x-2">
-                <Checkbox 
-                  id="rgpd" 
-                  checked={consentementRGPD} 
-                  onCheckedChange={(checked) => setConsentementRGPD(checked as boolean)}
-                />
-                <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="rgpd" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    J'accepte le traitement de mes données personnelles (RGPD) *
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    Les données collectées seront utilisées uniquement dans le cadre de la gestion du dossier juridique.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-2">
-                <Checkbox 
-                  id="mandat" 
-                  checked={signatureMandat} 
-                  onCheckedChange={(checked) => setSignatureMandat(checked as boolean)}
-                />
-                <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="mandat" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Signature électronique du mandat ou contrat avec l'avocat
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    En cochant cette case, le client confirme avoir lu et accepté les conditions du mandat.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Boutons d'action */}
           <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients')}
-              disabled={loading}
-            >
+            <Button type="button" variant="outline" onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${id}` : `/avocats/clients/${id}`)} disabled={loading}>
               Annuler
             </Button>
             <Button type="submit" className={mainButtonColor} disabled={loading}>
-              {loading ? "Création en cours..." : "Créer la fiche client"}
+              <Save className="h-4 w-4 mr-2" />
+              {loading ? 'Enregistrement...' : 'Enregistrer'}
             </Button>
           </div>
         </form>

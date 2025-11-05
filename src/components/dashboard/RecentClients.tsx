@@ -78,7 +78,8 @@ export function RecentClients({ role = 'avocat' }: RecentClientsProps = {}) {
             clients.map((client) => (
               <div
                 key={client.id}
-                className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors cursor-pointer"
+                onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}
               >
                 <div className="flex-1">
                   <p className="font-medium text-sm">{client.name}</p>

@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 type ClientRow = {
@@ -22,6 +23,14 @@ export default function Clients() {
   const location = useLocation();
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+  const navigate = useNavigate();
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -37,11 +46,15 @@ export default function Clients() {
         return;
       }
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from("clients")
         .select("id,name,kyc_status,missing_info,created_at")
         .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
+      if (debounced) {
+        query = query.ilike('name', `%${debounced}%`);
+      }
+      const { data, error } = await query;
       if (error) {
         console.error("Erreur chargement clients:", error);
         if (isMounted) setClients([]);
@@ -54,7 +67,7 @@ export default function Clients() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, debounced]);
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'
@@ -69,14 +82,23 @@ export default function Clients() {
   return (
     <AppLayout>
       <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1">
             <h1 className="text-3xl font-bold">Clients</h1>
-            <p className="text-muted-foreground mt-1">
-              Gérez votre base clients et KYC
-            </p>
+            <p className="text-muted-foreground mt-1">Gérez votre base clients et KYC</p>
           </div>
-          <FicheClientMenu variant="horizontal" colorClass={mainButtonColor} />
+          <div className="md:w-auto w-full flex justify-end">
+            <FicheClientMenu variant="horizontal" colorClass={mainButtonColor} />
+          </div>
+        </div>
+        <div className="mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher un client…"
+            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+          />
         </div>
         
         {loading ? (
@@ -99,7 +121,11 @@ export default function Clients() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {clients.map((client) => (
-              <Card key={client.id} className="p-4 hover:shadow-md transition-shadow">
+              <Card 
+                key={client.id} 
+                className="p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">{client.name}</h3>

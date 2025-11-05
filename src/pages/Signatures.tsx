@@ -28,6 +28,13 @@ export default function Signatures() {
   const location = useLocation();
   const [signatures, setSignatures] = useState<SignatureRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -43,11 +50,15 @@ export default function Signatures() {
         return;
       }
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from("signatures")
         .select("id,signer_name,document_name,status,last_reminder_at")
         .eq("owner_id", user.id)
         .order("last_reminder_at", { ascending: false, nullsFirst: false });
+      if (debounced) {
+        query = query.or(`signer_name.ilike.%${debounced}%,document_name.ilike.%${debounced}%`);
+      }
+      const { data, error } = await query;
       if (error) {
         console.error("Erreur chargement signatures:", error);
         if (isMounted) setSignatures([]);
@@ -60,7 +71,7 @@ export default function Signatures() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, debounced]);
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'
@@ -89,17 +100,24 @@ export default function Signatures() {
   return (
     <AppLayout>
       <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1">
             <h1 className="text-3xl font-bold">Signatures</h1>
-            <p className="text-muted-foreground mt-1">
-              Suivez vos demandes de signature électronique
-            </p>
+            <p className="text-muted-foreground mt-1">Suivez vos demandes de signature électronique</p>
           </div>
           <Button className={mainButtonColor}>
             <Plus className="mr-2 h-4 w-4" />
             Nouvelle signature
           </Button>
+        </div>
+        <div className="mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher (signataire ou document)…"
+            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+          />
         </div>
 
         {loading ? (

@@ -12,6 +12,8 @@ import NotaireDashboard from "./pages/notaires/Dashboard";
 import Documents from "./pages/Documents";
 import Signatures from "./pages/Signatures";
 import Clients from "./pages/Clients";
+import ClientDetail from "./pages/ClientDetail";
+import EditClient from "./pages/EditClient";
 import CreateClientAvocat from "./pages/CreateClientAvocat";
 import Tasks from "./pages/Tasks";
 import Contrats from "./pages/Contrats";
@@ -37,6 +39,8 @@ const App = () => (
             <Route path="/avocats/signatures" element={<Signatures />} />
             <Route path="/avocats/clients" element={<Clients />} />
             <Route path="/avocats/clients/create" element={<CreateClientAvocat />} />
+            <Route path="/avocats/clients/:id" element={<ClientDetail />} />
+            <Route path="/avocats/clients/:id/edit" element={<EditClient />} />
             <Route path="/avocats/tasks" element={<Tasks />} />
             <Route path="/avocats/contrats" element={<Contrats />} />
             
@@ -47,6 +51,8 @@ const App = () => (
             <Route path="/notaires/signatures" element={<Signatures />} />
             <Route path="/notaires/clients" element={<Clients />} />
             <Route path="/notaires/clients/create" element={<CreateClientAvocat />} />
+            <Route path="/notaires/clients/:id" element={<ClientDetail />} />
+            <Route path="/notaires/clients/:id/edit" element={<EditClient />} />
             <Route path="/notaires/tasks" element={<Tasks />} />
             <Route path="/notaires/contrats" element={<Contrats />} />
             
@@ -54,6 +60,8 @@ const App = () => (
             <Route path="/documents" element={<Documents />} />
             <Route path="/signatures" element={<Signatures />} />
             <Route path="/clients" element={<Clients />} />
+            <Route path="/clients/:id" element={<ClientDetail />} />
+            <Route path="/clients/:id/edit" element={<EditClient />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/contrats" element={<Contrats />} />
             

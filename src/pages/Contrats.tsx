@@ -66,6 +66,13 @@ export default function Contrats() {
   const [contrats, setContrats] = useState<ContratRow[]>([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Tous");
+  const [debounced, setDebounced] = useState("");
+
+  // debounce
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -85,12 +92,19 @@ export default function Contrats() {
         return;
       }
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('contrats')
         .select('id,name,category,type,created_at,updated_at')
         .eq('owner_id', user.id)
         .eq('role', role)
         .order('created_at', { ascending: false });
+      if (debounced) {
+        query = query.or(`name.ilike.%${debounced}%,type.ilike.%${debounced}%`);
+      }
+      if (categoryFilter && categoryFilter !== 'Tous') {
+        query = query.eq('category', categoryFilter);
+      }
+      const { data, error } = await query;
       if (error) {
         console.error('Erreur chargement contrats:', error);
         if (isMounted) setContrats([]);
@@ -101,7 +115,7 @@ export default function Contrats() {
     }
     load();
     return () => { isMounted = false; };
-  }, [user, role]);
+  }, [user, role, debounced, categoryFilter]);
 
   const refreshContrats = () => {
     // Force un rechargement
@@ -142,13 +156,8 @@ export default function Contrats() {
     }
   };
 
-  // Filtre les contrats
-  const filteredContrats = contrats.filter((c) => {
-    const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
-                       c.type.toLowerCase().includes(search.toLowerCase());
-    const matchCategory = categoryFilter === "Tous" || c.category === categoryFilter;
-    return matchSearch && matchCategory;
-  });
+  // Résultats déjà filtrés côté SQL
+  const filteredContrats = contrats;
 
   return (
     <AppLayout>

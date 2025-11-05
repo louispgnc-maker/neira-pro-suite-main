@@ -51,6 +51,14 @@ export default function Documents() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
+
+  // Debounce search
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -66,11 +74,16 @@ export default function Documents() {
         return;
       }
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from("documents")
         .select("id,name,client_name,status,updated_at,storage_path")
         .eq("owner_id", user.id)
         .order("updated_at", { ascending: false, nullsFirst: false });
+      if (debounced) {
+        // Basic case-insensitive filtering using ilike on name OR client_name
+        query = query.or(`name.ilike.%${debounced}%,client_name.ilike.%${debounced}%`);
+      }
+      const { data, error } = await query;
       if (error) {
         console.error("Erreur chargement documents:", error);
         if (isMounted) setDocuments([]);
@@ -83,7 +96,7 @@ export default function Documents() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, debounced]);
 
 
   const viewOrDownload = async (doc: DocRow, mode: 'view' | 'download') => {
@@ -203,14 +216,12 @@ export default function Documents() {
   return (
     <AppLayout>
       <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1">
             <h1 className="text-3xl font-bold">Documents</h1>
-            <p className="text-muted-foreground mt-1">
-              Gérez tous vos documents juridiques
-            </p>
+            <p className="text-muted-foreground mt-1">Gérez tous vos documents juridiques</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 md:w-auto w-full">
             <input
               ref={fileInputRef}
               type="file"
@@ -224,6 +235,15 @@ export default function Documents() {
               {uploading ? 'Import…' : 'Importer PDF'}
             </Button>
           </div>
+        </div>
+        <div className="mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher (nom ou client)…"
+            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+          />
         </div>
         
         {loading ? (
