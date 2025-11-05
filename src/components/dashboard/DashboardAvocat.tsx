@@ -7,7 +7,6 @@ import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
 import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
 import { RecentClients } from "@/components/dashboard/RecentClients";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
-import { ContractSelectorAvocat } from "@/components/dashboard/ContractSelectorAvocat";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -174,7 +173,6 @@ export function DashboardAvocat() {
             <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
               ✨ Premium
             </Badge>
-            <ContractSelectorAvocat variant="horizontal" />
           </div>
         </div>
         <p className="text-muted-foreground mt-2">
