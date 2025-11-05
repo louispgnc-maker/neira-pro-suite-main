@@ -52,6 +52,13 @@ export default function Auth() {
     const form = e.target as FormElements;
 
     try {
+      // Vérifier qu'un rôle est sélectionné
+      if (!role) {
+        toast.error("Veuillez sélectionner un espace (Avocat ou Notaire)");
+        setLoading(false);
+        return;
+      }
+
       // Retour immédiat si hors ligne
       if (typeof navigator !== 'undefined' && navigator && navigator.onLine === false) {
         toast.error("Hors ligne", { description: "Vérifiez votre connexion internet." });
