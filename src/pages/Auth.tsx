@@ -1,5 +1,5 @@
-import { useState, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, FormEvent, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,9 +22,19 @@ interface FormElements extends HTMLFormElement {
 
 export default function Auth() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [role, setRole] = useState<string | null>(null); // "avocat" | "notaire"
   const [loading, setLoading] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
+
+  // Détecte le rôle depuis l'URL au chargement
+  useEffect(() => {
+    if (location.pathname.includes('/notaires')) {
+      setRole('notaire');
+    } else if (location.pathname.includes('/avocats')) {
+      setRole('avocat');
+    }
+  }, [location.pathname]);
 
   // Utilitaire: évite un "chargement infini" si le réseau ou Supabase ne répond pas
   const withTimeout = async <T,>(promise: Promise<T>, ms = 7000): Promise<T> => {
