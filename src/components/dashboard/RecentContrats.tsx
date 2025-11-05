@@ -28,6 +28,7 @@ type ContratRow = {
   category: string;
   type: string;
   created_at: string | null;
+  client_names?: string[]; // Liste des noms de clients associés
 };
 
 interface RecentContratsProps {
@@ -75,20 +76,79 @@ export function RecentContrats({ role = 'avocat' }: RecentContratsProps = {}) {
         return;
       }
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Récupérer les contrats
+      const { data: contratsData, error: contratsError } = await supabase
         .from("contrats")
         .select("id,name,category,type,created_at")
         .eq("owner_id", user.id)
         .eq("role", role)
         .order("created_at", { ascending: false, nullsFirst: false })
         .limit(5);
-      if (error) {
-        console.error("Erreur chargement contrats:", error);
-        if (isMounted) setContrats([]);
-      } else if (isMounted) {
-        setContrats(data as ContratRow[]);
+      
+      if (contratsError) {
+        console.error("Erreur chargement contrats:", contratsError);
+        if (isMounted) {
+          setContrats([]);
+          setLoading(false);
+        }
+        return;
       }
-      if (isMounted) setLoading(false);
+      
+      if (!contratsData || contratsData.length === 0) {
+        if (isMounted) {
+          setContrats([]);
+          setLoading(false);
+        }
+        return;
+      }
+      
+      // Récupérer les associations client_contrats pour ces contrats
+      const contratIds = contratsData.map(c => c.id);
+      const { data: links, error: linksError } = await supabase
+        .from("client_contrats")
+        .select("contrat_id, client_id")
+        .eq("owner_id", user.id)
+        .eq("role", role)
+        .in("contrat_id", contratIds);
+      
+      if (linksError) {
+        console.error("Erreur chargement liens:", linksError);
+      }
+      
+      // Récupérer les noms des clients si des liens existent
+      let clientsMap = new Map<string, string>();
+      if (links && links.length > 0) {
+        const clientIds = [...new Set(links.map(l => l.client_id))];
+        const { data: clientsData, error: clientsError } = await supabase
+          .from("clients")
+          .select("id, name")
+          .in("id", clientIds);
+        
+        if (!clientsError && clientsData) {
+          clientsData.forEach(client => {
+            clientsMap.set(client.id, client.name);
+          });
+        }
+      }
+      
+      // Enrichir les contrats avec les noms des clients
+      const enrichedContrats = contratsData.map(contrat => {
+        const clientLinks = links?.filter(l => l.contrat_id === contrat.id) || [];
+        const clientNames = clientLinks
+          .map(link => clientsMap.get(link.client_id))
+          .filter(Boolean) as string[];
+        
+        return {
+          ...contrat,
+          client_names: clientNames
+        };
+      });
+      
+      if (isMounted) {
+        setContrats(enrichedContrats as ContratRow[]);
+        setLoading(false);
+      }
     }
     load();
     return () => {
@@ -114,6 +174,7 @@ export function RecentContrats({ role = 'avocat' }: RecentContratsProps = {}) {
           <TableHeader>
             <TableRow>
               <TableHead>Nom du contrat</TableHead>
+              <TableHead>Client(s)</TableHead>
               <TableHead>Catégorie</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Créé le</TableHead>
@@ -123,13 +184,13 @@ export function RecentContrats({ role = 'avocat' }: RecentContratsProps = {}) {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   Chargement…
                 </TableCell>
               </TableRow>
             ) : contrats.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   Aucun contrat.
                 </TableCell>
               </TableRow>
@@ -137,6 +198,11 @@ export function RecentContrats({ role = 'avocat' }: RecentContratsProps = {}) {
               contrats.map((contrat) => (
                 <TableRow key={contrat.id}>
                   <TableCell className="font-medium">{contrat.name}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {contrat.client_names && contrat.client_names.length > 0
+                      ? contrat.client_names.join(", ")
+                      : "—"}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={role === 'notaire' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
                       {contrat.category}
@@ -149,17 +215,24 @@ export function RecentContrats({ role = 'avocat' }: RecentContratsProps = {}) {
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className={role === 'notaire' ? 'hover:bg-amber-100 hover:text-amber-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleView(contrat)}>
+                      <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}>
+                        <DropdownMenuItem 
+                          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
+                          onClick={() => handleView(contrat)}
+                        >
                           <FileText className="mr-2 h-4 w-4" />
                           Voir les détails
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          className="text-destructive"
+                          className="text-destructive hover:bg-destructive hover:text-white focus:bg-destructive focus:text-white"
                           onClick={() => handleDelete(contrat)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
