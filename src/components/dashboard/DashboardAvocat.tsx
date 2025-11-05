@@ -7,8 +7,7 @@ import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
 import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
 import { RecentClients } from "@/components/dashboard/RecentClients";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
-import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
-import { ContractSelectorAvocat } from "@/components/dashboard/ContractSelectorAvocat";
+// Boutons retirés du header: FicheClientMenu & Création de contrat
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -175,10 +174,6 @@ export function DashboardAvocat() {
             <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
               ✨ Premium
             </Badge>
-            {/* Sélecteur de contrats spécifique espace avocat */}
-            <ContractSelectorAvocat variant="horizontal" />
-            {/* Menu fiche client conservé */}
-            <FicheClientMenu variant="horizontal" colorClass="bg-blue-600 hover:bg-blue-700 text-white" />
           </div>
         </div>
         <p className="text-muted-foreground mt-2">
