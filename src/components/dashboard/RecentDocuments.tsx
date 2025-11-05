@@ -47,7 +47,7 @@ export function RecentDocuments() {
   const viewOrDownload = async (doc: DocRow, mode: 'view' | 'download') => {
     if (!user) return;
     if (!doc.storage_path) {
-      toast.error("Aucun fichier associé");
+      toast.error("Aucun fichier associé.");
       return;
     }
     const { data, error } = await supabase.storage
@@ -161,12 +161,12 @@ export function RecentDocuments() {
                   Chargement…
                 </TableCell>
               </TableRow>
-            ) : documents.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
-                  aucuns documents
-                </TableCell>
-              </TableRow>
+              ) : documents.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                    Aucuns documents.
+                  </TableCell>
+                </TableRow>
             ) : (
               documents.map((doc) => (
                 <TableRow key={doc.id}>

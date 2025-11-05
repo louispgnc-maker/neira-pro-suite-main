@@ -134,24 +134,55 @@ export default function Auth() {
         {/* Single card containing everything */}
         <Card className="bg-white dark:bg-card shadow-xl border-2">
           <CardContent className="pt-6 space-y-6">
-            {/* Role selection buttons inside card */}
-            <div className="flex flex-col items-center gap-4">
-              <Button 
-                size="lg" 
-                className="w-full max-w-md text-xl px-8 py-8 font-bold" 
-                variant={role === "avocat" ? "default" : "outline"}
+            {/* Role selection cards in two columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Avocat Card */}
+              <div 
                 onClick={() => setRole("avocat")}
+                className={`cursor-pointer group transition-all duration-300 ${
+                  role === "avocat" 
+                    ? "ring-2 ring-blue-600 scale-105" 
+                    : "hover:scale-105 hover:shadow-lg"
+                }`}
               >
-                Espace Avocats
-              </Button>
-              <Button 
-                size="lg" 
-                className="w-full max-w-md text-xl px-8 py-8 font-bold" 
-                variant={role === "notaire" ? "default" : "outline"}
+                <Card className={`${
+                  role === "avocat" 
+                    ? "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-600" 
+                    : "bg-white hover:bg-blue-50/50"
+                } transition-all duration-300`}>
+                  <CardContent className="pt-8 pb-6 text-center space-y-3">
+                    <div className="text-5xl mb-2">⚖️</div>
+                    <h3 className="text-2xl font-bold text-blue-900">Espace Avocats</h3>
+                    <p className="text-sm text-blue-700">
+                      Accès sécurisé dédié aux avocats
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Notaire Card */}
+              <div 
                 onClick={() => setRole("notaire")}
+                className={`cursor-pointer group transition-all duration-300 ${
+                  role === "notaire" 
+                    ? "ring-2 ring-amber-600 scale-105" 
+                    : "hover:scale-105 hover:shadow-lg"
+                }`}
               >
-                Espace Notaires
-              </Button>
+                <Card className={`${
+                  role === "notaire" 
+                    ? "bg-gradient-to-br from-amber-50 to-amber-100 border-amber-600" 
+                    : "bg-white hover:bg-amber-50/50"
+                } transition-all duration-300`}>
+                  <CardContent className="pt-8 pb-6 text-center space-y-3">
+                    <div className="text-5xl mb-2">🏛️</div>
+                    <h3 className="text-2xl font-bold text-amber-900">Espace Notaires</h3>
+                    <p className="text-sm text-amber-700">
+                      Accès sécurisé dédié aux notaires
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
             {/* Show auth forms once role is selected */}

@@ -77,8 +77,8 @@ export function TasksCalendar() {
         <div className="space-y-3">
           {loading ? (
             <p className="text-center text-muted-foreground">Chargement…</p>
-          ) : tasks.length === 0 ? (
-            <p className="text-center text-muted-foreground">aucune tâche à venir</p>
+            ) : tasks.length === 0 ? (
+              <p className="text-center text-muted-foreground">Aucune tâche à venir.</p>
           ) : (
             tasks.map((task) => (
               <div
