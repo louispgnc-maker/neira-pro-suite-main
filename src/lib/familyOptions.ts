@@ -7,6 +7,7 @@ export interface FamilyOption {
 }
 
 export const FAMILY_OPTIONS: FamilyOption[] = [
+  { key: 'celibataire', label: 'Célibataire' },
   { key: 'mariage_regime_communautaire', label: 'Mariage - régime communauté réduite aux acquêts' },
   { key: 'mariage_separation_biens', label: 'Mariage - séparation de biens' },
   { key: 'mariage_regime_universelle', label: 'Mariage - communauté universelle' },

@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Upload, ArrowLeft, Save } from "lucide-react";
 import { AVOCAT_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorAvocat";
+import { FAMILY_OPTIONS } from "@/lib/familyOptions";
 
 export default function EditClient() {
   const { user } = useAuth();
@@ -58,29 +59,13 @@ export default function EditClient() {
   const [comptesBancairesRaw, setComptesBancairesRaw] = useState("");
 
   // Notaire-specific family fields
-  const [situationMatrimoniale, setSituationMatrimoniale] = useState("");
+  // Situation matrimoniale supprimée
   const [enfants, setEnfants] = useState<{ nom: string; date_naissance: string }[]>([]);
   const [situationFamiliale, setSituationFamiliale] = useState<string[]>([]);
   const [familySearch, setFamilySearch] = useState("");
-  const familleAmberItem = "cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white";
+  // const familleAmberItem = "cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"; // plus utilisé
   
-  // Import options
-  // (Lazy import to avoid circular) - using dynamic require style
-  const FAMILY_OPTIONS = [
-    'Mariage - régime communauté réduite aux acquêts',
-    'Mariage - séparation de biens',
-    'Mariage - communauté universelle',
-    'PACS',
-    'Concubinage',
-    'Divorce en cours',
-    'Divorce prononcé',
-    'Veuf / Veuve',
-    'Séparation',
-    'Enfants communs',
-    'Enfants d’une précédente union',
-    'Sous tutelle / curatelle',
-    'Handicap reconnu (enfant ou conjoint)'
-  ];
+  // Options partagées pour la situation familiale
 
   const [typeDossier, setTypeDossier] = useState("");
   const [contratSouhaite, setContratSouhaite] = useState("");
@@ -131,7 +116,7 @@ export default function EditClient() {
   setRevenus(c.revenus || '');
   setJustificatifsFinanciers(c.justificatifs_financiers || '');
   setComptesBancairesRaw(Array.isArray(c.comptes_bancaires) ? (c.comptes_bancaires as string[]).join('\n') : '');
-  setSituationMatrimoniale(c.situation_matrimoniale || '');
+  // situation_matrimoniale supprimée
   setEnfants(Array.isArray(c.enfants) ? (c.enfants as any[]).map((e: any) => ({ nom: e.nom || '', date_naissance: e.date_naissance || '' })) : []);
   setSituationFamiliale(Array.isArray(c.situation_familiale) ? c.situation_familiale : []);
         setTypeDossier(c.type_dossier || '');
@@ -218,7 +203,7 @@ export default function EditClient() {
         type_dossier: typeDossier || null,
         contrat_souhaite: contratSouhaite || null,
         historique_litiges: historiqueLitiges || null,
-        situation_matrimoniale: situationMatrimoniale || null,
+  // situation_matrimoniale supprimée
   enfants: enfants.filter(e => e.nom || e.date_naissance),
   situation_familiale: situationFamiliale.length ? situationFamiliale : null,
         consentement_rgpd: consentementRGPD,
@@ -407,10 +392,7 @@ export default function EditClient() {
               <CardTitle>3. Situation familiale (Notaire)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="situationMatrimoniale">Situation matrimoniale</Label>
-                <Input id="situationMatrimoniale" value={situationMatrimoniale} onChange={e => setSituationMatrimoniale(e.target.value)} />
-              </div>
+              {/* Champ Situation matrimoniale supprimé */}
               <div className="space-y-2">
                 <Label>Options familiales (multi)</Label>
                 <div className="border rounded-md p-2 bg-amber-50 border-amber-200">
@@ -424,20 +406,20 @@ export default function EditClient() {
                     />
                   </div>
                   <div className="max-h-48 overflow-y-auto space-y-1">
-                    {FAMILY_OPTIONS.filter(o => o.toLowerCase().includes(familySearch.toLowerCase())).map(opt => {
-                      const checked = situationFamiliale.includes(opt);
+                    {FAMILY_OPTIONS.filter(opt => opt.label.toLowerCase().includes(familySearch.toLowerCase())).map(opt => {
+                      const checked = situationFamiliale.includes(opt.label);
                       return (
-                        <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <label key={opt.key} className="flex items-center gap-2 text-sm cursor-pointer">
                           <input
                             type="checkbox"
                             className="h-4 w-4"
                             checked={checked}
                             onChange={e => {
                               const isChecked = e.target.checked;
-                              setSituationFamiliale(prev => isChecked ? [...prev, opt] : prev.filter(v => v !== opt));
+                              setSituationFamiliale(prev => isChecked ? [...prev, opt.label] : prev.filter(v => v !== opt.label));
                             }}
                           />
-                          <span>{opt}</span>
+                          <span>{opt.label}</span>
                         </label>
                       );
                     })}
