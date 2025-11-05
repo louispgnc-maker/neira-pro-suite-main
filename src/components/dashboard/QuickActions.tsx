@@ -1,5 +1,6 @@
 import { FileText, Upload, PenTool } from "lucide-react";
 import { ContractSelectorNotaire } from "@/components/dashboard/ContractSelectorNotaire";
+import { ContractSelectorAvocat } from "@/components/dashboard/ContractSelectorAvocat";
 import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -101,13 +102,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
         {role === 'notaire' ? (
           <ContractSelectorNotaire />
         ) : (
-          <Button
-            variant={actions[0].variant === 'default' && primaryButtonColor ? undefined : actions[0].variant}
-            className={actions[0].variant === 'default' && primaryButtonColor ? `${primaryButtonColor} h-auto flex-col gap-2 py-4` : "h-auto flex-col gap-2 py-4"}
-          >
-            <FileText className="h-5 w-5" />
-            <span className="text-xs">Créer un contrat</span>
-          </Button>
+          <ContractSelectorAvocat />
         )}
         {actions.slice(1).filter(a => a.key !== 'collect').map((action) => {
           const onClick = () => {
