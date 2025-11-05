@@ -12,7 +12,11 @@ type TaskRow = {
   due_date: string | null;
 };
 
-export function TasksCalendar() {
+interface TasksCalendarProps {
+  role?: 'avocat' | 'notaire';
+}
+
+export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState<TaskRow[]>([]);
@@ -36,6 +40,7 @@ export function TasksCalendar() {
         .from("tasks")
         .select("id,title,due_date")
         .eq("owner_id", user.id)
+        .eq("role", role)
         .gte("due_date", dateStr)
         .order("due_date", { ascending: true, nullsFirst: false })
         .limit(5);
@@ -51,7 +56,7 @@ export function TasksCalendar() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, role]);
 
   const formatDay = (d?: string | null) => {
     if (!d) return "—";

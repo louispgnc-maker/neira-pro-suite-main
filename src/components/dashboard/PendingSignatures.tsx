@@ -15,7 +15,11 @@ type SignatureRow = {
   last_reminder_at: string | null;
 };
 
-export function PendingSignatures() {
+interface PendingSignaturesProps {
+  role?: 'avocat' | 'notaire';
+}
+
+export function PendingSignatures({ role = 'avocat' }: PendingSignaturesProps = {}) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [signatures, setSignatures] = useState<SignatureRow[]>([]);
@@ -34,6 +38,7 @@ export function PendingSignatures() {
         .from("signatures")
         .select("id,signer,document_name,status,last_reminder_at")
         .eq("owner_id", user.id)
+        .eq("role", role)
         .in("status", ["pending", "awaiting", "en_attente"]) // support several values
         .order("last_reminder_at", { ascending: false, nullsFirst: true })
         .limit(3);
@@ -49,7 +54,7 @@ export function PendingSignatures() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, role]);
 
   const handleCopyLink = () => {
     toast.success("Lien copié dans le presse-papier");

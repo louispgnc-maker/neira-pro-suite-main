@@ -13,7 +13,12 @@ const actions = [
   { key: "collect", label: "Lien de collecte", icon: Link2, variant: "secondary" as const },
 ];
 
-export function QuickActions() {
+interface QuickActionsProps {
+  primaryButtonColor?: string;
+  role?: 'avocat' | 'notaire';
+}
+
+export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActionsProps = {}) {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -54,6 +59,7 @@ export function QuickActions() {
           name: file.name,
           client_name: null,
           status: 'En cours',
+          role: role,
           storage_path: path,
         });
         if (dbErr) {
@@ -95,11 +101,14 @@ export function QuickActions() {
             if (action.key === 'import') return triggerImport();
             // TODO: wire other actions
           };
+          const buttonClass = action.variant === 'default' && primaryButtonColor
+            ? `${primaryButtonColor} h-auto flex-col gap-2 py-4`
+            : "h-auto flex-col gap-2 py-4";
           return (
             <Button
               key={action.key}
-              variant={action.variant}
-              className="h-auto flex-col gap-2 py-4"
+              variant={action.variant === 'default' && primaryButtonColor ? undefined : action.variant}
+              className={buttonClass}
               onClick={onClick}
               disabled={uploading && action.key === 'import'}
             >

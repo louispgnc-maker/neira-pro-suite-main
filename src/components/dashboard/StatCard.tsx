@@ -9,17 +9,19 @@ interface StatCardProps {
     value: string;
     positive: boolean;
   };
+  iconColor?: string;
+  iconBgColor?: string;
 }
 
-export function StatCard({ title, value, icon: Icon, trend }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-primary", iconBgColor = "bg-primary/10" }: StatCardProps) {
   return (
     <Card className="relative overflow-hidden border-border bg-gradient-card transition-shadow hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        <div className="p-2 rounded-lg bg-primary/10">
-          <Icon className="h-4 w-4 text-primary" />
+        <div className={`p-2 rounded-lg ${iconBgColor}`}>
+          <Icon className={`h-4 w-4 ${iconColor}`} />
         </div>
       </CardHeader>
       <CardContent>

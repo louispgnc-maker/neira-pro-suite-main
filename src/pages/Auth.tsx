@@ -172,7 +172,7 @@ export default function Auth() {
               {/* Avocat Card */}
               <div 
                 onClick={() => setRole("avocat")}
-                className={`cursor-pointer group transition-all duration-300 ${
+                className={`cursor-pointer group transition-all duration-300 rounded-xl ${
                   role === "avocat" 
                     ? "ring-2 ring-blue-600 scale-105" 
                     : "hover:scale-105 hover:shadow-lg"
@@ -196,7 +196,7 @@ export default function Auth() {
               {/* Notaire Card */}
               <div 
                 onClick={() => setRole("notaire")}
-                className={`cursor-pointer group transition-all duration-300 ${
+                className={`cursor-pointer group transition-all duration-300 rounded-xl ${
                   role === "notaire" 
                     ? "ring-2 ring-amber-600 scale-105" 
                     : "hover:scale-105 hover:shadow-lg"

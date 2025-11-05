@@ -38,11 +38,19 @@ const statusColors: Record<string, string> = {
   "En attente": "bg-warning/10 text-warning border-warning/20",
 };
 
-export function RecentDocuments() {
+interface RecentDocumentsProps {
+  statusColorOverride?: Record<string, string>;
+  role?: 'avocat' | 'notaire';
+}
+
+export function RecentDocuments({ statusColorOverride, role = 'avocat' }: RecentDocumentsProps = {}) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Merge default colors with override
+  const effectiveStatusColors = { ...statusColors, ...statusColorOverride };
 
   const viewOrDownload = async (doc: DocRow, mode: 'view' | 'download') => {
     if (!user) return;
@@ -119,6 +127,7 @@ export function RecentDocuments() {
         .from("documents")
         .select("id,name,client_name,status,updated_at,storage_path")
         .eq("owner_id", user.id)
+        .eq("role", role)
         .order("updated_at", { ascending: false, nullsFirst: false })
         .limit(5);
       if (error) {
@@ -133,7 +142,7 @@ export function RecentDocuments() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, role]);
 
   return (
     <Card>
@@ -173,7 +182,7 @@ export function RecentDocuments() {
                   <TableCell className="font-medium">{doc.name}</TableCell>
                   <TableCell className="text-muted-foreground">{doc.client_name ?? "—"}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={statusColors[doc.status] ?? "bg-muted text-muted-foreground border-border"}>
+                    <Badge variant="outline" className={effectiveStatusColors[doc.status] ?? "bg-muted text-muted-foreground border-border"}>
                       {doc.status}
                     </Badge>
                   </TableCell>

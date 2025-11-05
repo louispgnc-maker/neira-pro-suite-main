@@ -15,7 +15,11 @@ type ClientRow = {
   created_at?: string | null;
 };
 
-export function RecentClients() {
+interface RecentClientsProps {
+  role?: 'avocat' | 'notaire';
+}
+
+export function RecentClients({ role = 'avocat' }: RecentClientsProps = {}) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [clients, setClients] = useState<ClientRow[]>([]);
@@ -34,6 +38,7 @@ export function RecentClients() {
         .from("clients")
         .select("id,name,kyc_status,missing_info,created_at")
         .eq("owner_id", user.id)
+        .eq("role", role)
         .order("created_at", { ascending: false })
         .limit(4);
       if (error) {
@@ -48,7 +53,7 @@ export function RecentClients() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, role]);
 
   return (
     <Card>

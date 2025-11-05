@@ -25,6 +25,27 @@ create policy "profiles_update_own" on public.profiles
 
 create index if not exists profiles_role_idx on public.profiles(role);
 
+-- Trigger to automatically create profile on user signup
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer as $$
+begin
+  insert into public.profiles (id, email, first_name, last_name, role)
+  values (
+    new.id,
+    new.email,
+    coalesce(new.raw_user_meta_data->>'first_name', ''),
+    coalesce(new.raw_user_meta_data->>'last_name', ''),
+    coalesce(new.raw_user_meta_data->>'role', 'avocat')
+  );
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
 -- 1) CLIENTS
 create table if not exists public.clients (
   id uuid primary key default gen_random_uuid(),
@@ -32,6 +53,7 @@ create table if not exists public.clients (
   name text not null,
   kyc_status text not null default 'Partiel', -- 'Complet' | 'Partiel'
   missing_info text,
+  role text not null default 'avocat', -- 'avocat' | 'notaire'
   created_at timestamptz not null default now()
 );
 
@@ -53,6 +75,7 @@ create policy "clients_delete_own" on public.clients
 
 create index if not exists clients_owner_idx on public.clients(owner_id);
 create index if not exists clients_created_at_idx on public.clients(created_at desc);
+create index if not exists clients_role_idx on public.clients(role);
 
 -- 2) DOCUMENTS
 create table if not exists public.documents (
@@ -61,6 +84,7 @@ create table if not exists public.documents (
   name text not null,
   client_name text,
   status text not null default 'Brouillon', -- 'En cours' | 'Signé' | 'En attente' | 'Brouillon'
+  role text not null default 'avocat', -- 'avocat' | 'notaire'
   updated_at timestamptz not null default now()
 );
 
@@ -82,6 +106,7 @@ create policy "documents_delete_own" on public.documents
 create index if not exists documents_owner_idx on public.documents(owner_id);
 create index if not exists documents_updated_at_idx on public.documents(updated_at desc);
 create index if not exists documents_status_idx on public.documents(status);
+create index if not exists documents_role_idx on public.documents(role);
 
 -- Add storage_path column to link to Supabase Storage path
 alter table public.documents add column if not exists storage_path text;
@@ -93,6 +118,7 @@ create table if not exists public.signatures (
   signer text not null,
   document_name text not null,
   status text not null default 'pending', -- 'pending' | 'completed' | 'awaiting' | 'en_attente'
+  role text not null default 'avocat', -- 'avocat' | 'notaire'
   last_reminder_at timestamptz
 );
 
@@ -114,6 +140,7 @@ create policy "signatures_delete_own" on public.signatures
 create index if not exists signatures_owner_idx on public.signatures(owner_id);
 create index if not exists signatures_status_idx on public.signatures(status);
 create index if not exists signatures_last_reminder_idx on public.signatures(last_reminder_at desc nulls last);
+create index if not exists signatures_role_idx on public.signatures(role);
 
 -- 4) TASKS (optional for dashboard KPI)
 create table if not exists public.tasks (
@@ -122,6 +149,7 @@ create table if not exists public.tasks (
   title text not null,
   due_date date,
   done boolean not null default false,
+  role text not null default 'avocat', -- 'avocat' | 'notaire'
   created_at timestamptz not null default now()
 );
 
@@ -142,6 +170,7 @@ create policy "tasks_delete_own" on public.tasks
 
 create index if not exists tasks_owner_idx on public.tasks(owner_id);
 create index if not exists tasks_due_date_idx on public.tasks(due_date);
+create index if not exists tasks_role_idx on public.tasks(role);
 
 -- Helpful helper: automatically refresh updated_at on documents
 create or replace function public.set_updated_at()

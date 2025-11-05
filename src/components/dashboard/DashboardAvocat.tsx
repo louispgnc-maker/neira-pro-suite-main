@@ -1,4 +1,4 @@
-import { FileText, PenTool, Users, Clock } from "lucide-react";
+import { FileText, PenTool, Users, Clock, ChevronDown } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
@@ -9,12 +9,20 @@ import { RecentClients } from "@/components/dashboard/RecentClients";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function DashboardAvocat() {
   const { profile, user } = useAuth();
+  const navigate = useNavigate();
   const [docCount, setDocCount] = useState(0);
   const [docPrevCount, setDocPrevCount] = useState(0);
   const [pendingSigCount, setPendingSigCount] = useState(0);
@@ -48,6 +56,7 @@ export function DashboardAvocat() {
         .from("documents")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
+        .eq("role", "avocat")
         .eq("status", "En cours")
         .gte("updated_at", `${yyyy}-${mm}-01`)
         .lte("updated_at", `${yyyy}-${mm}-31`);
@@ -56,6 +65,7 @@ export function DashboardAvocat() {
         .from("documents")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
+        .eq("role", "avocat")
         .eq("status", "En cours")
         .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
         .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
@@ -65,6 +75,7 @@ export function DashboardAvocat() {
         .from("signatures")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
+        .eq("role", "avocat")
         .in("status", ["pending", "awaiting", "en_attente"])
         .gte("updated_at", `${yyyy}-${mm}-01`)
         .lte("updated_at", `${yyyy}-${mm}-31`);
@@ -73,6 +84,7 @@ export function DashboardAvocat() {
         .from("signatures")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
+        .eq("role", "avocat")
         .in("status", ["pending", "awaiting", "en_attente"])
         .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
         .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
@@ -82,6 +94,7 @@ export function DashboardAvocat() {
         .from("clients")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
+        .eq("role", "avocat")
         .eq("kyc_status", "Partiel");
 
       // Tâches du jour
@@ -91,6 +104,7 @@ export function DashboardAvocat() {
         .from("tasks")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
+        .eq("role", "avocat")
         .eq("due_date", dateStr);
 
       const [docsRes, docsPrevRes, sigRes, sigPrevRes, clientsRes, tasksRes] = await Promise.allSettled([
@@ -126,16 +140,41 @@ export function DashboardAvocat() {
             <h1 className="text-3xl font-bold text-foreground">
               Bienvenue dans votre espace {profile?.first_name || 'Utilisateur'}
             </h1>
-            <Badge className="bg-blue-600 text-white border-0 px-4 py-1.5 text-sm">
-              Espace Avocat
-            </Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="bg-blue-600 text-white hover:bg-blue-700 hover:text-white border-0 px-4 py-1.5 text-sm h-auto gap-2">
+                  Espace Avocat
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem 
+                  className="cursor-pointer"
+                  onClick={() => navigate("/avocats/dashboard")}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-blue-600" />
+                    <span>Espace Avocat</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="cursor-pointer"
+                  onClick={() => navigate("/notaires/dashboard")}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-600" />
+                    <span>Espace Notaire</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="flex items-center gap-3">
-            <Badge className="bg-gradient-primary text-white border-0 px-4 py-1.5">
-              Premium
+            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
+              ✨ Premium
             </Badge>
-            <Button>Créer un document</Button>
-            <Button variant="secondary">Nouveau client</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Créer un document</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Nouveau client</Button>
           </div>
         </div>
         <p className="text-muted-foreground mt-2">
@@ -148,6 +187,8 @@ export function DashboardAvocat() {
             title="Dossiers en cours"
             value={docCount}
             icon={FileText}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-100"
             trend={(() => {
               const prev = docPrevCount;
               const curr = docCount;
@@ -163,6 +204,8 @@ export function DashboardAvocat() {
             title="Signatures en attente"
             value={pendingSigCount}
             icon={PenTool}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-100"
             trend={(() => {
               const prev = pendingSigPrevCount;
               const curr = pendingSigCount;
@@ -178,28 +221,40 @@ export function DashboardAvocat() {
             title="Clients à relancer"
             value={clientsToFollow}
             icon={Users}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-100"
           />
           <StatCard
             title="Tâches du jour"
             value={todayTasks}
             icon={Clock}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-100"
           />
         </div>
 
         {/* Quick Actions */}
-        <QuickActions />
+        <QuickActions 
+          role="avocat"
+          primaryButtonColor="bg-blue-600 hover:bg-blue-700 text-white" 
+        />
 
         {/* Main Section - full width */}
         <div className="space-y-6">
-          <RecentDocuments />
-          <PendingSignatures />
+          <RecentDocuments 
+            role="avocat"
+            statusColorOverride={{
+              "En cours": "bg-blue-100 text-blue-600 border-blue-200"
+            }} 
+          />
+          <PendingSignatures role="avocat" />
           <AlertsCompliance />
         </div>
 
         {/* Bottom Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <TasksCalendar />
-          <RecentClients />
+          <TasksCalendar role="avocat" />
+          <RecentClients role="avocat" />
         </div>
       </div>
       </div>
