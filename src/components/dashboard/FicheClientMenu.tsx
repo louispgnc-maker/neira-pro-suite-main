@@ -5,6 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Send, UserPlus } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface FicheClientMenuProps {
   variant?: 'vertical' | 'horizontal';
@@ -13,6 +14,14 @@ interface FicheClientMenuProps {
 }
 
 export function FicheClientMenu({ variant = 'vertical', colorClass = '', label = 'Fiche client' }: FicheClientMenuProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Détecte le rôle depuis l'URL
+  let role: 'avocat' | 'notaire' = 'avocat';
+  if (location.pathname.includes('/notaires')) role = 'notaire';
+  if (location.pathname.includes('/avocats')) role = 'avocat';
+
   // Base button style copied from buttonVariants root (without any color / hover so we can fully control)
   const base = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   // Fallback if no colorClass provided
@@ -38,7 +47,10 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem 
+          className="cursor-pointer"
+          onClick={() => navigate(role === 'notaire' ? '/notaires/clients/create' : '/avocats/clients/create')}
+        >
           <UserPlus className="mr-2 h-4 w-4" />
           Remplir une fiche client
         </DropdownMenuItem>

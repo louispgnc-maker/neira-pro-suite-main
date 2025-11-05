@@ -12,6 +12,7 @@ import NotaireDashboard from "./pages/notaires/Dashboard";
 import Documents from "./pages/Documents";
 import Signatures from "./pages/Signatures";
 import Clients from "./pages/Clients";
+import CreateClientAvocat from "./pages/CreateClientAvocat";
 import Tasks from "./pages/Tasks";
 import Contrats from "./pages/Contrats";
 import NotFound from "./pages/NotFound";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/avocats/documents" element={<Documents />} />
             <Route path="/avocats/signatures" element={<Signatures />} />
             <Route path="/avocats/clients" element={<Clients />} />
+            <Route path="/avocats/clients/create" element={<CreateClientAvocat />} />
             <Route path="/avocats/tasks" element={<Tasks />} />
             <Route path="/avocats/contrats" element={<Contrats />} />
             
@@ -44,6 +46,7 @@ const App = () => (
             <Route path="/notaires/documents" element={<Documents />} />
             <Route path="/notaires/signatures" element={<Signatures />} />
             <Route path="/notaires/clients" element={<Clients />} />
+            <Route path="/notaires/clients/create" element={<CreateClientAvocat />} />
             <Route path="/notaires/tasks" element={<Tasks />} />
             <Route path="/notaires/contrats" element={<Contrats />} />
             

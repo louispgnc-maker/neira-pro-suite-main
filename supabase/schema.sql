@@ -54,7 +54,35 @@ create table if not exists public.clients (
   kyc_status text not null default 'Partiel', -- 'Complet' | 'Partiel'
   missing_info text,
   role text not null default 'avocat', -- 'avocat' | 'notaire'
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  -- Informations personnelles
+  nom text,
+  prenom text,
+  date_naissance date,
+  lieu_naissance text,
+  adresse text,
+  telephone text,
+  email text,
+  nationalite text,
+  sexe text,
+  -- Identification officielle
+  type_identite text,
+  numero_identite text,
+  date_expiration_identite date,
+  id_doc_path text, -- Chemin vers le scan/photo de la pièce d'identité dans storage
+  -- Situation professionnelle / financière
+  profession text,
+  employeur text,
+  adresse_professionnelle text,
+  siret text,
+  situation_fiscale text,
+  -- Situation juridique / dossier
+  type_dossier text,
+  historique_litiges text,
+  pieces_justificatives text,
+  -- Consentements et mentions légales
+  consentement_rgpd boolean default false,
+  signature_mandat boolean default false
 );
 
 alter table public.clients enable row level security;
