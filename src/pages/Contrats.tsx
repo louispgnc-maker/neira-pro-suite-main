@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { ContractSelectorNotaire } from "@/components/dashboard/ContractSelectorNotaire";
+import { ContractSelectorAvocat } from "@/components/dashboard/ContractSelectorAvocat";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -40,12 +41,22 @@ type ContratRow = {
   updated_at: string;
 };
 
-const categories = [
+// Catégories filtrage dynamiques selon le rôle
+const categoriesNotaire = [
   "Tous",
   "Immobilier",
   "Famille & Patrimoine",
   "Succession",
   "Procurations & Actes divers"
+];
+
+const categoriesAvocat = [
+  "Tous",
+  "Droit des affaires / Commercial",
+  "Droit du travail",
+  "Droit immobilier",
+  "Droit civil / Vie privée",
+  "Propriété intellectuelle & Numérique",
 ];
 
 export default function Contrats() {
@@ -153,7 +164,7 @@ export default function Contrats() {
             {role === 'notaire' ? (
               <ContractSelectorNotaire variant="horizontal" onContractCreated={refreshContrats} />
             ) : (
-              <ContractSelectorNotaire variant="horizontal" colorClass="bg-blue-600 hover:bg-blue-700 text-white" onContractCreated={refreshContrats} />
+              <ContractSelectorAvocat variant="horizontal" onContractCreated={refreshContrats} />
             )}
           </div>
         </div>
@@ -172,7 +183,7 @@ export default function Contrats() {
                 </div>
               ) : (
                 <div className="mt-4 flex justify-center">
-                  <ContractSelectorNotaire variant="horizontal" label="Ajoutez votre premier contrat" colorClass="bg-blue-600 hover:bg-blue-700 text-white" onContractCreated={refreshContrats} />
+                  <ContractSelectorAvocat variant="horizontal" label="Ajoutez votre premier contrat" onContractCreated={refreshContrats} />
                 </div>
               )}
             </div>
@@ -194,7 +205,7 @@ export default function Contrats() {
                   <SelectValue placeholder="Catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat) => (
+                  {(role === 'notaire' ? categoriesNotaire : categoriesAvocat).map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
                     </SelectItem>
