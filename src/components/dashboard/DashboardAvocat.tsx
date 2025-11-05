@@ -129,9 +129,14 @@ export function DashboardAvocat() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
-              Bonjour, {profile?.first_name || 'Utilisateur'} {profile?.role && `(${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)})`}
-            </h1>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-bold text-foreground">
+                Bonjour, {profile?.first_name || 'Utilisateur'} {profile?.role && `(${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)})`}
+              </h1>
+              <Badge className="bg-blue-600 text-white border-0 px-4 py-1.5 text-sm">
+                Espace Avocat
+              </Badge>
+            </div>
             <p className="text-muted-foreground mt-1">
               Voici un aperçu de votre activité juridique
             </p>
