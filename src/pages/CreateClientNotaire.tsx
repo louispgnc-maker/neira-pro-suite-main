@@ -24,6 +24,7 @@ export default function CreateClientNotaire() {
 
   const role: 'notaire' = 'notaire';
   const mainButtonColor = 'bg-amber-600 hover:bg-amber-700 text-white';
+  const itemHover = 'cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white';
 
   const [loading, setLoading] = useState(false);
   const [idDocFile, setIdDocFile] = useState<File | null>(null);
@@ -253,12 +254,12 @@ export default function CreateClientNotaire() {
                   <Select value={etatCivil} onValueChange={setEtatCivil}>
                     <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Célibataire">Célibataire</SelectItem>
-                      <SelectItem value="Marié">Marié</SelectItem>
-                      <SelectItem value="Pacsé">Pacsé</SelectItem>
-                      <SelectItem value="Divorcé">Divorcé</SelectItem>
-                      <SelectItem value="Veuf">Veuf</SelectItem>
-                      <SelectItem value="Séparé">Séparé</SelectItem>
+                      <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
+                      <SelectItem className={itemHover} value="Marié">Marié</SelectItem>
+                      <SelectItem className={itemHover} value="Pacsé">Pacsé</SelectItem>
+                      <SelectItem className={itemHover} value="Divorcé">Divorcé</SelectItem>
+                      <SelectItem className={itemHover} value="Veuf">Veuf</SelectItem>
+                      <SelectItem className={itemHover} value="Séparé">Séparé</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -279,9 +280,9 @@ export default function CreateClientNotaire() {
                   <Select value={typeIdentite} onValueChange={setTypeIdentite}>
                     <SelectTrigger id="typeIdentite"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="CNI">Carte Nationale d'Identité</SelectItem>
-                      <SelectItem value="Passeport">Passeport</SelectItem>
-                      <SelectItem value="Titre de séjour">Titre de séjour</SelectItem>
+                      <SelectItem className={itemHover} value="CNI">Carte Nationale d'Identité</SelectItem>
+                      <SelectItem className={itemHover} value="Passeport">Passeport</SelectItem>
+                      <SelectItem className={itemHover} value="Titre de séjour">Titre de séjour</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -403,7 +404,7 @@ export default function CreateClientNotaire() {
                   <SelectTrigger id="typeDossier"><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
                   <SelectContent>
                     {NOTAIRE_CONTRACT_CATEGORIES.map(cat => (
-                      <SelectItem key={cat.key} value={cat.key}>{cat.label}</SelectItem>
+                      <SelectItem className={itemHover} key={cat.key} value={cat.key}>{cat.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -414,7 +415,7 @@ export default function CreateClientNotaire() {
                   <SelectTrigger id="contratSouhaite"><SelectValue placeholder={typeDossier ? 'Sélectionner...' : 'Choisir une catégorie d\'abord'} /></SelectTrigger>
                   <SelectContent>
                     {(NOTAIRE_CONTRACT_CATEGORIES.find(c => c.key === typeDossier)?.contracts || []).map(c => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                      <SelectItem className={itemHover} key={c} value={c}>{c}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

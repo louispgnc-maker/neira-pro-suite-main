@@ -29,6 +29,7 @@ export default function CreateClientAvocat() {
   const mainButtonColor = role === 'notaire'
     ? 'bg-amber-600 hover:bg-amber-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
+  const itemHover = 'cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white';
 
   // États du formulaire
   const [loading, setLoading] = useState(false);
@@ -298,9 +299,9 @@ export default function CreateClientAvocat() {
                       <SelectValue placeholder="Sélectionner..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="M">Masculin</SelectItem>
-                      <SelectItem value="F">Féminin</SelectItem>
-                      <SelectItem value="Autre">Autre</SelectItem>
+                      <SelectItem className={itemHover} value="M">Masculin</SelectItem>
+                      <SelectItem className={itemHover} value="F">Féminin</SelectItem>
+                      <SelectItem className={itemHover} value="Autre">Autre</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -323,9 +324,9 @@ export default function CreateClientAvocat() {
                       <SelectValue placeholder="Sélectionner..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="CNI">Carte Nationale d'Identité</SelectItem>
-                      <SelectItem value="Passeport">Passeport</SelectItem>
-                      <SelectItem value="Titre de séjour">Titre de séjour</SelectItem>
+                      <SelectItem className={itemHover} value="CNI">Carte Nationale d'Identité</SelectItem>
+                      <SelectItem className={itemHover} value="Passeport">Passeport</SelectItem>
+                      <SelectItem className={itemHover} value="Titre de séjour">Titre de séjour</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -408,11 +409,11 @@ export default function CreateClientAvocat() {
                     <SelectValue placeholder="Sélectionner une catégorie..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Droit des affaires / Commercial">💼 Droit des affaires / Commercial</SelectItem>
-                    <SelectItem value="Droit du travail">👔 Droit du travail</SelectItem>
-                    <SelectItem value="Droit immobilier">🏠 Droit immobilier</SelectItem>
-                    <SelectItem value="Droit civil / Vie privée">👪 Droit civil / Vie privée</SelectItem>
-                    <SelectItem value="Propriété intellectuelle & Numérique">🧠 Propriété intellectuelle & Numérique</SelectItem>
+                    <SelectItem className={itemHover} value="Droit des affaires / Commercial">💼 Droit des affaires / Commercial</SelectItem>
+                    <SelectItem className={itemHover} value="Droit du travail">👔 Droit du travail</SelectItem>
+                    <SelectItem className={itemHover} value="Droit immobilier">🏠 Droit immobilier</SelectItem>
+                    <SelectItem className={itemHover} value="Droit civil / Vie privée">👪 Droit civil / Vie privée</SelectItem>
+                    <SelectItem className={itemHover} value="Propriété intellectuelle & Numérique">🧠 Propriété intellectuelle & Numérique</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -429,7 +430,7 @@ export default function CreateClientAvocat() {
                   </SelectTrigger>
                   <SelectContent>
                     {(AVOCAT_CONTRACT_CATEGORIES.find(c => (c.key === typeDossier || c.label.includes(typeDossier)))?.contracts || []).map((contract) => (
-                      <SelectItem key={contract} value={contract}>{contract}</SelectItem>
+                      <SelectItem className={itemHover} key={contract} value={contract}>{contract}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
