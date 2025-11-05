@@ -148,7 +148,12 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Documents récents</CardTitle>
-        <Button variant="ghost" size="sm" onClick={() => navigate('/documents')}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+          onClick={() => navigate(role === 'notaire' ? '/notaires/documents' : '/avocats/documents')}
+        >
           Voir tout →
         </Button>
       </CardHeader>

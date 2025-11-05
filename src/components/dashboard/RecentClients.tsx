@@ -59,7 +59,12 @@ export function RecentClients({ role = 'avocat' }: RecentClientsProps = {}) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Clients récents / KYC</CardTitle>
-        <Button variant="ghost" size="sm" onClick={() => navigate('/clients')}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+          onClick={() => navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients')}
+        >
           Voir tout →
         </Button>
       </CardHeader>

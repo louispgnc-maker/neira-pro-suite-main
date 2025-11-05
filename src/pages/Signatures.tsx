@@ -13,6 +13,7 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "react-router-dom";
 
 type SignatureRow = {
   id: string;
@@ -24,8 +25,14 @@ type SignatureRow = {
 
 export default function Signatures() {
   const { user } = useAuth();
+  const location = useLocation();
   const [signatures, setSignatures] = useState<SignatureRow[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Détecte le rôle depuis l'URL
+  let role: 'avocat' | 'notaire' = 'avocat';
+  if (location.pathname.includes('/notaires')) role = 'notaire';
+  if (location.pathname.includes('/avocats')) role = 'avocat';
 
   useEffect(() => {
     let isMounted = true;
@@ -55,11 +62,28 @@ export default function Signatures() {
     };
   }, [user]);
 
-  function getStatusVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
-    const s = status.toLowerCase();
-    if (s === "pending" || s === "awaiting" || s === "en_attente") return "secondary";
-    if (s === "signed" || s === "signé" || s === "completed") return "outline";
-    return "default";
+  // Couleur du bouton principal
+  const mainButtonColor = role === 'notaire'
+    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+
+  // Couleur badge statut
+  function getStatusClass(status: string) {
+    if (status.toLowerCase() === 'en cours') {
+      return role === 'notaire'
+        ? 'bg-amber-100 text-amber-600 border-amber-200'
+        : 'bg-blue-100 text-blue-600 border-blue-200';
+    }
+    if (status.toLowerCase() === 'signé' || status.toLowerCase() === 'signed' || status.toLowerCase() === 'completed') {
+      return 'bg-success/10 text-success border-success/20';
+    }
+    if (status.toLowerCase() === 'en attente' || status.toLowerCase() === 'pending' || status.toLowerCase() === 'awaiting') {
+      return 'bg-warning/10 text-warning border-warning/20';
+    }
+    if (status.toLowerCase() === 'brouillon') {
+      return 'bg-muted text-muted-foreground border-border';
+    }
+    return 'bg-muted text-muted-foreground border-border';
   }
 
   return (
@@ -72,7 +96,7 @@ export default function Signatures() {
               Suivez vos demandes de signature électronique
             </p>
           </div>
-          <Button>
+          <Button className={mainButtonColor}>
             <Plus className="mr-2 h-4 w-4" />
             Nouvelle signature
           </Button>
@@ -86,6 +110,9 @@ export default function Signatures() {
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
               <p className="text-muted-foreground">Aucunes signatures</p>
+              <Button className={mainButtonColor + " mt-4"}>
+                Ajoutez ici vos documents signés
+              </Button>
             </div>
           </div>
         ) : (
@@ -105,7 +132,7 @@ export default function Signatures() {
                     <TableCell className="font-medium">{sig.signer_name}</TableCell>
                     <TableCell>{sig.document_name}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(sig.status)}>
+                      <Badge variant="outline" className={getStatusClass(sig.status)}>
                         {sig.status}
                       </Badge>
                     </TableCell>

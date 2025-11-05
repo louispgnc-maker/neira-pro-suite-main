@@ -1,10 +1,11 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Plus, MoreHorizontal, Eye, Download, Trash2, Upload } from "lucide-react";
+import { MoreHorizontal, Eye, Download, Trash2, Upload } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -30,19 +31,31 @@ type DocRow = {
   storage_path: string | null;
 };
 
-const statusColors: Record<string, string> = {
+const statusColorsAvocat: Record<string, string> = {
   "Signé": "bg-success/10 text-success border-success/20",
-  "En cours": "bg-primary/10 text-primary border-primary/20",
+  "En cours": "bg-blue-100 text-blue-600 border-blue-200",
+  "Brouillon": "bg-muted text-muted-foreground border-border",
+  "En attente": "bg-warning/10 text-warning border-warning/20",
+};
+const statusColorsNotaire: Record<string, string> = {
+  "Signé": "bg-success/10 text-success border-success/20",
+  "En cours": "bg-amber-100 text-amber-600 border-amber-200",
   "Brouillon": "bg-muted text-muted-foreground border-border",
   "En attente": "bg-warning/10 text-warning border-warning/20",
 };
 
 export default function Documents() {
   const { user } = useAuth();
+  const location = useLocation();
   const [documents, setDocuments] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Détecte le rôle depuis l'URL
+  let role: 'avocat' | 'notaire' = 'avocat';
+  if (location.pathname.includes('/notaires')) role = 'notaire';
+  if (location.pathname.includes('/avocats')) role = 'avocat';
 
   useEffect(() => {
     let isMounted = true;
@@ -71,6 +84,7 @@ export default function Documents() {
       isMounted = false;
     };
   }, [user]);
+
 
   const viewOrDownload = async (doc: DocRow, mode: 'view' | 'download') => {
     if (!user || !doc.storage_path) {
@@ -181,6 +195,11 @@ export default function Documents() {
     }
   };
 
+  // Couleur des boutons principaux
+  const mainButtonColor = role === 'notaire'
+    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+
   return (
     <AppLayout>
       <div className="p-6">
@@ -200,13 +219,9 @@ export default function Documents() {
               className="hidden"
               onChange={onFilesSelected}
             />
-            <Button variant="secondary" onClick={triggerImport} disabled={uploading}>
+            <Button className={mainButtonColor + ""} onClick={triggerImport} disabled={uploading}>
               <Upload className="mr-2 h-4 w-4" />
               {uploading ? 'Import…' : 'Importer PDF'}
-            </Button>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Nouveau document
             </Button>
           </div>
         </div>
@@ -219,7 +234,7 @@ export default function Documents() {
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
               <p className="text-muted-foreground">Aucun document pour le moment</p>
-              <Button variant="outline" className="mt-4" onClick={triggerImport}>
+              <Button className={mainButtonColor + " mt-4"} onClick={triggerImport}>
                 <Upload className="mr-2 h-4 w-4" />
                 Importer votre premier PDF
               </Button>
@@ -243,7 +258,7 @@ export default function Documents() {
                     <TableCell className="font-medium">{doc.name}</TableCell>
                     <TableCell className="text-muted-foreground">{doc.client_name ?? "—"}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={statusColors[doc.status] ?? "bg-muted text-muted-foreground border-border"}>
+                      <Badge variant="outline" className={(role === 'notaire' ? statusColorsNotaire[doc.status] : statusColorsAvocat[doc.status]) ?? "bg-muted text-muted-foreground border-border"}>
                         {doc.status}
                       </Badge>
                     </TableCell>

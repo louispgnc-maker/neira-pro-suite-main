@@ -64,7 +64,12 @@ export function PendingSignatures({ role = 'avocat' }: PendingSignaturesProps = 
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Signatures en attente</CardTitle>
-        <Button variant="ghost" size="sm" onClick={() => navigate('/signatures')}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+          onClick={() => navigate(role === 'notaire' ? '/notaires/signatures' : '/avocats/signatures')}
+        >
           Voir tout →
         </Button>
       </CardHeader>

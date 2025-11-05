@@ -1,10 +1,11 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   FileText,
   Users,
   CheckSquare,
   PenTool,
+  FolderPlus,
   LogOut,
 } from "lucide-react";
 import {
@@ -23,20 +24,30 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-const menuItems = [
-  { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Documents", url: "/documents", icon: FileText },
-  { title: "Signatures", url: "/signatures", icon: PenTool },
-  { title: "Clients", url: "/clients", icon: Users },
-  { title: "Tâches", url: "/tasks", icon: CheckSquare },
-];
+function getMenuItems(role: 'avocat' | 'notaire') {
+  const prefix = role === 'notaire' ? '/notaires' : '/avocats';
+  return [
+    { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard },
+    { title: "Documents", url: `${prefix}/documents`, icon: FileText },
+    { title: "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
+    { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
+    { title: "Clients", url: `${prefix}/clients`, icon: Users },
+    { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare },
+  ];
+}
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-
-  const isActive = (path: string) => location.pathname === path;
+  const navigate = useNavigate();
   const isCollapsed = state === "collapsed";
+
+  // Détecte le rôle depuis l'URL
+  let role: 'avocat' | 'notaire' = 'avocat';
+  if (location.pathname.includes('/notaires')) role = 'notaire';
+  if (location.pathname.includes('/avocats')) role = 'avocat';
+  const menuItems = getMenuItems(role);
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">

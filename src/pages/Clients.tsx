@@ -1,11 +1,13 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Plus, AlertCircle, CheckCircle2 } from "lucide-react";
+import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { useLocation } from "react-router-dom";
 
 type ClientRow = {
   id: string;
@@ -17,8 +19,14 @@ type ClientRow = {
 
 export default function Clients() {
   const { user } = useAuth();
+  const location = useLocation();
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Détecte le rôle depuis l'URL
+  let role: 'avocat' | 'notaire' = 'avocat';
+  if (location.pathname.includes('/notaires')) role = 'notaire';
+  if (location.pathname.includes('/avocats')) role = 'avocat';
 
   useEffect(() => {
     let isMounted = true;
@@ -48,6 +56,16 @@ export default function Clients() {
     };
   }, [user]);
 
+  // Couleur du bouton principal
+  const mainButtonColor = role === 'notaire'
+    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+
+  // Couleur badge KYC partiel
+  const kycPartielColor = role === 'notaire'
+    ? 'bg-warning/10 text-warning border-warning/20'
+    : 'bg-warning/10 text-warning border-warning/20'; // même couleur pour les deux, mais extensible
+
   return (
     <AppLayout>
       <div className="p-6">
@@ -58,10 +76,7 @@ export default function Clients() {
               Gérez votre base clients et KYC
             </p>
           </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Nouveau client
-          </Button>
+          <FicheClientMenu variant="horizontal" colorClass={mainButtonColor} />
         </div>
         
         {loading ? (
@@ -72,6 +87,13 @@ export default function Clients() {
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
               <p className="text-muted-foreground">Aucun client pour le moment</p>
+              <div className="mt-4 flex justify-center">
+                <FicheClientMenu
+                  variant="horizontal"
+                  label="Ajoutez votre premier client"
+                  colorClass={role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}
+                />
+              </div>
             </div>
           </div>
         ) : (
@@ -103,7 +125,7 @@ export default function Clients() {
                     className={
                       client.kyc_status === "Complet"
                         ? "bg-success/10 text-success border-success/20"
-                        : "bg-warning/10 text-warning border-warning/20"
+                        : kycPartielColor
                     }
                   >
                     {client.kyc_status}

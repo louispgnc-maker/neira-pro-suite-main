@@ -187,7 +187,46 @@ before update on public.documents
 for each row
 execute procedure public.set_updated_at();
 
--- 5) STORAGE POLICIES (bucket: documents)
+-- 5) CONTRATS
+create table if not exists public.contrats (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  name text not null,
+  category text not null, -- 'Immobilier', 'Famille & Patrimoine', 'Succession', 'Procurations', etc.
+  type text not null, -- ex: 'Compromis de vente / Promesse unilatérale de vente'
+  role text not null default 'notaire', -- 'avocat' | 'notaire'
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.contrats enable row level security;
+
+drop policy if exists "contrats_select_own" on public.contrats;
+create policy "contrats_select_own" on public.contrats
+  for select using (owner_id = auth.uid());
+drop policy if exists "contrats_insert_own" on public.contrats;
+create policy "contrats_insert_own" on public.contrats
+  for insert with check (owner_id = auth.uid());
+drop policy if exists "contrats_update_own" on public.contrats;
+create policy "contrats_update_own" on public.contrats
+  for update using (owner_id = auth.uid());
+drop policy if exists "contrats_delete_own" on public.contrats;
+create policy "contrats_delete_own" on public.contrats
+  for delete using (owner_id = auth.uid());
+
+create index if not exists contrats_owner_idx on public.contrats(owner_id);
+create index if not exists contrats_category_idx on public.contrats(category);
+create index if not exists contrats_role_idx on public.contrats(role);
+create index if not exists contrats_created_at_idx on public.contrats(created_at desc);
+
+-- Trigger pour mettre à jour updated_at
+drop trigger if exists contrats_set_updated_at on public.contrats;
+create trigger contrats_set_updated_at
+before update on public.contrats
+for each row
+execute procedure public.set_updated_at();
+
+-- 6) STORAGE POLICIES (bucket: documents)
 -- Allow authenticated users to upload/read/delete only in their own folder (first path segment = auth.uid())
 -- Example stored path: <user_id>/timestamp-filename.pdf
 

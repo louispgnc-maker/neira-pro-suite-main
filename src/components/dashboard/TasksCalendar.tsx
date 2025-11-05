@@ -74,7 +74,12 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Tâches & échéances</CardTitle>
-        <Button variant="ghost" size="sm" onClick={() => navigate('/tasks')}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+          onClick={() => navigate(role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')}
+        >
           Voir tout →
         </Button>
       </CardHeader>

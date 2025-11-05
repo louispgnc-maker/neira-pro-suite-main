@@ -1,5 +1,6 @@
-import { FileText, Upload, PenTool, Link2 } from "lucide-react";
+import { FileText, Upload, PenTool } from "lucide-react";
 import { ContractSelectorNotaire } from "@/components/dashboard/ContractSelectorNotaire";
+import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRef, useState } from "react";
@@ -11,7 +12,7 @@ const actions = [
   { key: "create", label: "Créer un contrat", icon: FileText, variant: "default" as const },
   { key: "import", label: "Importer PDF", icon: Upload, variant: "secondary" as const },
   { key: "sign", label: "Lancer signature", icon: PenTool, variant: "secondary" as const },
-  { key: "collect", label: "Lien de collecte", icon: Link2, variant: "secondary" as const },
+  // { key: "collect", label: "Lien de collecte", icon: Link2, variant: "secondary" as const },
 ];
 
 interface QuickActionsProps {
@@ -108,18 +109,17 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
             <span className="text-xs">Créer un contrat</span>
           </Button>
         )}
-        {actions.slice(1).map((action) => {
+        {actions.slice(1).filter(a => a.key !== 'collect').map((action) => {
           const onClick = () => {
             if (action.key === 'import') return triggerImport();
             // TODO: wire other actions
           };
-          const buttonClass = action.variant === 'default' && primaryButtonColor
-            ? `${primaryButtonColor} h-auto flex-col gap-2 py-4`
-            : "h-auto flex-col gap-2 py-4";
+          const colorClass = primaryButtonColor || (role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white');
+          const buttonClass = `${colorClass} h-auto flex-col gap-2 py-4`;
           return (
             <Button
               key={action.key}
-              variant={action.variant === 'default' && primaryButtonColor ? undefined : action.variant}
+              variant={primaryButtonColor ? undefined : action.variant}
               className={buttonClass}
               onClick={onClick}
               disabled={uploading && action.key === 'import'}
@@ -129,6 +129,11 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
             </Button>
           );
         })}
+        {/* Remplace 'Lien de collecte' par menu Fiche client avec même contenu */}
+        <FicheClientMenu
+          variant="vertical"
+          colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
+        />
       </CardContent>
     </Card>
   );

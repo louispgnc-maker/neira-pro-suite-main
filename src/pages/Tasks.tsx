@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 
 type TaskRow = {
   id: string;
@@ -26,8 +27,14 @@ type TaskRow = {
 
 export default function Tasks() {
   const { user } = useAuth();
+  const location = useLocation();
   const [tasks, setTasks] = useState<TaskRow[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Détecte le rôle depuis l'URL
+  let role: 'avocat' | 'notaire' = 'avocat';
+  if (location.pathname.includes('/notaires')) role = 'notaire';
+  if (location.pathname.includes('/avocats')) role = 'avocat';
 
   useEffect(() => {
     let isMounted = true;
@@ -83,6 +90,11 @@ export default function Tasks() {
     return due < now;
   }
 
+  // Couleur du bouton principal
+  const mainButtonColor = role === 'notaire'
+    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+
   return (
     <AppLayout>
       <div className="p-6">
@@ -93,7 +105,7 @@ export default function Tasks() {
               Organisez vos tâches et échéances
             </p>
           </div>
-          <Button>
+          <Button className={mainButtonColor}>
             <Plus className="mr-2 h-4 w-4" />
             Nouvelle tâche
           </Button>
@@ -107,6 +119,9 @@ export default function Tasks() {
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
               <p className="text-muted-foreground">Aucune tâche à venir</p>
+              <Button className={mainButtonColor + " mt-4"}>
+                Ajoutez ici vos prochaines tâches
+              </Button>
             </div>
           </div>
         ) : (

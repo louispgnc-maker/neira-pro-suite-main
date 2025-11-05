@@ -1,4 +1,4 @@
-import { FileText, PenTool, Users, Clock, ChevronDown, UserPlus, Send } from "lucide-react";
+import { FileText, PenTool, Users, Clock, ChevronDown } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
@@ -7,6 +7,7 @@ import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
 import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
 import { RecentClients } from "@/components/dashboard/RecentClients";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
+import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -174,24 +175,7 @@ export function DashboardAvocat() {
               ✨ Premium
             </Badge>
             <Button className="bg-blue-600 hover:bg-blue-700 text-white">Créer un document</Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Fiche client
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className="cursor-pointer">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Remplir une fiche client
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Send className="mr-2 h-4 w-4" />
-                  Fiche à compléter par le client
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <FicheClientMenu variant="horizontal" colorClass="bg-blue-600 hover:bg-blue-700 text-white" />
           </div>
         </div>
         <p className="text-muted-foreground mt-2">
