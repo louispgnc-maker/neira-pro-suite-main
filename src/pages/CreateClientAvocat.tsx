@@ -357,7 +357,18 @@ export default function CreateClientAvocat() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="typeDossier">Type de dossier</Label>
-                <Input id="typeDossier" value={typeDossier} onChange={(e) => setTypeDossier(e.target.value)} placeholder="Ex: Contrat, succession, immobilier..." />
+                <Select value={typeDossier} onValueChange={setTypeDossier}>
+                  <SelectTrigger id="typeDossier">
+                    <SelectValue placeholder="Sélectionner une catégorie..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Droit des affaires / Commercial">💼 Droit des affaires / Commercial</SelectItem>
+                    <SelectItem value="Droit du travail">👔 Droit du travail</SelectItem>
+                    <SelectItem value="Droit immobilier">🏠 Droit immobilier</SelectItem>
+                    <SelectItem value="Droit civil / Vie privée">👪 Droit civil / Vie privée</SelectItem>
+                    <SelectItem value="Propriété intellectuelle & Numérique">🧠 Propriété intellectuelle & Numérique</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
