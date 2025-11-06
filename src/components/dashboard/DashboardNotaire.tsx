@@ -244,16 +244,17 @@ export function DashboardNotaire() {
 
         {/* Main Section */}
         <div className="space-y-6">
-          <RecentDocuments 
-            role="notaire"
-            statusColorOverride={{
-              "En cours": "bg-amber-100 text-amber-600 border-amber-200"
-            }} 
-          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Dossiers (placeholder) à gauche */}
+            <RecentDocuments 
+              role="notaire"
+              statusColorOverride={{
+                "En cours": "bg-amber-100 text-amber-600 border-amber-200"
+              }} 
+            />
+            <RecentContrats role="notaire" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RecentDossiers role="notaire" />
-            {/* Signatures en attente à droite */}
             <PendingSignatures role="notaire" />
           </div>
           <AlertsCompliance />

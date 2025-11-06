@@ -244,16 +244,17 @@ export function DashboardAvocat() {
 
         {/* Main Section */}
         <div className="space-y-6">
-          <RecentDocuments 
-            role="avocat"
-            statusColorOverride={{
-              "En cours": "bg-blue-100 text-blue-600 border-blue-200"
-            }} 
-          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Dossiers (placeholder) à gauche */}
+            <RecentDocuments 
+              role="avocat"
+              statusColorOverride={{
+                "En cours": "bg-blue-100 text-blue-600 border-blue-200"
+              }} 
+            />
+            <RecentContrats role="avocat" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RecentDossiers role="avocat" />
-            {/* Signatures en attente à droite */}
             <PendingSignatures role="avocat" />
           </div>
           <AlertsCompliance />
