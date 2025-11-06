@@ -306,6 +306,79 @@ before update on public.dossiers
 for each row
 execute procedure public.set_updated_at();
 
+-- 7b) Link tables for Dossiers associations
+-- Dossiers <-> Clients (many-to-many)
+create table if not exists public.dossier_clients (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  dossier_id uuid not null references public.dossiers(id) on delete cascade,
+  client_id uuid not null references public.clients(id) on delete cascade,
+  role text not null default 'avocat',
+  created_at timestamptz not null default now()
+);
+
+alter table public.dossier_clients enable row level security;
+drop policy if exists "dossier_clients_select_own" on public.dossier_clients;
+create policy "dossier_clients_select_own" on public.dossier_clients for select using (owner_id = auth.uid());
+drop policy if exists "dossier_clients_insert_own" on public.dossier_clients;
+create policy "dossier_clients_insert_own" on public.dossier_clients for insert with check (owner_id = auth.uid());
+drop policy if exists "dossier_clients_update_own" on public.dossier_clients;
+create policy "dossier_clients_update_own" on public.dossier_clients for update using (owner_id = auth.uid());
+drop policy if exists "dossier_clients_delete_own" on public.dossier_clients;
+create policy "dossier_clients_delete_own" on public.dossier_clients for delete using (owner_id = auth.uid());
+create index if not exists dossier_clients_owner_idx on public.dossier_clients(owner_id);
+create index if not exists dossier_clients_dossier_idx on public.dossier_clients(dossier_id);
+create index if not exists dossier_clients_client_idx on public.dossier_clients(client_id);
+create index if not exists dossier_clients_role_idx on public.dossier_clients(role);
+
+-- Dossiers <-> Contrats (many-to-many)
+create table if not exists public.dossier_contrats (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  dossier_id uuid not null references public.dossiers(id) on delete cascade,
+  contrat_id uuid not null references public.contrats(id) on delete cascade,
+  role text not null default 'avocat',
+  created_at timestamptz not null default now()
+);
+
+alter table public.dossier_contrats enable row level security;
+drop policy if exists "dossier_contrats_select_own" on public.dossier_contrats;
+create policy "dossier_contrats_select_own" on public.dossier_contrats for select using (owner_id = auth.uid());
+drop policy if exists "dossier_contrats_insert_own" on public.dossier_contrats;
+create policy "dossier_contrats_insert_own" on public.dossier_contrats for insert with check (owner_id = auth.uid());
+drop policy if exists "dossier_contrats_update_own" on public.dossier_contrats;
+create policy "dossier_contrats_update_own" on public.dossier_contrats for update using (owner_id = auth.uid());
+drop policy if exists "dossier_contrats_delete_own" on public.dossier_contrats;
+create policy "dossier_contrats_delete_own" on public.dossier_contrats for delete using (owner_id = auth.uid());
+create index if not exists dossier_contrats_owner_idx on public.dossier_contrats(owner_id);
+create index if not exists dossier_contrats_dossier_idx on public.dossier_contrats(dossier_id);
+create index if not exists dossier_contrats_contrat_idx on public.dossier_contrats(contrat_id);
+create index if not exists dossier_contrats_role_idx on public.dossier_contrats(role);
+
+-- Dossiers <-> Documents (many-to-many)
+create table if not exists public.dossier_documents (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  dossier_id uuid not null references public.dossiers(id) on delete cascade,
+  document_id uuid not null references public.documents(id) on delete cascade,
+  role text not null default 'avocat',
+  created_at timestamptz not null default now()
+);
+
+alter table public.dossier_documents enable row level security;
+drop policy if exists "dossier_documents_select_own" on public.dossier_documents;
+create policy "dossier_documents_select_own" on public.dossier_documents for select using (owner_id = auth.uid());
+drop policy if exists "dossier_documents_insert_own" on public.dossier_documents;
+create policy "dossier_documents_insert_own" on public.dossier_documents for insert with check (owner_id = auth.uid());
+drop policy if exists "dossier_documents_update_own" on public.dossier_documents;
+create policy "dossier_documents_update_own" on public.dossier_documents for update using (owner_id = auth.uid());
+drop policy if exists "dossier_documents_delete_own" on public.dossier_documents;
+create policy "dossier_documents_delete_own" on public.dossier_documents for delete using (owner_id = auth.uid());
+create index if not exists dossier_documents_owner_idx on public.dossier_documents(owner_id);
+create index if not exists dossier_documents_dossier_idx on public.dossier_documents(dossier_id);
+create index if not exists dossier_documents_document_idx on public.dossier_documents(document_id);
+create index if not exists dossier_documents_role_idx on public.dossier_documents(role);
+
 alter table public.contrats enable row level security;
 
 drop policy if exists "contrats_select_own" on public.contrats;
