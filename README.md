@@ -81,6 +81,10 @@ If these variables are missing, the app will fail fast at startup to avoid using
 
 On every page bottom, a tiny footer shows the deployed version (short commit hash) and build time. This helps confirm the online site matches the latest commit you expect.
 
+### Supabase credential fallback
+
+If `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` are not provided at build time, the app now falls back to a default public anon key/URL so the site still loads. You should override these in production with your own project values. The anon key is safe to expose (RLS protects data) but using the wrong project can lead to missing tables.
+
 ## Supabase schema & migrations
 
 Schema SQL lives under `supabase/`. To provision the latest tables (including `dossiers` and association tables), run the migration in your Supabase project's SQL editor:
