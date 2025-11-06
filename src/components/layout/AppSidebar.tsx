@@ -92,15 +92,15 @@ export function AppSidebar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className={role === 'notaire' ? 'border border-amber-200 bg-transparent' : 'border border-blue-200 bg-transparent'}
+                className={role === 'notaire' ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}
               >
                 <DropdownMenuItem
                   onClick={() => navigate('/avocats/dashboard')}
                   disabled={role === 'avocat'}
                   className={
                     role === 'avocat'
-                      ? 'opacity-60 cursor-not-allowed bg-blue-200 text-blue-800'
-                      : 'bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700'
+                      ? 'opacity-60 text-muted-foreground'
+                      : 'hover:bg-blue-600 hover:text-white'
                   }
                 >
                   Espace Avocat
@@ -110,8 +110,8 @@ export function AppSidebar() {
                   disabled={role === 'notaire'}
                   className={
                     role === 'notaire'
-                      ? 'opacity-60 cursor-not-allowed bg-amber-200 text-amber-800'
-                      : 'bg-amber-600 text-white hover:bg-amber-700 focus:bg-amber-700'
+                      ? 'opacity-60 text-muted-foreground'
+                      : 'hover:bg-amber-600 hover:text-white'
                   }
                 >
                   Espace Notaire
