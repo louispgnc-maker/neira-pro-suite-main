@@ -18,18 +18,18 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl h-[90vh] p-0 gap-0 [&>button]:hidden">
-        <DialogHeader className="px-6 py-4 border-b">
+        <DialogHeader className="px-4 py-2 border-b">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-semibold truncate pr-4">
+            <DialogTitle className="text-base font-semibold truncate pr-4">
               {documentName}
             </DialogTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className={`h-8 w-8 rounded-full ${closeButtonClass}`}
+              className={`h-7 w-7 rounded-full ${closeButtonClass}`}
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </Button>
           </div>
         </DialogHeader>
