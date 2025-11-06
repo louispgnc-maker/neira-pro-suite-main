@@ -113,7 +113,7 @@ export default function Documents() {
       return;
     }
     if (mode === 'view') {
-      window.open(data.signedUrl, '_blank');
+      window.location.href = data.signedUrl;
     } else {
       const a = document.createElement('a');
       a.href = data.signedUrl;
