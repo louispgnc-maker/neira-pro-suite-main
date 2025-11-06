@@ -127,7 +127,7 @@ export function AppSidebar() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="w-full justify-start gap-2 group"
+              className={`w-full justify-start gap-2 group font-medium ${role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
             >
               <UserCircle2 className="h-4 w-4" />
               {!isCollapsed && <span>Profil</span>}
@@ -143,6 +143,12 @@ export function AppSidebar() {
               onClick={() => navigate(role === 'notaire' ? '/notaires/profile' : '/avocats/profile')}
             >
               Ouvrir le profil
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className={role === 'notaire' ? 'focus:bg-amber-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'}
+              onClick={() => navigate(role === 'notaire' ? '/notaires/profile#cabinet' : '/avocats/profile#cabinet')}
+            >
+              Rejoindre un cabinet
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

@@ -1,8 +1,11 @@
 import { AppLayout } from "@/components/layout/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -10,6 +13,8 @@ export default function Profile() {
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
+  const [inviteCode, setInviteCode] = useState("");
+  const colorClass = role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   return (
     <AppLayout>
@@ -27,6 +32,22 @@ export default function Profile() {
               {role}
             </Badge>
           </CardContent>
+          <CardFooter className="pt-2">
+            <div id="cabinet" className="w-full">
+              <div className="text-sm font-medium mb-2">Rejoindre un cabinet</div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Code d'invitation cabinet"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value)}
+                />
+                <Button className={colorClass} disabled={!inviteCode.trim()} onClick={() => {/* TODO: implémenter jonction cabinet */}}>
+                  Rejoindre
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">Saisissez le code d'invitation fourni par votre cabinet pour relier votre compte.</p>
+            </div>
+          </CardFooter>
         </Card>
       </div>
     </AppLayout>
