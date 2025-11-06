@@ -488,14 +488,14 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                         <SelectTrigger className={`w-[220px] ${role === 'notaire' ? 'bg-amber-600 text-white hover:bg-amber-700' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
                           <SelectValue placeholder="Sélectionner un rôle" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className={role === 'notaire' ? 'bg-amber-600' : 'bg-blue-600'}>
                           {member.role_cabinet === 'owner' && (
-                            <SelectItem value="owner" disabled>
+                            <SelectItem value="owner" disabled className="text-white opacity-60">
                               owner (choisir un rôle)
                             </SelectItem>
                           )}
                           {roleOptions.map((opt) => (
-                            <SelectItem key={opt} value={opt}>
+                            <SelectItem key={opt} value={opt} className="text-white hover:bg-opacity-80 focus:bg-opacity-80">
                               {opt}
                             </SelectItem>
                           ))}
