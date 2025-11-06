@@ -266,6 +266,45 @@ create table if not exists public.contrats (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+-- 7) DOSSIERS (separate from contrats)
+create table if not exists public.dossiers (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  role text not null default 'avocat', -- 'avocat' | 'notaire'
+  title text not null,
+  client_id uuid references public.clients(id) on delete set null,
+  status text not null default 'Ouvert', -- 'Ouvert' | 'En cours' | 'En attente' | 'Clos'
+  description text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.dossiers enable row level security;
+
+drop policy if exists "dossiers_select_own" on public.dossiers;
+create policy "dossiers_select_own" on public.dossiers
+  for select using (owner_id = auth.uid());
+drop policy if exists "dossiers_insert_own" on public.dossiers;
+create policy "dossiers_insert_own" on public.dossiers
+  for insert with check (owner_id = auth.uid());
+drop policy if exists "dossiers_update_own" on public.dossiers;
+create policy "dossiers_update_own" on public.dossiers
+  for update using (owner_id = auth.uid());
+drop policy if exists "dossiers_delete_own" on public.dossiers;
+create policy "dossiers_delete_own" on public.dossiers
+  for delete using (owner_id = auth.uid());
+
+create index if not exists dossiers_owner_idx on public.dossiers(owner_id);
+create index if not exists dossiers_role_idx on public.dossiers(role);
+create index if not exists dossiers_status_idx on public.dossiers(status);
+create index if not exists dossiers_created_at_idx on public.dossiers(created_at desc);
+
+-- Trigger pour mettre à jour updated_at sur dossiers
+drop trigger if exists dossiers_set_updated_at on public.dossiers;
+create trigger dossiers_set_updated_at
+before update on public.dossiers
+for each row
+execute procedure public.set_updated_at();
 
 alter table public.contrats enable row level security;
 

@@ -30,6 +30,7 @@ export function DashboardNotaire() {
   const [pendingSigCount, setPendingSigCount] = useState(0);
   const [pendingSigPrevCount, setPendingSigPrevCount] = useState(0);
   const [clientsToFollow, setClientsToFollow] = useState(0);
+  const [dossierCount, setDossierCount] = useState(0);
   const [todayTasks, setTodayTasks] = useState(0);
 
   useEffect(() => {
@@ -105,13 +106,20 @@ export function DashboardNotaire() {
         .eq("role", "notaire")
         .eq("due_date", dateStr);
 
-      const [docsRes, docsPrevRes, sigRes, sigPrevRes, clientsRes, tasksRes] = await Promise.allSettled([
+      const dossiersQuery = supabase
+        .from("dossiers")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id)
+        .eq("role", "notaire");
+
+      const [docsRes, docsPrevRes, sigRes, sigPrevRes, clientsRes, tasksRes, dossiersRes] = await Promise.allSettled([
         docsQuery,
         docsPrevQuery,
         sigQuery,
         sigPrevQuery,
         clientsQuery,
         tasksQuery,
+        dossiersQuery,
       ]);
 
       if (!isMounted) return;
@@ -120,7 +128,8 @@ export function DashboardNotaire() {
       setPendingSigCount(sigRes.status === "fulfilled" && sigRes.value.count ? sigRes.value.count : 0);
       setPendingSigPrevCount(sigPrevRes.status === "fulfilled" && sigPrevRes.value.count ? sigPrevRes.value.count : 0);
       setClientsToFollow(clientsRes.status === "fulfilled" && clientsRes.value.count ? clientsRes.value.count : 0);
-      setTodayTasks(tasksRes.status === "fulfilled" && tasksRes.value.count ? tasksRes.value.count : 0);
+  setTodayTasks(tasksRes.status === "fulfilled" && tasksRes.value.count ? tasksRes.value.count : 0);
+  setDossierCount(dossiersRes.status === "fulfilled" && dossiersRes.value.count ? dossiersRes.value.count : 0);
     }
     loadCounts();
     return () => {
@@ -215,7 +224,7 @@ export function DashboardNotaire() {
           />
           <StatCard
             title="Dossiers"
-            value={docCount}
+            value={dossierCount}
             icon={FolderPlus}
             iconColor="text-amber-600"
             iconBgColor="bg-amber-100"
