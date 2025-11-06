@@ -144,6 +144,14 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
     };
   }, [user, role]);
 
+  // Role-based menu styling (dropdown)
+  const menuContentClass = role === 'notaire'
+    ? 'bg-amber-50 border-amber-200'
+    : 'bg-blue-50 border-blue-200';
+  const menuItemClass = role === 'notaire'
+    ? 'focus:bg-amber-600 focus:text-white'
+    : 'focus:bg-blue-600 focus:text-white';
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -201,17 +209,17 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleView(doc)}>
+                      <DropdownMenuContent align="end" className={menuContentClass}>
+                        <DropdownMenuItem className={menuItemClass} onClick={() => handleView(doc)}>
                           <Eye className="mr-2 h-4 w-4" />
                           Voir
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDownload(doc)}>
+                        <DropdownMenuItem className={menuItemClass} onClick={() => handleDownload(doc)}>
                           <Download className="mr-2 h-4 w-4" />
                           Télécharger
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          className="text-destructive"
+                          className={`text-destructive ${menuItemClass}`}
                           onClick={() => handleDelete(doc)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
