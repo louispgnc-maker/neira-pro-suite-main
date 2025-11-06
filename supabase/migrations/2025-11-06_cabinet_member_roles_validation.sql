@@ -37,11 +37,11 @@ begin
 
   -- Validate role by cabinet type
   if v_cab_role = 'notaire' then
-    if new_role_param not in ('Notaire', 'Clerc de Notaire', 'Formaliste', 'Juriste Notarial') then
+    if new_role_param not in ('Fondateur', 'Notaire', 'Clerc de Notaire', 'Formaliste', 'Juriste Notarial') then
       raise exception 'Invalid role for notaire cabinet';
     end if;
   elsif v_cab_role = 'avocat' then
-    if new_role_param not in ('Avocat Associé', 'Avocat Collaborateur', 'Juriste', 'Responsable Administratif') then
+    if new_role_param not in ('Fondateur', 'Avocat Associé', 'Avocat Collaborateur', 'Juriste', 'Responsable Administratif') then
       raise exception 'Invalid role for avocat cabinet';
     end if;
   else

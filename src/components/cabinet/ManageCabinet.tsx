@@ -310,8 +310,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
   }
 
   const roleOptions = role === 'notaire'
-    ? ['Notaire', 'Clerc de Notaire', 'Formaliste', 'Juriste Notarial']
-    : ['Avocat Associé', 'Avocat Collaborateur', 'Juriste', 'Responsable Administratif'];
+    ? ['Fondateur', 'Notaire', 'Clerc de Notaire', 'Formaliste', 'Juriste Notarial']
+    : ['Fondateur', 'Avocat Associé', 'Avocat Collaborateur', 'Juriste', 'Responsable Administratif'];
 
   return (
     <div className="space-y-4">
@@ -487,7 +487,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <TableCell className="font-mono text-xs">{member.email}</TableCell>
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
-                      {member.role_cabinet === 'owner' ? (
+                      {member.role_cabinet === 'owner' || member.role_cabinet === 'Fondateur' ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
