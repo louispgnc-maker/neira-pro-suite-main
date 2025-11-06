@@ -60,8 +60,9 @@ export function AppSidebar() {
   const menuItems = getMenuItems(role);
   const isActive = (path: string) => location.pathname === path;
 
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const profileEmail = user?.email || '—';
+  const displayName = profile?.first_name || profile?.email?.split('@')[0] || 'Compte';
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border p-4">
@@ -71,7 +72,7 @@ export function AppSidebar() {
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="font-semibold text-sidebar-foreground">Professionnel</span>
+              <span className="font-semibold text-sidebar-foreground truncate max-w-[120px]" title={displayName}>{displayName}</span>
             </div>
           )}
         </div>
