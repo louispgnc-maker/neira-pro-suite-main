@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
-import { Copy, RefreshCw, Mail, Users } from 'lucide-react';
+import { Copy, RefreshCw, Mail, Users, ChevronDown } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -493,9 +493,10 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                             <Button
                               variant="outline"
                               size="sm"
-                              className={`h-7 ${role === 'notaire' ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 hover:text-white' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white'}`}
+                              className={`h-8 text-xs px-3 ${role === 'notaire' ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 hover:text-white' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white'}`}
                             >
                               Fondateur
+                              <ChevronDown className="ml-1 h-3 w-3" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
@@ -515,7 +516,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                           value={member.role_cabinet}
                           onValueChange={(value) => updateMemberRole(member.id, value)}
                         >
-                          <SelectTrigger className={`w-[220px] ${role === 'notaire' ? 'bg-amber-600 text-white hover:bg-amber-700' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
+                          <SelectTrigger className={`h-8 text-xs px-3 w-auto ${role === 'notaire' ? 'bg-amber-600 text-white hover:bg-amber-700 border-amber-600' : 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600'}`}>
                             <SelectValue placeholder="Sélectionner un rôle" />
                           </SelectTrigger>
                           <SelectContent>
