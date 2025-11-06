@@ -82,24 +82,12 @@ create index if not exists cabinet_members_status_idx on public.cabinet_members(
 alter table public.cabinets enable row level security;
 alter table public.cabinet_members enable row level security;
 
--- Policies pour CABINETS (simplifiées pour éviter récursion)
+-- Policies pour CABINETS (owner seulement, pas de vérification croisée)
 drop policy if exists "cabinets_owner_full_access" on public.cabinets;
 create policy "cabinets_owner_full_access" on public.cabinets
   for all using (owner_id = auth.uid());
 
--- Les membres peuvent voir les cabinets via leur membership direct (pas de subquery récursive)
-drop policy if exists "cabinets_members_can_read" on public.cabinets;
-create policy "cabinets_members_can_read" on public.cabinets
-  for select using (
-    exists (
-      select 1 from public.cabinet_members 
-      where cabinet_members.cabinet_id = cabinets.id 
-        and cabinet_members.user_id = auth.uid() 
-        and cabinet_members.status = 'active'
-    )
-  );
-
--- Policies pour CABINET_MEMBERS (simplifiées)
+-- Policies pour CABINET_MEMBERS
 -- Le propriétaire du cabinet peut tout gérer
 drop policy if exists "cabinet_members_owner_can_manage" on public.cabinet_members;
 create policy "cabinet_members_owner_can_manage" on public.cabinet_members
@@ -111,22 +99,22 @@ create policy "cabinet_members_owner_can_manage" on public.cabinet_members
     )
   );
 
--- Les membres peuvent voir les autres membres du même cabinet (via leur propre membership)
-drop policy if exists "cabinet_members_can_read_peers" on public.cabinet_members;
-create policy "cabinet_members_can_read_peers" on public.cabinet_members
-  for select using (
-    exists (
-      select 1 from public.cabinet_members as my_membership
-      where my_membership.cabinet_id = cabinet_members.cabinet_id
-        and my_membership.user_id = auth.uid() 
-        and my_membership.status = 'active'
-    )
-  );
-
 -- Les utilisateurs peuvent toujours voir leurs propres memberships
 drop policy if exists "cabinet_members_can_read_own" on public.cabinet_members;
 create policy "cabinet_members_can_read_own" on public.cabinet_members
   for select using (user_id = auth.uid());
+
+-- Les membres peuvent voir les autres membres du même cabinet (via leur propre membership)
+drop policy if exists "cabinet_members_can_read_peers" on public.cabinet_members;
+create policy "cabinet_members_can_read_peers" on public.cabinet_members
+  for select using (
+    cabinet_id in (
+      select cm.cabinet_id 
+      from public.cabinet_members cm
+      where cm.user_id = auth.uid() 
+        and cm.status = 'active'
+    )
+  );
 
 -- 4) Trigger pour updated_at sur cabinets
 drop trigger if exists cabinets_set_updated_at on public.cabinets;
