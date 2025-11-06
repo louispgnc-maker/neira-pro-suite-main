@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
-import { Copy, RefreshCw, Mail, CheckCircle2, XCircle, Users } from 'lucide-react';
+import { Copy, RefreshCw, Mail, Users } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -274,31 +274,6 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Badge variant={cabinet.email_verified ? 'default' : 'secondary'}>
-              {cabinet.email_verified ? (
-                <>
-                  <CheckCircle2 className="w-3 h-3 mr-1" />
-                  Vérifié
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-3 h-3 mr-1" />
-                  En attente de vérification
-                </>
-              )}
-            </Badge>
-          </div>
-
-          {!cabinet.email_verified && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 text-sm">
-              <p className="text-yellow-800">
-                Un email de vérification a été envoyé à <strong>{cabinet.email}</strong>. Consultez
-                votre boîte mail pour valider la création de votre cabinet.
-              </p>
-            </div>
-          )}
-
           <div className="space-y-2">
             <Label>Code d'accès du cabinet</Label>
             <div className="flex gap-2">

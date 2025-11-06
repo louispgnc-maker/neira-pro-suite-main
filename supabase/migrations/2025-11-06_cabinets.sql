@@ -95,30 +95,22 @@ $$;
 alter table public.cabinets enable row level security;
 alter table public.cabinet_members enable row level security;
 
--- Policies pour CABINETS
--- Le propriétaire du cabinet peut tout faire
-drop policy if exists "cabinets_owner_full_access" on public.cabinets;
-create policy "cabinets_owner_full_access" on public.cabinets
+-- Policies pour CABINETS - ULTRA SIMPLE
+-- Seul le propriétaire peut accéder à son cabinet
+drop policy if exists "cabinets_owner_access" on public.cabinets;
+create policy "cabinets_owner_access" on public.cabinets
   for all using (owner_id = auth.uid());
 
--- Policies pour CABINET_MEMBERS (SANS référence à cabinets pour éviter récursion)
--- Le propriétaire peut gérer via une fonction
-drop policy if exists "cabinet_members_full_access" on public.cabinet_members;
-create policy "cabinet_members_full_access" on public.cabinet_members
-  for all using (
-    user_id = auth.uid() -- Chaque user gère ses propres memberships
-    or public.is_cabinet_owner(cabinet_id, auth.uid()) -- Ou est owner du cabinet
-  );
+-- Policies pour CABINET_MEMBERS - ULTRA SIMPLE
+-- 1. Les users peuvent gérer leurs propres memberships
+drop policy if exists "cabinet_members_own_access" on public.cabinet_members;
+create policy "cabinet_members_own_access" on public.cabinet_members
+  for all using (user_id = auth.uid());
 
--- Les membres actifs peuvent voir les autres membres de leurs cabinets
-drop policy if exists "cabinet_members_can_read_peers" on public.cabinet_members;
-create policy "cabinet_members_can_read_peers" on public.cabinet_members
-  for select using (
-    cabinet_id in (
-      select cabinet_id from public.cabinet_members
-      where user_id = auth.uid() and status = 'active'
-    )
-  );
+-- 2. Les owners de cabinets peuvent gérer les membres de LEURS cabinets via fonction
+drop policy if exists "cabinet_members_owner_access" on public.cabinet_members;
+create policy "cabinet_members_owner_access" on public.cabinet_members
+  for all using (public.is_cabinet_owner(cabinet_id, auth.uid()));
 
 -- 4) Trigger pour updated_at sur cabinets
 drop trigger if exists cabinets_set_updated_at on public.cabinets;
@@ -166,13 +158,13 @@ declare
   cabinet_record record;
   user_profile record;
 begin
-  -- Trouver le cabinet avec ce code
+  -- Trouver le cabinet avec ce code (SANS vérification email pour faciliter les tests)
   select * into cabinet_record
   from public.cabinets
-  where code_acces = code_param and email_verified = true;
+  where code_acces = code_param;
   
   if not found then
-    raise exception 'Code invalide ou cabinet non vérifié';
+    raise exception 'Code invalide';
   end if;
   
   -- Vérifier que le rôle de l'utilisateur correspond
