@@ -77,6 +77,10 @@ npm run dev
 
 If these variables are missing, the app will fail fast at startup to avoid using incorrect defaults.
 
+### Build info in footer
+
+On every page bottom, a tiny footer shows the deployed version (short commit hash) and build time. This helps confirm the online site matches the latest commit you expect.
+
 ## Supabase schema & migrations
 
 Schema SQL lives under `supabase/`. To provision the latest tables (including `dossiers` and association tables), run the migration in your Supabase project's SQL editor:
