@@ -86,12 +86,9 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       if (ownedCabinet) {
         setCabinet(ownedCabinet);
 
-        // Charger les membres
+        // Charger les membres via RPC (bypass RLS)
         const { data: membersData, error: membersError } = await supabase
-          .from('cabinet_members')
-          .select('*')
-          .eq('cabinet_id', ownedCabinet.id)
-          .order('created_at', { ascending: true });
+          .rpc('get_cabinet_members', { cabinet_id_param: ownedCabinet.id });
 
         if (membersError) throw membersError;
         setMembers(membersData || []);
@@ -142,70 +139,19 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
     setInviteLoading(true);
     try {
-      // Vérifier si l'utilisateur existe déjà
-      const { data: userData, error: userError } = await supabase
-        .from('profiles')
-        .select('id, email, role')
-        .eq('email', inviteEmail.trim())
-        .single();
+      // Utiliser la fonction RPC pour inviter (bypass RLS)
+      const { data: memberId, error } = await supabase.rpc('invite_cabinet_member', {
+        cabinet_id_param: cabinet.id,
+        email_param: inviteEmail.trim(),
+        nom_param: inviteName.trim() || inviteEmail.trim(),
+      });
 
-      if (userError && userError.code !== 'PGRST116') throw userError;
+      if (error) throw error;
 
-      if (userData) {
-        // Vérifier que le rôle correspond
-        if (userData.role !== role) {
-          throw new Error(`Cet utilisateur n'est pas ${role}`);
-        }
-
-        // Vérifier s'il n'est pas déjà membre
-        const { data: existingMember } = await supabase
-          .from('cabinet_members')
-          .select('id')
-          .eq('cabinet_id', cabinet.id)
-          .eq('user_id', userData.id)
-          .single();
-
-        if (existingMember) {
-          throw new Error('Cet utilisateur est déjà membre du cabinet');
-        }
-
-        // Ajouter directement comme membre actif
-        const { error: memberError } = await supabase.from('cabinet_members').insert({
-          cabinet_id: cabinet.id,
-          user_id: userData.id,
-          email: inviteEmail.trim(),
-          nom: inviteName.trim() || userData.email,
-          role_cabinet: 'membre',
-          status: 'active',
-          joined_at: new Date().toISOString(),
-        });
-
-        if (memberError) throw memberError;
-
-        toast({
-          title: 'Membre ajouté',
-          description: `${inviteEmail} a été ajouté au cabinet.`,
-        });
-      } else {
-        // L'utilisateur n'existe pas encore, créer une invitation en attente
-        // TODO: Envoyer un email d'invitation
-        const { error: memberError } = await supabase.from('cabinet_members').insert({
-          cabinet_id: cabinet.id,
-          user_id: userId, // Temporaire, sera mis à jour quand l'utilisateur s'inscrira
-          email: inviteEmail.trim(),
-          nom: inviteName.trim(),
-          role_cabinet: 'membre',
-          status: 'pending',
-          invitation_sent_at: new Date().toISOString(),
-        });
-
-        if (memberError) throw memberError;
-
-        toast({
-          title: 'Invitation envoyée',
-          description: `Une invitation a été envoyée à ${inviteEmail}.`,
-        });
-      }
+      toast({
+        title: 'Membre invité',
+        description: `${inviteEmail} a été ajouté/invité au cabinet.`,
+      });
 
       setInviteEmail('');
       setInviteName('');
@@ -227,7 +173,10 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
     if (!confirm('Êtes-vous sûr de vouloir retirer ce membre du cabinet ?')) return;
 
     try {
-      const { error } = await supabase.from('cabinet_members').delete().eq('id', memberId);
+      // Utiliser la fonction RPC pour retirer (bypass RLS)
+      const { error } = await supabase.rpc('remove_cabinet_member', {
+        member_id_param: memberId,
+      });
 
       if (error) throw error;
 

@@ -69,32 +69,20 @@ export function CreateCabinetDialog({ role, onSuccess }: CreateCabinetDialogProp
       } = await supabase.auth.getUser();
       if (!user) throw new Error('Non authentifié');
 
-      // Créer le cabinet (sans token de vérification pour simplifier)
-      const { data: cabinet, error: cabinetError } = await supabase
-        .from('cabinets')
-        .insert({
-          ...formData,
-          role,
-          owner_id: user.id,
-          email_verified: true, // Auto-vérifié pour simplifier les tests
-        })
-        .select()
-        .single();
-
-      if (cabinetError) throw cabinetError;
-
-      // Créer automatiquement le membre owner
-      const { error: memberError } = await supabase.from('cabinet_members').insert({
-        cabinet_id: cabinet.id,
-        user_id: user.id,
-        email: user.email || '',
-        nom: formData.nom,
-        role_cabinet: 'owner',
-        status: 'active',
-        joined_at: new Date().toISOString(),
+      // Créer le cabinet via RPC (bypass RLS)
+      const { data: cabinetId, error } = await supabase.rpc('create_cabinet', {
+        nom_param: formData.nom,
+        raison_sociale_param: formData.raison_sociale,
+        siret_param: formData.siret,
+        adresse_param: formData.adresse,
+        code_postal_param: formData.code_postal,
+        ville_param: formData.ville,
+        telephone_param: formData.telephone,
+        email_param: formData.email,
+        role_param: role,
       });
 
-      if (memberError) throw memberError;
+      if (error) throw error;
 
       // TODO: Envoyer l'email de vérification via Edge Function
       // Pour l'instant, le cabinet est auto-vérifié

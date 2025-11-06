@@ -84,9 +84,11 @@ returns boolean
 language sql
 security definer
 stable
+set search_path = public
 as $$
+  -- Bypass RLS complètement en utilisant SECURITY DEFINER
   select exists (
-    select 1 from public.cabinets
+    select 1 from cabinets
     where id = cabinet_id_param and owner_id = user_id_param
   );
 $$;
@@ -101,16 +103,14 @@ drop policy if exists "cabinets_owner_access" on public.cabinets;
 create policy "cabinets_owner_access" on public.cabinets
   for all using (owner_id = auth.uid());
 
--- Policies pour CABINET_MEMBERS - ULTRA SIMPLE
--- 1. Les users peuvent gérer leurs propres memberships
-drop policy if exists "cabinet_members_own_access" on public.cabinet_members;
-create policy "cabinet_members_own_access" on public.cabinet_members
+-- Policies pour CABINET_MEMBERS - ULTRA SIMPLE (SANS RÉFÉRENCE À CABINETS)
+-- Chaque user peut voir et gérer TOUS ses memberships
+drop policy if exists "cabinet_members_user_access" on public.cabinet_members;
+create policy "cabinet_members_user_access" on public.cabinet_members
   for all using (user_id = auth.uid());
 
--- 2. Les owners de cabinets peuvent gérer les membres de LEURS cabinets via fonction
-drop policy if exists "cabinet_members_owner_access" on public.cabinet_members;
-create policy "cabinet_members_owner_access" on public.cabinet_members
-  for all using (public.is_cabinet_owner(cabinet_id, auth.uid()));
+-- NOTE: Les owners gèrent les membres via les fonctions RPC SECURITY DEFINER
+-- qui bypass complètement les policies (regenerate_cabinet_code, join_cabinet_by_code, etc.)
 
 -- 4) Trigger pour updated_at sur cabinets
 drop trigger if exists cabinets_set_updated_at on public.cabinets;
@@ -120,6 +120,7 @@ for each row
 execute procedure public.set_updated_at();
 
 -- 5) Function pour générer un nouveau code d'accès
+drop function if exists public.regenerate_cabinet_code(uuid);
 create or replace function public.regenerate_cabinet_code(cabinet_id_param uuid)
 returns text
 language plpgsql
@@ -148,85 +149,254 @@ begin
 end;
 $$;
 
--- 6) Function pour rejoindre un cabinet via code
-create or replace function public.join_cabinet_by_code(code_param text)
+-- 6) Function pour rejoindre un cabinet par code
+drop function if exists public.join_cabinet_by_code(text);
+create or replace function public.join_cabinet_by_code(code text)
 returns uuid
 language plpgsql
 security definer
+set search_path = public
 as $$
 declare
-  cabinet_record record;
-  user_profile record;
+  v_cabinet_id uuid;
+  v_user_id uuid;
+  v_user_role text;
+  v_cabinet_role text;
 begin
-  -- Trouver le cabinet avec ce code (SANS vérification email pour faciliter les tests)
-  select * into cabinet_record
-  from public.cabinets
-  where code_acces = code_param;
-  
+  v_user_id := auth.uid();
+  if v_user_id is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  -- Récupérer le rôle de l'utilisateur
+  select role into v_user_role from profiles where id = v_user_id;
+
+  -- Trouver le cabinet par code
+  select id, role into v_cabinet_id, v_cabinet_role
+  from cabinets
+  where code_acces = code;
+
   if not found then
-    raise exception 'Code invalide';
+    raise exception 'Invalid code';
   end if;
-  
-  -- Vérifier que le rôle de l'utilisateur correspond
-  select * into user_profile
-  from public.profiles
-  where id = auth.uid();
-  
-  if user_profile.role != cabinet_record.role then
-    raise exception 'Le rôle de votre compte ne correspond pas à ce cabinet';
+
+  -- Vérifier que le rôle correspond
+  if v_user_role != v_cabinet_role then
+    raise exception 'Role mismatch';
   end if;
-  
-  -- Vérifier que l'utilisateur n'est pas déjà membre
+
+  -- Vérifier si déjà membre
   if exists (
-    select 1 from public.cabinet_members
-    where cabinet_id = cabinet_record.id and user_id = auth.uid()
+    select 1 from cabinet_members
+    where cabinet_id = v_cabinet_id and user_id = v_user_id
   ) then
-    raise exception 'Vous êtes déjà membre de ce cabinet';
+    raise exception 'Already a member';
   end if;
-  
-  -- Ajouter l'utilisateur comme membre
-  insert into public.cabinet_members (
-    cabinet_id,
-    user_id,
-    email,
-    nom,
-    status,
-    joined_at
-  ) values (
-    cabinet_record.id,
-    auth.uid(),
-    user_profile.email,
-    coalesce(user_profile.first_name || ' ' || user_profile.last_name, user_profile.email),
-    'active',
-    now()
-  );
-  
-  return cabinet_record.id;
+
+  -- Récupérer l'email depuis le profil
+  insert into cabinet_members (cabinet_id, user_id, email, role_cabinet, status, joined_at)
+  select v_cabinet_id, v_user_id, p.email, 'membre', 'active', now()
+  from profiles p
+  where p.id = v_user_id;
+
+  return v_cabinet_id;
 end;
 $$;
 
+-- 7) Function pour créer un cabinet (bypass RLS)
+drop function if exists public.create_cabinet(text, text, text, text, text, text, text, text, text);
+create or replace function public.create_cabinet(
+  nom_param text,
+  raison_sociale_param text,
+  siret_param text,
+  adresse_param text,
+  code_postal_param text,
+  ville_param text,
+  telephone_param text,
+  email_param text,
+  role_param text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_cabinet_id uuid;
+  v_code_acces text;
+begin
+  v_user_id := auth.uid();
+  if v_user_id is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  -- Générer un code d'accès unique
+  v_code_acces := upper(substring(md5(random()::text) from 1 for 8));
+
+  -- Créer le cabinet
+  insert into cabinets (
+    owner_id, nom, raison_sociale, siret, adresse, code_postal, ville,
+    telephone, email, code_acces, role, email_verified
+  ) values (
+    v_user_id, nom_param, raison_sociale_param, siret_param, adresse_param,
+    code_postal_param, ville_param, telephone_param, email_param, v_code_acces,
+    role_param, true
+  ) returning id into v_cabinet_id;
+
+  -- Ajouter l'owner comme membre
+  insert into cabinet_members (
+    cabinet_id, user_id, email, nom, role_cabinet, status, joined_at
+  ) values (
+    v_cabinet_id, v_user_id, email_param, nom_param, 'owner', 'active', now()
+  );
+
+  return v_cabinet_id;
+end;
+$$;
+
+-- 8) Function pour récupérer les cabinets d'un utilisateur (bypass RLS)
+
 -- 7) Function pour récupérer les cabinets d'un utilisateur (bypass RLS)
+drop function if exists public.get_user_cabinets();
 create or replace function public.get_user_cabinets()
 returns setof public.cabinets
 language plpgsql
 security definer
 stable
+set search_path = public
 as $$
 begin
   return query
   select c.*
-  from public.cabinets c
+  from cabinets c
   where c.owner_id = auth.uid()
      or c.id in (
        select cm.cabinet_id
-       from public.cabinet_members cm
+       from cabinet_members cm
        where cm.user_id = auth.uid()
          and cm.status = 'active'
      );
 end;
 $$;
 
--- 8) Ajouter colonne cabinet_id aux profiles (optionnel, pour lier rapidement)
+-- 8) Function pour récupérer les membres d'un cabinet (bypass RLS)
+drop function if exists public.get_cabinet_members(uuid);
+create or replace function public.get_cabinet_members(cabinet_id_param uuid)
+returns setof public.cabinet_members
+language plpgsql
+security definer
+stable
+set search_path = public
+as $$
+begin
+  -- Vérifier que l'utilisateur est owner du cabinet
+  if not exists (
+    select 1 from cabinets 
+    where id = cabinet_id_param and owner_id = auth.uid()
+  ) then
+    raise exception 'Not authorized';
+  end if;
+  
+  return query
+  select cm.*
+  from cabinet_members cm
+  where cm.cabinet_id = cabinet_id_param
+  order by cm.created_at;
+end;
+$$;
+
+-- 9) Function pour supprimer un membre (bypass RLS)
+drop function if exists public.remove_cabinet_member(uuid);
+create or replace function public.remove_cabinet_member(member_id_param uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_cabinet_id uuid;
+begin
+  -- Récupérer le cabinet_id du membre
+  select cabinet_id into v_cabinet_id
+  from cabinet_members
+  where id = member_id_param;
+  
+  if not found then
+    raise exception 'Member not found';
+  end if;
+  
+  -- Vérifier que l'utilisateur est owner du cabinet
+  if not exists (
+    select 1 from cabinets 
+    where id = v_cabinet_id and owner_id = auth.uid()
+  ) then
+    raise exception 'Not authorized';
+  end if;
+  
+  -- Supprimer le membre
+  delete from cabinet_members where id = member_id_param;
+end;
+$$;
+
+-- 10) Function pour inviter un membre (bypass RLS)
+drop function if exists public.invite_cabinet_member(uuid, text, text);
+create or replace function public.invite_cabinet_member(
+  cabinet_id_param uuid,
+  email_param text,
+  nom_param text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_member_id uuid;
+begin
+  -- Vérifier que l'utilisateur est owner du cabinet
+  if not exists (
+    select 1 from cabinets 
+    where id = cabinet_id_param and owner_id = auth.uid()
+  ) then
+    raise exception 'Not authorized';
+  end if;
+  
+  -- Chercher l'utilisateur par email
+  select id into v_user_id
+  from profiles
+  where email = email_param;
+  
+  if v_user_id is not null then
+    -- Vérifier si déjà membre
+    if exists (
+      select 1 from cabinet_members
+      where cabinet_id = cabinet_id_param and user_id = v_user_id
+    ) then
+      raise exception 'Already a member';
+    end if;
+    
+    -- Ajouter comme membre actif
+    insert into cabinet_members (
+      cabinet_id, user_id, email, nom, status, joined_at
+    ) values (
+      cabinet_id_param, v_user_id, email_param, nom_param, 'active', now()
+    ) returning id into v_member_id;
+  else
+    -- Créer invitation en attente
+    insert into cabinet_members (
+      cabinet_id, user_id, email, nom, status, invitation_sent_at
+    ) values (
+      cabinet_id_param, auth.uid(), email_param, nom_param, 'pending', now()
+    ) returning id into v_member_id;
+  end if;
+  
+  return v_member_id;
+end;
+$$;
+
+-- 11) Ajouter colonne cabinet_id aux profiles (optionnel, pour lier rapidement)
 alter table public.profiles add column if not exists cabinet_id uuid references public.cabinets(id) on delete set null;
 
 create index if not exists profiles_cabinet_idx on public.profiles(cabinet_id);
