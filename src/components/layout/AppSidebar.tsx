@@ -67,36 +67,73 @@ export function AppSidebar() {
   const spaceBtnClass = role === 'notaire'
     ? 'bg-amber-600 hover:bg-amber-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
-  const spaceLabel = role === 'notaire' ? 'Espace Notaire' : 'Espace Avocat';
-  const switchLabel = role === 'notaire' ? 'Espace Avocat' : 'Espace Notaire';
-  const switchTarget = role === 'notaire' ? '/avocats/dashboard' : '/notaires/dashboard';
+  const spaceLabel = "Changer d'espace";
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border p-4 space-y-3">
-        {/* Bouton espace (Avocat / Notaire) en haut à gauche */}
+        {/* Dropdown "Changer d'espace" en haut à gauche */}
         <div className="flex items-center justify-between gap-2">
-          <Button
-            onClick={() => navigate(role === 'notaire' ? '/notaires/dashboard' : '/avocats/dashboard')}
-            className={`h-8 px-3 text-xs font-semibold rounded-md shadow-sm ${spaceBtnClass}`}
-          >
-            {spaceLabel}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                className={`h-8 px-3 text-xs font-semibold rounded-md shadow-sm text-white ${role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+              >
+                {spaceLabel}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className={role === 'notaire' ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}
+            >
+              {/* Espace Avocat: bleu, Espace Notaire: orange, texte blanc, selon l'espace actif */}
+              <DropdownMenuItem
+                onClick={() => navigate('/avocats/dashboard')}
+                disabled={role === 'avocat'}
+                className={
+                  role === 'avocat'
+                    ? 'opacity-60 text-muted-foreground bg-white'
+                    : 'bg-white text-black'
+                }
+                style={role !== 'avocat' ? { transition: 'background 0.2s' } : {}}
+                onMouseEnter={e => {
+                  if (role !== 'avocat') e.currentTarget.style.backgroundColor = '#2563eb', e.currentTarget.style.color = '#fff';
+                }}
+                onMouseLeave={e => {
+                  if (role !== 'avocat') e.currentTarget.style.backgroundColor = '#fff', e.currentTarget.style.color = '#000';
+                }}
+              >
+                Espace Avocat
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate('/notaires/dashboard')}
+                disabled={role === 'notaire'}
+                className={
+                  role === 'notaire'
+                    ? 'opacity-60 text-muted-foreground bg-white'
+                    : 'bg-white text-black'
+                }
+                style={role !== 'notaire' ? { transition: 'background 0.2s' } : {}}
+                onMouseEnter={e => {
+                  if (role !== 'notaire') e.currentTarget.style.backgroundColor = '#d97706', e.currentTarget.style.color = '#fff';
+                }}
+                onMouseLeave={e => {
+                  if (role !== 'notaire') e.currentTarget.style.backgroundColor = '#fff', e.currentTarget.style.color = '#000';
+                }}
+              >
+                Espace Notaire
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <SidebarTrigger />
         </div>
         <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${role === 'notaire' ? 'bg-amber-600' : 'bg-blue-600'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${role === 'notaire' ? 'bg-amber-600' : 'bg-blue-600'}`}> 
             <UserCircle2 className="h-5 w-5" />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
               <span className="font-semibold text-sidebar-foreground truncate max-w-[120px]" title={displayName}>{displayName}</span>
-              <button
-                type="button"
-                onClick={() => navigate(switchTarget)}
-                className={`text-[11px] mt-0.5 underline decoration-dotted hover:opacity-80 transition-opacity text-left ${role === 'notaire' ? 'text-blue-700' : 'text-amber-700'}`}
-              >
-                Passer vers {switchLabel}
-              </button>
+              {/* Phrase "Passer vers ..." supprimée */}
             </div>
           )}
         </div>
