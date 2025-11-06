@@ -205,7 +205,14 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Options document"
+                          className={role === 'notaire'
+                            ? 'bg-amber-50 hover:bg-amber-600 hover:text-white'
+                            : 'bg-blue-50 hover:bg-blue-600 hover:text-white'}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
