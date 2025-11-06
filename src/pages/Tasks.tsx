@@ -162,7 +162,7 @@ export default function Tasks() {
                     <TableRow
                       key={task.id}
                       className={task.done ? "opacity-50 cursor-pointer" : "cursor-pointer"}
-                      onDoubleClick={() => toast.info('(À venir) Ouverture détails tâche', { description: task.title })}
+                      onDoubleClick={() => {/* Future detail/edit modal */}}
                     >
                       <TableCell>
                         <Checkbox

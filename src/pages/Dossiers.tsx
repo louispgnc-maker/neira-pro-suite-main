@@ -1,5 +1,5 @@
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
@@ -45,6 +45,7 @@ export default function Dossiers() {
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
   const [selectedContrats, setSelectedContrats] = useState<string[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+  const navigate = useNavigate();
   const mainHover = role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white';
   const selectContentClass = role === 'notaire' ? 'bg-amber-50 border-amber-200' : '';
   const selectItemClass = role === 'notaire' ? 'cursor-pointer hover:bg-amber-600 hover:text-white' : 'cursor-pointer hover:bg-blue-600 hover:text-white';
@@ -319,7 +320,7 @@ export default function Dossiers() {
                     dossiers.map((d) => (
                       <TableRow
                         key={d.id}
-                        onDoubleClick={() => {/* Placeholder: future detail page */}}
+                        onDoubleClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}
                         className="cursor-pointer"
                       >
                         <TableCell className="font-medium">{d.title}</TableCell>

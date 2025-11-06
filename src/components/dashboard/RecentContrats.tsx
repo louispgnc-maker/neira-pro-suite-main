@@ -43,7 +43,7 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
   const [loading, setLoading] = useState(true);
 
   const handleView = (contrat: ContratRow) => {
-    // Navigation vers la page contrats
+    // Navigation vers la page contrats (listing pour l'instant)
     navigate(role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats');
   };
 

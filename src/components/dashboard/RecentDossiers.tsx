@@ -88,7 +88,7 @@ export function RecentDossiers({ role }: RecentDossiersProps) {
               rows.map((d) => (
                 <TableRow
                   key={d.id}
-                  onDoubleClick={() => navigate(derivedRole === 'notaire' ? '/notaires/dossiers' : '/avocats/dossiers')}
+                  onDoubleClick={() => navigate(derivedRole === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}
                   className="cursor-pointer"
                 >
                   <TableCell className="font-medium">{d.title}</TableCell>
