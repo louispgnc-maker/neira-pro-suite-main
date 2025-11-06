@@ -154,8 +154,13 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
         new_role_param: newRole,
       });
       if (error) throw error;
+      
+      // Mettre à jour l'état local sans recharger
+      setMembers(prev => prev.map(m => 
+        m.id === memberId ? { ...m, role_cabinet: newRole } : m
+      ));
+      
       toast({ title: 'Rôle mis à jour', description: 'Le rôle du membre a été modifié.' });
-      loadCabinet();
     } catch (error: any) {
       console.error('Erreur changement rôle:', error);
       toast({ title: 'Erreur', description: error.message || 'Impossible de changer le rôle', variant: 'destructive' });
