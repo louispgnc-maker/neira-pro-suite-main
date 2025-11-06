@@ -100,7 +100,7 @@ export function AppSidebar() {
                   className={
                     role === 'avocat'
                       ? 'opacity-60 text-muted-foreground'
-                      : 'hover:bg-blue-600 hover:text-white'
+                      : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white data-[highlighted]:bg-blue-600 data-[highlighted]:text-white'
                   }
                 >
                   Espace Avocat
@@ -111,7 +111,7 @@ export function AppSidebar() {
                   className={
                     role === 'notaire'
                       ? 'opacity-60 text-muted-foreground'
-                      : 'hover:bg-amber-600 hover:text-white'
+                      : 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white data-[highlighted]:bg-amber-600 data-[highlighted]:text-white'
                   }
                 >
                   Espace Notaire
