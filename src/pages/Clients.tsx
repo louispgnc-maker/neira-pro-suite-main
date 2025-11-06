@@ -50,6 +50,7 @@ export default function Clients() {
         .from("clients")
         .select("id,name,kyc_status,missing_info,created_at")
         .eq("owner_id", user.id)
+        .eq("role", role)
         .order("created_at", { ascending: false });
       if (debounced) {
         query = query.ilike('name', `%${debounced}%`);

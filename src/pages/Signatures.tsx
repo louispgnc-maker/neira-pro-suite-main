@@ -54,6 +54,7 @@ export default function Signatures() {
         .from("signatures")
         .select("id,signer_name,document_name,status,last_reminder_at")
         .eq("owner_id", user.id)
+        .eq("role", role)
         .order("last_reminder_at", { ascending: false, nullsFirst: false });
       if (debounced) {
         query = query.or(`signer_name.ilike.%${debounced}%,document_name.ilike.%${debounced}%`);
@@ -71,7 +72,7 @@ export default function Signatures() {
     return () => {
       isMounted = false;
     };
-  }, [user, debounced]);
+  }, [user, role, debounced]);
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'

@@ -56,6 +56,7 @@ export default function Tasks() {
         .from("tasks")
         .select("id,title,description,due_date,done")
         .eq("owner_id", user.id)
+        .eq("role", role)
         .order("due_date", { ascending: true, nullsFirst: false });
       if (debounced) {
         query = query.or(`title.ilike.%${debounced}%,description.ilike.%${debounced}%`);
@@ -73,14 +74,16 @@ export default function Tasks() {
     return () => {
       isMounted = false;
     };
-  }, [user, debounced]);
+  }, [user, role, debounced]);
 
   async function toggleDone(taskId: string, currentDone: boolean) {
     const newDone = !currentDone;
     const { error } = await supabase
       .from("tasks")
       .update({ done: newDone })
-      .eq("id", taskId);
+      .eq("id", taskId)
+      .eq("owner_id", user?.id || '')
+      .eq("role", role);
     if (error) {
       console.error("Erreur mise à jour tâche:", error);
       toast.error("Erreur lors de la mise à jour");

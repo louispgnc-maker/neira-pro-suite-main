@@ -45,7 +45,7 @@ interface Client {
   type_dossier: string | null;
   contrat_souhaite: string | null;
   historique_litiges: string | null;
-  situation_matrimoniale: string | null;
+  // situation_matrimoniale supprimée
   enfants: { nom: string; date_naissance: string | null }[] | null;
   documents_objet: string[] | null;
 }
@@ -81,7 +81,7 @@ export default function ClientDetail() {
           nom,prenom,date_naissance,lieu_naissance,adresse,telephone,email,nationalite,sexe,etat_civil,situation_familiale,
           type_identite,numero_identite,date_expiration_identite,id_doc_path,
           profession,employeur,adresse_professionnelle,siret,situation_fiscale,revenus,justificatifs_financiers,comptes_bancaires,
-          type_dossier,contrat_souhaite,historique_litiges,situation_matrimoniale,enfants,documents_objet
+          type_dossier,contrat_souhaite,historique_litiges,enfants,documents_objet
         `)
         .eq('owner_id', user.id)
         .eq('role', role)
@@ -223,10 +223,7 @@ export default function ClientDetail() {
                 <CardDescription>Mariage / PACS / Enfants</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div>
-                  <div className="text-sm text-muted-foreground">Situation matrimoniale</div>
-                  <div className="font-medium">{client.situation_matrimoniale || '-'}</div>
-                </div>
+                {/* Champ Situation matrimoniale supprimé */}
                 <div>
                   <div className="text-sm text-muted-foreground">Options</div>
                   {client.situation_familiale && client.situation_familiale.length > 0 ? (

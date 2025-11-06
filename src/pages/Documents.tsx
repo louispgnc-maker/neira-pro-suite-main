@@ -78,6 +78,7 @@ export default function Documents() {
         .from("documents")
         .select("id,name,client_name,status,updated_at,storage_path")
         .eq("owner_id", user.id)
+        .eq("role", role)
         .order("updated_at", { ascending: false, nullsFirst: false });
       if (debounced) {
         // Basic case-insensitive filtering using ilike on name OR client_name
@@ -96,7 +97,7 @@ export default function Documents() {
     return () => {
       isMounted = false;
     };
-  }, [user, debounced]);
+  }, [user, role, debounced]);
 
 
   const viewOrDownload = async (doc: DocRow, mode: 'view' | 'download') => {
@@ -187,6 +188,7 @@ export default function Documents() {
           name: file.name,
           client_name: null,
           status: 'En cours',
+          role: role,
           storage_path: path,
         }).select().single();
         if (dbErr) {
