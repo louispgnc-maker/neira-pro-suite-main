@@ -280,6 +280,7 @@ stable
 set search_path = public
 as $$
 begin
+  -- Owner can read everything
   if exists (
     select 1 from cabinets 
     where id = cabinet_id_param and owner_id = auth.uid()
@@ -290,6 +291,7 @@ begin
       order by cm.created_at;
   end if;
 
+  -- Active members can read everything
   if exists (
     select 1 from cabinet_members
     where cabinet_id = cabinet_id_param and user_id = auth.uid() and status = 'active'
@@ -299,6 +301,30 @@ begin
       where cm.cabinet_id = cabinet_id_param
       order by cm.created_at;
   end if;
+
+  -- Pending invited users (no user_id yet) can read ACTIVE members by email match
+  -- Extract email from JWT claims when present
+  declare
+    v_jwt json := nullif(current_setting('request.jwt.claims', true), '')::json;
+    v_email text := lower(coalesce(v_jwt ->> 'email', ''));
+  begin
+    if v_email is not null and v_email <> '' then
+      if exists (
+        select 1 from cabinet_members cm
+        where cm.cabinet_id = cabinet_id_param
+          and cm.user_id is null
+          and cm.status = 'pending'
+          and lower(cm.email) = v_email
+      ) then
+        -- Show only active members to pending invitees
+        return query
+          select cm.* from cabinet_members cm
+          where cm.cabinet_id = cabinet_id_param
+            and cm.status = 'active'
+          order by cm.created_at;
+      end if;
+    end if;
+  end;
 
   raise exception 'Not authorized';
 end;
