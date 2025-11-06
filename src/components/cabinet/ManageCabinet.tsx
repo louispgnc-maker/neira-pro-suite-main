@@ -31,6 +31,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface Cabinet {
   id: string;
@@ -482,12 +488,28 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
                       {member.role_cabinet === 'owner' ? (
-                        <Badge 
-                          variant="outline"
-                          className={role === 'notaire' ? 'bg-amber-600 text-white border-amber-600' : 'bg-blue-600 text-white border-blue-600'}
-                        >
-                          Fondateur
-                        </Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className={`h-7 ${role === 'notaire' ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 hover:text-white' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white'}`}
+                            >
+                              Fondateur
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            {roleOptions.map((opt) => (
+                              <DropdownMenuItem
+                                key={opt}
+                                onClick={() => updateMemberRole(member.id, opt)}
+                                className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
+                              >
+                                {opt}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       ) : (
                         <Select
                           value={member.role_cabinet}
