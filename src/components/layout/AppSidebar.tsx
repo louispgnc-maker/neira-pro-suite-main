@@ -8,6 +8,7 @@ import {
   FolderPlus,
   Folder,
   LogOut,
+  UserCircle2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,6 +25,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
 
 function getMenuItems(role: 'avocat' | 'notaire') {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -51,17 +60,18 @@ export function AppSidebar() {
   const menuItems = getMenuItems(role);
   const isActive = (path: string) => location.pathname === path;
 
+  const { user } = useAuth();
+  const profileEmail = user?.email || '—';
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center text-white font-bold text-sm">
-            N
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white">
+            <UserCircle2 className="h-5 w-5" />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="font-semibold text-sidebar-foreground">Neira</span>
-              <span className="text-xs text-muted-foreground">Professionnel</span>
+              <span className="font-semibold text-sidebar-foreground">Professionnel</span>
             </div>
           )}
         </div>
@@ -89,14 +99,36 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-4">
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-2"
-          onClick={() => (window.location.href = "/")}
-        >
-          <LogOut className="h-4 w-4" />
-          {!isCollapsed && <span>Déconnexion</span>}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 group"
+            >
+              <UserCircle2 className="h-4 w-4" />
+              {!isCollapsed && <span>Profil</span>}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" side="top" className={role === 'notaire' ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}>
+            <div className="px-2 py-1.5 text-xs text-muted-foreground">Connecté</div>
+            <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-amber-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} disabled>
+              {profileEmail}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className={role === 'notaire' ? 'focus:bg-amber-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'}
+              onClick={() => navigate(role === 'notaire' ? '/notaires/profile' : '/avocats/profile')}
+            >
+              Ouvrir le profil
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
+              onClick={() => (window.location.href = '/')}
+            >
+              <LogOut className="mr-2 h-4 w-4" /> Déconnexion
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarFooter>
     </Sidebar>
   );

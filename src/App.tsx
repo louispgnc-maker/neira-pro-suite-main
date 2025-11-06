@@ -20,6 +20,7 @@ import Tasks from "./pages/Tasks";
 import Contrats from "./pages/Contrats";
 import Dossiers from "./pages/Dossiers";
 import DossierDetail from "./pages/DossierDetail";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/avocats/contrats" element={<Contrats />} />
             <Route path="/avocats/dossiers" element={<Dossiers />} />
             <Route path="/avocats/dossiers/:id" element={<DossierDetail />} />
+            <Route path="/avocats/profile" element={<Profile />} />
             
             {/* Routes Notaire */}
             <Route path="/notaires/auth" element={<Auth />} />
@@ -62,6 +64,7 @@ const App = () => (
             <Route path="/notaires/contrats" element={<Contrats />} />
             <Route path="/notaires/dossiers" element={<Dossiers />} />
             <Route path="/notaires/dossiers/:id" element={<DossierDetail />} />
+            <Route path="/notaires/profile" element={<Profile />} />
             
             {/* Routes génériques (legacy) */}
             <Route path="/documents" element={<Documents />} />
@@ -73,6 +76,7 @@ const App = () => (
             <Route path="/contrats" element={<Contrats />} />
             <Route path="/dossiers" element={<Dossiers />} />
             <Route path="/dossiers/:id" element={<DossierDetail />} />
+            <Route path="/profile" element={<Profile />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
