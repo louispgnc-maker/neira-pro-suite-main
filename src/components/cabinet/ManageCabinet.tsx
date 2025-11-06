@@ -373,7 +373,13 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Annuler</Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setEditDialogOpen(false)}
+                      className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                    >
+                      Annuler
+                    </Button>
                     <Button className={colorClass} disabled={editLoading} onClick={handleUpdateCabinet}>
                       {editLoading ? 'Enregistrement...' : 'Enregistrer'}
                     </Button>
@@ -453,7 +459,11 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setInviteDialogOpen(false)}>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setInviteDialogOpen(false)}
+                      className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                    >
                       Annuler
                     </Button>
                     <Button
