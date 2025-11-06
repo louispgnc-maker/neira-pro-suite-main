@@ -1,4 +1,4 @@
-import { FileText, PenTool, Users, Clock, ChevronDown, FolderPlus } from "lucide-react";
+import { FileText, PenTool, Users, Clock, FolderPlus } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
@@ -11,12 +11,6 @@ import { RecentClients } from "@/components/dashboard/RecentClients";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
@@ -147,34 +141,6 @@ export function DashboardNotaire() {
             <h1 className="text-3xl font-bold text-foreground">
               Bienvenue sur votre espace
             </h1>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="bg-amber-600 text-white hover:bg-amber-700 hover:text-white border-0 px-4 py-1.5 text-sm h-auto gap-2">
-                  Espace Notaire
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem 
-                  className="cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"
-                  onClick={() => navigate("/avocats/dashboard")}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-blue-600" />
-                    <span>Espace Avocat</span>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className="cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"
-                  onClick={() => navigate("/notaires/dashboard")}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-amber-600" />
-                    <span>Espace Notaire</span>
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
           <div className="flex items-center gap-3">
             <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
