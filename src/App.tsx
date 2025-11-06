@@ -21,6 +21,7 @@ import Contrats from "./pages/Contrats";
 import Dossiers from "./pages/Dossiers";
 import DossierDetail from "./pages/DossierDetail";
 import Profile from "./pages/Profile";
+import Cabinet from "./pages/Cabinet";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/avocats/dossiers" element={<Dossiers />} />
             <Route path="/avocats/dossiers/:id" element={<DossierDetail />} />
             <Route path="/avocats/profile" element={<Profile />} />
+            <Route path="/avocats/cabinet" element={<Cabinet />} />
             
             {/* Routes Notaire */}
             <Route path="/notaires/auth" element={<Auth />} />
@@ -65,6 +67,7 @@ const App = () => (
             <Route path="/notaires/dossiers" element={<Dossiers />} />
             <Route path="/notaires/dossiers/:id" element={<DossierDetail />} />
             <Route path="/notaires/profile" element={<Profile />} />
+            <Route path="/notaires/cabinet" element={<Cabinet />} />
             
             {/* Routes génériques (legacy) */}
             <Route path="/documents" element={<Documents />} />
