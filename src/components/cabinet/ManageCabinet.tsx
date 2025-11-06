@@ -229,18 +229,18 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
               <Input value={cabinet.code_acces} readOnly className="font-mono" />
               <Button 
                 type="button" 
-                variant="outline" 
                 size="icon" 
                 onClick={copyCode}
+                className={colorClass}
               >
                 <Copy className="h-4 w-4" />
               </Button>
               <Button
                 type="button"
-                variant="outline"
                 size="icon"
                 onClick={regenerateCode}
                 title="Régénérer le code"
+                className={colorClass}
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
@@ -258,7 +258,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
               </Label>
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button size="sm" className={colorClass}>
                     <Mail className="h-4 w-4 mr-1" />
                     Inviter par email
                   </Button>
