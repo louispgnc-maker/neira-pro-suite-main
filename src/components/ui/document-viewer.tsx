@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -17,23 +17,21 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl h-[90vh] p-0 gap-0 [&>button]:hidden">
-        <DialogHeader className="px-3 py-1 border-b">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-sm font-semibold truncate pr-3">
-              {documentName}
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className={`h-6 w-6 rounded-full ${closeButtonClass}`}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-        </DialogHeader>
-        <div className="flex-1 overflow-hidden">
+      <DialogContent className="max-w-5xl h-[90vh] p-0 gap-0 [&>button]:hidden flex flex-col">
+        <div className="flex items-center justify-between px-3 py-1 border-b shrink-0">
+          <h2 className="text-sm font-semibold truncate pr-3">
+            {documentName}
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className={`h-6 w-6 rounded-full ${closeButtonClass}`}
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+        <div className="flex-1 min-h-0">
           <iframe
             src={documentUrl}
             className="w-full h-full border-0"
