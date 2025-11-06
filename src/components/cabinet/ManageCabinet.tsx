@@ -133,6 +133,22 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
     }
   };
 
+  // Mettre à jour rôle membre
+  const updateMemberRole = async (memberId: string, newRole: string) => {
+    try {
+      const { error } = await supabase.rpc('update_cabinet_member_role', {
+        member_id_param: memberId,
+        new_role_param: newRole,
+      });
+      if (error) throw error;
+      toast({ title: 'Rôle mis à jour', description: 'Le rôle du membre a été modifié.' });
+      loadCabinet();
+    } catch (error: any) {
+      console.error('Erreur changement rôle:', error);
+      toast({ title: 'Erreur', description: error.message || 'Impossible de changer le rôle', variant: 'destructive' });
+    }
+  };
+
   useEffect(() => {
     loadCabinet();
   }, [userId, role]);
@@ -454,7 +470,22 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <TableCell className="font-mono text-xs">{member.email}</TableCell>
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{member.role_cabinet}</Badge>
+                      {member.role_cabinet === 'owner' ? (
+                        <Badge variant="outline">owner</Badge>
+                      ) : (
+                        <div className="min-w-[160px]">
+                          <select
+                            className="w-full rounded border px-2 py-1 text-sm bg-background"
+                            value={member.role_cabinet}
+                            onChange={(e) => updateMemberRole(member.id, e.target.value)}
+                          >
+                            <option value="Notaire">Notaire</option>
+                            <option value="Clerc de Notaire">Clerc de Notaire</option>
+                            <option value="Formaliste">Formaliste</option>
+                            <option value="Juriste Notarial">Juriste Notarial</option>
+                          </select>
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge
@@ -472,13 +503,23 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     </TableCell>
                     <TableCell className="text-right">
                       {member.role_cabinet !== 'owner' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeMember(member.id)}
-                        >
-                          Retirer
-                        </Button>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="ghost" size="sm">Retirer</Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-sm">
+                            <DialogHeader>
+                              <DialogTitle>Retirer ce membre ?</DialogTitle>
+                              <DialogDescription>
+                                Cette action supprimera ce membre du cabinet. Voulez-vous continuer ?
+                              </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                              <Button variant="outline">Annuler</Button>
+                              <Button className={colorClass} onClick={() => removeMember(member.id)}>Confirmer</Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                       )}
                     </TableCell>
                   </TableRow>
