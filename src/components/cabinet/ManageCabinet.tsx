@@ -66,6 +66,73 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       ? 'bg-amber-600 hover:bg-amber-700 text-white'
       : 'bg-blue-600 hover:bg-blue-700 text-white';
 
+  // Edit cabinet dialog state
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editForm, setEditForm] = useState({
+    nom: '',
+    raison_sociale: '',
+    siret: '',
+    adresse: '',
+    code_postal: '',
+    ville: '',
+    telephone: '',
+    email: '',
+    site_web: '',
+  });
+
+  const openEditDialog = () => {
+    if (!cabinet) return;
+    setEditForm({
+      nom: cabinet.nom || '',
+      raison_sociale: cabinet.raison_sociale || '',
+      siret: '',
+      adresse: cabinet.adresse || '',
+      code_postal: '',
+      ville: '',
+      telephone: cabinet.telephone || '',
+      email: cabinet.email || '',
+      site_web: '',
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleEditChange = (field: string, value: string) => {
+    setEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleUpdateCabinet = async () => {
+    if (!cabinet) return;
+    setEditLoading(true);
+    try {
+      const { error } = await supabase
+        .from('cabinets')
+        .update({
+          nom: editForm.nom,
+          raison_sociale: editForm.raison_sociale,
+          siret: editForm.siret || null,
+          adresse: editForm.adresse,
+          code_postal: editForm.code_postal || null,
+          ville: editForm.ville || null,
+          telephone: editForm.telephone || null,
+          email: editForm.email || null,
+          site_web: editForm.site_web || null,
+        })
+        .eq('id', cabinet.id);
+
+      if (error) throw error;
+
+      toast({ title: 'Cabinet mis à jour', description: 'Les informations ont été enregistrées.' });
+      setEditDialogOpen(false);
+      loadCabinet();
+    } catch (error: any) {
+      console.error('Erreur mise à jour cabinet:', error);
+      toast({ title: 'Erreur', description: error.message || 'Mise à jour impossible', variant: 'destructive' });
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadCabinet();
   }, [userId, role]);
@@ -217,10 +284,74 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Mon cabinet</CardTitle>
-          <CardDescription>
-            {cabinet.nom} {cabinet.raison_sociale && `(${cabinet.raison_sociale})`}
-          </CardDescription>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <CardTitle>Mon cabinet</CardTitle>
+              <CardDescription>
+                {cabinet.nom} {cabinet.raison_sociale && `(${cabinet.raison_sociale})`}
+              </CardDescription>
+            </div>
+            {/* Bouton visible uniquement pour le owner (ManageCabinet est affiché pour l'owner, mais on protège quand même) */}
+            {userId && (
+              <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className={colorClass} onClick={openEditDialog}>
+                    Modifier le cabinet
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle>Modifier le cabinet</DialogTitle>
+                    <DialogDescription>Mettez à jour les informations de votre cabinet.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid grid-cols-2 gap-3 py-2">
+                    <div className="col-span-2 space-y-2">
+                      <Label htmlFor="edit-nom">Nom *</Label>
+                      <Input id="edit-nom" value={editForm.nom} onChange={(e) => handleEditChange('nom', e.target.value)} />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <Label htmlFor="edit-raison">Raison sociale</Label>
+                      <Input id="edit-raison" value={editForm.raison_sociale} onChange={(e) => handleEditChange('raison_sociale', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-siret">SIRET</Label>
+                      <Input id="edit-siret" value={editForm.siret} onChange={(e) => handleEditChange('siret', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-telephone">Téléphone</Label>
+                      <Input id="edit-telephone" value={editForm.telephone} onChange={(e) => handleEditChange('telephone', e.target.value)} />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <Label htmlFor="edit-adresse">Adresse</Label>
+                      <Input id="edit-adresse" value={editForm.adresse} onChange={(e) => handleEditChange('adresse', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-code-postal">Code postal</Label>
+                      <Input id="edit-code-postal" value={editForm.code_postal} onChange={(e) => handleEditChange('code_postal', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-ville">Ville</Label>
+                      <Input id="edit-ville" value={editForm.ville} onChange={(e) => handleEditChange('ville', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-email">Email</Label>
+                      <Input id="edit-email" type="email" value={editForm.email} onChange={(e) => handleEditChange('email', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-site">Site web</Label>
+                      <Input id="edit-site" value={editForm.site_web} onChange={(e) => handleEditChange('site_web', e.target.value)} />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Annuler</Button>
+                    <Button className={colorClass} disabled={editLoading} onClick={handleUpdateCabinet}>
+                      {editLoading ? 'Enregistrement...' : 'Enregistrer'}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
