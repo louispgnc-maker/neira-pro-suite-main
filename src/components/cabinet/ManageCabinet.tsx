@@ -69,6 +69,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
   const [cabinet, setCabinet] = useState<Cabinet | null>(null);
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState<boolean>(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteName, setInviteName] = useState('');
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
@@ -180,18 +181,24 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
       if (cabinetError) throw cabinetError;
 
-      // Prendre le premier cabinet où l'utilisateur est owner
+      // Choisir cabinet: owner en priorité, sinon premier cabinet où l'utilisateur est membre
       const ownedCabinet = cabinets?.find((c: any) => c.owner_id === userId);
-      
-      if (ownedCabinet) {
-        setCabinet(ownedCabinet);
+      const firstCabinet = ownedCabinet || (cabinets && cabinets.length > 0 ? cabinets[0] : null);
 
-        // Charger les membres via RPC (bypass RLS)
+      if (firstCabinet) {
+        setCabinet(firstCabinet);
+        setIsOwner(firstCabinet.owner_id === userId);
+
+        // Charger les membres via RPC (SECURITY DEFINER) - autorisé pour owner ou membre actif
         const { data: membersData, error: membersError } = await supabase
-          .rpc('get_cabinet_members', { cabinet_id_param: ownedCabinet.id });
+          .rpc('get_cabinet_members', { cabinet_id_param: firstCabinet.id });
 
         if (membersError) throw membersError;
         setMembers(membersData || []);
+      } else {
+        setCabinet(null);
+        setIsOwner(false);
+        setMembers([]);
       }
     } catch (error: any) {
       console.error('Erreur chargement cabinet:', error);
@@ -322,8 +329,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                 {cabinet.nom} {cabinet.raison_sociale && `(${cabinet.raison_sociale})`}
               </CardDescription>
             </div>
-            {/* Bouton visible uniquement pour le owner (ManageCabinet est affiché pour l'owner, mais on protège quand même) */}
-            {userId && (
+            {/* Bouton visible uniquement pour le fondateur (owner) */}
+            {isOwner && (
               <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" className={colorClass} onClick={openEditDialog}>
@@ -393,26 +400,30 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Code d'accès du cabinet</Label>
-            <div className="flex gap-2">
-              <Input value={cabinet.code_acces} readOnly className="font-mono" />
-              <Button 
-                type="button" 
-                size="icon" 
-                onClick={copyCode}
-                className={colorClass}
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                size="icon"
-                onClick={regenerateCode}
-                title="Régénérer le code"
-                className={colorClass}
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
+            {isOwner ? (
+              <div className="flex gap-2">
+                <Input value={cabinet.code_acces} readOnly className="font-mono" />
+                <Button 
+                  type="button" 
+                  size="icon" 
+                  onClick={copyCode}
+                  className={colorClass}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="icon"
+                  onClick={regenerateCode}
+                  title="Régénérer le code"
+                  className={colorClass}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">Vous êtes membre de ce cabinet.</p>
+            )}
             <p className="text-xs text-muted-foreground">
               Partagez ce code avec vos employés pour qu'ils puissent rejoindre le cabinet.
             </p>
@@ -424,59 +435,61 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                 <Users className="inline h-4 w-4 mr-1" />
                 Membres du cabinet ({members.length})
               </Label>
-              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className={colorClass}>
-                    <Mail className="h-4 w-4 mr-1" />
-                    Inviter par email
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Inviter un membre</DialogTitle>
-                    <DialogDescription>
-                      Ajoutez un membre à votre cabinet en saisissant son adresse email et son nom.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="invite-email">Email *</Label>
-                      <Input
-                        id="invite-email"
-                        type="email"
-                        placeholder="nom@exemple.fr"
-                        value={inviteEmail}
-                        onChange={(e) => setInviteEmail(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="invite-name">Nom</Label>
-                      <Input
-                        id="invite-name"
-                        placeholder="Jean Dupont"
-                        value={inviteName}
-                        onChange={(e) => setInviteName(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setInviteDialogOpen(false)}
-                      className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
-                    >
-                      Annuler
+              {isOwner && (
+                <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className={colorClass}>
+                      <Mail className="h-4 w-4 mr-1" />
+                      Inviter par email
                     </Button>
-                    <Button
-                      onClick={inviteMember}
-                      disabled={!inviteEmail.trim() || inviteLoading}
-                      className={colorClass}
-                    >
-                      {inviteLoading ? 'Envoi...' : 'Inviter'}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Inviter un membre</DialogTitle>
+                      <DialogDescription>
+                        Ajoutez un membre à votre cabinet en saisissant son adresse email et son nom.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="invite-email">Email *</Label>
+                        <Input
+                          id="invite-email"
+                          type="email"
+                          placeholder="nom@exemple.fr"
+                          value={inviteEmail}
+                          onChange={(e) => setInviteEmail(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="invite-name">Nom</Label>
+                        <Input
+                          id="invite-name"
+                          placeholder="Jean Dupont"
+                          value={inviteName}
+                          onChange={(e) => setInviteName(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setInviteDialogOpen(false)}
+                        className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                      >
+                        Annuler
+                      </Button>
+                      <Button
+                        onClick={inviteMember}
+                        disabled={!inviteEmail.trim() || inviteLoading}
+                        className={colorClass}
+                      >
+                        {inviteLoading ? 'Envoi...' : 'Inviter'}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
 
             <Table>
@@ -495,7 +508,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <TableCell className="font-mono text-xs">{member.email}</TableCell>
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
-                      {member.role_cabinet === 'owner' || member.role_cabinet === 'Fondateur' ? (
+                      {isOwner ? (
+                        member.role_cabinet === 'owner' || member.role_cabinet === 'Fondateur' ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -520,25 +534,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       ) : (
-                        <Select
-                          value={member.role_cabinet}
-                          onValueChange={(value) => updateMemberRole(member.id, value)}
-                        >
-                          <SelectTrigger className={`h-8 text-xs px-3 w-auto ${role === 'notaire' ? 'bg-amber-600 text-white hover:bg-amber-700 border-amber-600' : 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600'}`}>
-                            <SelectValue placeholder="Sélectionner un rôle" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {roleOptions.map((opt) => (
-                              <SelectItem 
-                                key={opt} 
-                                value={opt}
-                                className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
-                              >
-                                {opt}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Badge variant="secondary" className="text-xs">{member.role_cabinet}</Badge>
                       )}
                     </TableCell>
                     <TableCell>
@@ -556,7 +552,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      {member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
+                      {isOwner && member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button variant="destructive" size="sm">
