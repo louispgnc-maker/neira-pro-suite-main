@@ -31,15 +31,16 @@ export default function Profile() {
   const checkUserCabinet = async () => {
     if (!user) return;
     try {
-      // Vérifier si l'utilisateur est propriétaire d'un cabinet
-      const { data: cabinetData } = await supabase
-        .from('cabinets')
-        .select('id')
-        .eq('owner_id', user.id)
-        .eq('role', role)
-        .single();
+      // Utiliser la fonction RPC pour bypass les policies RLS
+      const { data: cabinets, error } = await supabase
+        .rpc('get_user_cabinets')
+        .eq('role', role);
 
-      setHasCabinet(!!cabinetData);
+      if (error) throw error;
+      
+      // Vérifier si l'utilisateur est propriétaire d'un cabinet
+      const ownedCabinet = cabinets?.find((c: any) => c.owner_id === user.id);
+      setHasCabinet(!!ownedCabinet);
     } catch (error) {
       console.error('Erreur vérification cabinet:', error);
     }

@@ -73,24 +73,24 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
   const loadCabinet = async () => {
     setLoading(true);
     try {
-      // Chercher le cabinet dont l'utilisateur est owner
-      const { data: cabinetData, error: cabinetError } = await supabase
-        .from('cabinets')
-        .select('*')
-        .eq('owner_id', userId)
-        .eq('role', role)
-        .single();
+      // Utiliser la fonction RPC pour bypass les policies RLS
+      const { data: cabinets, error: cabinetError } = await supabase
+        .rpc('get_user_cabinets')
+        .eq('role', role);
 
-      if (cabinetError && cabinetError.code !== 'PGRST116') throw cabinetError;
+      if (cabinetError) throw cabinetError;
 
-      if (cabinetData) {
-        setCabinet(cabinetData);
+      // Prendre le premier cabinet où l'utilisateur est owner
+      const ownedCabinet = cabinets?.find((c: any) => c.owner_id === userId);
+      
+      if (ownedCabinet) {
+        setCabinet(ownedCabinet);
 
         // Charger les membres
         const { data: membersData, error: membersError } = await supabase
           .from('cabinet_members')
           .select('*')
-          .eq('cabinet_id', cabinetData.id)
+          .eq('cabinet_id', ownedCabinet.id)
           .order('created_at', { ascending: true });
 
         if (membersError) throw membersError;

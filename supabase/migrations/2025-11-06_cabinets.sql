@@ -82,37 +82,34 @@ create index if not exists cabinet_members_status_idx on public.cabinet_members(
 alter table public.cabinets enable row level security;
 alter table public.cabinet_members enable row level security;
 
--- Policies pour CABINETS (owner seulement, pas de vérification croisée)
+-- Policies pour CABINETS
+-- Le propriétaire du cabinet peut tout faire
 drop policy if exists "cabinets_owner_full_access" on public.cabinets;
 create policy "cabinets_owner_full_access" on public.cabinets
   for all using (owner_id = auth.uid());
 
 -- Policies pour CABINET_MEMBERS
--- Le propriétaire du cabinet peut tout gérer
+-- Le propriétaire du cabinet peut gérer les membres (sans RLS check sur cabinets)
 drop policy if exists "cabinet_members_owner_can_manage" on public.cabinet_members;
 create policy "cabinet_members_owner_can_manage" on public.cabinet_members
   for all using (
-    exists (
-      select 1 from public.cabinets 
-      where cabinets.id = cabinet_members.cabinet_id 
-        and cabinets.owner_id = auth.uid()
+    cabinet_id in (
+      select id from public.cabinets where owner_id = auth.uid()
     )
   );
 
--- Les utilisateurs peuvent toujours voir leurs propres memberships
+-- Chaque utilisateur peut voir ses propres memberships
 drop policy if exists "cabinet_members_can_read_own" on public.cabinet_members;
 create policy "cabinet_members_can_read_own" on public.cabinet_members
   for select using (user_id = auth.uid());
 
--- Les membres peuvent voir les autres membres du même cabinet (via leur propre membership)
+-- Les membres actifs peuvent voir les autres membres de leurs cabinets
 drop policy if exists "cabinet_members_can_read_peers" on public.cabinet_members;
 create policy "cabinet_members_can_read_peers" on public.cabinet_members
   for select using (
     cabinet_id in (
-      select cm.cabinet_id 
-      from public.cabinet_members cm
-      where cm.user_id = auth.uid() 
-        and cm.status = 'active'
+      select cabinet_id from public.cabinet_members
+      where user_id = auth.uid() and status = 'active'
     )
   );
 
@@ -209,7 +206,28 @@ begin
 end;
 $$;
 
--- 7) Ajouter colonne cabinet_id aux profiles (optionnel, pour lier rapidement)
+-- 7) Function pour récupérer les cabinets d'un utilisateur (bypass RLS)
+create or replace function public.get_user_cabinets()
+returns setof public.cabinets
+language plpgsql
+security definer
+stable
+as $$
+begin
+  return query
+  select c.*
+  from public.cabinets c
+  where c.owner_id = auth.uid()
+     or c.id in (
+       select cm.cabinet_id
+       from public.cabinet_members cm
+       where cm.user_id = auth.uid()
+         and cm.status = 'active'
+     );
+end;
+$$;
+
+-- 8) Ajouter colonne cabinet_id aux profiles (optionnel, pour lier rapidement)
 alter table public.profiles add column if not exists cabinet_id uuid references public.cabinets(id) on delete set null;
 
 create index if not exists profiles_cabinet_idx on public.profiles(cabinet_id);
