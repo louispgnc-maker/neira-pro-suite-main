@@ -312,7 +312,6 @@ begin
       if exists (
         select 1 from cabinet_members cm
         where cm.cabinet_id = cabinet_id_param
-          and cm.user_id is null
           and cm.status = 'pending'
           and lower(cm.email) = v_email
       ) then
@@ -324,7 +323,6 @@ begin
               cm.status = 'active'
               or (
                 cm.status = 'pending'
-                and cm.user_id is null
                 and lower(cm.email) = v_email
               )
             )
