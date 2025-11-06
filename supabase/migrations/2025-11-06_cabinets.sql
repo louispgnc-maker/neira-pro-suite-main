@@ -2,7 +2,7 @@
 -- Les cabinets d'avocats et de notaires sont séparés (via colonne 'role')
 -- Chaque cabinet a un créateur/owner qui peut inviter des membres
 
--- 1) Table CABINETS
+-- 1) Table CABINETS (sans les policies RLS pour l'instant)
 create table if not exists public.cabinets (
   id uuid primary key default gen_random_uuid(),
   role text not null check (role in ('avocat', 'notaire')), -- Séparation avocat/notaire
@@ -48,23 +48,6 @@ create table if not exists public.cabinets (
   updated_at timestamptz not null default now()
 );
 
-alter table public.cabinets enable row level security;
-
--- Le créateur peut voir/modifier son cabinet
-drop policy if exists "cabinets_owner_full_access" on public.cabinets;
-create policy "cabinets_owner_full_access" on public.cabinets
-  for all using (owner_id = auth.uid());
-
--- Les membres du cabinet peuvent voir le cabinet
-drop policy if exists "cabinets_members_can_read" on public.cabinets;
-create policy "cabinets_members_can_read" on public.cabinets
-  for select using (
-    id in (
-      select cabinet_id from public.cabinet_members 
-      where user_id = auth.uid() and status = 'active'
-    )
-  );
-
 create index if not exists cabinets_owner_idx on public.cabinets(owner_id);
 create index if not exists cabinets_role_idx on public.cabinets(role);
 create index if not exists cabinets_code_acces_idx on public.cabinets(code_acces);
@@ -91,9 +74,31 @@ create table if not exists public.cabinet_members (
   unique(cabinet_id, user_id)
 );
 
+create index if not exists cabinet_members_cabinet_idx on public.cabinet_members(cabinet_id);
+create index if not exists cabinet_members_user_idx on public.cabinet_members(user_id);
+create index if not exists cabinet_members_status_idx on public.cabinet_members(status);
+
+-- 3) Activer RLS et créer les policies (après que les deux tables existent)
+alter table public.cabinets enable row level security;
 alter table public.cabinet_members enable row level security;
 
--- Le créateur du cabinet peut gérer les membres
+-- Policies pour CABINETS
+drop policy if exists "cabinets_owner_full_access" on public.cabinets;
+create policy "cabinets_owner_full_access" on public.cabinets
+  for all using (owner_id = auth.uid());
+
+drop policy if exists "cabinets_members_can_read" on public.cabinets;
+create policy "cabinets_members_can_read" on public.cabinets
+  for select using (
+    id in (
+      select cabinet_id from public.cabinet_members 
+      where user_id = auth.uid() and status = 'active'
+    )
+  );
+
+-- Policies pour CABINET_MEMBERS
+
+-- Policies pour CABINET_MEMBERS
 drop policy if exists "cabinet_members_owner_can_manage" on public.cabinet_members;
 create policy "cabinet_members_owner_can_manage" on public.cabinet_members
   for all using (
@@ -102,7 +107,6 @@ create policy "cabinet_members_owner_can_manage" on public.cabinet_members
     )
   );
 
--- Les membres peuvent voir les autres membres du même cabinet
 drop policy if exists "cabinet_members_can_read_peers" on public.cabinet_members;
 create policy "cabinet_members_can_read_peers" on public.cabinet_members
   for select using (
@@ -112,23 +116,18 @@ create policy "cabinet_members_can_read_peers" on public.cabinet_members
     )
   );
 
--- Les utilisateurs peuvent voir leurs propres memberships
 drop policy if exists "cabinet_members_can_read_own" on public.cabinet_members;
 create policy "cabinet_members_can_read_own" on public.cabinet_members
   for select using (user_id = auth.uid());
 
-create index if not exists cabinet_members_cabinet_idx on public.cabinet_members(cabinet_id);
-create index if not exists cabinet_members_user_idx on public.cabinet_members(user_id);
-create index if not exists cabinet_members_status_idx on public.cabinet_members(status);
-
--- 3) Trigger pour updated_at sur cabinets
+-- 4) Trigger pour updated_at sur cabinets
 drop trigger if exists cabinets_set_updated_at on public.cabinets;
 create trigger cabinets_set_updated_at
 before update on public.cabinets
 for each row
 execute procedure public.set_updated_at();
 
--- 4) Function pour générer un nouveau code d'accès
+-- 5) Function pour générer un nouveau code d'accès
 create or replace function public.regenerate_cabinet_code(cabinet_id_param uuid)
 returns text
 language plpgsql
@@ -157,7 +156,7 @@ begin
 end;
 $$;
 
--- 5) Function pour rejoindre un cabinet via code
+-- 6) Function pour rejoindre un cabinet via code
 create or replace function public.join_cabinet_by_code(code_param text)
 returns uuid
 language plpgsql
@@ -214,7 +213,7 @@ begin
 end;
 $$;
 
--- 6) Ajouter colonne cabinet_id aux profiles (optionnel, pour lier rapidement)
+-- 7) Ajouter colonne cabinet_id aux profiles (optionnel, pour lier rapidement)
 alter table public.profiles add column if not exists cabinet_id uuid references public.cabinets(id) on delete set null;
 
 create index if not exists profiles_cabinet_idx on public.profiles(cabinet_id);
