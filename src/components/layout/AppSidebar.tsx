@@ -24,6 +24,7 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -59,6 +60,8 @@ export function AppSidebar() {
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
   const menuItems = getMenuItems(role);
+  const primaryItems = menuItems.filter((m) => ["Tableau de bord", "Mon cabinet"].includes(m.title));
+  const secondaryItems = menuItems.filter((m) => !["Tableau de bord", "Mon cabinet"].includes(m.title));
   const isActive = (path: string) => location.pathname === path;
 
   const { user, profile } = useAuth();
@@ -73,7 +76,11 @@ export function AppSidebar() {
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border p-4 space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <SidebarTrigger />
+          <SidebarTrigger
+            className={
+              `h-8 w-8 rounded-md ${role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
+            }
+          />
           {!isCollapsed && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -130,7 +137,20 @@ export function AppSidebar() {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {primaryItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <NavLink to={item.url} className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4" />
+                      {!isCollapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+            <Separator className="my-2" />
+            <SidebarMenu>
+              {secondaryItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3">

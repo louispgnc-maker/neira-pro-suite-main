@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from '@/components/ui/dialog';
 import {
   Select,
@@ -570,12 +571,14 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                               </DialogDescription>
                             </DialogHeader>
                             <DialogFooter>
-                              <Button 
-                                variant="outline"
-                                className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
-                              >
-                                Non
-                              </Button>
+                              <DialogClose asChild>
+                                <Button 
+                                  variant="outline"
+                                  className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                                >
+                                  Non
+                                </Button>
+                              </DialogClose>
                               <Button variant="destructive" onClick={() => removeMember(member.id)}>Oui</Button>
                             </DialogFooter>
                           </DialogContent>
