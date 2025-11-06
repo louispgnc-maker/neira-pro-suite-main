@@ -78,6 +78,19 @@ create index if not exists cabinet_members_cabinet_idx on public.cabinet_members
 create index if not exists cabinet_members_user_idx on public.cabinet_members(user_id);
 create index if not exists cabinet_members_status_idx on public.cabinet_members(status);
 
+-- 2b) Fonction helper pour vérifier si un user est owner d'un cabinet (SECURITY DEFINER pour bypass RLS)
+create or replace function public.is_cabinet_owner(cabinet_id_param uuid, user_id_param uuid)
+returns boolean
+language sql
+security definer
+stable
+as $$
+  select exists (
+    select 1 from public.cabinets
+    where id = cabinet_id_param and owner_id = user_id_param
+  );
+$$;
+
 -- 3) Activer RLS et créer les policies (après que les deux tables existent)
 alter table public.cabinets enable row level security;
 alter table public.cabinet_members enable row level security;
@@ -88,20 +101,14 @@ drop policy if exists "cabinets_owner_full_access" on public.cabinets;
 create policy "cabinets_owner_full_access" on public.cabinets
   for all using (owner_id = auth.uid());
 
--- Policies pour CABINET_MEMBERS
--- Le propriétaire du cabinet peut gérer les membres (sans RLS check sur cabinets)
-drop policy if exists "cabinet_members_owner_can_manage" on public.cabinet_members;
-create policy "cabinet_members_owner_can_manage" on public.cabinet_members
+-- Policies pour CABINET_MEMBERS (SANS référence à cabinets pour éviter récursion)
+-- Le propriétaire peut gérer via une fonction
+drop policy if exists "cabinet_members_full_access" on public.cabinet_members;
+create policy "cabinet_members_full_access" on public.cabinet_members
   for all using (
-    cabinet_id in (
-      select id from public.cabinets where owner_id = auth.uid()
-    )
+    user_id = auth.uid() -- Chaque user gère ses propres memberships
+    or public.is_cabinet_owner(cabinet_id, auth.uid()) -- Ou est owner du cabinet
   );
-
--- Chaque utilisateur peut voir ses propres memberships
-drop policy if exists "cabinet_members_can_read_own" on public.cabinet_members;
-create policy "cabinet_members_can_read_own" on public.cabinet_members
-  for select using (user_id = auth.uid());
 
 -- Les membres actifs peuvent voir les autres membres de leurs cabinets
 drop policy if exists "cabinet_members_can_read_peers" on public.cabinet_members;
