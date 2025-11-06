@@ -317,7 +317,11 @@ export default function Dossiers() {
                     </TableRow>
                   ) : (
                     dossiers.map((d) => (
-                      <TableRow key={d.id}>
+                      <TableRow
+                        key={d.id}
+                        onDoubleClick={() => {/* Placeholder: future detail page */}}
+                        className="cursor-pointer"
+                      >
                         <TableCell className="font-medium">{d.title}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{d.status}</TableCell>
                         <TableCell>{d.client_count ?? '—'}</TableCell>

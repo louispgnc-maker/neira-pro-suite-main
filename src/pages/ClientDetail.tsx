@@ -125,7 +125,13 @@ export default function ClientDetail() {
     <AppLayout>
       <div className="p-6 max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="icon" onClick={goBack}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goBack}
+            className="bg-amber-500 hover:bg-amber-600 text-white"
+            aria-label="Retour"
+          >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">

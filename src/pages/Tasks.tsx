@@ -159,7 +159,11 @@ export default function Tasks() {
                 {tasks.map((task) => {
                   const overdue = !task.done && isOverdue(task.due_date);
                   return (
-                    <TableRow key={task.id} className={task.done ? "opacity-50" : ""}>
+                    <TableRow
+                      key={task.id}
+                      className={task.done ? "opacity-50 cursor-pointer" : "cursor-pointer"}
+                      onDoubleClick={() => toast.info('(À venir) Ouverture détails tâche', { description: task.title })}
+                    >
                       <TableCell>
                         <Checkbox
                           checked={task.done}

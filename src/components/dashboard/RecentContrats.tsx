@@ -197,7 +197,11 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
               </TableRow>
             ) : (
               contrats.map((contrat) => (
-                <TableRow key={contrat.id}>
+                <TableRow
+                  key={contrat.id}
+                  onDoubleClick={() => handleView(contrat)}
+                  className="cursor-pointer"
+                >
                   <TableCell className="font-medium">{contrat.name}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {contrat.client_names && contrat.client_names.length > 0

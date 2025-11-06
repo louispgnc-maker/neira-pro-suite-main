@@ -86,7 +86,11 @@ export function RecentDossiers({ role }: RecentDossiersProps) {
               </TableRow>
             ) : (
               rows.map((d) => (
-                <TableRow key={d.id}>
+                <TableRow
+                  key={d.id}
+                  onDoubleClick={() => navigate(derivedRole === 'notaire' ? '/notaires/dossiers' : '/avocats/dossiers')}
+                  className="cursor-pointer"
+                >
                   <TableCell className="font-medium">{d.title}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{d.status}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>

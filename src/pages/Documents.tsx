@@ -276,7 +276,11 @@ export default function Documents() {
               </TableHeader>
               <TableBody>
                 {documents.map((doc) => (
-                  <TableRow key={doc.id}>
+                  <TableRow
+                    key={doc.id}
+                    onDoubleClick={() => viewOrDownload(doc, 'view')}
+                    className="cursor-pointer"
+                  >
                     <TableCell className="font-medium">{doc.name}</TableCell>
                     <TableCell className="text-muted-foreground">{doc.client_name ?? "—"}</TableCell>
                     <TableCell>
