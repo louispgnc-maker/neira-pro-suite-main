@@ -24,6 +24,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface Cabinet {
   id: string;
@@ -474,22 +481,26 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <TableCell className="font-mono text-xs">{member.email}</TableCell>
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
-                      <div className="min-w-[220px]">
-                        <select
-                          className="w-full rounded border px-2 py-1 text-sm bg-background"
-                          value={member.role_cabinet}
-                          onChange={(e) => updateMemberRole(member.id, e.target.value)}
-                        >
+                      <Select
+                        value={member.role_cabinet}
+                        onValueChange={(value) => updateMemberRole(member.id, value)}
+                      >
+                        <SelectTrigger className="w-[220px]">
+                          <SelectValue placeholder="Sélectionner un rôle" />
+                        </SelectTrigger>
+                        <SelectContent>
                           {member.role_cabinet === 'owner' && (
-                            <option value="owner" disabled>
+                            <SelectItem value="owner" disabled>
                               owner (choisir un rôle)
-                            </option>
+                            </SelectItem>
                           )}
                           {roleOptions.map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
+                            <SelectItem key={opt} value={opt}>
+                              {opt}
+                            </SelectItem>
                           ))}
-                        </select>
-                      </div>
+                        </SelectContent>
+                      </Select>
                     </TableCell>
                     <TableCell>
                       <Badge
