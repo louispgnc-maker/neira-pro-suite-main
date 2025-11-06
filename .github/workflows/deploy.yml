@@ -20,6 +20,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          BASE_PATH: /neira-pro-suite-main/
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
       - name: Upload artifact
