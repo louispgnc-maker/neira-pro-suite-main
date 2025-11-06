@@ -66,11 +66,6 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       ? 'bg-amber-600 hover:bg-amber-700 text-white'
       : 'bg-blue-600 hover:bg-blue-700 text-white';
 
-  const outlineColorClass =
-    role === 'notaire'
-      ? 'border-amber-600 text-amber-700 hover:bg-amber-50'
-      : 'border-blue-600 text-blue-700 hover:bg-blue-50';
-
   useEffect(() => {
     loadCabinet();
   }, [userId, role]);
@@ -237,7 +232,6 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                 variant="outline" 
                 size="icon" 
                 onClick={copyCode}
-                className={outlineColorClass}
               >
                 <Copy className="h-4 w-4" />
               </Button>
@@ -247,7 +241,6 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                 size="icon"
                 onClick={regenerateCode}
                 title="Régénérer le code"
-                className={outlineColorClass}
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
@@ -265,7 +258,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
               </Label>
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className={outlineColorClass}>
+                  <Button variant="outline" size="sm">
                     <Mail className="h-4 w-4 mr-1" />
                     Inviter par email
                   </Button>
