@@ -429,9 +429,9 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
               </AlertDescription>
             </Alert>
           )}
-          <div className="space-y-2">
-            <Label>Code d'accès du cabinet</Label>
-            {isOwner ? (
+          {isOwner && (
+            <div className="space-y-2">
+              <Label>Code d'accès du cabinet</Label>
               <div className="flex gap-2">
                 <Input value={cabinet.code_acces} readOnly className="font-mono" />
                 <Button 
@@ -452,13 +452,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">Vous êtes membre de ce cabinet.</p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              Partagez ce code avec vos employés pour qu'ils puissent rejoindre le cabinet.
-            </p>
-          </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
