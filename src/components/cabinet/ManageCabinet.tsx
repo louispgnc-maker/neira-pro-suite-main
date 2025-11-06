@@ -66,6 +66,11 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       ? 'bg-amber-600 hover:bg-amber-700 text-white'
       : 'bg-blue-600 hover:bg-blue-700 text-white';
 
+  const outlineColorClass =
+    role === 'notaire'
+      ? 'border-amber-600 text-amber-700 hover:bg-amber-50'
+      : 'border-blue-600 text-blue-700 hover:bg-blue-50';
+
   useEffect(() => {
     loadCabinet();
   }, [userId, role]);
@@ -227,7 +232,13 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
             <Label>Code d'accès du cabinet</Label>
             <div className="flex gap-2">
               <Input value={cabinet.code_acces} readOnly className="font-mono" />
-              <Button type="button" variant="outline" size="icon" onClick={copyCode}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="icon" 
+                onClick={copyCode}
+                className={outlineColorClass}
+              >
                 <Copy className="h-4 w-4" />
               </Button>
               <Button
@@ -236,6 +247,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                 size="icon"
                 onClick={regenerateCode}
                 title="Régénérer le code"
+                className={outlineColorClass}
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
@@ -253,7 +265,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
               </Label>
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className={outlineColorClass}>
                     <Mail className="h-4 w-4 mr-1" />
                     Inviter par email
                   </Button>
