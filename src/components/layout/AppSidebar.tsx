@@ -6,6 +6,7 @@ import {
   CheckSquare,
   PenTool,
   FolderPlus,
+  Folder,
   LogOut,
 } from "lucide-react";
 import {
@@ -29,6 +30,7 @@ function getMenuItems(role: 'avocat' | 'notaire') {
   return [
     { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard },
     { title: "Documents", url: `${prefix}/documents`, icon: FileText },
+    { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder },
     { title: "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
     { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
     { title: "Clients", url: `${prefix}/clients`, icon: Users },

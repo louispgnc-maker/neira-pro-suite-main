@@ -33,16 +33,17 @@ type ContratRow = {
 
 interface RecentContratsProps {
   role?: 'avocat' | 'notaire';
+  title?: string;
 }
 
-export function RecentContrats({ role = 'avocat' }: RecentContratsProps = {}) {
+export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }: RecentContratsProps = {}) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [contrats, setContrats] = useState<ContratRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   const handleView = (contrat: ContratRow) => {
-    // Pour l'instant, navigation vers la page contrats (peut être étendu plus tard)
+    // Navigation vers la page contrats
     navigate(role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats');
   };
 
@@ -159,7 +160,7 @@ export function RecentContrats({ role = 'avocat' }: RecentContratsProps = {}) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg">Contrats récents</CardTitle>
+  <CardTitle className="text-lg">{title}</CardTitle>
         <Button
           variant="ghost"
           size="sm"

@@ -1,9 +1,10 @@
-import { FileText, PenTool, Users, Clock, ChevronDown } from "lucide-react";
+import { FileText, PenTool, Users, Clock, ChevronDown, FolderPlus } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentDocuments } from "@/components/dashboard/RecentDocuments";
 import { RecentContrats } from "@/components/dashboard/RecentContrats";
+import { RecentDossiers } from "@/components/dashboard/RecentDossiers";
 import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
 import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
 import { RecentClients } from "@/components/dashboard/RecentClients";
@@ -213,6 +214,13 @@ export function DashboardAvocat() {
             })()}
           />
           <StatCard
+            title="Dossiers"
+            value={docCount}
+            icon={FolderPlus}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-100"
+          />
+          <StatCard
             title="Clients à relancer"
             value={clientsToFollow}
             icon={Users}
@@ -234,18 +242,20 @@ export function DashboardAvocat() {
           primaryButtonColor="bg-blue-600 hover:bg-blue-700 text-white" 
         />
 
-        {/* Main Section - full width */}
+        {/* Main Section */}
         <div className="space-y-6">
+          <RecentDocuments 
+            role="avocat"
+            statusColorOverride={{
+              "En cours": "bg-blue-100 text-blue-600 border-blue-200"
+            }} 
+          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <RecentDocuments 
-              role="avocat"
-              statusColorOverride={{
-                "En cours": "bg-blue-100 text-blue-600 border-blue-200"
-              }} 
-            />
-            <RecentContrats role="avocat" />
+            {/* Dossiers (placeholder) à gauche */}
+            <RecentDossiers role="avocat" />
+            {/* Signatures en attente à droite */}
+            <PendingSignatures role="avocat" />
           </div>
-          <PendingSignatures role="avocat" />
           <AlertsCompliance />
         </div>
 

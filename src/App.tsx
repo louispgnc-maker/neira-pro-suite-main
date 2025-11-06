@@ -12,12 +12,13 @@ import NotaireDashboard from "./pages/notaires/Dashboard";
 import Documents from "./pages/Documents";
 import Signatures from "./pages/Signatures";
 import Clients from "./pages/Clients";
-import ClientDetail from "./pages/ClientDetail";
-import EditClient from "./pages/EditClient";
+import ClientDetail from "@/pages/ClientDetail";
+import EditClient from "@/pages/EditClient";
 import CreateClientAvocat from "./pages/CreateClientAvocat";
 import CreateClientNotaire from "./pages/CreateClientNotaire";
 import Tasks from "./pages/Tasks";
 import Contrats from "./pages/Contrats";
+import Dossiers from "./pages/Dossiers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/avocats/clients/:id/edit" element={<EditClient />} />
             <Route path="/avocats/tasks" element={<Tasks />} />
             <Route path="/avocats/contrats" element={<Contrats />} />
+            <Route path="/avocats/dossiers" element={<Dossiers />} />
             
             {/* Routes Notaire */}
             <Route path="/notaires/auth" element={<Auth />} />
@@ -56,6 +58,7 @@ const App = () => (
             <Route path="/notaires/clients/:id/edit" element={<EditClient />} />
             <Route path="/notaires/tasks" element={<Tasks />} />
             <Route path="/notaires/contrats" element={<Contrats />} />
+            <Route path="/notaires/dossiers" element={<Dossiers />} />
             
             {/* Routes génériques (legacy) */}
             <Route path="/documents" element={<Documents />} />
@@ -65,6 +68,7 @@ const App = () => (
             <Route path="/clients/:id/edit" element={<EditClient />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/contrats" element={<Contrats />} />
+            <Route path="/dossiers" element={<Dossiers />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

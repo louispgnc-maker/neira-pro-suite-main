@@ -1,9 +1,10 @@
-import { FileText, PenTool, Users, Clock, ChevronDown } from "lucide-react";
+import { FileText, PenTool, Users, Clock, ChevronDown, FolderPlus } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentDocuments } from "@/components/dashboard/RecentDocuments";
 import { RecentContrats } from "@/components/dashboard/RecentContrats";
+import { RecentDossiers } from "@/components/dashboard/RecentDossiers";
 import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
 import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
 import { RecentClients } from "@/components/dashboard/RecentClients";
@@ -213,6 +214,13 @@ export function DashboardNotaire() {
             })()}
           />
           <StatCard
+            title="Dossiers"
+            value={docCount}
+            icon={FolderPlus}
+            iconColor="text-amber-600"
+            iconBgColor="bg-amber-100"
+          />
+          <StatCard
             title="Clients à relancer"
             value={clientsToFollow}
             icon={Users}
@@ -234,18 +242,20 @@ export function DashboardNotaire() {
           primaryButtonColor="bg-amber-600 hover:bg-amber-700 text-white" 
         />
 
-        {/* Main Section - full width */}
+        {/* Main Section */}
         <div className="space-y-6">
+          <RecentDocuments 
+            role="notaire"
+            statusColorOverride={{
+              "En cours": "bg-amber-100 text-amber-600 border-amber-200"
+            }} 
+          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <RecentDocuments 
-              role="notaire"
-              statusColorOverride={{
-                "En cours": "bg-amber-100 text-amber-600 border-amber-200"
-              }} 
-            />
-            <RecentContrats role="notaire" />
+            {/* Dossiers (placeholder) à gauche */}
+            <RecentDossiers role="notaire" />
+            {/* Signatures en attente à droite */}
+            <PendingSignatures role="notaire" />
           </div>
-          <PendingSignatures role="notaire" />
           <AlertsCompliance />
         </div>
 
