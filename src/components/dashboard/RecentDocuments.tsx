@@ -21,6 +21,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { DocumentViewer } from "@/components/ui/document-viewer";
 
 type DocRow = {
   id: string;
@@ -48,6 +49,9 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState("");
+  const [viewerDocName, setViewerDocName] = useState("");
 
   // Merge default colors with override
   const effectiveStatusColors = { ...statusColors, ...statusColorOverride };
@@ -66,7 +70,9 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       return;
     }
     if (mode === 'view') {
-      window.location.href = data.signedUrl;
+      setViewerUrl(data.signedUrl);
+      setViewerDocName(doc.name);
+      setViewerOpen(true);
     } else {
       const a = document.createElement('a');
       a.href = data.signedUrl;
@@ -245,6 +251,12 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
           </TableBody>
         </Table>
       </CardContent>
+      <DocumentViewer
+        open={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        documentUrl={viewerUrl}
+        documentName={viewerDocName}
+      />
     </Card>
   );
 }

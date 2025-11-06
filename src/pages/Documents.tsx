@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { DocumentViewer } from "@/components/ui/document-viewer";
 
 type DocRow = {
   id: string;
@@ -53,6 +54,9 @@ export default function Documents() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState("");
+  const [viewerDocName, setViewerDocName] = useState("");
 
   // Debounce search
   useEffect(() => {
@@ -113,7 +117,9 @@ export default function Documents() {
       return;
     }
     if (mode === 'view') {
-      window.location.href = data.signedUrl;
+      setViewerUrl(data.signedUrl);
+      setViewerDocName(doc.name);
+      setViewerOpen(true);
     } else {
       const a = document.createElement('a');
       a.href = data.signedUrl;
@@ -324,6 +330,12 @@ export default function Documents() {
           </div>
         )}
       </div>
+      <DocumentViewer
+        open={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        documentUrl={viewerUrl}
+        documentName={viewerDocName}
+      />
     </AppLayout>
   );
 }
