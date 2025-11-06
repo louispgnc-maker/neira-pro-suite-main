@@ -316,11 +316,18 @@ begin
           and cm.status = 'pending'
           and lower(cm.email) = v_email
       ) then
-        -- Show only active members to pending invitees
+        -- Show active members + the invitee's own pending row
         return query
           select cm.* from cabinet_members cm
           where cm.cabinet_id = cabinet_id_param
-            and cm.status = 'active'
+            and (
+              cm.status = 'active'
+              or (
+                cm.status = 'pending'
+                and cm.user_id is null
+                and lower(cm.email) = v_email
+              )
+            )
           order by cm.created_at;
       end if;
     end if;
