@@ -5,9 +5,16 @@
 
 -- Insert missing founder membership rows
 insert into public.cabinet_members (cabinet_id, user_id, email, nom, role_cabinet, status, joined_at)
-select c.id, c.owner_id, c.email, coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email, c.email), 'Fondateur', 'active', now()
+select c.id,
+       c.owner_id,
+       coalesce(u.email, c.email) as email,
+       coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email, c.email) as nom,
+       'Fondateur',
+       'active',
+       now()
 from public.cabinets c
-join public.profiles p on p.id = c.owner_id
+left join auth.users u on u.id = c.owner_id
+left join public.profiles p on p.id = c.owner_id
 where not exists (
   select 1 from public.cabinet_members cm
   where cm.cabinet_id = c.id
