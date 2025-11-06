@@ -1,8 +1,17 @@
 
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://elysrdqujzlbvnjfilvh.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA'
+// Use Vite environment variables instead of hardcoding credentials.
+// Define VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env.local
+const supabaseUrl = import.meta?.env?.VITE_SUPABASE_URL
+const supabaseKey = import.meta?.env?.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  // Fail fast to avoid silent runtime issues if env vars are missing
+  // eslint-disable-next-line no-console
+  console.error('[supabaseClient] Missing Supabase env vars. Did you create .env.local?')
+  throw new Error('Supabase configuration missing: VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY')
+}
 
 // Fetch avec timeout pour éviter les attentes interminables en cas de réseau lent
 const fetchWithTimeout = (timeoutMs = 7000) => {

@@ -60,6 +60,47 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Environment setup
+
+This app expects Supabase credentials from Vite environment variables. Create a `.env.local` at the project root (never commit secrets) based on `.env.example`:
+
+```
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+Then run the dev server:
+
+```
+npm run dev
+```
+
+If these variables are missing, the app will fail fast at startup to avoid using incorrect defaults.
+
+## Supabase schema & migrations
+
+Schema SQL lives under `supabase/`. To provision the latest tables (including `dossiers` and association tables), run the migration in your Supabase project's SQL editor:
+
+- Open `supabase/migrations/2025-11-06_add_dossiers.sql`
+- Copy/paste its content into Supabase SQL editor and execute
+
+Idempotent by design: running it multiple times is safe. Ensure RLS policies are applied as included.
+
+## Troubleshooting: local vs online differences
+
+If the online app behaves differently than localhost, check:
+
+1) Environment variables
+	- The deployed site must have `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` set to the correct project.
+2) Database schema
+	- Apply the latest SQL migration(s) in your live Supabase project. Errors like `relation "public.dossiers" does not exist` mean migrations haven't run.
+3) Policies/Row Level Security
+	- Verify RLS policies exist and allow your queries for the current user (owner_id, role, etc.).
+4) Cache/deploy
+	- Invalidate CDN cache or redeploy if static assets are stale.
+5) Multiple Supabase projects
+	- Confirm both local and online point to the same Supabase project (URLs/keys).
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/22971231-7f53-4007-a2aa-9da47248d99c) and click on Share -> Publish.
