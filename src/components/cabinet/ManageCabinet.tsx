@@ -296,6 +296,10 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
     return null;
   }
 
+  const roleOptions = role === 'notaire'
+    ? ['Notaire', 'Clerc de Notaire', 'Formaliste', 'Juriste Notarial']
+    : ['Avocat Associé', 'Avocat Collaborateur', 'Juriste', 'Responsable Administratif'];
+
   return (
     <div className="space-y-4">
       <Card>
@@ -473,16 +477,15 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                       {member.role_cabinet === 'owner' ? (
                         <Badge variant="outline">owner</Badge>
                       ) : (
-                        <div className="min-w-[160px]">
+                        <div className="min-w-[200px]">
                           <select
                             className="w-full rounded border px-2 py-1 text-sm bg-background"
                             value={member.role_cabinet}
                             onChange={(e) => updateMemberRole(member.id, e.target.value)}
                           >
-                            <option value="Notaire">Notaire</option>
-                            <option value="Clerc de Notaire">Clerc de Notaire</option>
-                            <option value="Formaliste">Formaliste</option>
-                            <option value="Juriste Notarial">Juriste Notarial</option>
+                            {roleOptions.map((opt) => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
                           </select>
                         </div>
                       )}
