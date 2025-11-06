@@ -159,8 +159,6 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       setMembers(prev => prev.map(m => 
         m.id === memberId ? { ...m, role_cabinet: newRole } : m
       ));
-      
-      toast({ title: 'Rôle mis à jour', description: 'Le rôle du membre a été modifié.' });
     } catch (error: any) {
       console.error('Erreur changement rôle:', error);
       toast({ title: 'Erreur', description: error.message || 'Impossible de changer le rôle', variant: 'destructive' });
@@ -271,8 +269,6 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
   };
 
   const removeMember = async (memberId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir retirer ce membre du cabinet ?')) return;
-
     try {
       // Utiliser la fonction RPC pour retirer (bypass RLS)
       const { error } = await supabase.rpc('remove_cabinet_member', {
@@ -281,12 +277,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
       if (error) throw error;
 
-      toast({
-        title: 'Membre retiré',
-        description: 'Le membre a été retiré du cabinet.',
-      });
-
-      loadCabinet();
+      // Mettre à jour l'état local
+      setMembers(prev => prev.filter(m => m.id !== memberId));
     } catch (error: any) {
       console.error('Erreur retrait membre:', error);
       toast({
@@ -553,21 +545,23 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      {member.role_cabinet !== 'owner' && (
+                      {member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm">Retirer</Button>
+                            <Button variant="destructive" size="sm">
+                              Expulser
+                            </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-sm">
                             <DialogHeader>
-                              <DialogTitle>Retirer ce membre ?</DialogTitle>
+                              <DialogTitle>Expulser ce membre ?</DialogTitle>
                               <DialogDescription>
                                 Cette action supprimera ce membre du cabinet. Voulez-vous continuer ?
                               </DialogDescription>
                             </DialogHeader>
                             <DialogFooter>
-                              <Button variant="outline">Annuler</Button>
-                              <Button className={colorClass} onClick={() => removeMember(member.id)}>Confirmer</Button>
+                              <Button variant="outline">Non</Button>
+                              <Button variant="destructive" onClick={() => removeMember(member.id)}>Oui</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
