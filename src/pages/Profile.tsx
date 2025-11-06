@@ -52,7 +52,7 @@ export default function Profile() {
 
     try {
       const { data, error } = await supabase.rpc('join_cabinet_by_code', {
-        code_param: inviteCode.trim(),
+        code: inviteCode.trim(),
       });
 
       if (error) throw error;
