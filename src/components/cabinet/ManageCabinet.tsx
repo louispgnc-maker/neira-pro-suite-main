@@ -485,7 +485,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                         value={member.role_cabinet}
                         onValueChange={(value) => updateMemberRole(member.id, value)}
                       >
-                        <SelectTrigger className="w-[220px]">
+                        <SelectTrigger className={`w-[220px] ${role === 'notaire' ? 'bg-amber-600 text-white hover:bg-amber-700' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
                           <SelectValue placeholder="Sélectionner un rôle" />
                         </SelectTrigger>
                         <SelectContent>
