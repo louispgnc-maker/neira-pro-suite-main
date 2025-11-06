@@ -481,30 +481,34 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <TableCell className="font-mono text-xs">{member.email}</TableCell>
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
-                      <Select
-                        value={member.role_cabinet}
-                        onValueChange={(value) => updateMemberRole(member.id, value)}
-                      >
-                        <SelectTrigger className={`w-[220px] ${role === 'notaire' ? 'bg-amber-600 text-white hover:bg-amber-700' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
-                          <SelectValue placeholder="Sélectionner un rôle" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {member.role_cabinet === 'owner' && (
-                            <SelectItem value="owner" disabled>
-                              owner (choisir un rôle)
-                            </SelectItem>
-                          )}
-                          {roleOptions.map((opt) => (
-                            <SelectItem 
-                              key={opt} 
-                              value={opt}
-                              className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
-                            >
-                              {opt}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      {member.role_cabinet === 'owner' ? (
+                        <Badge 
+                          variant="outline"
+                          className={role === 'notaire' ? 'bg-amber-600 text-white border-amber-600' : 'bg-blue-600 text-white border-blue-600'}
+                        >
+                          Fondateur
+                        </Badge>
+                      ) : (
+                        <Select
+                          value={member.role_cabinet}
+                          onValueChange={(value) => updateMemberRole(member.id, value)}
+                        >
+                          <SelectTrigger className={`w-[220px] ${role === 'notaire' ? 'bg-amber-600 text-white hover:bg-amber-700' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
+                            <SelectValue placeholder="Sélectionner un rôle" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {roleOptions.map((opt) => (
+                              <SelectItem 
+                                key={opt} 
+                                value={opt}
+                                className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
+                              >
+                                {opt}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge
