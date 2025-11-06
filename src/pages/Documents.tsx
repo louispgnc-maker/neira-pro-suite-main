@@ -335,6 +335,7 @@ export default function Documents() {
         onClose={() => setViewerOpen(false)}
         documentUrl={viewerUrl}
         documentName={viewerDocName}
+        role={role}
       />
     </AppLayout>
   );

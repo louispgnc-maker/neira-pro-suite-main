@@ -256,6 +256,7 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
         onClose={() => setViewerOpen(false)}
         documentUrl={viewerUrl}
         documentName={viewerDocName}
+        role={role}
       />
     </Card>
   );

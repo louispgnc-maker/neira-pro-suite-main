@@ -7,12 +7,17 @@ interface DocumentViewerProps {
   onClose: () => void;
   documentUrl: string;
   documentName: string;
+  role?: 'avocat' | 'notaire';
 }
 
-export function DocumentViewer({ open, onClose, documentUrl, documentName }: DocumentViewerProps) {
+export function DocumentViewer({ open, onClose, documentUrl, documentName, role = 'avocat' }: DocumentViewerProps) {
+  const closeButtonClass = role === 'notaire' 
+    ? 'bg-amber-600 hover:bg-amber-700 text-white' 
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl h-[90vh] p-0 gap-0">
+      <DialogContent className="max-w-5xl h-[90vh] p-0 gap-0 [&>button]:hidden">
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-lg font-semibold truncate pr-4">
@@ -22,7 +27,7 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName }: Doc
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="h-8 w-8 rounded-full"
+              className={`h-8 w-8 rounded-full ${closeButtonClass}`}
             >
               <X className="h-4 w-4" />
             </Button>
