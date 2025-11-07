@@ -100,6 +100,26 @@ export default function EspaceCollaboratif() {
   const [taskDate, setTaskDate] = useState('');
   const [taskTime, setTaskTime] = useState('');
   const [taskSaving, setTaskSaving] = useState(false);
+  const [collabTasks, setCollabTasks] = useState<any[]>([]);
+  const [collabLoading, setCollabLoading] = useState(true);
+  // Load collaborative tasks (role/cabinet)
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      if (!user) return;
+      setCollabLoading(true);
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('id,title,description,due_at,done')
+        .eq('owner_id', user.id)
+        .eq('role', cabinetRole)
+        .order('due_at', { ascending: true, nullsFirst: false });
+      if (!error && mounted) setCollabTasks((data || []) as any[]);
+      setCollabLoading(false);
+    }
+    load();
+    return () => { mounted = false; };
+  }, [user, cabinetRole, taskDialogOpen]);
 
   useEffect(() => {
     if (user) {
@@ -221,14 +241,16 @@ export default function EspaceCollaboratif() {
     }
     setTaskSaving(true);
     try {
-      const due_date = taskDate || null; // store only date for now
-      const description = taskNotes || null; // could append time
+      let due_at = null;
+      if (taskDate) {
+        due_at = taskTime ? `${taskDate}T${taskTime}` : `${taskDate}T00:00`;
+      }
       const { error } = await supabase.from('tasks').insert({
         owner_id: user.id,
         role: cabinetRole,
         title,
-        description: description ? (taskTime ? `${description}\n[Heure: ${taskTime}]` : description) : (taskTime ? `[Heure: ${taskTime}]` : null),
-        due_date
+        description: taskNotes || null,
+        due_at
       });
       if (error) throw error;
       toast({ title: 'Tâche créée', description: 'La tâche a été ajoutée.' });
@@ -727,11 +749,68 @@ export default function EspaceCollaboratif() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Aucune tâche pour le moment</p>
-                <p className="text-sm mt-2">Créez votre première tâche collaborative</p>
-              </div>
+              {collabLoading ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Chargement…</p>
+                </div>
+              ) : collabTasks.filter(t => !t.done).length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Aucune tâche pour le moment</p>
+                  <p className="text-sm mt-2">Créez votre première tâche collaborative</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {collabTasks.filter(t => !t.done).map((task) => {
+                    const overdue = !task.done && task.due_at && new Date(task.due_at) < new Date();
+                    let dateStr = '';
+                    if (task.due_at) {
+                      const d = new Date(task.due_at);
+                      dateStr = d.toLocaleDateString() + (d.getHours() || d.getMinutes() ? ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
+                    }
+                    return (
+                      <div
+                        key={task.id}
+                        className={`relative rounded-lg shadow p-4 bg-yellow-50 border border-yellow-200 flex flex-col min-h-[140px]`}
+                      >
+                        <button
+                          className={`absolute top-2 right-2 p-1 rounded-full ${cabinetRole === 'notaire' ? 'text-orange-600 hover:bg-orange-100' : 'text-blue-600 hover:bg-blue-100'}`}
+                          title="Éditer la tâche"
+                          // onClick={() => ...}
+                        >
+                          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
+                        </button>
+                        <div className="flex items-center gap-2 mb-2">
+                          <input
+                            type="checkbox"
+                            checked={task.done}
+                            onChange={async () => {
+                              await supabase.from('tasks').update({ done: true }).eq('id', task.id);
+                              setCollabTasks(prev => prev.map(t => t.id === task.id ? { ...t, done: true } : t));
+                            }}
+                            className={`accent-${cabinetRole === 'notaire' ? 'orange' : 'blue'}-600 h-5 w-5 rounded`}
+                          />
+                          <span className="font-medium text-lg">{task.title}</span>
+                        </div>
+                        {task.description && (
+                          <div className="text-sm text-muted-foreground mb-2 whitespace-pre-line">{task.description}</div>
+                        )}
+                        <div className="flex-1" />
+                        <div className="flex items-center justify-between mt-2">
+                          {task.due_at ? (
+                            <Badge variant={overdue ? "destructive" : "outline"}>
+                              {dateStr}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">Pas d'échéance</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

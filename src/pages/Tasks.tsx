@@ -24,6 +24,7 @@ type TaskRow = {
   title: string;
   description?: string | null;
   due_date?: string | null;
+  due_at?: string | null;
   done: boolean;
 };
 
@@ -62,10 +63,10 @@ export default function Tasks() {
       setLoading(true);
       let query = supabase
         .from("tasks")
-        .select("id,title,description,due_date,done")
+        .select("id,title,description,due_date,due_at,done")
         .eq("owner_id", user.id)
         .eq("role", role)
-        .order("due_date", { ascending: true, nullsFirst: false });
+        .order("due_at", { ascending: true, nullsFirst: false });
       if (debounced) {
         query = query.or(`title.ilike.%${debounced}%,description.ilike.%${debounced}%`);
       }
@@ -126,15 +127,16 @@ export default function Tasks() {
     }
     setSaving(true);
     try {
-      // Combine date + time -> keep date for storage, append time to notes if provided
-      const dueDate = taskDate ? taskDate : null;
-      const notesWithTime = taskTime ? `${taskNotes}\n[Heure: ${taskTime}]` : taskNotes;
+      let due_at = null;
+      if (taskDate) {
+        due_at = taskTime ? `${taskDate}T${taskTime}` : `${taskDate}T00:00`;
+      }
       const insertObj: any = {
         owner_id: user.id,
         role,
         title,
-        description: notesWithTime || null,
-        due_date: dueDate,
+        description: taskNotes || null,
+        due_at,
       };
       const { error } = await supabase.from('tasks').insert(insertObj);
       if (error) throw error;
@@ -148,10 +150,10 @@ export default function Tasks() {
       // Reload tasks list
       let query = supabase
         .from("tasks")
-        .select("id,title,description,due_date,done")
+        .select("id,title,description,due_date,due_at,done")
         .eq("owner_id", user.id)
         .eq("role", role)
-        .order("due_date", { ascending: true, nullsFirst: false });
+        .order("due_at", { ascending: true, nullsFirst: false });
       const { data } = await query;
       setTasks((data || []) as TaskRow[]);
     } catch (err: any) {
@@ -244,54 +246,51 @@ export default function Tasks() {
             </div>
           </div>
         ) : (
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">Fait</TableHead>
-                  <TableHead>Tâche</TableHead>
-                  <TableHead>Échéance</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tasks.map((task) => {
-                  const overdue = !task.done && isOverdue(task.due_date);
-                  return (
-                    <TableRow
-                      key={task.id}
-                      className={task.done ? "opacity-50 cursor-pointer" : "cursor-pointer"}
-                      onDoubleClick={() => {/* Future detail/edit modal */}}
-                    >
-                      <TableCell>
-                        <Checkbox
-                          checked={task.done}
-                          onCheckedChange={() => toggleDone(task.id, task.done)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <div className={task.done ? "line-through" : ""}>
-                          <div className="font-medium">{task.title}</div>
-                          {task.description && (
-                            <div className="text-sm text-muted-foreground">
-                              {task.description}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {task.due_date ? (
-                          <Badge variant={overdue ? "destructive" : "outline"}>
-                            {new Date(task.due_date).toLocaleDateString()}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">Pas d'échéance</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {tasks.filter(t => !t.done).map((task) => {
+              const overdue = !task.done && isOverdue(task.due_at);
+              let dateStr = '';
+              if (task.due_at) {
+                const d = new Date(task.due_at);
+                dateStr = d.toLocaleDateString() + (d.getHours() || d.getMinutes() ? ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
+              }
+              return (
+                <div
+                  key={task.id}
+                  className={`relative rounded-lg shadow p-4 bg-yellow-50 border border-yellow-200 flex flex-col min-h-[140px]`}
+                >
+                  <button
+                    className={`absolute top-2 right-2 p-1 rounded-full ${role === 'notaire' ? 'text-orange-600 hover:bg-orange-100' : 'text-blue-600 hover:bg-blue-100'}`}
+                    title="Éditer la tâche"
+                    // onClick={() => ...} // à implémenter
+                  >
+                    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
+                  </button>
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="checkbox"
+                      checked={task.done}
+                      onChange={() => toggleDone(task.id, task.done)}
+                      className={`accent-${role === 'notaire' ? 'orange' : 'blue'}-600 h-5 w-5 rounded`}
+                    />
+                    <span className="font-medium text-lg">{task.title}</span>
+                  </div>
+                  {task.description && (
+                    <div className="text-sm text-muted-foreground mb-2 whitespace-pre-line">{task.description}</div>
+                  )}
+                  <div className="flex-1" />
+                  <div className="flex items-center justify-between mt-2">
+                    {task.due_at ? (
+                      <Badge variant={overdue ? "destructive" : "outline"}>
+                        {dateStr}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground text-xs">Pas d'échéance</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
