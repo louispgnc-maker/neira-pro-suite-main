@@ -78,7 +78,7 @@ export function AppSidebar() {
         <div className="flex items-center justify-between gap-2">
           <SidebarTrigger
             className={
-              `h-10 w-10 rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
+              `h-9 w-9 rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
             }
           />
           {!isCollapsed && (
@@ -121,8 +121,8 @@ export function AppSidebar() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <div className={`w-10 h-10 rounded-md flex-shrink-0 flex items-center justify-center text-white ${role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600'}`}> 
-            <UserCircle2 className="h-5 w-5" />
+          <div className={`w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center text-white ${role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600'}`}> 
+            <UserCircle2 className="h-4 w-4" />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
@@ -170,7 +170,7 @@ export function AppSidebar() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center' : 'w-full justify-start gap-2'} group font-medium rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+              className={`${isCollapsed ? 'h-9 w-9 p-0 justify-center' : 'w-full justify-start gap-2'} group font-medium rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
             >
               <UserCircle2 className="h-4 w-4" />
               {!isCollapsed && <span>Profil</span>}
