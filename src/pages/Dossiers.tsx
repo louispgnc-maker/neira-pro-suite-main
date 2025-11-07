@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
+import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
 
 type DossierRow = {
   id: string;
@@ -309,12 +310,13 @@ export default function Dossiers() {
                     <TableHead>Contrats</TableHead>
                     <TableHead>Documents</TableHead>
                     <TableHead>Créé le</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {dossiers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-muted-foreground">Aucun dossier</TableCell>
+                      <TableCell colSpan={7} className="text-center text-muted-foreground">Aucun dossier</TableCell>
                     </TableRow>
                   ) : (
                     dossiers.map((d) => (
@@ -329,6 +331,17 @@ export default function Dossiers() {
                         <TableCell>{d.contrat_count ?? '—'}</TableCell>
                         <TableCell>{d.document_count ?? '—'}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <ShareToCollaborativeDialog
+                            itemId={d.id}
+                            itemName={d.title}
+                            itemType="dossier"
+                            role={role}
+                            onSuccess={() => {
+                              toast.success('Dossier partagé');
+                            }}
+                          />
+                        </TableCell>
                       </TableRow>
                     ))
                   )}

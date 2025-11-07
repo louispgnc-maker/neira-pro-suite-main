@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DocumentViewer } from "@/components/ui/document-viewer";
+import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
 
 type DocRow = {
   id: string;
@@ -298,30 +299,41 @@ export default function Documents() {
                       {doc.updated_at ? new Date(doc.updated_at).toLocaleDateString() : "—"}
                     </TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => viewOrDownload(doc, 'view')}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Voir
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => viewOrDownload(doc, 'download')}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Télécharger
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            className="text-destructive"
-                            onClick={() => handleDelete(doc)}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Supprimer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="flex items-center gap-1">
+                        <ShareToCollaborativeDialog
+                          itemId={doc.id}
+                          itemName={doc.name}
+                          itemType="document"
+                          role={role}
+                          onSuccess={() => {
+                            toast.success('Document partagé');
+                          }}
+                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => viewOrDownload(doc, 'view')}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              Voir
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => viewOrDownload(doc, 'download')}>
+                              <Download className="mr-2 h-4 w-4" />
+                              Télécharger
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-destructive"
+                              onClick={() => handleDelete(doc)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

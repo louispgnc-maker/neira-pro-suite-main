@@ -266,3 +266,107 @@ begin
   return v_shared_doc_id;
 end;
 $$;
+
+-- Partager un dossier existant au cabinet
+drop function if exists public.share_dossier_to_cabinet(uuid, uuid, text, text);
+create or replace function public.share_dossier_to_cabinet(
+  cabinet_id_param uuid,
+  dossier_id_param uuid,
+  title_param text,
+  description_param text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_shared_dossier_id uuid;
+  v_status text;
+  v_client_name text;
+begin
+  -- Vérifier que l'utilisateur est membre actif du cabinet
+  if not exists (
+    select 1 from cabinet_members
+    where cabinet_id = cabinet_id_param
+      and user_id = auth.uid()
+      and status = 'active'
+  ) then
+    raise exception 'Not a member of this cabinet';
+  end if;
+
+  -- Récupérer les infos du dossier
+  select status, client_name
+  into v_status, v_client_name
+  from dossiers
+  where id = dossier_id_param and user_id = auth.uid();
+
+  if not found then
+    raise exception 'Dossier not found or access denied';
+  end if;
+
+  -- Créer le dossier partagé
+  insert into cabinet_dossiers (
+    cabinet_id, dossier_id, title, description,
+    status, client_name, shared_by
+  ) values (
+    cabinet_id_param, dossier_id_param, title_param, description_param,
+    v_status, v_client_name, auth.uid()
+  ) returning id into v_shared_dossier_id;
+
+  return v_shared_dossier_id;
+end;
+$$;
+
+-- Partager un contrat existant au cabinet
+drop function if exists public.share_contrat_to_cabinet(uuid, uuid, text, text);
+create or replace function public.share_contrat_to_cabinet(
+  cabinet_id_param uuid,
+  contrat_id_param uuid,
+  title_param text,
+  description_param text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_shared_contrat_id uuid;
+  v_type text;
+  v_status text;
+  v_client_name text;
+  v_file_url text;
+begin
+  -- Vérifier que l'utilisateur est membre actif du cabinet
+  if not exists (
+    select 1 from cabinet_members
+    where cabinet_id = cabinet_id_param
+      and user_id = auth.uid()
+      and status = 'active'
+  ) then
+    raise exception 'Not a member of this cabinet';
+  end if;
+
+  -- Récupérer les infos du contrat
+  select type, status, client_name, file_url
+  into v_type, v_status, v_client_name, v_file_url
+  from contrats
+  where id = contrat_id_param and user_id = auth.uid();
+
+  if not found then
+    raise exception 'Contrat not found or access denied';
+  end if;
+
+  -- Créer le contrat partagé
+  insert into cabinet_contrats (
+    cabinet_id, contrat_id, title, description,
+    type, status, client_name, file_url, shared_by
+  ) values (
+    cabinet_id_param, contrat_id_param, title_param, description_param,
+    v_type, v_status, v_client_name, v_file_url, auth.uid()
+  ) returning id into v_shared_contrat_id;
+
+  return v_shared_contrat_id;
+end;
+$$;

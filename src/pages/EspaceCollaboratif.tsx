@@ -14,9 +14,7 @@ import {
   BarChart3, 
   CheckSquare, 
   Calendar, 
-  FolderOpen,
-  Upload,
-  Plus
+  FolderOpen
 } from 'lucide-react';
 
 interface Cabinet {
@@ -33,11 +31,44 @@ interface CabinetMember {
   status: string;
 }
 
+interface SharedDocument {
+  id: string;
+  title: string;
+  description: string | null;
+  shared_at: string;
+  shared_by: string;
+  document_id: string;
+}
+
+interface SharedDossier {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  shared_at: string;
+  shared_by: string;
+  dossier_id: string;
+}
+
+interface SharedContrat {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  contrat_type: string;
+  shared_at: string;
+  shared_by: string;
+  contrat_id: string;
+}
+
 export default function EspaceCollaboratif() {
   const { user } = useAuth();
   const location = useLocation();
   const [cabinet, setCabinet] = useState<Cabinet | null>(null);
   const [members, setMembers] = useState<CabinetMember[]>([]);
+  const [documents, setDocuments] = useState<SharedDocument[]>([]);
+  const [dossiers, setDossiers] = useState<SharedDossier[]>([]);
+  const [contrats, setContrats] = useState<SharedContrat[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -76,6 +107,36 @@ export default function EspaceCollaboratif() {
 
         if (membersError) throw membersError;
         setMembers(membersData || []);
+
+        // Charger les documents partagés
+        const { data: docsData, error: docsError } = await supabase
+          .rpc('get_cabinet_documents', { cabinet_id_param: userCabinet.id });
+
+        if (docsError) {
+          console.error('Erreur chargement documents:', docsError);
+        } else {
+          setDocuments(docsData || []);
+        }
+
+        // Charger les dossiers partagés
+        const { data: dossiersData, error: dossiersError } = await supabase
+          .rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
+
+        if (dossiersError) {
+          console.error('Erreur chargement dossiers:', dossiersError);
+        } else {
+          setDossiers(dossiersData || []);
+        }
+
+        // Charger les contrats partagés
+        const { data: contratsData, error: contratsError } = await supabase
+          .rpc('get_cabinet_contrats', { cabinet_id_param: userCabinet.id });
+
+        if (contratsError) {
+          console.error('Erreur chargement contrats:', contratsError);
+        } else {
+          setContrats(contratsData || []);
+        }
       }
     } catch (error: any) {
       console.error('Erreur chargement espace collaboratif:', error);
@@ -170,26 +231,26 @@ export default function EspaceCollaboratif() {
                 <CardTitle className="text-sm font-medium">Documents partagés</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">documents au total</p>
+                <div className="text-2xl font-bold">{documents.length + contrats.length}</div>
+                <p className="text-xs text-muted-foreground">documents et contrats au total</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Tâches en cours</CardTitle>
+                <CardTitle className="text-sm font-medium">Dossiers partagés</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">tâches actives</p>
+                <div className="text-2xl font-bold">{dossiers.length}</div>
+                <p className="text-xs text-muted-foreground">dossiers partagés</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Événements à venir</CardTitle>
+                <CardTitle className="text-sm font-medium">Membres actifs</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">cette semaine</p>
+                <div className="text-2xl font-bold">{members.filter(m => m.status === 'active').length}</div>
+                <p className="text-xs text-muted-foreground">membres du cabinet</p>
               </CardContent>
             </Card>
           </div>
@@ -199,10 +260,34 @@ export default function EspaceCollaboratif() {
               <CardTitle>Activité récente</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Aucune activité récente</p>
-              </div>
+              {documents.length === 0 && dossiers.length === 0 && contrats.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Aucune activité récente</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {[...documents.map(d => ({ ...d, type: 'Document' })), 
+                    ...dossiers.map(d => ({ ...d, type: 'Dossier' })), 
+                    ...contrats.map(c => ({ ...c, type: 'Contrat' }))]
+                    .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime())
+                    .slice(0, 5)
+                    .map((item, idx) => (
+                      <div key={`${item.type}-${idx}`} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-5 w-5 text-muted-foreground" />
+                          <div>
+                            <p className="font-medium">{item.title}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {item.type} partagé le {new Date(item.shared_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <Badge variant="outline">{item.type}</Badge>
+                      </div>
+                    ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -217,21 +302,38 @@ export default function EspaceCollaboratif() {
                   <div>
                     <CardTitle className="text-lg">Documents partagés</CardTitle>
                     <CardDescription className="text-sm">
-                      Documents accessibles par tous les membres
+                      {documents.length} document{documents.length > 1 ? 's' : ''} accessible{documents.length > 1 ? 's' : ''}
                     </CardDescription>
                   </div>
-                  <Button size="sm" className={colorClass}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Partager
-                  </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">Aucun document partagé</p>
-                  <p className="text-xs mt-1">Partagez des documents depuis votre espace</p>
-                </div>
+                {documents.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">Aucun document partagé</p>
+                    <p className="text-xs mt-1">Partagez des documents depuis votre espace</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {documents.map((doc) => (
+                      <div key={doc.id} className="p-3 border rounded-lg hover:bg-accent transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="font-medium">{doc.title}</p>
+                            {doc.description && (
+                              <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
+                            )}
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Partagé le {new Date(doc.shared_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <FileText className="h-5 w-5 text-muted-foreground flex-shrink-0 ml-2" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -242,21 +344,47 @@ export default function EspaceCollaboratif() {
                   <div>
                     <CardTitle className="text-lg">Contrats partagés</CardTitle>
                     <CardDescription className="text-sm">
-                      Contrats accessibles par tous les membres
+                      {contrats.length} contrat{contrats.length > 1 ? 's' : ''} accessible{contrats.length > 1 ? 's' : ''}
                     </CardDescription>
                   </div>
-                  <Button size="sm" className={colorClass}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Partager
-                  </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">Aucun contrat partagé</p>
-                  <p className="text-xs mt-1">Partagez des contrats depuis votre espace</p>
-                </div>
+                {contrats.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">Aucun contrat partagé</p>
+                    <p className="text-xs mt-1">Partagez des contrats depuis votre espace</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {contrats.map((contrat) => (
+                      <div key={contrat.id} className="p-3 border rounded-lg hover:bg-accent transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">{contrat.title}</p>
+                              <Badge variant="outline" className={
+                                cabinetRole === 'notaire'
+                                  ? 'bg-amber-100 text-amber-600 border-amber-200'
+                                  : 'bg-blue-100 text-blue-600 border-blue-200'
+                              }>
+                                {contrat.category}
+                              </Badge>
+                            </div>
+                            {contrat.description && (
+                              <p className="text-sm text-muted-foreground mt-1">{contrat.description}</p>
+                            )}
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <FileText className="h-5 w-5 text-muted-foreground flex-shrink-0 ml-2" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -270,21 +398,53 @@ export default function EspaceCollaboratif() {
                 <div>
                   <CardTitle>Dossiers clients partagés</CardTitle>
                   <CardDescription>
-                    Accédez aux dossiers clients du cabinet
+                    {dossiers.length} dossier{dossiers.length > 1 ? 's' : ''} accessible{dossiers.length > 1 ? 's' : ''}
                   </CardDescription>
                 </div>
-                <Button className={colorClass}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nouveau dossier
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Aucun dossier partagé</p>
-                <p className="text-sm mt-2">Créez votre premier dossier client partagé</p>
-              </div>
+              {dossiers.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Aucun dossier partagé</p>
+                  <p className="text-sm mt-2">Partagez des dossiers depuis votre espace</p>
+                </div>
+              ) : (
+                <div className="grid gap-3">
+                  {dossiers.map((dossier) => (
+                    <div key={dossier.id} className="p-4 border rounded-lg hover:bg-accent transition-colors">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <FolderOpen className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                              <p className="font-medium">{dossier.title}</p>
+                              {dossier.description && (
+                                <p className="text-sm text-muted-foreground mt-1">{dossier.description}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className={
+                          dossier.status === 'Ouvert' 
+                            ? 'bg-green-100 text-green-700 border-green-300'
+                            : dossier.status === 'En cours'
+                            ? 'bg-blue-100 text-blue-700 border-blue-300'
+                            : dossier.status === 'Clos'
+                            ? 'bg-gray-100 text-gray-700 border-gray-300'
+                            : 'bg-yellow-100 text-yellow-700 border-yellow-300'
+                        }>
+                          {dossier.status}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-3 ml-8">
+                        Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
