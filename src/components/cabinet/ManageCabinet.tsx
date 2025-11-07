@@ -486,7 +486,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
         <CardContent className="space-y-4">
           {!isOwner && (
             <Alert>
-              <AlertDescription>
+              <AlertDescription className="text-xs">
                 Vous avez accès en lecture seule. Seul le Fondateur peut inviter, modifier les rôles et expulser des membres.
               </AlertDescription>
             </Alert>
@@ -587,7 +587,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                   <TableHead>Nom</TableHead>
                   <TableHead>Rôle</TableHead>
                   <TableHead>Statut</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  {isOwner && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -665,41 +665,43 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                         {member.status === 'active' ? 'Actif' : 'En attente'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
-                      {isOwner && member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="destructive" size="sm">
-                              Expulser
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-sm">
-                            <DialogHeader>
-                              <DialogTitle>Expulser ce membre ?</DialogTitle>
-                              <DialogDescription>
-                                Cette action supprimera ce membre du cabinet. Voulez-vous continuer ?
-                              </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button 
-                                  variant="outline"
-                                  className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
-                                >
-                                  Non
-                                </Button>
-                              </DialogClose>
-                              <Button variant="destructive" onClick={() => removeMember(member.id)}>Oui</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      )}
-                    </TableCell>
+                    {isOwner && (
+                      <TableCell className="text-right">
+                        {member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="destructive" size="sm">
+                                Expulser
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-sm">
+                              <DialogHeader>
+                                <DialogTitle>Expulser ce membre ?</DialogTitle>
+                                <DialogDescription>
+                                  Cette action supprimera ce membre du cabinet. Voulez-vous continuer ?
+                                </DialogDescription>
+                              </DialogHeader>
+                              <DialogFooter>
+                                <DialogClose asChild>
+                                  <Button 
+                                    variant="outline"
+                                    className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                                  >
+                                    Non
+                                  </Button>
+                                </DialogClose>
+                                <Button variant="destructive" onClick={() => removeMember(member.id)}>Oui</Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
                 {members.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground">
+                    <TableCell colSpan={isOwner ? 5 : 4} className="text-center text-muted-foreground">
                       Aucun membre pour le moment
                     </TableCell>
                   </TableRow>
