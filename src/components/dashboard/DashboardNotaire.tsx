@@ -139,7 +139,7 @@ export function DashboardNotaire() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold text-foreground">
-              Bienvenue sur votre espace
+              Bienvenue sur votre espace{profile?.first_name ? `, ${profile.first_name}` : ''}
             </h1>
           </div>
           <div className="flex items-center gap-3">
