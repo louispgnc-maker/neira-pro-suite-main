@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
-import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2 } from 'lucide-react';
+import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -382,115 +382,127 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                 {cabinet.nom} {cabinet.raison_sociale && `(${cabinet.raison_sociale})`}
               </CardDescription>
             </div>
-            {/* Bouton visible uniquement pour le fondateur (owner) */}
-            {isOwner && (
+            {/* Boutons d'accès selon le rôle */}
+            {isOwner ? (
               <div className="flex flex-col items-end gap-1">
-                <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    className={colorClass}
+                    onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/espace-collaboratif`)}
+                  >
+                    <ArrowRight className="h-4 w-4 mr-2" />
+                    Espace collaboratif
+                  </Button>
+                  <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" className={colorClass} onClick={openEditDialog}>
+                        Modifier le cabinet
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-xl">
+                      <DialogHeader>
+                        <DialogTitle>Modifier le cabinet</DialogTitle>
+                        <DialogDescription>Mettez à jour les informations de votre cabinet.</DialogDescription>
+                      </DialogHeader>
+                      <div className="grid grid-cols-2 gap-3 py-2">
+                        <div className="col-span-2 space-y-2">
+                          <Label htmlFor="edit-nom">Nom *</Label>
+                          <Input id="edit-nom" value={editForm.nom} onChange={(e) => handleEditChange('nom', e.target.value)} />
+                        </div>
+                        <div className="col-span-2 space-y-2">
+                          <Label htmlFor="edit-raison">Raison sociale</Label>
+                          <Input id="edit-raison" value={editForm.raison_sociale} onChange={(e) => handleEditChange('raison_sociale', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-siret">SIRET</Label>
+                          <Input id="edit-siret" value={editForm.siret} onChange={(e) => handleEditChange('siret', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-telephone">Téléphone</Label>
+                          <Input id="edit-telephone" value={editForm.telephone} onChange={(e) => handleEditChange('telephone', e.target.value)} />
+                        </div>
+                        <div className="col-span-2 space-y-2">
+                          <Label htmlFor="edit-adresse">Adresse</Label>
+                          <Input id="edit-adresse" value={editForm.adresse} onChange={(e) => handleEditChange('adresse', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-code-postal">Code postal</Label>
+                          <Input id="edit-code-postal" value={editForm.code_postal} onChange={(e) => handleEditChange('code_postal', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-ville">Ville</Label>
+                          <Input id="edit-ville" value={editForm.ville} onChange={(e) => handleEditChange('ville', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-email">Email</Label>
+                          <Input id="edit-email" type="email" value={editForm.email} onChange={(e) => handleEditChange('email', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-site">Site web</Label>
+                          <Input id="edit-site" value={editForm.site_web} onChange={(e) => handleEditChange('site_web', e.target.value)} />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setEditDialogOpen(false)}
+                          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                        >
+                          Annuler
+                        </Button>
+                        <Button className={colorClass} disabled={editLoading} onClick={handleUpdateCabinet}>
+                          {editLoading ? 'Enregistrement...' : 'Enregistrer'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              
+                {/* Bouton supprimer en petit */}
+                <Dialog>
                   <DialogTrigger asChild>
-                    <Button size="sm" className={colorClass} onClick={openEditDialog}>
-                      Modifier le cabinet
+                    <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/10">
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      Supprimer
                     </Button>
                   </DialogTrigger>
-                <DialogContent className="max-w-xl">
-                  <DialogHeader>
-                    <DialogTitle>Modifier le cabinet</DialogTitle>
-                    <DialogDescription>Mettez à jour les informations de votre cabinet.</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid grid-cols-2 gap-3 py-2">
-                    <div className="col-span-2 space-y-2">
-                      <Label htmlFor="edit-nom">Nom *</Label>
-                      <Input id="edit-nom" value={editForm.nom} onChange={(e) => handleEditChange('nom', e.target.value)} />
-                    </div>
-                    <div className="col-span-2 space-y-2">
-                      <Label htmlFor="edit-raison">Raison sociale</Label>
-                      <Input id="edit-raison" value={editForm.raison_sociale} onChange={(e) => handleEditChange('raison_sociale', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-siret">SIRET</Label>
-                      <Input id="edit-siret" value={editForm.siret} onChange={(e) => handleEditChange('siret', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-telephone">Téléphone</Label>
-                      <Input id="edit-telephone" value={editForm.telephone} onChange={(e) => handleEditChange('telephone', e.target.value)} />
-                    </div>
-                    <div className="col-span-2 space-y-2">
-                      <Label htmlFor="edit-adresse">Adresse</Label>
-                      <Input id="edit-adresse" value={editForm.adresse} onChange={(e) => handleEditChange('adresse', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-code-postal">Code postal</Label>
-                      <Input id="edit-code-postal" value={editForm.code_postal} onChange={(e) => handleEditChange('code_postal', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-ville">Ville</Label>
-                      <Input id="edit-ville" value={editForm.ville} onChange={(e) => handleEditChange('ville', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-email">Email</Label>
-                      <Input id="edit-email" type="email" value={editForm.email} onChange={(e) => handleEditChange('email', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-site">Site web</Label>
-                      <Input id="edit-site" value={editForm.site_web} onChange={(e) => handleEditChange('site_web', e.target.value)} />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setEditDialogOpen(false)}
-                      className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
-                    >
-                      Annuler
-                    </Button>
-                    <Button className={colorClass} disabled={editLoading} onClick={handleUpdateCabinet}>
-                      {editLoading ? 'Enregistrement...' : 'Enregistrer'}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-              
-              {/* Bouton supprimer en petit */}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/10">
-                    <Trash2 className="h-3 w-3 mr-1" />
-                    Supprimer
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Supprimer définitivement le cabinet ?</DialogTitle>
-                    <DialogDescription>
-                      Cette action est irréversible. Le cabinet "{cabinet?.nom}" et tous ses membres seront supprimés de façon permanente.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button 
-                        variant="outline"
-                        className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
-                      >
-                        Annuler
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Supprimer définitivement le cabinet ?</DialogTitle>
+                      <DialogDescription>
+                        Cette action est irréversible. Le cabinet "{cabinet?.nom}" et tous ses membres seront supprimés de façon permanente.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button 
+                          variant="outline"
+                          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                        >
+                          Annuler
+                        </Button>
+                      </DialogClose>
+                      <Button variant="destructive" onClick={deleteCabinet}>
+                        Oui, supprimer définitivement
                       </Button>
-                    </DialogClose>
-                    <Button variant="destructive" onClick={deleteCabinet}>
-                      Oui, supprimer définitivement
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            ) : (
+              <Button 
+                size="sm" 
+                className={colorClass}
+                onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/espace-collaboratif`)}
+              >
+                <ArrowRight className="h-4 w-4 mr-2" />
+                Espace collaboratif
+              </Button>
             )}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!isOwner && (
-            <Alert>
-              <AlertDescription className="text-xs">
-                Vous avez accès en lecture seule. Seul le Fondateur peut inviter, modifier les rôles et expulser des membres.
-              </AlertDescription>
-            </Alert>
-          )}
           {isOwner && (
             <div className="space-y-2">
               <Label>Code d'accès du cabinet</Label>
