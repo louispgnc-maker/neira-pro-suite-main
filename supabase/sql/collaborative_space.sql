@@ -64,10 +64,8 @@ create table if not exists public.cabinet_contrats (
   -- Infos du contrat
   title text not null,
   description text,
-  type text,
-  status text,
-  client_name text,
-  file_url text,
+  category text,
+  contrat_type text,
   
   -- Métadonnées
   shared_by uuid not null references auth.users(id) on delete cascade,
