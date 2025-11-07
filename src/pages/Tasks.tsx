@@ -239,10 +239,12 @@ export default function Tasks() {
         ) : tasks.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-muted-foreground">Aucune tâche à venir</p>
-              <Button className={mainButtonColor + " mt-4"} onClick={() => setOpen(true)}>
-                Ajoutez ici vos prochaines tâches
-              </Button>
+              <p className="text-muted-foreground">Aucune tâche pour le moment</p>
+              <div className="mt-4 flex justify-center">
+                <Button className={mainButtonColor} onClick={() => setOpen(true)}>
+                  Ajouter une première tâche
+                </Button>
+              </div>
             </div>
           </div>
         ) : (
