@@ -338,8 +338,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
         description: 'Le cabinet a été supprimé définitivement.',
       });
 
-      // Rediriger vers la page Mon Cabinet
-      navigate(role === 'notaire' ? '/notaires/mon-cabinet' : '/avocats/mon-cabinet');
+      // Recharger les données du cabinet (qui sera maintenant null)
+      loadCabinet();
     } catch (error: any) {
       console.error('Erreur suppression cabinet:', error);
       toast({
