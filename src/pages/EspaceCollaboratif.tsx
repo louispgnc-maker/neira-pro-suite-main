@@ -14,7 +14,8 @@ import {
   BarChart3, 
   CheckSquare, 
   Calendar, 
-  FolderOpen
+  FolderOpen,
+  Plus
 } from 'lucide-react';
 
 interface Cabinet {
@@ -82,13 +83,18 @@ export default function EspaceCollaboratif() {
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   useEffect(() => {
-    loadCabinetData();
-  }, []);
+    if (user) {
+      loadCabinetData();
+    }
+  }, [user, cabinetRole]);
 
   const loadCabinetData = async () => {
     setLoading(true);
     try {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       // Charger le cabinet
       const { data: cabinets, error: cabinetError } = await supabase
