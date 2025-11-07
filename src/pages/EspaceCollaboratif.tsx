@@ -19,6 +19,8 @@ import {
   Plus,
   ArrowRight
 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Cabinet {
   id: string;
@@ -91,6 +93,13 @@ export default function EspaceCollaboratif() {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerUrl, setViewerUrl] = useState('');
   const [viewerDocName, setViewerDocName] = useState('');
+  // Task creation (collaborative tab)
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [taskText, setTaskText] = useState('');
+  const [taskNotes, setTaskNotes] = useState('');
+  const [taskDate, setTaskDate] = useState('');
+  const [taskTime, setTaskTime] = useState('');
+  const [taskSaving, setTaskSaving] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -200,6 +209,39 @@ export default function EspaceCollaboratif() {
         description: 'Impossible d\'ouvrir le document',
         variant: 'destructive',
       });
+    }
+  };
+
+  const createCollaborativeTask = async () => {
+    if (!user) return;
+    const title = taskText.trim();
+    if (!title) {
+      toast({ title: 'Erreur', description: 'Veuillez saisir la tâche', variant: 'destructive' });
+      return;
+    }
+    setTaskSaving(true);
+    try {
+      const due_date = taskDate || null; // store only date for now
+      const description = taskNotes || null; // could append time
+      const { error } = await supabase.from('tasks').insert({
+        owner_id: user.id,
+        role: cabinetRole,
+        title,
+        description: description ? (taskTime ? `${description}\n[Heure: ${taskTime}]` : description) : (taskTime ? `[Heure: ${taskTime}]` : null),
+        due_date
+      });
+      if (error) throw error;
+      toast({ title: 'Tâche créée', description: 'La tâche a été ajoutée.' });
+      setTaskText('');
+      setTaskNotes('');
+      setTaskDate('');
+      setTaskTime('');
+      setTaskDialogOpen(false);
+    } catch (e:any) {
+      console.error('Erreur création tâche collaborative:', e);
+      toast({ title: 'Erreur', description: e.message || 'Création impossible', variant: 'destructive' });
+    } finally {
+      setTaskSaving(false);
     }
   };
 
@@ -633,10 +675,55 @@ export default function EspaceCollaboratif() {
                     Gérez les tâches collaboratives du cabinet
                   </CardDescription>
                 </div>
-                <Button className={colorClass}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nouvelle tâche
-                </Button>
+                <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className={colorClass}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Nouvelle tâche
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Nouvelle tâche collaborative</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Tâche</label>
+                        <Textarea
+                          rows={3}
+                          placeholder="Décrivez la tâche à réaliser"
+                          value={taskText}
+                          onChange={(e) => setTaskText(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Notes (optionnel)</label>
+                        <Textarea
+                          rows={2}
+                          placeholder="Notes complémentaires"
+                          value={taskNotes}
+                          onChange={(e) => setTaskNotes(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Date (optionnel)</label>
+                          <input type="date" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={taskDate} onChange={(e) => setTaskDate(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Heure (optionnel)</label>
+                          <input type="time" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={taskTime} onChange={(e) => setTaskTime(e.target.value)} />
+                        </div>
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setTaskDialogOpen(false)}>Annuler</Button>
+                        <Button className={colorClass} disabled={taskSaving} onClick={createCollaborativeTask}>
+                          {taskSaving ? 'Enregistrement…' : 'Créer'}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </CardHeader>
             <CardContent>
