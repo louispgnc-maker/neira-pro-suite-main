@@ -1,10 +1,10 @@
-import { FileText, Upload, PenTool } from "lucide-react";
+import { FileText, Upload, PenTool, Users } from "lucide-react";
 import { ContractSelectorNotaire } from "@/components/dashboard/ContractSelectorNotaire";
 import { ContractSelectorAvocat } from "@/components/dashboard/ContractSelectorAvocat";
 import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -25,6 +25,8 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [checkingCabinet, setCheckingCabinet] = useState(false);
+  const [hasCabinet, setHasCabinet] = useState(false);
 
   const triggerImport = () => {
     if (!user) {
@@ -83,12 +85,56 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
     }
   };
 
+  // Check cabinet membership (only relevant for notaire role per requirement)
+  useEffect(() => {
+    let active = true;
+    const check = async () => {
+      if (!user || role !== 'notaire') return;
+      setCheckingCabinet(true);
+      try {
+        const { data, error } = await supabase
+          .rpc('get_user_cabinets')
+          .eq('role', role);
+        if (!active) return;
+        if (error) {
+          console.error('Erreur vérification cabinet:', error.message);
+          setHasCabinet(false);
+        } else {
+          setHasCabinet(Array.isArray(data) && data.length > 0);
+        }
+      } catch (err) {
+        console.error('Exception vérification cabinet:', err);
+        if (active) setHasCabinet(false);
+      } finally {
+        if (active) setCheckingCabinet(false);
+      }
+    };
+    check();
+    return () => { active = false; };
+  }, [user, role]);
+
+  const handleCollaborative = () => {
+    if (role !== 'notaire') return; // Only for notaires as specified
+    // If still checking, block navigation briefly
+    if (checkingCabinet) {
+      toast.info('Vérification en cours…');
+      return;
+    }
+    if (!hasCabinet) {
+      // Redirect to cabinet setup page
+      window.location.href = 'https://www.neira.fr/notaires/cabinet';
+      return;
+    }
+    // Redirect to collaborative space
+    window.location.href = 'https://www.neira.fr/notaires/espace-collaboratif';
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Actions rapides</CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3">
+  <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {/* Hidden file input for PDF import */}
         <input
           ref={fileInputRef}
@@ -103,6 +149,20 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           <ContractSelectorNotaire />
         ) : (
           <ContractSelectorAvocat />
+        )}
+
+        {/* Espace collaboratif (only for notaire). Placed after first selector to appear near middle visually */}
+        {role === 'notaire' && (
+          <Button
+            onClick={handleCollaborative}
+            disabled={checkingCabinet}
+            className={`${primaryButtonColor || 'bg-orange-600 hover:bg-orange-700 text-white'} h-auto flex-col gap-2 py-4`}
+          >
+            <Users className="h-5 w-5" />
+            <span className="text-xs">
+              {checkingCabinet ? 'Chargement…' : 'Espace collaboratif'}
+            </span>
+          </Button>
         )}
         {actions.slice(1).filter(a => a.key !== 'collect').map((action) => {
           const onClick = () => {
