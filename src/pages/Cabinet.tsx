@@ -20,7 +20,12 @@ export default function Cabinet() {
 
   const [inviteCode, setInviteCode] = useState("");
   const [joiningCabinet, setJoiningCabinet] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const colorClass = role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
+
+  const refreshCabinet = () => {
+    setRefreshKey(prev => prev + 1);
+  };
 
   const handleJoinCabinet = async () => {
     if (!inviteCode.trim()) return;
@@ -39,7 +44,7 @@ export default function Cabinet() {
       });
 
       setInviteCode('');
-      window.location.reload(); // Recharger pour afficher le cabinet
+      refreshCabinet(); // Recharger le composant ManageCabinet
     } catch (error: any) {
       console.error('Erreur rejoindre cabinet:', error);
       toast({
@@ -87,7 +92,7 @@ export default function Cabinet() {
 
             <div className="border-t pt-4">
               <div className="text-sm font-medium mb-2">Créer un cabinet</div>
-              <CreateCabinetDialog role={role} />
+              <CreateCabinetDialog role={role} onSuccess={refreshCabinet} />
               <p className="text-xs text-muted-foreground mt-2">
                 Créez votre propre cabinet et invitez vos collaborateurs.
               </p>
@@ -96,7 +101,7 @@ export default function Cabinet() {
         </Card>
 
         {/* Composant ManageCabinet */}
-        {user && <ManageCabinet role={role} userId={user.id} />}
+        {user && <ManageCabinet key={refreshKey} role={role} userId={user.id} />}
       </div>
     </AppLayout>
   );
