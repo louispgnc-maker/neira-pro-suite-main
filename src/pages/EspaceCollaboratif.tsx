@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -32,13 +34,18 @@ interface CabinetMember {
 }
 
 export default function EspaceCollaboratif() {
-  const { role } = useParams<{ role: 'notaires' | 'avocats' }>();
+  const { user } = useAuth();
+  const location = useLocation();
   const [cabinet, setCabinet] = useState<Cabinet | null>(null);
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const cabinetRole = role === 'notaires' ? 'notaire' : 'avocat';
+  let role: 'avocat' | 'notaire' = 'avocat';
+  if (location.pathname.includes('/notaires')) role = 'notaire';
+  if (location.pathname.includes('/avocats')) role = 'avocat';
+
+  const cabinetRole = role;
   const colorClass = cabinetRole === 'notaire'
     ? 'bg-amber-600 hover:bg-amber-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
@@ -50,7 +57,6 @@ export default function EspaceCollaboratif() {
   const loadCabinetData = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       // Charger le cabinet
@@ -85,32 +91,37 @@ export default function EspaceCollaboratif() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <Card>
-          <CardContent className="py-8">
-            <p className="text-center text-muted-foreground">Chargement...</p>
-          </CardContent>
-        </Card>
-      </div>
+      <AppLayout>
+        <div className="container mx-auto p-6">
+          <Card>
+            <CardContent className="py-8">
+              <p className="text-center text-muted-foreground">Chargement...</p>
+            </CardContent>
+          </Card>
+        </div>
+      </AppLayout>
     );
   }
 
   if (!cabinet) {
     return (
-      <div className="container mx-auto p-6">
-        <Card>
-          <CardContent className="py-8">
-            <p className="text-center text-muted-foreground">
-              Vous devez rejoindre un cabinet pour accéder à l'espace collaboratif.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <AppLayout>
+        <div className="container mx-auto p-6">
+          <Card>
+            <CardContent className="py-8">
+              <p className="text-center text-muted-foreground">
+                Vous devez rejoindre un cabinet pour accéder à l'espace collaboratif.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <AppLayout>
+      <div className="container mx-auto p-6 space-y-6">
       {/* En-tête */}
       <div>
         <h1 className="text-3xl font-bold mb-2">Espace Collaboratif</h1>
@@ -316,5 +327,6 @@ export default function EspaceCollaboratif() {
         </TabsContent>
       </Tabs>
     </div>
+    </AppLayout>
   );
 }
