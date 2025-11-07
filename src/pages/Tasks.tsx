@@ -164,6 +164,8 @@ export default function Tasks() {
     }
   }
 
+  const activeTasks = tasks.filter(t => !t.done);
+
   return (
     <AppLayout>
       <div className="p-6">
@@ -236,7 +238,7 @@ export default function Tasks() {
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <p className="text-muted-foreground">Chargement…</p>
           </div>
-        ) : tasks.length === 0 ? (
+        ) : activeTasks.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
               <p className="text-muted-foreground">Aucune tâche pour le moment</p>
@@ -249,7 +251,7 @@ export default function Tasks() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tasks.filter(t => !t.done).map((task) => {
+            {activeTasks.map((task) => {
               const overdue = !task.done && isOverdue(task.due_at);
               let dateStr = '';
               if (task.due_at) {
@@ -264,7 +266,6 @@ export default function Tasks() {
                   <button
                     className={`absolute top-2 right-2 p-1 rounded-full ${role === 'notaire' ? 'text-orange-600 hover:bg-orange-100' : 'text-blue-600 hover:bg-blue-100'}`}
                     title="Éditer la tâche"
-                    // onClick={() => ...} // à implémenter
                   >
                     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
                   </button>

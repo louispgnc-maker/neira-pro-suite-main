@@ -20,6 +20,8 @@ async function capture(url) {
   const targets = [
     `${base}/avocats/espace-collaboratif`,
     `${base}/notaires/espace-collaboratif`,
+    `${base}/avocats/tasks`,
+    `${base}/notaires/tasks`,
     `${base}/`
   ];
   for (const t of targets) {
