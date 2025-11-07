@@ -230,9 +230,8 @@ set search_path = public
 as $$
 declare
   v_shared_doc_id uuid;
-  v_file_url text;
-  v_file_name text;
-  v_file_type text;
+  v_storage_path text;
+  v_doc_name text;
 begin
   -- Vérifier que l'utilisateur est membre actif du cabinet
   if not exists (
@@ -245,10 +244,10 @@ begin
   end if;
 
   -- Récupérer les infos du document
-  select file_url, file_name, content_type
-  into v_file_url, v_file_name, v_file_type
+  select storage_path, name
+  into v_storage_path, v_doc_name
   from documents
-  where id = document_id_param and user_id = auth.uid();
+  where id = document_id_param and owner_id = auth.uid();
 
   if not found then
     raise exception 'Document not found or access denied';
@@ -260,7 +259,7 @@ begin
     file_url, file_name, file_type, shared_by
   ) values (
     cabinet_id_param, document_id_param, title_param, description_param,
-    v_file_url, v_file_name, v_file_type, auth.uid()
+    v_storage_path, v_doc_name, 'application/pdf', auth.uid()
   ) returning id into v_shared_doc_id;
 
   return v_shared_doc_id;
@@ -283,7 +282,6 @@ as $$
 declare
   v_shared_dossier_id uuid;
   v_status text;
-  v_client_name text;
 begin
   -- Vérifier que l'utilisateur est membre actif du cabinet
   if not exists (
@@ -296,10 +294,10 @@ begin
   end if;
 
   -- Récupérer les infos du dossier
-  select status, client_name
-  into v_status, v_client_name
+  select status
+  into v_status
   from dossiers
-  where id = dossier_id_param and user_id = auth.uid();
+  where id = dossier_id_param and owner_id = auth.uid();
 
   if not found then
     raise exception 'Dossier not found or access denied';
@@ -308,10 +306,10 @@ begin
   -- Créer le dossier partagé
   insert into cabinet_dossiers (
     cabinet_id, dossier_id, title, description,
-    status, client_name, shared_by
+    status, shared_by
   ) values (
     cabinet_id_param, dossier_id_param, title_param, description_param,
-    v_status, v_client_name, auth.uid()
+    v_status, auth.uid()
   ) returning id into v_shared_dossier_id;
 
   return v_shared_dossier_id;
@@ -333,10 +331,8 @@ set search_path = public
 as $$
 declare
   v_shared_contrat_id uuid;
+  v_category text;
   v_type text;
-  v_status text;
-  v_client_name text;
-  v_file_url text;
 begin
   -- Vérifier que l'utilisateur est membre actif du cabinet
   if not exists (
@@ -349,10 +345,10 @@ begin
   end if;
 
   -- Récupérer les infos du contrat
-  select type, status, client_name, file_url
-  into v_type, v_status, v_client_name, v_file_url
+  select category, type
+  into v_category, v_type
   from contrats
-  where id = contrat_id_param and user_id = auth.uid();
+  where id = contrat_id_param and owner_id = auth.uid();
 
   if not found then
     raise exception 'Contrat not found or access denied';
@@ -361,10 +357,10 @@ begin
   -- Créer le contrat partagé
   insert into cabinet_contrats (
     cabinet_id, contrat_id, title, description,
-    type, status, client_name, file_url, shared_by
+    category, contrat_type, shared_by
   ) values (
     cabinet_id_param, contrat_id_param, title_param, description_param,
-    v_type, v_status, v_client_name, v_file_url, auth.uid()
+    v_category, v_type, auth.uid()
   ) returning id into v_shared_contrat_id;
 
   return v_shared_contrat_id;
