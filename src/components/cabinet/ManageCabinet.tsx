@@ -466,7 +466,12 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                   </DialogHeader>
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button variant="outline">Annuler</Button>
+                      <Button 
+                        variant="outline"
+                        className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                      >
+                        Annuler
+                      </Button>
                     </DialogClose>
                     <Button variant="destructive" onClick={deleteCabinet}>
                       Oui, supprimer définitivement
