@@ -328,21 +328,39 @@ export default function EspaceCollaboratif() {
                     .map((item, idx) => (
                       <div 
                         key={`${item.type}-${idx}`} 
-                        className={`flex items-center justify-between p-3 border rounded-lg transition-all ${
+                        className={`flex items-center justify-between p-3 border rounded-lg transition-all cursor-pointer ${
                           cabinetRole === 'notaire' 
                             ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
                             : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-                        } ${item.type === 'Document' && 'file_url' in item ? 'cursor-pointer' : ''}`}
+                        }`}
                         onClick={() => {
                           if (item.type === 'Document' && 'file_url' in item) {
                             handleViewDocument(item as SharedDocument);
+                          } else if (item.type === 'Dossier') {
+                            // Rediriger vers l'onglet dossiers
+                            const dossierTab = document.querySelector('[value="dossiers"]') as HTMLButtonElement;
+                            if (dossierTab) dossierTab.click();
+                          } else if (item.type === 'Contrat') {
+                            // Rediriger vers l'onglet documents & contrats
+                            const docTab = document.querySelector('[value="documents"]') as HTMLButtonElement;
+                            if (docTab) docTab.click();
                           }
                         }}
                       >
                         <div className="flex items-center gap-3">
-                          <FileText className={`h-5 w-5 ${
-                            cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                          }`} />
+                          {item.type === 'Document' ? (
+                            <FileText className={`h-5 w-5 ${
+                              cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                            }`} />
+                          ) : item.type === 'Dossier' ? (
+                            <FolderOpen className={`h-5 w-5 ${
+                              cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                            }`} />
+                          ) : (
+                            <FileText className={`h-5 w-5 ${
+                              cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                            }`} />
+                          )}
                           <div>
                             <p className="font-medium">{item.title}</p>
                             <p className="text-xs text-muted-foreground">
@@ -353,11 +371,9 @@ export default function EspaceCollaboratif() {
                         <Badge 
                           variant="outline"
                           className={
-                            item.type === 'Document' 
-                              ? cabinetRole === 'notaire'
-                                ? 'bg-orange-100 text-orange-600 border-orange-200'
-                                : 'bg-blue-100 text-blue-600 border-blue-200'
-                              : ''
+                            cabinetRole === 'notaire'
+                              ? 'bg-orange-100 text-orange-600 border-orange-200'
+                              : 'bg-blue-100 text-blue-600 border-blue-200'
                           }
                         >
                           {item.type}
