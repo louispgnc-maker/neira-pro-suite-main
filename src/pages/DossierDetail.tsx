@@ -91,7 +91,7 @@ export default function DossierDetail() {
             variant="ghost"
             size="icon"
             onClick={goBack}
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
             aria-label="Retour"
           >
             <ArrowLeft className="h-5 w-5" />

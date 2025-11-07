@@ -230,6 +230,7 @@ export default function CreateClientAvocat() {
             variant="ghost"
             size="icon"
             onClick={() => navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients')}
+            className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>

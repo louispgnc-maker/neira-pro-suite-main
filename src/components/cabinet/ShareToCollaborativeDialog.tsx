@@ -137,7 +137,7 @@ export function ShareToCollaborativeDialog({
         variant="ghost"
         size="sm"
         onClick={() => setOpen(true)}
-        className="text-muted-foreground hover:text-foreground"
+        className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
       >
         <Share2 className="h-4 w-4" />
       </Button>

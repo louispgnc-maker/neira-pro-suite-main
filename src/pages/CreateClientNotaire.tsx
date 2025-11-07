@@ -203,7 +203,12 @@ export default function CreateClientNotaire() {
     <AppLayout>
       <div className="p-6 max-w-5xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/notaires/clients')}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => navigate('/notaires/clients')}
+            className="hover:bg-orange-100 hover:text-orange-600"
+          >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -387,7 +392,13 @@ export default function CreateClientNotaire() {
                         <Input type="date" value={child.date_naissance} onChange={e => handleChildChange(idx,'date_naissance',e.target.value)} />
                       </div>
                       <div className="col-span-2 flex justify-end">
-                        <Button type="button" size="sm" variant="ghost" onClick={() => handleRemoveChild(idx)}>
+                        <Button 
+                          type="button" 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={() => handleRemoveChild(idx)}
+                          className="hover:bg-orange-100 hover:text-orange-600"
+                        >
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
