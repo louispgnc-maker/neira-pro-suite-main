@@ -135,10 +135,14 @@ export default function EspaceCollaboratif() {
 
       {/* Onglets principaux */}
       <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="dashboard">
             <BarChart3 className="h-4 w-4 mr-2" />
             Tableau de bord
+          </TabsTrigger>
+          <TabsTrigger value="documents">
+            <FileText className="h-4 w-4 mr-2" />
+            Documents & Contrats
           </TabsTrigger>
           <TabsTrigger value="dossiers">
             <FolderOpen className="h-4 w-4 mr-2" />
@@ -201,6 +205,61 @@ export default function EspaceCollaboratif() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Documents & Contrats */}
+        <TabsContent value="documents" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Documents */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Documents partagés</CardTitle>
+                    <CardDescription className="text-sm">
+                      Documents accessibles par tous les membres
+                    </CardDescription>
+                  </div>
+                  <Button size="sm" className={colorClass}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Partager
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">Aucun document partagé</p>
+                  <p className="text-xs mt-1">Partagez des documents depuis votre espace</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contrats */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Contrats partagés</CardTitle>
+                    <CardDescription className="text-sm">
+                      Contrats accessibles par tous les membres
+                    </CardDescription>
+                  </div>
+                  <Button size="sm" className={colorClass}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Partager
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">Aucun contrat partagé</p>
+                  <p className="text-xs mt-1">Partagez des contrats depuis votre espace</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Dossiers clients */}

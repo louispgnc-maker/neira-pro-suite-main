@@ -1,0 +1,268 @@
+-- Tables pour l'espace collaboratif du cabinet
+-- Documents, Dossiers et Contrats partagés
+
+-- 1) Table des documents partagés
+create table if not exists public.cabinet_documents (
+  id uuid primary key default gen_random_uuid(),
+  cabinet_id uuid not null references public.cabinets(id) on delete cascade,
+  
+  -- Référence au document original (nullable si upload direct)
+  document_id uuid references public.documents(id) on delete cascade,
+  
+  -- Infos du document
+  title text not null,
+  description text,
+  file_url text,
+  file_name text,
+  file_size bigint,
+  file_type text,
+  
+  -- Métadonnées
+  shared_by uuid not null references auth.users(id) on delete cascade,
+  shared_at timestamptz not null default now(),
+  
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists cabinet_documents_cabinet_idx on public.cabinet_documents(cabinet_id);
+create index if not exists cabinet_documents_shared_by_idx on public.cabinet_documents(shared_by);
+
+-- 2) Table des dossiers partagés
+create table if not exists public.cabinet_dossiers (
+  id uuid primary key default gen_random_uuid(),
+  cabinet_id uuid not null references public.cabinets(id) on delete cascade,
+  
+  -- Référence au dossier original (nullable si création directe)
+  dossier_id uuid references public.dossiers(id) on delete cascade,
+  
+  -- Infos du dossier
+  title text not null,
+  description text,
+  status text,
+  client_name text,
+  
+  -- Métadonnées
+  shared_by uuid not null references auth.users(id) on delete cascade,
+  shared_at timestamptz not null default now(),
+  
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists cabinet_dossiers_cabinet_idx on public.cabinet_dossiers(cabinet_id);
+create index if not exists cabinet_dossiers_shared_by_idx on public.cabinet_dossiers(shared_by);
+
+-- 3) Table des contrats partagés
+create table if not exists public.cabinet_contrats (
+  id uuid primary key default gen_random_uuid(),
+  cabinet_id uuid not null references public.cabinets(id) on delete cascade,
+  
+  -- Référence au contrat original (nullable si création directe)
+  contrat_id uuid references public.contrats(id) on delete cascade,
+  
+  -- Infos du contrat
+  title text not null,
+  description text,
+  type text,
+  status text,
+  client_name text,
+  file_url text,
+  
+  -- Métadonnées
+  shared_by uuid not null references auth.users(id) on delete cascade,
+  shared_at timestamptz not null default now(),
+  
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists cabinet_contrats_cabinet_idx on public.cabinet_contrats(cabinet_id);
+create index if not exists cabinet_contrats_shared_by_idx on public.cabinet_contrats(shared_by);
+
+-- 4) RLS Policies
+alter table public.cabinet_documents enable row level security;
+alter table public.cabinet_dossiers enable row level security;
+alter table public.cabinet_contrats enable row level security;
+
+-- Policy: Les membres du cabinet peuvent lire
+drop policy if exists "cabinet_members_read_documents" on public.cabinet_documents;
+create policy "cabinet_members_read_documents" on public.cabinet_documents
+  for select using (
+    cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  );
+
+drop policy if exists "cabinet_members_insert_documents" on public.cabinet_documents;
+create policy "cabinet_members_insert_documents" on public.cabinet_documents
+  for insert with check (
+    cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  );
+
+drop policy if exists "cabinet_members_read_dossiers" on public.cabinet_dossiers;
+create policy "cabinet_members_read_dossiers" on public.cabinet_dossiers
+  for select using (
+    cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  );
+
+drop policy if exists "cabinet_members_insert_dossiers" on public.cabinet_dossiers;
+create policy "cabinet_members_insert_dossiers" on public.cabinet_dossiers
+  for insert with check (
+    cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  );
+
+drop policy if exists "cabinet_members_read_contrats" on public.cabinet_contrats;
+create policy "cabinet_members_read_contrats" on public.cabinet_contrats
+  for select using (
+    cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  );
+
+drop policy if exists "cabinet_members_insert_contrats" on public.cabinet_contrats;
+create policy "cabinet_members_insert_contrats" on public.cabinet_contrats
+  for insert with check (
+    cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  );
+
+-- 5) Triggers pour updated_at
+drop trigger if exists cabinet_documents_set_updated_at on public.cabinet_documents;
+create trigger cabinet_documents_set_updated_at
+before update on public.cabinet_documents
+for each row
+execute procedure public.set_updated_at();
+
+drop trigger if exists cabinet_dossiers_set_updated_at on public.cabinet_dossiers;
+create trigger cabinet_dossiers_set_updated_at
+before update on public.cabinet_dossiers
+for each row
+execute procedure public.set_updated_at();
+
+drop trigger if exists cabinet_contrats_set_updated_at on public.cabinet_contrats;
+create trigger cabinet_contrats_set_updated_at
+before update on public.cabinet_contrats
+for each row
+execute procedure public.set_updated_at();
+
+-- 6) Fonctions RPC pour récupérer les données
+
+-- Récupérer les documents partagés du cabinet
+drop function if exists public.get_cabinet_documents(uuid);
+create or replace function public.get_cabinet_documents(cabinet_id_param uuid)
+returns setof public.cabinet_documents
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select cd.* from cabinet_documents cd
+  where cd.cabinet_id = cabinet_id_param
+    and cd.cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  order by cd.shared_at desc;
+$$;
+
+-- Récupérer les dossiers partagés du cabinet
+drop function if exists public.get_cabinet_dossiers(uuid);
+create or replace function public.get_cabinet_dossiers(cabinet_id_param uuid)
+returns setof public.cabinet_dossiers
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select cd.* from cabinet_dossiers cd
+  where cd.cabinet_id = cabinet_id_param
+    and cd.cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  order by cd.shared_at desc;
+$$;
+
+-- Récupérer les contrats partagés du cabinet
+drop function if exists public.get_cabinet_contrats(uuid);
+create or replace function public.get_cabinet_contrats(cabinet_id_param uuid)
+returns setof public.cabinet_contrats
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select cc.* from cabinet_contrats cc
+  where cc.cabinet_id = cabinet_id_param
+    and cc.cabinet_id in (
+      select cm.cabinet_id from cabinet_members cm
+      where cm.user_id = auth.uid() and cm.status = 'active'
+    )
+  order by cc.shared_at desc;
+$$;
+
+-- Partager un document existant au cabinet
+drop function if exists public.share_document_to_cabinet(uuid, uuid, text, text);
+create or replace function public.share_document_to_cabinet(
+  cabinet_id_param uuid,
+  document_id_param uuid,
+  title_param text,
+  description_param text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_shared_doc_id uuid;
+  v_file_url text;
+  v_file_name text;
+  v_file_type text;
+begin
+  -- Vérifier que l'utilisateur est membre actif du cabinet
+  if not exists (
+    select 1 from cabinet_members
+    where cabinet_id = cabinet_id_param
+      and user_id = auth.uid()
+      and status = 'active'
+  ) then
+    raise exception 'Not a member of this cabinet';
+  end if;
+
+  -- Récupérer les infos du document
+  select file_url, file_name, content_type
+  into v_file_url, v_file_name, v_file_type
+  from documents
+  where id = document_id_param and user_id = auth.uid();
+
+  if not found then
+    raise exception 'Document not found or access denied';
+  end if;
+
+  -- Créer le document partagé
+  insert into cabinet_documents (
+    cabinet_id, document_id, title, description,
+    file_url, file_name, file_type, shared_by
+  ) values (
+    cabinet_id_param, document_id_param, title_param, description_param,
+    v_file_url, v_file_name, v_file_type, auth.uid()
+  ) returning id into v_shared_doc_id;
+
+  return v_shared_doc_id;
+end;
+$$;
