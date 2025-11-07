@@ -328,7 +328,11 @@ export default function EspaceCollaboratif() {
                     .map((item, idx) => (
                       <div 
                         key={`${item.type}-${idx}`} 
-                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent transition-colors cursor-pointer"
+                        className={`flex items-center justify-between p-3 border rounded-lg transition-all ${
+                          cabinetRole === 'notaire' 
+                            ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
+                            : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+                        } ${item.type === 'Document' && 'file_url' in item ? 'cursor-pointer' : ''}`}
                         onClick={() => {
                           if (item.type === 'Document' && 'file_url' in item) {
                             handleViewDocument(item as SharedDocument);
@@ -336,7 +340,9 @@ export default function EspaceCollaboratif() {
                         }}
                       >
                         <div className="flex items-center gap-3">
-                          <FileText className="h-5 w-5 text-muted-foreground" />
+                          <FileText className={`h-5 w-5 ${
+                            cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                          }`} />
                           <div>
                             <p className="font-medium">{item.title}</p>
                             <p className="text-xs text-muted-foreground">
@@ -399,7 +405,11 @@ export default function EspaceCollaboratif() {
                     {documents.map((doc) => (
                       <div 
                         key={doc.id} 
-                        className="p-3 border rounded-lg hover:bg-accent transition-colors cursor-pointer"
+                        className={`p-3 border rounded-lg cursor-pointer transition-all ${
+                          cabinetRole === 'notaire' 
+                            ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
+                            : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+                        }`}
                         onClick={() => handleViewDocument(doc)}
                       >
                         <div className="flex items-start justify-between">
@@ -412,7 +422,9 @@ export default function EspaceCollaboratif() {
                               Partagé le {new Date(doc.shared_at).toLocaleDateString()}
                             </p>
                           </div>
-                          <FileText className="h-5 w-5 text-muted-foreground flex-shrink-0 ml-2" />
+                          <FileText className={`h-5 w-5 flex-shrink-0 ml-2 ${
+                            cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                          }`} />
                         </div>
                       </div>
                     ))}
@@ -451,7 +463,14 @@ export default function EspaceCollaboratif() {
                 ) : (
                   <div className="space-y-2 max-h-[400px] overflow-y-auto">
                     {contrats.map((contrat) => (
-                      <div key={contrat.id} className="p-3 border rounded-lg hover:bg-accent transition-colors">
+                      <div 
+                        key={contrat.id} 
+                        className={`p-3 border rounded-lg transition-all ${
+                          cabinetRole === 'notaire' 
+                            ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
+                            : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+                        }`}
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
@@ -471,7 +490,9 @@ export default function EspaceCollaboratif() {
                               Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
                             </p>
                           </div>
-                          <FileText className="h-5 w-5 text-muted-foreground flex-shrink-0 ml-2" />
+                          <FileText className={`h-5 w-5 flex-shrink-0 ml-2 ${
+                            cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                          }`} />
                         </div>
                       </div>
                     ))}
@@ -512,11 +533,20 @@ export default function EspaceCollaboratif() {
               ) : (
                 <div className="grid gap-3">
                   {dossiers.map((dossier) => (
-                    <div key={dossier.id} className="p-4 border rounded-lg hover:bg-accent transition-colors">
+                    <div 
+                      key={dossier.id} 
+                      className={`p-4 border rounded-lg transition-all ${
+                        cabinetRole === 'notaire' 
+                          ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
+                          : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+                      }`}
+                    >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3">
-                            <FolderOpen className="h-5 w-5 text-muted-foreground" />
+                            <FolderOpen className={`h-5 w-5 ${
+                              cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                            }`} />
                             <div>
                               <p className="font-medium">{dossier.title}</p>
                               {dossier.description && (
