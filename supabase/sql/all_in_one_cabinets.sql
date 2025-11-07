@@ -220,6 +220,7 @@ declare
   v_cabinet_id uuid;
   v_code_acces text;
   v_nom_proprietaire text;
+  v_user_email text;
 begin
   v_user_id := auth.uid();
   if v_user_id is null then raise exception 'Not authenticated'; end if;
@@ -235,9 +236,12 @@ begin
     role_param, true
   ) returning id into v_cabinet_id;
 
-  select coalesce(nullif(trim(first_name || ' ' || last_name), ''), email)
+  -- Get user email from auth.users and name from profiles
+  select u.email into v_user_email from auth.users u where u.id = v_user_id;
+  
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), v_user_email)
     into v_nom_proprietaire
-  from profiles where id = v_user_id;
+  from profiles p where p.id = v_user_id;
 
   insert into cabinet_members (
     cabinet_id, user_id, email, nom, role_cabinet, status, joined_at
