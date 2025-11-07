@@ -81,7 +81,15 @@ export default function DossierDetail() {
     return () => { mounted = false }; 
   }, [user, id, role]);
 
-  const goBack = () => navigate(role === 'notaire' ? '/notaires/dossiers' : '/avocats/dossiers');
+  const goBack = () => {
+    // If opened from the collaborative space, return to previous page
+    const fromCollaboratif = (location.state as any)?.fromCollaboratif;
+    if (fromCollaboratif) {
+      navigate(-1);
+      return;
+    }
+    navigate(role === 'notaire' ? '/notaires/dossiers' : '/avocats/dossiers');
+  };
 
   return (
     <AppLayout>

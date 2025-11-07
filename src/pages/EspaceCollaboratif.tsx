@@ -205,7 +205,7 @@ export default function EspaceCollaboratif() {
 
   const navigateToDossier = (dossier: SharedDossier) => {
     const targetId = dossier.dossier_id || dossier.id;
-    navigate(`/${cabinetRole}s/dossiers/${targetId}`);
+    navigate(`/${cabinetRole}s/dossiers/${targetId}`, { state: { fromCollaboratif: true } });
   };
 
   if (loading) {
