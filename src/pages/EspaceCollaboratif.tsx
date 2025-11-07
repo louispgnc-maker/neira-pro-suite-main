@@ -203,6 +203,11 @@ export default function EspaceCollaboratif() {
     }
   };
 
+  const navigateToDossier = (dossier: SharedDossier) => {
+    const targetId = dossier.dossier_id || dossier.id;
+    navigate(`/${cabinetRole}s/dossiers/${targetId}`);
+  };
+
   if (loading) {
     return (
       <AppLayout>
@@ -337,13 +342,16 @@ export default function EspaceCollaboratif() {
                           if (item.type === 'Document' && 'file_url' in item) {
                             handleViewDocument(item as SharedDocument);
                           } else if (item.type === 'Dossier') {
-                            // Rediriger vers l'onglet dossiers
                             const dossierTab = document.querySelector('[value="dossiers"]') as HTMLButtonElement;
                             if (dossierTab) dossierTab.click();
                           } else if (item.type === 'Contrat') {
-                            // Rediriger vers l'onglet documents & contrats
                             const docTab = document.querySelector('[value="documents"]') as HTMLButtonElement;
                             if (docTab) docTab.click();
+                          }
+                        }}
+                        onDoubleClick={() => {
+                          if (item.type === 'Dossier') {
+                            navigateToDossier(item as SharedDossier);
                           }
                         }}
                       >
@@ -551,11 +559,12 @@ export default function EspaceCollaboratif() {
                   {dossiers.map((dossier) => (
                     <div 
                       key={dossier.id} 
-                      className={`p-4 border rounded-lg transition-all ${
+                      className={`p-4 border rounded-lg transition-all cursor-pointer ${
                         cabinetRole === 'notaire' 
                           ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
                           : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
                       }`}
+                      onDoubleClick={() => navigateToDossier(dossier)}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
