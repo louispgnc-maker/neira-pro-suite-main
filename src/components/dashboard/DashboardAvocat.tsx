@@ -143,7 +143,7 @@ export function DashboardAvocat() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
+            <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
               ✨ Premium
             </Badge>
           </div>

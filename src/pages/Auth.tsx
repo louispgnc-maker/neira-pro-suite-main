@@ -189,19 +189,19 @@ export default function Auth() {
                 onClick={() => setRole("notaire")}
                 className={`cursor-pointer group transition-all duration-300 rounded-xl ${
                   role === "notaire" 
-                    ? "ring-2 ring-amber-600 scale-105" 
+                    ? "ring-2 ring-orange-600 scale-105" 
                     : "hover:scale-105 hover:shadow-lg"
                 }`}
               >
                 <Card className={`${
                   role === "notaire" 
-                    ? "bg-gradient-to-br from-amber-50 to-amber-100 border-amber-600" 
-                    : "bg-white hover:bg-amber-50/50"
+                    ? "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-600" 
+                    : "bg-white hover:bg-orange-50/50"
                 } transition-all duration-300`}>
                   <CardContent className="pt-8 pb-6 text-center space-y-3">
                     <div className="text-5xl mb-2">🏛️</div>
-                    <h3 className="text-2xl font-bold text-amber-900">Espace Notaires</h3>
-                    <p className="text-sm text-amber-700">
+                    <h3 className="text-2xl font-bold text-orange-900">Espace Notaires</h3>
+                    <p className="text-sm text-orange-700">
                       Accès sécurisé dédié aux notaires
                     </p>
                   </CardContent>

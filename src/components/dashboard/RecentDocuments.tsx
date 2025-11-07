@@ -152,10 +152,10 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
 
   // Role-based menu styling (dropdown)
   const menuContentClass = role === 'notaire'
-    ? 'bg-amber-50 border-amber-200'
+    ? 'bg-orange-50 border-orange-200'
     : 'bg-blue-50 border-blue-200';
   const menuItemClass = role === 'notaire'
-    ? 'focus:bg-amber-600 focus:text-white'
+    ? 'focus:bg-orange-600 focus:text-white'
     : 'focus:bg-blue-600 focus:text-white';
 
   return (
@@ -165,7 +165,7 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
         <Button
           variant="ghost"
           size="sm"
-          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+          className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
           onClick={() => navigate(role === 'notaire' ? '/notaires/documents' : '/avocats/documents')}
         >
           Voir tout →
@@ -220,7 +220,7 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
                           size="icon"
                           aria-label="Options document"
                           className={role === 'notaire'
-                            ? 'bg-amber-50 hover:bg-amber-600 hover:text-white'
+                            ? 'bg-orange-50 hover:bg-orange-600 hover:text-white'
                             : 'bg-blue-50 hover:bg-blue-600 hover:text-white'}
                         >
                           <MoreHorizontal className="h-4 w-4" />

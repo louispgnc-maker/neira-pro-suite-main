@@ -23,7 +23,7 @@ export function RecentDossiers({ role }: RecentDossiersProps) {
   }
 
   const btnClass = derivedRole === 'notaire'
-    ? 'hover:bg-amber-600 hover:text-white'
+    ? 'hover:bg-orange-600 hover:text-white'
     : 'hover:bg-blue-600 hover:text-white';
 
   const [rows, setRows] = useState<DossierRow[]>([]);

@@ -35,7 +35,7 @@ export default function DossierDetail() {
   const [documents, setDocuments] = useState<AssocDocument[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const mainColor = role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
+  const mainColor = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   useEffect(() => {
     let mounted = true;
@@ -91,7 +91,7 @@ export default function DossierDetail() {
             variant="ghost"
             size="icon"
             onClick={goBack}
-            className="bg-amber-500 hover:bg-amber-600 text-white"
+            className="bg-orange-500 hover:bg-orange-600 text-white"
             aria-label="Retour"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -121,7 +121,7 @@ export default function DossierDetail() {
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Statut</div>
-                  <Badge variant="outline" className={role === 'notaire' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
+                  <Badge variant="outline" className={role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
                     {dossier.status}
                   </Badge>
                 </div>

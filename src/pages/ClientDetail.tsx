@@ -67,7 +67,7 @@ export default function ClientDetail() {
   const [loading, setLoading] = useState(true);
 
   const mainButtonColor = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   useEffect(() => {
@@ -129,7 +129,7 @@ export default function ClientDetail() {
             variant="ghost"
             size="icon"
             onClick={goBack}
-            className="bg-amber-500 hover:bg-amber-600 text-white"
+            className="bg-orange-500 hover:bg-orange-600 text-white"
             aria-label="Retour"
           >
             <ArrowLeft className="h-5 w-5" />

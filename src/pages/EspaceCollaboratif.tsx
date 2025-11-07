@@ -320,13 +320,21 @@ export default function EspaceCollaboratif() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {[...documents.map(d => ({ ...d, type: 'Document' })), 
-                    ...dossiers.map(d => ({ ...d, type: 'Dossier' })), 
-                    ...contrats.map(c => ({ ...c, type: 'Contrat' }))]
+                  {[...documents.map(d => ({ ...d, type: 'Document' as const })), 
+                    ...dossiers.map(d => ({ ...d, type: 'Dossier' as const })), 
+                    ...contrats.map(c => ({ ...c, type: 'Contrat' as const }))]
                     .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime())
                     .slice(0, 5)
                     .map((item, idx) => (
-                      <div key={`${item.type}-${idx}`} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div 
+                        key={`${item.type}-${idx}`} 
+                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent transition-colors cursor-pointer"
+                        onClick={() => {
+                          if (item.type === 'Document' && 'file_url' in item) {
+                            handleViewDocument(item as SharedDocument);
+                          }
+                        }}
+                      >
                         <div className="flex items-center gap-3">
                           <FileText className="h-5 w-5 text-muted-foreground" />
                           <div>
@@ -336,7 +344,18 @@ export default function EspaceCollaboratif() {
                             </p>
                           </div>
                         </div>
-                        <Badge variant="outline">{item.type}</Badge>
+                        <Badge 
+                          variant="outline"
+                          className={
+                            item.type === 'Document' 
+                              ? cabinetRole === 'notaire'
+                                ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                : 'bg-blue-100 text-blue-600 border-blue-200'
+                              : ''
+                          }
+                        >
+                          {item.type}
+                        </Badge>
                       </div>
                     ))}
                 </div>

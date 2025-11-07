@@ -27,12 +27,12 @@ export default function EditClient() {
   if (location.pathname.includes('/avocats')) role = 'avocat';
 
   const mainButtonColor = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
-  const selectContentClass = role === 'notaire' ? 'bg-amber-50 border-amber-200' : '';
+  const selectContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : '';
   const selectItemClass = role === 'notaire'
-    ? 'cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white'
+    ? 'cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white'
     : 'cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white';
 
   const [loading, setLoading] = useState(false);
@@ -68,7 +68,7 @@ export default function EditClient() {
   const [enfants, setEnfants] = useState<{ nom: string; date_naissance: string }[]>([]);
   const [situationFamiliale, setSituationFamiliale] = useState<string[]>([]);
   const [familySearch, setFamilySearch] = useState("");
-  // const familleAmberItem = "cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"; // plus utilisé
+  // const familleAmberItem = "cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white"; // plus utilisé
   
   // Options partagées pour la situation familiale
 
@@ -400,14 +400,14 @@ export default function EditClient() {
               {/* Champ Situation matrimoniale supprimé */}
               <div className="space-y-2">
                 <Label>Options familiales (multi)</Label>
-                <div className="border rounded-md p-2 bg-amber-50 border-amber-200">
+                <div className="border rounded-md p-2 bg-orange-50 border-orange-200">
                   <div className="flex items-center mb-2">
                     <input
                       type="text"
                       value={familySearch}
                       onChange={e => setFamilySearch(e.target.value)}
                       placeholder="Rechercher..."
-                      className="flex-1 bg-white/70 outline-none text-sm px-2 py-1 rounded border border-amber-200 focus:border-amber-400"
+                      className="flex-1 bg-white/70 outline-none text-sm px-2 py-1 rounded border border-orange-200 focus:border-orange-400"
                     />
                   </div>
                   <div className="max-h-48 overflow-y-auto space-y-1">
@@ -430,7 +430,7 @@ export default function EditClient() {
                     })}
                   </div>
                   {situationFamiliale.length > 0 && (
-                    <div className="mt-2 text-xs text-amber-800">{situationFamiliale.length} sélection(s)</div>
+                    <div className="mt-2 text-xs text-orange-800">{situationFamiliale.length} sélection(s)</div>
                   )}
                 </div>
               </div>

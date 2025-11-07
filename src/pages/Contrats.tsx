@@ -81,7 +81,7 @@ export default function Contrats() {
   if (location.pathname.includes('/avocats')) role = 'avocat';
 
   const mainButtonColor = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   useEffect(() => {
@@ -250,7 +250,7 @@ export default function Contrats() {
                         <TableCell>
                           <Badge variant="outline" className={
                             role === 'notaire'
-                              ? 'bg-amber-100 text-amber-600 border-amber-200'
+                              ? 'bg-orange-100 text-orange-600 border-orange-200'
                               : 'bg-blue-100 text-blue-600 border-blue-200'
                           }>
                             {contrat.category}

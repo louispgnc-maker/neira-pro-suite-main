@@ -81,7 +81,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
   const colorClass =
     role === 'notaire'
-      ? 'bg-amber-600 hover:bg-amber-700 text-white'
+      ? 'bg-orange-600 hover:bg-orange-700 text-white'
       : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   // Edit cabinet dialog state
@@ -447,7 +447,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                         <Button 
                           variant="outline" 
                           onClick={() => setEditDialogOpen(false)}
-                          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                          className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
                         >
                           Annuler
                         </Button>
@@ -478,7 +478,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                       <DialogClose asChild>
                         <Button 
                           variant="outline"
-                          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                          className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
                         >
                           Annuler
                         </Button>
@@ -575,7 +575,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                       <Button 
                         variant="outline" 
                         onClick={() => setInviteDialogOpen(false)}
-                        className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                        className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
                       >
                         Annuler
                       </Button>
@@ -615,7 +615,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className={`h-8 text-xs px-3 ${role === 'notaire' ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 hover:text-white' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white'}`}
+                                className={`h-8 text-xs px-3 ${role === 'notaire' ? 'bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:text-white' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white'}`}
                               >
                                 Fondateur
                                 <ChevronDown className="ml-1 h-3 w-3" />
@@ -626,7 +626,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                                 <DropdownMenuItem
                                   key={opt}
                                   onClick={() => updateMemberRole(member.id, opt)}
-                                  className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
+                                  className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
                                 >
                                   {opt}
                                 </DropdownMenuItem>
@@ -638,7 +638,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                             value={member.role_cabinet}
                             onValueChange={(value) => updateMemberRole(member.id, value)}
                           >
-                            <SelectTrigger className={`h-8 text-xs px-3 w-auto ${role === 'notaire' ? 'bg-amber-600 text-white hover:bg-amber-700 border-amber-600' : 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600'}`}>
+                            <SelectTrigger className={`h-8 text-xs px-3 w-auto ${role === 'notaire' ? 'bg-orange-600 text-white hover:bg-orange-700 border-orange-600' : 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600'}`}>
                               <SelectValue placeholder="Sélectionner un rôle" />
                             </SelectTrigger>
                             <SelectContent>
@@ -646,7 +646,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                                 <SelectItem 
                                   key={opt} 
                                   value={opt}
-                                  className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
+                                  className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
                                 >
                                   {opt}
                                 </SelectItem>
@@ -657,7 +657,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                       ) : (
                         <Badge 
                           variant={ (member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? 'default' : 'secondary' }
-                          className={`text-xs ${ (member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? (role === 'notaire' ? 'bg-amber-600' : 'bg-blue-600') : ''}`}
+                          className={`text-xs ${ (member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? (role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600') : ''}`}
                         >
                           {member.role_cabinet === 'owner' ? 'Fondateur' : member.role_cabinet}
                         </Badge>
@@ -669,7 +669,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                         className={
                           member.status === 'active'
                             ? role === 'notaire'
-                              ? 'bg-amber-600'
+                              ? 'bg-orange-600'
                               : 'bg-blue-600'
                             : ''
                         }
@@ -697,7 +697,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                                 <DialogClose asChild>
                                   <Button 
                                     variant="outline"
-                                    className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                                    className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
                                   >
                                     Non
                                   </Button>

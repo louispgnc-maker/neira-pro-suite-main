@@ -143,7 +143,7 @@ export function DashboardNotaire() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
+            <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow">
               ✨ Premium
             </Badge>
           </div>
@@ -158,8 +158,8 @@ export function DashboardNotaire() {
             title="Actes en cours"
             value={docCount}
             icon={FileText}
-            iconColor="text-amber-600"
-            iconBgColor="bg-amber-100"
+            iconColor="text-orange-600"
+            iconBgColor="bg-orange-100"
             trend={(() => {
               const prev = docPrevCount;
               const curr = docCount;
@@ -175,8 +175,8 @@ export function DashboardNotaire() {
             title="Signatures en attente"
             value={pendingSigCount}
             icon={PenTool}
-            iconColor="text-amber-600"
-            iconBgColor="bg-amber-100"
+            iconColor="text-orange-600"
+            iconBgColor="bg-orange-100"
             trend={(() => {
               const prev = pendingSigPrevCount;
               const curr = pendingSigCount;
@@ -192,29 +192,29 @@ export function DashboardNotaire() {
             title="Dossiers"
             value={dossierCount}
             icon={FolderPlus}
-            iconColor="text-amber-600"
-            iconBgColor="bg-amber-100"
+            iconColor="text-orange-600"
+            iconBgColor="bg-orange-100"
           />
           <StatCard
             title="Clients à relancer"
             value={clientsToFollow}
             icon={Users}
-            iconColor="text-amber-600"
-            iconBgColor="bg-amber-100"
+            iconColor="text-orange-600"
+            iconBgColor="bg-orange-100"
           />
           <StatCard
             title="Tâches du jour"
             value={todayTasks}
             icon={Clock}
-            iconColor="text-amber-600"
-            iconBgColor="bg-amber-100"
+            iconColor="text-orange-600"
+            iconBgColor="bg-orange-100"
           />
         </div>
 
         {/* Quick Actions */}
         <QuickActions 
           role="notaire"
-          primaryButtonColor="bg-amber-600 hover:bg-amber-700 text-white" 
+          primaryButtonColor="bg-orange-600 hover:bg-orange-700 text-white" 
         />
 
         {/* Main Section */}
@@ -223,7 +223,7 @@ export function DashboardNotaire() {
             <RecentDocuments 
               role="notaire"
               statusColorOverride={{
-                "En cours": "bg-amber-100 text-amber-600 border-amber-200"
+                "En cours": "bg-orange-100 text-orange-600 border-orange-200"
               }} 
             />
             <RecentContrats role="notaire" />

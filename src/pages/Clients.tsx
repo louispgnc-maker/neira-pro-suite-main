@@ -72,7 +72,7 @@ export default function Clients() {
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   // Couleur badge KYC partiel
@@ -114,7 +114,7 @@ export default function Clients() {
                 <FicheClientMenu
                   variant="horizontal"
                   label="Ajoutez votre premier client"
-                  colorClass={role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}
+                  colorClass={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}
                 />
               </div>
             </div>

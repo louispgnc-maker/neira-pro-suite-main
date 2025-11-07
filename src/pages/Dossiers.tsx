@@ -47,9 +47,9 @@ export default function Dossiers() {
   const [selectedContrats, setSelectedContrats] = useState<string[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const navigate = useNavigate();
-  const mainHover = role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white';
-  const selectContentClass = role === 'notaire' ? 'bg-amber-50 border-amber-200' : '';
-  const selectItemClass = role === 'notaire' ? 'cursor-pointer hover:bg-amber-600 hover:text-white' : 'cursor-pointer hover:bg-blue-600 hover:text-white';
+  const mainHover = role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white';
+  const selectContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : '';
+  const selectItemClass = role === 'notaire' ? 'cursor-pointer hover:bg-orange-600 hover:text-white' : 'cursor-pointer hover:bg-blue-600 hover:text-white';
 
   useEffect(() => {
     let mounted = true;
@@ -198,7 +198,7 @@ export default function Dossiers() {
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
             <DialogTrigger asChild>
-              <Button className={role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}>
+              <Button className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}>
                 Nouveau dossier
               </Button>
             </DialogTrigger>
@@ -284,7 +284,7 @@ export default function Dossiers() {
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Annuler</Button>
-                  <Button className={role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'} onClick={createDossier}>Créer</Button>
+                  <Button className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'} onClick={createDossier}>Créer</Button>
                 </div>
               </div>
             </DialogContent>

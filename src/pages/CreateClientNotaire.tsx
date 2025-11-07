@@ -30,8 +30,8 @@ export default function CreateClientNotaire() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const role: 'notaire' = 'notaire';
-  const mainButtonColor = 'bg-amber-600 hover:bg-amber-700 text-white';
-  const itemHover = 'cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white';
+  const mainButtonColor = 'bg-orange-600 hover:bg-orange-700 text-white';
+  const itemHover = 'cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white';
 
   const [loading, setLoading] = useState(false);
   const [idDocFile, setIdDocFile] = useState<File | null>(null);
@@ -263,7 +263,7 @@ export default function CreateClientNotaire() {
                   <Label htmlFor="etatCivil">État civil</Label>
                   <Select value={etatCivil} onValueChange={setEtatCivil}>
                     <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent className="bg-amber-50 border-amber-200">
+                    <SelectContent className="bg-orange-50 border-orange-200">
                       <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
                       <SelectItem className={itemHover} value="Marié">Marié</SelectItem>
                       <SelectItem className={itemHover} value="Pacsé">Pacsé</SelectItem>
@@ -289,7 +289,7 @@ export default function CreateClientNotaire() {
                   <Label htmlFor="typeIdentite">Type de pièce d'identité</Label>
                   <Select value={typeIdentite} onValueChange={setTypeIdentite}>
                     <SelectTrigger id="typeIdentite"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent className="bg-amber-50 border-amber-200">
+                    <SelectContent className="bg-orange-50 border-orange-200">
                       <SelectItem className={itemHover} value="CNI">Carte Nationale d'Identité</SelectItem>
                       <SelectItem className={itemHover} value="Passeport">Passeport</SelectItem>
                       <SelectItem className={itemHover} value="Titre de séjour">Titre de séjour</SelectItem>
@@ -329,18 +329,18 @@ export default function CreateClientNotaire() {
                 <Label>Options (multi-sélection)</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="secondary" className="justify-between w-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200">
+                    <Button type="button" variant="secondary" className="justify-between w-full bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200">
                       {selectedFamily.length > 0 ? `${selectedFamily.length} sélection(s)` : 'Sélectionner des options'}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="min-w-[340px] bg-amber-50 border-amber-200" align="start">
-                    <div className="px-2 py-2 border-b border-amber-200 sticky top-0 bg-amber-50 z-10 flex items-center gap-2">
+                  <DropdownMenuContent className="min-w-[340px] bg-orange-50 border-orange-200" align="start">
+                    <div className="px-2 py-2 border-b border-orange-200 sticky top-0 bg-orange-50 z-10 flex items-center gap-2">
                       <input
                         type="text"
                         value={familySearch}
                         onChange={(e) => setFamilySearch(e.target.value)}
                         placeholder="Rechercher..."
-                        className="w-full bg-white/70 outline-none text-sm px-2 py-1 rounded border border-amber-200 focus:border-amber-400"
+                        className="w-full bg-white/70 outline-none text-sm px-2 py-1 rounded border border-orange-200 focus:border-orange-400"
                       />
                     </div>
                     <div className="max-h-64 overflow-y-auto">
@@ -349,7 +349,7 @@ export default function CreateClientNotaire() {
                         return (
                           <DropdownMenuItem
                             key={opt.key}
-                            className="cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"
+                            className="cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white"
                             onSelect={(e) => {
                               e.preventDefault();
                               setSelectedFamily(prev => checked ? prev.filter(l => l !== opt.label) : [...prev, opt.label]);
@@ -451,7 +451,7 @@ export default function CreateClientNotaire() {
                 <Label htmlFor="typeDossier">Type d'acte / dossier</Label>
                 <Select value={typeDossier} onValueChange={(val) => { setTypeDossier(val); setContratSouhaite(''); }}>
                   <SelectTrigger id="typeDossier"><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
-                  <SelectContent className="bg-amber-50 border-amber-200">
+                  <SelectContent className="bg-orange-50 border-orange-200">
                     {NOTAIRE_CONTRACT_CATEGORIES.map(cat => (
                       <SelectItem className={itemHover} key={cat.key} value={cat.key}>{cat.label}</SelectItem>
                     ))}
@@ -462,7 +462,7 @@ export default function CreateClientNotaire() {
                 <Label htmlFor="contratSouhaite">Acte/Contrat précis</Label>
                 <Select value={contratSouhaite} onValueChange={setContratSouhaite} disabled={!typeDossier}>
                   <SelectTrigger id="contratSouhaite"><SelectValue placeholder={typeDossier ? 'Sélectionner...' : 'Choisir une catégorie d\'abord'} /></SelectTrigger>
-                  <SelectContent className="bg-amber-50 border-amber-200">
+                  <SelectContent className="bg-orange-50 border-orange-200">
                     {(NOTAIRE_CONTRACT_CATEGORIES.find(c => c.key === typeDossier)?.contracts || []).map(c => (
                       <SelectItem className={itemHover} key={c} value={c}>{c}</SelectItem>
                     ))}

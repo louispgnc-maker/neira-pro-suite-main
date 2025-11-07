@@ -70,7 +70,7 @@ export default function Profile() {
 
             <div>
               <div className="text-sm text-muted-foreground">Espace</div>
-              <Badge variant="outline" className={role === 'notaire' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
+              <Badge variant="outline" className={role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
                 {role}
               </Badge>
             </div>

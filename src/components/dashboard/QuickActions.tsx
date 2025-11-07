@@ -109,7 +109,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
             if (action.key === 'import') return triggerImport();
             // TODO: wire other actions
           };
-          const colorClass = primaryButtonColor || (role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white');
+          const colorClass = primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white');
           const buttonClass = `${colorClass} h-auto flex-col gap-2 py-4`;
           return (
             <Button
@@ -127,7 +127,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
         {/* Remplace 'Lien de collecte' par menu Fiche client avec même contenu */}
         <FicheClientMenu
           variant="vertical"
-          colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
+          colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
         />
       </CardContent>
     </Card>

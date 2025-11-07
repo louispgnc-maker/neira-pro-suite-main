@@ -106,7 +106,7 @@ export default function Tasks() {
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   return (

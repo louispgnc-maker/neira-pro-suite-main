@@ -164,7 +164,7 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
         <Button
           variant="ghost"
           size="sm"
-          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+          className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
           onClick={() => navigate(role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats')}
         >
           Voir tout →
@@ -209,7 +209,7 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
                       : "—"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={role === 'notaire' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
+                    <Badge variant="outline" className={role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
                       {contrat.category}
                     </Badge>
                   </TableCell>
@@ -223,14 +223,14 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className={role === 'notaire' ? 'hover:bg-amber-100 hover:text-amber-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                          className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}>
+                      <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
                         <DropdownMenuItem 
-                          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
+                          className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
                           onClick={() => handleView(contrat)}
                         >
                           <FileText className="mr-2 h-4 w-4" />

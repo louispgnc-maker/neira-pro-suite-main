@@ -21,7 +21,7 @@ export default function Cabinet() {
   const [inviteCode, setInviteCode] = useState("");
   const [joiningCabinet, setJoiningCabinet] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const colorClass = role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
+  const colorClass = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   const refreshCabinet = () => {
     setRefreshKey(prev => prev + 1);

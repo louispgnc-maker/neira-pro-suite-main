@@ -85,7 +85,7 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
 
   // Base button style (no color) to allow full control via colorClass
   const base = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
-  const color = colorClass || 'bg-amber-600 hover:bg-amber-700 text-white';
+  const color = colorClass || 'bg-orange-600 hover:bg-orange-700 text-white';
   const verticalBtn = `${base} ${color} h-auto flex-col py-4`;
   const horizontalBtn = `${base} ${color} text-sm px-4 py-2 h-auto flex items-center`;
 
@@ -162,14 +162,14 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
         ) : (
           filteredCategories.map((cat) => (
             <DropdownMenuSub key={cat.key}>
-              <DropdownMenuSubTrigger className="font-semibold hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white data-[state=open]:bg-amber-600 data-[state=open]:text-white">
+              <DropdownMenuSubTrigger className="font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white data-[state=open]:bg-orange-600 data-[state=open]:text-white">
                 {cat.label}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 {cat.contracts.map((contract) => (
                   <DropdownMenuItem 
                     key={contract} 
-                    className="cursor-pointer hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white"
+                    className="cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white"
                     onClick={() => handleContractSelect(contract, cat.key)}
                   >
                     {contract}

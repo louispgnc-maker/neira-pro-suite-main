@@ -9,7 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 interface FicheClientMenuProps {
   variant?: 'vertical' | 'horizontal';
-  colorClass?: string; // ex: bg-amber-600 hover:bg-amber-700 text-white
+  colorClass?: string; // ex: bg-orange-600 hover:bg-orange-700 text-white
   label?: string; // button text label, defaults to "Fiche client"
 }
 
@@ -27,7 +27,7 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
   // Role-based fallback color if no colorClass provided (ensures consistent hover color per space)
   // Bouton: on ne change pas la couleur ici (reste mappé par défaut)
   const fallback = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
   const color = colorClass || fallback;
 
@@ -53,7 +53,7 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
         <DropdownMenuItem 
           className={
             `cursor-pointer ${role === 'notaire' 
-              ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' 
+              ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' 
               : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`
           }
           onClick={() => navigate(role === 'notaire' ? '/notaires/clients/create' : '/avocats/clients/create')}
@@ -64,7 +64,7 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
         <DropdownMenuItem 
           className={
             `cursor-pointer ${role === 'notaire' 
-              ? 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white' 
+              ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' 
               : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`
           }
         >

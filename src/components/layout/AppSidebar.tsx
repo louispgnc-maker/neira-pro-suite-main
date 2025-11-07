@@ -69,7 +69,7 @@ export function AppSidebar() {
   const displayName = profile?.first_name || profile?.email?.split('@')[0] || 'Compte';
   // Couleurs espace selon rôle
   const spaceBtnClass = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
   const spaceLabel = "Changer d'espace";
   return (
@@ -78,21 +78,21 @@ export function AppSidebar() {
         <div className="flex items-center justify-between gap-2">
           <SidebarTrigger
             className={
-              `h-8 w-8 rounded-md ${role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
+              `h-8 w-8 rounded-md ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
             }
           />
           {!isCollapsed && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  className={`h-8 px-3 text-xs font-semibold rounded-md shadow-sm text-white ${role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                  className={`h-8 px-3 text-xs font-semibold rounded-md shadow-sm text-white ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                 >
                   Changer d'espace
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className={role === 'notaire' ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}
+                className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}
               >
                 <DropdownMenuItem
                   onClick={() => navigate('/avocats/dashboard')}
@@ -111,7 +111,7 @@ export function AppSidebar() {
                   className={
                     role === 'notaire'
                       ? 'opacity-60 text-muted-foreground'
-                      : 'hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white data-[highlighted]:bg-amber-600 data-[highlighted]:text-white'
+                      : 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white data-[highlighted]:bg-orange-600 data-[highlighted]:text-white'
                   }
                 >
                   Espace Notaire
@@ -121,7 +121,7 @@ export function AppSidebar() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${role === 'notaire' ? 'bg-amber-600' : 'bg-blue-600'}`}> 
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600'}`}> 
             <UserCircle2 className="h-5 w-5" />
           </div>
           {!isCollapsed && (
@@ -170,19 +170,19 @@ export function AppSidebar() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className={`w-full justify-start gap-2 group font-medium ${role === 'notaire' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+              className={`w-full justify-start gap-2 group font-medium ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
             >
               <UserCircle2 className="h-4 w-4" />
               {!isCollapsed && <span>Profil</span>}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" side="top" className={role === 'notaire' ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}>
+          <DropdownMenuContent align="start" side="top" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
             <div className="px-2 py-1.5 text-xs text-muted-foreground">Connecté</div>
-            <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-amber-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} disabled>
+            <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} disabled>
               {profileEmail}
             </DropdownMenuItem>
             <DropdownMenuItem
-              className={role === 'notaire' ? 'focus:bg-amber-600 focus:text-white hover:bg-amber-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white'}
+              className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white hover:bg-orange-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white'}
               onClick={() => navigate(role === 'notaire' ? '/notaires/profile' : '/avocats/profile')}
             >
               Ouvrir le profil

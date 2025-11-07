@@ -41,7 +41,7 @@ const statusColorsAvocat: Record<string, string> = {
 };
 const statusColorsNotaire: Record<string, string> = {
   "Signé": "bg-success/10 text-success border-success/20",
-  "En cours": "bg-amber-100 text-amber-600 border-amber-200",
+  "En cours": "bg-orange-100 text-orange-600 border-orange-200",
   "Brouillon": "bg-muted text-muted-foreground border-border",
   "En attente": "bg-warning/10 text-warning border-warning/20",
 };
@@ -219,7 +219,7 @@ export default function Documents() {
 
   // Couleur des boutons principaux
   const mainButtonColor = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   return (

@@ -62,7 +62,7 @@ export function RecentClients({ role = 'avocat' }: RecentClientsProps = {}) {
         <Button
           variant="ghost"
           size="sm"
-          className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+          className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
           onClick={() => navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients')}
         >
           Voir tout →
