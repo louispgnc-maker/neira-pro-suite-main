@@ -384,12 +384,13 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
             </div>
             {/* Bouton visible uniquement pour le fondateur (owner) */}
             {isOwner && (
-              <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className={colorClass} onClick={openEditDialog}>
-                    Modifier le cabinet
-                  </Button>
-                </DialogTrigger>
+              <div className="flex flex-col items-end gap-1">
+                <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className={colorClass} onClick={openEditDialog}>
+                      Modifier le cabinet
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent className="max-w-xl">
                   <DialogHeader>
                     <DialogTitle>Modifier le cabinet</DialogTitle>
@@ -447,6 +448,33 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+              
+              {/* Bouton supprimer en petit */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/10">
+                    <Trash2 className="h-3 w-3 mr-1" />
+                    Supprimer
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Supprimer définitivement le cabinet ?</DialogTitle>
+                    <DialogDescription>
+                      Cette action est irréversible. Le cabinet "{cabinet?.nom}" et tous ses membres seront supprimés de façon permanente.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Annuler</Button>
+                    </DialogClose>
+                    <Button variant="destructive" onClick={deleteCabinet}>
+                      Oui, supprimer définitivement
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
             )}
           </div>
         </CardHeader>
@@ -674,45 +702,6 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
               </TableBody>
             </Table>
           </div>
-
-          {/* Danger zone - Delete cabinet (owner only) */}
-          {isOwner && (
-            <div className="mt-8 pt-6 border-t border-destructive/20">
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-destructive flex items-center gap-2">
-                  <Trash2 className="h-5 w-5" />
-                  Zone de danger
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  La suppression du cabinet est définitive et irréversible. Tous les membres seront retirés.
-                </p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="destructive" size="sm">
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Supprimer le cabinet
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Supprimer définitivement le cabinet ?</DialogTitle>
-                      <DialogDescription>
-                        Cette action est irréversible. Le cabinet "{cabinet?.nom}" et tous ses membres seront supprimés de façon permanente.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant="outline">Annuler</Button>
-                      </DialogClose>
-                      <Button variant="destructive" onClick={deleteCabinet}>
-                        Oui, supprimer définitivement
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
