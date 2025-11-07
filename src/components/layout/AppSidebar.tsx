@@ -74,11 +74,11 @@ export function AppSidebar() {
   const spaceLabel = "Changer d'espace";
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border p-4 space-y-3">
+      <SidebarHeader className={`border-b border-sidebar-border space-y-3 ${isCollapsed ? 'p-3' : 'p-4'}`}>
         <div className="flex items-center justify-between gap-2">
           <SidebarTrigger
             className={
-              `h-10 w-10 rounded-md ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
+              `h-10 w-10 rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
             }
           />
           {!isCollapsed && (
@@ -121,7 +121,7 @@ export function AppSidebar() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <div className={`w-10 h-10 rounded-md flex items-center justify-center text-white ${role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600'}`}> 
+          <div className={`w-10 h-10 rounded-md flex-shrink-0 flex items-center justify-center text-white ${role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600'}`}> 
             <UserCircle2 className="h-5 w-5" />
           </div>
           {!isCollapsed && (
@@ -165,12 +165,12 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-4">
+      <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-3' : 'p-4'}`}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className={`w-full ${isCollapsed ? 'h-10 w-10 p-0 justify-center' : 'justify-start gap-2'} group font-medium rounded-md ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+              className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center' : 'w-full justify-start gap-2'} group font-medium rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
             >
               <UserCircle2 className="h-4 w-4" />
               {!isCollapsed && <span>Profil</span>}
