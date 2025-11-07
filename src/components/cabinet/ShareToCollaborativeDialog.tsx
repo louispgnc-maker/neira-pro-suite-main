@@ -38,8 +38,12 @@ export function ShareToCollaborativeDialog({
   const { toast } = useToast();
 
   const colorClass = role === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
+  
+  const outlineHoverClass = role === 'notaire' 
+    ? 'hover:bg-orange-600 hover:text-white' 
+    : 'hover:bg-blue-600 hover:text-white';
 
   // Charger le cabinet de l'utilisateur
   useEffect(() => {
@@ -186,7 +190,7 @@ export function ShareToCollaborativeDialog({
                 <Button 
                   variant="outline" 
                   onClick={() => setOpen(false)}
-                  className={role === 'notaire' ? 'hover:bg-amber-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}
+                  className={outlineHoverClass}
                 >
                   Annuler
                 </Button>

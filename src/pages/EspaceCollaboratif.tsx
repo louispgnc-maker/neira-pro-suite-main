@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { DocumentViewer } from '@/components/ui/document-viewer';
 import { 
   FileText, 
   MessageSquare, 
@@ -37,6 +38,9 @@ interface SharedDocument {
   id: string;
   title: string;
   description: string | null;
+  file_url: string | null;
+  file_name: string | null;
+  file_type: string | null;
   shared_at: string;
   shared_by: string;
   document_id: string;
@@ -81,8 +85,12 @@ export default function EspaceCollaboratif() {
 
   const cabinetRole = role;
   const colorClass = cabinetRole === 'notaire'
-    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
+
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState('');
+  const [viewerDocName, setViewerDocName] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -155,6 +163,43 @@ export default function EspaceCollaboratif() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleViewDocument = async (doc: SharedDocument) => {
+    if (!doc.file_url) {
+      toast({
+        title: 'Erreur',
+        description: 'Aucun fichier associé',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.storage
+        .from('documents')
+        .createSignedUrl(doc.file_url, 60);
+
+      if (error || !data?.signedUrl) {
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de générer le lien',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setViewerUrl(data.signedUrl);
+      setViewerDocName(doc.title);
+      setViewerOpen(true);
+    } catch (error) {
+      console.error('Erreur ouverture document:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'ouvrir le document',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -333,7 +378,11 @@ export default function EspaceCollaboratif() {
                 ) : (
                   <div className="space-y-2 max-h-[400px] overflow-y-auto">
                     {documents.map((doc) => (
-                      <div key={doc.id} className="p-3 border rounded-lg hover:bg-accent transition-colors">
+                      <div 
+                        key={doc.id} 
+                        className="p-3 border rounded-lg hover:bg-accent transition-colors cursor-pointer"
+                        onClick={() => handleViewDocument(doc)}
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <p className="font-medium">{doc.title}</p>
@@ -390,7 +439,7 @@ export default function EspaceCollaboratif() {
                               <p className="font-medium">{contrat.title}</p>
                               <Badge variant="outline" className={
                                 cabinetRole === 'notaire'
-                                  ? 'bg-amber-100 text-amber-600 border-amber-200'
+                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
                                   : 'bg-blue-100 text-blue-600 border-blue-200'
                               }>
                                 {contrat.category}
@@ -546,6 +595,13 @@ export default function EspaceCollaboratif() {
         </TabsContent>
       </Tabs>
     </div>
+    <DocumentViewer
+      open={viewerOpen}
+      onClose={() => setViewerOpen(false)}
+      documentUrl={viewerUrl}
+      documentName={viewerDocName}
+      role={cabinetRole}
+    />
     </AppLayout>
   );
 }
