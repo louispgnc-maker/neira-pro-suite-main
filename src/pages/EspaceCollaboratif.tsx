@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,8 @@ import {
   CheckSquare, 
   Calendar, 
   FolderOpen,
-  Plus
+  Plus,
+  ArrowRight
 } from 'lucide-react';
 
 interface Cabinet {
@@ -65,6 +66,7 @@ interface SharedContrat {
 export default function EspaceCollaboratif() {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [cabinet, setCabinet] = useState<Cabinet | null>(null);
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [documents, setDocuments] = useState<SharedDocument[]>([]);
@@ -311,6 +313,14 @@ export default function EspaceCollaboratif() {
                       {documents.length} document{documents.length > 1 ? 's' : ''} accessible{documents.length > 1 ? 's' : ''}
                     </CardDescription>
                   </div>
+                  <Button 
+                    size="sm" 
+                    className={colorClass}
+                    onClick={() => navigate(`/${cabinetRole}s/documents`)}
+                  >
+                    <ArrowRight className="h-4 w-4 mr-2" />
+                    Aller à mes documents
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent>
@@ -318,7 +328,7 @@ export default function EspaceCollaboratif() {
                   <div className="text-center py-8 text-muted-foreground">
                     <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
                     <p className="text-sm">Aucun document partagé</p>
-                    <p className="text-xs mt-1">Partagez des documents depuis votre espace</p>
+                    <p className="text-xs mt-1">Utilisez le bouton de partage sur vos documents</p>
                   </div>
                 ) : (
                   <div className="space-y-2 max-h-[400px] overflow-y-auto">
@@ -353,6 +363,14 @@ export default function EspaceCollaboratif() {
                       {contrats.length} contrat{contrats.length > 1 ? 's' : ''} accessible{contrats.length > 1 ? 's' : ''}
                     </CardDescription>
                   </div>
+                  <Button 
+                    size="sm" 
+                    className={colorClass}
+                    onClick={() => navigate(`/${cabinetRole}s/contrats`)}
+                  >
+                    <ArrowRight className="h-4 w-4 mr-2" />
+                    Aller à mes contrats
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent>
@@ -360,7 +378,7 @@ export default function EspaceCollaboratif() {
                   <div className="text-center py-8 text-muted-foreground">
                     <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
                     <p className="text-sm">Aucun contrat partagé</p>
-                    <p className="text-xs mt-1">Partagez des contrats depuis votre espace</p>
+                    <p className="text-xs mt-1">Utilisez le bouton de partage sur vos contrats</p>
                   </div>
                 ) : (
                   <div className="space-y-2 max-h-[400px] overflow-y-auto">
@@ -407,6 +425,13 @@ export default function EspaceCollaboratif() {
                     {dossiers.length} dossier{dossiers.length > 1 ? 's' : ''} accessible{dossiers.length > 1 ? 's' : ''}
                   </CardDescription>
                 </div>
+                <Button 
+                  className={colorClass}
+                  onClick={() => navigate(`/${cabinetRole}s/dossiers`)}
+                >
+                  <ArrowRight className="h-4 w-4 mr-2" />
+                  Aller à mes dossiers
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -414,7 +439,7 @@ export default function EspaceCollaboratif() {
                 <div className="text-center py-12 text-muted-foreground">
                   <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucun dossier partagé</p>
-                  <p className="text-sm mt-2">Partagez des dossiers depuis votre espace</p>
+                  <p className="text-sm mt-2">Utilisez le bouton de partage sur vos dossiers</p>
                 </div>
               ) : (
                 <div className="grid gap-3">
