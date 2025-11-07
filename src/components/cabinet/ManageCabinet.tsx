@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -76,6 +77,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [inviteLoading, setInviteLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const colorClass =
     role === 'notaire'
@@ -336,8 +338,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
         description: 'Le cabinet a été supprimé définitivement.',
       });
 
-      // Recharger la page pour revenir à la création
-      window.location.reload();
+      // Rediriger vers la page Mon Cabinet
+      navigate(role === 'notaire' ? '/notaires/mon-cabinet' : '/avocats/mon-cabinet');
     } catch (error: any) {
       console.error('Erreur suppression cabinet:', error);
       toast({
