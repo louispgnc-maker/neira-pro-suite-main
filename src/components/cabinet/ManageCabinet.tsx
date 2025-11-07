@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
-import { Copy, RefreshCw, Mail, Users, ChevronDown } from 'lucide-react';
+import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -316,6 +316,33 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       toast({
         title: 'Erreur',
         description: error.message || 'Impossible de retirer ce membre',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const deleteCabinet = async () => {
+    if (!cabinet) return;
+    
+    try {
+      const { error } = await supabase.rpc('delete_cabinet', {
+        cabinet_id_param: cabinet.id,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Cabinet supprimé',
+        description: 'Le cabinet a été supprimé définitivement.',
+      });
+
+      // Recharger la page pour revenir à la création
+      window.location.reload();
+    } catch (error: any) {
+      console.error('Erreur suppression cabinet:', error);
+      toast({
+        title: 'Erreur',
+        description: error.message || 'Impossible de supprimer ce cabinet',
         variant: 'destructive',
       });
     }
@@ -645,6 +672,45 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
               </TableBody>
             </Table>
           </div>
+
+          {/* Danger zone - Delete cabinet (owner only) */}
+          {isOwner && (
+            <div className="mt-8 pt-6 border-t border-destructive/20">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-destructive flex items-center gap-2">
+                  <Trash2 className="h-5 w-5" />
+                  Zone de danger
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  La suppression du cabinet est définitive et irréversible. Tous les membres seront retirés.
+                </p>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="destructive" size="sm">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Supprimer le cabinet
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Supprimer définitivement le cabinet ?</DialogTitle>
+                      <DialogDescription>
+                        Cette action est irréversible. Le cabinet "{cabinet?.nom}" et tous ses membres seront supprimés de façon permanente.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Annuler</Button>
+                      </DialogClose>
+                      <Button variant="destructive" onClick={deleteCabinet}>
+                        Oui, supprimer définitivement
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

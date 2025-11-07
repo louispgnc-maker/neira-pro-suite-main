@@ -585,6 +585,28 @@ begin
 end;
 $$;
 
+-- Delete cabinet (owner only) -----------------------------------------------
+drop function if exists public.delete_cabinet(uuid);
+create or replace function public.delete_cabinet(cabinet_id_param uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Only the owner can delete the cabinet
+  if not exists (
+    select 1 from public.cabinets
+    where id = cabinet_id_param and owner_id = auth.uid()
+  ) then
+    raise exception 'Not authorized';
+  end if;
+
+  -- Delete cabinet (cascade will handle members)
+  delete from public.cabinets where id = cabinet_id_param;
+end;
+$$;
+
 -- 9) Notes & verification ----------------------------------------------------
 -- Optional checks to run after execution:
 -- select c.id, c.owner_id, cm.user_id as founder_member
