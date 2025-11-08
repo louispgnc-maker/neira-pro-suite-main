@@ -129,12 +129,14 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
     window.location.href = 'https://www.neira.fr/notaires/espace-collaboratif';
   };
 
+  const hasCollaborative = role === 'notaire';
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Actions rapides</CardTitle>
       </CardHeader>
-  <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-3">
+  <CardContent className={`grid grid-cols-2 ${hasCollaborative ? 'md:grid-cols-5' : 'md:grid-cols-4'} gap-3`}>
         {/* Hidden file input for PDF import */}
         <input
           ref={fileInputRef}
@@ -145,19 +147,14 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           onChange={onFilesSelected}
         />
 
-        {/** If collaborative button is absent (notaire only), expand the first selector to fill 2 grid columns so the remaining buttons occupy full width. */}
-        {(() => {
-          const hasCollaborative = role === 'notaire';
-          const selectorSpanClass = hasCollaborative ? '' : 'md:col-span-2';
-          return hasCollaborative ? (
-            <ContractSelectorNotaire />
-          ) : (
-            <div className={selectorSpanClass}><ContractSelectorAvocat /></div>
-          );
-        })()}
+        {hasCollaborative ? (
+          <ContractSelectorNotaire />
+        ) : (
+          <div className="md:col-span-2"><ContractSelectorAvocat /></div>
+        )}
 
         {/* Espace collaboratif (only for notaire). Placed after first selector to appear near middle visually */}
-        {role === 'notaire' && (
+        {hasCollaborative && (
           <Button
             onClick={handleCollaborative}
             disabled={checkingCabinet}
@@ -175,7 +172,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
             // TODO: wire other actions
           };
           const colorClass = primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white');
-          const buttonClass = `${colorClass} h-auto flex-col gap-2 py-4`;
+          const buttonClass = `${colorClass} w-full h-auto flex flex-col items-center ${hasCollaborative ? 'gap-2 py-4 text-sm' : 'gap-3 py-6 text-base'}`;
           return (
             <Button
               key={action.key}
@@ -185,15 +182,17 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
               disabled={uploading && action.key === 'import'}
             >
               <action.icon className="h-5 w-5" />
-              <span className="text-xs">{action.key === 'import' && uploading ? 'Import…' : action.label}</span>
+              <span className={`${hasCollaborative ? 'text-xs' : 'text-sm'}`}>{action.key === 'import' && uploading ? 'Import…' : action.label}</span>
             </Button>
           );
         })}
         {/* Remplace 'Lien de collecte' par menu Fiche client avec même contenu */}
-        <FicheClientMenu
-          variant="vertical"
-          colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
-        />
+        <div className={`${hasCollaborative ? '' : ''}`}>
+          <FicheClientMenu
+            variant="vertical"
+            colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
+          />
+        </div>
       </CardContent>
     </Card>
   );
