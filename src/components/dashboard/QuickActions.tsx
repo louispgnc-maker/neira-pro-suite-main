@@ -145,11 +145,16 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           onChange={onFilesSelected}
         />
 
-        {role === 'notaire' ? (
-          <ContractSelectorNotaire />
-        ) : (
-          <ContractSelectorAvocat />
-        )}
+        {/** If collaborative button is absent (notaire only), expand the first selector to fill 2 grid columns so the remaining buttons occupy full width. */}
+        {(() => {
+          const hasCollaborative = role === 'notaire';
+          const selectorSpanClass = hasCollaborative ? '' : 'md:col-span-2';
+          return hasCollaborative ? (
+            <ContractSelectorNotaire />
+          ) : (
+            <div className={selectorSpanClass}><ContractSelectorAvocat /></div>
+          );
+        })()}
 
         {/* Espace collaboratif (only for notaire). Placed after first selector to appear near middle visually */}
         {role === 'notaire' && (
