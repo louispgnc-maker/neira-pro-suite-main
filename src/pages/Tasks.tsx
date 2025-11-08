@@ -261,7 +261,7 @@ export default function Tasks() {
               return (
                 <div
                   key={task.id}
-                  className={`relative rounded-lg shadow p-4 bg-yellow-50 border border-yellow-200 flex flex-col min-h-[140px]`}
+                  className={`relative rounded-lg shadow p-4 bg-background border border-border flex flex-col min-h-[140px]`}
                 >
                   <button
                     className={`absolute top-2 right-2 p-1 rounded-full ${role === 'notaire' ? 'text-orange-600 hover:bg-orange-100' : 'text-blue-600 hover:bg-blue-100'}`}
