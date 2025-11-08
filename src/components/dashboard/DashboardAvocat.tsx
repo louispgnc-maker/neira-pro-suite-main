@@ -1,6 +1,7 @@
 import { FileText, PenTool, Users, Clock, FolderPlus } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { TasksSummaryCard } from "@/components/dashboard/TasksSummaryCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentDocuments } from "@/components/dashboard/RecentDocuments";
 import { RecentContrats } from "@/components/dashboard/RecentContrats";
@@ -202,13 +203,7 @@ export function DashboardAvocat() {
             iconColor="text-blue-600"
             iconBgColor="bg-blue-100"
           />
-          <StatCard
-            title="Tâches du jour"
-            value={todayTasks}
-            icon={Clock}
-            iconColor="text-blue-600"
-            iconBgColor="bg-blue-100"
-          />
+          <TasksSummaryCard role="avocat" />
         </div>
 
         {/* Quick Actions */}
