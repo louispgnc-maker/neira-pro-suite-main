@@ -27,8 +27,6 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
   const [uploading, setUploading] = useState(false);
   const [checkingCabinet, setCheckingCabinet] = useState(false);
   const [hasCabinet, setHasCabinet] = useState(false);
-  const [todoCount, setTodoCount] = useState<number>(0);
-  const [overdueCount, setOverdueCount] = useState<number>(0);
 
   const triggerImport = () => {
     if (!user) {
@@ -112,63 +110,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
       }
     };
     check();
-
-    // Load task counters (to-do and overdue) and subscribe to realtime updates for the current user
-    let statsActive = true;
-    const loadTaskCounts = async () => {
-      if (!user) return;
-      try {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        const todayISO = `${yyyy}-${mm}-${dd}`; // compare date portion
-
-        // To-do: not done
-        const todoRes = await supabase
-          .from('tasks')
-          .select('id', { count: 'exact', head: true })
-          .eq('owner_id', user.id)
-          .eq('role', role)
-          .eq('done', false);
-
-        // Overdue: not done and due_at < today
-        const overdueRes = await supabase
-          .from('tasks')
-          .select('id', { count: 'exact', head: true })
-          .eq('owner_id', user.id)
-          .eq('role', role)
-          .eq('done', false)
-          .lt('due_at', todayISO);
-
-        if (!statsActive) return;
-        setTodoCount(todoRes.count ?? 0);
-        setOverdueCount(overdueRes.count ?? 0);
-      } catch (err) {
-        console.error('Erreur chargement compteurs tâches:', err);
-      }
-    };
-    loadTaskCounts();
-
-    // Realtime subscription to tasks changes for current user to update counts live
-    let channel: any = null;
-    try {
-      if (user) {
-        channel = supabase.channel(`tasks-counts-${user.id}`)
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks', filter: `owner_id=eq.${user.id}` }, () => {
-            loadTaskCounts();
-          });
-        channel.subscribe();
-      }
-    } catch (e) {
-      console.error('Impossible de créer le channel realtime:', e);
-    }
-
-    return () => {
-      active = false;
-      statsActive = false;
-      try { channel?.unsubscribe && channel.unsubscribe(); } catch (e) { /* ignore */ }
-    };
+    return () => { active = false; };
   }, [user, role]);
 
   const handleCollaborative = () => {
@@ -202,28 +144,6 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           className="hidden"
           onChange={onFilesSelected}
         />
-
-        {/* Mini-card Tâches: split en deux (À faire / En retard) */}
-        <div className="col-span-1 md:col-span-1">
-          <div className="rounded-lg border border-border p-3 h-full flex flex-col justify-between bg-background">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs font-medium text-muted-foreground">Tâches</div>
-                <div className="text-lg font-semibold">{todoCount + overdueCount}</div>
-              </div>
-            </div>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <button onClick={() => window.location.href = (role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')} className="px-2 py-2 rounded-md bg-white border border-input text-sm flex flex-col items-center">
-                <span className="text-xs text-muted-foreground">À faire</span>
-                <span className="text-base font-bold">{todoCount}</span>
-              </button>
-              <button onClick={() => window.location.href = (role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')} className="px-2 py-2 rounded-md bg-white border border-input text-sm flex flex-col items-center">
-                <span className="text-xs text-muted-foreground">En retard</span>
-                <span className="text-base font-bold text-destructive">{overdueCount}</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         {role === 'notaire' ? (
           <ContractSelectorNotaire />

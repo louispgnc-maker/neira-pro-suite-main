@@ -1,6 +1,7 @@
 import { FileText, PenTool, Users, Clock } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { TasksSummaryCard } from "@/components/dashboard/TasksSummaryCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentDocuments } from "@/components/dashboard/RecentDocuments";
 import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
@@ -175,11 +176,7 @@ export default function Dashboard() {
             value={clientsToFollow}
             icon={Users}
           />
-          <StatCard
-            title="Tâches du jour"
-            value={todayTasks}
-            icon={Clock}
-          />
+          <TasksSummaryCard role={(profile?.role as 'avocat' | 'notaire') ?? 'avocat'} />
         </div>
 
         {/* Quick Actions */}
