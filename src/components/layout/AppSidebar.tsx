@@ -34,6 +34,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
+import { NotificationBell } from "@/components/NotificationBell";
 
 function getMenuItems(role: 'avocat' | 'notaire') {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -156,36 +157,38 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className={`${isCollapsed ? 'h-8 w-8 p-0 justify-center mx-auto' : 'w-full justify-start gap-2'} group font-medium rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-            >
-              <UserCircle2 className="h-4 w-4" />
-              {!isCollapsed && <span>Profil</span>}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" side="top" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
-            <div className="px-2 py-1.5 text-xs text-muted-foreground">Connecté</div>
-            <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} disabled>
-              {profileEmail}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white hover:bg-orange-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white'}
-              onClick={() => navigate(role === 'notaire' ? '/notaires/profile' : '/avocats/profile')}
-            >
-              Ouvrir le profil
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
-              onClick={() => (window.location.href = '/')}
-            >
-              <LogOut className="mr-2 h-4 w-4" /> Déconnexion
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className={`flex ${isCollapsed ? 'flex-col items-center' : 'items-center justify-start'} gap-2`}> 
+          <NotificationBell role={role} compact={true} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className={`h-8 w-8 p-0 flex items-center justify-center rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+              >
+                <UserCircle2 className="h-4 w-4 text-white" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="top" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
+              <div className="px-2 py-1.5 text-xs text-muted-foreground">Connecté</div>
+              <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} disabled>
+                {profileEmail}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white hover:bg-orange-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white'}
+                onClick={() => navigate(role === 'notaire' ? '/notaires/profile' : '/avocats/profile')}
+              >
+                Ouvrir le profil
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
+                onClick={() => (window.location.href = '/')}
+              >
+                <LogOut className="mr-2 h-4 w-4" /> Déconnexion
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
