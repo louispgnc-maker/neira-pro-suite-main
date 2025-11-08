@@ -185,3 +185,54 @@ after insert on public.cabinet_members
 for each row execute procedure public.notify_on_cabinet_member_insert();
 
 -- Done
+
+-- Indexes to speed up recipient lookups and unread count
+create index if not exists notifications_recipient_idx on public.notifications(recipient_id);
+create index if not exists notifications_created_at_idx on public.notifications(created_at desc);
+create index if not exists notifications_unread_partial_idx on public.notifications(recipient_id) where read = false;
+
+-- Allow recipients to update their notifications (mark as read)
+drop policy if exists "notifications_update_recipient" on public.notifications;
+create policy "notifications_update_recipient" on public.notifications
+  for update using (recipient_id = auth.uid());
+
+-- RPC: get unread notifications count for current user
+drop function if exists public.get_unread_notifications_count();
+create function public.get_unread_notifications_count()
+returns integer language sql stable as $$
+  select count(*)::int from public.notifications where recipient_id = auth.uid() and read = false;
+$$;
+
+-- RPC: get notifications list (paged)
+drop function if exists public.get_notifications(integer, integer);
+create function public.get_notifications(p_limit integer default 20, p_offset integer default 0)
+returns setof public.notifications language sql stable as $$
+  select * from public.notifications
+  where recipient_id = auth.uid()
+  order by created_at desc
+  limit coalesce(p_limit,20) offset coalesce(p_offset,0);
+$$;
+
+-- RPC: mark a single notification as read
+drop function if exists public.mark_notification_read(uuid);
+create function public.mark_notification_read(p_id uuid)
+returns void language plpgsql security definer as $$
+begin
+  update public.notifications set read = true where id = p_id and recipient_id = auth.uid();
+  return;
+end;
+$$;
+
+-- RPC: mark all notifications as read for current user; returns number marked
+drop function if exists public.mark_all_notifications_read();
+create function public.mark_all_notifications_read()
+returns integer language plpgsql security definer as $$
+declare
+  v_count integer := 0;
+begin
+  update public.notifications set read = true where recipient_id = auth.uid() and read = false returning 1 into v_count;
+  -- Above returns only one row into v_count; prefer to compute count separately
+  get diagnostics v_count = row_count;
+  return v_count;
+end;
+$$;
