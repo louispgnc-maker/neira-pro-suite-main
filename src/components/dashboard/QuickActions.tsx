@@ -150,7 +150,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
         {hasCollaborative ? (
           <ContractSelectorNotaire />
         ) : (
-          <div className="md:col-span-2"><ContractSelectorAvocat /></div>
+          <div className="md:col-span-1 [&>button]:w-full"><ContractSelectorAvocat /></div>
         )}
 
         {/* Espace collaboratif (only for notaire). Placed after first selector to appear near middle visually */}
@@ -187,7 +187,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           );
         })}
         {/* Remplace 'Lien de collecte' par menu Fiche client avec même contenu */}
-        <div className={`${hasCollaborative ? '' : ''}`}>
+        <div className={`${hasCollaborative ? '' : 'md:col-span-1 [&>button]:w-full'}`}>
           <FicheClientMenu
             variant="vertical"
             colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
