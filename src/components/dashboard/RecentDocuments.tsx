@@ -63,10 +63,9 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       return;
     }
     const storagePath = (doc.storage_path || '').replace(/^\/+/, '');
-    const encodedPath = storagePath.split('/').map(encodeURIComponent).join('/');
     const { data, error } = await supabase.storage
       .from('documents')
-      .createSignedUrl(encodedPath, 60);
+      .createSignedUrl(storagePath, 60);
     if (error || !data?.signedUrl) {
       console.error('createSignedUrl failed for', storagePath, error);
       try {
