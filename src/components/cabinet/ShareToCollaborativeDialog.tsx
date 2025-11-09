@@ -54,14 +54,12 @@ export function ShareToCollaborativeDialog({
 
   const loadCabinet = async () => {
     try {
-      const { data: cabinets, error } = await supabase
-        .rpc('get_user_cabinets')
-        .eq('role', role);
-
+      const { data: cabinetsData, error } = await supabase.rpc('get_user_cabinets');
       if (error) throw error;
-
-      if (cabinets && cabinets.length > 0) {
-        setCabinetId(cabinets[0].id);
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
+      const filtered = cabinets.filter((c: any) => c.role === role);
+      if (filtered && filtered.length > 0) {
+        setCabinetId(filtered[0].id);
       } else {
         setCabinetId(null);
       }

@@ -92,15 +92,16 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
       if (!user || role !== 'notaire') return;
       setCheckingCabinet(true);
       try {
-        const { data, error } = await supabase
-          .rpc('get_user_cabinets')
-          .eq('role', role);
+        // Call RPC without chaining filters (some RPC drivers don't support .eq chaining on RPC results)
+        const { data, error } = await supabase.rpc('get_user_cabinets');
         if (!active) return;
         if (error) {
-          console.error('Erreur vérification cabinet:', error.message);
+          console.error('Erreur vérification cabinet:', error);
           setHasCabinet(false);
         } else {
-          setHasCabinet(Array.isArray(data) && data.length > 0);
+          const arr = Array.isArray(data) ? data as any[] : [];
+          const filtered = arr.filter(c => c.role === role);
+          setHasCabinet(filtered.length > 0);
         }
       } catch (err) {
         console.error('Exception vérification cabinet:', err);

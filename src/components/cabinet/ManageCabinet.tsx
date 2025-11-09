@@ -178,15 +178,15 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
     setLoading(true);
     try {
       // Utiliser la fonction RPC pour bypass les policies RLS
-      const { data: cabinets, error: cabinetError } = await supabase
-        .rpc('get_user_cabinets')
-        .eq('role', role);
-
+      const { data: cabinetsData, error: cabinetError } = await supabase.rpc('get_user_cabinets');
       if (cabinetError) throw cabinetError;
 
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
+      const filtered = cabinets.filter((c: any) => c.role === role);
+
       // Choisir cabinet: owner en priorité, sinon premier cabinet où l'utilisateur est membre
-      const ownedCabinet = cabinets?.find((c: any) => c.owner_id === userId);
-      const firstCabinet = ownedCabinet || (cabinets && cabinets.length > 0 ? cabinets[0] : null);
+      const ownedCabinet = filtered?.find((c: any) => c.owner_id === userId);
+      const firstCabinet = ownedCabinet || (filtered && filtered.length > 0 ? filtered[0] : null);
 
       if (firstCabinet) {
         setCabinet(firstCabinet);
