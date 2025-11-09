@@ -133,28 +133,65 @@ export function ShareToCollaborativeDialog({
 
       const bucketCandidates = ['shared-documents', 'shared_documents'];
       let uploadedBucket: string | null = null;
+      const uploadErrors: Array<string> = [];
       for (const b of bucketCandidates) {
         try {
           const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
           if (!uploadErr) { uploadedBucket = b; break; }
-          console.warn(`Upload to bucket ${b} failed:`, uploadErr.message || uploadErr);
-        } catch (e) {
+          const msg = uploadErr?.message || JSON.stringify(uploadErr);
+          uploadErrors.push(`bucket=${b}: ${msg}`);
+          console.warn(`Upload to bucket ${b} failed:`, msg);
+        } catch (e: any) {
+          const msg = e?.message || String(e);
+          uploadErrors.push(`bucket=${b}: ${msg}`);
           console.warn(`Upload attempt to bucket ${b} threw:`, e);
         }
       }
 
+      // If upload to shared bucket failed, try a safer fallback: generate a signed URL from the original 'documents' object
+      let usedPublicUrl: string | null = null;
       if (!uploadedBucket) {
-        // rollback created shared entry
+        console.warn('All shared-bucket uploads failed:', uploadErrors);
+        // rollback created shared entry (to avoid half-shares)
         try {
           if (sharedId) await supabase.rpc('delete_cabinet_document', { p_id: sharedId });
           else await supabase.from('cabinet_documents').delete().match({ document_id: itemId, cabinet_id: cabinetId });
         } catch (_) { /* noop */ }
-        throw new Error('Upload to shared bucket failed');
+
+        // Try to provide a temporary signed URL so cabinet members can still open the file
+        try {
+          const signedRes = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7); // 7 days
+          if (signedRes?.data?.signedUrl) {
+            usedPublicUrl = signedRes.data.signedUrl;
+            // create a cabinet_documents entry so notification behavior remains consistent
+            const { data: created, error: createdErr } = await supabase.from('cabinet_documents').insert({
+              cabinet_id: cabinetId,
+              document_id: itemId,
+              title: title,
+              description: description || null,
+              shared_by: null,
+              file_url: usedPublicUrl,
+            }).select().single();
+            if (createdErr) {
+              console.warn('Failed to insert fallback cabinet_documents row:', createdErr);
+            }
+            toast({ title: 'Partagé (fallback)', description: 'Le document a été partagé mais la copie dans le bucket public a échoué — un lien temporaire a été créé pour permettre l’accès.', });
+            setOpen(false);
+            setTitle(itemName);
+            setDescription('');
+            if (onSuccess) onSuccess();
+            return;
+          }
+        } catch (e) {
+          console.warn('Signed URL fallback failed:', e);
+        }
+
+        throw new Error('Upload to shared bucket failed: ' + uploadErrors.join(' | '));
       }
 
       try {
         const pub = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
-        const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+        const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
         if (publicUrl) {
           await supabase.from('cabinet_documents').update({ file_url: publicUrl }).eq('id', sharedId);
         }
