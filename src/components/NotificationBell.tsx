@@ -89,6 +89,8 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
   const unread = unreadCount;
 
   const baseColor = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
+  const accentBg = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
+  const accentSubtle = role === 'notaire' ? 'text-orange-600 hover:bg-orange-50' : 'text-blue-600 hover:bg-blue-50';
   const btnSizeClass = compact ? 'h-8 w-8 p-0 flex items-center justify-center rounded-md' : 'p-2 rounded-md';
 
   return (
@@ -106,7 +108,8 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
           <div className="flex items-center gap-2 justify-between w-full">
             <DialogTitle>Notifications récentes</DialogTitle>
               <div className="ml-2">
-                <Button size="sm" className={`${baseColor}`} onClick={async () => {
+                {/* subtle small button to mark all read */}
+                <Button variant="ghost" size="sm" className={`text-[0.78rem] ${accentSubtle} px-2 py-1`} onClick={async () => {
                   try {
                     const { data, error } = await supabase.rpc('mark_all_notifications_read');
                     if (!error) {
@@ -168,16 +171,18 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
 
                     return (
                       <div key={n.id} className={`p-1`}>
-                        <div className={`flex items-start gap-3 p-3 border rounded-md ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
+                        {/* make the whole card clickable for better UX */}
+                        <div role="button" tabIndex={0} onClick={() => onNavigate((n as any).metadata)} onKeyDown={(e) => { if (e.key === 'Enter') onNavigate((n as any).metadata); }} className={`flex items-start gap-3 p-3 border rounded-md cursor-pointer ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
                           <div className="flex-1 text-sm">
                             <div className="font-medium text-sm mb-1">{n.title}</div>
                             {n.body && <div className="text-xs text-muted-foreground">{n.body}</div>}
                           </div>
                           <div className="flex flex-col items-end ml-2">
                             <div className="text-xs text-muted-foreground mb-2" title={when ? when.toLocaleString() : ''}>{timeAgo(when)}</div>
-                            <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onNavigate((n as any).metadata); }} title="Ouvrir">
+                            {/* colored circular open button so it's obvious and clickable */}
+                            <button onClick={(e) => { e.stopPropagation(); onNavigate((n as any).metadata); }} title="Ouvrir" className={`inline-flex items-center justify-center h-8 w-8 rounded-full ${accentBg}`}>
                               <ArrowRight className="h-4 w-4" />
-                            </Button>
+                            </button>
                           </div>
                         </div>
                       </div>
