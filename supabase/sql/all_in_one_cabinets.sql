@@ -190,8 +190,10 @@ begin
   end if;
 
   insert into cabinet_members (cabinet_id, user_id, email, nom, role_cabinet, status, joined_at)
-  select v_cabinet_id, v_user_id, p.email, 'membre', 'active', now()
-  from profiles p where p.id = v_user_id;
+  select v_cabinet_id, v_user_id, u.email, 'membre', 'active', now()
+  from profiles p
+  left join auth.users u on u.id = v_user_id
+  where p.id = v_user_id;
 
   return v_cabinet_id;
 end;
@@ -334,8 +336,9 @@ begin
       end if;
     end if;
   end;
-
-  raise exception 'Not authorized';
+    -- If none of the above conditions matched, return an empty result set instead of raising.
+    -- Returning no rows keeps the API stable (avoids 400 errors client-side) and preserves data safety.
+    return query select cm.* from public.cabinet_members cm where false;
 end;
 $$;
 
