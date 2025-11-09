@@ -19,6 +19,7 @@ import {
   Plus,
   ArrowRight
 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -78,6 +79,7 @@ export default function EspaceCollaboratif() {
   const [documents, setDocuments] = useState<SharedDocument[]>([]);
   const [dossiers, setDossiers] = useState<SharedDossier[]>([]);
   const [contrats, setContrats] = useState<SharedContrat[]>([]);
+  const [isCabinetOwner, setIsCabinetOwner] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -182,6 +184,20 @@ export default function EspaceCollaboratif() {
         } else {
           setContrats(contratsData || []);
         }
+
+        // Détecter si l'utilisateur est le propriétaire/fondateur du cabinet
+        try {
+          const { data: ownerData, error: ownerErr } = await supabase.rpc('is_cabinet_owner', { cabinet_id_param: userCabinet.id, user_id_param: user.id });
+          if (!ownerErr) {
+            let owner = false;
+            if (typeof ownerData === 'boolean') owner = ownerData as boolean;
+            else if (Array.isArray(ownerData) && ownerData.length > 0) owner = Boolean(ownerData[0]);
+            else owner = Boolean(ownerData);
+            setIsCabinetOwner(owner);
+          }
+        } catch (e) {
+          // noop
+        }
       }
     } catch (error: any) {
       console.error('Erreur chargement espace collaboratif:', error);
@@ -192,6 +208,43 @@ export default function EspaceCollaboratif() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteSharedItem = async (table: 'cabinet_documents' | 'cabinet_dossiers' | 'cabinet_contrats', id: string) => {
+    if (!id) return;
+    if (!confirm('Confirmer la suppression de cet élément partagé ?')) return;
+    try {
+      // Prefer RPC for documents if available
+      if (table === 'cabinet_documents') {
+        // Try RPC first (delete_cabinet_document), fallback to direct delete
+        const { error } = await supabase.rpc('delete_cabinet_document', { p_id: id });
+        if (error) {
+          const { error: delErr } = await supabase.from('cabinet_documents').delete().eq('id', id);
+          if (delErr) throw delErr;
+        }
+        setDocuments(prev => prev.filter(d => d.id !== id));
+      } else if (table === 'cabinet_dossiers') {
+        // Use RPC to enforce server-side permission check
+        const { error } = await supabase.rpc('delete_cabinet_dossier', { p_id: id });
+        if (error) {
+          // fallback to direct delete if RPC not present
+          const { error: delErr } = await supabase.from('cabinet_dossiers').delete().eq('id', id);
+          if (delErr) throw delErr;
+        }
+        setDossiers(prev => prev.filter(d => d.id !== id));
+      } else if (table === 'cabinet_contrats') {
+        const { error } = await supabase.rpc('delete_cabinet_contrat', { p_id: id });
+        if (error) {
+          const { error: delErr } = await supabase.from('cabinet_contrats').delete().eq('id', id);
+          if (delErr) throw delErr;
+        }
+        setContrats(prev => prev.filter(c => c.id !== id));
+      }
+      toast({ title: 'Supprimé', description: 'L\'élément a été supprimé.' });
+    } catch (e:any) {
+      console.error('delete shared item error', e);
+      toast({ title: 'Erreur', description: e.message || 'Suppression impossible', variant: 'destructive' });
     }
   };
 
@@ -450,6 +503,18 @@ export default function EspaceCollaboratif() {
                         >
                           {item.type}
                         </Badge>
+                        {(user && (item.shared_by === user.id || isCabinetOwner)) && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteSharedItem(
+                              item.type === 'Document' ? 'cabinet_documents' : item.type === 'Dossier' ? 'cabinet_dossiers' : 'cabinet_contrats',
+                              item.id
+                            ); }}
+                            className="ml-3 p-1 rounded hover:bg-gray-100"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                        )}
                       </div>
                     ))}
                 </div>
@@ -513,6 +578,15 @@ export default function EspaceCollaboratif() {
                           <FileText className={`h-5 w-5 flex-shrink-0 ml-2 ${
                             cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
                           }`} />
+                          {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
+                              className="ml-3 p-1 rounded hover:bg-gray-100"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-4 w-4 text-muted-foreground" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -581,6 +655,15 @@ export default function EspaceCollaboratif() {
                           <FileText className={`h-5 w-5 flex-shrink-0 ml-2 ${
                             cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
                           }`} />
+                        {(user && (contrat.shared_by === user.id || isCabinetOwner)) && (
+                          <button
+                            onClick={() => deleteSharedItem('cabinet_contrats', contrat.id)}
+                            className="ml-3 p-1 rounded hover:bg-gray-100"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                        )}
                         </div>
                       </div>
                     ))}
@@ -656,9 +739,20 @@ export default function EspaceCollaboratif() {
                           {dossier.status}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-3 ml-8">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-muted-foreground mt-3 ml-8">
                         Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
-                      </p>
+                          </p>
+                          {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
+                              className="ml-3 p-1 rounded hover:bg-gray-100"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-4 w-4 text-muted-foreground" />
+                            </button>
+                          )}
+                        </div>
                     </div>
                   ))}
                 </div>

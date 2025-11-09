@@ -138,6 +138,25 @@ create policy "cabinet_members_insert_contrats" on public.cabinet_contrats
     )
   );
 
+-- Policy: Seul celui qui a partagé peut supprimer son élément partagé
+drop policy if exists "cabinet_owner_delete_documents" on public.cabinet_documents;
+create policy "cabinet_owner_or_sharer_delete_documents" on public.cabinet_documents
+  for delete using (
+    shared_by = auth.uid() OR public.is_cabinet_owner(cabinet_id, auth.uid())
+  );
+
+drop policy if exists "cabinet_owner_delete_dossiers" on public.cabinet_dossiers;
+create policy "cabinet_owner_or_sharer_delete_dossiers" on public.cabinet_dossiers
+  for delete using (
+    shared_by = auth.uid() OR public.is_cabinet_owner(cabinet_id, auth.uid())
+  );
+
+drop policy if exists "cabinet_owner_delete_contrats" on public.cabinet_contrats;
+create policy "cabinet_owner_or_sharer_delete_contrats" on public.cabinet_contrats
+  for delete using (
+    shared_by = auth.uid() OR public.is_cabinet_owner(cabinet_id, auth.uid())
+  );
+
 -- 5) Triggers pour updated_at
 drop trigger if exists cabinet_documents_set_updated_at on public.cabinet_documents;
 create trigger cabinet_documents_set_updated_at
@@ -261,6 +280,85 @@ begin
   ) returning id into v_shared_doc_id;
 
   return v_shared_doc_id;
+end;
+$$;
+
+-- RPCs sécurisés pour suppression (share owner OR cabinet founder)
+drop function if exists public.delete_cabinet_document(uuid);
+create or replace function public.delete_cabinet_document(p_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_cabinet_id uuid;
+  v_shared_by uuid;
+begin
+  select cabinet_id, shared_by into v_cabinet_id, v_shared_by
+  from cabinet_documents where id = p_id;
+
+  if not found then
+    raise exception 'Document not found';
+  end if;
+
+  if v_shared_by = auth.uid() or public.is_cabinet_owner(v_cabinet_id, auth.uid()) then
+    delete from cabinet_documents where id = p_id;
+  else
+    raise exception 'Unauthorized to delete this document';
+  end if;
+end;
+$$;
+
+drop function if exists public.delete_cabinet_dossier(uuid);
+create or replace function public.delete_cabinet_dossier(p_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_cabinet_id uuid;
+  v_shared_by uuid;
+begin
+  select cabinet_id, shared_by into v_cabinet_id, v_shared_by
+  from cabinet_dossiers where id = p_id;
+
+  if not found then
+    raise exception 'Dossier not found';
+  end if;
+
+  if v_shared_by = auth.uid() or public.is_cabinet_owner(v_cabinet_id, auth.uid()) then
+    delete from cabinet_dossiers where id = p_id;
+  else
+    raise exception 'Unauthorized to delete this dossier';
+  end if;
+end;
+$$;
+
+drop function if exists public.delete_cabinet_contrat(uuid);
+create or replace function public.delete_cabinet_contrat(p_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_cabinet_id uuid;
+  v_shared_by uuid;
+begin
+  select cabinet_id, shared_by into v_cabinet_id, v_shared_by
+  from cabinet_contrats where id = p_id;
+
+  if not found then
+    raise exception 'Contrat not found';
+  end if;
+
+  if v_shared_by = auth.uid() or public.is_cabinet_owner(v_cabinet_id, auth.uid()) then
+    delete from cabinet_contrats where id = p_id;
+  else
+    raise exception 'Unauthorized to delete this contrat';
+  end if;
 end;
 $$;
 
