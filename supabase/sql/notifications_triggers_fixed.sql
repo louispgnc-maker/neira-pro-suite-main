@@ -246,8 +246,9 @@ returns integer language plpgsql security definer as $function$
 declare
   v_count integer := 0;
 begin
-  update public.notifications set read = true where recipient_id = auth.uid() and read = false returning 1 into v_count;
-  -- Above returns only one row into v_count; prefer to compute count separately
+  -- Mark all unread notifications as read for the current user. Don't use RETURNING into a scalar
+  -- because that will fail when multiple rows are updated; instead rely on GET DIAGNOSTICS.
+  update public.notifications set read = true where recipient_id = auth.uid() and read = false;
   get diagnostics v_count = row_count;
   return v_count;
 end;
@@ -365,9 +366,10 @@ begin
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_actor
-    where p.id = v_actor;
+    where p.id = v_actor
+    limit 1;
 
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
