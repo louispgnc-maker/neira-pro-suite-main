@@ -90,7 +90,10 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
 
   const baseColor = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
   const accentBg = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
-  const accentSubtle = role === 'notaire' ? 'text-orange-600 hover:bg-orange-50' : 'text-blue-600 hover:bg-blue-50';
+  // subtle mark-all button: on hover the text/background becomes slightly darker (not lighter)
+  const accentSubtle = role === 'notaire'
+    ? 'text-orange-600 hover:text-orange-800 hover:bg-orange-100'
+    : 'text-blue-600 hover:text-blue-800 hover:bg-blue-100';
   const btnSizeClass = compact ? 'h-8 w-8 p-0 flex items-center justify-center rounded-md' : 'p-2 rounded-md';
 
   return (
@@ -159,14 +162,40 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
                           if (error) console.error('mark_notification_read error', error);
                         }
                       } catch (e) { console.error('mark_notification_read error', e); }
+
                       setNotifications((cur) => cur.map(x => x.id === n.id ? { ...x, read: true } : x));
                       setUnreadCount((c) => Math.max(0, c - (n.read ? 0 : 1)));
+
                       try {
-                        if (meta && typeof meta === 'object') {
-                          navigate(`/${role}s/espace-collaboratif`, { state: { notificationOpen: meta } });
+                        let metadataToUse = meta;
+                        // If metadata not present in the row, try to fetch it from the DB as a fallback
+                        if ((!metadataToUse || typeof metadataToUse !== 'object') && n.id) {
+                          try {
+                            const { data: fetched, error: fetchErr } = await supabase
+                              .from('notifications')
+                              .select('metadata')
+                              .eq('id', n.id)
+                              .limit(1)
+                              .single();
+                            if (!fetchErr && fetched && (fetched as any).metadata) metadataToUse = (fetched as any).metadata;
+                          } catch (fe) {
+                            console.error('fetch notification metadata fallback error', fe);
+                          }
+                        }
+
+                        if (metadataToUse && typeof metadataToUse === 'object') {
+                          navigate(`/${role}s/espace-collaboratif`, { state: { notificationOpen: metadataToUse } });
+                          setOpen(false);
+                        } else {
+                          // fallback: just open the collaborative space
+                          navigate(`/${role}s/espace-collaboratif`);
                           setOpen(false);
                         }
-                      } catch (e) { /* ignore */ }
+                      } catch (e) {
+                        console.error('navigation error', e);
+                        try { navigate(`/${role}s/espace-collaboratif`); } catch (_) { /* ignore */ }
+                        setOpen(false);
+                      }
                     };
 
                     return (
