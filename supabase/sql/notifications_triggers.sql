@@ -236,3 +236,176 @@ begin
   return v_count;
 end;
 $$;
+
+-- Notify when a cabinet_dossiers row is inserted (share to cabinet)
+create or replace function public.notify_on_cabinet_dossier_insert()
+returns trigger language plpgsql security definer as $$
+declare
+  v_actor uuid := NEW.shared_by;
+  v_dossier_title text := coalesce(NEW.title, 'Dossier');
+  v_actor_name text;
+  v_cabinet_id uuid := NEW.cabinet_id;
+  v_cabinet_name text;
+  v_rec record;
+begin
+  if v_cabinet_id is null then
+    return null;
+  end if;
+
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
+    from public.profiles p where p.id = v_actor;
+
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+
+  for v_rec in
+    select cm.user_id from public.cabinet_members cm
+    where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_actor
+  loop
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    values (
+      v_rec.user_id,
+      v_actor,
+      v_cabinet_id,
+      format('%s vient de partager le dossier "%s" dans l''espace collaboratif du "%s"', v_actor_name, v_dossier_title, coalesce(v_cabinet_name, 'cabinet')),
+      null
+    );
+  end loop;
+
+  return null;
+end;
+$$;
+
+drop trigger if exists trigger_notify_cabinet_dossier_insert on public.cabinet_dossiers;
+create trigger trigger_notify_cabinet_dossier_insert
+after insert on public.cabinet_dossiers
+for each row execute procedure public.notify_on_cabinet_dossier_insert();
+
+-- Notify when a cabinet_contrats row is inserted (share to cabinet)
+create or replace function public.notify_on_cabinet_contrat_insert()
+returns trigger language plpgsql security definer as $$
+declare
+  v_actor uuid := NEW.shared_by;
+  v_title text := coalesce(NEW.title, 'Contrat');
+  v_actor_name text;
+  v_cabinet_id uuid := NEW.cabinet_id;
+  v_cabinet_name text;
+  v_rec record;
+begin
+  if v_cabinet_id is null then
+    return null;
+  end if;
+
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
+    from public.profiles p where p.id = v_actor;
+
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+
+  for v_rec in
+    select cm.user_id from public.cabinet_members cm
+    where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_actor
+  loop
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    values (
+      v_rec.user_id,
+      v_actor,
+      v_cabinet_id,
+      format('%s vient de partager le contrat "%s" dans l''espace collaboratif du "%s"', v_actor_name, v_title, coalesce(v_cabinet_name, 'cabinet')),
+      null
+    );
+  end loop;
+
+  return null;
+end;
+$$;
+
+drop trigger if exists trigger_notify_cabinet_contrat_insert on public.cabinet_contrats;
+create trigger trigger_notify_cabinet_contrat_insert
+after insert on public.cabinet_contrats
+for each row execute procedure public.notify_on_cabinet_contrat_insert();
+
+-- Notify when a cabinet_documents row is inserted (share to cabinet)
+create or replace function public.notify_on_cabinet_document_insert()
+returns trigger language plpgsql security definer as $$
+declare
+  v_actor uuid := NEW.shared_by;
+  v_title text := coalesce(NEW.title, NEW.file_name, 'Document');
+  v_actor_name text;
+  v_cabinet_id uuid := NEW.cabinet_id;
+  v_cabinet_name text;
+  v_rec record;
+begin
+  if v_cabinet_id is null then
+    return null;
+  end if;
+
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
+    from public.profiles p where p.id = v_actor;
+
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+
+  for v_rec in
+    select cm.user_id from public.cabinet_members cm
+    where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_actor
+  loop
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    values (
+      v_rec.user_id,
+      v_actor,
+      v_cabinet_id,
+      format('%s vient de partager le document "%s" dans l''espace collaboratif du "%s"', v_actor_name, v_title, coalesce(v_cabinet_name, 'cabinet')),
+      null
+    );
+  end loop;
+
+  return null;
+end;
+$$;
+
+drop trigger if exists trigger_notify_cabinet_document_insert on public.cabinet_documents;
+create trigger trigger_notify_cabinet_document_insert
+after insert on public.cabinet_documents
+for each row execute procedure public.notify_on_cabinet_document_insert();
+
+-- Notify when a task is created (collaborative tasks)
+create or replace function public.notify_on_task_insert()
+returns trigger language plpgsql security definer as $$
+declare
+  v_actor uuid := NEW.owner_id;
+  v_title text := coalesce(NEW.title, 'Tâche');
+  v_actor_name text;
+  v_cabinet_id uuid;
+  v_cabinet_name text;
+  v_rec record;
+begin
+  -- determine cabinet from actor profile
+  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_actor;
+  if v_cabinet_id is null then return null; end if;
+
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
+    from public.profiles p where p.id = v_actor;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+
+  for v_rec in
+    select cm.user_id from public.cabinet_members cm
+    join public.profiles pr on pr.id = cm.user_id
+    where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_actor
+      and pr.role = NEW.role
+  loop
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    values (
+      v_rec.user_id,
+      v_actor,
+      v_cabinet_id,
+      format('%s vient de créer la tâche "%s" pour %s dans l''espace collaboratif du "%s"', v_actor_name, v_title, NEW.role, coalesce(v_cabinet_name, 'cabinet')),
+      null
+    );
+  end loop;
+
+  return null;
+end;
+$$;
+
+drop trigger if exists trigger_notify_task_insert on public.tasks;
+create trigger trigger_notify_task_insert
+after insert on public.tasks
+for each row execute procedure public.notify_on_task_insert();
