@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { Share2 } from 'lucide-react';
 
@@ -36,6 +37,7 @@ export function ShareToCollaborativeDialog({
   const [loading, setLoading] = useState(false);
   const [cabinetId, setCabinetId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const colorClass = role === 'notaire'
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
@@ -151,7 +153,7 @@ export function ShareToCollaborativeDialog({
       // If upload to shared bucket failed, try a safer fallback: generate a signed URL from the original 'documents' object
       let usedPublicUrl: string | null = null;
       if (!uploadedBucket) {
-        console.warn('All shared-bucket uploads failed:', uploadErrors);
+  console.warn('All shared-bucket uploads failed:', uploadErrors);
         // rollback created shared entry (to avoid half-shares)
         try {
           if (sharedId) await supabase.rpc('delete_cabinet_document', { p_id: sharedId });
@@ -161,21 +163,32 @@ export function ShareToCollaborativeDialog({
         // Try to provide a temporary signed URL so cabinet members can still open the file
         try {
           const signedRes = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7); // 7 days
-          if (signedRes?.data?.signedUrl) {
-            usedPublicUrl = signedRes.data.signedUrl;
+            if (signedRes?.data?.signedUrl) {
+              usedPublicUrl = signedRes.data.signedUrl;
             // create a cabinet_documents entry so notification behavior remains consistent
-            const { data: created, error: createdErr } = await supabase.from('cabinet_documents').insert({
-              cabinet_id: cabinetId,
-              document_id: itemId,
-              title: title,
-              description: description || null,
-              shared_by: null,
-              file_url: usedPublicUrl,
-            }).select().single();
-            if (createdErr) {
-              console.warn('Failed to insert fallback cabinet_documents row:', createdErr);
+            try {
+              const insertPayload: any = {
+                cabinet_id: cabinetId,
+                document_id: itemId,
+                title: title,
+                description: description || null,
+                file_url: usedPublicUrl,
+              };
+              // set shared_by to the current user so the insert satisfies NOT NULL and RLS checks
+              if (user && user.id) insertPayload.shared_by = user.id;
+              const { data: created, error: createdErr } = await supabase.from('cabinet_documents').insert(insertPayload).select().single();
+              if (createdErr) {
+                console.warn('Failed to insert fallback cabinet_documents row:', createdErr);
+              }
+            } catch (e) {
+              console.warn('Failed to insert fallback cabinet_documents row (exception):', e);
             }
-            toast({ title: 'Partagé (fallback)', description: 'Le document a été partagé mais la copie dans le bucket public a échoué — un lien temporaire a été créé pour permettre l’accès.', });
+            // show a more detailed toast including upload errors to help debugging
+            const uploadErrMsg = uploadErrors.length ? uploadErrors.join(' | ') : 'unknown error';
+            toast({
+              title: 'Partagé (fallback)',
+              description: `Le document a été partagé mais la copie dans le bucket public a échoué — un lien temporaire a été créé pour permettre l’accès. Erreurs: ${uploadErrMsg}`,
+            });
             setOpen(false);
             setTitle(itemName);
             setDescription('');

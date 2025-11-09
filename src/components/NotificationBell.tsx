@@ -132,7 +132,8 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
               ) : notifications.length === 0 ? (
                 <div className="text-sm text-muted-foreground">Aucune notification</div>
               ) : (
-                <div className="space-y-2">
+                // limit visible area to exactly ~3 items and allow scrolling for older notifications
+                <div className="space-y-2 max-h-[216px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300" style={{ scrollbarWidth: 'thin' }}>
                   {notifications.map(n => {
                     const when = n.created_at ? new Date(n.created_at) : null;
                     const timeAgo = (d: Date | null) => {
@@ -199,7 +200,7 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
                     };
 
                     return (
-                      <div key={n.id} className={`p-1`}>
+                      <div key={n.id} className={`p-1 h-[72px]`}>
                         {/* make the whole card clickable for better UX */}
                         <div role="button" tabIndex={0} onClick={() => onNavigate((n as any).metadata)} onKeyDown={(e) => { if (e.key === 'Enter') onNavigate((n as any).metadata); }} className={`flex items-start gap-3 p-3 border rounded-md cursor-pointer ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
                           <div className="flex-1 text-sm">

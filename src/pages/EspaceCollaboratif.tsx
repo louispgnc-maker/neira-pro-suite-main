@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { copyDocumentToShared } from '@/lib/sharedCopy';
 import { DocumentViewer } from '@/components/ui/document-viewer';
 import { 
   FileText, 
@@ -95,6 +96,8 @@ export default function EspaceCollaboratif() {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerUrl, setViewerUrl] = useState('');
   const [viewerDocName, setViewerDocName] = useState('');
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploadingToCollab, setUploadingToCollab] = useState(false);
   // Task creation (collaborative tab)
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [taskText, setTaskText] = useState('');
@@ -271,6 +274,79 @@ export default function EspaceCollaboratif() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const triggerCollaboratifImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const onCollaboratifFilesSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !user || !cabinet) return;
+    setUploadingToCollab(true);
+    try {
+      for (const file of Array.from(files)) {
+        if (file.type !== 'application/pdf') {
+          toast({ title: 'Format non supporté', description: `${file.name} n'est pas un PDF`, variant: 'destructive' });
+          continue;
+        }
+        const path = `${user.id}/${Date.now()}-${file.name}`;
+        const { error: upErr } = await supabase.storage.from('documents').upload(path, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: 'application/pdf',
+        });
+        if (upErr) {
+          toast({ title: 'Échec upload', description: upErr.message || String(upErr), variant: 'destructive' });
+          continue;
+        }
+
+        const { data: inserted, error: dbErr } = await supabase.from('documents').insert({
+          owner_id: user.id,
+          name: file.name,
+          client_name: null,
+          status: 'En cours',
+          role: cabinetRole,
+          storage_path: path,
+        }).select().single();
+        if (dbErr || !inserted) {
+          toast({ title: 'Erreur DB', description: dbErr?.message || 'Impossible de référencer le document', variant: 'destructive' });
+          continue;
+        }
+
+        // Share to cabinet via RPC
+        try {
+          const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
+            cabinet_id_param: cabinet.id,
+            document_id_param: inserted.id,
+            title_param: inserted.name,
+            description_param: null,
+          });
+          if (rpcErr) throw rpcErr;
+
+          let sharedId: any = null;
+          if (rpcData == null) sharedId = null;
+          else if (Array.isArray(rpcData)) sharedId = rpcData[0];
+          else sharedId = rpcData;
+
+          // copy into shared bucket and update cabinet_documents.file_url
+          await copyDocumentToShared({ cabinetId: cabinet.id, documentId: inserted.id, sharedId, itemName: inserted.name });
+          toast({ title: 'Upload', description: `${file.name} ajouté à l'espace collaboratif` });
+        } catch (e:any) {
+          console.error('share to cabinet failed', e);
+          toast({ title: 'Partage échoué', description: e?.message || String(e), variant: 'destructive' });
+        }
+      }
+
+      // Refresh lists
+      await loadCabinetData();
+    } catch (e:any) {
+      console.error('Collaboratif import error', e);
+      toast({ title: 'Erreur', description: e?.message || String(e), variant: 'destructive' });
+    } finally {
+      setUploadingToCollab(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -644,14 +720,20 @@ export default function EspaceCollaboratif() {
                       {documents.length} document{documents.length > 1 ? 's' : ''} accessible{documents.length > 1 ? 's' : ''}
                     </CardDescription>
                   </div>
-                  <Button 
-                    size="sm" 
-                    className={colorClass}
-                    onClick={() => navigate(`/${cabinetRole}s/documents`)}
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    Aller à mes documents
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <input ref={fileInputRef} type="file" accept="application/pdf" multiple className="hidden" onChange={onCollaboratifFilesSelected} />
+                    <Button size="sm" className={colorClass} onClick={triggerCollaboratifImport} disabled={uploadingToCollab}>
+                      {uploadingToCollab ? 'Import…' : 'Importer dans l\'espace'}
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className={colorClass}
+                      onClick={() => navigate(`/${cabinetRole}s/documents`)}
+                    >
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Aller à mes documents
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
