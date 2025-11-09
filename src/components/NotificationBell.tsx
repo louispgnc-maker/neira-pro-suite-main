@@ -200,9 +200,9 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
                     };
 
                     return (
-                      <div key={n.id} className={`p-1 h-[72px]`}>
+                      <div key={n.id} className={`p-1`}> 
                         {/* make the whole card clickable for better UX */}
-                        <div role="button" tabIndex={0} onClick={() => onNavigate((n as any).metadata)} onKeyDown={(e) => { if (e.key === 'Enter') onNavigate((n as any).metadata); }} className={`flex items-start gap-3 p-3 border rounded-md cursor-pointer ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
+                        <div role="button" tabIndex={0} onClick={() => onNavigate((n as any).metadata)} onKeyDown={(e) => { if (e.key === 'Enter') onNavigate((n as any).metadata); }} className={`flex items-start gap-3 p-3 border rounded-md cursor-pointer box-border overflow-hidden ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
                           <div className="flex-1 text-sm">
                             <div className="font-medium text-sm mb-1">{n.title}</div>
                             {n.body && <div className="text-xs text-muted-foreground">{n.body}</div>}
