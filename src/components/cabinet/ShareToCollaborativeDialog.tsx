@@ -67,22 +67,15 @@ export function ShareToCollaborativeDialog({
       console.error('Erreur chargement cabinet:', error);
     }
   };
-
   const handleShare = async () => {
     if (!cabinetId) {
-      toast({
-        title: 'Erreur',
-        description: 'Vous devez rejoindre un cabinet pour partager',
-        variant: 'destructive',
-      });
+      toast({ title: 'Erreur', description: 'Vous devez rejoindre un cabinet pour partager', variant: 'destructive' });
       return;
     }
-
     setLoading(true);
     try {
       let rpcFunction = '';
       let idParamName = '';
-
       switch (itemType) {
         case 'document':
           rpcFunction = 'share_document_to_cabinet';
@@ -98,111 +91,90 @@ export function ShareToCollaborativeDialog({
           break;
       }
 
-      const { error } = await supabase.rpc(rpcFunction, {
+      const { data: rpcData, error: rpcErr } = await supabase.rpc(rpcFunction, {
         cabinet_id_param: cabinetId,
         [idParamName]: itemId,
         title_param: title,
         description_param: description || null,
       });
+      if (rpcErr) throw rpcErr;
 
-      if (error) throw error;
+      // extract shared id if present
+      let sharedId: any = null;
+      if (rpcData == null) sharedId = null;
+      else if (Array.isArray(rpcData)) sharedId = rpcData[0];
+      else sharedId = rpcData;
 
-      toast({
-        title: 'Partagé avec succès',
-        description: `${itemType === 'document' ? 'Le document' : itemType === 'dossier' ? 'Le dossier' : 'Le contrat'} a été partagé avec votre cabinet.`,
-      });
+      // If not a document, we can finish here
+      if (itemType !== 'document') {
+        toast({ title: 'Partagé avec succès', description: `${itemType === 'dossier' ? 'Le dossier' : 'Le contrat'} a été partagé avec votre cabinet.` });
+        setOpen(false);
+        setTitle(itemName);
+        setDescription('');
+        if (onSuccess) onSuccess();
+        return;
+      }
 
+      // For documents: copy synchronously to shared-documents (or fallback) and update cabinet_documents.file_url
+      const { data: doc, error: docErr } = await supabase
+        .from('documents')
+        .select('storage_path')
+        .eq('id', itemId)
+        .single();
+      if (docErr) throw docErr;
+      const storagePathRaw = (doc?.storage_path || '').replace(/^\/+/, '');
+      if (!storagePathRaw) throw new Error('storage_path not found');
+
+      const { data: downloaded, error: downloadErr } = await supabase.storage.from('documents').download(storagePathRaw);
+      if (downloadErr) throw downloadErr;
+
+      const filename = storagePathRaw.split('/').pop() || itemName || 'file.pdf';
+      const targetPath = `${cabinetId}/${itemId}-${filename}`;
+
+      const bucketCandidates = ['shared-documents', 'shared_documents'];
+      let uploadedBucket: string | null = null;
+      for (const b of bucketCandidates) {
+        try {
+          const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
+          if (!uploadErr) { uploadedBucket = b; break; }
+          console.warn(`Upload to bucket ${b} failed:`, uploadErr.message || uploadErr);
+        } catch (e) {
+          console.warn(`Upload attempt to bucket ${b} threw:`, e);
+        }
+      }
+
+      if (!uploadedBucket) {
+        // rollback created shared entry
+        try {
+          if (sharedId) await supabase.rpc('delete_cabinet_document', { p_id: sharedId });
+          else await supabase.from('cabinet_documents').delete().match({ document_id: itemId, cabinet_id: cabinetId });
+        } catch (_) { /* noop */ }
+        throw new Error('Upload to shared bucket failed');
+      }
+
+      try {
+        const pub = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
+        const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+        if (publicUrl) {
+          await supabase.from('cabinet_documents').update({ file_url: publicUrl }).eq('id', sharedId);
+        }
+      } catch (e) {
+        console.warn('Failed to read public URL after upload:', e);
+      }
+
+      toast({ title: 'Partagé avec succès', description: `Le document a été partagé avec votre cabinet et copié dans ${uploadedBucket}.` });
       setOpen(false);
       setTitle(itemName);
       setDescription('');
-      
-      // If sharing a document, try to copy it into a public/shared bucket so cabinet members can open it
-      if (itemType === 'document') {
-        (async () => {
-          try {
-            // fetch the document storage_path
-            const { data: doc, error: docErr } = await supabase
-              .from('documents')
-              .select('storage_path')
-              .eq('id', itemId)
-              .single();
-            if (docErr) throw docErr;
-            const storagePathRaw = (doc?.storage_path || '').replace(/^\/+/, '');
-            if (!storagePathRaw) throw new Error('storage_path not found');
-
-            // download from private 'documents' bucket (performed by the sharing user)
-            const { data: downloaded, error: downloadErr } = await supabase
-              .storage
-              .from('documents')
-              .download(storagePathRaw);
-            if (downloadErr) throw downloadErr;
-
-            // build a friendly path in the shared bucket
-            const filename = storagePathRaw.split('/').pop() || itemName || 'file.pdf';
-            const targetPath = `${cabinetId}/${itemId}-${filename}`;
-
-            // upload into a public/shared bucket. Try common bucket names so we
-            // handle both `shared-documents` (dash) and `shared_documents` (underscore).
-            const bucketCandidates = ['shared-documents', 'shared_documents'];
-            let uploadedBucket: string | null = null;
-            for (const b of bucketCandidates) {
-              try {
-                const { error: uploadErr } = await supabase
-                  .storage
-                  .from(b)
-                  .upload(targetPath, downloaded as any, { upsert: true });
-                if (!uploadErr) { uploadedBucket = b; break; }
-                // If bucket not found, loop to try next candidate
-                // other errors will be logged and we'll try next
-                // eslint-disable-next-line no-console
-                console.warn(`Upload to bucket ${b} failed:`, uploadErr.message || uploadErr);
-              } catch (e) {
-                // eslint-disable-next-line no-console
-                console.warn(`Upload attempt to bucket ${b} threw:`, e);
-              }
-            }
-
-            if (uploadedBucket) {
-              // get public url and update cabinet_documents.file_url so clients open the public copy
-              try {
-                const pub = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
-                const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
-                if (publicUrl) {
-                  await supabase
-                    .from('cabinet_documents')
-                    .update({ file_url: publicUrl })
-                    .match({ document_id: itemId, cabinet_id: cabinetId });
-                }
-              } catch (e) {
-                // eslint-disable-next-line no-console
-                console.warn('Failed to read public URL after upload:', e);
-              }
-            } else {
-              // eslint-disable-next-line no-console
-              console.warn('No shared_documents bucket available to upload shared copy');
-            }
-          } catch (e) {
-            // don't block the share action if copy fails; log for diagnostics
-            // console.error will be visible in dev console / logs
-            // eslint-disable-next-line no-console
-            console.error('Failed to copy shared document to public bucket:', e);
-          }
-        })();
-      }
-
       if (onSuccess) onSuccess();
     } catch (error: any) {
       console.error('Erreur partage:', error);
-      toast({
-        title: 'Erreur',
-        description: error.message || 'Impossible de partager cet élément',
-        variant: 'destructive',
-      });
+      toast({ title: 'Erreur', description: error.message || 'Impossible de partager cet élément', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <>
       <Button
