@@ -34,9 +34,11 @@ declare
   v_cabinet_name text;
   v_rec record;
 begin
-  -- get actor name and cabinet
-  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
-    from public.profiles p where p.id = v_owner;
+  -- get actor name and cabinet (fallback to auth.users.email if profile.email missing)
+    select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_owner
+    where p.id = v_owner;
   select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner;
   if v_cabinet_id is null then
     -- nothing to notify
@@ -48,13 +50,14 @@ begin
     select cm.user_id from public.cabinet_members cm
     where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_owner
   loop
-    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body, metadata)
     values (
       v_rec.user_id,
       v_owner,
       v_cabinet_id,
       format('%s vient d''ajouter "%s" à l''espace collaboratif du "%s"', v_actor_name, v_doc_name, coalesce(v_cabinet_name, 'cabinet')),
-      null
+      null,
+      json_build_object('type', 'document', 'id', NEW.id::text)::jsonb
     );
   end loop;
   return null;
@@ -77,8 +80,10 @@ declare
   v_cabinet_name text;
   v_rec record;
 begin
-  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
-    from public.profiles p where p.id = v_owner;
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_owner
+    where p.id = v_owner;
   select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner;
   if v_cabinet_id is null then return null; end if;
   select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
@@ -87,13 +92,14 @@ begin
     select cm.user_id from public.cabinet_members cm
     where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_owner
   loop
-    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body, metadata)
     values (
       v_rec.user_id,
       v_owner,
       v_cabinet_id,
       format('%s vient d''ajouter une fiche client "%s" à l''espace collaboratif du "%s"', v_actor_name, v_client_name, coalesce(v_cabinet_name, 'cabinet')),
-      null
+      null,
+      json_build_object('type', 'client', 'id', NEW.id::text)::jsonb
     );
   end loop;
   return null;
@@ -118,8 +124,10 @@ begin
   if NEW.status = old.status then return null; end if;
   if NEW.status is distinct from 'completed' then return null; end if;
 
-  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
-    from public.profiles p where p.id = v_owner;
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_owner
+    where p.id = v_owner;
   select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner;
   if v_cabinet_id is null then return null; end if;
   select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
@@ -128,13 +136,14 @@ begin
     select cm.user_id from public.cabinet_members cm
     where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_owner
   loop
-    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body, metadata)
     values (
       v_rec.user_id,
       v_owner,
       v_cabinet_id,
       format('%s vient de signer "%s" dans l''espace collaboratif du "%s"', v_actor_name, coalesce(NEW.document_name, 'Document'), coalesce(v_cabinet_name, 'cabinet')),
-      null
+      null,
+      json_build_object('type', 'signature', 'id', NEW.id::text)::jsonb
     );
   end loop;
   return null;
@@ -158,21 +167,24 @@ declare
 begin
   if NEW.status != 'active' then return null; end if;
   if v_user_id is null then return null; end if;
-  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
-    from public.profiles p where p.id = v_user_id;
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_user_id
+    where p.id = v_user_id;
   select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
     where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_user_id
   loop
-    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body, metadata)
     values (
       v_rec.user_id,
       v_user_id,
       v_cabinet_id,
       format('%s vient de rejoindre l''espace collaboratif du "%s"', v_actor_name, coalesce(v_cabinet_name, 'cabinet')),
-      null
+      null,
+      json_build_object('type', 'member_join', 'id', NEW.id::text)::jsonb
     );
   end loop;
   return null;
@@ -252,8 +264,10 @@ begin
     return null;
   end if;
 
-  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
-    from public.profiles p where p.id = v_actor;
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_actor
+    where p.id = v_actor;
 
   select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
 
@@ -261,13 +275,14 @@ begin
     select cm.user_id from public.cabinet_members cm
     where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_actor
   loop
-    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body, metadata)
     values (
       v_rec.user_id,
       v_actor,
       v_cabinet_id,
       format('%s vient de partager le dossier "%s" dans l''espace collaboratif du "%s"', v_actor_name, v_dossier_title, coalesce(v_cabinet_name, 'cabinet')),
-      null
+      null,
+      json_build_object('type', 'cabinet_dossier', 'id', NEW.id::text, 'dossier_id', coalesce(NEW.dossier_id::text, '') )::jsonb
     );
   end loop;
 
@@ -295,8 +310,10 @@ begin
     return null;
   end if;
 
-  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
-    from public.profiles p where p.id = v_actor;
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_actor
+    where p.id = v_actor;
 
   select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
 
@@ -304,13 +321,14 @@ begin
     select cm.user_id from public.cabinet_members cm
     where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_actor
   loop
-    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body, metadata)
     values (
       v_rec.user_id,
       v_actor,
       v_cabinet_id,
       format('%s vient de partager le contrat "%s" dans l''espace collaboratif du "%s"', v_actor_name, v_title, coalesce(v_cabinet_name, 'cabinet')),
-      null
+      null,
+      json_build_object('type', 'cabinet_contrat', 'id', NEW.id::text, 'contrat_id', coalesce(NEW.contrat_id::text, '') )::jsonb
     );
   end loop;
 
@@ -338,8 +356,10 @@ begin
     return null;
   end if;
 
-  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
-    from public.profiles p where p.id = v_actor;
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_actor
+    where p.id = v_actor;
 
   select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
 
@@ -347,13 +367,14 @@ begin
     select cm.user_id from public.cabinet_members cm
     where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_actor
   loop
-    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body, metadata)
     values (
       v_rec.user_id,
       v_actor,
       v_cabinet_id,
       format('%s vient de partager le document "%s" dans l''espace collaboratif du "%s"', v_actor_name, v_title, coalesce(v_cabinet_name, 'cabinet')),
-      null
+      null,
+      json_build_object('type', 'cabinet_document', 'id', NEW.id::text, 'document_id', coalesce(NEW.document_id::text, '') )::jsonb
     );
   end loop;
 
@@ -381,8 +402,10 @@ begin
   select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_actor;
   if v_cabinet_id is null then return null; end if;
 
-  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), p.email) into v_actor_name
-    from public.profiles p where p.id = v_actor;
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_actor
+    where p.id = v_actor;
   select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
 
   for v_rec in
@@ -391,13 +414,14 @@ begin
     where cm.cabinet_id = v_cabinet_id and cm.status = 'active' and cm.user_id is not null and cm.user_id <> v_actor
       and pr.role = NEW.role
   loop
-    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body)
+    insert into public.notifications (recipient_id, actor_id, cabinet_id, title, body, metadata)
     values (
       v_rec.user_id,
       v_actor,
       v_cabinet_id,
       format('%s vient de créer la tâche "%s" pour %s dans l''espace collaboratif du "%s"', v_actor_name, v_title, NEW.role, coalesce(v_cabinet_name, 'cabinet')),
-      null
+      null,
+      json_build_object('type', 'task', 'id', NEW.id::text)::jsonb
     );
   end loop;
 

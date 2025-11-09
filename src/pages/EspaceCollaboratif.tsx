@@ -129,6 +129,68 @@ export default function EspaceCollaboratif() {
     }
   }, [user, cabinetRole]);
 
+  // If navigated here from a notification, open the related resource
+  useEffect(() => {
+    const notif = (location.state as any)?.notificationOpen;
+    if (!notif) return;
+    // Wait until data loaded
+    if (loading) return;
+
+    setTimeout(async () => {
+      try {
+        const type = notif.type;
+        const id = notif.id;
+        if (!type) return;
+
+        if (type === 'cabinet_document' || type === 'document') {
+          // try to find shared document entry
+          const found = documents.find(d => d.id === id || d.document_id === id);
+          if (found) {
+            await handleViewDocument(found as SharedDocument);
+            return;
+          }
+          // fallback: go to documents list
+          const docTab = document.querySelector('[value="documents"]') as HTMLButtonElement;
+          if (docTab) docTab.click();
+        } else if (type === 'cabinet_dossier' || type === 'dossier') {
+          const found = dossiers.find(d => d.id === id || d.dossier_id === id);
+          if (found) {
+            navigateToDossier(found as SharedDossier);
+            return;
+          }
+          // open dossier tab and navigate to detail
+          const dossierTab = document.querySelector('[value="dossiers"]') as HTMLButtonElement;
+          if (dossierTab) dossierTab.click();
+          navigate(`/${cabinetRole}s/dossiers/${id}`);
+        } else if (type === 'cabinet_contrat' || type === 'contrat') {
+          const found = contrats.find(c => c.id === id || c.contrat_id === id);
+          if (found) {
+            const docTab = document.querySelector('[value="documents"]') as HTMLButtonElement;
+            if (docTab) docTab.click();
+            return;
+          }
+          navigate(`/${cabinetRole}s/contrats`);
+        } else if (type === 'task' || type === 'tasks') {
+          const taskTab = document.querySelector('[value="taches"]') as HTMLButtonElement;
+          if (taskTab) taskTab.click();
+          // optionally scroll to the task if present
+          const foundTask = collabTasks.find(t => t.id === id);
+          if (foundTask) {
+            setTimeout(() => {
+              const el = document.querySelector(`[data-task-id=\"${id}\"]`);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 200);
+          }
+        }
+      } catch (e) {
+        // ignore
+      } finally {
+        // clear navigation state so it doesn't trigger again
+        try { navigate(location.pathname, { replace: true, state: {} }); } catch (e) { /* noop */ }
+      }
+    }, 200);
+  }, [loading, location.state]);
+
   const loadCabinetData = async () => {
     setLoading(true);
     try {
@@ -866,6 +928,7 @@ export default function EspaceCollaboratif() {
                     return (
                       <div
                         key={task.id}
+                        data-task-id={task.id}
                         className={`relative rounded-lg shadow p-4 bg-yellow-50 border border-yellow-200 flex flex-col min-h-[140px]`}
                       >
                         <button

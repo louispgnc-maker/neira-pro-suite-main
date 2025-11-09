@@ -2,6 +2,7 @@ import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -11,10 +12,12 @@ type NotificationRow = {
   body?: string | null;
   read?: boolean;
   created_at?: string;
+  metadata?: any;
 };
 
 export function NotificationBell({ role = 'avocat', compact = false }: { role?: 'avocat' | 'notaire', compact?: boolean }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +50,7 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
         if (active) setNotifications([]);
       } finally {
         if (active) setLoading(false);
-      }
+      } 
     };
     load();
     return () => { active = false; };
@@ -118,7 +121,7 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
           </div>
         </DialogHeader>
         <div className="space-y-3 mt-2">
-          {loading ? (
+              {loading ? (
             <div className="text-sm text-muted-foreground">Chargement…</div>
           ) : notifications.length === 0 ? (
             <div className="text-sm text-muted-foreground">Aucune notification</div>
@@ -135,6 +138,19 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
                     }
                     setNotifications((cur) => cur.map(x => x.id === n.id ? { ...x, read: true } : x));
                     setUnreadCount((c) => Math.max(0, c - (n.read ? 0 : 1)));
+                        // navigate to resource if metadata provided
+                        try {
+                          const meta = (n as any).metadata;
+                          if (meta && typeof meta === 'object') {
+                            const t = meta.type;
+                            // open collaborative space and pass metadata to EspaceCollaboratif
+                            navigate(`/${role}s/espace-collaboratif`, { state: { notificationOpen: meta } });
+                            // close the dialog
+                            setOpen(false);
+                          }
+                        } catch (e) {
+                          /* ignore navigation errors */
+                        }
                   } catch (e) { console.error('mark read click', e); }
                 }}
               >
