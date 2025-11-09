@@ -2,6 +2,7 @@ import { Bell, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
+import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,6 +23,7 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     let active = true;
@@ -115,13 +117,18 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
                 <Button variant="ghost" size="sm" className={`text-[0.78rem] ${accentSubtle} px-2 py-1`} onClick={async () => {
                   try {
                     const { data, error } = await supabase.rpc('mark_all_notifications_read');
-                    if (!error) {
-                      setNotifications((cur) => cur.map(n => ({ ...n, read: true })));
-                      setUnreadCount(0);
-                    } else {
+                    if (error) {
                       console.error('mark_all_notifications_read error', error);
+                      toast({ title: 'Erreur', description: error.message || JSON.stringify(error), variant: 'destructive' });
+                      return;
                     }
-                  } catch (e) { console.error('mark all read', e); }
+
+                    // data should be the number of notifications marked
+                    const marked = typeof data === 'number' ? data : (Array.isArray(data) && data.length ? Number(data[0]) : null);
+                    setNotifications((cur) => cur.map(n => ({ ...n, read: true })));
+                    setUnreadCount(0);
+                    toast({ title: 'Notifications', description: marked ? `${marked} notification(s) marquée(s) comme lues` : 'Toutes les notifications ont été marquées comme lues' });
+                  } catch (e:any) { console.error('mark all read', e); toast({ title: 'Erreur', description: e?.message || String(e), variant: 'destructive' }); }
                 }}>Tout marquer comme lu</Button>
               </div>
           </div>
