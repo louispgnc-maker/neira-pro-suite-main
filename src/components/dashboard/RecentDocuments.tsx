@@ -62,15 +62,47 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       toast.error("Aucun fichier associé.");
       return;
     }
-    const storagePath = (doc.storage_path || '').replace(/^\/+/, '');
+    const raw = (doc.storage_path || '').trim();
+
+    // If storage_path is already a full URL, open it directly
+    if (/^https?:\/\//i.test(raw)) {
+      if (mode === 'view') {
+        setViewerUrl(raw);
+        setViewerDocName(doc.name);
+        setViewerOpen(true);
+        return;
+      } else {
+        const a = document.createElement('a');
+        a.href = raw;
+        a.download = doc.name || 'document.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        return;
+      }
+    }
+
+    // Otherwise treat as a storage path and determine bucket
+    let storagePath = raw.replace(/^\/+/, '');
+    let bucket = 'documents';
+    if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
+      bucket = storagePath.startsWith('shared-documents/') ? 'shared-documents' : 'shared_documents';
+      storagePath = storagePath.replace(/^shared[-_]documents\//, '');
+    } else if (storagePath.includes('/')) {
+      const maybeBucket = storagePath.split('/')[0];
+      if (maybeBucket === 'documents' || maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') {
+        if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = maybeBucket;
+        storagePath = storagePath.split('/').slice(1).join('/');
+      }
+    }
+
     const { data, error } = await supabase.storage
-      .from('documents')
+      .from(bucket)
       .createSignedUrl(storagePath, 60);
     if (error || !data?.signedUrl) {
-      console.error('createSignedUrl failed for', storagePath, error);
+      console.error('createSignedUrl failed for', bucket, storagePath, error);
       try {
-        const encodedPath = (storagePath || '').split('/').map(encodeURIComponent).join('/');
-        const pub = await supabase.storage.from('documents').getPublicUrl(encodedPath);
+        const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
         const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
         if (publicUrl) {
           if (mode === 'view') {

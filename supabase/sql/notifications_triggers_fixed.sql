@@ -1,4 +1,4 @@
--- Notifications table + triggers
+-- Notifications table + triggers (fixed dollar-quoting)
 create table if not exists public.notifications (
   id uuid primary key default gen_random_uuid(),
   recipient_id uuid references auth.users(id) on delete cascade,
@@ -25,7 +25,7 @@ create policy "notifications_insert_any" on public.notifications
 
 -- Function: notify cabinet members when a document is added
 create or replace function public.notify_on_document_insert()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer as $function$
 declare
   v_owner uuid := NEW.owner_id;
   v_doc_name text := coalesce(NEW.name, 'Document');
@@ -62,7 +62,7 @@ begin
   end loop;
   return null;
 end;
-$$;
+$function$;
 
 drop trigger if exists trigger_notify_document_insert on public.documents;
 create trigger trigger_notify_document_insert
@@ -71,7 +71,7 @@ for each row execute procedure public.notify_on_document_insert();
 
 -- Function: notify when a client record is created
 create or replace function public.notify_on_client_insert()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer as $function$
 declare
   v_owner uuid := NEW.owner_id;
   v_client_name text := coalesce(NEW.prenom || ' ' || NEW.nom, NEW.name, 'Client');
@@ -104,7 +104,7 @@ begin
   end loop;
   return null;
 end;
-$$;
+$function$;
 
 drop trigger if exists trigger_notify_client_insert on public.clients;
 create trigger trigger_notify_client_insert
@@ -113,7 +113,7 @@ for each row execute procedure public.notify_on_client_insert();
 
 -- Function: notify when a signature is completed
 create or replace function public.notify_on_signature_update()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer as $function$
 declare
   v_owner uuid := NEW.owner_id;
   v_actor_name text;
@@ -148,7 +148,7 @@ begin
   end loop;
   return null;
 end;
-$$;
+$function$;
 
 drop trigger if exists trigger_notify_signature_update on public.signatures;
 create trigger trigger_notify_signature_update
@@ -157,7 +157,7 @@ for each row execute procedure public.notify_on_signature_update();
 
 -- Function: notify when a new cabinet member becomes active (joins)
 create or replace function public.notify_on_cabinet_member_insert()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer as $function$
 declare
   v_cabinet_id uuid := NEW.cabinet_id;
   v_user_id uuid := NEW.user_id;
@@ -189,7 +189,7 @@ begin
   end loop;
   return null;
 end;
-$$;
+$function$;
 
 drop trigger if exists trigger_notify_cabinet_member_insert on public.cabinet_members;
 create trigger trigger_notify_cabinet_member_insert
@@ -211,9 +211,9 @@ create policy "notifications_update_recipient" on public.notifications
 -- RPC: get unread notifications count for current user
 drop function if exists public.get_unread_notifications_count();
 create function public.get_unread_notifications_count()
-returns integer language sql stable as $$
+returns integer language sql stable as $function$
   select count(*)::int from public.notifications where recipient_id = auth.uid() and read = false;
-$$;
+$function$;
 
 -- RPC: get notifications list (paged)
 drop function if exists public.get_notifications(integer, integer);
@@ -225,6 +225,7 @@ returns setof public.notifications language sql stable as $function$
   limit coalesce(p_limit,20) offset coalesce(p_offset,0);
 $function$;
 
+-- RPC: mark a single notification as read
 drop function if exists public.mark_notification_read(uuid);
 create function public.mark_notification_read(p_id uuid)
 returns void language plpgsql security definer as $function$
@@ -237,7 +238,7 @@ $function$;
 -- RPC: mark all notifications as read for current user; returns number marked
 drop function if exists public.mark_all_notifications_read();
 create function public.mark_all_notifications_read()
-returns integer language plpgsql security definer as $$
+returns integer language plpgsql security definer as $function$
 declare
   v_count integer := 0;
 begin
@@ -246,11 +247,11 @@ begin
   get diagnostics v_count = row_count;
   return v_count;
 end;
-$$;
+$function$;
 
 -- Notify when a cabinet_dossiers row is inserted (share to cabinet)
 create or replace function public.notify_on_cabinet_dossier_insert()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer as $function$
 declare
   v_actor uuid := NEW.shared_by;
   v_dossier_title text := coalesce(NEW.title, 'Dossier');
@@ -287,7 +288,7 @@ begin
 
   return null;
 end;
-$$;
+$function$;
 
 drop trigger if exists trigger_notify_cabinet_dossier_insert on public.cabinet_dossiers;
 create trigger trigger_notify_cabinet_dossier_insert
@@ -296,7 +297,7 @@ for each row execute procedure public.notify_on_cabinet_dossier_insert();
 
 -- Notify when a cabinet_contrats row is inserted (share to cabinet)
 create or replace function public.notify_on_cabinet_contrat_insert()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer as $function$
 declare
   v_actor uuid := NEW.shared_by;
   v_title text := coalesce(NEW.title, 'Contrat');
@@ -333,7 +334,7 @@ begin
 
   return null;
 end;
-$$;
+$function$;
 
 drop trigger if exists trigger_notify_cabinet_contrat_insert on public.cabinet_contrats;
 create trigger trigger_notify_cabinet_contrat_insert
@@ -342,7 +343,7 @@ for each row execute procedure public.notify_on_cabinet_contrat_insert();
 
 -- Notify when a cabinet_documents row is inserted (share to cabinet)
 create or replace function public.notify_on_cabinet_document_insert()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer as $function$
 declare
   v_actor uuid := NEW.shared_by;
   v_title text := coalesce(NEW.title, NEW.file_name, 'Document');
@@ -379,7 +380,7 @@ begin
 
   return null;
 end;
-$$;
+$function$;
 
 drop trigger if exists trigger_notify_cabinet_document_insert on public.cabinet_documents;
 create trigger trigger_notify_cabinet_document_insert
@@ -388,7 +389,7 @@ for each row execute procedure public.notify_on_cabinet_document_insert();
 
 -- Notify when a task is created (collaborative tasks)
 create or replace function public.notify_on_task_insert()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer as $function$
 declare
   v_actor uuid := NEW.owner_id;
   v_title text := coalesce(NEW.title, 'Tâche');
@@ -426,7 +427,7 @@ begin
 
   return null;
 end;
-$$;
+$function$;
 
 drop trigger if exists trigger_notify_task_insert on public.tasks;
 create trigger trigger_notify_task_insert
