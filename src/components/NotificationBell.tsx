@@ -1,4 +1,4 @@
-import { Bell } from "lucide-react";
+import { Bell, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
@@ -105,65 +105,86 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
         <DialogHeader>
           <div className="flex items-center gap-2 justify-between w-full">
             <DialogTitle>Notifications récentes</DialogTitle>
-            <div className="ml-2">
-              <Button variant="ghost" size="sm" onClick={async () => {
-                try {
-                  const { data, error } = await supabase.rpc('mark_all_notifications_read');
-                  if (!error) {
-                    setNotifications((cur) => cur.map(n => ({ ...n, read: true })));
-                    setUnreadCount(0);
-                  } else {
-                    console.error('mark_all_notifications_read error', error);
-                  }
-                } catch (e) { console.error('mark all read', e); }
-              }}>Tout marquer comme lu</Button>
-            </div>
+              <div className="ml-2">
+                <Button size="sm" className={`${baseColor}`} onClick={async () => {
+                  try {
+                    const { data, error } = await supabase.rpc('mark_all_notifications_read');
+                    if (!error) {
+                      setNotifications((cur) => cur.map(n => ({ ...n, read: true })));
+                      setUnreadCount(0);
+                    } else {
+                      console.error('mark_all_notifications_read error', error);
+                    }
+                  } catch (e) { console.error('mark all read', e); }
+                }}>Tout marquer comme lu</Button>
+              </div>
           </div>
         </DialogHeader>
         <div className="space-y-3 mt-2">
               {loading ? (
-            <div className="text-sm text-muted-foreground">Chargement…</div>
-          ) : notifications.length === 0 ? (
-            <div className="text-sm text-muted-foreground">Aucune notification</div>
-          ) : (
-            notifications.map(n => (
-              <div
-                key={n.id}
-                className={`p-3 rounded-md cursor-pointer ${n.read ? 'bg-background' : 'bg-gradient-to-r from-primary/5 to-accent/5'}`}
-                onClick={async () => {
-                  try {
-                    if (!n.read) {
-                      const { data, error } = await supabase.rpc('mark_notification_read', { p_id: n.id });
-                      if (error) console.error('mark_notification_read error', error);
-                    }
-                    setNotifications((cur) => cur.map(x => x.id === n.id ? { ...x, read: true } : x));
-                    setUnreadCount((c) => Math.max(0, c - (n.read ? 0 : 1)));
-                        // navigate to resource if metadata provided
-                        try {
-                          const meta = (n as any).metadata;
-                          if (meta && typeof meta === 'object') {
-                            const t = meta.type;
-                            // open collaborative space and pass metadata to EspaceCollaboratif
-                            navigate(`/${role}s/espace-collaboratif`, { state: { notificationOpen: meta } });
-                            // close the dialog
-                            setOpen(false);
-                          }
-                        } catch (e) {
-                          /* ignore navigation errors */
+                <div className="text-sm text-muted-foreground">Chargement…</div>
+              ) : notifications.length === 0 ? (
+                <div className="text-sm text-muted-foreground">Aucune notification</div>
+              ) : (
+                <div className="space-y-2">
+                  {notifications.map(n => {
+                    const when = n.created_at ? new Date(n.created_at) : null;
+                    const timeAgo = (d: Date | null) => {
+                      if (!d) return '';
+                      const now = new Date();
+                      const diffSec = Math.floor((now.getTime() - d.getTime()) / 1000);
+                      if (diffSec < 10) return "À l'instant";
+                      if (diffSec < 60) return `Il y a ${diffSec} s`;
+                      const diffMin = Math.floor(diffSec / 60);
+                      if (diffMin < 60) return `Il y a ${diffMin} min`;
+                      const diffH = Math.floor(diffMin / 60);
+                      if (diffH < 24) return `Il y a ${diffH} h`;
+                      const diffDays = Math.floor(diffH / 24);
+                      if (diffDays === 1) return 'Hier';
+                      if (diffDays < 7) return `Il y a ${diffDays} j`;
+                      try {
+                        return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
+                      } catch (e) {
+                        return d.toLocaleDateString();
+                      }
+                    };
+
+                    const onNavigate = async (meta?: any) => {
+                      try {
+                        if (!n.read) {
+                          const { data, error } = await supabase.rpc('mark_notification_read', { p_id: n.id });
+                          if (error) console.error('mark_notification_read error', error);
                         }
-                  } catch (e) { console.error('mark read click', e); }
-                }}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="font-medium">{n.title}</div>
-                    {n.body && <div className="text-sm text-muted-foreground">{n.body}</div>}
-                  </div>
-                  <div className="text-xs text-muted-foreground ml-4">{n.created_at ? new Date(n.created_at).toLocaleString() : ''}</div>
+                      } catch (e) { console.error('mark_notification_read error', e); }
+                      setNotifications((cur) => cur.map(x => x.id === n.id ? { ...x, read: true } : x));
+                      setUnreadCount((c) => Math.max(0, c - (n.read ? 0 : 1)));
+                      try {
+                        if (meta && typeof meta === 'object') {
+                          navigate(`/${role}s/espace-collaboratif`, { state: { notificationOpen: meta } });
+                          setOpen(false);
+                        }
+                      } catch (e) { /* ignore */ }
+                    };
+
+                    return (
+                      <div key={n.id} className={`p-1`}>
+                        <div className={`flex items-start gap-3 p-3 border rounded-md ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
+                          <div className="flex-1 text-sm">
+                            <div className="font-medium text-sm mb-1">{n.title}</div>
+                            {n.body && <div className="text-xs text-muted-foreground">{n.body}</div>}
+                          </div>
+                          <div className="flex flex-col items-end ml-2">
+                            <div className="text-xs text-muted-foreground mb-2" title={when ? when.toLocaleString() : ''}>{timeAgo(when)}</div>
+                            <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onNavigate((n as any).metadata); }} title="Ouvrir">
+                              <ArrowRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
-            ))
-          )}
+              )}
         </div>
       </DialogContent>
     </Dialog>
