@@ -1,0 +1,64 @@
+import { supabase } from '@/lib/supabaseClient';
+
+const BUCKET_CANDIDATES = ['shared-documents', 'shared_documents'];
+
+export async function copyDocumentToShared({
+  cabinetId,
+  documentId,
+  sharedId,
+  itemName,
+}: {
+  cabinetId: string;
+  documentId: string;
+  sharedId?: string | number | null;
+  itemName?: string | null;
+}): Promise<{ uploadedBucket: string | null; publicUrl: string | null }> {
+  try {
+    const { data: doc, error: docErr } = await supabase
+      .from('documents')
+      .select('storage_path')
+      .eq('id', documentId)
+      .single();
+    if (docErr) throw docErr;
+
+    const storagePathRaw = (doc?.storage_path || '').replace(/^\/+/, '');
+    if (!storagePathRaw) throw new Error('storage_path not found');
+
+    const { data: downloaded, error: downloadErr } = await supabase.storage.from('documents').download(storagePathRaw);
+    if (downloadErr) throw downloadErr;
+
+    const filename = storagePathRaw.split('/').pop() || itemName || `${documentId}.pdf`;
+    const targetPath = `${cabinetId}/${documentId}-${filename}`;
+
+    let uploadedBucket: string | null = null;
+    for (const b of BUCKET_CANDIDATES) {
+      try {
+        const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
+        if (!uploadErr) { uploadedBucket = b; break; }
+        console.warn(`Upload to bucket ${b} failed:`, uploadErr.message || uploadErr);
+      } catch (e) {
+        console.warn(`Upload attempt to bucket ${b} threw:`, e);
+      }
+    }
+
+    if (!uploadedBucket) {
+      return { uploadedBucket: null, publicUrl: null };
+    }
+
+    const { data: pub } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
+    const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+
+    if (publicUrl && sharedId) {
+      try {
+        await supabase.from('cabinet_documents').update({ file_url: publicUrl }).eq('id', sharedId);
+      } catch (e) {
+        console.warn('Failed to update cabinet_documents.file_url after upload:', e);
+      }
+    }
+
+    return { uploadedBucket, publicUrl };
+  } catch (e) {
+    console.error('copyDocumentToShared error', e);
+    return { uploadedBucket: null, publicUrl: null };
+  }
+}
