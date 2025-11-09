@@ -322,11 +322,29 @@ export default function EspaceCollaboratif() {
     }
 
     try {
+      // sanitize storage path (strip leading slashes) — createSignedUrl expects a relative path
+      const storagePath = (doc.file_url || '').replace(/^\/+/, '');
       const { data, error } = await supabase.storage
         .from('documents')
-        .createSignedUrl(doc.file_url, 60);
+        .createSignedUrl(storagePath, 60);
 
       if (error || !data?.signedUrl) {
+        console.error('createSignedUrl failed for', storagePath, error);
+        // Try a public URL fallback if the bucket/object is public
+        try {
+          const pub = await supabase.storage.from('documents').getPublicUrl(storagePath);
+          // getPublicUrl returns { data: { publicUrl } } in some SDK versions or { publicUrl }
+          const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+          if (publicUrl) {
+            setViewerUrl(publicUrl);
+            setViewerDocName(doc.title);
+            setViewerOpen(true);
+            return;
+          }
+        } catch (e) {
+          console.error('getPublicUrl fallback failed', e);
+        }
+
         toast({
           title: 'Erreur',
           description: 'Impossible de générer le lien',

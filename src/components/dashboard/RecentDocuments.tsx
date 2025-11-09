@@ -62,10 +62,34 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       toast.error("Aucun fichier associé.");
       return;
     }
+    const storagePath = (doc.storage_path || '').replace(/^\/+/, '');
     const { data, error } = await supabase.storage
       .from('documents')
-      .createSignedUrl(doc.storage_path, 60);
+      .createSignedUrl(storagePath, 60);
     if (error || !data?.signedUrl) {
+      console.error('createSignedUrl failed for', storagePath, error);
+      try {
+        const pub = await supabase.storage.from('documents').getPublicUrl(storagePath);
+        const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+        if (publicUrl) {
+          if (mode === 'view') {
+            setViewerUrl(publicUrl);
+            setViewerDocName(doc.name);
+            setViewerOpen(true);
+            return;
+          } else {
+            const a = document.createElement('a');
+            a.href = publicUrl;
+            a.download = doc.name || 'document.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('getPublicUrl fallback failed', e);
+      }
       toast.error("Impossible de générer le lien");
       return;
     }
