@@ -42,7 +42,22 @@ export async function copyDocumentToShared({
     }
 
     if (!uploadedBucket) {
-      return { uploadedBucket: null, publicUrl: null };
+      // try fallback: create a signed URL from original documents bucket so users can access temporarily
+      try {
+        const signed = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7);
+        const signedUrl = signed?.data?.signedUrl || null;
+        if (signedUrl && sharedId) {
+          try {
+            await supabase.from('cabinet_documents').update({ file_url: signedUrl }).eq('id', sharedId);
+          } catch (e) {
+            console.warn('Failed to update cabinet_documents.file_url with signedUrl fallback:', e);
+          }
+        }
+        return { uploadedBucket: null, publicUrl: signedUrl };
+      } catch (e) {
+        console.warn('Signed URL fallback also failed', e);
+        return { uploadedBucket: null, publicUrl: null };
+      }
     }
 
     const { data: pub } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
