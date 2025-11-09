@@ -370,7 +370,13 @@ begin
     left join auth.users u on u.id = v_actor
     where p.id = v_actor;
 
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+  select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
+    from public.profiles p
+    left join auth.users u on u.id = v_actor
+    where p.id = v_actor
+    limit 1;
+
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
