@@ -200,13 +200,14 @@ export default function EspaceCollaboratif() {
       }
 
       // Charger le cabinet
-      const { data: cabinets, error: cabinetError } = await supabase
-        .rpc('get_user_cabinets')
-        .eq('role', cabinetRole);
-
+      // NOTE: some Supabase setups don't allow chaining filters on RPC results reliably
+      // so we call the RPC and filter client-side by role to avoid runtime errors.
+      const { data: cabinetsData, error: cabinetError } = await supabase.rpc('get_user_cabinets');
       if (cabinetError) throw cabinetError;
 
-      const userCabinet = cabinets?.[0] || null;
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
+      const filtered = cabinets.filter((c: any) => c.role === cabinetRole);
+      const userCabinet = filtered[0] || null;
       setCabinet(userCabinet);
 
       if (userCabinet) {
