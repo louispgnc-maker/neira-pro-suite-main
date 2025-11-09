@@ -246,9 +246,12 @@ returns integer language plpgsql security definer as $function$
 declare
   v_count integer := 0;
 begin
-  update public.notifications set read = true where recipient_id = auth.uid() and read = false returning 1 into v_count;
-  -- Above returns only one row into v_count; prefer to compute count separately
-  get diagnostics v_count = row_count;
+  -- Compute count first (safe if multiple rows) then perform the update.
+  select count(*)::int into v_count from public.notifications where recipient_id = auth.uid() and read = false;
+  if v_count = 0 then
+    return 0;
+  end if;
+  update public.notifications set read = true where recipient_id = auth.uid() and read = false;
   return v_count;
 end;
 $function$;
