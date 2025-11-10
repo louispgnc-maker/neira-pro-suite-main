@@ -192,12 +192,56 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
         setCabinet(firstCabinet);
         setIsOwner(firstCabinet.owner_id === userId);
 
-        // Charger les membres via RPC (SECURITY DEFINER) - autorisé pour owner ou membre actif
-        const { data: membersData, error: membersError } = await supabase
-          .rpc('get_cabinet_members', { cabinet_id_param: firstCabinet.id });
+        // Charger les membres via RPC, sinon fallback table, puis fallback profils (owner + user)
+        let membersRes: any[] = [];
+        try {
+          const { data: membersData, error: membersError } = await supabase
+            .rpc('get_cabinet_members_simple', { cabinet_id_param: firstCabinet.id });
+          if (membersError) throw membersError;
+          membersRes = Array.isArray(membersData) ? (membersData as any[]) : [];
+        } catch (rpcErr) {
+          try {
+            const { data: membersTableData, error: tableErr } = await supabase
+              .from('cabinet_members')
+              .select('id,email,nom,role_cabinet,status,joined_at')
+              .eq('cabinet_id', firstCabinet.id);
+            if (tableErr) throw tableErr;
+            membersRes = Array.isArray(membersTableData) ? (membersTableData as any[]) : [];
+          } catch (tableErr) {
+            membersRes = [];
+          }
+        }
 
-        if (membersError) throw membersError;
-        setMembers(membersData || []);
+        if (!Array.isArray(membersRes) || membersRes.length === 0) {
+          const fallback: any[] = [];
+          try {
+            const ownerId = (firstCabinet as any).owner_id;
+            const idsToFetch = Array.from(new Set([ownerId, userId].filter(Boolean)));
+            if (idsToFetch.length > 0) {
+              const { data: profilesData } = await supabase
+                .from('profiles')
+                .select('id, email, nom, full_name')
+                .in('id', idsToFetch);
+              if (Array.isArray(profilesData)) {
+                for (const p of profilesData) {
+                  fallback.push({
+                    id: p.id,
+                    email: p.email || '',
+                    nom: p.nom || p.full_name || '',
+                    role_cabinet: p.id === ownerId ? 'Fondateur' : 'Membre',
+                    status: 'active',
+                  });
+                }
+              }
+            }
+          } catch (pfE) {
+            // ignore profile fallback errors
+          }
+
+          setMembers(fallback.length > 0 ? fallback : []);
+        } else {
+          setMembers(membersRes);
+        }
       } else {
         setCabinet(null);
         setIsOwner(false);
@@ -723,6 +767,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
           </div>
         </CardContent>
       </Card>
+      
     </div>
   );
 }

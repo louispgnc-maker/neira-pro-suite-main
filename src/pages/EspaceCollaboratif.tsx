@@ -82,6 +82,7 @@ export default function EspaceCollaboratif() {
   const [contrats, setContrats] = useState<SharedContrat[]>([]);
   const [isCabinetOwner, setIsCabinetOwner] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  
   const { toast } = useToast();
 
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -214,12 +215,59 @@ export default function EspaceCollaboratif() {
       setCabinet(userCabinet);
 
       if (userCabinet) {
-        // Charger les membres
-        const { data: membersData, error: membersError } = await supabase
-          .rpc('get_cabinet_members', { cabinet_id_param: userCabinet.id });
+        // Charger les membres : RPC -> table fallback -> profile fallback (owner + current user).
+        let membersRes: any[] = [];
+        try {
+          const { data: membersData, error: membersError } = await supabase
+            .rpc('get_cabinet_members_simple', { cabinet_id_param: userCabinet.id });
+          if (membersError) throw membersError;
+          membersRes = Array.isArray(membersData) ? (membersData as any[]) : [];
+        } catch (rpcErr) {
+          // RPC failed or not available, try direct table read (subject to RLS)
+          try {
+            const { data: membersTableData, error: tableErr } = await supabase
+              .from('cabinet_members')
+              .select('id,email,nom,role_cabinet,status')
+              .eq('cabinet_id', userCabinet.id);
+            if (tableErr) throw tableErr;
+            membersRes = Array.isArray(membersTableData) ? (membersTableData as any[]) : [];
+          } catch (tableErr) {
+            // both RPC and table fallback failed; proceed to profile fallback
+            membersRes = [];
+          }
+        }
 
-        if (membersError) throw membersError;
-        setMembers(membersData || []);
+        // If still empty, show owner + current user as minimum fallback
+        if (!Array.isArray(membersRes) || membersRes.length === 0) {
+          const fallback: any[] = [];
+          try {
+            const ownerId = (userCabinet as any).owner_id;
+            const idsToFetch = Array.from(new Set([ownerId, user.id].filter(Boolean)));
+            if (idsToFetch.length > 0) {
+              const { data: profilesData } = await supabase
+                .from('profiles')
+                .select('id, email, nom, full_name')
+                .in('id', idsToFetch);
+              if (Array.isArray(profilesData)) {
+                for (const p of profilesData) {
+                  fallback.push({
+                    id: p.id,
+                    email: p.email || '',
+                    nom: p.nom || p.full_name || '',
+                    role_cabinet: p.id === ownerId ? 'Fondateur' : 'Membre',
+                    status: 'active',
+                  });
+                }
+              }
+            }
+          } catch (e) {
+            // ignore profile fetch errors for fallback
+          }
+
+          setMembers(fallback.length > 0 ? fallback : []);
+        } else {
+          setMembers(membersRes);
+        }
 
         // Charger les documents partagés
         const { data: docsData, error: docsError } = await supabase
@@ -1119,7 +1167,7 @@ export default function EspaceCollaboratif() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+  </div>
     <DocumentViewer
       open={viewerOpen}
       onClose={() => setViewerOpen(false)}

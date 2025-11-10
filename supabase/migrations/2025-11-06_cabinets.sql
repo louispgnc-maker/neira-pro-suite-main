@@ -107,7 +107,21 @@ create policy "cabinets_owner_access" on public.cabinets
 -- Chaque user peut voir et gérer TOUS ses memberships
 drop policy if exists "cabinet_members_user_access" on public.cabinet_members;
 create policy "cabinet_members_user_access" on public.cabinet_members
-  for all using (user_id = auth.uid());
+  for all using (
+    exists (
+      select 1 from public.cabinets c
+      where c.id = cabinet_id and c.owner_id = auth.uid()
+    )
+    or exists (
+      select 1 from public.cabinet_members cm
+      where cm.cabinet_id = cabinet_id and cm.user_id = auth.uid() and cm.status = 'active'
+    )
+    or user_id = auth.uid()
+    or (
+      coalesce(lower((nullif(current_setting('request.jwt.claims', true), '')::json ->> 'email')), '') = lower(coalesce(email, ''))
+      and status = 'pending'
+    )
+  );
 
 -- NOTE: Les owners gèrent les membres via les fonctions RPC SECURITY DEFINER
 -- qui bypass complètement les policies (regenerate_cabinet_code, join_cabinet_by_code, etc.)
