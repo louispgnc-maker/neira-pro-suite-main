@@ -1,6 +1,8 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Search } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -36,6 +38,8 @@ export default function Dossiers() {
 
   const [loading, setLoading] = useState(true);
   const [dossiers, setDossiers] = useState<DossierRow[]>([]);
+  const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -48,8 +52,10 @@ export default function Dossiers() {
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const navigate = useNavigate();
   const mainHover = role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white';
-  const selectContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : '';
+  const selectContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200';
   const selectItemClass = role === 'notaire' ? 'cursor-pointer hover:bg-orange-600 hover:text-white' : 'cursor-pointer hover:bg-blue-600 hover:text-white';
+  const menuContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200';
+  const menuItemClass = role === 'notaire' ? 'focus:bg-orange-600 focus:text-white hover:bg-orange-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white';
 
   useEffect(() => {
     let mounted = true;
@@ -62,11 +68,25 @@ export default function Dossiers() {
         .eq('owner_id', user.id)
         .eq('role', role)
         .order('created_at', { ascending: false });
+
+      let list = (d || []) as DossierRow[];
+      // If search filter provided, refetch server-side with ilike
+      if (debounced) {
+        const { data: sd, error: sErr } = await supabase
+          .from('dossiers')
+          .select('id,title,status,created_at')
+          .eq('owner_id', user.id)
+          .eq('role', role)
+          .or(`title.ilike.%${debounced}%`)
+          .order('created_at', { ascending: false });
+        if (!sErr && sd) {
+          list = sd as DossierRow[];
+        }
+      }
       if (error) {
         console.error('Erreur chargement dossiers:', error);
         if (mounted) setDossiers([]);
       } else if (mounted) {
-        const list = (d || []) as DossierRow[];
         // charger les compteurs d'association
         const ids = list.map((x) => x.id);
         if (ids.length > 0) {
@@ -107,6 +127,26 @@ export default function Dossiers() {
     loadRefs();
     return () => { mounted = false; };
   }, [user, role]);
+
+  // debounce search
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const handleDelete = async (dossier: DossierRow) => {
+    if (!user) return;
+    if (!confirm(`Supprimer "${dossier.title}" ?`)) return;
+    try {
+      const { error } = await supabase.from('dossiers').delete().eq('id', dossier.id).eq('owner_id', user.id);
+      if (error) throw error;
+      setDossiers((prev) => prev.filter((x) => x.id !== dossier.id));
+      toast.success('Dossier supprimé');
+    } catch (err: any) {
+      console.error('Erreur suppression dossier:', err);
+      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+    }
+  };
 
   const resetForm = () => {
     setTitle("");
@@ -301,7 +341,19 @@ export default function Dossiers() {
                 <p className="text-muted-foreground">Chargement…</p>
               </div>
             ) : (
-              <Table>
+              <>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Rechercher un dossier..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nom</TableHead>
@@ -332,21 +384,43 @@ export default function Dossiers() {
                         <TableCell>{d.document_count ?? '—'}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
                         <TableCell>
-                          <ShareToCollaborativeDialog
-                            itemId={d.id}
-                            itemName={d.title}
-                            itemType="dossier"
-                            role={role}
-                            onSuccess={() => {
-                              toast.success('Dossier partagé');
-                            }}
-                          />
+                          <div className="flex items-center gap-1">
+                            <ShareToCollaborativeDialog
+                              itemId={d.id}
+                              itemName={d.title}
+                              itemType="dossier"
+                              role={role}
+                              onSuccess={() => {
+                                toast.success('Dossier partagé');
+                              }}
+                            />
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                                >
+                                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className={menuContentClass}>
+                                <DropdownMenuItem className={menuItemClass} onClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}>
+                                  Voir
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
+                                  Supprimer
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
                   )}
                 </TableBody>
-              </Table>
+                </Table>
+              </>
             )}
           </CardContent>
         </Card>

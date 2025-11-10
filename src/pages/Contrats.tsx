@@ -87,6 +87,12 @@ export default function Contrats() {
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
+  // Role-based menu/select styling
+  const menuContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200';
+  const menuItemClass = role === 'notaire' ? 'focus:bg-orange-600 focus:text-white hover:bg-orange-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white';
+  const selectContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200';
+  const selectItemClass = role === 'notaire' ? 'cursor-pointer hover:bg-orange-600 hover:text-white' : 'cursor-pointer hover:bg-blue-600 hover:text-white';
+
   useEffect(() => {
     let isMounted = true;
     async function load() {
@@ -208,7 +214,7 @@ export default function Contrats() {
                   Ajouter
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
+              <DropdownMenuContent align="end" className={menuContentClass}>
                 <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/documents?openImport=1' : '/avocats/documents?openImport=1')}>
                   <Upload className="mr-2 h-4 w-4" />
                   Importer depuis mon appareil
@@ -216,11 +222,11 @@ export default function Contrats() {
 
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger className={role === 'notaire' ? 'font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}>Créer un contrat</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
+                  <DropdownMenuSubContent className={menuContentClass}>
                     {(role === 'notaire' ? NOTAIRE_CONTRACT_CATEGORIES : AVOCAT_CONTRACT_CATEGORIES).map((cat) => (
                       <DropdownMenuSub key={cat.key}>
                           <DropdownMenuSubTrigger className={role === 'notaire' ? 'font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}>{cat.label}</DropdownMenuSubTrigger>
-                        <DropdownMenuSubContent>
+                        <DropdownMenuSubContent className={menuContentClass}>
                           {cat.contracts.map((contract) => (
                             <DropdownMenuItem
                               key={contract}
@@ -256,14 +262,14 @@ export default function Contrats() {
                       Ajouter
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
+                  <DropdownMenuContent align="end" className={menuContentClass}>
                     <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="font-semibold">Créer un contrat</DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
+                      <DropdownMenuSubTrigger className={`font-semibold ${role === 'notaire' ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`}>Créer un contrat</DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className={menuContentClass}>
                         {(role === 'notaire' ? NOTAIRE_CONTRACT_CATEGORIES : AVOCAT_CONTRACT_CATEGORIES).map((cat) => (
                           <DropdownMenuSub key={cat.key}>
-                            <DropdownMenuSubTrigger className="font-semibold">{cat.label}</DropdownMenuSubTrigger>
-                            <DropdownMenuSubContent>
+                            <DropdownMenuSubTrigger className={`font-semibold ${role === 'notaire' ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`}>{cat.label}</DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent className={menuContentClass}>
                               {cat.contracts.map((contract) => (
                                 <DropdownMenuItem
                                   key={contract}
@@ -299,9 +305,9 @@ export default function Contrats() {
                 <SelectTrigger className="w-[280px]">
                   <SelectValue placeholder="Catégorie" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className={selectContentClass}>
                   {(role === 'notaire' ? categoriesNotaire : categoriesAvocat).map((cat) => (
-                    <SelectItem key={cat} value={cat}>
+                    <SelectItem key={cat} value={cat} className={selectItemClass}>
                       {cat}
                     </SelectItem>
                   ))}
@@ -365,9 +371,9 @@ export default function Contrats() {
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
+                              <DropdownMenuContent align="end" className={menuContentClass}>
                                 <DropdownMenuItem 
-                                  className="text-destructive"
+                                  className={`text-destructive ${menuItemClass}`}
                                   onClick={() => handleDelete(contrat)}
                                 >
                                   <Trash2 className="mr-2 h-4 w-4" />

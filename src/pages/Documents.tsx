@@ -344,6 +344,9 @@ export default function Documents() {
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
+  const menuContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200';
+  const menuItemClass = role === 'notaire' ? 'focus:bg-orange-600 focus:text-white hover:bg-orange-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white';
+
   return (
     <AppLayout>
       <div className="p-6">
@@ -449,19 +452,19 @@ export default function Documents() {
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => viewOrDownload(doc, 'view')}>
+                          <DropdownMenuContent align="end" className={menuContentClass}>
+                              <DropdownMenuItem className={menuItemClass} onClick={() => viewOrDownload(doc, 'view')}>
                               <Eye className="mr-2 h-4 w-4" />
                               Voir
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => viewOrDownload(doc, 'download')}>
+                              <DropdownMenuItem className={menuItemClass} onClick={() => viewOrDownload(doc, 'download')}>
                               <Download className="mr-2 h-4 w-4" />
                               Télécharger
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              className="text-destructive"
-                              onClick={() => handleDelete(doc)}
-                            >
+                              <DropdownMenuItem 
+                                className={`text-destructive ${menuItemClass}`}
+                                onClick={() => handleDelete(doc)}
+                              >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Supprimer
                             </DropdownMenuItem>
