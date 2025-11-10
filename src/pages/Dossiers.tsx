@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Search } from "lucide-react";
+import { Search, Eye, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -406,9 +406,11 @@ export default function Dossiers() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className={menuContentClass}>
                                 <DropdownMenuItem className={menuItemClass} onClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}>
+                                  <Eye className="mr-2 h-4 w-4" />
                                   Voir
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
+                                  <Trash2 className="mr-2 h-4 w-4" />
                                   Supprimer
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
