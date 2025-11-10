@@ -706,11 +706,7 @@ export default function EspaceCollaboratif() {
                     .map((item, idx) => (
                       <div 
                         key={`${item.type}-${idx}`} 
-                        className={`flex items-center justify-between p-3 border rounded-lg transition-all cursor-pointer ${
-                          cabinetRole === 'notaire' 
-                            ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
-                            : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-                        }`}
+                        className={`flex items-center justify-between p-3 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
                         onClick={() => {
                           if (item.type === 'Document' && 'file_url' in item) {
                             handleViewDocument(item as SharedDocument);
@@ -827,11 +823,7 @@ export default function EspaceCollaboratif() {
                     {documents.map((doc) => (
                       <div 
                         key={doc.id} 
-                        className={`p-3 border rounded-lg cursor-pointer transition-all ${
-                          cabinetRole === 'notaire' 
-                            ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
-                            : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-                        }`}
+                        className={`p-3 border rounded-lg cursor-pointer transition-all bg-white hover:bg-gray-50`}
                         onClick={() => handleViewDocument(doc)}
                       >
                         <div className="flex items-start justify-between">
@@ -908,11 +900,7 @@ export default function EspaceCollaboratif() {
                     {contrats.map((contrat) => (
                       <div 
                         key={contrat.id} 
-                        className={`p-3 border rounded-lg transition-all ${
-                          cabinetRole === 'notaire' 
-                            ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
-                            : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-                        }`}
+                        className={`p-3 border rounded-lg transition-all bg-white hover:bg-gray-50`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -987,11 +975,7 @@ export default function EspaceCollaboratif() {
                   {dossiers.map((dossier) => (
                     <div 
                       key={dossier.id} 
-                      className={`p-4 border rounded-lg transition-all cursor-pointer ${
-                        cabinetRole === 'notaire' 
-                          ? 'bg-orange-50 border-orange-200 hover:bg-orange-100' 
-                          : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-                      }`}
+                      className={`p-4 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
                       onDoubleClick={() => navigateToDossier(dossier)}
                     >
                       <div className="flex items-start justify-between">
