@@ -139,19 +139,25 @@ create policy "cabinet_members_insert_contrats" on public.cabinet_contrats
   );
 
 -- Policy: Seul celui qui a partagé peut supprimer son élément partagé
+-- Ensure we drop any older policy names and the current intended name to avoid "policy already exists" errors
 drop policy if exists "cabinet_owner_delete_documents" on public.cabinet_documents;
+drop policy if exists "cabinet_owner_or_sharer_delete_documents" on public.cabinet_documents;
 create policy "cabinet_owner_or_sharer_delete_documents" on public.cabinet_documents
   for delete using (
     shared_by = auth.uid() OR public.is_cabinet_owner(cabinet_id, auth.uid())
   );
 
+-- Ensure we drop any older policy names and the current intended name to avoid "policy already exists" errors
 drop policy if exists "cabinet_owner_delete_dossiers" on public.cabinet_dossiers;
+drop policy if exists "cabinet_owner_or_sharer_delete_dossiers" on public.cabinet_dossiers;
 create policy "cabinet_owner_or_sharer_delete_dossiers" on public.cabinet_dossiers
   for delete using (
     shared_by = auth.uid() OR public.is_cabinet_owner(cabinet_id, auth.uid())
   );
 
+-- Ensure we drop any older policy names and the current intended name to avoid "policy already exists" errors
 drop policy if exists "cabinet_owner_delete_contrats" on public.cabinet_contrats;
+drop policy if exists "cabinet_owner_or_sharer_delete_contrats" on public.cabinet_contrats;
 create policy "cabinet_owner_or_sharer_delete_contrats" on public.cabinet_contrats
   for delete using (
     shared_by = auth.uid() OR public.is_cabinet_owner(cabinet_id, auth.uid())
