@@ -9,8 +9,8 @@ CREATE OR REPLACE FUNCTION public.share_document_to_cabinet_with_url(
   cabinet_id_param uuid,
   document_id_param uuid,
   title_param text,
-  description_param text default null,
   file_url_param text,
+  description_param text default null,
   file_name_param text default null,
   file_type_param text default null
 )
