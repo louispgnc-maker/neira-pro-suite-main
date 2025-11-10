@@ -111,7 +111,7 @@ export default function Signatures() {
             Nouvelle signature
           </Button>
         </div>
-        <div className="mb-4 bg-white p-4 rounded-lg border">
+        <div className={signatures.length > 0 ? "mb-4 bg-white p-4 rounded-lg border" : "mb-4"}>
           <input
             type="text"
             value={search}
@@ -135,7 +135,7 @@ export default function Signatures() {
             </div>
           </div>
         ) : (
-          <div className="border rounded-lg bg-white">
+          <div className="border rounded-lg bg-white p-4">
             <Table>
               <TableHeader>
                 <TableRow>

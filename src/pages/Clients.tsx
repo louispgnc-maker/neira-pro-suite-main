@@ -92,7 +92,7 @@ export default function Clients() {
             <FicheClientMenu variant="horizontal" colorClass={mainButtonColor} />
           </div>
         </div>
-        <div className="mb-4 bg-white p-4 rounded-lg border">
+        <div className={clients.length > 0 ? "mb-4 bg-white p-4 rounded-lg border" : "mb-4"}>
           <input
             type="text"
             value={search}
