@@ -701,7 +701,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                         ) : (
                           <Badge
                             variant={(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? 'default' : 'secondary'}
-                            className={`text-xs ${(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? (role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600') : (['Notaire','Clerc de Notaire','Formaliste','Juriste Notarial'].includes(member.role_cabinet || '') ? 'bg-orange-600 hover:bg-orange-700 text-white' : '')}`}
+                            className={`text-xs ${(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white') : (['Notaire','Clerc de Notaire','Formaliste','Juriste Notarial'].includes(member.role_cabinet || '') ? 'bg-orange-600 hover:bg-orange-700 text-white' : '')}`}
                           >
                             {member.role_cabinet === 'owner' ? 'Fondateur' : member.role_cabinet}
                           </Badge>
