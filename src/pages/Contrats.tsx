@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { FileText, Search, MoreHorizontal, Trash2 } from "lucide-react";
+import { FileText, Search, MoreHorizontal, Trash2, Plus, ArrowRight, Upload } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
@@ -171,11 +171,28 @@ export default function Contrats() {
             </p>
           </div>
           <div>
-            {role === 'notaire' ? (
-              <ContractSelectorNotaire variant="horizontal" onContractCreated={refreshContrats} />
-            ) : (
-              <ContractSelectorAvocat variant="horizontal" onContractCreated={refreshContrats} />
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className={mainButtonColor}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Ajouter
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
+                {/* Include creation UI for contracts directly inside the menu for quick access */}
+                <div className="px-2 py-2">
+                  {role === 'notaire' ? (
+                    <ContractSelectorNotaire variant="vertical" onContractCreated={refreshContrats} />
+                  ) : (
+                    <ContractSelectorAvocat variant="vertical" onContractCreated={refreshContrats} />
+                  )}
+                </div>
+                <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats')}>
+                  <ArrowRight className="mr-2 h-4 w-4" />
+                  Aller à mes contrats
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -187,15 +204,29 @@ export default function Contrats() {
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
               <p className="text-muted-foreground">Aucun contrat pour le moment</p>
-              {role === 'notaire' ? (
-                <div className="mt-4 flex justify-center">
-                  <ContractSelectorNotaire variant="horizontal" label="Ajoutez votre premier contrat" onContractCreated={refreshContrats} />
-                </div>
-              ) : (
-                <div className="mt-4 flex justify-center">
-                  <ContractSelectorAvocat variant="horizontal" label="Ajoutez votre premier contrat" onContractCreated={refreshContrats} />
-                </div>
-              )}
+              <div className="mt-4 flex justify-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className={mainButtonColor}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Ajouter
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
+                    <div className="px-2 py-2">
+                      {role === 'notaire' ? (
+                        <ContractSelectorNotaire variant="vertical" onContractCreated={refreshContrats} />
+                      ) : (
+                        <ContractSelectorAvocat variant="vertical" onContractCreated={refreshContrats} />
+                      )}
+                    </div>
+                    <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats')}>
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                      Aller à mes contrats
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
         ) : (

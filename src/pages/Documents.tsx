@@ -1,6 +1,7 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Eye, Download, Trash2, Upload } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -352,10 +353,24 @@ export default function Documents() {
                 <input type="checkbox" checked={autoShare} onChange={(e) => setAutoShare(e.target.checked)} />
                 <span className="select-none">Partager automatiquement</span>
               </label>
-              <Button className={mainButtonColor + ""} onClick={triggerImport} disabled={uploading}>
-                <Upload className="mr-2 h-4 w-4" />
-                {uploading ? 'Import…' : 'Importer PDF'}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className={mainButtonColor + ""}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Ajouter
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
+                  <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => triggerImport()}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Importer depuis mon appareil
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/documents' : '/avocats/documents')}>
+                    <ArrowRight className="mr-2 h-4 w-4" />
+                    Aller à mes documents
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -377,10 +392,26 @@ export default function Documents() {
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
               <p className="text-muted-foreground">Aucun document pour le moment</p>
-              <Button className={mainButtonColor + " mt-4"} onClick={triggerImport}>
-                <Upload className="mr-2 h-4 w-4" />
-                Importer votre premier PDF
-              </Button>
+              <div className="mt-4 flex justify-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className={mainButtonColor + ""}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Ajouter
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
+                    <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => triggerImport()}>
+                      <Upload className="mr-2 h-4 w-4" />
+                      Importer depuis mon appareil
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/documents' : '/avocats/documents')}>
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                      Aller à mes documents
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
         ) : (
