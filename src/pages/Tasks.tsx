@@ -224,13 +224,13 @@ export default function Tasks() {
             </DialogContent>
           </Dialog>
         </div>
-        <div className="mb-4">
+        <div className="mb-4 bg-white p-4 rounded-lg border">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher (titre ou description)…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="w-full md:max-w-sm rounded-md border border-input bg-transparent px-3 py-2 text-sm"
           />
         </div>
 
@@ -250,8 +250,9 @@ export default function Tasks() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {activeTasks.map((task) => {
+          <div className="border rounded-lg bg-white p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {activeTasks.map((task) => {
               const overdue = !task.done && isOverdue(task.due_at);
               let dateStr = '';
               if (task.due_at) {

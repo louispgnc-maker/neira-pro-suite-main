@@ -92,13 +92,13 @@ export default function Clients() {
             <FicheClientMenu variant="horizontal" colorClass={mainButtonColor} />
           </div>
         </div>
-        <div className="mb-4">
+        <div className="mb-4 bg-white p-4 rounded-lg border">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un client…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="w-full md:max-w-sm rounded-md border border-input bg-transparent px-3 py-2 text-sm"
           />
         </div>
         
@@ -120,46 +120,48 @@ export default function Clients() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {clients.map((client) => (
-              <Card 
-                key={client.id} 
-                className="p-4 hover:shadow-md transition-shadow cursor-pointer" 
-                onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{client.name}</h3>
-                    {client.missing_info ? (
-                      <p className="text-xs text-destructive flex items-center gap-1 mt-2">
-                        <AlertCircle className="h-3 w-3" />
-                        Manque: {client.missing_info}
-                      </p>
-                    ) : (
-                      <p className="text-xs text-success flex items-center gap-1 mt-2">
-                        <CheckCircle2 className="h-3 w-3" />
-                        Dossier complet
-                      </p>
-                    )}
-                    {client.created_at && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Ajouté le {new Date(client.created_at).toLocaleDateString()}
-                      </p>
-                    )}
+          <div className="border rounded-lg bg-white p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {clients.map((client) => (
+                <Card 
+                  key={client.id} 
+                  className="p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                  onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg">{client.name}</h3>
+                      {client.missing_info ? (
+                        <p className="text-xs text-destructive flex items-center gap-1 mt-2">
+                          <AlertCircle className="h-3 w-3" />
+                          Manque: {client.missing_info}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-success flex items-center gap-1 mt-2">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Dossier complet
+                        </p>
+                      )}
+                      {client.created_at && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Ajouté le {new Date(client.created_at).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={
+                        client.kyc_status === "Complet"
+                          ? "bg-success/10 text-success border-success/20"
+                          : kycPartielColor
+                      }
+                    >
+                      {client.kyc_status}
+                    </Badge>
                   </div>
-                  <Badge
-                    variant="outline"
-                    className={
-                      client.kyc_status === "Complet"
-                        ? "bg-success/10 text-success border-success/20"
-                        : kycPartielColor
-                    }
-                  >
-                    {client.kyc_status}
-                  </Badge>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ))}
+            </div>
           </div>
         )}
       </div>
