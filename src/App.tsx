@@ -18,6 +18,7 @@ import CreateClientAvocat from "./pages/CreateClientAvocat";
 import CreateClientNotaire from "./pages/CreateClientNotaire";
 import Tasks from "./pages/Tasks";
 import Contrats from "./pages/Contrats";
+import ContratDetail from "./pages/ContratDetail";
 import Dossiers from "./pages/Dossiers";
 import DossierDetail from "./pages/DossierDetail";
 import Profile from "./pages/Profile";
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/avocats/clients/:id/edit" element={<EditClient />} />
             <Route path="/avocats/tasks" element={<Tasks />} />
             <Route path="/avocats/contrats" element={<Contrats />} />
+            <Route path="/avocats/contrats/:id" element={<ContratDetail />} />
             <Route path="/avocats/dossiers" element={<Dossiers />} />
             <Route path="/avocats/dossiers/:id" element={<DossierDetail />} />
             <Route path="/avocats/profile" element={<Profile />} />
@@ -66,6 +68,7 @@ const App = () => (
             <Route path="/notaires/clients/:id/edit" element={<EditClient />} />
             <Route path="/notaires/tasks" element={<Tasks />} />
             <Route path="/notaires/contrats" element={<Contrats />} />
+            <Route path="/notaires/contrats/:id" element={<ContratDetail />} />
             <Route path="/notaires/dossiers" element={<Dossiers />} />
             <Route path="/notaires/dossiers/:id" element={<DossierDetail />} />
             <Route path="/notaires/profile" element={<Profile />} />
@@ -80,6 +83,7 @@ const App = () => (
             <Route path="/clients/:id/edit" element={<EditClient />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/contrats" element={<Contrats />} />
+            <Route path="/contrats/:id" element={<ContratDetail />} />
             <Route path="/dossiers" element={<Dossiers />} />
             <Route path="/dossiers/:id" element={<DossierDetail />} />
             <Route path="/profile" element={<Profile />} />

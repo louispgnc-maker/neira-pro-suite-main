@@ -183,8 +183,8 @@ export default function EspaceCollaboratif() {
         } else if (type === 'cabinet_contrat' || type === 'contrat') {
           const found = contrats.find(c => c.id === id || c.contrat_id === id);
           if (found) {
-            const docTab = document.querySelector('[value="documents"]') as HTMLButtonElement;
-            if (docTab) docTab.click();
+            // Open contract detail (support cabinet_contrats.id or original contrat_id)
+            navigate(`/${cabinetRole}s/contrats/${found.id}`);
             return;
           }
           navigate(`/${cabinetRole}s/contrats`);
@@ -745,6 +745,22 @@ export default function EspaceCollaboratif() {
                             </p>
                           </div>
                         </div>
+                        {/* quick open for shared contracts */}
+                        {item.type === 'Contrat' && (
+                          <div className="ml-3">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const cid = (item as any).id || (item as any).contrat_id;
+                                navigate(`/${cabinetRole}s/contrats/${cid}`, { state: { fromCollaboratif: true } });
+                              }}
+                              className="p-2 rounded hover:bg-gray-100"
+                              title="Voir le contrat"
+                            >
+                              <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                            </button>
+                          </div>
+                        )}
                         <Badge 
                           variant="outline"
                           className={
