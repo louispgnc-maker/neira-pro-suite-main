@@ -48,9 +48,9 @@ export default function Tasks() {
   }, [search]);
 
   // Détecte le rôle depuis l'URL
-  let role: 'avocat' | 'notaire' = 'avocat';
-  if (location.pathname.includes('/notaires')) role = 'notaire';
-  if (location.pathname.includes('/avocats')) role = 'avocat';
+  let role: "avocat" | "notaire" = "avocat";
+  if (location.pathname.includes("/notaires")) role = "notaire";
+  if (location.pathname.includes("/avocats")) role = "avocat";
 
   useEffect(() => {
     let isMounted = true;
@@ -91,15 +91,13 @@ export default function Tasks() {
       .from("tasks")
       .update({ done: newDone })
       .eq("id", taskId)
-      .eq("owner_id", user?.id || '')
+      .eq("owner_id", user?.id || "")
       .eq("role", role);
     if (error) {
       console.error("Erreur mise à jour tâche:", error);
       toast.error("Erreur lors de la mise à jour");
     } else {
-      setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, done: newDone } : t))
-      );
+      setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, done: newDone } : t)));
       toast.success(newDone ? "Tâche marquée comme terminée" : "Tâche rouverte");
     }
   }
@@ -114,20 +112,19 @@ export default function Tasks() {
   }
 
   // Couleur du bouton principal
-  const mainButtonColor = role === 'notaire'
-    ? 'bg-orange-600 hover:bg-orange-700 text-white'
-    : 'bg-blue-600 hover:bg-blue-700 text-white';
+  const mainButtonColor =
+    role === "notaire" ? "bg-orange-600 hover:bg-orange-700 text-white" : "bg-blue-600 hover:bg-blue-700 text-white";
 
   async function createTask() {
     if (!user) return;
     const title = taskText.trim();
     if (!title) {
-      toast.error('Merci de saisir la tâche');
+      toast.error("Merci de saisir la tâche");
       return;
     }
     setSaving(true);
     try {
-      let due_at = null;
+      let due_at: string | null = null;
       if (taskDate) {
         due_at = taskTime ? `${taskDate}T${taskTime}` : `${taskDate}T00:00`;
       }
@@ -138,9 +135,9 @@ export default function Tasks() {
         description: taskNotes || null,
         due_at,
       };
-      const { error } = await supabase.from('tasks').insert(insertObj);
+      const { error } = await supabase.from("tasks").insert(insertObj);
       if (error) throw error;
-      toast.success('Tâche créée');
+      toast.success("Tâche créée");
       // Reset form and close
       setTaskText("");
       setTaskNotes("");
@@ -157,14 +154,14 @@ export default function Tasks() {
       const { data } = await query;
       setTasks((data || []) as TaskRow[]);
     } catch (err: any) {
-      console.error('Erreur création tâche:', err);
-      toast.error('Erreur lors de la création', { description: err?.message || String(err) });
+      console.error("Erreur création tâche:", err);
+      toast.error("Erreur lors de la création", { description: err?.message || String(err) });
     } finally {
       setSaving(false);
     }
   }
 
-  const activeTasks = tasks.filter(t => !t.done);
+  const activeTasks = tasks.filter((t) => !t.done);
 
   return (
     <AppLayout>
@@ -188,21 +185,11 @@ export default function Tasks() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Tâche</label>
-                  <Textarea
-                    rows={3}
-                    placeholder="Décrivez la tâche à réaliser"
-                    value={taskText}
-                    onChange={(e) => setTaskText(e.target.value)}
-                  />
+                  <Textarea rows={3} placeholder="Décrivez la tâche à réaliser" value={taskText} onChange={(e) => setTaskText(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Notes (optionnel)</label>
-                  <Textarea
-                    rows={2}
-                    placeholder="Notes complémentaires"
-                    value={taskNotes}
-                    onChange={(e) => setTaskNotes(e.target.value)}
-                  />
+                  <Textarea rows={2} placeholder="Notes complémentaires" value={taskNotes} onChange={(e) => setTaskNotes(e.target.value)} />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -215,16 +202,19 @@ export default function Tasks() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
+                  <Button variant="outline" onClick={() => setOpen(false)}>
+                    Annuler
+                  </Button>
                   <Button className={mainButtonColor} disabled={saving} onClick={createTask}>
-                    {saving ? 'Enregistrement…' : 'Créer'}
+                    {saving ? "Enregistrement…" : "Créer"}
                   </Button>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
         </div>
-        <div className="mb-4 bg-white p-4 rounded-lg border">
+
+        <div className={activeTasks.length > 0 ? "mb-4 bg-white p-4 rounded-lg border" : "mb-4"}>
           <input
             type="text"
             value={search}
@@ -253,48 +243,44 @@ export default function Tasks() {
           <div className="border rounded-lg bg-white p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {activeTasks.map((task) => {
-              const overdue = !task.done && isOverdue(task.due_at);
-              let dateStr = '';
-              if (task.due_at) {
-                const d = new Date(task.due_at);
-                dateStr = d.toLocaleDateString() + (d.getHours() || d.getMinutes() ? ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
-              }
-              return (
-                <div
-                  key={task.id}
-                  className={`relative rounded-lg shadow p-4 bg-background border border-border flex flex-col min-h-[140px]`}
-                >
-                  <button
-                    className={`absolute top-2 right-2 p-1 rounded-full ${role === 'notaire' ? 'text-orange-600 hover:bg-orange-100' : 'text-blue-600 hover:bg-blue-100'}`}
-                    title="Éditer la tâche"
-                  >
-                    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
-                  </button>
-                  <div className="flex items-center gap-2 mb-2">
-                    <input
-                      type="checkbox"
-                      checked={task.done}
-                      onChange={() => toggleDone(task.id, task.done)}
-                      className={`accent-${role === 'notaire' ? 'orange' : 'blue'}-600 h-5 w-5 rounded`}
-                    />
-                    <span className="font-medium text-lg">{task.title}</span>
+                const overdue = !task.done && isOverdue(task.due_at);
+                let dateStr = "";
+                if (task.due_at) {
+                  const d = new Date(task.due_at);
+                  dateStr = d.toLocaleDateString() + (d.getHours() || d.getMinutes() ? " " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "");
+                }
+                return (
+                  <div key={task.id} className={`relative rounded-lg shadow p-4 bg-white border border-border flex flex-col min-h-[140px]`}>
+                    <button
+                      className={`absolute top-2 right-2 p-1 rounded-full ${role === "notaire" ? "text-orange-600 hover:bg-orange-100" : "text-blue-600 hover:bg-blue-100"}`}
+                      title="Éditer la tâche"
+                    >
+                      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" />
+                      </svg>
+                    </button>
+                    <div className="flex items-center gap-2 mb-2">
+                      <input
+                        type="checkbox"
+                        checked={task.done}
+                        onChange={() => toggleDone(task.id, task.done)}
+                        className={`accent-${role === "notaire" ? "orange" : "blue"}-600 h-5 w-5 rounded`}
+                      />
+                      <span className="font-medium text-lg">{task.title}</span>
+                    </div>
+                    {task.description && <div className="text-sm text-muted-foreground mb-2 whitespace-pre-line">{task.description}</div>}
+                    <div className="flex-1" />
+                    <div className="flex items-center justify-between mt-2">
+                      {task.due_at ? (
+                        <Badge variant={overdue ? "destructive" : "outline"}>{dateStr}</Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">Pas d'échéance</span>
+                      )}
+                    </div>
                   </div>
-                  {task.description && (
-                    <div className="text-sm text-muted-foreground mb-2 whitespace-pre-line">{task.description}</div>
-                  )}
-                  <div className="flex-1" />
-                  <div className="flex items-center justify-between mt-2">
-                    {task.due_at ? (
-                      <Badge variant={overdue ? "destructive" : "outline"}>
-                        {dateStr}
-                      </Badge>
-                    ) : (
-                      <span className="text-muted-foreground text-xs">Pas d'échéance</span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
