@@ -109,7 +109,101 @@ export function ShareToCollaborativeDialog({
 
       // If not a document, we can finish here
       if (itemType !== 'document') {
-        toast({ title: 'Partagé avec succès', description: `${itemType === 'dossier' ? 'Le dossier' : 'Le contrat'} a été partagé avec votre cabinet.` });
+        const typeLabel = itemType === 'dossier' ? 'Dossier' : itemType === 'contrat' ? 'Contrat' : 'Élément';
+        // If dossier: additionally try to copy associated documents so members can open them like regular shared documents
+        if (itemType === 'dossier') {
+          try {
+            // find associated document ids owned by current user
+            const { data: links, error: linksErr } = await supabase
+              .from('dossier_documents')
+              .select('document_id')
+              .eq('dossier_id', itemId)
+              .eq('owner_id', user?.id);
+            if (!linksErr && Array.isArray(links) && links.length > 0) {
+              const docIds = links.map((l: any) => l.document_id);
+              // load document storage paths and names
+              const { data: docsData, error: docsErr } = await supabase
+                .from('documents')
+                .select('id,storage_path,name')
+                .in('id', docIds);
+              if (!docsErr && Array.isArray(docsData) && docsData.length > 0) {
+                const bucketCandidates = ['shared-documents', 'shared_documents'];
+                const uploadErrors: string[] = [];
+                let copiedCount = 0;
+                for (const d of docsData) {
+                  try {
+                    const storagePathRaw = (d?.storage_path || '').replace(/^\/+/, '');
+                    if (!storagePathRaw) continue;
+                    const { data: downloaded, error: downloadErr } = await supabase.storage.from('documents').download(storagePathRaw);
+                    if (downloadErr) { uploadErrors.push(`download:${d.id}:${downloadErr.message || String(downloadErr)}`); continue; }
+                    const filename = storagePathRaw.split('/').pop() || d.name || 'file.pdf';
+                    const targetPath = `${cabinetId}/${d.id}-${filename}`;
+                    let uploadedBucket: string | null = null;
+                    for (const b of bucketCandidates) {
+                      try {
+                        const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
+                        if (!uploadErr) { uploadedBucket = b; break; }
+                        uploadErrors.push(`bucket=${b} doc=${d.id} err=${uploadErr?.message || JSON.stringify(uploadErr)}`);
+                      } catch (e: any) {
+                        uploadErrors.push(`bucket=${b} doc=${d.id} thrown=${e?.message || String(e)}`);
+                      }
+                    }
+
+                    let publicUrl: string | null = null;
+                    if (uploadedBucket) {
+                      try {
+                        const pub = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
+                        publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+                      } catch (e) { /* noop */ }
+                    } else {
+                      // fallback: try signed URL from original bucket
+                      try {
+                        const signed = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7);
+                        publicUrl = signed?.data?.signedUrl || null;
+                      } catch (e) {
+                        uploadErrors.push(`signedurl_failed doc=${d.id} ${(e as any)?.message || String(e)}`);
+                        publicUrl = null;
+                      }
+                    }
+
+                    // Insert cabinet_documents entry for this document so members can open it
+                    try {
+                      const insertPayload: any = {
+                        cabinet_id: cabinetId,
+                        document_id: d.id,
+                        title: d.name || title,
+                        description: null,
+                        file_url: publicUrl,
+                        file_name: d.name || filename,
+                        file_type: 'application/pdf',
+                        shared_by: user?.id,
+                      };
+                      const { error: insErr } = await supabase.from('cabinet_documents').insert(insertPayload);
+                      if (insErr) {
+                        uploadErrors.push(`insert_failed doc=${d.id} err=${insErr.message || String(insErr)}`);
+                      } else {
+                        copiedCount++;
+                      }
+                    } catch (e:any) {
+                      uploadErrors.push(`insert_exception doc=${d.id} ${(e as any)?.message || String(e)}`);
+                    }
+                  } catch (e:any) {
+                    uploadErrors.push(`unexpected doc=${d.id} ${(e as any)?.message || String(e)}`);
+                  }
+                }
+
+                const uploadErrMsg = uploadErrors.length ? uploadErrors.join(' | ') : '';
+                toast({ title: 'Partagé avec succès', description: `Dossier partagé. ${copiedCount} pièce(s) jointe(s) copiée(s) vers l'espace partagé.${uploadErrMsg ? ' Erreurs: ' + uploadErrMsg : ''}` });
+              }
+            }
+          } catch (e:any) {
+            console.error('Erreur copie documents du dossier:', e);
+            toast({ title: 'Partagé', description: `Dossier partagé mais certaines pièces jointes n'ont pas été copiées (${e?.message || String(e)})` });
+          }
+        } else {
+          toast({ title: 'Partagé avec succès', description: `${typeLabel} a été partagé avec votre cabinet.` });
+        }
+
         setOpen(false);
         setTitle(itemName);
         setDescription('');
