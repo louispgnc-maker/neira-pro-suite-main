@@ -360,6 +360,89 @@ begin
 end;
 $$;
 
+-- Paginated members list variant (safer for large cabinets)
+-- Usage: SELECT * FROM public.get_cabinet_members_paginated(<cabinet_uuid>, <limit>, <offset>);
+drop function if exists public.get_cabinet_members_paginated(uuid, int, int);
+create or replace function public.get_cabinet_members_paginated(
+  cabinet_id_param uuid,
+  p_limit int default 100,
+  p_offset int default 0
+)
+returns table(
+  id uuid,
+  cabinet_id uuid,
+  user_id uuid,
+  email text,
+  nom text,
+  role_cabinet text,
+  status text,
+  invitation_sent_at timestamptz,
+  joined_at timestamptz,
+  created_at timestamptz
+)
+language plpgsql
+security definer
+stable
+set search_path = public
+as $$
+declare
+  v_jwt json := nullif(current_setting('request.jwt.claims', true), '')::json;
+  v_email text := lower(coalesce(v_jwt ->> 'email', ''));
+begin
+  -- Owner or active member: show all members (paginated)
+  if exists (
+    select 1 from cabinets where id = cabinet_id_param and owner_id = auth.uid()
+  ) then
+    return query
+      select cm.id, cm.cabinet_id, cm.user_id, cm.email, cm.nom, cm.role_cabinet,
+             cm.status, cm.invitation_sent_at, cm.joined_at, cm.created_at
+      from cabinet_members cm
+      where cm.cabinet_id = cabinet_id_param
+      order by cm.created_at
+      limit p_limit offset p_offset;
+  end if;
+
+  if exists (
+    select 1 from cabinet_members
+    where cabinet_id = cabinet_id_param and user_id = auth.uid() and status = 'active'
+  ) then
+    return query
+      select cm.id, cm.cabinet_id, cm.user_id, cm.email, cm.nom, cm.role_cabinet,
+             cm.status, cm.invitation_sent_at, cm.joined_at, cm.created_at
+      from cabinet_members cm
+      where cm.cabinet_id = cabinet_id_param
+      order by cm.created_at
+      limit p_limit offset p_offset;
+  end if;
+
+  -- Pending invite by email: show active members + the pending invite row (paginated)
+  if v_email is not null and v_email <> '' then
+    if exists (
+      select 1 from cabinet_members cm
+      where cm.cabinet_id = cabinet_id_param and cm.status = 'pending' and lower(cm.email) = v_email
+    ) then
+      return query
+        select cm.id, cm.cabinet_id, cm.user_id, cm.email, cm.nom, cm.role_cabinet,
+               cm.status, cm.invitation_sent_at, cm.joined_at, cm.created_at
+        from cabinet_members cm
+        where cm.cabinet_id = cabinet_id_param
+          and (
+            cm.status = 'active'
+            or (cm.status = 'pending' and lower(cm.email) = v_email)
+          )
+        order by cm.created_at
+        limit p_limit offset p_offset;
+    end if;
+  end if;
+
+  -- Otherwise return no rows
+  return;
+end;
+$$;
+
+-- Composite index to speed up common cabinet + status queries
+create index if not exists idx_cabinet_members_cabinet_status on public.cabinet_members(cabinet_id, status);
+
 -- Remove member (owner only)
 drop function if exists public.remove_cabinet_member(uuid);
 create or replace function public.remove_cabinet_member(member_id_param uuid)
