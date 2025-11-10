@@ -5,8 +5,8 @@ import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { ContractSelectorNotaire } from "@/components/dashboard/ContractSelectorNotaire";
-import { ContractSelectorAvocat } from "@/components/dashboard/ContractSelectorAvocat";
+import { NOTAIRE_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorNotaire";
+import { AVOCAT_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorAvocat";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -22,6 +22,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import {
   Select,
@@ -118,6 +121,33 @@ export default function Contrats() {
     return () => { isMounted = false; };
   }, [user, role, debounced, categoryFilter]);
 
+  const createContract = async (contractType: string, categoryKey: string) => {
+    if (!user) {
+      toast.error("Connexion requise");
+      return;
+    }
+    try {
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: contractType,
+          type: contractType,
+          category: categoryKey,
+          role: role,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      toast.success('Contrat créé', { description: contractType });
+      refreshContrats();
+    } catch (err: any) {
+      console.error('Erreur création contrat:', err);
+      toast.error('Erreur lors de la création', { description: err?.message || String(err) });
+    }
+  };
+
   const refreshContrats = () => {
     // Force un rechargement
     if (!user) return;
@@ -184,19 +214,27 @@ export default function Contrats() {
                   Importer depuis mon appareil
                 </DropdownMenuItem>
 
-                <div className="px-2 py-2">
-                  <div className="text-sm font-semibold pb-2">Créer un contrat</div>
-                  {role === 'notaire' ? (
-                    <ContractSelectorNotaire variant="vertical" onContractCreated={refreshContrats} />
-                  ) : (
-                    <ContractSelectorAvocat variant="vertical" onContractCreated={refreshContrats} />
-                  )}
-                </div>
-
-                <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats')}>
-                  <ArrowRight className="mr-2 h-4 w-4" />
-                  Aller à mes contrats
-                </DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger className="font-semibold">Créer un contrat</DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    {(role === 'notaire' ? NOTAIRE_CONTRACT_CATEGORIES : AVOCAT_CONTRACT_CATEGORIES).map((cat) => (
+                      <DropdownMenuSub key={cat.key}>
+                        <DropdownMenuSubTrigger className="font-semibold">{cat.label}</DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                          {cat.contracts.map((contract) => (
+                            <DropdownMenuItem
+                              key={contract}
+                              className={role === 'notaire' ? 'cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
+                              onClick={() => createContract(contract, cat.key)}
+                            >
+                              {contract}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -219,17 +257,27 @@ export default function Contrats() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
-                    <div className="px-2 py-2">
-                      {role === 'notaire' ? (
-                        <ContractSelectorNotaire variant="vertical" onContractCreated={refreshContrats} />
-                      ) : (
-                        <ContractSelectorAvocat variant="vertical" onContractCreated={refreshContrats} />
-                      )}
-                    </div>
-                    <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats')}>
-                      <ArrowRight className="mr-2 h-4 w-4" />
-                      Aller à mes contrats
-                    </DropdownMenuItem>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="font-semibold">Créer un contrat</DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        {(role === 'notaire' ? NOTAIRE_CONTRACT_CATEGORIES : AVOCAT_CONTRACT_CATEGORIES).map((cat) => (
+                          <DropdownMenuSub key={cat.key}>
+                            <DropdownMenuSubTrigger className="font-semibold">{cat.label}</DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent>
+                              {cat.contracts.map((contract) => (
+                                <DropdownMenuItem
+                                  key={contract}
+                                  className={role === 'notaire' ? 'cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
+                                  onClick={() => createContract(contract, cat.key)}
+                                >
+                                  {contract}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuSubContent>
+                          </DropdownMenuSub>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
