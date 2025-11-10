@@ -234,14 +234,14 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
                           onClick={() => handleView(contrat)}
                         >
                           <FileText className="mr-2 h-4 w-4" />
-                          Voir les détails
+                          👁️ Voir les détails
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          className="text-destructive hover:bg-destructive hover:text-white focus:bg-destructive focus:text-white"
+                          className={`text-destructive ${role === 'notaire' ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`}
                           onClick={() => handleDelete(contrat)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Supprimer
+                          🗑️ Supprimer
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

@@ -286,18 +286,18 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
                       <DropdownMenuContent align="end" className={menuContentClass}>
                         <DropdownMenuItem className={menuItemClass} onClick={() => handleView(doc)}>
                           <Eye className="mr-2 h-4 w-4" />
-                          Voir
+                          👁️ Voir
                         </DropdownMenuItem>
                         <DropdownMenuItem className={menuItemClass} onClick={() => handleDownload(doc)}>
                           <Download className="mr-2 h-4 w-4" />
-                          Télécharger
+                          ⬇️ Télécharger
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           className={`text-destructive ${menuItemClass}`}
                           onClick={() => handleDelete(doc)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Supprimer
+                          🗑️ Supprimer
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

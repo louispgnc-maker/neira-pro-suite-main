@@ -406,10 +406,10 @@ export default function Dossiers() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className={menuContentClass}>
                                 <DropdownMenuItem className={menuItemClass} onClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}>
-                                  Voir
+                                  👁️ Voir
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
-                                  Supprimer
+                                  🗑️ Supprimer
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>

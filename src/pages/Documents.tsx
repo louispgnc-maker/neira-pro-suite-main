@@ -454,20 +454,20 @@ export default function Documents() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className={menuContentClass}>
                               <DropdownMenuItem className={menuItemClass} onClick={() => viewOrDownload(doc, 'view')}>
-                              <Eye className="mr-2 h-4 w-4" />
-                              Voir
-                            </DropdownMenuItem>
+                                <Eye className="mr-2 h-4 w-4" />
+                                👁️ Voir
+                              </DropdownMenuItem>
                               <DropdownMenuItem className={menuItemClass} onClick={() => viewOrDownload(doc, 'download')}>
-                              <Download className="mr-2 h-4 w-4" />
-                              Télécharger
-                            </DropdownMenuItem>
+                                <Download className="mr-2 h-4 w-4" />
+                                ⬇️ Télécharger
+                              </DropdownMenuItem>
                               <DropdownMenuItem 
                                 className={`text-destructive ${menuItemClass}`}
                                 onClick={() => handleDelete(doc)}
                               >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Supprimer
-                            </DropdownMenuItem>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                🗑️ Supprimer
+                              </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

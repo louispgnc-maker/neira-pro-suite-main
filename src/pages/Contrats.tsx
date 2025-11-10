@@ -221,12 +221,12 @@ export default function Contrats() {
                 </DropdownMenuItem>
 
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className={role === 'notaire' ? 'font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}>Créer un contrat</DropdownMenuSubTrigger>
+                    <DropdownMenuSubTrigger className={role === 'notaire' ? 'font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white data-[state=open]:bg-orange-600 data-[state=open]:text-white' : 'font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white data-[state=open]:bg-blue-600 data-[state=open]:text-white'}>Créer un contrat</DropdownMenuSubTrigger>
                   <DropdownMenuSubContent className={menuContentClass}>
                     {(role === 'notaire' ? NOTAIRE_CONTRACT_CATEGORIES : AVOCAT_CONTRACT_CATEGORIES).map((cat) => (
                       <DropdownMenuSub key={cat.key}>
-                          <DropdownMenuSubTrigger className={role === 'notaire' ? 'font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}>{cat.label}</DropdownMenuSubTrigger>
-                        <DropdownMenuSubContent className={menuContentClass}>
+                          <DropdownMenuSubTrigger className={role === 'notaire' ? 'font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white data-[state=open]:bg-orange-600 data-[state=open]:text-white' : 'font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white data-[state=open]:bg-blue-600 data-[state=open]:text-white'}>{cat.label}</DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent className={menuContentClass}>
                           {cat.contracts.map((contract) => (
                             <DropdownMenuItem
                               key={contract}
@@ -377,7 +377,7 @@ export default function Contrats() {
                                   onClick={() => handleDelete(contrat)}
                                 >
                                   <Trash2 className="mr-2 h-4 w-4" />
-                                  Supprimer
+                                  🗑️ Supprimer
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
