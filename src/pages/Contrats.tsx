@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { FileText, Search, MoreHorizontal, Trash2, Plus, ArrowRight, Upload } from "lucide-react";
+import { Eye, Search, MoreHorizontal, Trash2, Plus, ArrowRight, Upload } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
@@ -382,7 +382,7 @@ export default function Contrats() {
                                   className={menuItemClass}
                                   onClick={() => handleView(contrat)}
                                 >
-                                  <FileText className="mr-2 h-4 w-4" />
+                                  <Eye className="mr-2 h-4 w-4" />
                                   Voir
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 

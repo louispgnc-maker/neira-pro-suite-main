@@ -1,4 +1,4 @@
-import { MoreHorizontal, Eye, Trash2, FileText } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -233,7 +233,7 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
                           className={role === 'notaire' ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}
                           onClick={() => handleView(contrat)}
                         >
-                          <FileText className="mr-2 h-4 w-4" />
+                          <Eye className="mr-2 h-4 w-4" />
                           Voir les détails
                         </DropdownMenuItem>
                         <DropdownMenuItem 
