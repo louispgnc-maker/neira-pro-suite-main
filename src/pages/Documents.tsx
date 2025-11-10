@@ -107,6 +107,19 @@ export default function Documents() {
     };
   }, [user, role, debounced]);
 
+  // If navigated here with ?openImport=1, open the file picker automatically
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      if (params.get('openImport') === '1') {
+        // small timeout to ensure input ref is ready
+        setTimeout(() => triggerImport(), 150);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [location.search]);
+
 
   const viewOrDownload = async (doc: DocRow, mode: 'view' | 'download') => {
     if (!user || !doc.storage_path) {
@@ -353,24 +366,10 @@ export default function Documents() {
                 <input type="checkbox" checked={autoShare} onChange={(e) => setAutoShare(e.target.checked)} />
                 <span className="select-none">Partager automatiquement</span>
               </label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className={mainButtonColor + ""}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Ajouter
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
-                  <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => triggerImport()}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Importer depuis mon appareil
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/documents' : '/avocats/documents')}>
-                    <ArrowRight className="mr-2 h-4 w-4" />
-                    Aller à mes documents
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button className={mainButtonColor + ""} onClick={triggerImport} disabled={uploading}>
+                <Plus className="h-4 w-4 mr-2" />
+                {uploading ? 'Import…' : 'Ajouter'}
+              </Button>
             </div>
           </div>
         </div>
@@ -393,24 +392,10 @@ export default function Documents() {
             <div className="text-center">
               <p className="text-muted-foreground">Aucun document pour le moment</p>
               <div className="mt-4 flex justify-center">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className={mainButtonColor + ""}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Ajouter
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
-                    <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => triggerImport()}>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Importer depuis mon appareil
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/documents' : '/avocats/documents')}>
-                      <ArrowRight className="mr-2 h-4 w-4" />
-                      Aller à mes documents
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button className={mainButtonColor + ""} onClick={triggerImport}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Ajouter
+                </Button>
               </div>
             </div>
           </div>

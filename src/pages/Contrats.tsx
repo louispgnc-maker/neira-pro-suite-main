@@ -179,14 +179,20 @@ export default function Contrats() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
-                {/* Include creation UI for contracts directly inside the menu for quick access */}
+                <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/documents?openImport=1' : '/avocats/documents?openImport=1')}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Importer depuis mon appareil
+                </DropdownMenuItem>
+
                 <div className="px-2 py-2">
+                  <div className="text-sm font-semibold pb-2">Créer un contrat</div>
                   {role === 'notaire' ? (
                     <ContractSelectorNotaire variant="vertical" onContractCreated={refreshContrats} />
                   ) : (
                     <ContractSelectorAvocat variant="vertical" onContractCreated={refreshContrats} />
                   )}
                 </div>
+
                 <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} onClick={() => window.location.href = (role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats')}>
                   <ArrowRight className="mr-2 h-4 w-4" />
                   Aller à mes contrats
