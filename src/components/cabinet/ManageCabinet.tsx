@@ -698,14 +698,14 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                             </SelectContent>
                           </Select>
                         )
-                      ) : (
-                        <Badge 
-                          variant={ (member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? 'default' : 'secondary' }
-                          className={`text-xs ${ (member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? (role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600') : ''}`}
-                        >
-                          {member.role_cabinet === 'owner' ? 'Fondateur' : member.role_cabinet}
-                        </Badge>
-                      )}
+                        ) : (
+                          <Badge
+                            variant={(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? 'default' : 'secondary'}
+                            className={`text-xs ${(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? (role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600') : (['Notaire','Clerc de Notaire','Formaliste','Juriste Notarial'].includes(member.role_cabinet || '') ? 'bg-orange-600 hover:bg-orange-700 text-white' : '')}`}
+                          >
+                            {member.role_cabinet === 'owner' ? 'Fondateur' : member.role_cabinet}
+                          </Badge>
+                        )}
                     </TableCell>
                     <TableCell>
                       <Badge
