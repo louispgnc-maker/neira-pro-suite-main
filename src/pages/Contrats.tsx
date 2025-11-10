@@ -215,11 +215,11 @@ export default function Contrats() {
                 </DropdownMenuItem>
 
                 <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="font-semibold">Créer un contrat</DropdownMenuSubTrigger>
+                    <DropdownMenuSubTrigger className={role === 'notaire' ? 'font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}>Créer un contrat</DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
                     {(role === 'notaire' ? NOTAIRE_CONTRACT_CATEGORIES : AVOCAT_CONTRACT_CATEGORIES).map((cat) => (
                       <DropdownMenuSub key={cat.key}>
-                        <DropdownMenuSubTrigger className="font-semibold">{cat.label}</DropdownMenuSubTrigger>
+                          <DropdownMenuSubTrigger className={role === 'notaire' ? 'font-semibold hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' : 'font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}>{cat.label}</DropdownMenuSubTrigger>
                         <DropdownMenuSubContent>
                           {cat.contracts.map((contract) => (
                             <DropdownMenuItem
