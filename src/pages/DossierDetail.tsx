@@ -42,6 +42,7 @@ export default function DossierDetail() {
     async function load() {
       if (!user || !id) return;
       setLoading(true);
+      // Try loading as owner first
       const { data: d, error } = await supabase
         .from('dossiers')
         .select('id,title,status,description,created_at')
@@ -49,9 +50,35 @@ export default function DossierDetail() {
         .eq('role', role)
         .eq('id', id)
         .maybeSingle();
-      if (!error && d && mounted) setDossier(d as Dossier);
+      if (!error && d && mounted) {
+        setDossier(d as Dossier);
+      } else {
+        // Fallback: maybe this dossier was shared to the cabinet. Try cabinet_dossiers (visible to active members)
+        try {
+          const { data: shared, error: sErr } = await supabase
+            .from('cabinet_dossiers')
+            .select('id, title, description, status, shared_by, shared_at')
+            .eq('dossier_id', id)
+            .maybeSingle();
+          if (!sErr && shared && mounted) {
+            // Map cabinet_dossiers shape to our local Dossier shape for read-only display
+            setDossier({
+              id: shared.id,
+              title: shared.title,
+              status: shared.status || '—',
+              description: shared.description || null,
+              created_at: shared.shared_at || null,
+            });
+            // note: associated clients/contrats/documents are not available to non-owners via the standard tables
+            // we intentionally leave lists empty and show the shared info.
+          }
+        } catch (e) {
+          // ignore fallback errors
+        }
+      }
 
-      // Associations
+      // Associations (only available for owners). If dossier was loaded from cabinet_dossiers fallback above,
+      // these queries will likely return empty due to RLS; that's acceptable.
       const [dc, dco, dd] = await Promise.all([
         supabase.from('dossier_clients').select('client_id').eq('dossier_id', id).eq('owner_id', user.id).eq('role', role),
         supabase.from('dossier_contrats').select('contrat_id').eq('dossier_id', id).eq('owner_id', user.id).eq('role', role),
@@ -80,6 +107,7 @@ export default function DossierDetail() {
     load();
     return () => { mounted = false }; 
   }, [user, id, role]);
+
 
   const goBack = () => {
     // If opened from the collaborative space, return to previous page

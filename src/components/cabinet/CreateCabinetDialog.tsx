@@ -114,9 +114,12 @@ export function CreateCabinetDialog({ role, onSuccess }: CreateCabinetDialogProp
       if (onSuccess) onSuccess();
     } catch (error: any) {
       console.error('Erreur création cabinet:', error);
+      // Show more detailed RPC error when available to help debugging (safe client-side)
+      const desc = error?.message ? `${error.message}` : (typeof error === 'string' ? error : 'Impossible de créer le cabinet');
+      const extra = error && typeof error === 'object' ? ` (${JSON.stringify(error)})` : '';
       toast({
         title: 'Erreur',
-        description: error.message || 'Impossible de créer le cabinet',
+        description: desc + extra,
         variant: 'destructive',
       });
     } finally {
