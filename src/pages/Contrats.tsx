@@ -377,7 +377,7 @@ export default function Contrats() {
                                   onClick={() => handleDelete(contrat)}
                                 >
                                   <Trash2 className="mr-2 h-4 w-4" />
-                                  🗑️ Supprimer
+                                  Supprimer
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
