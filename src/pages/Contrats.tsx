@@ -297,14 +297,14 @@ export default function Contrats() {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-4 mb-4 bg-white p-4 rounded-lg border">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Rechercher un contrat..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-transparent"
                 />
               </div>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -321,7 +321,7 @@ export default function Contrats() {
               </Select>
             </div>
 
-            <div className="border rounded-lg">
+            <div className="border rounded-lg bg-white">
               <Table>
                 <TableHeader>
                   <TableRow>

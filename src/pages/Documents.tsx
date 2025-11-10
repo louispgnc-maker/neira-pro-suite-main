@@ -376,13 +376,13 @@ export default function Documents() {
             </div>
           </div>
         </div>
-        <div className="mb-4">
+        <div className="mb-4 bg-white p-4 rounded-lg border">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher (nom ou client)…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="w-full md:max-w-sm rounded-md border border-input bg-transparent px-3 py-2 text-sm"
           />
         </div>
         
@@ -403,7 +403,7 @@ export default function Documents() {
             </div>
           </div>
         ) : (
-          <div className="border rounded-lg">
+          <div className="border rounded-lg bg-white">
             <Table>
               <TableHeader>
                 <TableRow>
