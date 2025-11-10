@@ -246,11 +246,21 @@ returns integer language plpgsql security definer as $function$
 declare
   v_count integer := 0;
 begin
-  -- Compute count first (safe if multiple rows) then perform the update.
-  select count(*)::int into v_count from public.notifications where recipient_id = auth.uid() and read = false;
+  -- Try to compute count first; if a SELECT ... INTO elsewhere raises P0003 during
+  -- the function execution, fallback to performing the update and reading ROW_COUNT.
+  begin
+    select count(*)::int into v_count from public.notifications where recipient_id = auth.uid() and read = false;
+  exception when sqlstate 'P0003' then
+    -- If some nested SELECT caused P0003, perform update and return affected rows.
+    update public.notifications set read = true where recipient_id = auth.uid() and read = false;
+    get diagnostics v_count = row_count;
+    return v_count;
+  end;
+
   if v_count = 0 then
     return 0;
   end if;
+
   update public.notifications set read = true where recipient_id = auth.uid() and read = false;
   return v_count;
 end;
