@@ -1,6 +1,6 @@
--- Insert a cabinet_documents row using a provided public file_url
--- This lets the client upload to a shared/public bucket first, then call this RPC
--- so the shared entry is immediately viewable by other members.
+-- Insère une ligne dans la table cabinet_documents en utilisant une file_url publique fournie
+-- Cela permet au client d'uploader d'abord dans un bucket partagé/public, puis d'appeler cette RPC
+-- afin que l'entrée partagée soit immédiatement visible par les autres membres.
 
 BEGIN;
 
@@ -32,9 +32,9 @@ begin
     raise exception 'Not a member of this cabinet';
   end if;
 
-  -- Optionnel : ensure document exists and belongs to user (best-effort)
-  -- If document_id_param is null or not owned by caller, we still allow insertion
-  -- to support direct uploads where ownership may differ.
+  -- Optionnel : vérifier que le document existe et appartient à l'utilisateur (au mieux)
+  -- Si document_id_param est null ou n'appartient pas à l'appelant, nous autorisons néanmoins l'insertion
+  -- pour supporter les uploads directs où la propriété peut différer.
 
   insert into cabinet_documents (
     cabinet_id, document_id, title, description,

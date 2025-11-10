@@ -20,7 +20,13 @@ import {
   Plus,
   ArrowRight
 } from 'lucide-react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, UploadCloud } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -93,6 +99,14 @@ export default function EspaceCollaboratif() {
   const colorClass = cabinetRole === 'notaire'
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
+
+  // Role-based menu styling (dropdown)
+  const menuContentClass = cabinetRole === 'notaire'
+    ? 'bg-orange-50 border-orange-200'
+    : 'bg-blue-50 border-blue-200';
+  const menuItemClass = cabinetRole === 'notaire'
+    ? 'focus:bg-orange-600 focus:text-white'
+    : 'focus:bg-blue-600 focus:text-white';
 
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerUrl, setViewerUrl] = useState('');
@@ -780,17 +794,24 @@ export default function EspaceCollaboratif() {
                   </div>
                   <div className="flex items-center gap-2">
                     <input ref={fileInputRef} type="file" accept="application/pdf" multiple className="hidden" onChange={onCollaboratifFilesSelected} />
-                    <Button size="sm" className={colorClass} onClick={triggerCollaboratifImport} disabled={uploadingToCollab}>
-                      {uploadingToCollab ? 'Import…' : 'Importer dans l\'espace'}
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      className={colorClass}
-                      onClick={() => navigate(`/${cabinetRole}s/documents`)}
-                    >
-                      <ArrowRight className="h-4 w-4 mr-2" />
-                      Aller à mes documents
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" className={colorClass}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Ajouter
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className={menuContentClass}>
+                        <DropdownMenuItem className={menuItemClass} onClick={() => triggerCollaboratifImport()}>
+                          <UploadCloud className="mr-2 h-4 w-4" />
+                          Importer depuis mon appareil
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className={menuItemClass} onClick={() => navigate(`/${cabinetRole}s/documents`)}>
+                          <ArrowRight className="mr-2 h-4 w-4" />
+                          Aller à mes documents
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               </CardHeader>
@@ -853,14 +874,26 @@ export default function EspaceCollaboratif() {
                       {contrats.length} contrat{contrats.length > 1 ? 's' : ''} accessible{contrats.length > 1 ? 's' : ''}
                     </CardDescription>
                   </div>
-                  <Button 
-                    size="sm" 
-                    className={colorClass}
-                    onClick={() => navigate(`/${cabinetRole}s/contrats`)}
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    Aller à mes contrats
-                  </Button>
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" className={colorClass}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Ajouter
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className={menuContentClass}>
+                        <DropdownMenuItem className={menuItemClass} onClick={() => triggerCollaboratifImport()}>
+                          <UploadCloud className="mr-2 h-4 w-4" />
+                          Importer depuis mon appareil
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className={menuItemClass} onClick={() => navigate(`/${cabinetRole}s/contrats`)}>
+                          <ArrowRight className="mr-2 h-4 w-4" />
+                          Aller à mes contrats
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
