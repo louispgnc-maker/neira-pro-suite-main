@@ -1,7 +1,7 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { FileText, Search, MoreHorizontal, Trash2, Plus, ArrowRight, Upload } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -71,6 +71,8 @@ export default function Contrats() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Tous");
   const [debounced, setDebounced] = useState("");
+
+  const navigate = useNavigate();
 
   // debounce
   useEffect(() => {
@@ -191,6 +193,10 @@ export default function Contrats() {
       console.error('Erreur suppression contrat:', err);
       toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
     }
+  };
+
+  const handleView = (contrat: ContratRow) => {
+    navigate(role === 'notaire' ? `/notaires/contrats/${contrat.id}` : `/avocats/contrats/${contrat.id}`);
   };
 
   // Résultats déjà filtrés côté SQL
@@ -372,6 +378,13 @@ export default function Contrats() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className={menuContentClass}>
+                                <DropdownMenuItem 
+                                  className={menuItemClass}
+                                  onClick={() => handleView(contrat)}
+                                >
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  Voir
+                                </DropdownMenuItem>
                                 <DropdownMenuItem 
                                   className={`text-destructive ${menuItemClass}`}
                                   onClick={() => handleDelete(contrat)}
