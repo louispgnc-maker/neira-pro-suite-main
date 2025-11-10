@@ -16,7 +16,8 @@ begin
   -- Récupérer le cabinet du membre
   select cabinet_id into v_cabinet_id
   from cabinet_members
-  where id = member_id_param;
+  where id = member_id_param
+  limit 1;
 
   if not found then
     raise exception 'Member not found';

@@ -25,7 +25,7 @@ as $$
 declare
   v_owner uuid;
 begin
-  select owner_id into v_owner from public.cabinets where id = NEW.cabinet_id;
+  select owner_id into v_owner from public.cabinets where id = NEW.cabinet_id limit 1;
   if v_owner is null then
     raise exception 'Cabinet not found';
   end if;
@@ -72,7 +72,8 @@ begin
   into v_cabinet_id, v_cab_role, v_member_user, v_owner
   from public.cabinet_members cm
   join public.cabinets c on c.id = cm.cabinet_id
-  where cm.id = member_id_param;
+  where cm.id = member_id_param
+  limit 1;
 
   if not found then
     raise exception 'Member not found';

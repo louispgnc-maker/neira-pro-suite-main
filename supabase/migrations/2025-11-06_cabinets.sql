@@ -169,12 +169,13 @@ begin
   end if;
 
   -- Récupérer le rôle de l'utilisateur
-  select role into v_user_role from profiles where id = v_user_id;
+  select role into v_user_role from profiles where id = v_user_id limit 1;
 
   -- Trouver le cabinet par code
   select id, role into v_cabinet_id, v_cabinet_role
   from cabinets
-  where code_acces = code;
+  where code_acces = code
+  limit 1;
 
   if not found then
     raise exception 'Invalid code';
@@ -320,7 +321,8 @@ begin
   -- Récupérer le cabinet_id du membre
   select cabinet_id into v_cabinet_id
   from cabinet_members
-  where id = member_id_param;
+  where id = member_id_param
+  limit 1;
   
   if not found then
     raise exception 'Member not found';
@@ -366,7 +368,8 @@ begin
   -- Chercher l'utilisateur par email
   select id into v_user_id
   from profiles
-  where email = email_param;
+  where email = email_param
+  limit 1;
   
   if v_user_id is not null then
     -- Vérifier si déjà membre

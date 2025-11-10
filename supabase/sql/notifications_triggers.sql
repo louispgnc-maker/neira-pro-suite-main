@@ -38,13 +38,14 @@ begin
     select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_owner
-    where p.id = v_owner;
-  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner;
+    where p.id = v_owner
+    limit 1;
+  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner limit 1;
   if v_cabinet_id is null then
     -- nothing to notify
     return null;
   end if;
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
@@ -83,10 +84,11 @@ begin
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_owner
-    where p.id = v_owner;
-  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner;
+    where p.id = v_owner
+    limit 1;
+  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner limit 1;
   if v_cabinet_id is null then return null; end if;
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
@@ -127,10 +129,11 @@ begin
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_owner
-    where p.id = v_owner;
-  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner;
+    where p.id = v_owner
+    limit 1;
+  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_owner limit 1;
   if v_cabinet_id is null then return null; end if;
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
@@ -170,8 +173,9 @@ begin
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_user_id
-    where p.id = v_user_id;
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+    where p.id = v_user_id
+    limit 1;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
@@ -266,9 +270,10 @@ begin
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_actor
-    where p.id = v_actor;
+    where p.id = v_actor
+    limit 1;
 
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
@@ -312,9 +317,10 @@ begin
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_actor
-    where p.id = v_actor;
+    where p.id = v_actor
+    limit 1;
 
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
@@ -358,9 +364,10 @@ begin
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_actor
-    where p.id = v_actor;
+    where p.id = v_actor
+    limit 1;
 
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm
@@ -398,14 +405,15 @@ declare
   v_rec record;
 begin
   -- determine cabinet from actor profile
-  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_actor;
+  select p.cabinet_id into v_cabinet_id from public.profiles p where p.id = v_actor limit 1;
   if v_cabinet_id is null then return null; end if;
 
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), u.email) into v_actor_name
     from public.profiles p
     left join auth.users u on u.id = v_actor
-    where p.id = v_actor;
-  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id;
+    where p.id = v_actor
+    limit 1;
+  select nom into v_cabinet_name from public.cabinets c where c.id = v_cabinet_id limit 1;
 
   for v_rec in
     select cm.user_id from public.cabinet_members cm

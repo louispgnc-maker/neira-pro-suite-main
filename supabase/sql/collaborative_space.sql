@@ -296,7 +296,7 @@ declare
   v_shared_by uuid;
 begin
   select cabinet_id, shared_by into v_cabinet_id, v_shared_by
-  from cabinet_documents where id = p_id;
+  from cabinet_documents where id = p_id limit 1;
 
   if not found then
     raise exception 'Document not found';
@@ -322,7 +322,7 @@ declare
   v_shared_by uuid;
 begin
   select cabinet_id, shared_by into v_cabinet_id, v_shared_by
-  from cabinet_dossiers where id = p_id;
+  from cabinet_dossiers where id = p_id limit 1;
 
   if not found then
     raise exception 'Dossier not found';
@@ -348,7 +348,7 @@ declare
   v_shared_by uuid;
 begin
   select cabinet_id, shared_by into v_cabinet_id, v_shared_by
-  from cabinet_contrats where id = p_id;
+  from cabinet_contrats where id = p_id limit 1;
 
   if not found then
     raise exception 'Contrat not found';

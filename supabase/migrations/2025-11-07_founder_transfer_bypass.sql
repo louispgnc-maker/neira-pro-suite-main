@@ -19,7 +19,7 @@ begin
     return NEW;
   end if;
 
-  select owner_id into v_owner from public.cabinets where id = NEW.cabinet_id;
+  select owner_id into v_owner from public.cabinets where id = NEW.cabinet_id limit 1;
   if v_owner is null then
     raise exception 'Cabinet not found';
   end if;
@@ -63,7 +63,8 @@ begin
   -- Resolve current owner and cabinet role
   select owner_id, role into v_old_owner, v_cab_role
   from public.cabinets
-  where id = cabinet_id_param;
+  where id = cabinet_id_param
+  limit 1;
 
   if v_old_owner is null then
     raise exception 'Cabinet not found';

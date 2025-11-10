@@ -178,8 +178,8 @@ begin
     raise exception 'Not authenticated';
   end if;
 
-  select role into v_user_role from profiles where id = v_user_id;
-  select id, role into v_cabinet_id, v_cabinet_role from cabinets where code_acces = code;
+  select role into v_user_role from profiles where id = v_user_id limit 1;
+  select id, role into v_cabinet_id, v_cabinet_role from cabinets where code_acces = code limit 1;
   if not found then raise exception 'Invalid code'; end if;
   if v_user_role != v_cabinet_role then raise exception 'Role mismatch'; end if;
 
@@ -239,11 +239,11 @@ begin
   ) returning id into v_cabinet_id;
 
   -- Get user email from auth.users and name from profiles
-  select u.email into v_user_email from auth.users u where u.id = v_user_id;
+  select u.email into v_user_email from auth.users u where u.id = v_user_id limit 1;
   
   select coalesce(nullif(trim(p.first_name || ' ' || p.last_name), ''), v_user_email)
     into v_nom_proprietaire
-  from profiles p where p.id = v_user_id;
+  from profiles p where p.id = v_user_id limit 1;
 
   insert into cabinet_members (
     cabinet_id, user_id, email, nom, role_cabinet, status, joined_at
@@ -353,7 +353,7 @@ as $$
 declare
   v_cabinet_id uuid;
 begin
-  select cabinet_id into v_cabinet_id from cabinet_members where id = member_id_param;
+  select cabinet_id into v_cabinet_id from cabinet_members where id = member_id_param limit 1;
   if not found then raise exception 'Member not found'; end if;
 
   if not exists (
@@ -438,7 +438,8 @@ begin
   into v_cabinet_id, v_cab_role, v_member_user, v_owner
   from public.cabinet_members cm
   join public.cabinets c on c.id = cm.cabinet_id
-  where cm.id = member_id_param;
+  where cm.id = member_id_param
+  limit 1;
 
   if not found then raise exception 'Member not found'; end if;
 
@@ -528,7 +529,7 @@ begin
     return NEW;
   end if;
 
-  select owner_id into v_owner from public.cabinets where id = NEW.cabinet_id;
+  select owner_id into v_owner from public.cabinets where id = NEW.cabinet_id limit 1;
   if v_owner is null then raise exception 'Cabinet not found'; end if;
 
   if NEW.role_cabinet = 'Fondateur' and NEW.user_id <> v_owner then
@@ -565,7 +566,7 @@ declare
   v_cab_role text;
 begin
   select owner_id, role into v_old_owner, v_cab_role
-  from public.cabinets where id = cabinet_id_param;
+  from public.cabinets where id = cabinet_id_param limit 1;
   if v_old_owner is null then raise exception 'Cabinet not found'; end if;
 
   if v_old_owner <> auth.uid() then raise exception 'Not authorized'; end if;
