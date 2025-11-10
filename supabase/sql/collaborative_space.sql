@@ -50,6 +50,9 @@ create table if not exists public.cabinet_dossiers (
   updated_at timestamptz not null default now()
 );
 
+-- Add a column to reference created cabinet_documents for attachments (helps clients open attachments)
+alter table public.cabinet_dossiers add column if not exists attached_document_ids uuid[];
+
 create index if not exists cabinet_dossiers_cabinet_idx on public.cabinet_dossiers(cabinet_id);
 create index if not exists cabinet_dossiers_shared_by_idx on public.cabinet_dossiers(shared_by);
 

@@ -130,6 +130,7 @@ export function ShareToCollaborativeDialog({
                 const bucketCandidates = ['shared-documents', 'shared_documents'];
                 const uploadErrors: string[] = [];
                 let copiedCount = 0;
+                const createdCabinetDocIds: string[] = [];
                 for (const d of docsData) {
                   try {
                     const storagePathRaw = (d?.storage_path || '').replace(/^\/+/, '');
@@ -178,10 +179,11 @@ export function ShareToCollaborativeDialog({
                         file_type: 'application/pdf',
                         shared_by: user?.id,
                       };
-                      const { error: insErr } = await supabase.from('cabinet_documents').insert(insertPayload);
+                      const { data: insData, error: insErr } = await supabase.from('cabinet_documents').insert(insertPayload).select('id').single();
                       if (insErr) {
                         uploadErrors.push(`insert_failed doc=${d.id} err=${insErr.message || String(insErr)}`);
-                      } else {
+                      } else if (insData && insData.id) {
+                        createdCabinetDocIds.push(insData.id);
                         copiedCount++;
                       }
                     } catch (e:any) {
@@ -190,6 +192,15 @@ export function ShareToCollaborativeDialog({
                   } catch (e:any) {
                     uploadErrors.push(`unexpected doc=${d.id} ${(e as any)?.message || String(e)}`);
                   }
+                }
+
+                // persist created cabinet_documents ids back to the cabinet_dossiers row so clients can load attachments
+                try {
+                  if (sharedId && createdCabinetDocIds.length > 0) {
+                    await supabase.from('cabinet_dossiers').update({ attached_document_ids: createdCabinetDocIds }).eq('id', sharedId);
+                  }
+                } catch (e) {
+                  console.warn('Failed to update cabinet_dossiers.attached_document_ids', e);
                 }
 
                 const uploadErrMsg = uploadErrors.length ? uploadErrors.join(' | ') : '';

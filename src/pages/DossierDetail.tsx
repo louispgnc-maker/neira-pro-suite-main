@@ -18,7 +18,7 @@ interface Dossier {
 
 interface AssocClient { id: string; name: string }
 interface AssocContrat { id: string; name: string; category: string }
-interface AssocDocument { id: string; name: string }
+interface AssocDocument { id: string; name: string; file_url?: string | null; file_name?: string | null }
 
 export default function DossierDetail() {
   const { user } = useAuth();
@@ -57,7 +57,7 @@ export default function DossierDetail() {
         try {
           const { data: shared, error: sErr } = await supabase
             .from('cabinet_dossiers')
-            .select('id, title, description, status, shared_by, shared_at')
+            .select('id, title, description, status, shared_by, shared_at, attached_document_ids')
             .eq('dossier_id', id)
             .maybeSingle();
           if (!sErr && shared && mounted) {
@@ -69,8 +69,21 @@ export default function DossierDetail() {
               description: shared.description || null,
               created_at: shared.shared_at || null,
             });
-            // note: associated clients/contrats/documents are not available to non-owners via the standard tables
-            // we intentionally leave lists empty and show the shared info.
+            // If the shared row includes attached cabinet_documents ids, load them so members can open attachments
+            try {
+              const attachedIds: string[] = (shared as any).attached_document_ids || [];
+              if (attachedIds.length > 0) {
+                const { data: attachedDocs, error: attErr } = await supabase
+                  .from('cabinet_documents')
+                  .select('id, title, file_url, file_name')
+                  .in('id', attachedIds as unknown as string[]);
+                if (!attErr && Array.isArray(attachedDocs) && mounted) {
+                  setDocuments((attachedDocs as any).map((a: any) => ({ id: a.id, name: a.title, file_url: a.file_url, file_name: a.file_name })));
+                }
+              }
+            } catch (e) {
+              // ignore attachment load errors
+            }
           }
         } catch (e) {
           // ignore fallback errors
@@ -107,6 +120,47 @@ export default function DossierDetail() {
     load();
     return () => { mounted = false }; 
   }, [user, id, role]);
+
+  const openSharedDocument = async (fileUrl: string | null | undefined, name?: string) => {
+    if (!fileUrl) {
+      return;
+    }
+    const raw = (fileUrl || '').trim();
+    if (/^https?:\/\//i.test(raw)) {
+      window.open(raw, '_blank');
+      return;
+    }
+
+    // treat as storage path
+    let storagePath = raw.replace(/^\/+/, '');
+    let bucket = 'documents';
+    if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
+      bucket = storagePath.startsWith('shared-documents/') ? 'shared-documents' : 'shared_documents';
+      storagePath = storagePath.replace(/^shared[-_]documents\//, '');
+    }
+
+    try {
+      const { data, error } = await supabase.storage.from(bucket).createSignedUrl(storagePath, 60);
+      if (error || !data?.signedUrl) {
+        // try public URL fallback
+        try {
+          const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath as string);
+          const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+          if (publicUrl) {
+            window.open(publicUrl, '_blank');
+            return;
+          }
+        } catch (e) {
+          // ignore
+        }
+        console.error('createSignedUrl failed for', bucket, storagePath, error);
+        return;
+      }
+      window.open(data.signedUrl, '_blank');
+    } catch (e) {
+      console.error('Erreur ouverture pièce jointe partagée:', e);
+    }
+  };
 
 
   const goBack = () => {
@@ -219,7 +273,12 @@ export default function DossierDetail() {
                 ) : (
                   <div className="space-y-1">
                     {documents.map(d => (
-                      <div key={d.id} className="text-sm">{d.name}</div>
+                      <div key={d.id} className="text-sm flex items-center justify-between">
+                        <div>{d.name}</div>
+                        {d.file_url ? (
+                          <button className="text-sm text-blue-600 hover:underline" onClick={() => openSharedDocument(d.file_url, d.file_name || d.name)}>Ouvrir</button>
+                        ) : null}
+                      </div>
                     ))}
                   </div>
                 )}
