@@ -266,20 +266,36 @@ export default function Documents() {
           if (inserted) setDocuments((prev) => [inserted as DocRow, ...prev]);
 
           // Auto-share: if enabled, create a cabinet share and copy the file into shared bucket
-          if (autoShare && inserted) {
-            (async () => {
-              try {
-                // fetch user's cabinets and pick first matching role
-                const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
-                if (cabinetsErr) throw cabinetsErr;
-                const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-                const filtered = cabinets.filter((c: any) => c.role === role);
-                const cabinetId = filtered && filtered.length > 0 ? filtered[0].id : null;
-                if (!cabinetId) {
-                  toast.error('Aucun cabinet disponible pour partager');
-                  return;
-                }
+        if (autoShare && inserted) {
+          (async () => {
+            try {
+              // fetch user's cabinets and pick first matching role
+              const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
+              if (cabinetsErr) throw cabinetsErr;
+              const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
+              const filtered = cabinets.filter((c: any) => c.role === role);
+              const cabinetId = filtered && filtered.length > 0 ? filtered[0].id : null;
+              if (!cabinetId) {
+                toast.error('Aucun cabinet disponible pour partager');
+                return;
+              }
 
+              // First copy to shared bucket to get a public URL
+              const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: inserted.id, sharedId: null, itemName: inserted.name });
+
+              if (publicUrl) {
+                const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
+                  cabinet_id_param: cabinetId,
+                  document_id_param: inserted.id,
+                  title_param: inserted.name,
+                  description_param: null,
+                  file_url_param: publicUrl,
+                  file_name_param: inserted.name,
+                  file_type_param: 'application/pdf',
+                });
+                if (rpcErr) throw rpcErr;
+              } else {
+                // fallback to original RPC and let copyDocumentToShared update it
                 const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
                   cabinet_id_param: cabinetId,
                   document_id_param: inserted.id,
@@ -287,20 +303,15 @@ export default function Documents() {
                   description_param: null,
                 });
                 if (rpcErr) throw rpcErr;
-
-                let sharedId: any = null;
-                if (rpcData == null) sharedId = null;
-                else if (Array.isArray(rpcData)) sharedId = rpcData[0];
-                else sharedId = rpcData;
-
-                await copyDocumentToShared({ cabinetId, documentId: inserted.id, sharedId, itemName: inserted.name });
-                toast.success('Document partagé automatiquement');
-              } catch (e:any) {
-                console.error('Auto-share failed', e);
-                toast.error('Partage automatique échoué: ' + (e?.message || String(e)));
               }
-            })();
-          }
+
+              toast.success('Document partagé automatiquement');
+            } catch (e:any) {
+              console.error('Auto-share failed', e);
+              toast.error('Partage automatique échoué: ' + (e?.message || String(e)));
+            }
+          })();
+        }
         }
       }
       if (uploaded.length > 0) {

@@ -363,23 +363,33 @@ export default function EspaceCollaboratif() {
           continue;
         }
 
-        // Share to cabinet via RPC
+        // Upload to shared bucket, get publicUrl, then create cabinet_documents row with that publicUrl
         try {
-          const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
-            cabinet_id_param: cabinet.id,
-            document_id_param: inserted.id,
-            title_param: inserted.name,
-            description_param: null,
-          });
-          if (rpcErr) throw rpcErr;
+          const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId: cabinet.id, documentId: inserted.id, sharedId: null, itemName: inserted.name });
 
-          let sharedId: any = null;
-          if (rpcData == null) sharedId = null;
-          else if (Array.isArray(rpcData)) sharedId = rpcData[0];
-          else sharedId = rpcData;
+          // If we got a public URL, use the new RPC to create the cabinet_documents entry with the public URL.
+          if (publicUrl) {
+            const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
+              cabinet_id_param: cabinet.id,
+              document_id_param: inserted.id,
+              title_param: inserted.name,
+              description_param: null,
+              file_url_param: publicUrl,
+              file_name_param: inserted.name,
+              file_type_param: 'application/pdf',
+            });
+            if (rpcErr) throw rpcErr;
+          } else {
+            // fallback: attempt original RPC (will store storage_path) and rely on later update
+            const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
+              cabinet_id_param: cabinet.id,
+              document_id_param: inserted.id,
+              title_param: inserted.name,
+              description_param: null,
+            });
+            if (rpcErr) throw rpcErr;
+          }
 
-          // copy into shared bucket and update cabinet_documents.file_url
-          await copyDocumentToShared({ cabinetId: cabinet.id, documentId: inserted.id, sharedId, itemName: inserted.name });
           toast({ title: 'Upload', description: `${file.name} ajouté à l'espace collaboratif` });
         } catch (e:any) {
           console.error('share to cabinet failed', e);
