@@ -168,8 +168,8 @@ export default function EspaceCollaboratif() {
             return;
           }
           // fallback: go to documents list
-          const docTab = document.querySelector('[value="documents"]') as HTMLButtonElement;
-          if (docTab) docTab.click();
+          // switch to documents tab (controlled) so the selection persists
+          handleTabChange('documents');
         } else if (type === 'cabinet_dossier' || type === 'dossier') {
           const found = dossiers.find(d => d.id === id || d.dossier_id === id);
           if (found) {
@@ -177,8 +177,8 @@ export default function EspaceCollaboratif() {
             return;
           }
           // open dossier tab and navigate to detail
-          const dossierTab = document.querySelector('[value="dossiers"]') as HTMLButtonElement;
-          if (dossierTab) dossierTab.click();
+          // switch to dossiers tab (controlled) so the selection persists
+          handleTabChange('dossiers');
           navigate(`/${cabinetRole}s/dossiers/${id}`);
         } else if (type === 'cabinet_contrat' || type === 'contrat') {
           const found = contrats.find(c => c.id === id || c.contrat_id === id);
@@ -189,8 +189,8 @@ export default function EspaceCollaboratif() {
           }
           navigate(`/${cabinetRole}s/contrats`);
         } else if (type === 'task' || type === 'tasks') {
-          const taskTab = document.querySelector('[value="taches"]') as HTMLButtonElement;
-          if (taskTab) taskTab.click();
+          // switch to tasks tab (controlled) so the selection persists
+          handleTabChange('taches');
           // optionally scroll to the task if present
           const foundTask = collabTasks.find(t => t.id === id);
           if (foundTask) {
@@ -813,11 +813,11 @@ export default function EspaceCollaboratif() {
                           if (item.type === 'Document' && 'file_url' in item) {
                             handleViewDocument(item as SharedDocument);
                           } else if (item.type === 'Dossier') {
-                            const dossierTab = document.querySelector('[value="dossiers"]') as HTMLButtonElement;
-                            if (dossierTab) dossierTab.click();
+                            // switch to dossiers tab (controlled)
+                            handleTabChange('dossiers');
                           } else if (item.type === 'Contrat') {
-                            const docTab = document.querySelector('[value="documents"]') as HTMLButtonElement;
-                            if (docTab) docTab.click();
+                            // switch to documents tab (controlled)
+                            handleTabChange('documents');
                           }
                         }}
                         onDoubleClick={() => {
