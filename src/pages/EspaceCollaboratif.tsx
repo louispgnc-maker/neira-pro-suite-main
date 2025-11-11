@@ -1232,7 +1232,7 @@ export default function EspaceCollaboratif() {
 
         {/* Calendrier */}
         <TabsContent value="calendrier" className="space-y-4">
-          <SharedCalendar role={cabinetRole} />
+          <SharedCalendar role={cabinetRole} members={members} isCabinetOwner={isCabinetOwner} />
         </TabsContent>
 
         {/* Tâches */}
