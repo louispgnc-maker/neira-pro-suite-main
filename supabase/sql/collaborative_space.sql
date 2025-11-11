@@ -414,7 +414,9 @@ begin
     status, shared_by
   ) values (
     cabinet_id_param, dossier_id_param, title_param, description_param,
-    v_status, auth.uid()
+    -- normalize status: prefer 'En cours' rather than 'Ouvert' for shared items
+    CASE WHEN lower(coalesce(v_status,'')) = 'ouvert' THEN 'En cours' ELSE v_status END,
+    auth.uid()
   ) returning id into v_shared_dossier_id;
 
   return v_shared_dossier_id;

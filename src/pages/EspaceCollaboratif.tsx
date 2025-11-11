@@ -745,22 +745,7 @@ export default function EspaceCollaboratif() {
                             </p>
                           </div>
                         </div>
-                        {/* quick open for shared contracts */}
-                        {item.type === 'Contrat' && (
-                          <div className="ml-3">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const cid = (item as any).id || (item as any).contrat_id;
-                                navigate(`/${cabinetRole}s/contrats/${cid}`, { state: { fromCollaboratif: true } });
-                              }}
-                              className="p-2 rounded hover:bg-gray-100"
-                              title="Voir le contrat"
-                            >
-                              <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                            </button>
-                          </div>
-                        )}
+                        {/* contracts no longer show the middle quick-open arrow to keep alignment */}
                         <Badge 
                           variant="outline"
                           className={
@@ -848,22 +833,22 @@ export default function EspaceCollaboratif() {
                             {doc.description && (
                               <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
                             )}
-                            <p className="text-xs text-muted-foreground mt-2">
+                          </div>
+
+                          <div className="flex flex-col items-end gap-2 ml-4">
+                            <p className="text-xs text-muted-foreground">
                               Partagé le {new Date(doc.shared_at).toLocaleDateString()}
                             </p>
+                            {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
+                                className="p-1 rounded hover:bg-gray-100"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                            )}
                           </div>
-                          <FileText className={`h-5 w-5 flex-shrink-0 ml-2 ${
-                            cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                          }`} />
-                          {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
-                              className="ml-3 p-1 rounded hover:bg-gray-100"
-                              title="Supprimer"
-                            >
-                              <Trash2 className="h-4 w-4 text-muted-foreground" />
-                            </button>
-                          )}
                         </div>
                       </div>
                     ))}
@@ -933,22 +918,22 @@ export default function EspaceCollaboratif() {
                             {contrat.description && (
                               <p className="text-sm text-muted-foreground mt-1">{contrat.description}</p>
                             )}
-                            <p className="text-xs text-muted-foreground mt-2">
+                          </div>
+
+                          <div className="flex flex-col items-end gap-2 ml-4">
+                            <p className="text-xs text-muted-foreground">
                               Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
                             </p>
+                            {(user && (contrat.shared_by === user.id || isCabinetOwner)) && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_contrats', contrat.id); }}
+                                className="p-1 rounded hover:bg-gray-100"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                            )}
                           </div>
-                          <FileText className={`h-5 w-5 flex-shrink-0 ml-2 ${
-                            cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                          }`} />
-                        {(user && (contrat.shared_by === user.id || isCabinetOwner)) && (
-                          <button
-                            onClick={() => deleteSharedItem('cabinet_contrats', contrat.id)}
-                            className="ml-3 p-1 rounded hover:bg-gray-100"
-                            title="Supprimer"
-                          >
-                            <Trash2 className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                        )}
                         </div>
                       </div>
                     ))}
@@ -1008,31 +993,34 @@ export default function EspaceCollaboratif() {
                             </div>
                           </div>
                         </div>
-                        <Badge variant="outline" className={
-                          dossier.status === 'Ouvert' 
-                            ? 'bg-green-100 text-green-700 border-green-300'
-                            : dossier.status === 'En cours'
-                            ? 'bg-blue-100 text-blue-700 border-blue-300'
-                            : dossier.status === 'Clos'
-                            ? 'bg-gray-100 text-gray-700 border-gray-300'
-                            : 'bg-yellow-100 text-yellow-700 border-yellow-300'
-                        }>
-                          {dossier.status}
-                        </Badge>
-                      </div>
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-muted-foreground mt-3 ml-8">
-                        Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
-                          </p>
-                          {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
-                              className="ml-3 p-1 rounded hover:bg-gray-100"
-                              title="Supprimer"
-                            >
-                              <Trash2 className="h-4 w-4 text-muted-foreground" />
-                            </button>
-                          )}
+
+                        <div className="flex flex-col items-end gap-2 ml-4">
+                          <Badge variant="outline" className={
+                            dossier.status === 'Ouvert' 
+                              ? 'bg-green-100 text-green-700 border-green-300'
+                              : dossier.status === 'En cours'
+                              ? 'bg-blue-100 text-blue-700 border-blue-300'
+                              : dossier.status === 'Clos'
+                              ? 'bg-gray-100 text-gray-700 border-gray-300'
+                              : 'bg-yellow-100 text-yellow-700 border-yellow-300'
+                          }>
+                            {dossier.status}
+                          </Badge>
+
+                          <div className="flex items-center gap-3">
+                            <p className="text-xs text-muted-foreground">
+                              Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
+                            </p>
+                            {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
+                                className="p-1 rounded hover:bg-gray-100"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                     </div>
                   ))}

@@ -43,7 +43,7 @@ export default function Dossiers() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("Ouvert");
+  const [status, setStatus] = useState("En cours");
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [contrats, setContrats] = useState<ContratRow[]>([]);
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
@@ -151,7 +151,7 @@ export default function Dossiers() {
   const resetForm = () => {
     setTitle("");
     setDescription("");
-    setStatus("Ouvert");
+    setStatus("En cours");
     setSelectedClients([]);
     setSelectedContrats([]);
     setSelectedDocuments([]);
