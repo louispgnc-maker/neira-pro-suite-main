@@ -104,7 +104,7 @@ export default function Signatures() {
       <div className="p-6">
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold">Signatures</h1>
+            <h1 className="text-3xl font-bold">Liste des signatures</h1>
             <p className="text-muted-foreground mt-1">Suivez vos demandes de signature électronique</p>
           </div>
           <Button className={mainButtonColor}>

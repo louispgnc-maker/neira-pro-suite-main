@@ -361,7 +361,7 @@ export default function Documents() {
       <div className="p-6">
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold">Documents</h1>
+            <h1 className="text-3xl font-bold">Liste des documents</h1>
             <p className="text-muted-foreground mt-1">Gérez tous vos documents juridiques</p>
           </div>
           <div className="flex gap-2 md:w-auto w-full">

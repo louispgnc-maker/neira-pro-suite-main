@@ -208,7 +208,7 @@ export default function Contrats() {
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Contrats</h1>
+            <h1 className="text-3xl font-bold">Liste des contrats</h1>
             <p className="text-muted-foreground mt-1">
               Centralisez et créez vos modèles de contrats
             </p>
