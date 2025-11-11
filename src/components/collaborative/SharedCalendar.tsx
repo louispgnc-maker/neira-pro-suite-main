@@ -94,12 +94,14 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
           const ownerProfile = r.owner_id ? profilesMap[r.owner_id] : null;
           const owner_name = ownerProfile ? (ownerProfile.nom || ownerProfile.full_name || ownerProfile.email || ownerProfile.id) : (r.owner_id || null);
           const owner_email = ownerProfile ? ownerProfile.email || null : null;
+          const allDay = Boolean(r.source?.all_day || r.source?.allDay || false);
           return ({
             id: r.id,
             title: r.title,
             start: r.start,
             end: r.end || undefined,
-            extendedProps: { description: r.description, owner_id: r.owner_id, owner_name, owner_email, event_type: r.event_type },
+            allDay,
+            extendedProps: { description: r.description, owner_id: r.owner_id, owner_name, owner_email, event_type: r.event_type, all_day: allDay },
             backgroundColor: color,
             borderColor: color,
           });
@@ -136,7 +138,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                   // ignore
                 }
               }
-              setEvents(prev => [{ id: evt.id, title: evt.title, start: evt.start, end: evt.end_at || undefined, extendedProps: { description: evt.description, owner_id: evt.owner_id, owner_name, owner_email }, backgroundColor: color, borderColor: color }, ...prev]);
+              setEvents(prev => [{ id: evt.id, title: evt.title, start: evt.start, end: evt.end_at || undefined, allDay: Boolean(evt.all_day || evt.allDay || false), extendedProps: { description: evt.description, owner_id: evt.owner_id, owner_name, owner_email, all_day: Boolean(evt.all_day || evt.allDay || false) }, backgroundColor: color, borderColor: color }, ...prev]);
       } else if (payload.eventType === 'UPDATE') {
         const ownerKey = payload.record?.owner_id || payload.record?.id;
         const color = payload.record?.color || generateColorFromString(String(ownerKey));
@@ -152,7 +154,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                   }
                 } catch (e) { /* noop */ }
               }
-              setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: evt.start, end: evt.end_at || undefined, extendedProps: { ...p.extendedProps, description: evt.description, owner_name, owner_email }, backgroundColor: color, borderColor: color } : p));
+              setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: evt.start, end: evt.end_at || undefined, allDay: Boolean(payload.record?.all_day || payload.record?.allDay || false), extendedProps: { ...p.extendedProps, description: evt.description, owner_name, owner_email, all_day: Boolean(payload.record?.all_day || payload.record?.allDay || false) }, backgroundColor: color, borderColor: color } : p));
       } else if (payload.eventType === 'DELETE') {
         setEvents(prev => prev.filter(p => p.id !== payload.old.id));
       }
