@@ -52,6 +52,11 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
 
   useEffect(() => {
     let mounted = true;
+    const addDaysToYMD = (ymd: string, days: number) => {
+      const [y, m, d] = ymd.split('-').map((n: string) => parseInt(n, 10));
+      const dt = new Date(y, m - 1, d + days);
+      return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+    };
     async function load() {
       setLoading(true);
       try {
@@ -88,6 +93,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
           }
         }
 
+
         const mapEvents = rawEvents.map((r: any) => {
           const ownerKey = r.owner_id || r.id;
           const color = r.color || generateColorFromString(String(ownerKey));
@@ -95,11 +101,22 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
           const owner_name = ownerProfile ? (ownerProfile.nom || ownerProfile.full_name || ownerProfile.email || ownerProfile.id) : (r.owner_id || null);
           const owner_email = ownerProfile ? ownerProfile.email || null : null;
           const allDay = Boolean(r.source?.all_day || r.source?.allDay || false);
+          // If event is all-day, FullCalendar expects an exclusive end date. Our DB stores end_at as inclusive (23:59:59), so add 1 day for display.
+          let displayStart: any = r.start;
+          let displayEnd: any = r.end || undefined;
+          if (allDay) {
+            // use YYYY-MM-DD for start
+            if (r.start) displayStart = (r.start as string).slice(0, 10);
+            if (r.end) {
+              const endYmd = (r.end as string).slice(0, 10);
+              displayEnd = addDaysToYMD(endYmd, 1);
+            }
+          }
           return ({
             id: r.id,
             title: r.title,
-            start: r.start,
-            end: r.end || undefined,
+            start: displayStart,
+            end: displayEnd,
             allDay,
             extendedProps: { description: r.description, owner_id: r.owner_id, owner_name, owner_email, event_type: r.event_type, all_day: allDay },
             backgroundColor: color,
@@ -138,7 +155,15 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                   // ignore
                 }
               }
-              setEvents(prev => [{ id: evt.id, title: evt.title, start: evt.start, end: evt.end_at || undefined, allDay: Boolean(evt.all_day || evt.allDay || false), extendedProps: { description: evt.description, owner_id: evt.owner_id, owner_name, owner_email, all_day: Boolean(evt.all_day || evt.allDay || false) }, backgroundColor: color, borderColor: color }, ...prev]);
+              // compute display start/end for realtime-insert
+              const insertedAllDay = Boolean(evt.all_day || evt.allDay || false);
+              let iStart: any = evt.start;
+              let iEnd: any = evt.end_at || undefined;
+              if (insertedAllDay) {
+                if (evt.start) iStart = (evt.start as string).slice(0, 10);
+                if (evt.end_at) iEnd = addDaysToYMD((evt.end_at as string).slice(0, 10), 1);
+              }
+              setEvents(prev => [{ id: evt.id, title: evt.title, start: iStart, end: iEnd, allDay: insertedAllDay, extendedProps: { description: evt.description, owner_id: evt.owner_id, owner_name, owner_email, all_day: insertedAllDay }, backgroundColor: color, borderColor: color }, ...prev]);
       } else if (payload.eventType === 'UPDATE') {
         const ownerKey = payload.record?.owner_id || payload.record?.id;
         const color = payload.record?.color || generateColorFromString(String(ownerKey));
@@ -154,7 +179,15 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                   }
                 } catch (e) { /* noop */ }
               }
-              setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: evt.start, end: evt.end_at || undefined, allDay: Boolean(payload.record?.all_day || payload.record?.allDay || false), extendedProps: { ...p.extendedProps, description: evt.description, owner_name, owner_email, all_day: Boolean(payload.record?.all_day || payload.record?.allDay || false) }, backgroundColor: color, borderColor: color } : p));
+              // compute display start/end for update
+              const updatedAllDay = Boolean(payload.record?.all_day || payload.record?.allDay || false);
+              let uStart: any = evt.start;
+              let uEnd: any = evt.end_at || undefined;
+              if (updatedAllDay) {
+                if (evt.start) uStart = (evt.start as string).slice(0, 10);
+                if (evt.end_at) uEnd = addDaysToYMD((evt.end_at as string).slice(0, 10), 1);
+              }
+              setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: uStart, end: uEnd, allDay: updatedAllDay, extendedProps: { ...p.extendedProps, description: evt.description, owner_name, owner_email, all_day: updatedAllDay }, backgroundColor: color, borderColor: color } : p));
       } else if (payload.eventType === 'DELETE') {
         setEvents(prev => prev.filter(p => p.id !== payload.old.id));
       }
