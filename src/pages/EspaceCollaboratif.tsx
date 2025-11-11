@@ -581,6 +581,69 @@ export default function EspaceCollaboratif() {
     navigate(`/${cabinetRole}s/dossiers/${targetId}`, { state: { fromCollaboratif: true } });
   };
 
+  // Search states for lists
+  const [activitySearch, setActivitySearch] = useState('');
+  const [documentsSearch, setDocumentsSearch] = useState('');
+  const [contratsSearch, setContratsSearch] = useState('');
+  const [dossiersSearch, setDossiersSearch] = useState('');
+
+  // Prepare filtered & sorted lists
+  const _combinedActivity: Array<any> = [
+    ...documents.map(d => ({ ...d, type: 'Document' as const })),
+    ...dossiers.map(d => ({ ...d, type: 'Dossier' as const })),
+    ...contrats.map(c => ({ ...c, type: 'Contrat' as const })),
+  ];
+
+  const combinedActivityFiltered = _combinedActivity.filter((item) => {
+    const q = activitySearch.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      (item.title || '').toLowerCase().includes(q) ||
+      ((item.description || '') as string).toLowerCase().includes(q) ||
+      (item.type || '').toLowerCase().includes(q)
+    );
+  });
+
+  const recentActivity = combinedActivityFiltered
+    .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime())
+    .slice(0, 5);
+
+  const documentsFiltered = documents
+    .filter((d) => {
+      const q = documentsSearch.trim().toLowerCase();
+      if (!q) return true;
+      return (
+        (d.title || '').toLowerCase().includes(q) ||
+        ((d.description || '') as string).toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime());
+
+  const contratsFiltered = contrats
+    .filter((c) => {
+      const q = contratsSearch.trim().toLowerCase();
+      if (!q) return true;
+      return (
+        (c.title || '').toLowerCase().includes(q) ||
+        ((c.description || '') as string).toLowerCase().includes(q) ||
+        (c.category || '').toLowerCase().includes(q) ||
+        (c.contrat_type || '').toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime());
+
+  const dossiersFiltered = dossiers
+    .filter((d) => {
+      const q = dossiersSearch.trim().toLowerCase();
+      if (!q) return true;
+      return (
+        (d.title || '').toLowerCase().includes(q) ||
+        ((d.description || '') as string).toLowerCase().includes(q) ||
+        (d.status || '').toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime());
+
   if (loading) {
     return (
       <AppLayout>
@@ -691,19 +754,24 @@ export default function EspaceCollaboratif() {
               <CardTitle>Activité récente</CardTitle>
             </CardHeader>
             <CardContent>
-              {documents.length === 0 && dossiers.length === 0 && contrats.length === 0 ? (
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      placeholder="Rechercher activité..."
+                      value={activitySearch}
+                      onChange={(e) => setActivitySearch(e.target.value)}
+                      className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    />
+                  </div>
+
+                  {documents.length === 0 && dossiers.length === 0 && contrats.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucune activité récente</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {[...documents.map(d => ({ ...d, type: 'Document' as const })), 
-                    ...dossiers.map(d => ({ ...d, type: 'Dossier' as const })), 
-                    ...contrats.map(c => ({ ...c, type: 'Contrat' as const }))]
-                    .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime())
-                    .slice(0, 5)
-                    .map((item, idx) => (
+                  {recentActivity.map((item, idx) => (
                       <div 
                         key={`${item.type}-${idx}`} 
                         className={`flex items-center justify-between p-3 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
@@ -828,8 +896,19 @@ export default function EspaceCollaboratif() {
                     <p className="text-xs mt-1">Utilisez le bouton de partage sur vos documents</p>
                   </div>
                 ) : (
-                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                    {documents.map((doc) => (
+                  <div>
+                    <div className="mb-3">
+                      <input
+                        type="text"
+                        placeholder="Rechercher documents..."
+                        value={documentsSearch}
+                        onChange={(e) => setDocumentsSearch(e.target.value)}
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-2 max-h-[420px] overflow-y-auto">
+                      {documentsFiltered.map((doc) => (
                       <div 
                         key={doc.id} 
                         className={`p-3 border rounded-lg cursor-pointer transition-all bg-white hover:bg-gray-50`}
@@ -915,8 +994,19 @@ export default function EspaceCollaboratif() {
                     <p className="text-xs mt-1">Utilisez le bouton de partage sur vos contrats</p>
                   </div>
                 ) : (
-                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                    {contrats.map((contrat) => (
+                  <div>
+                    <div className="mb-3">
+                      <input
+                        type="text"
+                        placeholder="Rechercher contrats..."
+                        value={contratsSearch}
+                        onChange={(e) => setContratsSearch(e.target.value)}
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-2 max-h-[420px] overflow-y-auto">
+                      {contratsFiltered.map((contrat) => (
                       <div 
                         key={contrat.id} 
                         className={`p-3 border rounded-lg transition-all bg-white hover:bg-gray-50`}
@@ -993,59 +1083,71 @@ export default function EspaceCollaboratif() {
                   <p className="text-sm mt-2">Utilisez le bouton de partage sur vos dossiers</p>
                 </div>
               ) : (
-                <div className="grid gap-3">
-                  {dossiers.map((dossier) => {
-                    return (
-                      <div
-                        key={dossier.id}
-                        className={`p-4 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
-                        onDoubleClick={() => navigateToDossier(dossier)}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3">
-                              <FolderOpen className={`h-5 w-5 ${
-                                cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                              }`} />
-                              <div>
-                                <p className="font-medium">{dossier.title}</p>
-                                {dossier.description && (
-                                  <p className="text-sm text-muted-foreground mt-1">{dossier.description}</p>
+                <div>
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      placeholder="Rechercher dossiers..."
+                      value={dossiersSearch}
+                      onChange={(e) => setDossiersSearch(e.target.value)}
+                      className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    />
+                  </div>
+
+                  <div className="grid gap-3 max-h-[320px] overflow-y-auto">
+                    {dossiersFiltered.map((dossier) => {
+                      return (
+                        <div
+                          key={dossier.id}
+                          className={`p-4 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
+                          onDoubleClick={() => navigateToDossier(dossier)}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3">
+                                <FolderOpen className={`h-5 w-5 ${
+                                  cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                                }`} />
+                                <div>
+                                  <p className="font-medium">{dossier.title}</p>
+                                  {dossier.description && (
+                                    <p className="text-sm text-muted-foreground mt-1">{dossier.description}</p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col items-end gap-2 ml-4">
+                              <p className="text-xs text-muted-foreground">{dossier.status}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
+                              </p>
+
+                              <div className="flex items-center gap-3">
+                                {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
+                                    className="p-1 rounded hover:bg-gray-100"
+                                    title="Supprimer"
+                                  >
+                                    <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                  </button>
                                 )}
+
+                                <Badge variant="outline" className={
+                                  cabinetRole === 'notaire'
+                                    ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                    : 'bg-blue-100 text-blue-600 border-blue-200'
+                                }>
+                                  Dossier
+                                </Badge>
                               </div>
                             </div>
                           </div>
-
-                          <div className="flex flex-col items-end gap-2 ml-4">
-                            <p className="text-xs text-muted-foreground">{dossier.status}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
-                            </p>
-
-                            <div className="flex items-center gap-3">
-                              {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
-                                  className="p-1 rounded hover:bg-gray-100"
-                                  title="Supprimer"
-                                >
-                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
-                                </button>
-                              )}
-
-                              <Badge variant="outline" className={
-                                cabinetRole === 'notaire'
-                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
-                                  : 'bg-blue-100 text-blue-600 border-blue-200'
-                              }>
-                                Dossier
-                              </Badge>
-                            </div>
-                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </CardContent>
