@@ -28,6 +28,11 @@ type CalendarEvent = {
 
 export function SharedCalendar({ role, members }: { role?: string; members?: Array<{ id: string; nom?: string; email?: string }> }) {
   const { user } = useAuth();
+  const isNotaire = role === 'notaire';
+  const mainButtonClass = isNotaire
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+  const calendarRoleClass = isNotaire ? 'fc-notaire' : 'fc-avocat';
   const [events, setEvents] = useState<EventInput[]>([]);
   const [loading, setLoading] = useState(true);
   const [openCreate, setOpenCreate] = useState(false);
@@ -194,7 +199,7 @@ export function SharedCalendar({ role, members }: { role?: string; members?: Arr
 
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between">
+  <div className="mb-3 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-medium">Calendrier partagé</h3>
           <p className="text-sm text-muted-foreground">Jour / semaine / mois — temps réel pour tous les membres</p>
@@ -202,7 +207,7 @@ export function SharedCalendar({ role, members }: { role?: string; members?: Arr
         <div className="flex gap-2">
           <Dialog open={openCreate} onOpenChange={setOpenCreate}>
             <DialogTrigger asChild>
-              <Button variant="outline">Nouvel événement</Button>
+              <Button className={mainButtonClass}>Nouvel événement</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -225,7 +230,7 @@ export function SharedCalendar({ role, members }: { role?: string; members?: Arr
                   {editingEvent && (
                     <Button variant="outline" onClick={() => deleteEvent(editingEvent.id)}>Supprimer</Button>
                   )}
-                  <Button onClick={() => { if (editingEvent) updateEvent(); else createEvent(); }}>
+                  <Button className={mainButtonClass} onClick={() => { if (editingEvent) updateEvent(); else createEvent(); }}>
                     {editingEvent ? 'Enregistrer' : 'Créer'}
                   </Button>
                 </div>
@@ -247,23 +252,42 @@ export function SharedCalendar({ role, members }: { role?: string; members?: Arr
         </div>
       )}
 
-      <div className="bg-white rounded-lg border p-2">
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-          initialView="dayGridMonth"
-          locales={[frLocale]}
-          locale="fr"
-          headerToolbar={{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' }}
-          buttonText={{ today: "Aujourd'hui", month: 'Mois', week: 'Semaine', day: 'Jour', list: 'Liste' }}
-          selectable={true}
-          selectMirror={true}
-          select={handleDateSelect}
-          events={events}
-          eventClick={handleEventClick}
-          height="auto"
-          ref={calendarRef as any}
-        />
-      </div>
+      {/* role-based calendar styling */}
+          <div>
+            <style>{`
+              .${calendarRoleClass} .fc-button,
+              .${calendarRoleClass} .fc-button-primary {
+                color: white !important;
+              }
+              .${calendarRoleClass} .fc-button {
+                background: ${isNotaire ? '#ea580c' : '#2563eb'} !important;
+                border-color: ${isNotaire ? '#f97316' : '#3b82f6'} !important;
+              }
+              .${calendarRoleClass} .fc-button:hover {
+                background: ${isNotaire ? '#c2410c' : '#1e40af'} !important;
+              }
+              .${calendarRoleClass} .fc-button:disabled {
+                opacity: 0.6;
+              }
+            `}</style>
+            <div className={`${calendarRoleClass} bg-white rounded-lg border p-2`}>
+              <FullCalendar
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+                initialView="dayGridMonth"
+                locales={[frLocale]}
+                locale="fr"
+                headerToolbar={{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' }}
+                buttonText={{ today: "Aujourd'hui", month: 'Mois', week: 'Semaine', day: 'Jour', list: 'Liste' }}
+                selectable={true}
+                selectMirror={true}
+                select={handleDateSelect}
+                events={events}
+                eventClick={handleEventClick}
+                height="auto"
+                ref={calendarRef as any}
+              />
+            </div>
+          </div>
     </div>
   );
 }
