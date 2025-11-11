@@ -587,6 +587,40 @@ export default function EspaceCollaboratif() {
   const [contratsSearch, setContratsSearch] = useState('');
   const [dossiersSearch, setDossiersSearch] = useState('');
 
+  // Persist active tab across refreshes: read from URL ?tab= or localStorage
+  const [selectedTab, setSelectedTab] = useState<string>(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      return params.get('tab') || (localStorage.getItem('collab_tab') ?? 'dashboard');
+    } catch (e) {
+      return localStorage.getItem('collab_tab') ?? 'dashboard';
+    }
+  });
+
+  // Keep selectedTab in sync when location.search changes (back/forward/navigation)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      const tab = params.get('tab');
+      if (tab && tab !== selectedTab) setSelectedTab(tab);
+    } catch (e) {
+      // ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
+
+  const handleTabChange = (value: string) => {
+    setSelectedTab(value);
+    try {
+      const params = new URLSearchParams(location.search);
+      params.set('tab', value);
+      navigate(`${location.pathname}${params.toString() ? `?${params.toString()}` : ''}`, { replace: true });
+    } catch (e) {
+      // ignore
+    }
+    try { localStorage.setItem('collab_tab', value); } catch (e) { /* ignore */ }
+  };
+
   // Prepare filtered & sorted lists
   const _combinedActivity: Array<any> = [
     ...documents.map(d => ({ ...d, type: 'Document' as const })),
@@ -689,7 +723,7 @@ export default function EspaceCollaboratif() {
       </div>
 
       {/* Onglets principaux */}
-      <Tabs defaultValue="dashboard" className="w-full">
+  <Tabs value={selectedTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="dashboard">
             <BarChart3 className="h-4 w-4 mr-2" />
