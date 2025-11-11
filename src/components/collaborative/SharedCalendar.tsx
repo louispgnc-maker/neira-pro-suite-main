@@ -454,8 +454,10 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  {editingEvent && (
-                    <Button variant="outline" onClick={() => deleteEvent(editingEvent.id)}>Supprimer</Button>
+                  {editingEvent && user && (editingEvent.owner_id === user.id || isCabinetOwner) && (
+                    <Button className={`${mainButtonClass} mr-2`} onClick={() => deleteEvent(editingEvent.id)}>
+                      Supprimer
+                    </Button>
                   )}
                   <Button className={mainButtonClass} onClick={() => { if (editingEvent) updateEvent(); else createEvent(); }}>
                     {editingEvent ? 'Enregistrer' : 'Créer'}
