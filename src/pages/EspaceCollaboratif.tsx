@@ -981,7 +981,6 @@ export default function EspaceCollaboratif() {
                           Importer depuis mon appareil
                         </DropdownMenuItem>
                         <DropdownMenuItem className={menuItemClass} onClick={() => navigate(`/${cabinetRole}s/contrats`)}>
-                          <ArrowRight className="mr-2 h-4 w-4" />
                           Aller à mes contrats
                         </DropdownMenuItem>
                       </DropdownMenuContent>
