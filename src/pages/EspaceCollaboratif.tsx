@@ -908,47 +908,50 @@ export default function EspaceCollaboratif() {
                     </div>
 
                     <div className="space-y-2 max-h-[420px] overflow-y-auto">
-                      {documentsFiltered.map((doc) => (
-                      <div 
-                        key={doc.id} 
-                        className={`p-3 border rounded-lg cursor-pointer transition-all bg-white hover:bg-gray-50`}
-                        onClick={() => handleViewDocument(doc)}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="font-medium">{doc.title}</p>
-                            {doc.description && (
-                              <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
-                            )}
-                          </div>
+                      {documentsFiltered.map((doc) => {
+                        return (
+                          <div
+                            key={doc.id}
+                            className={`p-3 border rounded-lg cursor-pointer transition-all bg-white hover:bg-gray-50`}
+                            onClick={() => handleViewDocument(doc)}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <p className="font-medium">{doc.title}</p>
+                                {doc.description && (
+                                  <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
+                                )}
+                              </div>
 
-                          <div className="flex flex-col items-end gap-2 ml-4">
-                            <p className="text-xs text-muted-foreground">
-                              Partagé le {new Date(doc.shared_at).toLocaleDateString()}
-                            </p>
-                            <div className="flex items-center gap-3">
-                              {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
-                                  className="p-1 rounded hover:bg-gray-100"
-                                  title="Supprimer"
-                                >
-                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
-                                </button>
-                              )}
+                              <div className="flex flex-col items-end gap-2 ml-4">
+                                <p className="text-xs text-muted-foreground">
+                                  Partagé le {new Date(doc.shared_at).toLocaleDateString()}
+                                </p>
+                                <div className="flex items-center gap-3">
+                                  {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
+                                      className="p-1 rounded hover:bg-gray-100"
+                                      title="Supprimer"
+                                    >
+                                      <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                    </button>
+                                  )}
 
-                              <Badge variant="outline" className={
-                                cabinetRole === 'notaire'
-                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
-                                  : 'bg-blue-100 text-blue-600 border-blue-200'
-                              }>
-                                Document
-                              </Badge>
+                                  <Badge variant="outline" className={
+                                    cabinetRole === 'notaire'
+                                      ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                      : 'bg-blue-100 text-blue-600 border-blue-200'
+                                  }>
+                                    Document
+                                  </Badge>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    ))}
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -964,7 +967,7 @@ export default function EspaceCollaboratif() {
                       {contrats.length} contrat{contrats.length > 1 ? 's' : ''} accessible{contrats.length > 1 ? 's' : ''}
                     </CardDescription>
                   </div>
-                  <div>
+                  <div className="flex items-center gap-2 self-start">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button size="sm" className={colorClass}>
@@ -1006,48 +1009,51 @@ export default function EspaceCollaboratif() {
                     </div>
 
                     <div className="space-y-2 max-h-[420px] overflow-y-auto">
-                      {contratsFiltered.map((contrat) => (
-                      <div 
-                        key={contrat.id} 
-                        className={`p-3 border rounded-lg transition-all bg-white hover:bg-gray-50`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <p className="font-medium">{contrat.title}</p>
-                            </div>
-                            {contrat.description && (
-                              <p className="text-sm text-muted-foreground mt-1">{contrat.description}</p>
-                            )}
-                          </div>
+                      {contratsFiltered.map((contrat) => {
+                        return (
+                          <div
+                            key={contrat.id}
+                            className={`p-3 border rounded-lg transition-all bg-white hover:bg-gray-50`}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <p className="font-medium">{contrat.title}</p>
+                                </div>
+                                {contrat.description && (
+                                  <p className="text-sm text-muted-foreground mt-1">{contrat.description}</p>
+                                )}
+                              </div>
 
-                          <div className="flex flex-col items-end gap-2 ml-4">
-                            <p className="text-xs text-muted-foreground">
-                              Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
-                            </p>
-                            <div className="flex items-center gap-3">
-                              {(user && (contrat.shared_by === user.id || isCabinetOwner)) && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_contrats', contrat.id); }}
-                                  className="p-1 rounded hover:bg-gray-100"
-                                  title="Supprimer"
-                                >
-                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
-                                </button>
-                              )}
+                              <div className="flex flex-col items-end gap-2 ml-4">
+                                <p className="text-xs text-muted-foreground">
+                                  Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
+                                </p>
+                                <div className="flex items-center gap-3">
+                                  {(user && (contrat.shared_by === user.id || isCabinetOwner)) && (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_contrats', contrat.id); }}
+                                      className="p-1 rounded hover:bg-gray-100"
+                                      title="Supprimer"
+                                    >
+                                      <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                    </button>
+                                  )}
 
-                              <Badge variant="outline" className={
-                                cabinetRole === 'notaire'
-                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
-                                  : 'bg-blue-100 text-blue-600 border-blue-200'
-                              }>
-                                Contrat
-                              </Badge>
+                                  <Badge variant="outline" className={
+                                    cabinetRole === 'notaire'
+                                      ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                      : 'bg-blue-100 text-blue-600 border-blue-200'
+                                  }>
+                                    Contrat
+                                  </Badge>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    ))}
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </CardContent>
