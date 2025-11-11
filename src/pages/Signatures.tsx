@@ -117,7 +117,7 @@ export default function Signatures() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher (signataire ou document)…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
 

@@ -304,7 +304,7 @@ export default function Contrats() {
                   placeholder="Rechercher un contrat..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 bg-transparent"
+                  className="pl-10 bg-background"
                 />
               </div>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>

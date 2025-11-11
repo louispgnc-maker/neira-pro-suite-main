@@ -160,7 +160,7 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un contrat..."
-            className="w-full bg-transparent outline-none text-sm px-2 py-1"
+            className="w-full bg-background outline-none text-sm px-2 py-1"
             autoFocus
           />
         </div>

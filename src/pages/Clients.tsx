@@ -98,7 +98,7 @@ export default function Clients() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un client…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         
