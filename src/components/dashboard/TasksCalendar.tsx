@@ -60,6 +60,9 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
           // safety: exclude tasks that are already marked done (some rows might still have done=true)
           if ((t as any).done) return false;
           try {
+            // Include tasks without any due date so newly created tasks (no date) are visible
+            if (!t.due_date && !t.due_at) return true;
+
             if (t.due_date && t.due_date >= dateStr) return true;
             if (t.due_at) {
               const d = new Date(t.due_at);
