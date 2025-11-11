@@ -43,9 +43,11 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
       // and /tasks logic consistent even if some rows only populate due_at or due_date.
       const { data, error } = await supabase
         .from("tasks")
-        .select("id,title,due_date,due_at")
+        .select("id,title,due_date,due_at,done")
         .eq("owner_id", user.id)
         .eq("role", role)
+        // exclude already completed tasks so dashboard matches /tasks
+        .eq("done", false)
         .order("due_at", { ascending: true, nullsFirst: false })
         .limit(20);
 
@@ -55,6 +57,8 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
       } else if (isMounted) {
         const raw = (data || []) as TaskRow[];
         const filtered = raw.filter((t) => {
+          // safety: exclude tasks that are already marked done (some rows might still have done=true)
+          if ((t as any).done) return false;
           try {
             if (t.due_date && t.due_date >= dateStr) return true;
             if (t.due_at) {
