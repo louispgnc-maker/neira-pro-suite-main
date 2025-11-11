@@ -789,7 +789,7 @@ export default function EspaceCollaboratif() {
                       {documents.length} document{documents.length > 1 ? 's' : ''} accessible{documents.length > 1 ? 's' : ''}
                     </CardDescription>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 self-start">
                     <input ref={fileInputRef} type="file" accept="application/pdf" multiple className="hidden" onChange={onCollaboratifFilesSelected} />
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -861,7 +861,7 @@ export default function EspaceCollaboratif() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="self-start">
                     <CardTitle className="text-lg">Contrats partagés</CardTitle>
                     <CardDescription className="text-sm">
                       {contrats.length} contrat{contrats.length > 1 ? 's' : ''} accessible{contrats.length > 1 ? 's' : ''}
@@ -956,7 +956,7 @@ export default function EspaceCollaboratif() {
                   </CardDescription>
                 </div>
                 <Button 
-                  className={colorClass}
+                  className={`${colorClass} self-start`}
                   onClick={() => navigate(`/${cabinetRole}s/dossiers`)}
                 >
                   <ArrowRight className="h-4 w-4 mr-2" />
