@@ -336,42 +336,46 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
             <DialogTrigger asChild>
               <Button className={mainButtonClass}>Nouvel événement</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>{editingEvent ? 'Modifier l\'événement' : 'Nouvel événement'}</DialogTitle>
               </DialogHeader>
-                {editingEvent && (
-                  <div className="text-sm text-muted-foreground mb-2">
-                    <p>Créé par : <strong>{editingEvent.owner_name || editingEvent.owner_id || '—'}</strong>{editingEvent.owner_email ? ` (${editingEvent.owner_email})` : ''}</p>
-                  </div>
-                )}
+              {editingEvent && (
+                <div className="text-sm text-muted-foreground mb-2">
+                  <p>Créé par : <strong>{editingEvent.owner_name || editingEvent.owner_id || '—'}</strong>{editingEvent.owner_email ? ` (${editingEvent.owner_email})` : ''}</p>
+                </div>
+              )}
+
               <div className="space-y-4">
-                <div>
-                  <label className="text-sm">Titre</label>
-                  <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} />
+                <div className="flex flex-col">
+                  <label className="text-sm mb-1">Titre</label>
+                  <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} className="w-full" />
                 </div>
-                <div>
-                  <label className="text-sm">Description</label>
-                  <Textarea value={formDescription} onChange={(e) => setFormDescription(e.target.value)} />
+
+                <div className="flex flex-col">
+                  <label className="text-sm mb-1">Description</label>
+                  <Textarea value={formDescription} onChange={(e) => setFormDescription(e.target.value)} className="w-full" />
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <div>
-                    <label className="text-sm">Date début</label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="flex flex-col">
+                    <label className="text-sm mb-1">Date début</label>
                     <input type="date" value={formStartDate} onChange={(e) => setFormStartDate(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
                   </div>
-                  <div>
-                    <label className="text-sm">Heure (optionnel)</label>
+                  <div className="flex flex-col">
+                    <label className="text-sm mb-1">Heure (optionnel)</label>
                     <input type="time" value={formStartTime} onChange={(e) => setFormStartTime(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
                   </div>
-                  <div>
-                    <label className="text-sm">Date fin (optionnel)</label>
+                  <div className="flex flex-col">
+                    <label className="text-sm mb-1">Date fin (optionnel)</label>
                     <input type="date" value={formEndDate} onChange={(e) => setFormEndDate(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
                   </div>
-                  <div>
-                    <label className="text-sm">Heure fin (optionnel)</label>
+                  <div className="flex flex-col">
+                    <label className="text-sm mb-1">Heure fin (optionnel)</label>
                     <input type="time" value={formEndTime} onChange={(e) => setFormEndTime(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
                   </div>
                 </div>
+
                 <div className="flex justify-end gap-2">
                   {editingEvent && (
                     <Button variant="outline" onClick={() => deleteEvent(editingEvent.id)}>Supprimer</Button>
