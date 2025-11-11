@@ -85,7 +85,7 @@ export default function Clients() {
       <div className="p-6">
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold">Liste des clients</h1>
+            <h1 className="text-3xl font-bold">Clients</h1>
             <p className="text-muted-foreground mt-1">Gérez votre base clients et KYC</p>
           </div>
           <div className="md:w-auto w-full flex justify-end">

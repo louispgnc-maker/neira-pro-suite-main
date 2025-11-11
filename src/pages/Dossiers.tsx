@@ -231,9 +231,9 @@ export default function Dossiers() {
   return (
     <AppLayout>
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Liste des dossiers</h1>
+            <h1 className="text-3xl font-bold">Dossiers</h1>
             <p className="text-muted-foreground mt-1">Gérez vos dossiers et leurs associations</p>
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
