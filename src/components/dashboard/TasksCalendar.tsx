@@ -10,6 +10,7 @@ type TaskRow = {
   id: string;
   title: string;
   due_date: string | null;
+  due_at?: string | null;
 };
 
 interface TasksCalendarProps {
@@ -36,19 +37,37 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
       const mm = String(today.getMonth() + 1).padStart(2, "0");
       const dd = String(today.getDate()).padStart(2, "0");
       const dateStr = `${yyyy}-${mm}-${dd}`;
+
+      // Fetch recent tasks for the user and role, then filter client-side to include
+      // tasks that have either due_date or due_at on/after today. This keeps dashboard
+      // and /tasks logic consistent even if some rows only populate due_at or due_date.
       const { data, error } = await supabase
         .from("tasks")
-        .select("id,title,due_date")
+        .select("id,title,due_date,due_at")
         .eq("owner_id", user.id)
         .eq("role", role)
-        .gte("due_date", dateStr)
-        .order("due_date", { ascending: true, nullsFirst: false })
-        .limit(5);
+        .order("due_at", { ascending: true, nullsFirst: false })
+        .limit(20);
+
       if (error) {
         console.error("Erreur chargement tâches:", error);
         if (isMounted) setTasks([]);
       } else if (isMounted) {
-        setTasks(data as TaskRow[]);
+        const raw = (data || []) as TaskRow[];
+        const filtered = raw.filter((t) => {
+          try {
+            if (t.due_date && t.due_date >= dateStr) return true;
+            if (t.due_at) {
+              const d = new Date(t.due_at);
+              const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+              return dStr >= dateStr;
+            }
+          } catch (e) {
+            return false;
+          }
+          return false;
+        }).slice(0, 5);
+        setTasks(filtered as TaskRow[]);
       }
       if (isMounted) setLoading(false);
     }
