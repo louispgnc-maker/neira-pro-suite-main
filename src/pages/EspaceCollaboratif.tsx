@@ -973,57 +973,60 @@ export default function EspaceCollaboratif() {
                 </div>
               ) : (
                 <div className="grid gap-3">
-                  {dossiers.map((dossier) => (
-                    <div 
-                      key={dossier.id} 
-                      className={`p-4 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
-                      onDoubleClick={() => navigateToDossier(dossier)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3">
-                            <FolderOpen className={`h-5 w-5 ${
-                              cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                            }`} />
-                            <div>
-                              <p className="font-medium">{dossier.title}</p>
-                              {dossier.description && (
-                                <p className="text-sm text-muted-foreground mt-1">{dossier.description}</p>
+                  {dossiers.map((dossier) => {
+                    return (
+                      <div
+                        key={dossier.id}
+                        className={`p-4 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
+                        onDoubleClick={() => navigateToDossier(dossier)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3">
+                              <FolderOpen className={`h-5 w-5 ${
+                                cabinetRole === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`} />
+                              <div>
+                                <p className="font-medium">{dossier.title}</p>
+                                {dossier.description && (
+                                  <p className="text-sm text-muted-foreground mt-1">{dossier.description}</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-end gap-2 ml-4">
+                            <Badge variant="outline" className={
+                              dossier.status === 'Ouvert'
+                                ? 'bg-green-100 text-green-700 border-green-300'
+                                : dossier.status === 'En cours'
+                                ? 'bg-blue-100 text-blue-700 border-blue-300'
+                                : dossier.status === 'Clos'
+                                ? 'bg-gray-100 text-gray-700 border-gray-300'
+                                : 'bg-yellow-100 text-yellow-700 border-yellow-300'
+                            }>
+                              {dossier.status}
+                            </Badge>
+
+                            <div className="flex items-center gap-3">
+                              <p className="text-xs text-muted-foreground">
+                                Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
+                              </p>
+                              {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
+                                  className="p-1 rounded hover:bg-gray-100"
+                                  title="Supprimer"
+                                >
+                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                </button>
                               )}
                             </div>
                           </div>
                         </div>
-
-                        <div className="flex flex-col items-end gap-2 ml-4">
-                          <Badge variant="outline" className={
-                            dossier.status === 'Ouvert' 
-                              ? 'bg-green-100 text-green-700 border-green-300'
-                              : dossier.status === 'En cours'
-                              ? 'bg-blue-100 text-blue-700 border-blue-300'
-                              : dossier.status === 'Clos'
-                              ? 'bg-gray-100 text-gray-700 border-gray-300'
-                              : 'bg-yellow-100 text-yellow-700 border-yellow-300'
-                          }>
-                            {dossier.status}
-                          </Badge>
-
-                          <div className="flex items-center gap-3">
-                            <p className="text-xs text-muted-foreground">
-                              Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
-                            </p>
-                            {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
-                              <button
-                                onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
-                                className="p-1 rounded hover:bg-gray-100"
-                                title="Supprimer"
-                              >
-                                <Trash2 className="h-4 w-4 text-muted-foreground" />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
