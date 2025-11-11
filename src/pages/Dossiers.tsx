@@ -344,14 +344,14 @@ export default function Dossiers() {
           </Card>
         ) : (
           <>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="relative flex-1">
+            <div className="mb-4 bg-white p-4 rounded-lg border">
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Rechercher un dossier..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-slate-100"
                 />
               </div>
             </div>
