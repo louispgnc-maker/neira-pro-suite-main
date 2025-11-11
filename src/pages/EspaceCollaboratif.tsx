@@ -745,29 +745,37 @@ export default function EspaceCollaboratif() {
                             </p>
                           </div>
                         </div>
-                        {/* contracts no longer show the middle quick-open arrow to keep alignment */}
-                        <Badge 
-                          variant="outline"
-                          className={
-                            cabinetRole === 'notaire'
-                              ? 'bg-orange-100 text-orange-600 border-orange-200'
-                              : 'bg-blue-100 text-blue-600 border-blue-200'
-                          }
-                        >
-                          {item.type}
-                        </Badge>
-                        {(user && (item.shared_by === user.id || isCabinetOwner)) && (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); deleteSharedItem(
-                              item.type === 'Document' ? 'cabinet_documents' : item.type === 'Dossier' ? 'cabinet_dossiers' : 'cabinet_contrats',
-                              item.id
-                            ); }}
-                            className="ml-3 p-1 rounded hover:bg-gray-100"
-                            title="Supprimer"
-                          >
-                            <Trash2 className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                        )}
+                        {/* Right side: date, delete (if allowed) then type badge aligned to the right */}
+                        <div className="flex flex-col items-end gap-2 ml-4">
+                          <p className="text-xs text-muted-foreground">
+                            {item.type} partagé le {new Date(item.shared_at).toLocaleDateString()}
+                          </p>
+                          <div className="flex items-center gap-3">
+                            {(user && (item.shared_by === user.id || isCabinetOwner)) && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deleteSharedItem(
+                                  item.type === 'Document' ? 'cabinet_documents' : item.type === 'Dossier' ? 'cabinet_dossiers' : 'cabinet_contrats',
+                                  item.id
+                                ); }}
+                                className="p-1 rounded hover:bg-gray-100"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                            )}
+
+                            <Badge 
+                              variant="outline"
+                              className={
+                                cabinetRole === 'notaire'
+                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                  : 'bg-blue-100 text-blue-600 border-blue-200'
+                              }
+                            >
+                              {item.type}
+                            </Badge>
+                          </div>
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -839,15 +847,25 @@ export default function EspaceCollaboratif() {
                             <p className="text-xs text-muted-foreground">
                               Partagé le {new Date(doc.shared_at).toLocaleDateString()}
                             </p>
-                            {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
-                              <button
-                                onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
-                                className="p-1 rounded hover:bg-gray-100"
-                                title="Supprimer"
-                              >
-                                <Trash2 className="h-4 w-4 text-muted-foreground" />
-                              </button>
-                            )}
+                            <div className="flex items-center gap-3">
+                              {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
+                                  className="p-1 rounded hover:bg-gray-100"
+                                  title="Supprimer"
+                                >
+                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                </button>
+                              )}
+
+                              <Badge variant="outline" className={
+                                cabinetRole === 'notaire'
+                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                  : 'bg-blue-100 text-blue-600 border-blue-200'
+                              }>
+                                Document
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -907,13 +925,6 @@ export default function EspaceCollaboratif() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
                               <p className="font-medium">{contrat.title}</p>
-                              <Badge variant="outline" className={
-                                cabinetRole === 'notaire'
-                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
-                                  : 'bg-blue-100 text-blue-600 border-blue-200'
-                              }>
-                                {contrat.category}
-                              </Badge>
                             </div>
                             {contrat.description && (
                               <p className="text-sm text-muted-foreground mt-1">{contrat.description}</p>
@@ -924,15 +935,25 @@ export default function EspaceCollaboratif() {
                             <p className="text-xs text-muted-foreground">
                               Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
                             </p>
-                            {(user && (contrat.shared_by === user.id || isCabinetOwner)) && (
-                              <button
-                                onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_contrats', contrat.id); }}
-                                className="p-1 rounded hover:bg-gray-100"
-                                title="Supprimer"
-                              >
-                                <Trash2 className="h-4 w-4 text-muted-foreground" />
-                              </button>
-                            )}
+                            <div className="flex items-center gap-3">
+                              {(user && (contrat.shared_by === user.id || isCabinetOwner)) && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_contrats', contrat.id); }}
+                                  className="p-1 rounded hover:bg-gray-100"
+                                  title="Supprimer"
+                                >
+                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                </button>
+                              )}
+
+                              <Badge variant="outline" className={
+                                cabinetRole === 'notaire'
+                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                  : 'bg-blue-100 text-blue-600 border-blue-200'
+                              }>
+                                Contrat
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -996,22 +1017,12 @@ export default function EspaceCollaboratif() {
                           </div>
 
                           <div className="flex flex-col items-end gap-2 ml-4">
-                            <Badge variant="outline" className={
-                              dossier.status === 'Ouvert'
-                                ? 'bg-green-100 text-green-700 border-green-300'
-                                : dossier.status === 'En cours'
-                                ? 'bg-blue-100 text-blue-700 border-blue-300'
-                                : dossier.status === 'Clos'
-                                ? 'bg-gray-100 text-gray-700 border-gray-300'
-                                : 'bg-yellow-100 text-yellow-700 border-yellow-300'
-                            }>
-                              {dossier.status}
-                            </Badge>
+                            <p className="text-xs text-muted-foreground">{dossier.status}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
+                            </p>
 
                             <div className="flex items-center gap-3">
-                              <p className="text-xs text-muted-foreground">
-                                Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
-                              </p>
                               {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
                                 <button
                                   onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
@@ -1021,6 +1032,14 @@ export default function EspaceCollaboratif() {
                                   <Trash2 className="h-4 w-4 text-muted-foreground" />
                                 </button>
                               )}
+
+                              <Badge variant="outline" className={
+                                cabinetRole === 'notaire'
+                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                  : 'bg-blue-100 text-blue-600 border-blue-200'
+                              }>
+                                Dossier
+                              </Badge>
                             </div>
                           </div>
                         </div>
