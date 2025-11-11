@@ -50,13 +50,26 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
   const calendarRef = useRef<FullCalendar | null>(null);
   const { toast } = useToast();
 
+  const addDaysToYMD = (ymd: string, days: number) => {
+    const [y, m, d] = ymd.split('-').map((n: string) => parseInt(n, 10));
+    const dt = new Date(y, m - 1, d + days);
+    return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+  };
+
+  const renderEventContent = (arg: any) => {
+    const isAllDay = Boolean((arg.event?.extendedProps as any)?.all_day);
+    const timeText = arg.timeText || '';
+    return (
+      <div className="flex items-center gap-2">
+        {!isAllDay && <span className="text-xs text-muted-foreground mr-1">{timeText}</span>}
+        <span className="truncate">{arg.event.title}</span>
+        {isAllDay && <span className="ml-2 text-xs bg-gray-100 text-gray-700 rounded px-2 py-0.5">Journée</span>}
+      </div>
+    );
+  };
+
   useEffect(() => {
     let mounted = true;
-    const addDaysToYMD = (ymd: string, days: number) => {
-      const [y, m, d] = ymd.split('-').map((n: string) => parseInt(n, 10));
-      const dt = new Date(y, m - 1, d + days);
-      return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
-    };
     async function load() {
       setLoading(true);
       try {
@@ -249,16 +262,17 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
     }
     try {
       // combine date + optional time; if no time provided, use 00:00 and mark all_day
+      const all_day = !formStartTime;
+      // store pure date strings for all-day events
       const startIso = (() => {
-        if (!formStartTime) return new Date(`${formStartDate}T00:00:00`).toISOString();
+        if (all_day) return formStartDate; // store as date only
         return new Date(`${formStartDate}T${formStartTime}:00`).toISOString();
       })();
       const endIso = (() => {
         if (!formEndDate) return null;
-        if (!formEndTime) return new Date(`${formEndDate}T23:59:59`).toISOString();
+        if (all_day) return formEndDate; // store as date only (inclusive)
         return new Date(`${formEndDate}T${formEndTime}:00`).toISOString();
       })();
-      const all_day = !formStartTime;
 
       const payload: any = {
         title: formTitle,
@@ -279,12 +293,21 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
       if (data) {
         const ownerKey = data.owner_id || data.id;
         const color = data.color || generateColorFromString(String(ownerKey));
+        // compute display start/end for optimistic UI
+        const isAllDay = Boolean(data.all_day || data.allDay || false);
+        let dispStart: any = data.start;
+        let dispEnd: any = data.end_at || undefined;
+        if (isAllDay) {
+          dispStart = (data.start || '').slice(0, 10);
+          if (data.end_at) dispEnd = addDaysToYMD((data.end_at || '').slice(0, 10), 1);
+        }
         const newEvt = {
           id: data.id,
           title: data.title,
-          start: data.start,
-          end: data.end_at || undefined,
-          extendedProps: { description: data.description, owner_id: data.owner_id, owner_name: data.owner_name || null, owner_email: data.owner_email || null },
+          start: dispStart,
+          end: dispEnd,
+          allDay: isAllDay,
+          extendedProps: { description: data.description, owner_id: data.owner_id, owner_name: data.owner_name || null, owner_email: data.owner_email || null, all_day: isAllDay },
           backgroundColor: color,
           borderColor: color,
         };
@@ -300,14 +323,11 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
   const updateEvent = async () => {
     if (!editingEvent) return;
     try {
-      const startIso = (() => {
-        if (!formStartTime) return new Date(`${formStartDate}T00:00:00`).toISOString();
-        return new Date(`${formStartDate}T${formStartTime}:00`).toISOString();
-      })();
+      const all_day = !formStartTime;
+      const startIso = all_day ? formStartDate : new Date(`${formStartDate}T${formStartTime}:00`).toISOString();
       const endIso = (() => {
         if (!formEndDate) return null;
-        if (!formEndTime) return new Date(`${formEndDate}T23:59:59`).toISOString();
-        return new Date(`${formEndDate}T${formEndTime}:00`).toISOString();
+        return all_day ? formEndDate : new Date(`${formEndDate}T${formEndTime}:00`).toISOString();
       })();
 
       const payload: any = {
@@ -315,12 +335,21 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
         description: formDescription || null,
         start: startIso,
         end_at: endIso,
+        all_day: all_day,
       };
       const { data: updated, error } = await supabase.from('calendar_events').update(payload).eq('id', editingEvent.id).select().single();
       if (error) throw error;
       // update local state using returned row if available
       if (updated) {
-        setEvents(prev => prev.map(p => p.id === updated.id ? { ...p, title: updated.title, start: updated.start, end: updated.end_at || undefined, extendedProps: { ...((p as any).extendedProps || {}), description: updated.description } } : p));
+        // compute display values for all-day
+        const isAllDay = Boolean(updated.all_day || updated.allDay || false);
+        let dispStart: any = updated.start;
+        let dispEnd: any = updated.end_at || undefined;
+        if (isAllDay) {
+          dispStart = (updated.start || '').slice(0, 10);
+          if (updated.end_at) dispEnd = addDaysToYMD((updated.end_at || '').slice(0, 10), 1);
+        }
+        setEvents(prev => prev.map(p => p.id === updated.id ? { ...p, title: updated.title, start: dispStart, end: dispEnd, allDay: isAllDay, extendedProps: { ...((p as any).extendedProps || {}), description: updated.description, all_day: isAllDay } } : p));
       }
       setEditingEvent(null);
       setOpenCreate(false);
@@ -468,6 +497,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                 select={handleDateSelect}
                 events={events}
                 eventClick={handleEventClick}
+                eventContent={renderEventContent}
                 height="auto"
                 ref={calendarRef as any}
               />
