@@ -617,8 +617,10 @@ export default function EspaceCollaboratif() {
     // Try direct original dossier id first, otherwise resolve via RPCs to find the shared row
     (async () => {
       try {
-        if (dossier.dossier_id) {
-          navigate(`/${cabinetRole}s/dossiers/${dossier.dossier_id}`, { state: { fromCollaboratif: true } });
+        // When opening from the collaborative space, prefer the cabinet row id (dossier.id)
+        // because the original dossier row may be inaccessible due to RLS for non-owners.
+        if (dossier.id) {
+          navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
           return;
         }
 
