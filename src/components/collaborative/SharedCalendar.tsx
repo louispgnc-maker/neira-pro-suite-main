@@ -6,6 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
+import frLocale from '@fullcalendar/core/locales/fr';
 // Note: FullCalendar styles can be imported globally if desired. Omitted here to avoid bundler CSS resolution issues in some environments.
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ type CalendarEvent = {
   event_type?: string | null;
 };
 
-export function SharedCalendar({ role }: { role?: string }) {
+export function SharedCalendar({ role, members }: { role?: string; members?: Array<{ id: string; nom?: string; email?: string }> }) {
   const { user } = useAuth();
   const [events, setEvents] = useState<EventInput[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,15 +50,19 @@ export function SharedCalendar({ role }: { role?: string }) {
         const { data, error } = await query.order('start', { ascending: true });
         if (error) throw error;
         if (!mounted) return;
-        const mapEvents = (data || []).map((e: any) => ({
-          id: e.id,
-          title: e.title,
-          start: e.start,
-          end: e.end || undefined,
-          extendedProps: { description: e.description, owner_id: e.owner_id, event_type: e.event_type },
-          backgroundColor: e.color || undefined,
-          borderColor: e.color || undefined,
-        }));
+        const mapEvents = (data || []).map((e: any) => {
+          const ownerKey = e.owner_id || e.id;
+          const color = e.color || generateColorFromString(String(ownerKey));
+          return ({
+            id: e.id,
+            title: e.title,
+            start: e.start,
+            end: e.end || undefined,
+            extendedProps: { description: e.description, owner_id: e.owner_id, event_type: e.event_type },
+            backgroundColor: color,
+            borderColor: color,
+          });
+        });
         setEvents(mapEvents);
       } catch (e) {
         console.error('load calendar events', e);
@@ -74,9 +79,13 @@ export function SharedCalendar({ role }: { role?: string }) {
       const evt = payload.record;
       if (!evt) return;
       if (payload.eventType === 'INSERT') {
-        setEvents(prev => [{ id: evt.id, title: evt.title, start: evt.start, end: evt.end || undefined, extendedProps: { description: evt.description, owner_id: evt.owner_id }, backgroundColor: evt.color || undefined, borderColor: evt.color || undefined }, ...prev]);
+        const ownerKey = evt.owner_id || evt.id;
+        const color = evt.color || generateColorFromString(String(ownerKey));
+        setEvents(prev => [{ id: evt.id, title: evt.title, start: evt.start, end: evt.end || undefined, extendedProps: { description: evt.description, owner_id: evt.owner_id }, backgroundColor: color, borderColor: color }, ...prev]);
       } else if (payload.eventType === 'UPDATE') {
-        setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: evt.start, end: evt.end || undefined, extendedProps: { ...p.extendedProps, description: evt.description } } : p));
+        const ownerKey = payload.record?.owner_id || payload.record?.id;
+        const color = payload.record?.color || generateColorFromString(String(ownerKey));
+        setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: evt.start, end: evt.end || undefined, extendedProps: { ...p.extendedProps, description: evt.description }, backgroundColor: color, borderColor: color } : p));
       } else if (payload.eventType === 'DELETE') {
         setEvents(prev => prev.filter(p => p.id !== payload.old.id));
       }
@@ -226,11 +235,26 @@ export function SharedCalendar({ role }: { role?: string }) {
         </div>
       </div>
 
+      {/* Legend: color per member (if provided) */}
+      {members && members.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-3">
+          {members.map(m => (
+            <div key={m.id} className="flex items-center gap-2">
+              <span style={{ backgroundColor: generateColorFromString(m.id) }} className="w-4 h-4 rounded" />
+              <span className="text-sm text-muted-foreground">{m.nom || m.email || m.id.substring(0,6)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="bg-white rounded-lg border p-2">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
           initialView="dayGridMonth"
+          locales={[frLocale]}
+          locale="fr"
           headerToolbar={{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' }}
+          buttonText={{ today: "Aujourd'hui", month: 'Mois', week: 'Semaine', day: 'Jour', list: 'Liste' }}
           selectable={true}
           selectMirror={true}
           select={handleDateSelect}
