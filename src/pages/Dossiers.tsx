@@ -331,101 +331,109 @@ export default function Dossiers() {
           </Dialog>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Liste des dossiers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
+        {loading ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Liste des dossiers</CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-lg">
                 <p className="text-muted-foreground">Chargement…</p>
               </div>
-            ) : (
-              <>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Rechercher un dossier..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Rechercher un dossier..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Liste des dossiers</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead>Clients</TableHead>
-                    <TableHead>Contrats</TableHead>
-                    <TableHead>Documents</TableHead>
-                    <TableHead>Créé le</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {dossiers.length === 0 ? (
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground">Aucun dossier</TableCell>
+                      <TableHead>Nom</TableHead>
+                      <TableHead>Statut</TableHead>
+                      <TableHead>Clients</TableHead>
+                      <TableHead>Contrats</TableHead>
+                      <TableHead>Documents</TableHead>
+                      <TableHead>Créé le</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
                     </TableRow>
-                  ) : (
-                    dossiers.map((d) => (
-                      <TableRow
-                        key={d.id}
-                        onDoubleClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}
-                        className="cursor-pointer"
-                      >
-                        <TableCell className="font-medium">{d.title}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{d.status}</TableCell>
-                        <TableCell>{d.client_count ?? '—'}</TableCell>
-                        <TableCell>{d.contrat_count ?? '—'}</TableCell>
-                        <TableCell>{d.document_count ?? '—'}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <ShareToCollaborativeDialog
-                              itemId={d.id}
-                              itemName={d.title}
-                              itemType="dossier"
-                              role={role}
-                              onSuccess={() => {
-                                toast.success('Dossier partagé');
-                              }}
-                            />
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
-                                >
-                                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className={menuContentClass}>
-                                <DropdownMenuItem className={menuItemClass} onClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  Voir
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Supprimer
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {dossiers.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center text-muted-foreground">Aucun dossier</TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
+                    ) : (
+                      dossiers.map((d) => (
+                        <TableRow
+                          key={d.id}
+                          onDoubleClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}
+                          className="cursor-pointer"
+                        >
+                          <TableCell className="font-medium">{d.title}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{d.status}</TableCell>
+                          <TableCell>{d.client_count ?? '—'}</TableCell>
+                          <TableCell>{d.contrat_count ?? '—'}</TableCell>
+                          <TableCell>{d.document_count ?? '—'}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <ShareToCollaborativeDialog
+                                itemId={d.id}
+                                itemName={d.title}
+                                itemType="dossier"
+                                role={role}
+                                onSuccess={() => {
+                                  toast.success('Dossier partagé');
+                                }}
+                              />
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                                  >
+                                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className={menuContentClass}>
+                                  <DropdownMenuItem className={menuItemClass} onClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}>
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Voir
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Supprimer
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
                 </Table>
-              </>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
     </AppLayout>
   );

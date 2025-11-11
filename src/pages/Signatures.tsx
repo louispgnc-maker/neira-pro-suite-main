@@ -113,18 +113,21 @@ export default function Signatures() {
           </Button>
         </div>
         <div className={signatures.length > 0 ? "mb-4" : "mb-4"}>
+          <div className="mb-3">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher (signataire ou document)…"
+              className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </div>
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Liste des signatures</CardTitle>
             </CardHeader>
             <CardContent>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher (signataire ou document)…"
-                className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
-              />
+              {/* search moved above the title */}
             </CardContent>
           </Card>
         </div>
