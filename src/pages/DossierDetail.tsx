@@ -95,6 +95,53 @@ export default function DossierDetail() {
           // ignore fallback errors
         }
 
+        // If RPC lookup failed to find the shared row, try direct table lookup as a last resort
+        try {
+          try {
+            const { data: cd1, error: cd1Err } = await supabase
+              .from('cabinet_dossiers')
+              .select('id, title, description, status, shared_by, shared_at, dossier_id')
+              .eq('dossier_id', id)
+              .maybeSingle();
+            if (!cd1Err && cd1 && mounted) {
+              setDossier({
+                id: cd1.id,
+                title: cd1.title,
+                status: cd1.status || '—',
+                description: cd1.description || null,
+                created_at: cd1.shared_at || null,
+              });
+              // attached documents are loaded via the RPC path; skip direct attached load here to avoid
+              // triggering potential DB-side computed columns that can cause server errors.
+            }
+          } catch (e) {
+            // ignore
+          }
+
+          // try by cabinet_dossiers.id
+          try {
+            const { data: cd2, error: cd2Err } = await supabase
+              .from('cabinet_dossiers')
+              .select('id, title, description, status, shared_by, shared_at, dossier_id')
+              .eq('id', id)
+              .maybeSingle();
+            if (!cd2Err && cd2 && mounted) {
+              setDossier({
+                id: cd2.id,
+                title: cd2.title,
+                status: cd2.status || '—',
+                description: cd2.description || null,
+                created_at: cd2.shared_at || null,
+              });
+              // see note above: avoid selecting computed/derived columns directly here
+            }
+          } catch (e) {
+            // ignore
+          }
+        } catch (e) {
+          // ignore final fallback errors
+        }
+
       // Associations (only available for owners). If dossier was loaded from cabinet_dossiers fallback above,
       // these queries will likely return empty due to RLS; that's acceptable.
       const [dc, dco, dd] = await Promise.all([
