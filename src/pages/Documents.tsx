@@ -140,12 +140,7 @@ export default function Documents() {
         const a = document.createElement('a');
         a.href = raw;
         a.download = doc.name || 'document.pdf';
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Liste des documents</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="border rounded-lg bg-white">
+        document.body.appendChild(a);
         a.click();
         a.remove();
         return;
@@ -218,9 +213,6 @@ export default function Documents() {
     try {
       if (doc.storage_path) {
         const { error: storageErr } = await supabase.storage
-              </div>
-            </CardContent>
-          </Card>
           .from('documents')
           .remove([doc.storage_path]);
         if (storageErr) {
