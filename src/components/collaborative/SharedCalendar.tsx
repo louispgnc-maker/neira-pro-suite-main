@@ -62,7 +62,7 @@ export function SharedCalendar({ role, members }: { role?: string; members?: Arr
             id: e.id,
             title: e.title,
             start: e.start,
-            end: e.end || undefined,
+            end: e.end_at || undefined,
             extendedProps: { description: e.description, owner_id: e.owner_id, event_type: e.event_type },
             backgroundColor: color,
             borderColor: color,
@@ -86,11 +86,11 @@ export function SharedCalendar({ role, members }: { role?: string; members?: Arr
       if (payload.eventType === 'INSERT') {
         const ownerKey = evt.owner_id || evt.id;
         const color = evt.color || generateColorFromString(String(ownerKey));
-        setEvents(prev => [{ id: evt.id, title: evt.title, start: evt.start, end: evt.end || undefined, extendedProps: { description: evt.description, owner_id: evt.owner_id }, backgroundColor: color, borderColor: color }, ...prev]);
+        setEvents(prev => [{ id: evt.id, title: evt.title, start: evt.start, end: evt.end_at || undefined, extendedProps: { description: evt.description, owner_id: evt.owner_id }, backgroundColor: color, borderColor: color }, ...prev]);
       } else if (payload.eventType === 'UPDATE') {
         const ownerKey = payload.record?.owner_id || payload.record?.id;
         const color = payload.record?.color || generateColorFromString(String(ownerKey));
-        setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: evt.start, end: evt.end || undefined, extendedProps: { ...p.extendedProps, description: evt.description }, backgroundColor: color, borderColor: color } : p));
+        setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: evt.start, end: evt.end_at || undefined, extendedProps: { ...p.extendedProps, description: evt.description }, backgroundColor: color, borderColor: color } : p));
       } else if (payload.eventType === 'DELETE') {
         setEvents(prev => prev.filter(p => p.id !== payload.old.id));
       }
@@ -139,7 +139,7 @@ export function SharedCalendar({ role, members }: { role?: string; members?: Arr
         title: formTitle,
         description: formDescription || null,
         start: new Date(formStart).toISOString(),
-        end: formEnd ? new Date(formEnd).toISOString() : null,
+        end_at: formEnd ? new Date(formEnd).toISOString() : null,
         owner_id: user.id,
         role: role || null,
         color: generateColorFromString(user.id || 'u'),
@@ -163,7 +163,7 @@ export function SharedCalendar({ role, members }: { role?: string; members?: Arr
         title: formTitle,
         description: formDescription || null,
         start: new Date(formStart).toISOString(),
-        end: formEnd ? new Date(formEnd).toISOString() : null,
+        end_at: formEnd ? new Date(formEnd).toISOString() : null,
       };
       const { error } = await supabase.from('calendar_events').update(payload).eq('id', editingEvent.id);
       if (error) throw error;
