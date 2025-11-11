@@ -16,7 +16,7 @@ type NotificationRow = {
   metadata?: any;
 };
 
-export function NotificationBell({ role = 'avocat', compact = false }: { role?: 'avocat' | 'notaire', compact?: boolean }) {
+export function NotificationBell({ role = 'avocat', compact = false, cabinetId }: { role?: 'avocat' | 'notaire', compact?: boolean, cabinetId?: string | null }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -36,14 +36,14 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
       }
       setLoading(true);
       try {
-        // Use RPCs added in the DB to get unread count and notifications
-        const { data: unreadData, error: unreadErr } = await supabase.rpc('get_unread_notifications_count');
+          // Use RPCs added in the DB to get unread count and notifications
+          const { data: unreadData, error: unreadErr } = await supabase.rpc('get_unread_notifications_count', { p_cabinet_id: cabinetId ?? null });
         if (!unreadErr) {
           const cnt = typeof unreadData === 'number' ? unreadData : (Array.isArray(unreadData) ? Number(unreadData[0]) : 0);
           if (active) setUnreadCount(cnt ?? 0);
         }
 
-        const { data: list, error: listErr } = await supabase.rpc('get_notifications', { p_limit: 20, p_offset: 0 });
+          const { data: list, error: listErr } = await supabase.rpc('get_notifications', { p_limit: 20, p_offset: 0, p_cabinet_id: cabinetId ?? null });
         if (!listErr && active && Array.isArray(list)) {
           setNotifications(list as NotificationRow[]);
         }
@@ -56,7 +56,7 @@ export function NotificationBell({ role = 'avocat', compact = false }: { role?: 
     };
     load();
     return () => { active = false; };
-  }, [user, role]);
+  }, [user, role, cabinetId]);
 
   // Realtime subscription to the notifications table for this user
   useEffect(() => {

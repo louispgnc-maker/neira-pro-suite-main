@@ -614,8 +614,50 @@ export default function EspaceCollaboratif() {
   };
 
   const navigateToDossier = (dossier: SharedDossier) => {
-    const targetId = dossier.dossier_id || dossier.id;
-    navigate(`/${cabinetRole}s/dossiers/${targetId}`, { state: { fromCollaboratif: true } });
+    // Try direct original dossier id first, otherwise resolve via RPCs to find the shared row
+    (async () => {
+      try {
+        if (dossier.dossier_id) {
+          navigate(`/${cabinetRole}s/dossiers/${dossier.dossier_id}`, { state: { fromCollaboratif: true } });
+          return;
+        }
+
+        // Use RPCs (safer with RLS) to resolve the cabinet's shared rows and find mapping
+        const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
+        if (cabinetsErr || !Array.isArray(cabinetsData)) {
+          // fallback to navigate using the provided id
+          navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+          return;
+        }
+        const cabinets = cabinetsData as any[];
+        const filtered = cabinets.filter((c: any) => c.role === cabinetRole);
+        const userCabinet = filtered[0] || null;
+        if (!userCabinet) {
+          navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+          return;
+        }
+
+        const { data: sharedDossiersData, error: sharedErr } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
+        if (sharedErr || !Array.isArray(sharedDossiersData)) {
+          navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+          return;
+        }
+
+        const found = (sharedDossiersData as any[]).find((sd) => (sd.dossier_id === dossier.dossier_id) || (sd.dossier_id === dossier.id) || (sd.id === dossier.id));
+        if (found) {
+          // prefer original dossier id if present
+          const target = found.dossier_id || found.id || dossier.id;
+          navigate(`/${cabinetRole}s/dossiers/${target}`, { state: { fromCollaboratif: true } });
+          return;
+        }
+
+        // final fallback: navigate using given id
+        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+      } catch (e) {
+        // fallback
+        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+      }
+    })();
   };
 
   // Search states for lists

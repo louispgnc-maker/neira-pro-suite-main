@@ -53,42 +53,47 @@ export default function DossierDetail() {
       if (!error && d && mounted) {
         setDossier(d as Dossier);
       } else {
-        // Fallback: maybe this dossier was shared to the cabinet. Try cabinet_dossiers (visible to active members)
+        // Fallback: maybe this dossier was shared to the cabinet. Use RPCs to avoid RLS issues.
         try {
-          const { data: shared, error: sErr } = await supabase
-            .from('cabinet_dossiers')
-            .select('id, title, description, status, shared_by, shared_at, attached_document_ids')
-            .eq('dossier_id', id)
-            .maybeSingle();
-          if (!sErr && shared && mounted) {
-            // Map cabinet_dossiers shape to our local Dossier shape for read-only display
-            setDossier({
-              id: shared.id,
-              title: shared.title,
-              status: shared.status || '—',
-              description: shared.description || null,
-              created_at: shared.shared_at || null,
-            });
-            // If the shared row includes attached cabinet_documents ids, load them so members can open attachments
-            try {
-              const attachedIds: string[] = (shared as any).attached_document_ids || [];
-              if (attachedIds.length > 0) {
-                const { data: attachedDocs, error: attErr } = await supabase
-                  .from('cabinet_documents')
-                  .select('id, title, file_url, file_name')
-                  .in('id', attachedIds as unknown as string[]);
-                if (!attErr && Array.isArray(attachedDocs) && mounted) {
-                  setDocuments((attachedDocs as any).map((a: any) => ({ id: a.id, name: a.title, file_url: a.file_url, file_name: a.file_name })));
+          const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
+          if (!cabinetsErr && Array.isArray(cabinetsData)) {
+            const cabinets = cabinetsData as any[];
+            const filtered = cabinets.filter((c: any) => c.role === role);
+            const userCabinet = filtered[0] || null;
+            if (userCabinet) {
+              const { data: sharedDossiersData, error: sharedErr } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
+              if (!sharedErr && Array.isArray(sharedDossiersData)) {
+                const found = (sharedDossiersData as any[]).find((sd) => (sd.dossier_id === id) || (sd.id === id));
+                if (found && mounted) {
+                  setDossier({
+                    id: found.id,
+                    title: found.title,
+                    status: found.status || '—',
+                    description: found.description || null,
+                    created_at: found.shared_at || null,
+                  });
+                  // If the shared row includes attached cabinet_documents ids, load them so members can open attachments
+                  try {
+                    const attachedIds: string[] = found.attached_document_ids || [];
+                    if (attachedIds.length > 0) {
+                      const { data: attachedDocs, error: attErr } = await supabase
+                        .from('cabinet_documents')
+                        .select('id, title, file_url, file_name')
+                        .in('id', attachedIds as unknown as string[]);
+                      if (!attErr && Array.isArray(attachedDocs) && mounted) {
+                        setDocuments((attachedDocs as any).map((a: any) => ({ id: a.id, name: a.title, file_url: a.file_url, file_name: a.file_name })));
+                      }
+                    }
+                  } catch (e) {
+                    // ignore attachment load errors
+                  }
                 }
               }
-            } catch (e) {
-              // ignore attachment load errors
             }
           }
         } catch (e) {
           // ignore fallback errors
         }
-      }
 
       // Associations (only available for owners). If dossier was loaded from cabinet_dossiers fallback above,
       // these queries will likely return empty due to RLS; that's acceptable.

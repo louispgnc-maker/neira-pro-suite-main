@@ -8,6 +8,7 @@ interface UserProfile {
   last_name: string;
   email: string;
   role?: string; // 'avocat' | 'notaire'
+  cabinet_id?: string | null;
   created_at?: string;
 }
 

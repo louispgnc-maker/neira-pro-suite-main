@@ -35,6 +35,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/NotificationBell";
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 function getMenuItems(role: 'avocat' | 'notaire') {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -68,6 +70,24 @@ export function AppSidebar() {
   const { user, profile } = useAuth();
   const profileEmail = user?.email || '—';
   const displayName = profile?.first_name || profile?.email?.split('@')[0] || 'Compte';
+  const [currentCabinetId, setCurrentCabinetId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadCabinetForRole = async () => {
+      if (!user) return setCurrentCabinetId(null);
+      try {
+        const { data } = await supabase.rpc('get_user_cabinets');
+        const cabinets = Array.isArray(data) ? data as any[] : [];
+        const found = cabinets.find((c: any) => c.role === role);
+        if (mounted) setCurrentCabinetId(found?.id ?? profile?.cabinet_id ?? null);
+      } catch (e) {
+        if (mounted) setCurrentCabinetId(profile?.cabinet_id ?? null);
+      }
+    };
+    loadCabinetForRole();
+    return () => { mounted = false; };
+  }, [user, role, profile]);
   // Couleurs espace selon rôle
   const spaceBtnClass = role === 'notaire'
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
@@ -158,7 +178,7 @@ export function AppSidebar() {
 
       <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
         <div className={`flex ${isCollapsed ? 'flex-col items-center' : 'items-center justify-start'} gap-2`}> 
-          <NotificationBell role={role} compact={true} />
+          <NotificationBell role={role} compact={true} cabinetId={currentCabinetId} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

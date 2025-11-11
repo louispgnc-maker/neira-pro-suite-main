@@ -9,14 +9,22 @@ returns boolean language sql stable as $$
     select 1
     from public.cabinet_members cm
     join public.cabinets c on cm.cabinet_id = c.id
-    where cm.id = user_id
+    where cm.user_id = user_id
       and c.role = role_text
       and (cm.status is null or cm.status = 'active')
   );
 $$;
 
+
 -- Enable row level security on calendar_events
 alter table if exists public.calendar_events enable row level security;
+-- DROP any previous policies for this table so the SQL is idempotent
+drop policy if exists "calendar_select_for_members" on public.calendar_events;
+drop policy if exists "calendar_insert_owner_only" on public.calendar_events;
+drop policy if exists "calendar_update_owner_or_member" on public.calendar_events;
+drop policy if exists "calendar_update_owner_or_cabinet_owner" on public.calendar_events;
+drop policy if exists "calendar_delete_owner_or_member" on public.calendar_events;
+drop policy if exists "calendar_delete_owner_or_cabinet_owner" on public.calendar_events;
 
 -- Allow SELECT for authenticated users who are either the owner or a member of the same role
 create policy "calendar_select_for_members"
@@ -26,7 +34,15 @@ create policy "calendar_select_for_members"
     auth.uid() is not null
     and (
       owner_id = auth.uid()
-      or public.is_user_in_role(auth.uid(), role)
+      or exists (
+        -- allow if current user is a member of the same cabinet as the event owner
+        select 1
+        from public.profiles owner_p
+        join public.cabinet_members cm on cm.cabinet_id = owner_p.cabinet_id
+        where owner_p.id = public.calendar_events.owner_id
+          and cm.user_id = auth.uid()
+          and (cm.status is null or cm.status = 'active')
+      )
     )
   );
 
@@ -40,31 +56,44 @@ create policy "calendar_insert_owner_only"
   );
 
 -- Allow UPDATE for the owner or any member of the same role
-create policy "calendar_update_owner_or_member"
+-- Allow UPDATE only for the event owner or the owner of the cabinet that contains the event owner
+-- (prevents arbitrary members from updating other members' events)
+create policy "calendar_update_owner_or_cabinet_owner"
   on public.calendar_events
   for update
   using (
     auth.uid() is not null
     and (
       owner_id = auth.uid()
-      or public.is_user_in_role(auth.uid(), role)
+      -- OR current user is the owner of the cabinet that the event owner belongs to
+      or exists(
+        select 1 from public.profiles p
+        join public.cabinets c on p.cabinet_id = c.id
+        where p.id = public.calendar_events.owner_id
+          and c.owner_id = auth.uid()
+      )
     )
   )
   with check (
-    -- when updating, still require that owner_id remains set (and if changed it must equal the actor)
+    -- when updating, still require that owner_id remains set
     auth.uid() is not null
-    and owner_id = auth.uid()
+    and owner_id is not null
   );
 
--- Allow DELETE for the owner or any member of the same role
-create policy "calendar_delete_owner_or_member"
+-- Allow DELETE only for the event owner or the owner of the cabinet that contains the event owner
+create policy "calendar_delete_owner_or_cabinet_owner"
   on public.calendar_events
   for delete
   using (
     auth.uid() is not null
     and (
       owner_id = auth.uid()
-      or public.is_user_in_role(auth.uid(), role)
+      or exists(
+        select 1 from public.profiles p
+        join public.cabinets c on p.cabinet_id = c.id
+        where p.id = public.calendar_events.owner_id
+          and c.owner_id = auth.uid()
+      )
     )
   );
 

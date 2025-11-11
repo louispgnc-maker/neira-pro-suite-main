@@ -70,6 +70,46 @@ export default function Dossiers() {
         .order('created_at', { ascending: false });
 
       let list = (d || []) as DossierRow[];
+      // Fetch cabinet shared dossiers and merge so members see shared dossiers like shared documents
+      try {
+        const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+        const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as any[]) : [];
+        const filtered = cabinets.filter((c: any) => c.role === role);
+        const userCabinet = filtered[0] || null;
+        if (userCabinet) {
+          try {
+            const { data: sharedDossiers } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
+            if (Array.isArray(sharedDossiers) && sharedDossiers.length > 0) {
+              // Map cabinet_dossiers rows to DossierRow while marking them as shared
+              const mapped = (sharedDossiers as any[]).map((sd) => ({
+                id: sd.dossier_id || sd.id,
+                title: sd.title,
+                status: sd.status || '—',
+                created_at: sd.shared_at || sd.created_at || null,
+                // attach helper meta used in rendering
+                // @ts-ignore
+                _shared: true,
+                // @ts-ignore
+                _cabinet_row_id: sd.id,
+                // @ts-ignore
+                _attached_document_count: Array.isArray(sd.attached_document_ids) ? sd.attached_document_ids.length : 0,
+              } as DossierRow));
+
+              // merge owned and shared, de-dup by original dossier id
+              const byId = new Map<string, DossierRow & { _shared?: boolean }>();
+              list.forEach((it) => byId.set(it.id, it));
+              mapped.forEach((it: any) => {
+                if (!byId.has(it.id)) byId.set(it.id, it);
+              });
+              list = Array.from(byId.values());
+            }
+          } catch (e) {
+            // ignore shared fetch errors
+          }
+        }
+      } catch (e) {
+        // ignore get_user_cabinets errors
+      }
       // If search filter provided, refetch server-side with ilike
       if (debounced) {
         const { data: sd, error: sErr } = await supabase
@@ -102,10 +142,12 @@ export default function Dossiers() {
           if (dc.data) dc.data.forEach((row: any) => cntClients.set(row.dossier_id, (cntClients.get(row.dossier_id) || 0) + 1));
           if (dco.data) dco.data.forEach((row: any) => cntContrats.set(row.dossier_id, (cntContrats.get(row.dossier_id) || 0) + 1));
           if (dd.data) dd.data.forEach((row: any) => cntDocs.set(row.dossier_id, (cntDocs.get(row.dossier_id) || 0) + 1));
-          list.forEach((x) => {
+          list.forEach((x: any) => {
+            // if shared entry has attached_document_count we prefer that
+            if (x._attached_document_count !== undefined) x.document_count = x._attached_document_count;
+            else x.document_count = cntDocs.get(x.id) || 0;
             x.client_count = cntClients.get(x.id) || 0;
             x.contrat_count = cntContrats.get(x.id) || 0;
-            x.document_count = cntDocs.get(x.id) || 0;
           });
         }
         setDossiers(list);
@@ -413,14 +455,16 @@ export default function Dossiers() {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className={menuContentClass}>
-                                  <DropdownMenuItem className={menuItemClass} onClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}>
+                                    <DropdownMenuItem className={menuItemClass} onClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}>
                                     <Eye className="mr-2 h-4 w-4" />
                                     Voir
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Supprimer
-                                  </DropdownMenuItem>
+                                    {!(d as any)._shared && (
+                                      <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Supprimer
+                                      </DropdownMenuItem>
+                                    )}
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>

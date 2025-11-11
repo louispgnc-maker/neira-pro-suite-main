@@ -212,19 +212,23 @@ drop policy if exists "notifications_update_recipient" on public.notifications;
 create policy "notifications_update_recipient" on public.notifications
   for update using (recipient_id = auth.uid());
 
--- RPC: get unread notifications count for current user
-drop function if exists public.get_unread_notifications_count();
-create function public.get_unread_notifications_count()
+-- RPC: get unread notifications count for current user (optionally filtered by cabinet)
+drop function if exists public.get_unread_notifications_count(uuid);
+create function public.get_unread_notifications_count(p_cabinet_id uuid default null)
 returns integer language sql stable as $$
-  select count(*)::int from public.notifications where recipient_id = auth.uid() and read = false;
+  select count(*)::int from public.notifications
+  where recipient_id = auth.uid()
+    and read = false
+    and (p_cabinet_id is null or cabinet_id = p_cabinet_id);
 $$;
 
--- RPC: get notifications list (paged)
-drop function if exists public.get_notifications(integer, integer);
-create function public.get_notifications(p_limit integer default 20, p_offset integer default 0)
+-- RPC: get notifications list (paged) optionally filtered by cabinet
+drop function if exists public.get_notifications(integer, integer, uuid);
+create function public.get_notifications(p_limit integer default 20, p_offset integer default 0, p_cabinet_id uuid default null)
 returns setof public.notifications language sql stable as $function$
   select * from public.notifications
   where recipient_id = auth.uid()
+    and (p_cabinet_id is null or cabinet_id = p_cabinet_id)
   order by created_at desc
   limit coalesce(p_limit,20) offset coalesce(p_offset,0);
 $function$;
