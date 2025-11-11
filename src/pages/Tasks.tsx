@@ -170,7 +170,7 @@ export default function Tasks() {
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Liste des tâches</h1>
-            <p className="text-muted-foreground mt-1">Organisez vos tâches et échéances</p>
+            <p className="text-muted-foreground mt-1">Gérez toutes vos tâches</p>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
