@@ -21,6 +21,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Trash2, UploadCloud } from 'lucide-react';
+import SharedCalendar from '@/components/collaborative/SharedCalendar';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -1231,21 +1232,7 @@ export default function EspaceCollaboratif() {
 
         {/* Calendrier */}
         <TabsContent value="calendrier" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Calendrier partagé</CardTitle>
-              <CardDescription>
-                Planifiez et coordonnez les événements du cabinet
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Calendrier partagé</p>
-                <p className="text-sm mt-2">Fonctionnalité en cours de développement</p>
-              </div>
-            </CardContent>
-          </Card>
+          <SharedCalendar role={cabinetRole} />
         </TabsContent>
 
         {/* Tâches */}
