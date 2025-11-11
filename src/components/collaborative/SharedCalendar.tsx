@@ -59,11 +59,11 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
   const renderEventContent = (arg: any) => {
     const isAllDay = Boolean((arg.event?.extendedProps as any)?.all_day);
     const timeText = arg.timeText || '';
+    const hideTime = isAllDay || timeText === '00:00' || timeText === '00:00:00';
     return (
       <div className="flex items-center gap-2">
-        {!isAllDay && <span className="text-xs text-muted-foreground mr-1">{timeText}</span>}
+        {!hideTime && <span className="text-xs text-muted-foreground mr-1">{timeText}</span>}
         <span className="truncate">{arg.event.title}</span>
-        {isAllDay && <span className="ml-2 text-xs bg-gray-100 text-gray-700 rounded px-2 py-0.5">Journée</span>}
       </div>
     );
   };
@@ -218,13 +218,26 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
     // Pre-fill date/time fields; startStr is like 2025-11-11T12:00:00
     const s = selectInfo.startStr;
     const e = selectInfo.endStr || '';
+    const isAllDay = (selectInfo as any).allDay === true;
     setFormStartDate(s.slice(0, 10));
-    setFormStartTime(s.length > 10 ? s.slice(11, 16) : '');
-    if (e) {
-      setFormEndDate(e.slice(0, 10));
-      setFormEndTime(e.length > 10 ? e.slice(11, 16) : '');
+    if (isAllDay) {
+      // FullCalendar provides exclusive end for all-day selections -> subtract one day for the form
+      if (e) {
+        const endYmd = e.slice(0, 10);
+        setFormEndDate(addDaysToYMD(endYmd, -1));
+      } else {
+        setFormEndDate('');
+      }
+      setFormStartTime('');
+      setFormEndTime('');
     } else {
-      setFormEndDate(''); setFormEndTime('');
+      setFormStartTime(s.length > 10 ? s.slice(11, 16) : '');
+      if (e) {
+        setFormEndDate(e.slice(0, 10));
+        setFormEndTime(e.length > 10 ? e.slice(11, 16) : '');
+      } else {
+        setFormEndDate(''); setFormEndTime('');
+      }
     }
     setOpenCreate(true);
   };
