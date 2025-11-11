@@ -120,6 +120,14 @@ export default function EspaceCollaboratif() {
   const [taskDate, setTaskDate] = useState('');
   const [taskTime, setTaskTime] = useState('');
   const [taskSaving, setTaskSaving] = useState(false);
+  // Edit task dialog state
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editTaskId, setEditTaskId] = useState<string | null>(null);
+  const [editTaskText, setEditTaskText] = useState('');
+  const [editTaskNotes, setEditTaskNotes] = useState('');
+  const [editTaskDate, setEditTaskDate] = useState('');
+  const [editTaskTime, setEditTaskTime] = useState('');
+  const [editTaskSaving, setEditTaskSaving] = useState(false);
   const [collabTasks, setCollabTasks] = useState<any[]>([]);
   const [collabLoading, setCollabLoading] = useState(true);
   // Load collaborative tasks (role/cabinet)
@@ -573,6 +581,34 @@ export default function EspaceCollaboratif() {
       toast({ title: 'Erreur', description: e.message || 'Création impossible', variant: 'destructive' });
     } finally {
       setTaskSaving(false);
+    }
+  };
+
+  const updateCollaborativeTask = async () => {
+    if (!user) return;
+    if (!editTaskId) return;
+    const title = editTaskText.trim();
+    if (!title) {
+      toast({ title: 'Erreur', description: 'Veuillez saisir la tâche', variant: 'destructive' });
+      return;
+    }
+    setEditTaskSaving(true);
+    try {
+      let due_at = null as string | null;
+      if (editTaskDate) {
+        due_at = editTaskTime ? `${editTaskDate}T${editTaskTime}` : `${editTaskDate}T00:00`;
+      }
+      const { error } = await supabase.from('tasks').update({ title, description: editTaskNotes || null, due_at }).eq('id', editTaskId);
+      if (error) throw error;
+      // update local state
+      setCollabTasks(prev => prev.map(t => t.id === editTaskId ? { ...t, title, description: editTaskNotes || null, due_at } : t));
+      toast({ title: 'Tâche modifiée', description: 'La tâche a été mise à jour.' });
+      setEditDialogOpen(false);
+    } catch (e:any) {
+      console.error('Erreur mise à jour tâche collaborative:', e);
+      toast({ title: 'Erreur', description: e.message || 'Mise à jour impossible', variant: 'destructive' });
+    } finally {
+      setEditTaskSaving(false);
     }
   };
 
@@ -1272,6 +1308,49 @@ export default function EspaceCollaboratif() {
                     </div>
                   </DialogContent>
                 </Dialog>
+                  <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Modifier la tâche</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Tâche</label>
+                          <Textarea
+                            rows={3}
+                            placeholder="Décrivez la tâche à réaliser"
+                            value={editTaskText}
+                            onChange={(e) => setEditTaskText(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Notes (optionnel)</label>
+                          <Textarea
+                            rows={2}
+                            placeholder="Notes complémentaires"
+                            value={editTaskNotes}
+                            onChange={(e) => setEditTaskNotes(e.target.value)}
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Date (optionnel)</label>
+                            <input type="date" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={editTaskDate} onChange={(e) => setEditTaskDate(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Heure (optionnel)</label>
+                            <input type="time" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={editTaskTime} onChange={(e) => setEditTaskTime(e.target.value)} />
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Annuler</Button>
+                          <Button className={colorClass} disabled={editTaskSaving} onClick={updateCollaborativeTask}>
+                            {editTaskSaving ? 'Enregistrement…' : 'Enregistrer'}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
               </div>
             </CardHeader>
             <CardContent>
@@ -1295,16 +1374,41 @@ export default function EspaceCollaboratif() {
                       const d = new Date(task.due_at);
                       dateStr = d.toLocaleDateString() + (d.getHours() || d.getMinutes() ? ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
                     }
-                    return (
+                      return (
                       <div
                         key={task.id}
                         data-task-id={task.id}
-                        className={`relative rounded-lg shadow p-4 bg-yellow-50 border border-yellow-200 flex flex-col min-h-[140px]`}
+                        className={`relative rounded-lg shadow p-4 bg-white border border-gray-100 flex flex-col min-h-[140px]`}
                       >
                         <button
+                          onClick={(e) => { e.stopPropagation();
+                            // open edit dialog with task values
+                            setEditTaskId(task.id);
+                            setEditTaskText(task.title || '');
+                            setEditTaskNotes(task.description || '');
+                            if (task.due_at) {
+                              try {
+                                const d = new Date(task.due_at);
+                                // format yyyy-mm-dd and time hh:mm
+                                const yyyy = d.getFullYear();
+                                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                                const dd = String(d.getDate()).padStart(2, '0');
+                                setEditTaskDate(`${yyyy}-${mm}-${dd}`);
+                                const hh = String(d.getHours()).padStart(2, '0');
+                                const mi = String(d.getMinutes()).padStart(2, '0');
+                                setEditTaskTime(`${hh}:${mi}`);
+                              } catch (e) {
+                                setEditTaskDate('');
+                                setEditTaskTime('');
+                              }
+                            } else {
+                              setEditTaskDate('');
+                              setEditTaskTime('');
+                            }
+                            setEditDialogOpen(true);
+                          }}
                           className={`absolute top-2 right-2 p-1 rounded-full ${cabinetRole === 'notaire' ? 'text-orange-600 hover:bg-orange-100' : 'text-blue-600 hover:bg-blue-100'}`}
                           title="Éditer la tâche"
-                          // onClick={() => ...}
                         >
                           <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
                         </button>
