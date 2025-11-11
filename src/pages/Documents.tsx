@@ -2,6 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Eye, Download, Trash2, Upload } from "lucide-react";
 import { Plus, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -139,7 +140,12 @@ export default function Documents() {
         const a = document.createElement('a');
         a.href = raw;
         a.download = doc.name || 'document.pdf';
-        document.body.appendChild(a);
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Liste des documents</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="border rounded-lg bg-white">
         a.click();
         a.remove();
         return;
@@ -212,6 +218,9 @@ export default function Documents() {
     try {
       if (doc.storage_path) {
         const { error: storageErr } = await supabase.storage
+              </div>
+            </CardContent>
+          </Card>
           .from('documents')
           .remove([doc.storage_path]);
         if (storageErr) {

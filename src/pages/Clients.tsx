@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
@@ -120,49 +120,56 @@ export default function Clients() {
             </div>
           </div>
         ) : (
-          <div className="border rounded-lg bg-white p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {clients.map((client) => (
-                <Card 
-                  key={client.id} 
-                  className="p-4 hover:shadow-md transition-shadow cursor-pointer" 
-                  onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{client.name}</h3>
-                      {client.missing_info ? (
-                        <p className="text-xs text-destructive flex items-center gap-1 mt-2">
-                          <AlertCircle className="h-3 w-3" />
-                          Manque: {client.missing_info}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-success flex items-center gap-1 mt-2">
-                          <CheckCircle2 className="h-3 w-3" />
-                          Dossier complet
-                        </p>
-                      )}
-                      {client.created_at && (
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Ajouté le {new Date(client.created_at).toLocaleDateString()}
-                        </p>
-                      )}
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className={
-                        client.kyc_status === "Complet"
-                          ? "bg-success/10 text-success border-success/20"
-                          : kycPartielColor
-                      }
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Liste des clients</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="border rounded-lg bg-white p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {clients.map((client) => (
+                    <Card 
+                      key={client.id} 
+                      className="p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                      onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}
                     >
-                      {client.kyc_status}
-                    </Badge>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg">{client.name}</h3>
+                          {client.missing_info ? (
+                            <p className="text-xs text-destructive flex items-center gap-1 mt-2">
+                              <AlertCircle className="h-3 w-3" />
+                              Manque: {client.missing_info}
+                            </p>
+                          ) : (
+                            <p className="text-xs text-success flex items-center gap-1 mt-2">
+                              <CheckCircle2 className="h-3 w-3" />
+                              Dossier complet
+                            </p>
+                          )}
+                          {client.created_at && (
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Ajouté le {new Date(client.created_at).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={
+                            client.kyc_status === "Complet"
+                              ? "bg-success/10 text-success border-success/20"
+                              : kycPartielColor
+                          }
+                        >
+                          {client.kyc_status}
+                        </Badge>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     </AppLayout>

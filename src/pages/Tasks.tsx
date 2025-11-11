@@ -1,5 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -240,9 +241,14 @@ export default function Tasks() {
             </div>
           </div>
         ) : (
-          <div className="border rounded-lg bg-white p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeTasks.map((task) => {
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Liste des tâches</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="border rounded-lg bg-white p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {activeTasks.map((task) => {
                 const overdue = !task.done && isOverdue(task.due_at);
                 let dateStr = "";
                 if (task.due_at) {
@@ -280,8 +286,10 @@ export default function Tasks() {
                   </div>
                 );
               })}
-            </div>
-          </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     </AppLayout>

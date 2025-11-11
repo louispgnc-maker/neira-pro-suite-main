@@ -9,6 +9,7 @@ import { NOTAIRE_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSele
 import { AVOCAT_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorAvocat";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -321,8 +322,13 @@ export default function Contrats() {
               </Select>
             </div>
 
-            <div className="border rounded-lg bg-white">
-              <Table>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Liste des contrats</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="border rounded-lg bg-white">
+                  <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nom du contrat</TableHead>
@@ -400,8 +406,10 @@ export default function Contrats() {
                     ))
                   )}
                 </TableBody>
-              </Table>
-            </div>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
           </>
         )}
       </div>

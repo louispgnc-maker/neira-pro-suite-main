@@ -1,6 +1,7 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -111,14 +112,21 @@ export default function Signatures() {
             Nouvelle signature
           </Button>
         </div>
-        <div className={signatures.length > 0 ? "mb-4 bg-white p-4 rounded-lg border" : "mb-4"}>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher (signataire ou document)…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+        <div className={signatures.length > 0 ? "mb-4" : "mb-4"}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Liste des signatures</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher (signataire ou document)…"
+                className="w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm"
+              />
+            </CardContent>
+          </Card>
         </div>
 
         {loading ? (
