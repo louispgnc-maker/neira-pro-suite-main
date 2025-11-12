@@ -14,6 +14,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
+import { copyClientFileToShared } from '@/lib/sharedCopy';
 import { Share2 } from 'lucide-react';
 
 interface ShareToCollaborativeDialogProps {
@@ -118,14 +119,54 @@ export function ShareToCollaborativeDialog({
 
       let rpcData: any = null;
       if (itemType === 'client') {
-        // share_client_to_cabinet signature: (p_client_id uuid, p_cabinet_id uuid, p_shared_by uuid)
-        const { data: d, error: err } = await supabase.rpc('share_client_to_cabinet', {
-          p_client_id: itemId,
-          p_cabinet_id: cabinetId,
-          p_shared_by: user?.id,
-        });
-        if (err) throw err;
-        rpcData = d;
+        // For clients: try to copy the client's attached ID document (id_doc_path) into the shared bucket
+        // and call share_client_to_cabinet_with_url to store the public URL on the cabinet_clients row.
+        try {
+          const { data: clientRow, error: clientErr } = await supabase
+            .from('clients')
+            .select('id,name,id_doc_path')
+            .eq('id', itemId)
+            .maybeSingle();
+
+          if (clientErr) throw clientErr;
+
+          let publicUrl: string | null = null;
+          let fileName: string | null = null;
+          let fileType: string | null = null;
+
+          if (clientRow && clientRow.id_doc_path) {
+            const { uploadedBucket, publicUrl: pu } = await copyClientFileToShared({ cabinetId, clientId: itemId, storagePath: clientRow.id_doc_path, itemName: clientRow.name });
+            publicUrl = pu;
+            if (publicUrl) {
+              fileName = clientRow.name || null;
+              fileType = 'application/pdf';
+            }
+          }
+
+          if (publicUrl) {
+            const { data: d, error: err } = await supabase.rpc('share_client_to_cabinet_with_url', {
+              cabinet_id_param: cabinetId,
+              client_id_param: itemId,
+              file_url_param: publicUrl,
+              description_param: description || null,
+              file_name_param: fileName,
+              file_type_param: fileType,
+            });
+            if (err) throw err;
+            rpcData = d;
+          } else {
+            // fallback to original RPC without URL
+            const { data: d, error: err } = await supabase.rpc('share_client_to_cabinet', {
+              p_client_id: itemId,
+              p_cabinet_id: cabinetId,
+              p_shared_by: user?.id,
+            });
+            if (err) throw err;
+            rpcData = d;
+          }
+        } catch (e) {
+          throw e;
+        }
       } else {
         const { data: d, error: err } = await supabase.rpc(rpcFunction, {
           cabinet_id_param: cabinetId,

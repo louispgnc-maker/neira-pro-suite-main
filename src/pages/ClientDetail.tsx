@@ -98,6 +98,26 @@ export default function ClientDetail() {
         setClient(c as Client);
       }
 
+      // If not found as an owned client, attempt to load via cabinet_clients (shared client)
+      if (mounted && !c) {
+        try {
+          const cabinetClientId = (location.state as any)?.cabinetClientId;
+          if (cabinetClientId) {
+            const { data: rpcData, error: rpcErr } = await supabase.rpc('get_cabinet_client_details', { p_cabinet_client_id: cabinetClientId });
+            if (!rpcErr && rpcData) {
+              // rpcData is JSONB representing the client row
+              const parsed = rpcData as any;
+              // supabase.rpc may return the JSON as an array/object depending on setup
+              const clientObj = (typeof parsed === 'string') ? JSON.parse(parsed) : parsed;
+              if (clientObj) setClient(clientObj as Client);
+            }
+          }
+        } catch (e) {
+          // ignore RPC errors
+          console.error('Erreur chargement client partagé:', e);
+        }
+      }
+
       // Load associated contrats
       const { data: links, error: linkErr } = await supabase
         .from('client_contrats')
@@ -122,7 +142,15 @@ export default function ClientDetail() {
     return () => { mounted = false; };
   }, [user, id]);
 
-  const goBack = () => navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients');
+  const goBack = () => {
+    const fromCollaboratif = (location.state as any)?.fromCollaboratif;
+    if (fromCollaboratif) {
+      // Explicitly return to the collaborative clients tab instead of the personal clients list
+      navigate(`/${role}s/espace-collaboratif?tab=clients`);
+      return;
+    }
+    navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients');
+  };
   const onEdit = () => navigate(role === 'notaire' ? `/notaires/clients/${id}/edit` : `/avocats/clients/${id}/edit`);
 
   return (

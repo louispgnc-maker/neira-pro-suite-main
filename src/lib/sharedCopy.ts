@@ -77,3 +77,56 @@ export async function copyDocumentToShared({
     return { uploadedBucket: null, publicUrl: null };
   }
 }
+
+export async function copyClientFileToShared({
+  cabinetId,
+  clientId,
+  storagePath,
+  itemName,
+}: {
+  cabinetId: string;
+  clientId: string;
+  storagePath: string;
+  itemName?: string | null;
+}): Promise<{ uploadedBucket: string | null; publicUrl: string | null }> {
+  try {
+    const storagePathRaw = (storagePath || '').replace(/^\/+/, '');
+    if (!storagePathRaw) throw new Error('storage_path not provided');
+
+    const { data: downloaded, error: downloadErr } = await supabase.storage.from('documents').download(storagePathRaw);
+    if (downloadErr) throw downloadErr;
+
+    const filename = storagePathRaw.split('/').pop() || itemName || `${clientId}`;
+    const targetPath = `${cabinetId}/clients/${clientId}-${filename}`;
+
+    let uploadedBucket: string | null = null;
+    const BUCKET_CANDIDATES = ['shared-documents', 'shared_documents'];
+    for (const b of BUCKET_CANDIDATES) {
+      try {
+        const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
+        if (!uploadErr) { uploadedBucket = b; break; }
+        console.warn(`Upload to bucket ${b} failed:`, uploadErr.message || uploadErr);
+      } catch (e) {
+        console.warn(`Upload attempt to bucket ${b} threw:`, e);
+      }
+    }
+
+    if (!uploadedBucket) {
+      // fallback: signed URL from original bucket
+      try {
+        const signed = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7);
+        const signedUrl = signed?.data?.signedUrl || null;
+        return { uploadedBucket: null, publicUrl: signedUrl };
+      } catch (e) {
+        return { uploadedBucket: null, publicUrl: null };
+      }
+    }
+
+    const { data: pub } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
+    const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+    return { uploadedBucket, publicUrl };
+  } catch (e) {
+    console.error('copyClientFileToShared error', e);
+    return { uploadedBucket: null, publicUrl: null };
+  }
+}
