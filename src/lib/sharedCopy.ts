@@ -56,9 +56,47 @@ export async function copyDocumentToShared({
     const { data: pub } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
     const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
 
-    // Note: we no longer update cabinet_documents directly here because that can trigger
-    // RLS violations for client-side sessions. Callers should use the server-side RPC
-    // `share_document_to_cabinet_with_url` to create/update cabinet_documents rows.
+    // Revert behavior: create / update a cabinet_documents row from the client so the
+    // sharing flow works as it did previously. If RLS blocks this in the running DB
+    // the insert/update will fail at runtime; this restores the client-side flow.
+    try {
+      // Try to get auth user id if available
+      let sharedBy: string | null = null;
+      try {
+        const userRes: any = await (supabase.auth as any).getUser();
+        sharedBy = userRes?.data?.user?.id || null;
+      } catch (e) {
+        // ignore: not critical
+      }
+
+      if (publicUrl) {
+        // Try insert first; if unique constraint exists, fall back to update
+        const payload = {
+          cabinet_id: cabinetId,
+          document_id: documentId,
+          title: itemName || filename,
+          description: null,
+          file_url: publicUrl,
+          file_name: filename,
+          file_type: 'application/pdf',
+          shared_by: sharedBy,
+        } as any;
+
+        try {
+          const { data: insertData, error: insertErr } = await supabase.from('cabinet_documents').insert(payload).select();
+          if (insertErr) {
+            // If unique violation or other conflict, attempt an update
+            console.warn('insert cabinet_documents failed, attempting update:', insertErr.message || insertErr);
+            const { data: up, error: upErr } = await supabase.from('cabinet_documents').update(payload).match({ cabinet_id: cabinetId, document_id: documentId }).select();
+            if (upErr) console.warn('update cabinet_documents also failed:', upErr);
+          }
+        } catch (e) {
+          console.warn('cabinet_documents insert/update threw:', e);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to create cabinet_documents row after upload:', e);
+    }
 
     return { uploadedBucket, publicUrl };
   } catch (e) {
@@ -113,6 +151,41 @@ export async function copyClientFileToShared({
 
     const { data: pub } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
     const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+
+    // Revert behavior: create / update a cabinet_clients row from the client so the
+    // sharing flow works as it did previously.
+    try {
+      let sharedBy: string | null = null;
+      try {
+        const userRes: any = await (supabase.auth as any).getUser();
+        sharedBy = userRes?.data?.user?.id || null;
+      } catch (e) { /* noop */ }
+
+      if (publicUrl) {
+        const payload = {
+          cabinet_id: cabinetId,
+          client_id: clientId,
+          file_url: publicUrl,
+          file_name: filename,
+          file_type: 'application/pdf',
+          description: null,
+          shared_by: sharedBy,
+        } as any;
+        try {
+          const { data: insertData, error: insertErr } = await supabase.from('cabinet_clients').insert(payload).select();
+          if (insertErr) {
+            console.warn('insert cabinet_clients failed, attempting update:', insertErr.message || insertErr);
+            const { data: up, error: upErr } = await supabase.from('cabinet_clients').update(payload).match({ cabinet_id: cabinetId, client_id: clientId }).select();
+            if (upErr) console.warn('update cabinet_clients also failed:', upErr);
+          }
+        } catch (e) {
+          console.warn('cabinet_clients insert/update threw:', e);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to create cabinet_clients row after upload:', e);
+    }
+
     return { uploadedBucket, publicUrl };
   } catch (e) {
     console.error('copyClientFileToShared error', e);

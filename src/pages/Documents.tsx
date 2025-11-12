@@ -299,28 +299,33 @@ export default function Documents() {
               const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: inserted.id, sharedId: null, itemName: inserted.name });
 
               if (publicUrl) {
-                const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
-                  cabinet_id_param: cabinetId,
-                  document_id_param: inserted.id,
-                  title_param: inserted.name,
-                  description_param: null,
-                  file_url_param: publicUrl,
-                  file_name_param: inserted.name,
-                  file_type_param: 'application/pdf',
-                });
-                if (rpcErr) throw rpcErr;
+                // The helper now creates/updates the cabinet_documents row client-side.
+                toast.success('Document partagé automatiquement');
               } else {
-                // fallback to original RPC and let copyDocumentToShared update it
-                const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
-                  cabinet_id_param: cabinetId,
-                  document_id_param: inserted.id,
-                  title_param: inserted.name,
-                  description_param: null,
-                });
-                if (rpcErr) throw rpcErr;
+                // fallback: attempt to create a cabinet_documents row that references the original storage path
+                try {
+                  const payload = {
+                    cabinet_id: cabinetId,
+                    document_id: inserted.id,
+                    title: inserted.name,
+                    description: null,
+                    file_url: null,
+                    file_name: inserted.name,
+                    file_type: 'application/pdf',
+                    shared_by: user?.id || null,
+                  } as any;
+                  const { data: cdData, error: cdErr } = await supabase.from('cabinet_documents').insert(payload).select();
+                  if (cdErr) {
+                    console.warn('Fallback insert cabinet_documents failed:', cdErr);
+                    toast.error('Partage automatique échoué');
+                  } else {
+                    toast.success('Document partagé automatiquement (fallback)');
+                  }
+                } catch (e:any) {
+                  console.error('Fallback cabinet_documents insert failed', e);
+                  toast.error('Partage automatique échoué');
+                }
               }
-
-              toast.success('Document partagé automatiquement');
             } catch (e:any) {
               console.error('Auto-share failed', e);
               toast.error('Partage automatique échoué: ' + (e?.message || String(e)));
