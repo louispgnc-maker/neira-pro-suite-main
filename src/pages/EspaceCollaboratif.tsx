@@ -331,79 +331,24 @@ export default function EspaceCollaboratif() {
           setContrats(contratsData || []);
         }
 
-        // Charger les clients partagés (RPC -> fallback table)
+        // Charger les clients partagés via la nouvelle RPC qui renvoie des noms normalisés
         try {
-          const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients', { cabinet_id_param: userCabinet.id });
+          const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { p_cabinet_id: userCabinet.id });
           if (clientsError) throw clientsError;
-          // DEBUG: log raw RPC response so we can inspect why name may be missing
-          try { console.debug('RPC get_cabinet_clients raw:', clientsData); } catch (e) { /* noop */ }
-          // Normalize RPC result to ensure we have a display `name` (fallbacks: name | profiles.full_name | prenom+nom | client_id)
-          const raw = Array.isArray(clientsData) ? (clientsData as any[]) : [];
-          const mappedRpc = raw.map((r: any) => {
-            // r may already contain a friendly name in various shapes
-            let name = r.name || r.full_name || r.client_name || '';
-            // Check attached profiles object/array
-            const p = r.profiles && (Array.isArray(r.profiles) ? r.profiles[0] : r.profiles);
-            if (!name && p) {
-              if (p.full_name && p.full_name.trim()) name = p.full_name.trim();
-              else {
-                const prenom = (p.prenom || p.first_name || '').trim();
-                const nom = (p.nom || p.last_name || '').trim();
-                name = ((prenom || nom) ? `${prenom} ${nom}`.trim() : '').trim();
-              }
-            }
-            // Nested client object fallback
-            if (!name && r.client && typeof r.client === 'object') {
-              const cp = r.client;
-              name = cp.name || cp.full_name || `${(cp.prenom || '').trim()} ${(cp.nom || '').trim()}`.trim() || '';
-            }
-            return {
-              id: r.id,
-              client_id: r.client_id || r.client?.id || r.client_id,
-              name: name || r.client_id,
-              shared_at: r.shared_at,
-              shared_by: r.shared_by,
-            };
-          });
+          const mapped = (Array.isArray(clientsData) ? (clientsData as any[]) : []).map((r: any) => ({
+            id: r.id,
+            client_id: r.client_id,
+            name: r.name || r.full_name || r.client_id,
+            prenom: r.prenom || null,
+            nom: r.nom || null,
+            shared_at: r.shared_at,
+            shared_by: r.shared_by,
+            file_url: r.file_url || null,
+            file_name: r.file_name || null,
+            file_type: r.file_type || null,
+          }));
 
-          setClientsShared(mappedRpc);
-
-          // Enrich entries missing a friendly name by calling get_cabinet_client_details per cabinet_client row.
-          (async function enrichMissingNames(rows: any[]) {
-            try {
-              const toFetch = rows.filter(r => !r.name || r.name === r.client_id);
-              if (toFetch.length === 0) return;
-              const results = await Promise.allSettled(toFetch.map(async (r) => {
-                try {
-                  const { data: rpcData, error: rpcErr } = await supabase.rpc('get_cabinet_client_details', { p_cabinet_client_id: r.id });
-                  if (rpcErr || !rpcData) return { id: r.id, name: null };
-                  let clientObj: any = null;
-                  if (Array.isArray(rpcData) && rpcData.length > 0) clientObj = rpcData[0];
-                  else if (typeof rpcData === 'object' && rpcData !== null) {
-                    const keys = Object.keys(rpcData as object);
-                    if (keys.length === 1 && (rpcData as any)[keys[0]] && typeof (rpcData as any)[keys[0]] === 'object') clientObj = (rpcData as any)[keys[0]];
-                    else clientObj = rpcData;
-                  } else if (typeof rpcData === 'string') clientObj = JSON.parse(rpcData as string);
-
-                  if (!clientObj) return { id: r.id, name: null };
-                  const name = clientObj.name || clientObj.full_name || `${(clientObj.prenom || '').trim()} ${(clientObj.nom || '').trim()}`.trim() || null;
-                  return { id: r.id, name };
-                } catch (e) {
-                  return { id: r.id, name: null };
-                }
-              }));
-
-              const updates: Record<string, string | null> = {};
-              for (const res of results) {
-                if (res.status === 'fulfilled' && res.value && res.value.name) updates[res.value.id] = res.value.name;
-              }
-              if (Object.keys(updates).length === 0) return;
-              setClientsShared(prev => prev.map((r) => ({ ...r, name: updates[r.id] || r.name })));
-            } catch (e) {
-              // ignore enrichment errors
-              console.error('Erreur enrichment noms clients partagés:', e);
-            }
-          })(mappedRpc);
+          setClientsShared(mapped);
         } catch (e) {
           try {
             // Fallback to direct table read. Select related profile full_name via foreign table join
