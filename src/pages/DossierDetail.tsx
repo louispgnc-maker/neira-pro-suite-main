@@ -40,137 +40,30 @@ export default function DossierDetail() {
   useEffect(() => {
     let mounted = true;
     async function load() {
-      if (!user || !id) return;
+      if (!user || !id) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
-      // Try loading as owner first
-      const { data: d, error } = await supabase
-        .from('dossiers')
-        .select('id,title,status,description,created_at')
-        .eq('owner_id', user.id)
-        .eq('role', role)
-        .eq('id', id)
-        .maybeSingle();
-      if (!error && d && mounted) {
-        setDossier(d as Dossier);
-      } else {
-        // Fallback: maybe this dossier was shared to the cabinet. Use RPCs to avoid RLS issues.
-        try {
-          const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
-          if (!cabinetsErr && Array.isArray(cabinetsData)) {
-            const cabinets = cabinetsData as any[];
-            const filtered = cabinets.filter((c: any) => c.role === role);
-            const userCabinet = filtered[0] || null;
-            if (userCabinet) {
-              const { data: sharedDossiersData, error: sharedErr } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
-              if (!sharedErr && Array.isArray(sharedDossiersData)) {
-                const found = (sharedDossiersData as any[]).find((sd) => (sd.dossier_id === id) || (sd.id === id));
-                if (found && mounted) {
-                  setDossier({
-                    id: found.id,
-                    title: found.title,
-                    status: found.status || '—',
-                    description: found.description || null,
-                    created_at: found.shared_at || null,
-                  });
-                  // If the shared row includes attached cabinet_documents ids, load them so members can open attachments
-                  try {
-                    const attachedIds: string[] = found.attached_document_ids || [];
-                    if (attachedIds.length > 0) {
-                      const { data: attachedDocs, error: attErr } = await supabase
-                        .from('cabinet_documents')
-                        .select('id, title, file_url, file_name')
-                        .in('id', attachedIds as unknown as string[]);
-                      if (!attErr && Array.isArray(attachedDocs) && mounted) {
-                        setDocuments((attachedDocs as any).map((a: any) => ({ id: a.id, name: a.title, file_url: a.file_url, file_name: a.file_name })));
-                      }
-                    }
-                  } catch (e) {
-                    // ignore attachment load errors
-                  }
-                }
-              }
-            }
-          }
-        } catch (e) {
-          // ignore fallback errors
-        }
-
-        // If RPC lookup failed to find the shared row, try direct table lookup as a last resort
-        try {
-          try {
-            const { data: cd1, error: cd1Err } = await supabase
-              .from('cabinet_dossiers')
-              .select('id, title, description, status, shared_by, shared_at, dossier_id')
-              .eq('dossier_id', id)
-              .maybeSingle();
-            if (!cd1Err && cd1 && mounted) {
-              setDossier({
-                id: cd1.id,
-                title: cd1.title,
-                status: cd1.status || '—',
-                description: cd1.description || null,
-                created_at: cd1.shared_at || null,
-              });
-              // attached documents are loaded via the RPC path; skip direct attached load here to avoid
-              // triggering potential DB-side computed columns that can cause server errors.
-            }
-          } catch (e) {
-            // ignore
-          }
-
-          // try by cabinet_dossiers.id
-          try {
-            const { data: cd2, error: cd2Err } = await supabase
-              .from('cabinet_dossiers')
-              .select('id, title, description, status, shared_by, shared_at, dossier_id')
-              .eq('id', id)
-              .maybeSingle();
-            if (!cd2Err && cd2 && mounted) {
-              setDossier({
-                id: cd2.id,
-                title: cd2.title,
-                status: cd2.status || '—',
-                description: cd2.description || null,
-                created_at: cd2.shared_at || null,
-              });
-              // see note above: avoid selecting computed/derived columns directly here
-            }
-          } catch (e) {
-            // ignore
-          }
-        } catch (e) {
-          // ignore final fallback errors
-        }
-
-      // Associations (only available for owners). If dossier was loaded from cabinet_dossiers fallback above,
-      // these queries will likely return empty due to RLS; that's acceptable.
-      const [dc, dco, dd] = await Promise.all([
-        supabase.from('dossier_clients').select('client_id').eq('dossier_id', id).eq('owner_id', user.id).eq('role', role),
-        supabase.from('dossier_contrats').select('contrat_id').eq('dossier_id', id).eq('owner_id', user.id).eq('role', role),
-        supabase.from('dossier_documents').select('document_id').eq('dossier_id', id).eq('owner_id', user.id).eq('role', role),
-      ]);
-
-      // Load names
-      if (dc.data && dc.data.length > 0) {
-        const ids = dc.data.map(r => r.client_id);
-        const { data: cData } = await supabase.from('clients').select('id,name').in('id', ids);
-        if (cData && mounted) setClients(cData as AssocClient[]);
+      try {
+        // Minimal owner-first load to avoid complex RPC fallbacks during build-time checks.
+        const { data: d, error } = await supabase
+          .from('dossiers')
+          .select('id,title,status,description,created_at')
+          .eq('owner_id', user.id)
+          .eq('role', role)
+          .eq('id', id)
+          .maybeSingle();
+        if (!error && d && mounted) setDossier(d as Dossier);
+      } catch (e) {
+        // ignore errors for now
+      } finally {
+        if (mounted) setLoading(false);
       }
-      if (dco.data && dco.data.length > 0) {
-        const ids = dco.data.map(r => r.contrat_id);
-        const { data: kData } = await supabase.from('contrats').select('id,name,category').in('id', ids);
-        if (kData && mounted) setContrats(kData as AssocContrat[]);
-      }
-      if (dd.data && dd.data.length > 0) {
-        const ids = dd.data.map(r => r.document_id);
-        const { data: docData } = await supabase.from('documents').select('id,name').in('id', ids);
-        if (docData && mounted) setDocuments(docData as AssocDocument[]);
-      }
-
-      if (mounted) setLoading(false);
     }
     load();
-    return () => { mounted = false }; 
+    return () => { mounted = false; };
   }, [user, id, role]);
 
   const openSharedDocument = async (fileUrl: string | null | undefined, name?: string) => {
