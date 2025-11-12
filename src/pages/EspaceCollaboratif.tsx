@@ -367,6 +367,43 @@ export default function EspaceCollaboratif() {
           });
 
           setClientsShared(mappedRpc);
+
+          // Enrich entries missing a friendly name by calling get_cabinet_client_details per cabinet_client row.
+          (async function enrichMissingNames(rows: any[]) {
+            try {
+              const toFetch = rows.filter(r => !r.name || r.name === r.client_id);
+              if (toFetch.length === 0) return;
+              const results = await Promise.allSettled(toFetch.map(async (r) => {
+                try {
+                  const { data: rpcData, error: rpcErr } = await supabase.rpc('get_cabinet_client_details', { p_cabinet_client_id: r.id });
+                  if (rpcErr || !rpcData) return { id: r.id, name: null };
+                  let clientObj: any = null;
+                  if (Array.isArray(rpcData) && rpcData.length > 0) clientObj = rpcData[0];
+                  else if (typeof rpcData === 'object' && rpcData !== null) {
+                    const keys = Object.keys(rpcData as object);
+                    if (keys.length === 1 && (rpcData as any)[keys[0]] && typeof (rpcData as any)[keys[0]] === 'object') clientObj = (rpcData as any)[keys[0]];
+                    else clientObj = rpcData;
+                  } else if (typeof rpcData === 'string') clientObj = JSON.parse(rpcData as string);
+
+                  if (!clientObj) return { id: r.id, name: null };
+                  const name = clientObj.name || clientObj.full_name || `${(clientObj.prenom || '').trim()} ${(clientObj.nom || '').trim()}`.trim() || null;
+                  return { id: r.id, name };
+                } catch (e) {
+                  return { id: r.id, name: null };
+                }
+              }));
+
+              const updates: Record<string, string | null> = {};
+              for (const res of results) {
+                if (res.status === 'fulfilled' && res.value && res.value.name) updates[res.value.id] = res.value.name;
+              }
+              if (Object.keys(updates).length === 0) return;
+              setClientsShared(prev => prev.map((r) => ({ ...r, name: updates[r.id] || r.name })));
+            } catch (e) {
+              // ignore enrichment errors
+              console.error('Erreur enrichment noms clients partagés:', e);
+            }
+          })(mappedRpc);
         } catch (e) {
           try {
             // Fallback to direct table read. Select related profile full_name via foreign table join
