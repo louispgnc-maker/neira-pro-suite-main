@@ -116,13 +116,26 @@ export function ShareToCollaborativeDialog({
           break;
       }
 
-      const { data: rpcData, error: rpcErr } = await supabase.rpc(rpcFunction, {
-        cabinet_id_param: cabinetId,
-        [idParamName]: itemId,
-        title_param: title,
-        description_param: description || null,
-      });
-      if (rpcErr) throw rpcErr;
+      let rpcData: any = null;
+      if (itemType === 'client') {
+        // share_client_to_cabinet signature: (p_client_id uuid, p_cabinet_id uuid, p_shared_by uuid)
+        const { data: d, error: err } = await supabase.rpc('share_client_to_cabinet', {
+          p_client_id: itemId,
+          p_cabinet_id: cabinetId,
+          p_shared_by: user?.id,
+        });
+        if (err) throw err;
+        rpcData = d;
+      } else {
+        const { data: d, error: err } = await supabase.rpc(rpcFunction, {
+          cabinet_id_param: cabinetId,
+          [idParamName]: itemId,
+          title_param: title,
+          description_param: description || null,
+        });
+        if (err) throw err;
+        rpcData = d;
+      }
 
       // extract shared id if present
       let sharedId: any = null;
@@ -391,12 +404,12 @@ export function ShareToCollaborativeDialog({
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Titre *</Label>
+                  <Label htmlFor="title">Identité *</Label>
                   <Input
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Titre du partage"
+                    placeholder="Identité ou nom affiché"
                   />
                 </div>
                 <div className="space-y-2">
