@@ -1,6 +1,7 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Plus, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Share2 } from 'lucide-react';
 import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { useToast } from '@/hooks/use-toast';
 
 type ClientRow = {
   id: string;
@@ -31,6 +33,7 @@ export default function Clients() {
     return () => clearTimeout(t);
   }, [search]);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -79,6 +82,41 @@ export default function Clients() {
   const kycPartielColor = role === 'notaire'
     ? 'bg-warning/10 text-warning border-warning/20'
     : 'bg-warning/10 text-warning border-warning/20'; // même couleur pour les deux, mais extensible
+
+  const [sharingClientId, setSharingClientId] = useState<string | null>(null);
+
+  const shareClient = async (clientId: string, clientName?: string) => {
+    if (!user) {
+      toast({ title: 'Erreur', description: 'Vous devez être connecté pour partager.', variant: 'destructive' });
+      return;
+    }
+    if (!confirm(`Partager la fiche client "${clientName || clientId}" dans l'espace collaboratif ?`)) return;
+    setSharingClientId(clientId);
+    try {
+      const { data: cabinetsData, error: cabErr } = await supabase.rpc('get_user_cabinets');
+      if (cabErr) throw cabErr;
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
+      const filtered = cabinets.filter((c: any) => c.role === role);
+      const userCabinet = filtered[0] || null;
+      if (!userCabinet) {
+        toast({ title: 'Aucun cabinet', description: 'Rejoignez ou créez un cabinet pour partager.', variant: 'destructive' });
+        return;
+      }
+
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('share_client_to_cabinet', {
+        p_client_id: clientId,
+        p_cabinet_id: userCabinet.id,
+        p_shared_by: user.id,
+      });
+      if (rpcErr) throw rpcErr;
+      toast({ title: 'Partagé', description: 'La fiche client a été partagée dans l\'espace collaboratif.' });
+    } catch (e: any) {
+      console.error('Erreur partage client:', e);
+      toast({ title: 'Erreur', description: e?.message || String(e), variant: 'destructive' });
+    } finally {
+      setSharingClientId(null);
+    }
+  };
 
   return (
     <AppLayout>
@@ -131,10 +169,9 @@ export default function Clients() {
                     <Card 
                       key={client.id} 
                       className="p-4 hover:shadow-md transition-shadow cursor-pointer" 
-                      onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}
                     >
                       <div className="flex items-start justify-between">
-                        <div className="flex-1">
+                        <div className="flex-1" onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}>
                           <h3 className="font-semibold text-lg">{client.name}</h3>
                           {client.missing_info ? (
                             <p className="text-xs text-destructive flex items-center gap-1 mt-2">
@@ -153,16 +190,21 @@ export default function Clients() {
                             </p>
                           )}
                         </div>
-                        <Badge
-                          variant="outline"
-                          className={
-                            client.kyc_status === "Complet"
-                              ? "bg-success/10 text-success border-success/20"
-                              : kycPartielColor
-                          }
-                        >
-                          {client.kyc_status}
-                        </Badge>
+                        <div className="flex items-center gap-3">
+                          <Badge
+                            variant="outline"
+                            className={
+                              client.kyc_status === "Complet"
+                                ? "bg-success/10 text-success border-success/20"
+                                : kycPartielColor
+                            }
+                          >
+                            {client.kyc_status}
+                          </Badge>
+                          <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); shareClient(client.id, client.name); }} disabled={sharingClientId === client.id}>
+                            <Share2 className="h-4 w-4 mr-2" /> {sharingClientId === client.id ? 'Partage…' : 'Partager'}
+                          </Button>
+                        </div>
                       </div>
                     </Card>
                   ))}
