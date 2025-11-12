@@ -333,7 +333,9 @@ export default function EspaceCollaboratif() {
 
         // Charger les clients partagés via la nouvelle RPC qui renvoie des noms normalisés
         try {
-          const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { p_cabinet_id: userCabinet.id });
+          // Pass both parameter names for compatibility with different RPC signatures.
+          // The DB function will COALESCE and use the first non-null value.
+          const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { p_cabinet_id: userCabinet.id, cabinet_id_param: userCabinet.id });
           if (clientsError) throw clientsError;
           const mapped = (Array.isArray(clientsData) ? (clientsData as any[]) : []).map((r: any) => ({
             id: r.id,
@@ -350,45 +352,60 @@ export default function EspaceCollaboratif() {
 
           setClientsShared(mapped);
           try { console.debug('get_cabinet_clients_with_names mapped:', mapped); } catch (e) { /* noop */ }
-        } catch (e) {
-          try {
-            // Fallback to direct table read. Select related profile full_name via foreign table join
-            // and map to the expected shape. Using the aliasing syntax previously used caused
-            // PostgREST selection errors on some setups, so we request profiles(full_name)
-            // and map the result client-side.
-            const { data: clientsTable, error: clientsTableErr } = await supabase
-              .from('cabinet_clients')
-              .select('id, client_id, shared_at, shared_by, profiles(full_name)')
-              .eq('cabinet_id', userCabinet.id)
-              .order('shared_at', { ascending: false });
-            if (clientsTableErr) throw clientsTableErr;
+          } catch (e) {
+            try {
+              // Fallback to safe two-step table read to avoid PostgREST nested relation selects
+              // 1) fetch basic cabinet_clients rows
+              const { data: clientsTable, error: clientsTableErr } = await supabase
+                .from('cabinet_clients')
+                .select('id, client_id, shared_at, shared_by, file_url, file_name, file_type')
+                .eq('cabinet_id', userCabinet.id)
+                .order('shared_at', { ascending: false });
+              if (clientsTableErr) throw clientsTableErr;
 
-            const mapped = (clientsTable || []).map((r: any) => {
-              // profiles may be an object or an array depending on PostgREST version/config
-              const p = r.profiles && (Array.isArray(r.profiles) ? r.profiles[0] : r.profiles);
-              let displayName = '';
-              if (p) {
-                displayName = p.full_name || `${p.prenom || ''}`.trim() ? `${(p.prenom || '').trim()} ${(p.nom || '').trim()}`.trim() : '';
-                // if full_name present, prefer it
-                if (p.full_name && p.full_name.trim()) displayName = p.full_name.trim();
-                // fallback to 'nom' only
-                if (!displayName && p.nom) displayName = (p.nom || '').trim();
+              const rows = Array.isArray(clientsTable) ? (clientsTable as any[]) : [];
+              const ids = Array.from(new Set(rows.map(r => r.client_id).filter(Boolean)));
+
+              // 2) fetch profiles for these client_ids in one call
+              let profiles: any[] = [];
+              if (ids.length > 0) {
+                const { data: profilesData, error: profilesErr } = await supabase
+                  .from('profiles')
+                  .select('id,prenom,nom,full_name')
+                  .in('id', ids);
+                if (profilesErr) {
+                  // Non-fatal: if profiles fail, we'll still render fallback names
+                  console.warn('profiles fetch failed', profilesErr);
+                } else {
+                  profiles = Array.isArray(profilesData) ? profilesData : [];
+                }
               }
-              return {
-                id: r.id,
-                client_id: r.client_id,
-                name: displayName || r.client_id,
-                shared_at: r.shared_at,
-                shared_by: r.shared_by,
-              };
-            });
 
-            setClientsShared(mapped);
-          } catch (e2) {
-            console.error('Erreur chargement clients partagés:', e2);
-            setClientsShared([]);
+              const byId = Object.fromEntries(profiles.map((p: any) => [p.id, p]));
+
+              const mapped = rows.map((r: any) => {
+                const p = byId[r.client_id];
+                const display = (p && (p.full_name || ([p.prenom, p.nom].filter(Boolean).join(' ')))) || r.client_id;
+                return {
+                  id: r.id,
+                  client_id: r.client_id,
+                  name: display,
+                  prenom: p?.prenom || null,
+                  nom: p?.nom || null,
+                  shared_at: r.shared_at,
+                  shared_by: r.shared_by,
+                  file_url: r.file_url || null,
+                  file_name: r.file_name || null,
+                  file_type: r.file_type || null,
+                };
+              });
+
+              setClientsShared(mapped);
+            } catch (e2) {
+              console.error('Erreur chargement clients partagés:', e2);
+              setClientsShared([]);
+            }
           }
-        }
 
         // Détecter si l'utilisateur est le propriétaire/fondateur du cabinet
         try {
@@ -505,11 +522,12 @@ export default function EspaceCollaboratif() {
     try {
       // Prefer RPC for documents if available
       if (table === 'cabinet_documents') {
-        // Try RPC first (delete_cabinet_document), fallback to direct delete
+        // Try RPC first (delete_cabinet_document). Do not perform direct table delete to avoid RLS errors.
         const { error } = await supabase.rpc('delete_cabinet_document', { p_id: id });
         if (error) {
-          const { error: delErr } = await supabase.from('cabinet_documents').delete().eq('id', id);
-          if (delErr) throw delErr;
+          // RPC failed — log and surface error to user. Avoid direct delete which may violate RLS.
+          console.error('delete_cabinet_document RPC error', error);
+          throw error;
         }
         setDocuments(prev => prev.filter(d => d.id !== id));
       } else if (table === 'cabinet_dossiers') {
@@ -529,11 +547,11 @@ export default function EspaceCollaboratif() {
         }
         setContrats(prev => prev.filter(c => c.id !== id));
       } else if (table === 'cabinet_clients') {
-        // Try RPC first (delete_cabinet_client), fallback to direct delete
+        // Try RPC first (delete_cabinet_client). Do not perform direct table delete to avoid RLS errors.
         const { error } = await supabase.rpc('delete_cabinet_client', { p_id: id });
         if (error) {
-          const { error: delErr } = await supabase.from('cabinet_clients').delete().eq('id', id);
-          if (delErr) throw delErr;
+          console.error('delete_cabinet_client RPC error', error);
+          throw error;
         }
         setClientsShared(prev => prev.filter(c => c.id !== id));
       }
@@ -744,6 +762,7 @@ export default function EspaceCollaboratif() {
   const [contratsSearch, setContratsSearch] = useState('');
   const [dossiersSearch, setDossiersSearch] = useState('');
   const [clientsSearch, setClientsSearch] = useState('');
+  const [showClientsEmptyHint, setShowClientsEmptyHint] = useState(false);
 
   // Persist active tab across refreshes: read from URL ?tab= or localStorage
   const [selectedTab, setSelectedTab] = useState<string>(() => {
@@ -852,6 +871,17 @@ export default function EspaceCollaboratif() {
     } catch (e) { /* noop */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientsShared, clientsSearch]);
+
+  // Show a small on-screen hint when clients list is empty to help debugging
+  useEffect(() => {
+    try {
+      if (!loading && clientsShared.length === 0) {
+        setShowClientsEmptyHint(true);
+      } else {
+        setShowClientsEmptyHint(false);
+      }
+    } catch (e) { /* noop */ }
+  }, [clientsShared, loading]);
 
   if (loading) {
     return (
@@ -1393,7 +1423,7 @@ export default function EspaceCollaboratif() {
               </div>
             </CardHeader>
             <CardContent>
-              {clientsShared.length === 0 ? (
+                {clientsShared.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucun client partagé</p>
@@ -1450,6 +1480,14 @@ export default function EspaceCollaboratif() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+              {showClientsEmptyHint && (
+                <div className="fixed bottom-6 right-6 z-50">
+                  <div className="rounded bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm shadow">
+                    <strong className="block mb-1">Debug</strong>
+                    <div>La liste des clients partagés est vide — vérifiez la RPC <code>get_cabinet_clients_with_names</code> et la console réseau.</div>
                   </div>
                 </div>
               )}

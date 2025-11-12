@@ -46,13 +46,6 @@ export async function copyDocumentToShared({
       try {
         const signed = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7);
         const signedUrl = signed?.data?.signedUrl || null;
-        if (signedUrl && sharedId) {
-          try {
-            await supabase.from('cabinet_documents').update({ file_url: signedUrl }).eq('id', sharedId);
-          } catch (e) {
-            console.warn('Failed to update cabinet_documents.file_url with signedUrl fallback:', e);
-          }
-        }
         return { uploadedBucket: null, publicUrl: signedUrl };
       } catch (e) {
         console.warn('Signed URL fallback also failed', e);
@@ -63,13 +56,9 @@ export async function copyDocumentToShared({
     const { data: pub } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
     const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
 
-    if (publicUrl && sharedId) {
-      try {
-        await supabase.from('cabinet_documents').update({ file_url: publicUrl }).eq('id', sharedId);
-      } catch (e) {
-        console.warn('Failed to update cabinet_documents.file_url after upload:', e);
-      }
-    }
+    // Note: we no longer update cabinet_documents directly here because that can trigger
+    // RLS violations for client-side sessions. Callers should use the server-side RPC
+    // `share_document_to_cabinet_with_url` to create/update cabinet_documents rows.
 
     return { uploadedBucket, publicUrl };
   } catch (e) {

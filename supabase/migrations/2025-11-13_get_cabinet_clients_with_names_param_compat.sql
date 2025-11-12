@@ -1,15 +1,13 @@
--- Migration : ajouter la RPC get_cabinet_clients_with_names pour renvoyer les lignes de cabinet_clients
--- avec un nom affiché normalisé
--- Date : 2025-11-13
+-- Migration: make get_cabinet_clients_with_names accept both p_cabinet_id and cabinet_id_param for compatibility
+-- Date: 2025-11-13
 
 BEGIN;
 
--- Retourne un nom affiché stable et normalisé pour chaque ligne cabinet_client afin que
--- le frontend n'ait pas à deviner les champs ni à effectuer des appels RPC par ligne.
--- La fonction vérifie que l'appelant est un membre actif du cabinet.
-DROP FUNCTION IF EXISTS public.get_cabinet_clients_with_names(uuid);
+-- Replace function to accept both parameter names (both optional) and use the first non-null value.
+DROP FUNCTION IF EXISTS public.get_cabinet_clients_with_names(uuid, uuid);
 CREATE OR REPLACE FUNCTION public.get_cabinet_clients_with_names(
-  p_cabinet_id uuid
+  p_cabinet_id uuid DEFAULT NULL,
+  cabinet_id_param uuid DEFAULT NULL
 )
 RETURNS TABLE (
   id uuid,
@@ -28,27 +26,27 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  v_cabinet_id uuid := COALESCE(p_cabinet_id, cabinet_id_param);
 BEGIN
-  -- Vérifie que l'appelant est un membre actif du cabinet
+  IF v_cabinet_id IS NULL THEN
+    RAISE EXCEPTION 'Missing cabinet id';
+  END IF;
+
+  -- Ensure caller is an active member of the cabinet
   IF NOT EXISTS (
     SELECT 1 FROM cabinet_members
-    WHERE cabinet_id = p_cabinet_id
+    WHERE cabinet_id = v_cabinet_id
       AND user_id = auth.uid()
       AND status = 'active'
   ) THEN
-    RAISE EXCEPTION 'Non membre de ce cabinet';
+    RAISE EXCEPTION 'Not a member of this cabinet';
   END IF;
 
   RETURN QUERY
   SELECT
     cc.id,
     cc.client_id,
-  -- Priorité pour le nom affiché :
-  -- 1. profile.full_name
-  -- 2. profile.prenom + ' ' + profile.nom
-  -- 3. clients.name ou clients.full_name
-  -- 4. clients.prenom + ' ' + clients.nom
-  -- 5. sinon, fallback sur client_id
     COALESCE(
       NULLIF(p.full_name, ''),
       NULLIF(TRIM(CONCAT_WS(' ', p.prenom, p.nom)), ''),
@@ -64,16 +62,15 @@ BEGIN
     cc.file_url,
     cc.file_name,
     cc.file_type,
-  -- expose le profil pour le débogage (omettez les champs sensibles si présents dans votre schéma)
     to_jsonb(p.*) - 'password'
   FROM public.cabinet_clients cc
   LEFT JOIN public.clients c ON c.id = cc.client_id
   LEFT JOIN public.profiles p ON p.id = cc.client_id
-  WHERE cc.cabinet_id = p_cabinet_id
+  WHERE cc.cabinet_id = v_cabinet_id
   ORDER BY cc.shared_at DESC;
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.get_cabinet_clients_with_names(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_cabinet_clients_with_names(uuid, uuid) TO authenticated;
 
 COMMIT;

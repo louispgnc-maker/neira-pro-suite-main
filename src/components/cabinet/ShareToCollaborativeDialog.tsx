@@ -203,7 +203,7 @@ export function ShareToCollaborativeDialog({
                 .from('documents')
                 .select('id,storage_path,name')
                 .in('id', docIds);
-              if (!docsErr && Array.isArray(docsData) && docsData.length > 0) {
+                if (!docsErr && Array.isArray(docsData) && docsData.length > 0) {
                 const bucketCandidates = ['shared-documents', 'shared_documents'];
                 const uploadErrors: string[] = [];
                 let copiedCount = 0;
@@ -244,27 +244,52 @@ export function ShareToCollaborativeDialog({
                       }
                     }
 
-                    // Insert cabinet_documents entry for this document so members can open it
+                    // Create cabinet_documents entry via server-side RPC to avoid RLS issues
                     try {
-                      const insertPayload: any = {
-                        cabinet_id: cabinetId,
-                        document_id: d.id,
-                        title: d.name || title,
-                        description: null,
-                        file_url: publicUrl,
-                        file_name: d.name || filename,
-                        file_type: 'application/pdf',
-                        shared_by: user?.id,
-                      };
-                      const { data: insData, error: insErr } = await supabase.from('cabinet_documents').insert(insertPayload).select('id').single();
-                      if (insErr) {
-                        uploadErrors.push(`insert_failed doc=${d.id} err=${insErr.message || String(insErr)}`);
-                      } else if (insData && insData.id) {
-                        createdCabinetDocIds.push(insData.id);
-                        copiedCount++;
+                      if (publicUrl) {
+                        const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
+                          cabinet_id_param: cabinetId,
+                          document_id_param: d.id,
+                          title_param: d.name || title,
+                          description_param: null,
+                          file_url_param: publicUrl,
+                          file_name_param: d.name || filename,
+                          file_type_param: 'application/pdf',
+                        });
+                        if (rpcErr) {
+                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${rpcErr.message || String(rpcErr)}`);
+                        } else {
+                          // rpc returns uuid or row, try to extract id
+                          let createdId: string | null = null;
+                          if (Array.isArray(rpcData) && rpcData.length > 0) createdId = rpcData[0];
+                          else if (rpcData && typeof rpcData === 'string') createdId = rpcData;
+                          if (createdId) {
+                            createdCabinetDocIds.push(createdId);
+                            copiedCount++;
+                          }
+                        }
+                      } else {
+                        // no publicUrl: create via RPC without url (will store storage_path)
+                        const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
+                          cabinet_id_param: cabinetId,
+                          document_id_param: d.id,
+                          title_param: d.name || title,
+                          description_param: null,
+                        });
+                        if (rpcErr) {
+                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${rpcErr.message || String(rpcErr)}`);
+                        } else {
+                          let createdId: string | null = null;
+                          if (Array.isArray(rpcData) && rpcData.length > 0) createdId = rpcData[0];
+                          else if (rpcData && typeof rpcData === 'string') createdId = rpcData;
+                          if (createdId) {
+                            createdCabinetDocIds.push(createdId);
+                            copiedCount++;
+                          }
+                        }
                       }
                     } catch (e:any) {
-                      uploadErrors.push(`insert_exception doc=${d.id} ${(e as any)?.message || String(e)}`);
+                      uploadErrors.push(`rpc_exception doc=${d.id} ${(e as any)?.message || String(e)}`);
                     }
                   } catch (e:any) {
                     uploadErrors.push(`unexpected doc=${d.id} ${(e as any)?.message || String(e)}`);
@@ -339,7 +364,7 @@ export function ShareToCollaborativeDialog({
         // rollback created shared entry (to avoid half-shares)
         try {
           if (sharedId) await supabase.rpc('delete_cabinet_document', { p_id: sharedId });
-          else await supabase.from('cabinet_documents').delete().match({ document_id: itemId, cabinet_id: cabinetId });
+          else console.warn('No sharedId available to rollback; skipping table delete to avoid RLS errors');
         } catch (_) { /* noop */ }
 
         // Try to provide a temporary signed URL so cabinet members can still open the file
@@ -349,21 +374,21 @@ export function ShareToCollaborativeDialog({
               usedPublicUrl = signedRes.data.signedUrl;
             // create a cabinet_documents entry so notification behavior remains consistent
             try {
-              const insertPayload: any = {
-                cabinet_id: cabinetId,
-                document_id: itemId,
-                title: title,
-                description: description || null,
-                file_url: usedPublicUrl,
-              };
-              // set shared_by to the current user so the insert satisfies NOT NULL and RLS checks
-              if (user && user.id) insertPayload.shared_by = user.id;
-              const { data: created, error: createdErr } = await supabase.from('cabinet_documents').insert(insertPayload).select().single();
-              if (createdErr) {
-                console.warn('Failed to insert fallback cabinet_documents row:', createdErr);
+              // Use server-side RPC to create the cabinet_documents row with the signed URL
+              const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
+                cabinet_id_param: cabinetId,
+                document_id_param: itemId,
+                title_param: title,
+                description_param: description || null,
+                file_url_param: usedPublicUrl,
+                file_name_param: title || null,
+                file_type_param: null,
+              });
+              if (rpcErr) {
+                console.warn('Failed to create fallback cabinet_documents row via RPC:', rpcErr);
               }
             } catch (e) {
-              console.warn('Failed to insert fallback cabinet_documents row (exception):', e);
+              console.warn('Failed to create fallback cabinet_documents row via RPC (exception):', e);
             }
             // show a more detailed toast including upload errors to help debugging
             const uploadErrMsg = uploadErrors.length ? uploadErrors.join(' | ') : 'unknown error';
@@ -388,7 +413,20 @@ export function ShareToCollaborativeDialog({
         const pub = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
         const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
         if (publicUrl) {
-          await supabase.from('cabinet_documents').update({ file_url: publicUrl }).eq('id', sharedId);
+          // Update the cabinet_documents entry via RPC to avoid RLS violations
+          try {
+            await supabase.rpc('share_document_to_cabinet_with_url', {
+              cabinet_id_param: cabinetId,
+              document_id_param: itemId,
+              title_param: title,
+              description_param: description || null,
+              file_url_param: publicUrl,
+              file_name_param: title || null,
+              file_type_param: 'application/pdf',
+            });
+          } catch (e) {
+            console.warn('Failed to update cabinet_documents via RPC after upload:', e);
+          }
         }
       } catch (e) {
         console.warn('Failed to read public URL after upload:', e);
