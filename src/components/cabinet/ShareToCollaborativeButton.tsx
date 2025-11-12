@@ -35,19 +35,22 @@ export default function ShareToCollaborativeButton({ clientId, clientName, role,
       <Button variant="ghost" size="sm" onClick={handleClick} disabled={disabled} className={baseClass}>
         <Share2 className="h-4 w-4" />
       </Button>
-      {open && (
-        <ShareToCollaborativeDialog
-          itemId={clientId}
-          itemName={clientName}
-          itemType="client"
-          role={role}
-          hideTrigger={true}
-          onSuccess={() => {
-            if (onDone) onDone();
-            setOpen(false);
-          }}
-        />
-      )}
+      <ShareToCollaborativeDialog
+        itemId={clientId}
+        itemName={clientName}
+        itemType="client"
+        role={role}
+        hideTrigger={true}
+        initialOpen={open}
+        onClose={() => {
+          setOpen(false);
+          if (onDone) onDone();
+        }}
+        onSuccess={() => {
+          if (onDone) onDone();
+          setOpen(false);
+        }}
+      />
     </>
   );
 }

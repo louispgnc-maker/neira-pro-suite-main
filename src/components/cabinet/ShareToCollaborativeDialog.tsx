@@ -24,6 +24,10 @@ interface ShareToCollaborativeDialogProps {
   onSuccess?: () => void;
   // When true, the dialog will not render its built-in trigger button.
   hideTrigger?: boolean;
+  // If true, the dialog will open immediately when mounted.
+  initialOpen?: boolean;
+  // Called when the dialog is closed (either cancel or after success).
+  onClose?: () => void;
 }
 
 export function ShareToCollaborativeDialog({ 
@@ -33,6 +37,8 @@ export function ShareToCollaborativeDialog({
   role,
   onSuccess,
   hideTrigger = false,
+  initialOpen = false,
+  onClose,
 }: ShareToCollaborativeDialogProps) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(itemName);
@@ -55,6 +61,16 @@ export function ShareToCollaborativeDialog({
     if (open) {
       loadCabinet();
     }
+  }, [open]);
+
+  // initialize open state from prop
+  useEffect(() => {
+    if (initialOpen) setOpen(true);
+  }, [initialOpen]);
+
+  // notify parent when dialog closes
+  useEffect(() => {
+    if (!open && onClose) onClose();
   }, [open]);
 
   const loadCabinet = async () => {
