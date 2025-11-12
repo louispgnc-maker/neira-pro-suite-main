@@ -335,6 +335,8 @@ export default function EspaceCollaboratif() {
         try {
           const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients', { cabinet_id_param: userCabinet.id });
           if (clientsError) throw clientsError;
+          // DEBUG: log raw RPC response so we can inspect why name may be missing
+          try { console.debug('RPC get_cabinet_clients raw:', clientsData); } catch (e) { /* noop */ }
           // Normalize RPC result to ensure we have a display `name` (fallbacks: name | profiles.full_name | prenom+nom | client_id)
           const raw = Array.isArray(clientsData) ? (clientsData as any[]) : [];
           const mappedRpc = raw.map((r: any) => {
