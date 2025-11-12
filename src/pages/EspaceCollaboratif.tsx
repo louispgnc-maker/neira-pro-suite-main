@@ -335,7 +335,36 @@ export default function EspaceCollaboratif() {
         try {
           const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients', { cabinet_id_param: userCabinet.id });
           if (clientsError) throw clientsError;
-          setClientsShared(Array.isArray(clientsData) ? (clientsData as any[]) : []);
+          // Normalize RPC result to ensure we have a display `name` (fallbacks: name | profiles.full_name | prenom+nom | client_id)
+          const raw = Array.isArray(clientsData) ? (clientsData as any[]) : [];
+          const mappedRpc = raw.map((r: any) => {
+            // r may already contain a friendly name in various shapes
+            let name = r.name || r.full_name || r.client_name || '';
+            // Check attached profiles object/array
+            const p = r.profiles && (Array.isArray(r.profiles) ? r.profiles[0] : r.profiles);
+            if (!name && p) {
+              if (p.full_name && p.full_name.trim()) name = p.full_name.trim();
+              else {
+                const prenom = (p.prenom || p.first_name || '').trim();
+                const nom = (p.nom || p.last_name || '').trim();
+                name = ((prenom || nom) ? `${prenom} ${nom}`.trim() : '').trim();
+              }
+            }
+            // Nested client object fallback
+            if (!name && r.client && typeof r.client === 'object') {
+              const cp = r.client;
+              name = cp.name || cp.full_name || `${(cp.prenom || '').trim()} ${(cp.nom || '').trim()}`.trim() || '';
+            }
+            return {
+              id: r.id,
+              client_id: r.client_id || r.client?.id || r.client_id,
+              name: name || r.client_id,
+              shared_at: r.shared_at,
+              shared_by: r.shared_by,
+            };
+          });
+
+          setClientsShared(mappedRpc);
         } catch (e) {
           try {
             // Fallback to direct table read. Select related profile full_name via foreign table join
