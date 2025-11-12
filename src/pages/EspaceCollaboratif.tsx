@@ -349,6 +349,7 @@ export default function EspaceCollaboratif() {
           }));
 
           setClientsShared(mapped);
+          try { console.debug('get_cabinet_clients_with_names mapped:', mapped); } catch (e) { /* noop */ }
         } catch (e) {
           try {
             // Fallback to direct table read. Select related profile full_name via foreign table join
@@ -842,6 +843,15 @@ export default function EspaceCollaboratif() {
       return ((c.name || '') as string).toLowerCase().includes(q) || (c.client_id || '').toLowerCase().includes(q);
     })
     .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime());
+
+  // Debug: log clients lists to help diagnose missing UI
+  useEffect(() => {
+    try {
+      console.debug('clientsShared (length):', clientsShared.length, clientsShared.slice(0,5));
+      console.debug('clientsFiltered (length):', clientsFiltered.length, clientsFiltered.slice(0,5));
+    } catch (e) { /* noop */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientsShared, clientsSearch]);
 
   if (loading) {
     return (
