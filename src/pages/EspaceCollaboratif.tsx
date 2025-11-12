@@ -1393,7 +1393,7 @@ export default function EspaceCollaboratif() {
                       <div
                         key={client.id}
                         className={`p-3 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
-                        onClick={() => navigate(`/${cabinetRole}s/clients/${client.client_id}`, { state: { fromCollaboratif: true, cabinetClientId: client.id } })}
+                        onClick={() => navigate(`/${cabinetRole}s/clients/${client.client_id}?fromCollaboratif=1&cabinetClientId=${client.id}`, { state: { fromCollaboratif: true, cabinetClientId: client.id } })}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
