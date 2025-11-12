@@ -338,13 +338,38 @@ export default function EspaceCollaboratif() {
           setClientsShared(Array.isArray(clientsData) ? (clientsData as any[]) : []);
         } catch (e) {
           try {
+            // Fallback to direct table read. Select related profile full_name via foreign table join
+            // and map to the expected shape. Using the aliasing syntax previously used caused
+            // PostgREST selection errors on some setups, so we request profiles(full_name)
+            // and map the result client-side.
             const { data: clientsTable, error: clientsTableErr } = await supabase
               .from('cabinet_clients')
-              .select('id, client_id, name:profiles!inner.full_name, shared_at, shared_by')
+              .select('id, client_id, shared_at, shared_by, profiles(full_name)')
               .eq('cabinet_id', userCabinet.id)
               .order('shared_at', { ascending: false });
             if (clientsTableErr) throw clientsTableErr;
-            setClientsShared((clientsTable as any[]) || []);
+
+            const mapped = (clientsTable || []).map((r: any) => {
+              // profiles may be an object or an array depending on PostgREST version/config
+              const p = r.profiles && (Array.isArray(r.profiles) ? r.profiles[0] : r.profiles);
+              let displayName = '';
+              if (p) {
+                displayName = p.full_name || `${p.prenom || ''}`.trim() ? `${(p.prenom || '').trim()} ${(p.nom || '').trim()}`.trim() : '';
+                // if full_name present, prefer it
+                if (p.full_name && p.full_name.trim()) displayName = p.full_name.trim();
+                // fallback to 'nom' only
+                if (!displayName && p.nom) displayName = (p.nom || '').trim();
+              }
+              return {
+                id: r.id,
+                client_id: r.client_id,
+                name: displayName || r.client_id,
+                shared_at: r.shared_at,
+                shared_by: r.shared_by,
+              };
+            });
+
+            setClientsShared(mapped);
           } catch (e2) {
             console.error('Erreur chargement clients partagés:', e2);
             setClientsShared([]);
@@ -1365,7 +1390,11 @@ export default function EspaceCollaboratif() {
 
                   <div className="space-y-2 max-h-[420px] overflow-y-auto">
                     {clientsFiltered.map((client) => (
-                      <div key={client.id} className={`p-3 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}>
+                      <div
+                        key={client.id}
+                        className={`p-3 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
+                        onClick={() => navigate(`/${cabinetRole}s/clients/${client.client_id}`, { state: { fromCollaboratif: true, cabinetClientId: client.id } })}
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <p className="font-medium">{client.name || client.client_id}</p>
