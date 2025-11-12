@@ -144,42 +144,29 @@ export function ShareToCollaborativeDialog({
           }
 
           if (publicUrl) {
-            // Insert / update cabinet_clients row client-side
-            try {
-              const payload: any = {
-                cabinet_id: cabinetId,
-                client_id: itemId,
-                description: description || null,
-                file_url: publicUrl,
-                file_name: fileName,
-                file_type: fileType,
-                shared_by: user?.id || null,
-              };
-              const { data: ins, error: insErr } = await supabase.from('cabinet_clients').insert(payload).select();
-              if (insErr) {
-                console.warn('cabinet_clients insert failed, attempting update:', insErr.message || insErr);
-                const { data: up, error: upErr } = await supabase.from('cabinet_clients').update(payload).match({ cabinet_id: cabinetId, client_id: itemId }).select();
-                if (upErr) console.warn('cabinet_clients update also failed:', upErr);
-                else rpcData = up;
-              } else rpcData = ins;
-            } catch (e) {
-              throw e;
-            }
+            // Create or update cabinet_clients via server-side RPC so RLS doesn't block the write
+            const { data: rpcRes, error: rpcErr } = await supabase.rpc('share_client_to_cabinet_with_url', {
+              cabinet_id_param: cabinetId,
+              client_id_param: itemId,
+              file_url_param: publicUrl,
+              description_param: description || null,
+              file_name_param: fileName,
+              file_type_param: fileType,
+            });
+            if (rpcErr) throw rpcErr;
+            rpcData = rpcRes;
           } else {
-            // fallback: create cabinet_clients row without URL
-            try {
-              const payload: any = {
-                cabinet_id: cabinetId,
-                client_id: itemId,
-                description: description || null,
-                shared_by: user?.id || null,
-              };
-              const { data: ins, error: insErr } = await supabase.from('cabinet_clients').insert(payload).select();
-              if (insErr) throw insErr;
-              rpcData = ins;
-            } catch (e) {
-              throw e;
-            }
+            // No file URL: still create the cabinet_clients row via RPC (file_url null)
+            const { data: rpcRes, error: rpcErr } = await supabase.rpc('share_client_to_cabinet_with_url', {
+              cabinet_id_param: cabinetId,
+              client_id_param: itemId,
+              file_url_param: null,
+              description_param: description || null,
+              file_name_param: fileName,
+              file_type_param: fileType,
+            });
+            if (rpcErr) throw rpcErr;
+            rpcData = rpcRes;
           }
         } catch (e) {
           throw e;
@@ -188,35 +175,23 @@ export function ShareToCollaborativeDialog({
         // Insert the shared row client-side for dossiers/contrats (documents are handled later).
         try {
           if (itemType === 'dossier') {
-            const payload: any = {
-              cabinet_id: cabinetId,
-              dossier_id: itemId,
-              title: title,
-              description: description || null,
-              shared_by: user?.id || null,
-            };
-            const { data: ins, error: insErr } = await supabase.from('cabinet_dossiers').insert(payload).select();
-            if (insErr) {
-              console.warn('cabinet_dossiers insert failed, attempting update:', insErr.message || insErr);
-              const { data: up, error: upErr } = await supabase.from('cabinet_dossiers').update(payload).match({ cabinet_id: cabinetId, dossier_id: itemId }).select();
-              if (upErr) console.warn('cabinet_dossiers update also failed:', upErr);
-              else rpcData = up;
-            } else rpcData = ins;
+            const { data: d, error: err } = await supabase.rpc('share_dossier_to_cabinet', {
+              cabinet_id_param: cabinetId,
+              dossier_id_param: itemId,
+              title_param: title,
+              description_param: description || null,
+            });
+            if (err) throw err;
+            rpcData = d;
           } else if (itemType === 'contrat') {
-            const payload: any = {
-              cabinet_id: cabinetId,
-              contrat_id: itemId,
-              title: title,
-              description: description || null,
-              shared_by: user?.id || null,
-            };
-            const { data: ins, error: insErr } = await supabase.from('cabinet_contrats').insert(payload).select();
-            if (insErr) {
-              console.warn('cabinet_contrats insert failed, attempting update:', insErr.message || insErr);
-              const { data: up, error: upErr } = await supabase.from('cabinet_contrats').update(payload).match({ cabinet_id: cabinetId, contrat_id: itemId }).select();
-              if (upErr) console.warn('cabinet_contrats update also failed:', upErr);
-              else rpcData = up;
-            } else rpcData = ins;
+            const { data: d, error: err } = await supabase.rpc('share_contrat_to_cabinet', {
+              cabinet_id_param: cabinetId,
+              contrat_id_param: itemId,
+              title_param: title,
+              description_param: description || null,
+            });
+            if (err) throw err;
+            rpcData = d;
           } else {
             // Fallback: call rpcFunction - keep existing behavior if table unknown
             const { data: d, error: err } = await supabase.rpc(rpcFunction, {
