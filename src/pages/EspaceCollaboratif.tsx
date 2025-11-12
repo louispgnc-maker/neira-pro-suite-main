@@ -78,6 +78,14 @@ interface SharedContrat {
   contrat_id: string;
 }
 
+interface SharedClient {
+  id: string;
+  client_id: string;
+  name: string;
+  shared_at: string;
+  shared_by: string;
+}
+
 export default function EspaceCollaboratif() {
   const { user } = useAuth();
   const location = useLocation();
@@ -87,6 +95,7 @@ export default function EspaceCollaboratif() {
   const [documents, setDocuments] = useState<SharedDocument[]>([]);
   const [dossiers, setDossiers] = useState<SharedDossier[]>([]);
   const [contrats, setContrats] = useState<SharedContrat[]>([]);
+  const [clientsShared, setClientsShared] = useState<SharedClient[]>([]);
   const [isCabinetOwner, setIsCabinetOwner] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   
@@ -322,6 +331,26 @@ export default function EspaceCollaboratif() {
           setContrats(contratsData || []);
         }
 
+        // Charger les clients partagés (RPC -> fallback table)
+        try {
+          const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients', { cabinet_id_param: userCabinet.id });
+          if (clientsError) throw clientsError;
+          setClientsShared(Array.isArray(clientsData) ? (clientsData as any[]) : []);
+        } catch (e) {
+          try {
+            const { data: clientsTable, error: clientsTableErr } = await supabase
+              .from('cabinet_clients')
+              .select('id, client_id, name:profiles!inner.full_name, shared_at, shared_by')
+              .eq('cabinet_id', userCabinet.id)
+              .order('shared_at', { ascending: false });
+            if (clientsTableErr) throw clientsTableErr;
+            setClientsShared((clientsTable as any[]) || []);
+          } catch (e2) {
+            console.error('Erreur chargement clients partagés:', e2);
+            setClientsShared([]);
+          }
+        }
+
         // Détecter si l'utilisateur est le propriétaire/fondateur du cabinet
         try {
           const { data: ownerData, error: ownerErr } = await supabase.rpc('is_cabinet_owner', { cabinet_id_param: userCabinet.id, user_id_param: user.id });
@@ -431,7 +460,7 @@ export default function EspaceCollaboratif() {
     }
   };
 
-  const deleteSharedItem = async (table: 'cabinet_documents' | 'cabinet_dossiers' | 'cabinet_contrats', id: string) => {
+  const deleteSharedItem = async (table: 'cabinet_documents' | 'cabinet_dossiers' | 'cabinet_contrats' | 'cabinet_clients', id: string) => {
     if (!id) return;
     if (!confirm('Confirmer la suppression de cet élément partagé ?')) return;
     try {
@@ -460,6 +489,14 @@ export default function EspaceCollaboratif() {
           if (delErr) throw delErr;
         }
         setContrats(prev => prev.filter(c => c.id !== id));
+      } else if (table === 'cabinet_clients') {
+        // Try RPC first (delete_cabinet_client), fallback to direct delete
+        const { error } = await supabase.rpc('delete_cabinet_client', { p_id: id });
+        if (error) {
+          const { error: delErr } = await supabase.from('cabinet_clients').delete().eq('id', id);
+          if (delErr) throw delErr;
+        }
+        setClientsShared(prev => prev.filter(c => c.id !== id));
       }
       toast({ title: 'Supprimé', description: 'L\'élément a été supprimé.' });
     } catch (e:any) {
@@ -667,6 +704,7 @@ export default function EspaceCollaboratif() {
   const [documentsSearch, setDocumentsSearch] = useState('');
   const [contratsSearch, setContratsSearch] = useState('');
   const [dossiersSearch, setDossiersSearch] = useState('');
+  const [clientsSearch, setClientsSearch] = useState('');
 
   // Persist active tab across refreshes: read from URL ?tab= or localStorage
   const [selectedTab, setSelectedTab] = useState<string>(() => {
@@ -759,6 +797,14 @@ export default function EspaceCollaboratif() {
     })
     .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime());
 
+  const clientsFiltered = clientsShared
+    .filter((c) => {
+      const q = clientsSearch.trim().toLowerCase();
+      if (!q) return true;
+      return ((c.name || '') as string).toLowerCase().includes(q) || (c.client_id || '').toLowerCase().includes(q);
+    })
+    .sort((a, b) => new Date(b.shared_at).getTime() - new Date(a.shared_at).getTime());
+
   if (loading) {
     return (
       <AppLayout>
@@ -805,7 +851,7 @@ export default function EspaceCollaboratif() {
 
       {/* Onglets principaux */}
   <Tabs value={selectedTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="dashboard">
             <BarChart3 className="h-4 w-4 mr-2" />
             Tableau de bord
@@ -817,6 +863,10 @@ export default function EspaceCollaboratif() {
           <TabsTrigger value="dossiers">
             <FolderOpen className="h-4 w-4 mr-2" />
             Dossiers
+          </TabsTrigger>
+          <TabsTrigger value="clients">
+            <Plus className="h-4 w-4 mr-2" />
+            Clients
           </TabsTrigger>
           <TabsTrigger value="calendrier">
             <Calendar className="h-4 w-4 mr-2" />
@@ -1267,6 +1317,87 @@ export default function EspaceCollaboratif() {
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Clients partagés */}
+        <TabsContent value="clients" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Clients partagés</CardTitle>
+                  <CardDescription>
+                    {clientsShared.length} client{clientsShared.length > 1 ? 's' : ''} accessible{clientsShared.length > 1 ? 's' : ''}
+                  </CardDescription>
+                </div>
+                <Button 
+                  className={`${colorClass} self-start`}
+                  onClick={() => navigate(`/${cabinetRole}s/clients`)}
+                >
+                  <ArrowRight className="h-4 w-4 mr-2" />
+                  Aller à mes clients
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {clientsShared.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Aucun client partagé</p>
+                  <p className="text-sm mt-2">Utilisez le bouton de partage sur vos dossiers/clients</p>
+                </div>
+              ) : (
+                <div>
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      placeholder="Rechercher clients..."
+                      value={clientsSearch}
+                      onChange={(e) => setClientsSearch(e.target.value)}
+                      className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-2 max-h-[420px] overflow-y-auto">
+                    {clientsFiltered.map((client) => (
+                      <div key={client.id} className={`p-3 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="font-medium">{client.name || client.client_id}</p>
+                          </div>
+
+                          <div className="flex flex-col items-end gap-2 ml-4">
+                            <p className="text-xs text-muted-foreground">
+                              Partagé le {new Date(client.shared_at).toLocaleDateString()}
+                            </p>
+                            <div className="flex items-center gap-3">
+                              {(user && (client.shared_by === user.id || isCabinetOwner)) && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_clients', client.id); }}
+                                  className="p-1 rounded hover:bg-gray-100"
+                                  title="Supprimer"
+                                >
+                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                </button>
+                              )}
+
+                              <Badge variant="outline" className={
+                                cabinetRole === 'notaire'
+                                  ? 'bg-orange-100 text-orange-600 border-orange-200'
+                                  : 'bg-blue-100 text-blue-600 border-blue-200'
+                              }>
+                                Client
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
