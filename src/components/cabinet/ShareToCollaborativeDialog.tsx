@@ -19,9 +19,11 @@ import { Share2 } from 'lucide-react';
 interface ShareToCollaborativeDialogProps {
   itemId: string;
   itemName: string;
-  itemType: 'document' | 'dossier' | 'contrat';
+  itemType: 'document' | 'dossier' | 'contrat' | 'client';
   role: 'avocat' | 'notaire';
   onSuccess?: () => void;
+  // When true, the dialog will not render its built-in trigger button.
+  hideTrigger?: boolean;
 }
 
 export function ShareToCollaborativeDialog({ 
@@ -29,7 +31,8 @@ export function ShareToCollaborativeDialog({
   itemName, 
   itemType,
   role,
-  onSuccess 
+  onSuccess,
+  hideTrigger = false,
 }: ShareToCollaborativeDialogProps) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(itemName);
@@ -90,6 +93,10 @@ export function ShareToCollaborativeDialog({
         case 'contrat':
           rpcFunction = 'share_contrat_to_cabinet';
           idParamName = 'contrat_id_param';
+          break;
+        case 'client':
+          rpcFunction = 'share_client_to_cabinet';
+          idParamName = 'p_client_id';
           break;
       }
 
@@ -332,14 +339,16 @@ export function ShareToCollaborativeDialog({
   
   return (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setOpen(true)}
-        className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
-      >
-        <Share2 className="h-4 w-4" />
-      </Button>
+      {!hideTrigger && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setOpen(true)}
+          className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+        >
+          <Share2 className="h-4 w-4" />
+        </Button>
+      )}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md">
           {!cabinetId ? (

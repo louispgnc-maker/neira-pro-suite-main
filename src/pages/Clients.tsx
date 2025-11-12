@@ -2,6 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Plus, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Share2 } from 'lucide-react';
+import ShareToCollaborativeButton from '@/components/cabinet/ShareToCollaborativeButton';
 import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -201,9 +202,7 @@ export default function Clients() {
                           >
                             {client.kyc_status}
                           </Badge>
-                          <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); shareClient(client.id, client.name); }} disabled={sharingClientId === client.id}>
-                            <Share2 className="h-4 w-4 mr-2" /> {sharingClientId === client.id ? 'Partage…' : 'Partager'}
-                          </Button>
+                          <ShareToCollaborativeButton clientId={client.id} clientName={client.name} role={role} disabled={sharingClientId === client.id} onStart={() => setSharingClientId(client.id)} onDone={() => setSharingClientId(null)} />
                         </div>
                       </div>
                     </Card>

@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { Share2 } from 'lucide-react';
+import ShareToCollaborativeButton from '@/components/cabinet/ShareToCollaborativeButton';
 
 interface Client {
   id: string;
@@ -147,38 +148,7 @@ export default function ClientDetail() {
             <Button className={mainButtonColor} onClick={onEdit}>
               <Pencil className="h-4 w-4 mr-2" /> Modifier
             </Button>
-            <Button variant="outline" className={role === 'notaire' ? 'text-orange-600 border-orange-200' : 'text-blue-600 border-blue-200'} onClick={async () => {
-              if (!user || !client) return;
-              if (!confirm('Partager cette fiche client dans l\'espace collaboratif du cabinet ?')) return;
-              setSharing(true);
-              try {
-                // Resolve user's current cabinet for the role
-                const { data: cabinetsData, error: cabErr } = await supabase.rpc('get_user_cabinets');
-                if (cabErr) throw cabErr;
-                const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-                const filtered = cabinets.filter((c: any) => c.role === role);
-                const userCabinet = filtered[0] || null;
-                if (!userCabinet) {
-                  alert('Aucun cabinet trouvé. Rejoignez ou créez un cabinet pour partager.');
-                  return;
-                }
-
-                const { data: rpcData, error: rpcErr } = await supabase.rpc('share_client_to_cabinet', {
-                  p_client_id: client.id,
-                  p_cabinet_id: userCabinet.id,
-                  p_shared_by: user.id,
-                });
-                if (rpcErr) throw rpcErr;
-                alert('Fiche client partagée avec succès.');
-              } catch (e:any) {
-                console.error('Erreur partage client:', e);
-                alert('Échec du partage: ' + (e?.message || String(e)));
-              } finally {
-                setSharing(false);
-              }
-            }} disabled={sharing}>
-              <Share2 className="h-4 w-4 mr-2" /> {sharing ? 'Partage…' : 'Partager'}
-            </Button>
+            <ShareToCollaborativeButton clientId={id as string} clientName={client?.name || ''} role={role} disabled={sharing} onStart={() => setSharing(true)} onDone={() => setSharing(false)} />
           </div>
         </div>
 
