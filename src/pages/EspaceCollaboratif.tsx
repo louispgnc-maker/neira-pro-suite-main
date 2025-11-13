@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { copyDocumentToShared } from '@/lib/sharedCopy';
+import { getSignedUrlForPath } from '@/lib/storageHelpers';
 import { DocumentViewer } from '@/components/ui/document-viewer';
 import { 
   FileText, 
@@ -602,13 +603,10 @@ export default function EspaceCollaboratif() {
         }
       }
 
-      // try signed url from chosen bucket
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .createSignedUrl(storagePath, 60);
-
-      if (error || !data?.signedUrl) {
-        console.error('createSignedUrl failed for', bucket, storagePath, error);
+      // try signed url via Edge Function (membership-checked) with client fallback
+      const signed = await getSignedUrlForPath({ bucket, path: storagePath, cabinetId: cabinet?.id, expires: 60 });
+      if (!signed.signedUrl) {
+        console.error('signed url generation failed for', bucket, storagePath);
         // Try a public URL fallback if the bucket/object is public
         try {
           const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
@@ -623,15 +621,11 @@ export default function EspaceCollaboratif() {
           console.error('getPublicUrl fallback failed', e);
         }
 
-        toast({
-          title: 'Erreur',
-          description: 'Impossible de générer le lien',
-          variant: 'destructive',
-        });
+        toast({ title: 'Erreur', description: 'Impossible de générer le lien', variant: 'destructive' });
         return;
       }
 
-      setViewerUrl(data.signedUrl);
+      setViewerUrl(signed.signedUrl);
       setViewerDocName(doc.title);
       setViewerOpen(true);
     } catch (error) {

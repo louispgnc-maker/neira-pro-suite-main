@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { copyClientFileToShared } from '@/lib/sharedCopy';
+import { getSignedUrlForPath } from '@/lib/storageHelpers';
 import { Share2 } from 'lucide-react';
 
 interface ShareToCollaborativeDialogProps {
@@ -89,6 +90,26 @@ export function ShareToCollaborativeDialog({
       console.error('Erreur chargement cabinet:', error);
     }
   };
+
+  // Helper to call RPC and uniformly handle the "Not a member of this cabinet" error
+  const callRpc = async (name: string, params: any) => {
+    const { data, error } = await supabase.rpc(name, params as any);
+    if (error) {
+      // Postgres RAISE with code P0001 is surfaced here — map it to a friendly toast
+      if (error.code === 'P0001' || (error.message && String(error.message).includes('Not a member'))) {
+        toast({
+          title: "Autorisation refusée",
+          description: "Vous n'êtes pas membre de ce cabinet. Vérifiez que vous êtes connecté avec le bon compte ou contactez l'administrateur.",
+          variant: 'destructive',
+        });
+        const e: any = new Error('NOT_MEMBER');
+        e.rpcError = error;
+        throw e;
+      }
+      throw error;
+    }
+    return data;
+  };
   const handleShare = async () => {
     if (!cabinetId) {
       toast({ title: 'Erreur', description: 'Vous devez rejoindre un cabinet pour partager', variant: 'destructive' });
@@ -145,7 +166,7 @@ export function ShareToCollaborativeDialog({
 
           if (publicUrl) {
             // Create or update cabinet_clients via server-side RPC so RLS doesn't block the write
-            const { data: rpcRes, error: rpcErr } = await supabase.rpc('share_client_to_cabinet_with_url', {
+            const rpcRes = await callRpc('share_client_to_cabinet_with_url', {
               cabinet_id_param: cabinetId,
               client_id_param: itemId,
               file_url_param: publicUrl,
@@ -153,11 +174,10 @@ export function ShareToCollaborativeDialog({
               file_name_param: fileName,
               file_type_param: fileType,
             });
-            if (rpcErr) throw rpcErr;
             rpcData = rpcRes;
           } else {
             // No file URL: still create the cabinet_clients row via RPC (file_url null)
-            const { data: rpcRes, error: rpcErr } = await supabase.rpc('share_client_to_cabinet_with_url', {
+            const rpcRes = await callRpc('share_client_to_cabinet_with_url', {
               cabinet_id_param: cabinetId,
               client_id_param: itemId,
               file_url_param: null,
@@ -165,7 +185,6 @@ export function ShareToCollaborativeDialog({
               file_name_param: fileName,
               file_type_param: fileType,
             });
-            if (rpcErr) throw rpcErr;
             rpcData = rpcRes;
           }
         } catch (e) {
@@ -174,33 +193,30 @@ export function ShareToCollaborativeDialog({
       } else {
         // Insert the shared row client-side for dossiers/contrats (documents are handled later).
         try {
-          if (itemType === 'dossier') {
-            const { data: d, error: err } = await supabase.rpc('share_dossier_to_cabinet', {
+            if (itemType === 'dossier') {
+            const d = await callRpc('share_dossier_to_cabinet', {
               cabinet_id_param: cabinetId,
               dossier_id_param: itemId,
               title_param: title,
               description_param: description || null,
             });
-            if (err) throw err;
             rpcData = d;
           } else if (itemType === 'contrat') {
-            const { data: d, error: err } = await supabase.rpc('share_contrat_to_cabinet', {
+            const d = await callRpc('share_contrat_to_cabinet', {
               cabinet_id_param: cabinetId,
               contrat_id_param: itemId,
               title_param: title,
               description_param: description || null,
             });
-            if (err) throw err;
             rpcData = d;
           } else {
             // Fallback: call rpcFunction - keep existing behavior if table unknown
-            const { data: d, error: err } = await supabase.rpc(rpcFunction, {
+            const d = await callRpc(rpcFunction, {
               cabinet_id_param: cabinetId,
               [idParamName]: itemId,
               title_param: title,
               description_param: description || null,
             });
-            if (err) throw err;
             rpcData = d;
           }
         } catch (e) {
@@ -239,7 +255,7 @@ export function ShareToCollaborativeDialog({
                 let copiedCount = 0;
                 const createdCabinetDocIds: string[] = [];
                 for (const d of docsData) {
-                  try {
+                    try {
                     const storagePathRaw = (d?.storage_path || '').replace(/^\/+/, '');
                     if (!storagePathRaw) continue;
                     const { data: downloaded, error: downloadErr } = await supabase.storage.from('documents').download(storagePathRaw);
@@ -264,10 +280,11 @@ export function ShareToCollaborativeDialog({
                         publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
                       } catch (e) { /* noop */ }
                     } else {
-                      // fallback: try signed URL from original bucket
+                      // fallback: ask Edge Function for a signed URL (server-signed)
                       try {
-                        const signed = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7);
-                        publicUrl = signed?.data?.signedUrl || null;
+                        const res = await getSignedUrlForPath({ bucket: 'documents', path: storagePathRaw, cabinetId, expires: 60 * 60 * 24 * 7 });
+                        publicUrl = res?.signedUrl || null;
+                        if (!publicUrl) uploadErrors.push(`signedurl_failed doc=${d.id} fallback_no_url`);
                       } catch (e) {
                         uploadErrors.push(`signedurl_failed doc=${d.id} ${(e as any)?.message || String(e)}`);
                         publicUrl = null;
@@ -277,18 +294,16 @@ export function ShareToCollaborativeDialog({
                     // Create cabinet_documents entry via server-side RPC to avoid RLS issues
                     try {
                       if (publicUrl) {
-                        const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
-                          cabinet_id_param: cabinetId,
-                          document_id_param: d.id,
-                          title_param: d.name || title,
-                          description_param: null,
-                          file_url_param: publicUrl,
-                          file_name_param: d.name || filename,
-                          file_type_param: 'application/pdf',
-                        });
-                        if (rpcErr) {
-                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${rpcErr.message || String(rpcErr)}`);
-                        } else {
+                        try {
+                          const rpcData = await callRpc('share_document_to_cabinet_with_url', {
+                            cabinet_id_param: cabinetId,
+                            document_id_param: d.id,
+                            title_param: d.name || title,
+                            description_param: null,
+                            file_url_param: publicUrl,
+                            file_name_param: d.name || filename,
+                            file_type_param: 'application/pdf',
+                          });
                           // rpc returns uuid or row, try to extract id
                           let createdId: string | null = null;
                           if (Array.isArray(rpcData) && rpcData.length > 0) createdId = rpcData[0];
@@ -297,18 +312,17 @@ export function ShareToCollaborativeDialog({
                             createdCabinetDocIds.push(createdId);
                             copiedCount++;
                           }
+                        } catch (err:any) {
+                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${(err as any)?.message || String(err)}`);
                         }
                       } else {
-                        // no publicUrl: create via RPC without url (will store storage_path)
-                        const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
-                          cabinet_id_param: cabinetId,
-                          document_id_param: d.id,
-                          title_param: d.name || title,
-                          description_param: null,
-                        });
-                        if (rpcErr) {
-                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${rpcErr.message || String(rpcErr)}`);
-                        } else {
+                        try {
+                          const rpcData = await callRpc('share_document_to_cabinet', {
+                            cabinet_id_param: cabinetId,
+                            document_id_param: d.id,
+                            title_param: d.name || title,
+                            description_param: null,
+                          });
                           let createdId: string | null = null;
                           if (Array.isArray(rpcData) && rpcData.length > 0) createdId = rpcData[0];
                           else if (rpcData && typeof rpcData === 'string') createdId = rpcData;
@@ -316,6 +330,8 @@ export function ShareToCollaborativeDialog({
                             createdCabinetDocIds.push(createdId);
                             copiedCount++;
                           }
+                        } catch (err:any) {
+                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${(err as any)?.message || String(err)}`);
                         }
                       }
                     } catch (e:any) {
@@ -392,30 +408,31 @@ export function ShareToCollaborativeDialog({
       if (!uploadedBucket) {
   console.warn('All shared-bucket uploads failed:', uploadErrors);
         // rollback created shared entry (to avoid half-shares)
-        try {
-          if (sharedId) await supabase.rpc('delete_cabinet_document', { p_id: sharedId });
+                    try {
+          if (sharedId) await callRpc('delete_cabinet_document', { p_id: sharedId });
           else console.warn('No sharedId available to rollback; skipping table delete to avoid RLS errors');
         } catch (_) { /* noop */ }
 
         // Try to provide a temporary signed URL so cabinet members can still open the file
         try {
-          const signedRes = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7); // 7 days
-            if (signedRes?.data?.signedUrl) {
-              usedPublicUrl = signedRes.data.signedUrl;
+          const res = await getSignedUrlForPath({ bucket: 'documents', path: storagePathRaw, cabinetId, expires: 60 * 60 * 24 * 7 });
+          if (res?.signedUrl) {
+            usedPublicUrl = res.signedUrl;
             // create a cabinet_documents entry so notification behavior remains consistent
             try {
               // Use server-side RPC to create the cabinet_documents row with the signed URL
-              const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
-                cabinet_id_param: cabinetId,
-                document_id_param: itemId,
-                title_param: title,
-                description_param: description || null,
-                file_url_param: usedPublicUrl,
-                file_name_param: title || null,
-                file_type_param: null,
-              });
-              if (rpcErr) {
-                console.warn('Failed to create fallback cabinet_documents row via RPC:', rpcErr);
+              try {
+                await callRpc('share_document_to_cabinet_with_url', {
+                  cabinet_id_param: cabinetId,
+                  document_id_param: itemId,
+                  title_param: title,
+                  description_param: description || null,
+                  file_url_param: usedPublicUrl,
+                  file_name_param: title || null,
+                  file_type_param: null,
+                });
+              } catch (e:any) {
+                console.warn('Failed to create fallback cabinet_documents row via RPC:', e?.message || e);
               }
             } catch (e) {
               console.warn('Failed to create fallback cabinet_documents row via RPC (exception):', e);
@@ -445,7 +462,7 @@ export function ShareToCollaborativeDialog({
         if (publicUrl) {
           // Update the cabinet_documents entry via RPC to avoid RLS violations
           try {
-            await supabase.rpc('share_document_to_cabinet_with_url', {
+            await callRpc('share_document_to_cabinet_with_url', {
               cabinet_id_param: cabinetId,
               document_id_param: itemId,
               title_param: title,
@@ -454,8 +471,8 @@ export function ShareToCollaborativeDialog({
               file_name_param: title || null,
               file_type_param: 'application/pdf',
             });
-          } catch (e) {
-            console.warn('Failed to update cabinet_documents via RPC after upload:', e);
+          } catch (e:any) {
+            console.warn('Failed to update cabinet_documents via RPC after upload:', e?.message || e);
           }
         }
       } catch (e) {

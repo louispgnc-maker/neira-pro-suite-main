@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
+import { getSignedUrlForPath } from './storageHelpers';
 
 const BUCKET_CANDIDATES = ['shared-documents', 'shared_documents'];
 
@@ -42,13 +43,15 @@ export async function copyDocumentToShared({
     }
 
     if (!uploadedBucket) {
-      // try fallback: create a signed URL from original documents bucket so users can access temporarily
+      // try fallback: ask our Edge Function (server-side) for a signed URL which
+      // enforces cabinet membership. This avoids using client-side createSignedUrl
+      // which will fail when RLS/storage rules block it, and avoids attempting
+      // to upload into a shared bucket that may not exist.
       try {
-        const signed = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7);
-        const signedUrl = signed?.data?.signedUrl || null;
+        const { signedUrl } = await getSignedUrlForPath({ bucket: 'documents', path: storagePathRaw, cabinetId, expires: 60 * 60 * 24 * 7 });
         return { uploadedBucket: null, publicUrl: signedUrl };
       } catch (e) {
-        console.warn('Signed URL fallback also failed', e);
+        console.warn('Signed URL fallback via function also failed', e);
         return { uploadedBucket: null, publicUrl: null };
       }
     }
@@ -102,12 +105,13 @@ export async function copyClientFileToShared({
     }
 
     if (!uploadedBucket) {
-      // fallback: signed URL from original bucket
+      // fallback: ask Edge Function for a signed URL (preferred) instead of
+      // using client-side createSignedUrl which may be blocked by RLS.
       try {
-        const signed = await supabase.storage.from('documents').createSignedUrl(storagePathRaw, 60 * 60 * 24 * 7);
-        const signedUrl = signed?.data?.signedUrl || null;
+        const { signedUrl } = await getSignedUrlForPath({ bucket: 'documents', path: storagePathRaw, cabinetId, expires: 60 * 60 * 24 * 7 });
         return { uploadedBucket: null, publicUrl: signedUrl };
       } catch (e) {
+        console.warn('Signed URL fallback via function failed', e);
         return { uploadedBucket: null, publicUrl: null };
       }
     }
