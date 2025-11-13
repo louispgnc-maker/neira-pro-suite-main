@@ -78,11 +78,19 @@ export function AppSidebar() {
       if (!user) return setCurrentCabinetId(null);
       try {
         const { data } = await supabase.rpc('get_user_cabinets');
-        const cabinets = Array.isArray(data) ? data as any[] : [];
-        const found = cabinets.find((c: any) => c.role === role);
-        if (mounted) setCurrentCabinetId(found?.id ?? profile?.cabinet_id ?? null);
-      } catch (e) {
-        if (mounted) setCurrentCabinetId(profile?.cabinet_id ?? null);
+        const cabinets = Array.isArray(data) ? (data as unknown[]) : [];
+        const found = cabinets.find((c) => {
+          const cc = c as Record<string, unknown>;
+          return cc.role === role;
+        });
+        let foundId: string | null = null;
+        if (found) {
+          const cc = found as Record<string, unknown>;
+          if (typeof cc.id === 'string') foundId = cc.id;
+        }
+        if (mounted) setCurrentCabinetId(foundId ?? (typeof profile?.cabinet_id === 'string' ? profile!.cabinet_id : null));
+      } catch (e: unknown) {
+        if (mounted) setCurrentCabinetId(typeof profile?.cabinet_id === 'string' ? profile!.cabinet_id : null);
       }
     };
     loadCabinetForRole();

@@ -129,7 +129,7 @@ export default function Tasks() {
       if (taskDate) {
         due_at = taskTime ? `${taskDate}T${taskTime}` : `${taskDate}T00:00`;
       }
-      const insertObj: any = {
+      const insertObj: Record<string, unknown> = {
         owner_id: user.id,
         role,
         title,
@@ -146,7 +146,7 @@ export default function Tasks() {
       setTaskTime("");
       setOpen(false);
       // Reload tasks list
-      let query = supabase
+      const query = supabase
         .from("tasks")
         .select("id,title,description,due_date,due_at,done")
         .eq("owner_id", user.id)
@@ -154,9 +154,10 @@ export default function Tasks() {
         .order("due_at", { ascending: true, nullsFirst: false });
       const { data } = await query;
       setTasks((data || []) as TaskRow[]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erreur création tâche:", err);
-      toast.error("Erreur lors de la création", { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error("Erreur lors de la création", { description: message });
     } finally {
       setSaving(false);
     }

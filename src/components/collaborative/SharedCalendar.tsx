@@ -56,8 +56,8 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
     return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
   };
 
-  const renderEventContent = (arg: any) => {
-    const isAllDay = Boolean((arg.event?.extendedProps as any)?.all_day);
+  const renderEventContent = (arg: { event?: EventApi; timeText?: string }) => {
+    const isAllDay = Boolean((arg.event?.extendedProps as Record<string, unknown>)?.['all_day']);
     const timeText = arg.timeText || '';
     const hideTime = isAllDay || timeText === '00:00' || timeText === '00:00:00';
     return (
@@ -73,32 +73,41 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
     async function load() {
       setLoading(true);
       try {
-        let query = supabase.from('calendar_events').select('*');
-        if (role) query = query.eq('role', role as any);
-        const { data, error } = await query.order('start', { ascending: true });
+    let query = supabase.from('calendar_events').select('*');
+    if (role) query = query.eq('role', role);
+    const { data, error } = await query.order('start', { ascending: true });
         if (error) throw error;
         if (!mounted) return;
         // Map events and then fetch owner profiles to display creator name/email
-        const rawEvents = (data || []).map((e: any) => ({
-          source: e,
-          id: e.id,
-          title: e.title,
-          start: e.start,
-          end: e.end_at || undefined,
-          owner_id: e.owner_id,
-          description: e.description,
-          color: e.color,
-          event_type: e.event_type,
-        }));
+        const rawData = Array.isArray(data) ? (data as unknown[]) : [];
+        const rawEvents = rawData.map((e) => {
+          const row = e as Record<string, unknown>;
+          return {
+            source: row,
+            id: String(row['id'] ?? ''),
+            title: String(row['title'] ?? ''),
+            start: String(row['start'] ?? ''),
+            end: row['end_at'] ? String(row['end_at']) : undefined,
+            owner_id: row['owner_id'] ? String(row['owner_id']) : undefined,
+            description: row['description'] ? String(row['description']) : undefined,
+            color: row['color'] ? String(row['color']) : undefined,
+            event_type: row['event_type'] ? String(row['event_type']) : undefined,
+          };
+        });
 
         // Collect owner ids and fetch profiles
-        const ownerIds = Array.from(new Set(rawEvents.map((r: any) => r.owner_id).filter(Boolean)));
-        let profilesMap: Record<string, any> = {};
+        const ownerIds = Array.from(new Set(rawEvents.map((r) => r.owner_id).filter(Boolean) as string[]));
+        let profilesMap: Record<string, Record<string, unknown>> = {};
         if (ownerIds.length > 0) {
           try {
-            const { data: profiles } = await supabase.from('profiles').select('id, nom, full_name, email').in('id', ownerIds as any[]);
+            const { data: profiles } = await supabase.from('profiles').select('id, nom, full_name, email').in('id', ownerIds as string[]);
             if (Array.isArray(profiles)) {
-              profilesMap = profiles.reduce((acc: any, p: any) => ({ ...acc, [p.id]: p }), {} as any);
+              profilesMap = (profiles as unknown[]).reduce((acc, p) => {
+                const rp = p as Record<string, unknown>;
+                const id = String(rp['id'] ?? '');
+                acc[id] = rp;
+                return acc;
+              }, {} as Record<string, Record<string, unknown>>);
             }
           } catch (err) {
             // ignore profile fetch errors; we'll fallback to owner_id
@@ -107,21 +116,22 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
         }
 
 
-        const mapEvents = rawEvents.map((r: any) => {
+        const mapEvents = rawEvents.map((r) => {
           const ownerKey = r.owner_id || r.id;
           const color = r.color || generateColorFromString(String(ownerKey));
-          const ownerProfile = r.owner_id ? profilesMap[r.owner_id] : null;
-          const owner_name = ownerProfile ? (ownerProfile.nom || ownerProfile.full_name || ownerProfile.email || ownerProfile.id) : (r.owner_id || null);
-          const owner_email = ownerProfile ? ownerProfile.email || null : null;
-          const allDay = Boolean(r.source?.all_day || r.source?.allDay || false);
+          const ownerProfile = r.owner_id ? profilesMap[String(r.owner_id)] : null;
+          const owner_name = ownerProfile ? (String(ownerProfile['nom'] ?? ownerProfile['full_name'] ?? ownerProfile['email'] ?? ownerProfile['id'])) : (r.owner_id ?? null);
+          const owner_email = ownerProfile ? (ownerProfile['email'] ? String(ownerProfile['email']) : null) : null;
+          const src = r.source as Record<string, unknown> | undefined;
+          const allDay = Boolean(src?.['all_day'] ?? src?.['allDay'] ?? false);
           // If event is all-day, FullCalendar expects an exclusive end date. Our DB stores end_at as inclusive (23:59:59), so add 1 day for display.
-          let displayStart: any = r.start;
-          let displayEnd: any = r.end || undefined;
+          let displayStart: string | undefined = r.start || undefined;
+          let displayEnd: string | undefined = r.end || undefined;
           if (allDay) {
             // use YYYY-MM-DD for start
-            if (r.start) displayStart = (r.start as string).slice(0, 10);
+            if (r.start) displayStart = String(r.start).slice(0, 10);
             if (r.end) {
-              const endYmd = (r.end as string).slice(0, 10);
+              const endYmd = String(r.end).slice(0, 10);
               displayEnd = addDaysToYMD(endYmd, 1);
             }
           }
@@ -137,9 +147,10 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
           });
         });
         setEvents(mapEvents);
-      } catch (e) {
+      } catch (e: unknown) {
         console.error('load calendar events', e);
-        toast({ title: 'Erreur', description: 'Impossible de charger le calendrier', variant: 'destructive' });
+        const message = e instanceof Error ? e.message : String(e ?? 'Impossible de charger le calendrier');
+        toast({ title: 'Erreur', description: message, variant: 'destructive' });
       } finally {
         setLoading(false);
       }
@@ -161,20 +172,21 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                 try {
                   const { data: p } = await supabase.from('profiles').select('id, nom, full_name, email').eq('id', evt.owner_id).maybeSingle();
                   if (p) {
-                    owner_name = p.nom || p.full_name || p.email || p.id;
-                    owner_email = p.email || null;
+                    const rp = p as Record<string, unknown>;
+                    owner_name = String(rp['nom'] ?? rp['full_name'] ?? rp['email'] ?? rp['id']);
+                    owner_email = rp['email'] ? String(rp['email']) : null;
                   }
-                } catch (e) {
+                } catch (_e: unknown) {
                   // ignore
                 }
               }
               // compute display start/end for realtime-insert
               const insertedAllDay = Boolean(evt.all_day || evt.allDay || false);
-              let iStart: any = evt.start;
-              let iEnd: any = evt.end_at || undefined;
-              if (insertedAllDay) {
-                if (evt.start) iStart = (evt.start as string).slice(0, 10);
-                if (evt.end_at) iEnd = addDaysToYMD((evt.end_at as string).slice(0, 10), 1);
+              let iStart: string | undefined = evt.start;
+              let iEnd: string | undefined = evt.end_at || undefined;
+                if (insertedAllDay) {
+                if (evt.start) iStart = String(evt.start).slice(0, 10);
+                if (evt.end_at) iEnd = addDaysToYMD(String(evt.end_at).slice(0, 10), 1);
               }
               setEvents(prev => [{ id: evt.id, title: evt.title, start: iStart, end: iEnd, allDay: insertedAllDay, extendedProps: { description: evt.description, owner_id: evt.owner_id, owner_name, owner_email, all_day: insertedAllDay }, backgroundColor: color, borderColor: color }, ...prev]);
       } else if (payload.eventType === 'UPDATE') {
@@ -190,15 +202,15 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                     owner_name = p.nom || p.full_name || p.email || p.id;
                     owner_email = p.email || null;
                   }
-                } catch (e) { /* noop */ }
+                } catch (_e: unknown) { /* noop */ }
               }
               // compute display start/end for update
               const updatedAllDay = Boolean(payload.record?.all_day || payload.record?.allDay || false);
-              let uStart: any = evt.start;
-              let uEnd: any = evt.end_at || undefined;
-              if (updatedAllDay) {
-                if (evt.start) uStart = (evt.start as string).slice(0, 10);
-                if (evt.end_at) uEnd = addDaysToYMD((evt.end_at as string).slice(0, 10), 1);
+              let uStart: string | undefined = evt.start;
+              let uEnd: string | undefined = evt.end_at || undefined;
+                if (updatedAllDay) {
+                if (evt.start) uStart = String(evt.start).slice(0, 10);
+                if (evt.end_at) uEnd = addDaysToYMD(String(evt.end_at).slice(0, 10), 1);
               }
               setEvents(prev => prev.map(p => p.id === evt.id ? { ...p, title: evt.title, start: uStart, end: uEnd, allDay: updatedAllDay, extendedProps: { ...p.extendedProps, description: evt.description, owner_name, owner_email, all_day: updatedAllDay }, backgroundColor: color, borderColor: color } : p));
       } else if (payload.eventType === 'DELETE') {
@@ -218,7 +230,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
     // Pre-fill date/time fields; startStr is like 2025-11-11T12:00:00
     const s = selectInfo.startStr;
     const e = selectInfo.endStr || '';
-    const isAllDay = (selectInfo as any).allDay === true;
+  const isAllDay = (selectInfo as unknown as { allDay?: boolean }).allDay === true;
     setFormStartDate(s.slice(0, 10));
     if (isAllDay) {
       // FullCalendar provides exclusive end for all-day selections -> subtract one day for the form
@@ -247,16 +259,16 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
     setEditingEvent({
       id: ev.id,
       title: ev.title,
-      description: (ev.extendedProps as any)?.description || '',
+      description: (ev.extendedProps as Record<string, unknown>)['description'] ? String((ev.extendedProps as Record<string, unknown>)['description']) : '',
       start: ev.startStr,
       end: ev.endStr || undefined,
-      owner_id: (ev.extendedProps as any)?.owner_id,
-      owner_name: (ev.extendedProps as any)?.owner_name || null,
-      owner_email: (ev.extendedProps as any)?.owner_email || null,
+      owner_id: (ev.extendedProps as Record<string, unknown>)['owner_id'] ? String((ev.extendedProps as Record<string, unknown>)['owner_id']) : undefined,
+      owner_name: (ev.extendedProps as Record<string, unknown>)['owner_name'] ? String((ev.extendedProps as Record<string, unknown>)['owner_name']) : null,
+      owner_email: (ev.extendedProps as Record<string, unknown>)['owner_email'] ? String((ev.extendedProps as Record<string, unknown>)['owner_email']) : null,
       color: ev.backgroundColor || undefined,
     });
     setFormTitle(ev.title);
-    setFormDescription((ev.extendedProps as any)?.description || '');
+  setFormDescription(((ev.extendedProps as Record<string, unknown>)['description']) ? String((ev.extendedProps as Record<string, unknown>)['description']) : '');
     // split start/end into date + optional time
     const s = ev.startStr || '';
     const e = ev.endStr || '';
@@ -287,7 +299,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
         return new Date(`${formEndDate}T${formEndTime}:00`).toISOString();
       })();
 
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         title: formTitle,
         description: formDescription || null,
         start: startIso,
@@ -308,11 +320,12 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
         const color = data.color || generateColorFromString(String(ownerKey));
         // compute display start/end for optimistic UI
         const isAllDay = Boolean(data.all_day || data.allDay || false);
-        let dispStart: any = data.start;
-        let dispEnd: any = data.end_at || undefined;
+        const dataRec = data as Record<string, unknown>;
+        let dispStart: string | undefined = dataRec['start'] ? String(dataRec['start']) : undefined;
+        let dispEnd: string | undefined = dataRec['end_at'] ? String(dataRec['end_at']) : undefined;
         if (isAllDay) {
-          dispStart = (data.start || '').slice(0, 10);
-          if (data.end_at) dispEnd = addDaysToYMD((data.end_at || '').slice(0, 10), 1);
+          dispStart = String(dataRec['start'] || '').slice(0, 10) || undefined;
+          if (dataRec['end_at']) dispEnd = addDaysToYMD(String(dataRec['end_at']).slice(0, 10), 1);
         }
         const newEvt = {
           id: data.id,
@@ -327,9 +340,10 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
         setEvents(prev => [newEvt, ...prev]);
       }
       toast({ title: 'Événement créé' });
-    } catch (e:any) {
+    } catch (e: unknown) {
       console.error('create event', e);
-      toast({ title: 'Erreur', description: e.message || 'Création échouée', variant: 'destructive' });
+      const message = e instanceof Error ? e.message : String(e ?? 'Création échouée');
+      toast({ title: 'Erreur', description: message, variant: 'destructive' });
     }
   };
 
@@ -343,7 +357,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
         return all_day ? formEndDate : new Date(`${formEndDate}T${formEndTime}:00`).toISOString();
       })();
 
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         title: formTitle,
         description: formDescription || null,
         start: startIso,
@@ -356,20 +370,22 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
       if (updated) {
         // compute display values for all-day
         const isAllDay = Boolean(updated.all_day || updated.allDay || false);
-        let dispStart: any = updated.start;
-        let dispEnd: any = updated.end_at || undefined;
+        const updatedRec = updated as Record<string, unknown>;
+        let dispStart: string | undefined = updatedRec['start'] ? String(updatedRec['start']) : undefined;
+        let dispEnd: string | undefined = updatedRec['end_at'] ? String(updatedRec['end_at']) : undefined;
         if (isAllDay) {
-          dispStart = (updated.start || '').slice(0, 10);
-          if (updated.end_at) dispEnd = addDaysToYMD((updated.end_at || '').slice(0, 10), 1);
+          dispStart = String(updatedRec['start'] || '').slice(0, 10) || undefined;
+          if (updatedRec['end_at']) dispEnd = addDaysToYMD(String(updatedRec['end_at']).slice(0, 10), 1);
         }
-        setEvents(prev => prev.map(p => p.id === updated.id ? { ...p, title: updated.title, start: dispStart, end: dispEnd, allDay: isAllDay, extendedProps: { ...((p as any).extendedProps || {}), description: updated.description, all_day: isAllDay } } : p));
+        setEvents(prev => prev.map(p => p.id === updated.id ? { ...p, title: updated.title, start: dispStart, end: dispEnd, allDay: isAllDay, extendedProps: { ...(((p as EventInput).extendedProps as Record<string, unknown>) || {}), description: updated.description, all_day: isAllDay } } : p));
       }
       setEditingEvent(null);
       setOpenCreate(false);
       toast({ title: 'Événement mis à jour' });
-    } catch (e:any) {
+    } catch (e: unknown) {
       console.error('update event', e);
-      toast({ title: 'Erreur', description: e.message || 'Mise à jour échouée', variant: 'destructive' });
+      const message = e instanceof Error ? e.message : String(e ?? 'Mise à jour échouée');
+      toast({ title: 'Erreur', description: message, variant: 'destructive' });
     }
   };
 
@@ -388,9 +404,10 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
       setEditingEvent(null);
       setOpenCreate(false);
       toast({ title: 'Événement supprimé' });
-    } catch (e:any) {
+    } catch (e: unknown) {
       console.error('delete event', e);
-      toast({ title: 'Erreur', description: e.message || 'Suppression échouée', variant: 'destructive' });
+      const message = e instanceof Error ? e.message : String(e ?? 'Suppression échouée');
+      toast({ title: 'Erreur', description: message, variant: 'destructive' });
     }
   };
 
@@ -514,7 +531,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                 eventClick={handleEventClick}
                 eventContent={renderEventContent}
                 height="auto"
-                ref={calendarRef as any}
+                ref={(el) => { calendarRef.current = el as unknown as FullCalendar | null; }}
               />
             </div>
           </div>

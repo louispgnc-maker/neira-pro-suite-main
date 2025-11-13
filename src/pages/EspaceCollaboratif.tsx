@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -87,6 +87,18 @@ interface SharedClient {
   shared_by: string;
 }
 
+interface CollabTask {
+  id: string;
+  title: string;
+  description?: string | null;
+  due_at?: string | null;
+  done?: boolean;
+  owner_id?: string;
+  role?: string;
+}
+
+type CombinedActivity = (SharedDocument & { type: 'Document' }) | (SharedDossier & { type: 'Dossier' }) | (SharedContrat & { type: 'Contrat' });
+
 export default function EspaceCollaboratif() {
   const { user } = useAuth();
   const location = useLocation();
@@ -139,7 +151,7 @@ export default function EspaceCollaboratif() {
   const [editTaskDate, setEditTaskDate] = useState('');
   const [editTaskTime, setEditTaskTime] = useState('');
   const [editTaskSaving, setEditTaskSaving] = useState(false);
-  const [collabTasks, setCollabTasks] = useState<any[]>([]);
+  const [collabTasks, setCollabTasks] = useState<CollabTask[]>([]);
   const [collabLoading, setCollabLoading] = useState(true);
   // Load collaborative tasks (role/cabinet)
   useEffect(() => {
@@ -153,286 +165,14 @@ export default function EspaceCollaboratif() {
         .eq('owner_id', user.id)
         .eq('role', cabinetRole)
         .order('due_at', { ascending: true, nullsFirst: false });
-      if (!error && mounted) setCollabTasks((data || []) as any[]);
+    if (!error && mounted) setCollabTasks((data || []) as CollabTask[]);
       setCollabLoading(false);
     }
     load();
     return () => { mounted = false; };
   }, [user, cabinetRole, taskDialogOpen]);
 
-  useEffect(() => {
-    if (user) {
-      loadCabinetData();
-    }
-  }, [user, cabinetRole]);
-
-  // If navigated here from a notification, open the related resource
-  useEffect(() => {
-    const notif = (location.state as any)?.notificationOpen;
-    if (!notif) return;
-    // Wait until data loaded
-    if (loading) return;
-
-    setTimeout(async () => {
-      try {
-        const type = notif.type;
-        const id = notif.id;
-        if (!type) return;
-
-        if (type === 'cabinet_document' || type === 'document') {
-          // try to find shared document entry
-          const found = documents.find(d => d.id === id || d.document_id === id);
-          if (found) {
-            await handleViewDocument(found as SharedDocument);
-            return;
-          }
-          // fallback: go to documents list
-          // switch to documents tab (controlled) so the selection persists
-          handleTabChange('documents');
-        } else if (type === 'cabinet_dossier' || type === 'dossier') {
-          const found = dossiers.find(d => d.id === id || d.dossier_id === id);
-          if (found) {
-            navigateToDossier(found as SharedDossier);
-            return;
-          }
-          // open dossier tab and navigate to detail
-          // switch to dossiers tab (controlled) so the selection persists
-          handleTabChange('dossiers');
-          navigate(`/${cabinetRole}s/dossiers/${id}`);
-        } else if (type === 'cabinet_contrat' || type === 'contrat') {
-          const found = contrats.find(c => c.id === id || c.contrat_id === id);
-          if (found) {
-            // Open contract detail (support cabinet_contrats.id or original contrat_id)
-            navigate(`/${cabinetRole}s/contrats/${found.id}`);
-            return;
-          }
-          navigate(`/${cabinetRole}s/contrats`);
-        } else if (type === 'task' || type === 'tasks') {
-          // switch to tasks tab (controlled) so the selection persists
-          handleTabChange('taches');
-          // optionally scroll to the task if present
-          const foundTask = collabTasks.find(t => t.id === id);
-          if (foundTask) {
-            setTimeout(() => {
-              const el = document.querySelector(`[data-task-id=\"${id}\"]`);
-              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 200);
-          }
-        }
-      } catch (e) {
-        // ignore
-      } finally {
-        // clear navigation state so it doesn't trigger again
-        try { navigate(location.pathname, { replace: true, state: {} }); } catch (e) { /* noop */ }
-      }
-    }, 200);
-  }, [loading, location.state]);
-
-  const loadCabinetData = async () => {
-    setLoading(true);
-    try {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      // Charger le cabinet
-      // NOTE: some Supabase setups don't allow chaining filters on RPC results reliably
-      // so we call the RPC and filter client-side by role to avoid runtime errors.
-      const { data: cabinetsData, error: cabinetError } = await supabase.rpc('get_user_cabinets');
-      if (cabinetError) throw cabinetError;
-
-      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-      const filtered = cabinets.filter((c: any) => c.role === cabinetRole);
-      const userCabinet = filtered[0] || null;
-      setCabinet(userCabinet);
-
-      if (userCabinet) {
-        // Charger les membres : RPC -> table fallback -> profile fallback (owner + current user).
-        let membersRes: any[] = [];
-        try {
-          const { data: membersData, error: membersError } = await supabase
-            .rpc('get_cabinet_members_simple', { cabinet_id_param: userCabinet.id });
-          if (membersError) throw membersError;
-          membersRes = Array.isArray(membersData) ? (membersData as any[]) : [];
-        } catch (rpcErr) {
-          // RPC failed or not available, try direct table read (subject to RLS)
-          try {
-            const { data: membersTableData, error: tableErr } = await supabase
-              .from('cabinet_members')
-              .select('id,email,nom,role_cabinet,status')
-              .eq('cabinet_id', userCabinet.id);
-            if (tableErr) throw tableErr;
-            membersRes = Array.isArray(membersTableData) ? (membersTableData as any[]) : [];
-          } catch (tableErr) {
-            // both RPC and table fallback failed; proceed to profile fallback
-            membersRes = [];
-          }
-        }
-
-        // If still empty, show owner + current user as minimum fallback
-        if (!Array.isArray(membersRes) || membersRes.length === 0) {
-          const fallback: any[] = [];
-          try {
-            const ownerId = (userCabinet as any).owner_id;
-            const idsToFetch = Array.from(new Set([ownerId, user.id].filter(Boolean)));
-            if (idsToFetch.length > 0) {
-              const { data: profilesData } = await supabase
-                .from('profiles')
-                .select('id, email, nom, full_name')
-                .in('id', idsToFetch);
-              if (Array.isArray(profilesData)) {
-                for (const p of profilesData) {
-                  fallback.push({
-                    id: p.id,
-                    email: p.email || '',
-                    nom: p.nom || p.full_name || '',
-                    role_cabinet: p.id === ownerId ? 'Fondateur' : 'Membre',
-                    status: 'active',
-                  });
-                }
-              }
-            }
-          } catch (e) {
-            // ignore profile fetch errors for fallback
-          }
-
-          setMembers(fallback.length > 0 ? fallback : []);
-        } else {
-          setMembers(membersRes);
-        }
-
-        // Charger les documents partagés
-        const { data: docsData, error: docsError } = await supabase
-          .rpc('get_cabinet_documents', { cabinet_id_param: userCabinet.id });
-
-        if (docsError) {
-          console.error('Erreur chargement documents:', docsError);
-        } else {
-          setDocuments(docsData || []);
-        }
-
-        // Charger les dossiers partagés
-        const { data: dossiersData, error: dossiersError } = await supabase
-          .rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
-
-        if (dossiersError) {
-          console.error('Erreur chargement dossiers:', dossiersError);
-        } else {
-          setDossiers(dossiersData || []);
-        }
-
-        // Charger les contrats partagés
-        const { data: contratsData, error: contratsError } = await supabase
-          .rpc('get_cabinet_contrats', { cabinet_id_param: userCabinet.id });
-
-        if (contratsError) {
-          console.error('Erreur chargement contrats:', contratsError);
-        } else {
-          setContrats(contratsData || []);
-        }
-
-        // Charger les clients partagés via la nouvelle RPC qui renvoie des noms normalisés
-        try {
-          // Pass both parameter names for compatibility with different RPC signatures.
-          // The DB function will COALESCE and use the first non-null value.
-          const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { p_cabinet_id: userCabinet.id, cabinet_id_param: userCabinet.id });
-          if (clientsError) throw clientsError;
-          const mapped = (Array.isArray(clientsData) ? (clientsData as any[]) : []).map((r: any) => ({
-            id: r.id,
-            client_id: r.client_id,
-            name: r.name || r.full_name || r.client_id,
-            prenom: r.prenom || null,
-            nom: r.nom || null,
-            shared_at: r.shared_at,
-            shared_by: r.shared_by,
-            file_url: r.file_url || null,
-            file_name: r.file_name || null,
-            file_type: r.file_type || null,
-          }));
-
-          setClientsShared(mapped);
-          try { console.debug('get_cabinet_clients_with_names mapped:', mapped); } catch (e) { /* noop */ }
-          } catch (e) {
-            try {
-              // Fallback to safe two-step table read to avoid PostgREST nested relation selects
-              // 1) fetch basic cabinet_clients rows
-              const { data: clientsTable, error: clientsTableErr } = await supabase
-                .from('cabinet_clients')
-                .select('id, client_id, shared_at, shared_by, file_url, file_name, file_type')
-                .eq('cabinet_id', userCabinet.id)
-                .order('shared_at', { ascending: false });
-              if (clientsTableErr) throw clientsTableErr;
-
-              const rows = Array.isArray(clientsTable) ? (clientsTable as any[]) : [];
-              const ids = Array.from(new Set(rows.map(r => r.client_id).filter(Boolean)));
-
-              // 2) fetch profiles for these client_ids in one call
-              let profiles: any[] = [];
-              if (ids.length > 0) {
-                const { data: profilesData, error: profilesErr } = await supabase
-                  .from('profiles')
-                  .select('id,prenom,nom,full_name')
-                  .in('id', ids);
-                if (profilesErr) {
-                  // Non-fatal: if profiles fail, we'll still render fallback names
-                  console.warn('profiles fetch failed', profilesErr);
-                } else {
-                  profiles = Array.isArray(profilesData) ? profilesData : [];
-                }
-              }
-
-              const byId = Object.fromEntries(profiles.map((p: any) => [p.id, p]));
-
-              const mapped = rows.map((r: any) => {
-                const p = byId[r.client_id];
-                const display = (p && (p.full_name || ([p.prenom, p.nom].filter(Boolean).join(' ')))) || r.client_id;
-                return {
-                  id: r.id,
-                  client_id: r.client_id,
-                  name: display,
-                  prenom: p?.prenom || null,
-                  nom: p?.nom || null,
-                  shared_at: r.shared_at,
-                  shared_by: r.shared_by,
-                  file_url: r.file_url || null,
-                  file_name: r.file_name || null,
-                  file_type: r.file_type || null,
-                };
-              });
-
-              setClientsShared(mapped);
-            } catch (e2) {
-              console.error('Erreur chargement clients partagés:', e2);
-              setClientsShared([]);
-            }
-          }
-
-        // Détecter si l'utilisateur est le propriétaire/fondateur du cabinet
-        try {
-          const { data: ownerData, error: ownerErr } = await supabase.rpc('is_cabinet_owner', { cabinet_id_param: userCabinet.id, user_id_param: user.id });
-          if (!ownerErr) {
-            let owner = false;
-            if (typeof ownerData === 'boolean') owner = ownerData as boolean;
-            else if (Array.isArray(ownerData) && ownerData.length > 0) owner = Boolean(ownerData[0]);
-            else owner = Boolean(ownerData);
-            setIsCabinetOwner(owner);
-          }
-        } catch (e) {
-          // noop
-        }
-      }
-    } catch (error: any) {
-      console.error('Erreur chargement espace collaboratif:', error);
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de charger l\'espace collaboratif',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   const triggerCollaboratifImport = () => {
     fileInputRef.current?.click();
@@ -500,17 +240,19 @@ export default function EspaceCollaboratif() {
           }
 
           toast({ title: 'Upload', description: `${file.name} ajouté à l'espace collaboratif` });
-        } catch (e:any) {
+        } catch (e: unknown) {
           console.error('share to cabinet failed', e);
-          toast({ title: 'Partage échoué', description: e?.message || String(e), variant: 'destructive' });
+          const msg = e instanceof Error ? e.message : String(e);
+          toast({ title: 'Partage échoué', description: msg, variant: 'destructive' });
         }
       }
 
       // Refresh lists
       await loadCabinetData();
-    } catch (e:any) {
+    } catch (e: unknown) {
       console.error('Collaboratif import error', e);
-      toast({ title: 'Erreur', description: e?.message || String(e), variant: 'destructive' });
+      const msg = e instanceof Error ? e.message : String(e);
+      toast({ title: 'Erreur', description: msg, variant: 'destructive' });
     } finally {
       setUploadingToCollab(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -557,13 +299,14 @@ export default function EspaceCollaboratif() {
         setClientsShared(prev => prev.filter(c => c.id !== id));
       }
       toast({ title: 'Supprimé', description: 'L\'élément a été supprimé.' });
-    } catch (e:any) {
+    } catch (e: unknown) {
       console.error('delete shared item error', e);
-      toast({ title: 'Erreur', description: e.message || 'Suppression impossible', variant: 'destructive' });
+      const msg = e instanceof Error ? e.message : 'Suppression impossible';
+      toast({ title: 'Erreur', description: msg, variant: 'destructive' });
     }
   };
 
-  const handleViewDocument = async (doc: SharedDocument) => {
+  const handleViewDocument = useCallback(async (doc: SharedDocument) => {
     if (!doc.file_url) {
       toast({
         title: 'Erreur',
@@ -610,7 +353,8 @@ export default function EspaceCollaboratif() {
         // Try a public URL fallback if the bucket/object is public
         try {
           const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
-          const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+          const pubResp = pub as unknown as { data?: { publicUrl?: string }; publicUrl?: string } | null;
+          const publicUrl = pubResp?.data?.publicUrl ?? pubResp?.publicUrl;
           if (publicUrl) {
             setViewerUrl(publicUrl);
             setViewerDocName(doc.title);
@@ -636,7 +380,7 @@ export default function EspaceCollaboratif() {
         variant: 'destructive',
       });
     }
-  };
+  }, [cabinet?.id, toast]);
 
   const createCollaborativeTask = async () => {
     if (!user) return;
@@ -665,9 +409,10 @@ export default function EspaceCollaboratif() {
       setTaskDate('');
       setTaskTime('');
       setTaskDialogOpen(false);
-    } catch (e:any) {
+    } catch (e: unknown) {
       console.error('Erreur création tâche collaborative:', e);
-      toast({ title: 'Erreur', description: e.message || 'Création impossible', variant: 'destructive' });
+      const msg = e instanceof Error ? e.message : 'Création impossible';
+      toast({ title: 'Erreur', description: msg, variant: 'destructive' });
     } finally {
       setTaskSaving(false);
     }
@@ -693,63 +438,193 @@ export default function EspaceCollaboratif() {
       setCollabTasks(prev => prev.map(t => t.id === editTaskId ? { ...t, title, description: editTaskNotes || null, due_at } : t));
       toast({ title: 'Tâche modifiée', description: 'La tâche a été mise à jour.' });
       setEditDialogOpen(false);
-    } catch (e:any) {
+    } catch (e: unknown) {
       console.error('Erreur mise à jour tâche collaborative:', e);
-      toast({ title: 'Erreur', description: e.message || 'Mise à jour impossible', variant: 'destructive' });
+      const msg = e instanceof Error ? e.message : 'Mise à jour impossible';
+      toast({ title: 'Erreur', description: msg, variant: 'destructive' });
     } finally {
       setEditTaskSaving(false);
     }
   };
 
-  const navigateToDossier = (dossier: SharedDossier) => {
-    // Try direct original dossier id first, otherwise resolve via RPCs to find the shared row
-    (async () => {
-      try {
-        // When opening from the collaborative space, prefer the cabinet row id (dossier.id)
-        // because the original dossier row may be inaccessible due to RLS for non-owners.
-        if (dossier.id) {
-          navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-          return;
-        }
-
-        // Use RPCs (safer with RLS) to resolve the cabinet's shared rows and find mapping
-        const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
-        if (cabinetsErr || !Array.isArray(cabinetsData)) {
-          // fallback to navigate using the provided id
-          navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-          return;
-        }
-        const cabinets = cabinetsData as any[];
-        const filtered = cabinets.filter((c: any) => c.role === cabinetRole);
-        const userCabinet = filtered[0] || null;
-        if (!userCabinet) {
-          navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-          return;
-        }
-
-        const { data: sharedDossiersData, error: sharedErr } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
-        if (sharedErr || !Array.isArray(sharedDossiersData)) {
-          navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-          return;
-        }
-
-        const found = (sharedDossiersData as any[]).find((sd) => (sd.dossier_id === dossier.dossier_id) || (sd.dossier_id === dossier.id) || (sd.id === dossier.id));
-        if (found) {
-          // prefer original dossier id if present
-          const target = found.dossier_id || found.id || dossier.id;
-          navigate(`/${cabinetRole}s/dossiers/${target}`, { state: { fromCollaboratif: true } });
-          return;
-        }
-
-        // final fallback: navigate using given id
+  const navigateToDossier = useCallback(async (dossier: SharedDossier) => {
+    try {
+      if (dossier.id) {
         navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-      } catch (e) {
-        // fallback
-        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+        return;
       }
-    })();
-  };
 
+      const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
+      if (cabinetsErr || !Array.isArray(cabinetsData)) {
+        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+        return;
+      }
+      const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
+      const filtered = cabinets.filter((c) => ((c as unknown as { role?: string }).role) === cabinetRole);
+  const userCabinet = (filtered[0] as unknown as Cabinet) || null;
+      if (!userCabinet) {
+        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+        return;
+      }
+
+      const { data: sharedDossiersData, error: sharedErr } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
+      if (sharedErr || !Array.isArray(sharedDossiersData)) {
+        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+        return;
+      }
+
+      const found = (Array.isArray(sharedDossiersData) ? (sharedDossiersData as unknown[]) : []).find((sd) => ((sd as unknown as SharedDossier).dossier_id === dossier.dossier_id) || ((sd as unknown as SharedDossier).dossier_id === dossier.id) || ((sd as unknown as SharedDossier).id === dossier.id)) as SharedDossier | undefined;
+      if (found) {
+        const target = found.dossier_id || found.id || dossier.id;
+        navigate(`/${cabinetRole}s/dossiers/${target}`, { state: { fromCollaboratif: true } });
+        return;
+      }
+
+      navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+    } catch (e) {
+      navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+    }
+  }, [cabinetRole, navigate]);
+
+  const loadCabinetData = useCallback(async () => {
+    setLoading(true);
+    try {
+      if (!user) return;
+
+      // Fetch user's cabinets and pick one matching the current role
+      const { data: cabinetsData, error: cabinetsError } = await supabase.rpc('get_user_cabinets');
+      if (cabinetsError) throw cabinetsError;
+  const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
+  const filtered = cabinets.filter((c) => ((c as unknown as { role?: string }).role) === cabinetRole);
+  const userCabinet = (filtered[0] as unknown as Cabinet) || null;
+      setCabinet(userCabinet as Cabinet | null);
+
+      if (!userCabinet) {
+        setMembers([]);
+        setDocuments([]);
+        setDossiers([]);
+        setContrats([]);
+        setClientsShared([]);
+        setIsCabinetOwner(false);
+        return;
+      }
+
+      // Members: try RPC then fallback to table
+      try {
+        const { data: membersData, error: membersError } = await supabase.rpc('get_cabinet_members_simple', { cabinet_id_param: userCabinet?.id });
+        if (!membersError && Array.isArray(membersData)) {
+          const arr = membersData as unknown[];
+          setMembers(arr.map(m => {
+            const mm = m as { id: string; email: string; nom?: string; role_cabinet: string; status: string };
+            return { id: mm.id, email: mm.email, nom: mm.nom || undefined, role_cabinet: mm.role_cabinet, status: mm.status };
+          }));
+        } else {
+          // fallback
+          const { data: membersTable } = await supabase.from('cabinet_members').select('id,email,nom,role_cabinet,status').eq('cabinet_id', userCabinet?.id);
+          if (Array.isArray(membersTable)) {
+            const arr = membersTable as unknown[];
+            setMembers(arr.map(m => {
+              const mm = m as { id: string; email: string; nom?: string; role_cabinet: string; status: string };
+              return { id: mm.id, email: mm.email, nom: mm.nom || undefined, role_cabinet: mm.role_cabinet, status: mm.status };
+            }));
+          } else {
+            setMembers([]);
+          }
+        }
+      } catch (e) {
+        setMembers([]);
+      }
+
+      // Documents
+      try {
+  const { data: docsData, error: docsError } = await supabase.rpc('get_cabinet_documents', { cabinet_id_param: userCabinet?.id });
+        if (!docsError && Array.isArray(docsData)) setDocuments(docsData as SharedDocument[]);
+        else setDocuments([]);
+      } catch (e) {
+        setDocuments([]);
+      }
+
+      // Dossiers
+      try {
+  const { data: dossiersData, error: dossiersError } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet?.id });
+        if (!dossiersError && Array.isArray(dossiersData)) setDossiers(dossiersData as SharedDossier[]);
+        else setDossiers([]);
+      } catch (e) {
+        setDossiers([]);
+      }
+
+      // Contrats
+      try {
+  const { data: contratsData, error: contratsError } = await supabase.rpc('get_cabinet_contrats', { cabinet_id_param: userCabinet?.id });
+        if (!contratsError && Array.isArray(contratsData)) setContrats(contratsData as SharedContrat[]);
+        else setContrats([]);
+      } catch (e) {
+        setContrats([]);
+      }
+
+      // Clients: try RPC then fallback to table+profiles join
+      try {
+        const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { p_cabinet_id: userCabinet?.id, cabinet_id_param: userCabinet?.id });
+        if (!clientsError && Array.isArray(clientsData)) {
+          const arr = clientsData as unknown[];
+          const mapped = arr.map((r) => {
+            const rr = r as { id: string; client_id: string; name?: string; full_name?: string; shared_at: string; shared_by: string };
+            return { id: rr.id, client_id: rr.client_id, name: rr.name || rr.full_name || rr.client_id, shared_at: rr.shared_at, shared_by: rr.shared_by };
+          });
+          setClientsShared(mapped as SharedClient[]);
+        } else {
+          // fallback implementation: read cabinet_clients then profiles
+          const { data: clientsTable } = await supabase.from('cabinet_clients').select('id,client_id,shared_at,shared_by').eq('cabinet_id', userCabinet?.id).order('shared_at', { ascending: false });
+          const rows = Array.isArray(clientsTable) ? clientsTable as unknown[] : [];
+          const ids = Array.from(new Set(rows.map(r => (r as { client_id?: string }).client_id).filter(Boolean)));
+          let profiles: unknown[] = [];
+          if (ids.length > 0) {
+            const { data: profilesData } = await supabase.from('profiles').select('id,prenom,nom,full_name').in('id', ids);
+            profiles = Array.isArray(profilesData) ? profilesData as unknown[] : [];
+          }
+          const byId = Object.fromEntries((profiles as unknown[]).map((p) => {
+            const pp = p as { id: string; prenom?: string; nom?: string; full_name?: string };
+            return [pp.id, pp];
+          }));
+          const mapped = rows.map((r) => {
+            const rr = r as { id: string; client_id: string; shared_at: string; shared_by: string };
+            const profile = byId[rr.client_id] as { full_name?: string; prenom?: string; nom?: string } | undefined;
+            const name = profile ? (profile.full_name || [profile.prenom, profile.nom].filter(Boolean).join(' ')) : rr.client_id;
+            return { id: rr.id, client_id: rr.client_id, name, shared_at: rr.shared_at, shared_by: rr.shared_by };
+          });
+          setClientsShared(mapped as SharedClient[]);
+        }
+      } catch (e) {
+        setClientsShared([]);
+      }
+
+      // Owner check
+      try {
+  const { data: ownerData, error: ownerErr } = await supabase.rpc('is_cabinet_owner', { cabinet_id_param: userCabinet?.id, user_id_param: user.id });
+        if (!ownerErr) {
+          if (typeof ownerData === 'boolean') setIsCabinetOwner(ownerData as boolean);
+          else if (Array.isArray(ownerData) && ownerData.length > 0) setIsCabinetOwner(Boolean(ownerData[0]));
+          else setIsCabinetOwner(Boolean(ownerData));
+        }
+      } catch (e) {
+        setIsCabinetOwner(false);
+      }
+
+    } catch (e: unknown) {
+      console.error('Erreur chargement espace collaboratif:', e);
+      try { toast({ title: 'Erreur', description: String(e), variant: 'destructive' }); } catch (_) { /* noop */ }
+    } finally {
+      setLoading(false);
+    }
+  }, [user, cabinetRole, toast]);
+
+  useEffect(() => {
+    if (user) {
+      loadCabinetData();
+    }
+  }, [user, cabinetRole, loadCabinetData]);
+
+  
   // Search states for lists
   const [activitySearch, setActivitySearch] = useState('');
   const [documentsSearch, setDocumentsSearch] = useState('');
@@ -780,7 +655,7 @@ export default function EspaceCollaboratif() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
-  const handleTabChange = (value: string) => {
+  const handleTabChange = useCallback((value: string) => {
     setSelectedTab(value);
     try {
       const params = new URLSearchParams(location.search);
@@ -790,13 +665,70 @@ export default function EspaceCollaboratif() {
       // ignore
     }
     try { localStorage.setItem('collab_tab', value); } catch (e) { /* ignore */ }
-  };
+  }, [location.pathname, location.search, navigate]);
+
+  // If navigated here from a notification, open the related resource
+  useEffect(() => {
+    const notif = (location.state as { notificationOpen?: { type?: string; id?: string } | unknown })?.notificationOpen as { type?: string; id?: string } | undefined;
+    if (!notif) return;
+    // Wait until data loaded
+    if (loading) return;
+
+    const timer = setTimeout(() => {
+      (async () => {
+      try {
+          const type = notif.type;
+          const id = notif.id;
+          if (!type) return;
+
+          if (type === 'cabinet_document' || type === 'document') {
+            const found = documents.find(d => d.id === id || d.document_id === id);
+            if (found) {
+              await handleViewDocument(found as SharedDocument);
+              return;
+            }
+            handleTabChange('documents');
+          } else if (type === 'cabinet_dossier' || type === 'dossier') {
+            const found = dossiers.find(d => d.id === id || d.dossier_id === id);
+            if (found) {
+              navigateToDossier(found as SharedDossier);
+              return;
+            }
+            handleTabChange('dossiers');
+            navigate(`/${cabinetRole}s/dossiers/${id}`);
+          } else if (type === 'cabinet_contrat' || type === 'contrat') {
+            const found = contrats.find(c => c.id === id || c.contrat_id === id);
+            if (found) {
+              navigate(`/${cabinetRole}s/contrats/${found.id}`);
+              return;
+            }
+            navigate(`/${cabinetRole}s/contrats`);
+          } else if (type === 'task' || type === 'tasks') {
+            handleTabChange('taches');
+            const foundTask = collabTasks.find(t => t.id === id);
+            if (foundTask) {
+              setTimeout(() => {
+                const el = document.querySelector(`[data-task-id="${id}"]`);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 200);
+            }
+          }
+        } catch (e: unknown) {
+          // ignore
+        } finally {
+          try { navigate(location.pathname, { replace: true, state: {} }); } catch (e) { /* noop */ }
+        }
+      })();
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [loading, location.state, documents, dossiers, contrats, collabTasks, handleViewDocument, handleTabChange, navigateToDossier, cabinetRole, navigate, location.pathname]);
 
   // Prepare filtered & sorted lists
-  const _combinedActivity: Array<any> = [
-    ...documents.map(d => ({ ...d, type: 'Document' as const })),
-    ...dossiers.map(d => ({ ...d, type: 'Dossier' as const })),
-    ...contrats.map(c => ({ ...c, type: 'Contrat' as const })),
+  const _combinedActivity: CombinedActivity[] = [
+    ...documents.map(d => ({ ...d, type: 'Document' as const } as CombinedActivity)),
+    ...dossiers.map(d => ({ ...d, type: 'Dossier' as const } as CombinedActivity)),
+    ...contrats.map(c => ({ ...c, type: 'Contrat' as const } as CombinedActivity)),
   ];
 
   const combinedActivityFiltered = _combinedActivity.filter((item) => {
@@ -862,7 +794,7 @@ export default function EspaceCollaboratif() {
     try {
       console.debug('clientsShared (length):', clientsShared.length, clientsShared.slice(0,5));
       console.debug('clientsFiltered (length):', clientsFiltered.length, clientsFiltered.slice(0,5));
-    } catch (e) { /* noop */ }
+    } catch (e: unknown) { /* noop */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientsShared, clientsSearch]);
 

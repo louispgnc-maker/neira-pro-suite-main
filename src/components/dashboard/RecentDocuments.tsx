@@ -103,7 +103,14 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       console.error('createSignedUrl failed for', bucket, storagePath, error);
       try {
         const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
-        const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+        const publicUrl = (() => {
+          const p = pub as unknown as Record<string, unknown> | null | undefined;
+          if (!p) return undefined;
+          const dataObj = p['data'] as Record<string, unknown> | undefined;
+          if (dataObj && typeof dataObj['publicUrl'] === 'string') return dataObj['publicUrl'] as string;
+          if (typeof p['publicUrl'] === 'string') return p['publicUrl'] as string;
+          return undefined;
+        })();
         if (publicUrl) {
           if (mode === 'view') {
             setViewerUrl(publicUrl);
@@ -171,9 +178,10 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       // Met à jour l'état local pour retirer le document de la liste
       setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
       toast.success('Document supprimé');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur suppression document:', err);
-      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la suppression', { description: message });
     }
   };
 

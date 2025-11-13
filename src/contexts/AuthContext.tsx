@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
@@ -16,8 +17,8 @@ interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ error: any | null }>;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: any | null }>;
+  login: (email: string, password: string) => Promise<{ error: unknown | null }>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: unknown | null }>;
   logout: () => Promise<void>;
 }
 
@@ -44,11 +45,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error('Erreur lecture profil:', selectError);
       }
 
-      const meta = (u as any).user_metadata ?? {};
-      const first_name = meta.first_name ?? existing?.first_name ?? '';
-      const last_name = meta.last_name ?? existing?.last_name ?? '';
-      const email = u.email ?? existing?.email ?? '';
-      const role = meta.role ?? existing?.role ?? 'avocat'; // Default role is 'avocat'
+  const meta = ((u as unknown) as { user_metadata?: Record<string, unknown> }).user_metadata ?? {};
+  const metaTyped = meta as Record<string, unknown>;
+  const first_name = typeof metaTyped.first_name === 'string' ? metaTyped.first_name : (existing?.first_name ?? '');
+  const last_name = typeof metaTyped.last_name === 'string' ? metaTyped.last_name : (existing?.last_name ?? '');
+  const email = u.email ?? existing?.email ?? '';
+  const role = typeof metaTyped.role === 'string' ? metaTyped.role : (existing?.role ?? 'avocat'); // Default role is 'avocat'
 
       if (!existing) {
         // Create profile if missing

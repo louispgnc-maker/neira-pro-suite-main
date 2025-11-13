@@ -112,11 +112,20 @@ export function CreateCabinetDialog({ role, onSuccess }: CreateCabinetDialogProp
       });
 
       if (onSuccess) onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur création cabinet:', error);
       // Show more detailed RPC error when available to help debugging (safe client-side)
-      const desc = error?.message ? `${error.message}` : (typeof error === 'string' ? error : 'Impossible de créer le cabinet');
-      const extra = error && typeof error === 'object' ? ` (${JSON.stringify(error)})` : '';
+      let desc = 'Impossible de créer le cabinet';
+      let extra = '';
+      if (typeof error === 'string') {
+        desc = error;
+      } else if (typeof error === 'object' && error !== null) {
+        // try to read a message property if present
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const maybe: any = error;
+        if (maybe?.message) desc = String(maybe.message);
+  try { extra = ` (${JSON.stringify(maybe)})`; } catch (e) { /* ignore */ }
+      }
       toast({
         title: 'Erreur',
         description: desc + extra,

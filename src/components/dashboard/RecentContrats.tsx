@@ -62,9 +62,10 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
       
       setContrats((prev) => prev.filter((c) => c.id !== contrat.id));
       toast.success('Contrat supprimé');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur suppression contrat:', err);
-      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la suppression', { description: message });
     }
   };
 
@@ -118,26 +119,30 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
       }
       
       // Récupérer les noms des clients si des liens existent
-      let clientsMap = new Map<string, string>();
-      if (links && links.length > 0) {
-        const clientIds = [...new Set(links.map(l => l.client_id))];
+      const clientsMap = new Map<string, string>();
+      const linksArr = Array.isArray(links) ? links as unknown[] : [];
+      if (linksArr.length > 0) {
+        const clientIds = [...new Set(linksArr.map(l => String((l as Record<string, unknown>)['client_id'] ?? '')))];
         const { data: clientsData, error: clientsError } = await supabase
           .from("clients")
           .select("id, name")
           .in("id", clientIds);
         
-        if (!clientsError && clientsData) {
-          clientsData.forEach(client => {
-            clientsMap.set(client.id, client.name);
+        if (!clientsError && Array.isArray(clientsData)) {
+          (clientsData as unknown[]).forEach(client => {
+            const c = client as Record<string, unknown>;
+            const id = String(c['id'] ?? '');
+            const name = String(c['name'] ?? '');
+            if (id) clientsMap.set(id, name);
           });
         }
       }
       
       // Enrichir les contrats avec les noms des clients
       const enrichedContrats = contratsData.map(contrat => {
-        const clientLinks = links?.filter(l => l.contrat_id === contrat.id) || [];
+        const clientLinks = (linksArr.filter((l) => String((l as Record<string, unknown>)['contrat_id'] ?? '') === contrat.id) as unknown[]);
         const clientNames = clientLinks
-          .map(link => clientsMap.get(link.client_id))
+          .map(link => clientsMap.get(String((link as Record<string, unknown>)['client_id'] ?? '')))
           .filter(Boolean) as string[];
         
         return {

@@ -113,9 +113,9 @@ export default function Documents() {
     try {
       const params = new URLSearchParams(location.search);
       if (params.get('openImport') === '1') {
-        // small timeout to ensure input ref is ready
-        setTimeout(() => triggerImport(), 150);
-      }
+          // small timeout to ensure input ref is ready
+          setTimeout(() => fileInputRef.current?.click(), 150);
+        }
     } catch (e) {
       // ignore
     }
@@ -168,7 +168,14 @@ export default function Documents() {
       console.error('createSignedUrl failed for', bucket, storagePath, error);
       try {
         const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
-        const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+        const publicUrl = (() => {
+          const p = pub as unknown as Record<string, unknown> | null | undefined;
+          if (!p) return undefined;
+          const dataObj = p['data'] as Record<string, unknown> | undefined;
+          if (dataObj && typeof dataObj['publicUrl'] === 'string') return dataObj['publicUrl'] as string;
+          if (typeof p['publicUrl'] === 'string') return p['publicUrl'] as string;
+          return undefined;
+        })();
         if (publicUrl) {
           if (mode === 'view') {
             setViewerUrl(publicUrl);
@@ -230,9 +237,10 @@ export default function Documents() {
       
       setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
       toast.success('Document supprimé');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur suppression document:', err);
-      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la suppression', { description: message });
     }
   };
 
@@ -287,9 +295,9 @@ export default function Documents() {
               // fetch user's cabinets and pick first matching role
               const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
               if (cabinetsErr) throw cabinetsErr;
-              const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-              const filtered = cabinets.filter((c: any) => c.role === role);
-              const cabinetId = filtered && filtered.length > 0 ? filtered[0].id : null;
+              const cabinets = Array.isArray(cabinetsData) ? cabinetsData as unknown[] : [];
+              const filtered = cabinets.filter((c) => (c as Record<string, unknown>)['role'] === role);
+              const cabinetId = filtered && filtered.length > 0 ? String((filtered[0] as Record<string, unknown>)['id'] ?? '') : null;
               if (!cabinetId) {
                 toast.error('Aucun cabinet disponible pour partager');
                 return;
@@ -304,31 +312,33 @@ export default function Documents() {
               } else {
                 // fallback: attempt to create a cabinet_documents row that references the original storage path
                 try {
-                  const payload = {
+                  const payload: Record<string, unknown> = {
                     cabinet_id: cabinetId,
-                    document_id: inserted.id,
-                    title: inserted.name,
+                    document_id: (inserted as Record<string, unknown>)['id'],
+                    title: (inserted as Record<string, unknown>)['name'],
                     description: null,
                     file_url: null,
-                    file_name: inserted.name,
+                    file_name: (inserted as Record<string, unknown>)['name'],
                     file_type: 'application/pdf',
                     shared_by: user?.id || null,
-                  } as any;
-                  const { data: cdData, error: cdErr } = await supabase.from('cabinet_documents').insert(payload).select();
+                  };
+                  const { data: cdData, error: cdErr } = await supabase.from('cabinet_documents').insert(payload as unknown).select();
                   if (cdErr) {
                     console.warn('Fallback insert cabinet_documents failed:', cdErr);
                     toast.error('Partage automatique échoué');
                   } else {
                     toast.success('Document partagé automatiquement (fallback)');
                   }
-                } catch (e:any) {
+                } catch (e: unknown) {
                   console.error('Fallback cabinet_documents insert failed', e);
-                  toast.error('Partage automatique échoué');
+                  const msg = e instanceof Error ? e.message : String(e);
+                  toast.error('Partage automatique échoué' + (msg ? `: ${msg}` : ''));
                 }
               }
-            } catch (e:any) {
+            } catch (e: unknown) {
               console.error('Auto-share failed', e);
-              toast.error('Partage automatique échoué: ' + (e?.message || String(e)));
+              const message = e instanceof Error ? e.message : String(e);
+              toast.error('Partage automatique échoué: ' + message);
             }
           })();
         }
@@ -337,8 +347,9 @@ export default function Documents() {
       if (uploaded.length > 0) {
         toast.success(`Import terminé`, { description: `${uploaded.length} fichier(s) ajouté(s)` });
       }
-    } catch (err: any) {
-      toast.error("Erreur d'import", { description: err?.message || String(err) });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error("Erreur d'import", { description: message });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';

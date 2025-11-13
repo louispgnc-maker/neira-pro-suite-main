@@ -151,9 +151,10 @@ export default function Contrats() {
       if (error) throw error;
       toast.success('Contrat créé', { description: contractType });
       refreshContrats();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur création contrat:', err);
-      toast.error('Erreur lors de la création', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
     }
   };
 
@@ -190,9 +191,10 @@ export default function Contrats() {
       
       setContrats((prev) => prev.filter((c) => c.id !== contrat.id));
       toast.success('Contrat supprimé');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur suppression contrat:', err);
-      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la suppression', { description: message });
     }
   };
 

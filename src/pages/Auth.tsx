@@ -111,16 +111,18 @@ export default function Auth() {
           navigate("/avocats/dashboard");
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur d\'authentification:', error);
-      if (error?.message === 'TIMEOUT') {
+      const msg = (typeof error === 'object' && error !== null && 'message' in error) ? String((error as { message?: unknown }).message) : String(error);
+      const lower = (msg || '').toLowerCase();
+      if (msg === 'TIMEOUT') {
         toast.error("Connexion trop longue", { description: "Vérifiez votre connexion internet ou réessayez dans un instant." });
-      } else if (error?.message?.toLowerCase?.().includes('email not confirmed')) {
+      } else if (lower.includes('email not confirmed')) {
         toast.error("Email non confirmé", { description: "Veuillez confirmer votre email puis réessayez." });
-      } else if (error?.message?.toLowerCase?.().includes('invalid login credentials')) {
+      } else if (lower.includes('invalid login credentials')) {
         toast.error("Identifiants invalides", { description: "Email ou mot de passe incorrect." });
       } else {
-        toast.error(error.message || "Une erreur est survenue");
+        toast.error(msg || "Une erreur est survenue");
       }
     } finally {
       setLoading(false);

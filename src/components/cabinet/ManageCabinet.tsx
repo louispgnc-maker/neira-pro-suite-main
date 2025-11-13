@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -143,9 +143,10 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       toast({ title: 'Cabinet mis à jour', description: 'Les informations ont été enregistrées.' });
       setEditDialogOpen(false);
       loadCabinet();
-    } catch (error: any) {
-      console.error('Erreur mise à jour cabinet:', error);
-      toast({ title: 'Erreur', description: error.message || 'Mise à jour impossible', variant: 'destructive' });
+    } catch (error: unknown) {
+        console.error('Erreur mise à jour cabinet:', error);
+        const message = error instanceof Error ? error.message : String(error ?? 'Mise à jour impossible');
+        toast({ title: 'Erreur', description: message, variant: 'destructive' });
     } finally {
       setEditLoading(false);
     }
@@ -164,71 +165,68 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       setMembers(prev => prev.map(m => 
         m.id === memberId ? { ...m, role_cabinet: newRole } : m
       ));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur changement rôle:', error);
-      toast({ title: 'Erreur', description: error.message || 'Impossible de changer le rôle', variant: 'destructive' });
+      const message = error instanceof Error ? error.message : String(error ?? 'Impossible de changer le rôle');
+      toast({ title: 'Erreur', description: message, variant: 'destructive' });
     }
   };
-
-  useEffect(() => {
-    loadCabinet();
-  }, [userId, role]);
-
-  const loadCabinet = async () => {
+  const loadCabinet = useCallback(async () => {
     setLoading(true);
     try {
       // Utiliser la fonction RPC pour bypass les policies RLS
       const { data: cabinetsData, error: cabinetError } = await supabase.rpc('get_user_cabinets');
       if (cabinetError) throw cabinetError;
 
-      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-      const filtered = cabinets.filter((c: any) => c.role === role);
+      const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
+      const filtered = cabinets.filter((c) => String((c as Record<string, unknown>)['role']) === role);
 
       // Choisir cabinet: owner en priorité, sinon premier cabinet où l'utilisateur est membre
-      const ownedCabinet = filtered?.find((c: any) => c.owner_id === userId);
+      const ownedCabinet = filtered?.find((c) => String((c as Record<string, unknown>)['owner_id']) === userId);
       const firstCabinet = ownedCabinet || (filtered && filtered.length > 0 ? filtered[0] : null);
 
       if (firstCabinet) {
-        setCabinet(firstCabinet);
-        setIsOwner(firstCabinet.owner_id === userId);
+        setCabinet(firstCabinet as unknown as Cabinet);
+        setIsOwner(String((firstCabinet as Record<string, unknown>)['owner_id']) === userId);
+        const cabinetId = String((firstCabinet as Record<string, unknown>)['id'] ?? '');
 
         // Charger les membres via RPC, sinon fallback table, puis fallback profils (owner + user)
-        let membersRes: any[] = [];
+        let membersRes: unknown[] = [];
         try {
           const { data: membersData, error: membersError } = await supabase
-            .rpc('get_cabinet_members_simple', { cabinet_id_param: firstCabinet.id });
+            .rpc('get_cabinet_members_simple', { cabinet_id_param: cabinetId });
           if (membersError) throw membersError;
-          membersRes = Array.isArray(membersData) ? (membersData as any[]) : [];
+          membersRes = Array.isArray(membersData) ? (membersData as unknown[]) : [];
         } catch (rpcErr) {
           try {
             const { data: membersTableData, error: tableErr } = await supabase
               .from('cabinet_members')
-              .select('id,email,nom,role_cabinet,status,joined_at')
-              .eq('cabinet_id', firstCabinet.id);
+                .select('id,email,nom,role_cabinet,status,joined_at')
+                .eq('cabinet_id', cabinetId);
             if (tableErr) throw tableErr;
-            membersRes = Array.isArray(membersTableData) ? (membersTableData as any[]) : [];
+            membersRes = Array.isArray(membersTableData) ? (membersTableData as unknown[]) : [];
           } catch (tableErr) {
             membersRes = [];
           }
         }
-
         if (!Array.isArray(membersRes) || membersRes.length === 0) {
-          const fallback: any[] = [];
+          const fallback: CabinetMember[] = [];
           try {
-            const ownerId = (firstCabinet as any).owner_id;
+            const ownerId = String((firstCabinet as Record<string, unknown>)['owner_id'] ?? '');
             const idsToFetch = Array.from(new Set([ownerId, userId].filter(Boolean)));
             if (idsToFetch.length > 0) {
               const { data: profilesData } = await supabase
                 .from('profiles')
                 .select('id, email, nom, full_name')
-                .in('id', idsToFetch);
+                .in('id', idsToFetch as string[]);
               if (Array.isArray(profilesData)) {
-                for (const p of profilesData) {
+                for (const p of profilesData as unknown[]) {
+                  const pid = String((p as Record<string, unknown>)['id'] ?? '');
                   fallback.push({
-                    id: p.id,
-                    email: p.email || '',
-                    nom: p.nom || p.full_name || '',
-                    role_cabinet: p.id === ownerId ? 'Fondateur' : 'Membre',
+                    id: pid,
+                    email: String((p as Record<string, unknown>)['email'] ?? ''),
+                    nom: String((p as Record<string, unknown>)['nom'] ?? (p as Record<string, unknown>)['full_name'] ?? ''),
+                    role_cabinet: pid === ownerId ? 'Fondateur' : 'Membre',
                     status: 'active',
                   });
                 }
@@ -236,23 +234,40 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
             }
           } catch (pfE) {
             // ignore profile fallback errors
+            console.warn('Profile fallback failed', pfE);
           }
 
           setMembers(fallback.length > 0 ? fallback : []);
         } else {
-          setMembers(membersRes);
+          // Normalize unknown items into CabinetMember[]
+          const normalized: CabinetMember[] = (membersRes as unknown[]).map((m) => ({
+            id: String((m as Record<string, unknown>)['id'] ?? ''),
+            email: String((m as Record<string, unknown>)['email'] ?? ''),
+            nom: String((m as Record<string, unknown>)['nom'] ?? '') || undefined,
+            role_cabinet: String((m as Record<string, unknown>)['role_cabinet'] ?? ''),
+            status: String((m as Record<string, unknown>)['status'] ?? ''),
+            joined_at: (m as Record<string, unknown>)['joined_at'] ? String((m as Record<string, unknown>)['joined_at']) : undefined,
+          }));
+          setMembers(normalized);
         }
       } else {
         setCabinet(null);
         setIsOwner(false);
         setMembers([]);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur chargement cabinet:', error);
+      const message = error instanceof Error ? error.message : String(error ?? 'Erreur chargement cabinet');
+      // non-blocking: log to console; do not show toast here to avoid noisy UX
+      console.warn(message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, role]);
+
+  useEffect(() => {
+    loadCabinet();
+  }, [loadCabinet]);
 
   const copyCode = () => {
     if (!cabinet) return;
@@ -278,11 +293,12 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       });
 
       loadCabinet();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur régénération code:', error);
+      const message = error instanceof Error ? error.message : String(error ?? 'Impossible de régénérer le code');
       toast({
         title: 'Erreur',
-        description: error.message || 'Impossible de régénérer le code',
+        description: message,
         variant: 'destructive',
       });
     }
@@ -334,11 +350,12 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       setInviteName('');
       setInviteDialogOpen(false);
       loadCabinet();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur invitation membre:', error);
+      const message = error instanceof Error ? error.message : String(error ?? 'Impossible d\'inviter ce membre');
       toast({
         title: 'Erreur',
-        description: error.message || 'Impossible d\'inviter ce membre',
+        description: message,
         variant: 'destructive',
       });
     } finally {
@@ -357,11 +374,12 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
       // Mettre à jour l'état local
       setMembers(prev => prev.filter(m => m.id !== memberId));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur retrait membre:', error);
+      const message = error instanceof Error ? error.message : String(error ?? 'Impossible de retirer ce membre');
       toast({
         title: 'Erreur',
-        description: error.message || 'Impossible de retirer ce membre',
+        description: message,
         variant: 'destructive',
       });
     }
@@ -384,11 +402,12 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
       // Recharger les données du cabinet (qui sera maintenant null)
       loadCabinet();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur suppression cabinet:', error);
+      const message = error instanceof Error ? error.message : String(error ?? 'Impossible de supprimer ce cabinet');
       toast({
         title: 'Erreur',
-        description: error.message || 'Impossible de supprimer ce cabinet',
+        description: message,
         variant: 'destructive',
       });
     }

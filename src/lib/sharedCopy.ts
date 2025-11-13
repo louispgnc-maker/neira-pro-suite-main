@@ -25,22 +25,24 @@ export async function copyDocumentToShared({
     const storagePathRaw = (doc?.storage_path || '').replace(/^\/+/, '');
     if (!storagePathRaw) throw new Error('storage_path not found');
 
-    const { data: downloaded, error: downloadErr } = await supabase.storage.from('documents').download(storagePathRaw);
+  const { data: downloaded, error: downloadErr } = await supabase.storage.from('documents').download(storagePathRaw);
     if (downloadErr) throw downloadErr;
 
     const filename = storagePathRaw.split('/').pop() || itemName || `${documentId}.pdf`;
     const targetPath = `${cabinetId}/${documentId}-${filename}`;
 
     let uploadedBucket: string | null = null;
-    for (const b of BUCKET_CANDIDATES) {
-      try {
-        const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
-        if (!uploadErr) { uploadedBucket = b; break; }
-        console.warn(`Upload to bucket ${b} failed:`, uploadErr.message || uploadErr);
-      } catch (e) {
-        console.warn(`Upload attempt to bucket ${b} threw:`, e);
+      for (const b of BUCKET_CANDIDATES) {
+        try {
+          // `downloaded` is a Blob (or null). Supabase upload accepts Blob/File/ReadableStream.
+          const payload = downloaded as Blob | ArrayBuffer | null;
+          const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, payload, { upsert: true });
+          if (!uploadErr) { uploadedBucket = b; break; }
+          console.warn(`Upload to bucket ${b} failed:`, uploadErr.message || uploadErr);
+        } catch (e) {
+          console.warn(`Upload attempt to bucket ${b} threw:`, e);
+        }
       }
-    }
 
     if (!uploadedBucket) {
       // try fallback: ask our Edge Function (server-side) for a signed URL which
@@ -82,8 +84,8 @@ export async function copyDocumentToShared({
                   }
                 }
 
-                const { data: pub } = await supabase.storage.from(bucket).getPublicUrl(path);
-                const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+                const { data: publicData } = await supabase.storage.from(bucket).getPublicUrl(path);
+                const publicUrl = publicData?.publicUrl ?? null;
                 if (publicUrl) return { uploadedBucket: bucket, publicUrl };
                 // otherwise fall through and return the raw storagePath
                 return { uploadedBucket: null, publicUrl: json.storagePath };
@@ -102,15 +104,15 @@ export async function copyDocumentToShared({
       // Older fallback: try signed URL for original object so members can still access it
       try {
         const { signedUrl } = await getSignedUrlForPath({ bucket: 'documents', path: storagePathRaw, cabinetId, expires: 60 * 60 * 24 * 7 });
-        return { uploadedBucket: null, publicUrl: signedUrl };
+        return { uploadedBucket: null, publicUrl: signedUrl ?? null };
       } catch (e) {
         console.warn('Signed URL fallback via function also failed', e);
         return { uploadedBucket: null, publicUrl: null };
       }
     }
 
-    const { data: pub } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
-    const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+    const { data: publicData } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
+    const publicUrl = publicData?.publicUrl ?? null;
 
     // Server-side writes are required for secure sharing. The helper must NOT
     // attempt to create cabinet_* rows client-side (RLS will usually block it).
@@ -149,7 +151,8 @@ export async function copyClientFileToShared({
     const BUCKET_CANDIDATES = ['shared-documents', 'shared_documents'];
     for (const b of BUCKET_CANDIDATES) {
       try {
-        const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
+        const payload = downloaded as Blob | ArrayBuffer | null;
+        const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, payload, { upsert: true });
         if (!uploadErr) { uploadedBucket = b; break; }
         console.warn(`Upload to bucket ${b} failed:`, uploadErr.message || uploadErr);
       } catch (e) {
@@ -190,8 +193,8 @@ export async function copyClientFileToShared({
                   }
                 }
 
-                const { data: pub } = await supabase.storage.from(bucket).getPublicUrl(path);
-                const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+                const { data: publicData } = await supabase.storage.from(bucket).getPublicUrl(path);
+                const publicUrl = publicData?.publicUrl ?? null;
                 if (publicUrl) return { uploadedBucket: bucket, publicUrl };
                 return { uploadedBucket: null, publicUrl: json.storagePath };
               } catch (e) {
@@ -206,15 +209,15 @@ export async function copyClientFileToShared({
 
       try {
         const { signedUrl } = await getSignedUrlForPath({ bucket: 'documents', path: storagePathRaw, cabinetId, expires: 60 * 60 * 24 * 7 });
-        return { uploadedBucket: null, publicUrl: signedUrl };
+        return { uploadedBucket: null, publicUrl: signedUrl ?? null };
       } catch (e) {
         console.warn('Signed URL fallback via function failed', e);
         return { uploadedBucket: null, publicUrl: null };
       }
     }
 
-    const { data: pub } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
-    const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+  const { data: publicData } = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
+  const publicUrl = publicData?.publicUrl ?? null;
 
     // Server-side writes are required for secure sharing. Do not create or
     // update `cabinet_clients` from the client. Instead, callers should invoke

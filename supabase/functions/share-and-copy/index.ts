@@ -85,18 +85,20 @@ serve(async (req) => {
       console.error('download error', downloadErr);
       return new Response(JSON.stringify({ error: 'Failed to download source object', details: (downloadErr && downloadErr.message) || downloadErr }), { status: 500 });
     }
-    console.log('downloaded source object size:', (downloaded as any)?.size || 'unknown');
+  const _downloaded = downloaded as unknown as { size?: number } | null;
+  console.log('downloaded source object size:', _downloaded?.size ?? 'unknown');
 
     // Try uploading into shared buckets
     let uploadedBucket: string | null = null;
     for (const b of BUCKET_CANDIDATES) {
       try {
-        console.log('attempting upload to bucket', b, 'targetPath', targetPath);
-        const { error: uploadErr } = await admin.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
-        if (!uploadErr) { uploadedBucket = b; console.log('upload succeeded to', b); break; }
-        console.warn(`Upload to bucket ${b} failed:`, uploadErr && (uploadErr.message || uploadErr));
+  console.log('attempting upload to bucket', b, 'targetPath', targetPath);
+  const uploadBody = downloaded as unknown as Uint8Array | Blob | string;
+  const { error: uploadErr } = await admin.storage.from(b).upload(targetPath, uploadBody, { upsert: true });
+  if (!uploadErr) { uploadedBucket = b; console.log('upload succeeded to', b); break; }
+  console.warn(`Upload to bucket ${b} failed:`, uploadErr && ((uploadErr as unknown as { message?: string }).message || uploadErr));
       } catch (e) {
-        console.warn(`Upload attempt to bucket ${b} threw:`, e && (e.message || e));
+        console.warn(`Upload attempt to bucket ${b} threw:`, e instanceof Error ? e.message : String(e));
       }
     }
 

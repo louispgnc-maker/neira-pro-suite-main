@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Profile() {
@@ -16,20 +16,17 @@ export default function Profile() {
   const [cabinetName, setCabinetName] = useState<string | null>(null);
   const [loadingCabinet, setLoadingCabinet] = useState(true);
 
-  useEffect(() => {
-    loadUserCabinet();
-  }, [user, role]);
-
-  const loadUserCabinet = async () => {
+  const loadUserCabinet = useCallback(async () => {
     if (!user) return;
     setLoadingCabinet(true);
     try {
       const { data: cabinetsData, error } = await supabase.rpc('get_user_cabinets');
       if (error) throw error;
-      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-      const filtered = cabinets.filter((c: any) => c.role === role);
+      const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
+      const filtered = cabinets.filter((c) => ((c as Record<string, unknown>)['role'] === role));
       if (filtered && filtered.length > 0) {
-        setCabinetName(filtered[0].nom);
+        const nom = (filtered[0] as Record<string, unknown>)['nom'];
+        setCabinetName(typeof nom === 'string' && nom.trim() ? nom : null);
       } else {
         setCabinetName(null);
       }
@@ -39,7 +36,11 @@ export default function Profile() {
     } finally {
       setLoadingCabinet(false);
     }
-  };
+  }, [user, role]);
+
+  useEffect(() => {
+    loadUserCabinet();
+  }, [loadUserCabinet]);
 
   return (
     <AppLayout>

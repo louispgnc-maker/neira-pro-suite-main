@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -59,11 +59,28 @@ export function ShareToCollaborativeDialog({
     : 'hover:bg-blue-600 hover:text-white';
 
   // Charger le cabinet de l'utilisateur
+
+  const loadCabinet = useCallback(async () => {
+    try {
+      const { data: cabinetsData, error } = await supabase.rpc('get_user_cabinets');
+      if (error) throw error;
+      const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
+      const filtered = cabinets.filter((c) => String((c as Record<string, unknown>)['role']) === role);
+      if (filtered && filtered.length > 0) {
+        setCabinetId(String((filtered[0] as Record<string, unknown>)['id'] ?? null));
+      } else {
+        setCabinetId(null);
+      }
+    } catch (error) {
+      console.error('Erreur chargement cabinet:', error);
+    }
+  }, [role]);
+
   useEffect(() => {
     if (open) {
       loadCabinet();
     }
-  }, [open]);
+  }, [open, loadCabinet]);
 
   // initialize open state from prop
   useEffect(() => {
@@ -73,27 +90,12 @@ export function ShareToCollaborativeDialog({
   // notify parent when dialog closes
   useEffect(() => {
     if (!open && onClose) onClose();
-  }, [open]);
+  }, [open, onClose]);
 
-  const loadCabinet = async () => {
-    try {
-      const { data: cabinetsData, error } = await supabase.rpc('get_user_cabinets');
-      if (error) throw error;
-      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-      const filtered = cabinets.filter((c: any) => c.role === role);
-      if (filtered && filtered.length > 0) {
-        setCabinetId(filtered[0].id);
-      } else {
-        setCabinetId(null);
-      }
-    } catch (error) {
-      console.error('Erreur chargement cabinet:', error);
-    }
-  };
 
   // Helper to call RPC and uniformly handle the "Not a member of this cabinet" error
-  const callRpc = async (name: string, params: any) => {
-    const { data, error } = await supabase.rpc(name, params as any);
+  const callRpc = async (name: string, params: unknown) => {
+    const { data, error } = await supabase.rpc(name, params as unknown as Record<string, unknown> | null);
     if (error) {
       // Postgres RAISE with code P0001 is surfaced here — map it to a friendly toast
       if (error.code === 'P0001' || (error.message && String(error.message).includes('Not a member'))) {
@@ -102,7 +104,7 @@ export function ShareToCollaborativeDialog({
           description: "Vous n'êtes pas membre de ce cabinet. Vérifiez que vous êtes connecté avec le bon compte ou contactez l'administrateur.",
           variant: 'destructive',
         });
-        const e: any = new Error('NOT_MEMBER');
+        const e = new Error('NOT_MEMBER') as Error & { rpcError?: unknown };
         e.rpcError = error;
         throw e;
       }
@@ -138,11 +140,10 @@ export function ShareToCollaborativeDialog({
           break;
       }
 
-      let rpcData: any = null;
+  let rpcData: unknown = null;
   if (itemType === 'client') {
         // For clients: try to copy the client's attached ID document (id_doc_path) into the shared bucket
         // and call share_client_to_cabinet_with_url to store the public URL on the cabinet_clients row.
-        try {
           const { data: clientRow, error: clientErr } = await supabase
             .from('clients')
             .select('id,name,id_doc_path')
@@ -187,13 +188,9 @@ export function ShareToCollaborativeDialog({
             });
             rpcData = rpcRes;
           }
-        } catch (e) {
-          throw e;
-        }
       } else {
         // Insert the shared row client-side for dossiers/contrats (documents are handled later).
-        try {
-            if (itemType === 'dossier') {
+      if (itemType === 'dossier') {
             const d = await callRpc('share_dossier_to_cabinet', {
               cabinet_id_param: cabinetId,
               dossier_id_param: itemId,
@@ -219,16 +216,23 @@ export function ShareToCollaborativeDialog({
             });
             rpcData = d;
           }
-        } catch (e) {
-          throw e;
-        }
+      
       }
 
-      // extract shared id if present
-      let sharedId: any = null;
-      if (rpcData == null) sharedId = null;
-      else if (Array.isArray(rpcData)) sharedId = rpcData[0];
-      else sharedId = rpcData;
+      // extract shared id if present (normalize to string|null)
+      let sharedId: string | null = null;
+      if (rpcData == null) {
+        sharedId = null;
+      } else if (Array.isArray(rpcData)) {
+        sharedId = rpcData.length > 0 ? String(rpcData[0]) : null;
+      } else if (typeof rpcData === 'string' || typeof rpcData === 'number') {
+        sharedId = String(rpcData);
+      } else if (rpcData && typeof rpcData === 'object') {
+        const maybeId = (rpcData as Record<string, unknown>)['id'] ?? null;
+        sharedId = maybeId != null ? String(maybeId) : null;
+      } else {
+        sharedId = null;
+      }
 
       // If not a document, we can finish here
       if (itemType !== 'document') {
@@ -243,7 +247,7 @@ export function ShareToCollaborativeDialog({
               .eq('dossier_id', itemId)
               .eq('owner_id', user?.id);
             if (!linksErr && Array.isArray(links) && links.length > 0) {
-              const docIds = links.map((l: any) => l.document_id);
+              const docIds = links.map((l) => String((l as Record<string, unknown>)['document_id']));
               // load document storage paths and names
               const { data: docsData, error: docsErr } = await supabase
                 .from('documents')
@@ -265,11 +269,11 @@ export function ShareToCollaborativeDialog({
                     let uploadedBucket: string | null = null;
                     for (const b of bucketCandidates) {
                       try {
-                        const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
+                        const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as Blob, { upsert: true });
                         if (!uploadErr) { uploadedBucket = b; break; }
                         uploadErrors.push(`bucket=${b} doc=${d.id} err=${uploadErr?.message || JSON.stringify(uploadErr)}`);
-                      } catch (e: any) {
-                        uploadErrors.push(`bucket=${b} doc=${d.id} thrown=${e?.message || String(e)}`);
+                      } catch (e: unknown) {
+                        uploadErrors.push(`bucket=${b} doc=${d.id} thrown=${e instanceof Error ? e.message : String(e)}`);
                       }
                     }
 
@@ -277,7 +281,9 @@ export function ShareToCollaborativeDialog({
                     if (uploadedBucket) {
                       try {
                         const pub = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
-                        publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+                        const pubRec = pub as Record<string, unknown> | null;
+                        const dataRec = pubRec?.['data'] as Record<string, unknown> | undefined;
+                        publicUrl = dataRec && dataRec['publicUrl'] ? String(dataRec['publicUrl']) : (pubRec && pubRec['publicUrl'] ? String(pubRec['publicUrl']) : null);
                       } catch (e) { /* noop */ }
                     } else {
                       // fallback: ask Edge Function for a signed URL (server-signed)
@@ -286,7 +292,7 @@ export function ShareToCollaborativeDialog({
                         publicUrl = res?.signedUrl || null;
                         if (!publicUrl) uploadErrors.push(`signedurl_failed doc=${d.id} fallback_no_url`);
                       } catch (e) {
-                        uploadErrors.push(`signedurl_failed doc=${d.id} ${(e as any)?.message || String(e)}`);
+                        uploadErrors.push(`signedurl_failed doc=${d.id} ${e instanceof Error ? e.message : String(e)}`);
                         publicUrl = null;
                       }
                     }
@@ -312,8 +318,8 @@ export function ShareToCollaborativeDialog({
                             createdCabinetDocIds.push(createdId);
                             copiedCount++;
                           }
-                        } catch (err:any) {
-                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${(err as any)?.message || String(err)}`);
+                          } catch (err: unknown) {
+                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${err instanceof Error ? err.message : String(err)}`);
                         }
                       } else {
                         try {
@@ -330,15 +336,15 @@ export function ShareToCollaborativeDialog({
                             createdCabinetDocIds.push(createdId);
                             copiedCount++;
                           }
-                        } catch (err:any) {
-                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${(err as any)?.message || String(err)}`);
+                        } catch (err: unknown) {
+                          uploadErrors.push(`rpc_insert_failed doc=${d.id} err=${err instanceof Error ? err.message : String(err)}`);
                         }
                       }
-                    } catch (e:any) {
-                      uploadErrors.push(`rpc_exception doc=${d.id} ${(e as any)?.message || String(e)}`);
+                    } catch (e: unknown) {
+                      uploadErrors.push(`rpc_exception doc=${d.id} ${e instanceof Error ? e.message : String(e)}`);
                     }
-                  } catch (e:any) {
-                    uploadErrors.push(`unexpected doc=${d.id} ${(e as any)?.message || String(e)}`);
+                    } catch (e: unknown) {
+                    uploadErrors.push(`unexpected doc=${d.id} ${e instanceof Error ? e.message : String(e)}`);
                   }
                 }
 
@@ -355,9 +361,9 @@ export function ShareToCollaborativeDialog({
                 toast({ title: 'Partagé avec succès', description: `Dossier partagé. ${copiedCount} pièce(s) jointe(s) copiée(s) vers l'espace partagé.${uploadErrMsg ? ' Erreurs: ' + uploadErrMsg : ''}` });
               }
             }
-          } catch (e:any) {
+          } catch (e: unknown) {
             console.error('Erreur copie documents du dossier:', e);
-            toast({ title: 'Partagé', description: `Dossier partagé mais certaines pièces jointes n'ont pas été copiées (${e?.message || String(e)})` });
+            toast({ title: 'Partagé', description: `Dossier partagé mais certaines pièces jointes n'ont pas été copiées (${e instanceof Error ? e.message : String(e)})` });
           }
         } else {
           toast({ title: 'Partagé avec succès', description: `${typeLabel} a été partagé avec votre cabinet.` });
@@ -391,13 +397,13 @@ export function ShareToCollaborativeDialog({
       const uploadErrors: Array<string> = [];
       for (const b of bucketCandidates) {
         try {
-          const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as any, { upsert: true });
+          const { error: uploadErr } = await supabase.storage.from(b).upload(targetPath, downloaded as Blob, { upsert: true });
           if (!uploadErr) { uploadedBucket = b; break; }
           const msg = uploadErr?.message || JSON.stringify(uploadErr);
           uploadErrors.push(`bucket=${b}: ${msg}`);
           console.warn(`Upload to bucket ${b} failed:`, msg);
-        } catch (e: any) {
-          const msg = e?.message || String(e);
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e);
           uploadErrors.push(`bucket=${b}: ${msg}`);
           console.warn(`Upload attempt to bucket ${b} threw:`, e);
         }
@@ -431,8 +437,8 @@ export function ShareToCollaborativeDialog({
                   file_name_param: title || null,
                   file_type_param: null,
                 });
-              } catch (e:any) {
-                console.warn('Failed to create fallback cabinet_documents row via RPC:', e?.message || e);
+              } catch (e: unknown) {
+                console.warn('Failed to create fallback cabinet_documents row via RPC:', e instanceof Error ? e.message : e);
               }
             } catch (e) {
               console.warn('Failed to create fallback cabinet_documents row via RPC (exception):', e);
@@ -458,7 +464,9 @@ export function ShareToCollaborativeDialog({
 
       try {
         const pub = await supabase.storage.from(uploadedBucket).getPublicUrl(targetPath);
-        const publicUrl = (pub && (pub as any).data && (pub as any).data.publicUrl) || (pub as any)?.publicUrl || null;
+        const pubRec = pub as Record<string, unknown> | null;
+        const dataRec = pubRec?.['data'] as Record<string, unknown> | undefined;
+        const publicUrl = dataRec && dataRec['publicUrl'] ? String(dataRec['publicUrl']) : (pubRec && pubRec['publicUrl'] ? String(pubRec['publicUrl']) : null);
         if (publicUrl) {
           // Update the cabinet_documents entry via RPC to avoid RLS violations
           try {
@@ -471,8 +479,8 @@ export function ShareToCollaborativeDialog({
               file_name_param: title || null,
               file_type_param: 'application/pdf',
             });
-          } catch (e:any) {
-            console.warn('Failed to update cabinet_documents via RPC after upload:', e?.message || e);
+          } catch (e: unknown) {
+            console.warn('Failed to update cabinet_documents via RPC after upload:', e instanceof Error ? e.message : e);
           }
         }
       } catch (e) {
@@ -484,9 +492,10 @@ export function ShareToCollaborativeDialog({
       setTitle(itemName);
       setDescription('');
       if (onSuccess) onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur partage:', error);
-      toast({ title: 'Erreur', description: error.message || 'Impossible de partager cet élément', variant: 'destructive' });
+      const message = error instanceof Error ? error.message : String(error ?? 'Impossible de partager cet élément');
+      toast({ title: 'Erreur', description: message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }

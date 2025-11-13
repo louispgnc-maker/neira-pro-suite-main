@@ -88,7 +88,7 @@ export function EmailVerificationStatus({ email, onBackToLogin }: EmailVerificat
           <Button
             variant="outline"
             onClick={() => {
-              try { onBackToLogin(); } catch {}
+              try { onBackToLogin(); } catch (err) { /* ignore */ }
               navigate('/');
             }}
             disabled={!isVerified}

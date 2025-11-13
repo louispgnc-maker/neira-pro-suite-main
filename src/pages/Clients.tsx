@@ -72,7 +72,7 @@ export default function Clients() {
     return () => {
       isMounted = false;
     };
-  }, [user, debounced]);
+  }, [user, debounced, role]);
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'
@@ -96,24 +96,26 @@ export default function Clients() {
     try {
       const { data: cabinetsData, error: cabErr } = await supabase.rpc('get_user_cabinets');
       if (cabErr) throw cabErr;
-      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-      const filtered = cabinets.filter((c: any) => c.role === role);
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as unknown[] : [];
+      const filtered = cabinets.filter((c) => (c as Record<string, unknown>)['role'] === role);
       const userCabinet = filtered[0] || null;
       if (!userCabinet) {
         toast({ title: 'Aucun cabinet', description: 'Rejoignez ou créez un cabinet pour partager.', variant: 'destructive' });
         return;
       }
 
+      const cabinetIdParam = String((userCabinet as Record<string, unknown>)['id'] ?? '');
       const { data: rpcData, error: rpcErr } = await supabase.rpc('share_client_to_cabinet', {
         p_client_id: clientId,
-        p_cabinet_id: userCabinet.id,
+        p_cabinet_id: cabinetIdParam,
         p_shared_by: user.id,
       });
       if (rpcErr) throw rpcErr;
       toast({ title: 'Partagé', description: 'La fiche client a été partagée dans l\'espace collaboratif.' });
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Erreur partage client:', e);
-      toast({ title: 'Erreur', description: e?.message || String(e), variant: 'destructive' });
+      const message = e instanceof Error ? e.message : String(e);
+      toast({ title: 'Erreur', description: message, variant: 'destructive' });
     } finally {
       setSharingClientId(null);
     }

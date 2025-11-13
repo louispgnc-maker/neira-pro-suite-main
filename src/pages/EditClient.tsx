@@ -122,7 +122,10 @@ export default function EditClient() {
   setJustificatifsFinanciers(c.justificatifs_financiers || '');
   setComptesBancairesRaw(Array.isArray(c.comptes_bancaires) ? (c.comptes_bancaires as string[]).join('\n') : '');
   // situation_matrimoniale supprimée
-  setEnfants(Array.isArray(c.enfants) ? (c.enfants as any[]).map((e: any) => ({ nom: e.nom || '', date_naissance: e.date_naissance || '' })) : []);
+  setEnfants(Array.isArray(c.enfants) ? (c.enfants as unknown[]).map((e: unknown) => {
+          const ee = e as Record<string, unknown>;
+          return { nom: String(ee.nom ?? ''), date_naissance: String(ee.date_naissance ?? '') };
+        }) : []);
   setSituationFamiliale(Array.isArray(c.situation_familiale) ? c.situation_familiale : []);
         setTypeDossier(c.type_dossier || '');
         setContratSouhaite(c.contrat_souhaite || '');
@@ -145,7 +148,7 @@ export default function EditClient() {
         .select('contrat_id')
         .eq('owner_id', user.id)
         .eq('client_id', id);
-      if (links && mounted) setSelectedContrats(links.map((l: any) => l.contrat_id));
+  if (links && mounted) setSelectedContrats((links as unknown[]).map((l: unknown) => String((l as Record<string, unknown>).contrat_id ?? '')));
     }
     load();
     return () => { mounted = false; };
@@ -181,7 +184,7 @@ export default function EditClient() {
       }
 
       // Update client
-      const updates: any = {
+  const updates: Record<string, unknown> = {
         owner_id: user.id,
         role,
         name: `${prenom} ${nom}`,
@@ -247,9 +250,10 @@ export default function EditClient() {
 
       toast.success('Fiche client mise à jour');
       navigate(role === 'notaire' ? `/notaires/clients/${id}` : `/avocats/clients/${id}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur mise à jour client:', err);
-      toast.error('Erreur mise à jour', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur mise à jour', { description: message });
     } finally {
       setLoading(false);
     }
