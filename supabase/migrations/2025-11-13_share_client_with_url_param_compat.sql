@@ -20,46 +20,8 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-DECLARE
-  v_cabinet_id uuid := COALESCE(p_cabinet_id, cabinet_id_param);
-  v_client_id uuid := COALESCE(p_client_id, client_id_param);
-  v_shared_id uuid;
-  v_now timestamptz := now();
 BEGIN
-  IF v_cabinet_id IS NULL OR v_client_id IS NULL THEN
-    RAISE EXCEPTION 'Missing cabinet or client id';
-  END IF;
-
-  -- Vérifie que l'appelant est un membre actif du cabinet
-  IF NOT EXISTS (
-    SELECT 1 FROM cabinet_members
-    WHERE cabinet_id = v_cabinet_id
-      AND user_id = auth.uid()
-      AND status = 'active'
-  ) THEN
-    RAISE EXCEPTION 'Not a member of this cabinet';
-  END IF;
-
-  INSERT INTO public.cabinet_clients (
-    cabinet_id, client_id, shared_by, shared_at, created_at, updated_at, file_url, file_name, file_type, description
-  ) VALUES (
-    v_cabinet_id, v_client_id, auth.uid(), v_now, v_now, v_now, file_url_param, COALESCE(file_name_param, ''), COALESCE(file_type_param, ''), description_param
-  )
-  ON CONFLICT (client_id, cabinet_id) DO UPDATE
-    SET shared_by = EXCLUDED.shared_by,
-        shared_at = EXCLUDED.shared_at,
-        updated_at = v_now,
-        file_url = EXCLUDED.file_url,
-        file_name = EXCLUDED.file_name,
-        file_type = EXCLUDED.file_type,
-        description = EXCLUDED.description
-  RETURNING id INTO v_shared_id;
-
-  IF v_shared_id IS NULL THEN
-    SELECT id INTO v_shared_id FROM public.cabinet_clients WHERE client_id = v_client_id AND cabinet_id = v_cabinet_id LIMIT 1;
-  END IF;
-
-  RETURN v_shared_id;
+  RAISE EXCEPTION 'Sharing disabled: share_client_to_cabinet_with_url has been removed.';
 END;
 $$;
 

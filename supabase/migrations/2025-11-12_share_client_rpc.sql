@@ -11,23 +11,8 @@ CREATE OR REPLACE FUNCTION public.share_client_to_cabinet(
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
-DECLARE
-  v_id uuid;
-  v_now timestamptz := now();
 BEGIN
-  INSERT INTO public.cabinet_clients (id, cabinet_id, client_id, shared_by, shared_at, created_at, updated_at)
-  VALUES (gen_random_uuid(), p_cabinet_id, p_client_id, p_shared_by, v_now, v_now, v_now)
-  ON CONFLICT (client_id, cabinet_id) DO UPDATE
-    SET shared_by = EXCLUDED.shared_by,
-        shared_at = EXCLUDED.shared_at,
-        updated_at = v_now
-  RETURNING id INTO v_id;
-
-  IF v_id IS NULL THEN
-    SELECT id INTO v_id FROM public.cabinet_clients WHERE client_id = p_client_id AND cabinet_id = p_cabinet_id LIMIT 1;
-  END IF;
-
-  RETURN v_id;
+  RAISE EXCEPTION 'Sharing disabled: share_client_to_cabinet has been removed.';
 END;
 $$;
 

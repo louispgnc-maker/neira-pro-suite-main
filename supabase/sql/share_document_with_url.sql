@@ -2,6 +2,9 @@
 -- Cela permet au client d'uploader d'abord dans un bucket partagé/public, puis d'appeler cette RPC
 -- afin que l'entrée partagée soit immédiatement visible par les autres membres.
 
+-- Sharing RPC removed: this function previously created a cabinet_documents row from a public file URL.
+-- To fully disable sharing, the implementation is replaced with a stub that raises an explicit error.
+
 BEGIN;
 
 DROP FUNCTION IF EXISTS public.share_document_to_cabinet_with_url(uuid, uuid, text, text, text, text, text);
@@ -19,33 +22,9 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-declare
-  v_shared_doc_id uuid;
-begin
-  -- Vérifier que l'utilisateur est membre actif du cabinet
-  if not exists (
-    select 1 from cabinet_members
-    where cabinet_id = cabinet_id_param
-      and user_id = auth.uid()
-      and status = 'active'
-  ) then
-    raise exception 'Not a member of this cabinet';
-  end if;
-
-  -- Optionnel : vérifier que le document existe et appartient à l'utilisateur (au mieux)
-  -- Si document_id_param est null ou n'appartient pas à l'appelant, nous autorisons néanmoins l'insertion
-  -- pour supporter les uploads directs où la propriété peut différer.
-
-  insert into cabinet_documents (
-    cabinet_id, document_id, title, description,
-    file_url, file_name, file_type, shared_by
-  ) values (
-    cabinet_id_param, document_id_param, title_param, description_param,
-    file_url_param, coalesce(file_name_param, ''), coalesce(file_type_param, ''), auth.uid()
-  ) returning id into v_shared_doc_id;
-
-  return v_shared_doc_id;
-end;
+BEGIN
+  RAISE EXCEPTION 'Sharing disabled: share_document_to_cabinet_with_url has been removed.';
+END;
 $$;
 
 COMMIT;
