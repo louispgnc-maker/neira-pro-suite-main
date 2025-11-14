@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
-import { copyDocumentToShared } from '@/lib/sharedCopy';
 import { getSignedUrlForPath } from '@/lib/storageHelpers';
 import { DocumentViewer } from '@/components/ui/document-viewer';
 import { 
@@ -212,39 +211,9 @@ export default function EspaceCollaboratif() {
           continue;
         }
 
-        // Upload to shared bucket, get publicUrl, then create cabinet_documents row with that publicUrl
-        try {
-          const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId: cabinet.id, documentId: inserted.id, sharedId: null, itemName: inserted.name });
-
-          // If we got a public URL, use the new RPC to create the cabinet_documents entry with the public URL.
-          if (publicUrl) {
-            const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
-              cabinet_id_param: cabinet.id,
-              document_id_param: inserted.id,
-              title_param: inserted.name,
-              description_param: null,
-              file_url_param: publicUrl,
-              file_name_param: inserted.name,
-              file_type_param: 'application/pdf',
-            });
-            if (rpcErr) throw rpcErr;
-          } else {
-            // fallback: attempt original RPC (will store storage_path) and rely on later update
-            const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
-              cabinet_id_param: cabinet.id,
-              document_id_param: inserted.id,
-              title_param: inserted.name,
-              description_param: null,
-            });
-            if (rpcErr) throw rpcErr;
-          }
-
-          toast({ title: 'Upload', description: `${file.name} ajouté à l'espace collaboratif` });
-        } catch (e: unknown) {
-          console.error('share to cabinet failed', e);
-          const msg = e instanceof Error ? e.message : String(e);
-          toast({ title: 'Partage échoué', description: msg, variant: 'destructive' });
-        }
+        // Sharing subsystem removed: we keep the upload to the user's storage and documents table,
+        // but we no longer call any client-side copy or RPCs to create cabinet_* share rows.
+        toast({ title: 'Upload', description: `${file.name} ajouté à l'espace collaboratif` });
       }
 
       // Refresh lists
@@ -652,8 +621,7 @@ export default function EspaceCollaboratif() {
     } catch (e) {
       // ignore
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search]);
+  }, [location.search, selectedTab]);
 
   const handleTabChange = useCallback((value: string) => {
     setSelectedTab(value);
@@ -795,8 +763,7 @@ export default function EspaceCollaboratif() {
       console.debug('clientsShared (length):', clientsShared.length, clientsShared.slice(0,5));
       console.debug('clientsFiltered (length):', clientsFiltered.length, clientsFiltered.slice(0,5));
     } catch (e: unknown) { /* noop */ }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientsShared, clientsSearch]);
+  }, [clientsShared, clientsSearch, clientsFiltered]);
 
   // Show a small on-screen hint when clients list is empty to help debugging
   useEffect(() => {

@@ -120,11 +120,10 @@ export function CreateCabinetDialog({ role, onSuccess }: CreateCabinetDialogProp
       if (typeof error === 'string') {
         desc = error;
       } else if (typeof error === 'object' && error !== null) {
-        // try to read a message property if present
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const maybe: any = error;
-        if (maybe?.message) desc = String(maybe.message);
-  try { extra = ` (${JSON.stringify(maybe)})`; } catch (e) { /* ignore */ }
+        // try to read a message property if present (use unknown-safe handling)
+        const maybe = error as Record<string, unknown>;
+        if (maybe?.message && typeof maybe.message === 'string') desc = maybe.message as string;
+        try { extra = ` (${JSON.stringify(maybe)})`; } catch (e) { /* ignore */ }
       }
       toast({
         title: 'Erreur',

@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DocumentViewer } from "@/components/ui/document-viewer";
 import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
-import { copyDocumentToShared } from '@/lib/sharedCopy';
 
 type DocRow = {
   id: string;
@@ -55,7 +54,6 @@ export default function Documents() {
   const [documents, setDocuments] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [autoShare, setAutoShare] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -288,60 +286,9 @@ export default function Documents() {
           // Ajouter à l'état local
           if (inserted) setDocuments((prev) => [inserted as DocRow, ...prev]);
 
-          // Auto-share: if enabled, create a cabinet share and copy the file into shared bucket
-        if (autoShare && inserted) {
-          (async () => {
-            try {
-              // fetch user's cabinets and pick first matching role
-              const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
-              if (cabinetsErr) throw cabinetsErr;
-              const cabinets = Array.isArray(cabinetsData) ? cabinetsData as unknown[] : [];
-              const filtered = cabinets.filter((c) => (c as Record<string, unknown>)['role'] === role);
-              const cabinetId = filtered && filtered.length > 0 ? String((filtered[0] as Record<string, unknown>)['id'] ?? '') : null;
-              if (!cabinetId) {
-                toast.error('Aucun cabinet disponible pour partager');
-                return;
-              }
-
-              // First copy to shared bucket to get a public URL
-              const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: inserted.id, sharedId: null, itemName: inserted.name });
-
-              if (publicUrl) {
-                // The helper now creates/updates the cabinet_documents row client-side.
-                toast.success('Document partagé automatiquement');
-              } else {
-                // fallback: attempt to create a cabinet_documents row that references the original storage path
-                try {
-                  const payload: Record<string, unknown> = {
-                    cabinet_id: cabinetId,
-                    document_id: (inserted as Record<string, unknown>)['id'],
-                    title: (inserted as Record<string, unknown>)['name'],
-                    description: null,
-                    file_url: null,
-                    file_name: (inserted as Record<string, unknown>)['name'],
-                    file_type: 'application/pdf',
-                    shared_by: user?.id || null,
-                  };
-                  const { data: cdData, error: cdErr } = await supabase.from('cabinet_documents').insert(payload as unknown).select();
-                  if (cdErr) {
-                    console.warn('Fallback insert cabinet_documents failed:', cdErr);
-                    toast.error('Partage automatique échoué');
-                  } else {
-                    toast.success('Document partagé automatiquement (fallback)');
-                  }
-                } catch (e: unknown) {
-                  console.error('Fallback cabinet_documents insert failed', e);
-                  const msg = e instanceof Error ? e.message : String(e);
-                  toast.error('Partage automatique échoué' + (msg ? `: ${msg}` : ''));
-                }
-              }
-            } catch (e: unknown) {
-              console.error('Auto-share failed', e);
-              const message = e instanceof Error ? e.message : String(e);
-              toast.error('Partage automatique échoué: ' + message);
-            }
-          })();
-        }
+        // Note: automatic sharing has been disabled. If you want to re-enable,
+        // restore the logic that calls copyDocumentToShared and creates
+        // cabinet_documents entries via secure RPCs.
         }
       }
       if (uploaded.length > 0) {
@@ -382,10 +329,6 @@ export default function Documents() {
               onChange={onFilesSelected}
             />
             <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={autoShare} onChange={(e) => setAutoShare(e.target.checked)} />
-                <span className="select-none">Partager automatiquement</span>
-              </label>
               <Button className={mainButtonColor + ""} onClick={triggerImport} disabled={uploading}>
                 <Plus className="h-4 w-4 mr-2" />
                 {uploading ? 'Import…' : 'Ajouter'}

@@ -222,8 +222,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
       mounted = false;
       try { channel.unsubscribe(); } catch (e) { /* noop */ }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role]);
+  }, [role, toast]);
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
     setSelectInfoRange({ startStr: selectInfo.startStr, endStr: selectInfo.endStr || undefined });
