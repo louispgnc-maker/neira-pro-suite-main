@@ -8,7 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Zap, TrendingUp, Check } from "lucide-react";
+import { Shield, Zap, TrendingUp, Check, Users } from "lucide-react";
 
 
 interface FormElements extends HTMLFormElement {
@@ -143,104 +143,17 @@ export default function Auth() {
 
   // Main page with role selection OR auth forms
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
+    <div onClick={() => setRole(null)} className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
       {/* Top-left logo + small phrase */}
       <div className="absolute top-6 left-6 flex items-start gap-3">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-primary shadow-glow">
-          <span className="text-xl font-bold text-white">N</span>
-        </div>
+  <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-12 h-12 rounded-lg object-cover" />
         <div className="text-left">
           <h1 className="text-xl font-bold text-foreground">Neira</h1>
           <p className="text-sm text-muted-foreground">{role ? (role === "avocat" ? "Espace Avocats" : "Espace Notaires") : "Espace Professionnel Automatisé"}</p>
         </div>
       </div>
 
-      <div className="w-full max-w-2xl mx-auto mb-8">
-        <div className="text-left mb-2" style={{height: 8}} />
-
-        {/* Single card containing everything */}
-        <Card className="bg-white dark:bg-card shadow-xl border-2">
-          <CardContent className="pt-6 space-y-6">
-            {/* Show auth forms once role is selected */}
-            {role && (
-              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="login">Connexion</TabsTrigger>
-                  <TabsTrigger value="signup">Créer un compte</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="login" className="space-y-4 mt-4">
-                  <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="nom@cabinet.fr"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Mot de passe</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        required
-                      />
-                    </div>
-                    <Button type="submit" className="w-full" disabled={loading}>
-                      {loading ? "Connexion..." : "Se connecter"}
-                    </Button>
-                  </form>
-                </TabsContent>
-
-                <TabsContent value="signup" className="space-y-4 mt-4">
-                  <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName">Prénom</Label>
-                        <Input
-                          id="firstName"
-                          placeholder="Jean"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName">Nom</Label>
-                        <Input
-                          id="lastName"
-                          placeholder="Dupont"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signupEmail">Email</Label>
-                      <Input
-                        id="signupEmail"
-                        type="email"
-                        placeholder="nom@cabinet.fr"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signupPassword">Mot de passe</Label>
-                      <Input
-                        id="signupPassword"
-                        type="password"
-                        required
-                      />
-                    </div>
-                    <Button type="submit" className="w-full" disabled={loading}>
-                      {loading ? "Création..." : "Créer mon compte"}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {/* auth card will be inserted under the role buttons further down */}
 
       {/* Features Section - Below Auth */}
       <div className="w-full max-w-4xl mx-auto mt-16">
@@ -253,9 +166,9 @@ export default function Auth() {
           </p>
         </div>
 
-        {/* Role selection buttons placed under the hero */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {/* Role selection buttons placed under the hero */}
+  <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl mx-auto mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-border">
             <div
               onClick={() => setRole("avocat")}
               className={`cursor-pointer group transition-all duration-300 rounded-xl ${
@@ -298,33 +211,100 @@ export default function Auth() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="flex flex-col items-center text-center p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-3 shadow-sm">
-              <Shield className="w-5 h-5 text-white" />
+        {/* Auth card (white bar) shown only when a role is selected */}
+        {role ? (
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl mx-auto mb-8">
+            <Card className="bg-white dark:bg-card shadow-xl border-2">
+              <CardContent className="pt-6 space-y-6">
+                <Tabs defaultValue="login" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="login">Connexion</TabsTrigger>
+                    <TabsTrigger value="signup">Créer un compte</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="login" className="space-y-4 mt-4">
+                    <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="nom@cabinet.fr"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Mot de passe</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          required
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? "Connexion..." : "Se connecter"}
+                      </Button>
+                    </form>
+                  </TabsContent>
+
+                  <TabsContent value="signup" className="space-y-4 mt-4">
+                    <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="firstName">Prénom</Label>
+                          <Input id="firstName" placeholder="Jean" required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lastName">Nom</Label>
+                          <Input id="lastName" placeholder="Dupont" required />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="signupEmail">Email</Label>
+                        <Input id="signupEmail" type="email" placeholder="nom@cabinet.fr" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="signupPassword">Mot de passe</Label>
+                        <Input id="signupPassword" type="password" required />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? "Création..." : "Créer mon compte"}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+        ) : null}
+
+        <div className="grid md:grid-cols-3 gap-6 mb-8 divide-y md:divide-y-0 md:divide-x divide-border">
+          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-transparent hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-2 shadow-sm">
+              <Shield className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-bold text-base text-foreground mb-2">Sécurité des données</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <h3 className="font-bold text-sm text-foreground mb-1">Sécurité des données</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Hébergement en Europe, chiffrement SSL, conformité RGPD
             </p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-3 shadow-sm">
-              <Zap className="w-5 h-5 text-white" />
+          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-2 shadow-sm">
+              <Users className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-bold text-base text-foreground mb-2">Automatisation intelligente</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Réduisez les tâches répétitives et gagnez du temps
+            <h3 className="font-bold text-sm text-foreground mb-1">Espace collaboratif</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Partagez des documents, collaborez en temps réel avec vos collègues et vos clients.
             </p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-6 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border border-success/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-3 shadow-sm">
-              <TrendingUp className="w-5 h-5 text-white" />
+          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border border-success/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-2 shadow-sm">
+              <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-bold text-base text-foreground mb-2">Pensé pour les professionnels</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <h3 className="font-bold text-sm text-foreground mb-1">Pensé pour les professionnels</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Gestion des documents, rendez-vous, contacts et statistiques
             </p>
           </div>
