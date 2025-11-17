@@ -80,7 +80,8 @@ export default function DossierDetail() {
     let storagePath = raw.replace(/^\/+/, '');
     let bucket = 'documents';
     if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
-      bucket = storagePath.startsWith('shared-documents/') ? 'shared-documents' : 'shared_documents';
+      // normalize to canonical 'shared-documents' bucket
+      bucket = 'shared-documents';
       storagePath = storagePath.replace(/^shared[-_]documents\//, '');
     }
 

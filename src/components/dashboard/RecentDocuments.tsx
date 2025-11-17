@@ -86,12 +86,13 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
     let storagePath = raw.replace(/^\/+/, '');
     let bucket = 'documents';
     if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
-      bucket = storagePath.startsWith('shared-documents/') ? 'shared-documents' : 'shared_documents';
+      // normalize to canonical 'shared-documents'
+      bucket = 'shared-documents';
       storagePath = storagePath.replace(/^shared[-_]documents\//, '');
     } else if (storagePath.includes('/')) {
       const maybeBucket = storagePath.split('/')[0];
       if (maybeBucket === 'documents' || maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') {
-        if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = maybeBucket;
+        if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = 'shared-documents';
         storagePath = storagePath.split('/').slice(1).join('/');
       }
     }
@@ -130,7 +131,10 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       } catch (e) {
         console.error('getPublicUrl fallback failed', e);
       }
-      toast.error("Impossible de générer le lien");
+      // Provide an actionable message instead of a generic error
+      toast.error(
+        'Partage désactivé / stockage partagé indisponible. Pour corriger (admin) : voir supabase/CONNECT_SHARED_BUCKET.md'
+      );
       return;
     }
     if (mode === 'view') {

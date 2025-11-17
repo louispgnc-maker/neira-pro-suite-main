@@ -303,14 +303,16 @@ export default function EspaceCollaboratif() {
       // split bucket and path accordingly. Otherwise assume original 'documents' bucket.
       let bucket = 'documents';
       if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
-        bucket = storagePath.startsWith('shared-documents/') ? 'shared-documents' : 'shared_documents';
+        // Normalize any historical variant to the canonical bucket name
+        bucket = 'shared-documents';
         storagePath = storagePath.replace(/^shared[-_]documents\//, '');
       } else if (storagePath.includes('/')) {
         // Heuristic: if path looks like '<bucket>/rest/of/path', and bucket exists, use it.
         const maybeBucket = storagePath.split('/')[0];
-        // conservative: only switch if maybeBucket is 'documents' or 'shared_documents'
+        // conservative: only switch if maybeBucket is 'documents' or a historical shared bucket
         if (maybeBucket === 'documents' || maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') {
-          if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = maybeBucket;
+          // Always map historical variants to the canonical 'shared-documents'
+          if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = 'shared-documents';
           storagePath = storagePath.split('/').slice(1).join('/');
         }
       }
@@ -318,7 +320,15 @@ export default function EspaceCollaboratif() {
       // try signed url via Edge Function (membership-checked) with client fallback
       const signed = await getSignedUrlForPath({ bucket, path: storagePath, cabinetId: cabinet?.id, expires: 60 });
       if (!signed.signedUrl) {
-        console.error('signed url generation failed for', bucket, storagePath);
+        // provide richer diagnostics to help reproduce the fallback in the browser
+        try {
+          console.error('signed url generation failed for', bucket, storagePath);
+          console.groupCollapsed && console.groupCollapsed('Signed URL diagnostics');
+          console.log('getSignedUrlForPath result:', signed);
+          console.groupEnd && console.groupEnd();
+        } catch (_e) {
+          // ignore console errors
+        }
         // Try a public URL fallback if the bucket/object is public
         try {
           const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
@@ -334,7 +344,15 @@ export default function EspaceCollaboratif() {
           console.error('getPublicUrl fallback failed', e);
         }
 
-        toast({ title: 'Erreur', description: 'Impossible de générer le lien', variant: 'destructive' });
+        // show a compact, actionable diagnostic in the toast so the developer/user has a hint
+        const tried = (signed as any)?.triedBuckets ? (signed as any).triedBuckets.join(', ') : undefined;
+        const repoDoc = 'supabase/CONNECT_SHARED_BUCKET.md';
+        const baseDesc = tried
+          ? `Partage désactivé / stockage partagé indisponible. Buckets essayés: ${tried}.` 
+          : 'Partage désactivé / stockage partagé indisponible.';
+        const desc = `${baseDesc} Pour corriger (admin) : voir ${repoDoc}`;
+        // Use a neutral title to indicate sharing is disabled rather than an internal error
+        toast({ title: 'Partagé (désactivé)', description: desc, variant: 'destructive' });
         return;
       }
 

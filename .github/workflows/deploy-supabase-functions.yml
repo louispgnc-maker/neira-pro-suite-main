@@ -1,0 +1,51 @@
+name: Deploy Supabase Functions
+
+on:
+  push:
+    branches:
+      - main
+      - deploy/fix-shared-fallback
+  workflow_dispatch: {}
+
+jobs:
+  deploy-functions:
+    name: Deploy `share-and-copy` function
+    runs-on: ubuntu-latest
+    env:
+      # These should be set in GitHub repository secrets
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install supabase CLI
+        run: |
+          # Install via npm (works on ubuntu runners)
+          npm install -g supabase
+
+      - name: Verify supabase CLI
+        run: supabase --version
+
+      - name: Configure service role secret in Supabase (idempotent)
+        run: |
+          if [ -z "$SUPABASE_PROJECT_REF" ]; then echo "Missing SUPABASE_PROJECT_REF secret"; exit 1; fi
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then echo "Missing SUPABASE_SERVICE_ROLE_KEY secret"; exit 1; fi
+          supabase secrets set SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Deploy `share-and-copy` function
+        run: |
+          if [ -z "$SUPABASE_PROJECT_REF" ]; then echo "Missing SUPABASE_PROJECT_REF secret"; exit 1; fi
+          # Deploy only the share-and-copy function folder
+          supabase functions deploy share-and-copy --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Confirm deployment
+        run: |
+          echo "Deployed share-and-copy to project $SUPABASE_PROJECT_REF"
