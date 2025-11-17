@@ -32,18 +32,19 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
         toast.error('Impossible de récupérer vos cabinets');
         return;
       }
-      const arr = cabinetsData as unknown[];
-      const found = arr.find((c: any) => (c.role || c.role_cabinet) === role) as any;
-      const cabinetId = found?.id || (arr[0] && (arr[0] as any).id);
+  const arr = cabinetsData as unknown[];
+  type MaybeCab = { role?: string; role_cabinet?: string; id?: string };
+  const found = arr.find((c) => (((c as MaybeCab).role) || (c as MaybeCab).role_cabinet) === role) as MaybeCab | undefined;
+  const cabinetId = found?.id || (arr[0] && (arr[0] as MaybeCab).id);
       if (!cabinetId) {
         toast.error('Aucun cabinet trouvé pour partager');
         return;
       }
 
       const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: itemId });
-      if (uploadedBucket && publicUrl) {
+        if (uploadedBucket && publicUrl) {
         toast.success('Document partagé');
-        onSuccess && onSuccess();
+        if (onSuccess) onSuccess();
       } else {
         toast.error('Partage impossible');
       }

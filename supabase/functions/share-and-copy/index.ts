@@ -46,7 +46,7 @@ serve(async (req) => {
       .eq('status', 'active')
       .limit(1);
     if (membersErr) return new Response(JSON.stringify({ error: 'Membership check failed' }), { status: 500 });
-    let isMember = Array.isArray(membersData) && membersData.length > 0;
+    const isMember = Array.isArray(membersData) && membersData.length > 0;
     if (!isMember) {
       const { data: ownerData } = await admin.rpc('is_cabinet_owner', { cabinet_id_param: cabinetId, user_id_param: callerId });
       const isOwner = (typeof ownerData === 'boolean' && ownerData) || (Array.isArray(ownerData) && ownerData.length > 0 && ownerData[0]);
@@ -63,7 +63,7 @@ serve(async (req) => {
     if (docErr || !docRow) return new Response(JSON.stringify({ error: 'Document not found' }), { status: 404 });
 
     const sourceBucket = 'documents';
-    let sourcePath = (docRow.storage_path || '').replace(/^\/+/, '');
+  const sourcePath = (docRow.storage_path || '').replace(/^\/+/, '');
     if (!sourcePath) return new Response(JSON.stringify({ error: 'Document has no storage_path' }), { status: 400 });
 
     // Create a signed URL for the source and fetch the bytes
@@ -98,7 +98,7 @@ serve(async (req) => {
     const publicUrl = newSigned?.signedUrl ?? null;
 
     // Insert cabinet_documents row
-    const insertPayload: any = {
+    const insertPayload: Record<string, unknown> = {
       cabinet_id: cabinetId,
       document_id: docRow.id,
       title: docRow.name || safeName,

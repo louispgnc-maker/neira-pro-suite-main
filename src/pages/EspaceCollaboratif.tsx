@@ -323,9 +323,9 @@ export default function EspaceCollaboratif() {
         // provide richer diagnostics to help reproduce the fallback in the browser
         try {
           console.error('signed url generation failed for', bucket, storagePath);
-          console.groupCollapsed && console.groupCollapsed('Signed URL diagnostics');
+          if (console.groupCollapsed) console.groupCollapsed('Signed URL diagnostics');
           console.log('getSignedUrlForPath result:', signed);
-          console.groupEnd && console.groupEnd();
+          if (console.groupEnd) console.groupEnd();
         } catch (_e) {
           // ignore console errors
         }
@@ -345,7 +345,8 @@ export default function EspaceCollaboratif() {
         }
 
         // show a compact, actionable diagnostic in the toast so the developer/user has a hint
-        const tried = (signed as any)?.triedBuckets ? (signed as any).triedBuckets.join(', ') : undefined;
+  const triedBuckets = (signed as { triedBuckets?: string[] } | null | undefined)?.triedBuckets;
+  const tried = triedBuckets && Array.isArray(triedBuckets) ? triedBuckets.join(', ') : undefined;
         const repoDoc = 'supabase/CONNECT_SHARED_BUCKET.md';
         const baseDesc = tried
           ? `Partage désactivé / stockage partagé indisponible. Buckets essayés: ${tried}.` 
