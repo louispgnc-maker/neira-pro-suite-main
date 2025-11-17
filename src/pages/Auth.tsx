@@ -193,8 +193,13 @@ export default function Auth() {
       {overlayVisible ? (
         <div className={`fixed inset-0 z-[1000] flex items-center justify-center ${overlayAnimate ? 'pointer-events-auto' : 'pointer-events-none'}`}>
           <div
-            className={`absolute inset-0 bg-white transform transition-all duration-400 ease-out ${overlayAnimate ? 'scale-0 opacity-100' : 'scale-100 opacity-0'}`}
-            style={{ transformOrigin: overlayOrigin }}
+            className={`absolute inset-0 bg-white`}
+            style={{
+              transformOrigin: overlayOrigin,
+              transform: overlayAnimate ? 'scale(20)' : 'scale(0.04)',
+              opacity: overlayAnimate ? 1 : 0,
+              transition: 'transform 450ms ease-out, opacity 300ms ease-out',
+            }}
           />
         </div>
       ) : null}
@@ -219,7 +224,7 @@ export default function Auth() {
                 role === "avocat"
                   ? "ring-2 ring-blue-600 scale-105"
                   : "hover:scale-105 hover:shadow-lg"
-              } ${isNavigating && role === 'avocat' ? 'scale-75 transform' : ''}`}
+              }`}
               role="button"
               tabIndex={0}
             >
@@ -242,7 +247,7 @@ export default function Auth() {
                 role === "notaire"
                   ? "ring-2 ring-orange-600 scale-105"
                   : "hover:scale-105 hover:shadow-lg"
-              } ${isNavigating && role === 'notaire' ? 'scale-75 transform' : ''}`}
+              }`}
               role="button"
               tabIndex={0}
             >
