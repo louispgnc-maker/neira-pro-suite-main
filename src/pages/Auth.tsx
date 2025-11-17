@@ -146,7 +146,7 @@ export default function Auth() {
     <div onClick={() => setRole(null)} className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
       {/* Top-left logo + small phrase */}
       <div className="absolute top-6 left-6 flex items-start gap-3">
-  <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-12 h-12 rounded-lg object-cover" />
+        <img src="/neira-logo.svg" alt="Neira" className="w-12 h-12 rounded-lg object-cover" />
         <div className="text-left">
           <h1 className="text-xl font-bold text-foreground">Neira</h1>
           <p className="text-sm text-muted-foreground">{role ? (role === "avocat" ? "Espace Avocats" : "Espace Notaires") : "Espace Professionnel Automatisé"}</p>
