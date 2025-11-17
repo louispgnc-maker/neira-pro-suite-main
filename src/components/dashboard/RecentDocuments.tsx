@@ -86,12 +86,13 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
     let storagePath = raw.replace(/^\/+/, '');
     let bucket = 'documents';
     if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
-      bucket = storagePath.startsWith('shared-documents/') ? 'shared-documents' : 'shared_documents';
+      // normalize to canonical 'shared-documents'
+      bucket = 'shared-documents';
       storagePath = storagePath.replace(/^shared[-_]documents\//, '');
     } else if (storagePath.includes('/')) {
       const maybeBucket = storagePath.split('/')[0];
       if (maybeBucket === 'documents' || maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') {
-        if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = maybeBucket;
+        if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = 'shared-documents';
         storagePath = storagePath.split('/').slice(1).join('/');
       }
     }
@@ -103,7 +104,14 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       console.error('createSignedUrl failed for', bucket, storagePath, error);
       try {
         const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
-        const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+        const publicUrl = (() => {
+          const p = pub as unknown as Record<string, unknown> | null | undefined;
+          if (!p) return undefined;
+          const dataObj = p['data'] as Record<string, unknown> | undefined;
+          if (dataObj && typeof dataObj['publicUrl'] === 'string') return dataObj['publicUrl'] as string;
+          if (typeof p['publicUrl'] === 'string') return p['publicUrl'] as string;
+          return undefined;
+        })();
         if (publicUrl) {
           if (mode === 'view') {
             setViewerUrl(publicUrl);
@@ -123,7 +131,10 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       } catch (e) {
         console.error('getPublicUrl fallback failed', e);
       }
-      toast.error("Impossible de générer le lien");
+      // Provide an actionable message instead of a generic error
+      toast.error(
+        'Partage désactivé / stockage partagé indisponible. Pour corriger (admin) : voir supabase/CONNECT_SHARED_BUCKET.md'
+      );
       return;
     }
     if (mode === 'view') {
@@ -171,9 +182,10 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       // Met à jour l'état local pour retirer le document de la liste
       setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
       toast.success('Document supprimé');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur suppression document:', err);
-      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la suppression', { description: message });
     }
   };
 

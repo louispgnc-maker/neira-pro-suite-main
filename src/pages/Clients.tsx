@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { useToast } from '@/hooks/use-toast';
+// sharing removed: no client-side sharing RPCs
 
 type ClientRow = {
   id: string;
@@ -34,8 +34,6 @@ export default function Clients() {
     return () => clearTimeout(t);
   }, [search]);
   const navigate = useNavigate();
-  const { toast } = useToast();
-
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
@@ -72,7 +70,7 @@ export default function Clients() {
     return () => {
       isMounted = false;
     };
-  }, [user, debounced]);
+  }, [user, debounced, role]);
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'
@@ -84,40 +82,8 @@ export default function Clients() {
     ? 'bg-warning/10 text-warning border-warning/20'
     : 'bg-warning/10 text-warning border-warning/20'; // même couleur pour les deux, mais extensible
 
-  const [sharingClientId, setSharingClientId] = useState<string | null>(null);
-
-  const shareClient = async (clientId: string, clientName?: string) => {
-    if (!user) {
-      toast({ title: 'Erreur', description: 'Vous devez être connecté pour partager.', variant: 'destructive' });
-      return;
-    }
-    if (!confirm(`Partager la fiche client "${clientName || clientId}" dans l'espace collaboratif ?`)) return;
-    setSharingClientId(clientId);
-    try {
-      const { data: cabinetsData, error: cabErr } = await supabase.rpc('get_user_cabinets');
-      if (cabErr) throw cabErr;
-      const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-      const filtered = cabinets.filter((c: any) => c.role === role);
-      const userCabinet = filtered[0] || null;
-      if (!userCabinet) {
-        toast({ title: 'Aucun cabinet', description: 'Rejoignez ou créez un cabinet pour partager.', variant: 'destructive' });
-        return;
-      }
-
-      const { data: rpcData, error: rpcErr } = await supabase.rpc('share_client_to_cabinet', {
-        p_client_id: clientId,
-        p_cabinet_id: userCabinet.id,
-        p_shared_by: user.id,
-      });
-      if (rpcErr) throw rpcErr;
-      toast({ title: 'Partagé', description: 'La fiche client a été partagée dans l\'espace collaboratif.' });
-    } catch (e: any) {
-      console.error('Erreur partage client:', e);
-      toast({ title: 'Erreur', description: e?.message || String(e), variant: 'destructive' });
-    } finally {
-      setSharingClientId(null);
-    }
-  };
+  // sharing removed: no client-side share function. The UI button remains
+  // but will render a disabled placeholder dialog component.
 
   return (
     <AppLayout>
@@ -202,7 +168,7 @@ export default function Clients() {
                           >
                             {client.kyc_status}
                           </Badge>
-                          <ShareToCollaborativeButton clientId={client.id} clientName={client.name} role={role} disabled={sharingClientId === client.id} onStart={() => setSharingClientId(client.id)} onDone={() => setSharingClientId(null)} />
+                          <ShareToCollaborativeButton clientId={client.id} clientName={client.name} role={role} />
                         </div>
                       </div>
                     </Card>

@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DocumentViewer } from "@/components/ui/document-viewer";
 import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
-import { copyDocumentToShared } from '@/lib/sharedCopy';
 
 type DocRow = {
   id: string;
@@ -55,7 +54,6 @@ export default function Documents() {
   const [documents, setDocuments] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [autoShare, setAutoShare] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -113,9 +111,9 @@ export default function Documents() {
     try {
       const params = new URLSearchParams(location.search);
       if (params.get('openImport') === '1') {
-        // small timeout to ensure input ref is ready
-        setTimeout(() => triggerImport(), 150);
-      }
+          // small timeout to ensure input ref is ready
+          setTimeout(() => fileInputRef.current?.click(), 150);
+        }
     } catch (e) {
       // ignore
     }
@@ -151,12 +149,13 @@ export default function Documents() {
     let storagePath = raw.replace(/^\/+/, '');
     let bucket = 'documents';
     if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
-      bucket = storagePath.startsWith('shared-documents/') ? 'shared-documents' : 'shared_documents';
+      // normalize to canonical bucket
+      bucket = 'shared-documents';
       storagePath = storagePath.replace(/^shared[-_]documents\//, '');
     } else if (storagePath.includes('/')) {
       const maybeBucket = storagePath.split('/')[0];
       if (maybeBucket === 'documents' || maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') {
-        if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = maybeBucket;
+        if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = 'shared-documents';
         storagePath = storagePath.split('/').slice(1).join('/');
       }
     }
@@ -168,7 +167,14 @@ export default function Documents() {
       console.error('createSignedUrl failed for', bucket, storagePath, error);
       try {
         const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
-        const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+        const publicUrl = (() => {
+          const p = pub as unknown as Record<string, unknown> | null | undefined;
+          if (!p) return undefined;
+          const dataObj = p['data'] as Record<string, unknown> | undefined;
+          if (dataObj && typeof dataObj['publicUrl'] === 'string') return dataObj['publicUrl'] as string;
+          if (typeof p['publicUrl'] === 'string') return p['publicUrl'] as string;
+          return undefined;
+        })();
         if (publicUrl) {
           if (mode === 'view') {
             setViewerUrl(publicUrl);
@@ -189,7 +195,10 @@ export default function Documents() {
         console.error('getPublicUrl fallback failed', e);
       }
 
-      toast.error("Impossible de générer le lien");
+      // Provide an actionable message instead of a generic error to avoid confusing the user
+      toast.error(
+        'Partage désactivé / stockage partagé indisponible. Pour corriger (admin) : voir supabase/CONNECT_SHARED_BUCKET.md'
+      );
       return;
     }
     if (mode === 'view') {
@@ -230,9 +239,10 @@ export default function Documents() {
       
       setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
       toast.success('Document supprimé');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur suppression document:', err);
-      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la suppression', { description: message });
     }
   };
 
@@ -280,60 +290,17 @@ export default function Documents() {
           // Ajouter à l'état local
           if (inserted) setDocuments((prev) => [inserted as DocRow, ...prev]);
 
-          // Auto-share: if enabled, create a cabinet share and copy the file into shared bucket
-        if (autoShare && inserted) {
-          (async () => {
-            try {
-              // fetch user's cabinets and pick first matching role
-              const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
-              if (cabinetsErr) throw cabinetsErr;
-              const cabinets = Array.isArray(cabinetsData) ? cabinetsData as any[] : [];
-              const filtered = cabinets.filter((c: any) => c.role === role);
-              const cabinetId = filtered && filtered.length > 0 ? filtered[0].id : null;
-              if (!cabinetId) {
-                toast.error('Aucun cabinet disponible pour partager');
-                return;
-              }
-
-              // First copy to shared bucket to get a public URL
-              const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: inserted.id, sharedId: null, itemName: inserted.name });
-
-              if (publicUrl) {
-                const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet_with_url', {
-                  cabinet_id_param: cabinetId,
-                  document_id_param: inserted.id,
-                  title_param: inserted.name,
-                  description_param: null,
-                  file_url_param: publicUrl,
-                  file_name_param: inserted.name,
-                  file_type_param: 'application/pdf',
-                });
-                if (rpcErr) throw rpcErr;
-              } else {
-                // fallback to original RPC and let copyDocumentToShared update it
-                const { data: rpcData, error: rpcErr } = await supabase.rpc('share_document_to_cabinet', {
-                  cabinet_id_param: cabinetId,
-                  document_id_param: inserted.id,
-                  title_param: inserted.name,
-                  description_param: null,
-                });
-                if (rpcErr) throw rpcErr;
-              }
-
-              toast.success('Document partagé automatiquement');
-            } catch (e:any) {
-              console.error('Auto-share failed', e);
-              toast.error('Partage automatique échoué: ' + (e?.message || String(e)));
-            }
-          })();
-        }
+        // Note: automatic sharing has been disabled. If you want to re-enable,
+        // restore the logic that calls copyDocumentToShared and creates
+        // cabinet_documents entries via secure RPCs.
         }
       }
       if (uploaded.length > 0) {
         toast.success(`Import terminé`, { description: `${uploaded.length} fichier(s) ajouté(s)` });
       }
-    } catch (err: any) {
-      toast.error("Erreur d'import", { description: err?.message || String(err) });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error("Erreur d'import", { description: message });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -366,10 +333,6 @@ export default function Documents() {
               onChange={onFilesSelected}
             />
             <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={autoShare} onChange={(e) => setAutoShare(e.target.checked)} />
-                <span className="select-none">Partager automatiquement</span>
-              </label>
               <Button className={mainButtonColor + ""} onClick={triggerImport} disabled={uploading}>
                 <Plus className="h-4 w-4 mr-2" />
                 {uploading ? 'Import…' : 'Ajouter'}

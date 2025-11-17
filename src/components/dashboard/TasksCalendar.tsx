@@ -55,17 +55,20 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
         console.error("Erreur chargement tâches:", error);
         if (isMounted) setTasks([]);
       } else if (isMounted) {
-        const raw = (data || []) as TaskRow[];
+        const raw = Array.isArray(data) ? data as unknown[] : [];
         const filtered = raw.filter((t) => {
+          const tr = t as Record<string, unknown>;
           // safety: exclude tasks that are already marked done (some rows might still have done=true)
-          if ((t as any).done) return false;
+          if (tr['done']) return false;
           try {
+            const due_date = tr['due_date'] ? String(tr['due_date']) : null;
+            const due_at = tr['due_at'] ? String(tr['due_at']) : null;
             // Include tasks without any due date so newly created tasks (no date) are visible
-            if (!t.due_date && !t.due_at) return true;
+            if (!due_date && !due_at) return true;
 
-            if (t.due_date && t.due_date >= dateStr) return true;
-            if (t.due_at) {
-              const d = new Date(t.due_at);
+            if (due_date && due_date >= dateStr) return true;
+            if (due_at) {
+              const d = new Date(due_at);
               const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
               return dStr >= dateStr;
             }
@@ -73,7 +76,15 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
             return false;
           }
           return false;
-        }).slice(0, 5);
+        }).slice(0, 5).map((t) => {
+          const tr = t as Record<string, unknown>;
+          return {
+            id: String(tr['id'] ?? ''),
+            title: String(tr['title'] ?? ''),
+            due_date: tr['due_date'] ? String(tr['due_date']) : null,
+            due_at: tr['due_at'] ? String(tr['due_at']) : null,
+          } as TaskRow;
+        });
         setTasks(filtered as TaskRow[]);
       }
       if (isMounted) setLoading(false);

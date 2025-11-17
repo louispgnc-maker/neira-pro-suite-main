@@ -21,42 +21,8 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-DECLARE
-  v_shared_dossier_id uuid;
-  v_status text;
 BEGIN
-  -- Vérifier que l'utilisateur est membre actif du cabinet
-  IF NOT EXISTS (
-    SELECT 1 FROM cabinet_members
-    WHERE cabinet_id = cabinet_id_param
-      AND user_id = auth.uid()
-      AND status = 'active'
-  ) THEN
-    RAISE EXCEPTION 'Not a member of this cabinet';
-  END IF;
-
-  -- Récupérer les infos du dossier
-  SELECT status
-  INTO v_status
-  FROM dossiers
-  WHERE id = dossier_id_param AND owner_id = auth.uid();
-
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'Dossier not found or access denied';
-  END IF;
-
-  -- Créer le dossier partagé
-  INSERT INTO cabinet_dossiers (
-    cabinet_id, dossier_id, title, description,
-    status, shared_by
-  ) VALUES (
-    cabinet_id_param, dossier_id_param, title_param, description_param,
-    -- normalize status: prefer 'En cours' rather than 'Ouvert' for shared items
-    CASE WHEN lower(coalesce(v_status,'')) = 'ouvert' THEN 'En cours' ELSE v_status END,
-    auth.uid()
-  ) RETURNING id INTO v_shared_dossier_id;
-
-  RETURN v_shared_dossier_id;
+  RAISE EXCEPTION 'Sharing disabled: share_dossier_to_cabinet has been removed.';
 END;
 $$;
 

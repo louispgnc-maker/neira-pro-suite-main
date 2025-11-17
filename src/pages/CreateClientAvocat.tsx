@@ -214,9 +214,10 @@ export default function CreateClientAvocat() {
       } else {
         navigate('/avocats/clients');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur création client:', err);
-      toast.error("Erreur lors de la création", { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error("Erreur lors de la création", { description: message });
     } finally {
       setLoading(false);
     }

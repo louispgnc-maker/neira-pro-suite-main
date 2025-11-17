@@ -45,11 +45,12 @@ export default function Cabinet() {
 
       setInviteCode('');
       refreshCabinet(); // Recharger le composant ManageCabinet
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur rejoindre cabinet:', error);
+      const message = error instanceof Error ? error.message : String(error);
       toast({
         title: 'Erreur',
-        description: error.message || 'Code invalide ou cabinet non trouvé',
+        description: message || 'Code invalide ou cabinet non trouvé',
         variant: 'destructive',
       });
     } finally {

@@ -45,7 +45,7 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
         if (!isActive) return;
         setTodoCount(todoRes.count ?? 0);
         setOverdueCount(overdueRes.count ?? 0);
-      } catch (e) {
+      } catch (e: unknown) {
         console.error('Erreur chargement compteurs tâches:', e);
       } finally {
         if (isActive) setLoading(false);
@@ -54,7 +54,7 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
 
     loadCounts();
 
-    let channel: any = null;
+      let channel: { subscribe?: () => unknown; unsubscribe?: () => unknown } | null = null;
     try {
       if (user) {
         channel = supabase.channel(`tasks-counts-${user.id}`)
@@ -64,12 +64,12 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
         channel.subscribe();
       }
     } catch (e) {
-      console.error('Realtime channel error:', e);
+        console.error('Realtime channel error:', e as unknown);
     }
 
     return () => {
       isActive = false;
-      try { channel?.unsubscribe && channel.unsubscribe(); } catch (e) { /* ignore */ }
+      try { if (channel?.unsubscribe) { channel.unsubscribe(); } } catch (e: unknown) { /* ignore */ }
     };
   }, [user, role]);
 

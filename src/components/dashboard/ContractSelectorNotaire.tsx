@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -124,9 +125,10 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
       if (onContractCreated) {
         onContractCreated();
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur création contrat:', err);
-      toast.error('Erreur lors de la création', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
     }
   };
 

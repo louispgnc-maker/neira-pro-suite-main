@@ -12,7 +12,7 @@ if (!supabaseUrl || !supabaseKey) {
   // fallback to the project's REST API URL (project ref -> <ref>.supabase.co)
   supabaseUrl = 'https://elysrdqujzlbvnjfilvh.supabase.co'
   supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA'
-  // eslint-disable-next-line no-console
+   
   console.warn('[supabaseClient] Using fallback Supabase credentials. Configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for environment-specific builds.')
 }
 

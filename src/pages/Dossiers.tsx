@@ -73,33 +73,34 @@ export default function Dossiers() {
       // Fetch cabinet shared dossiers and merge so members see shared dossiers like shared documents
       try {
         const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
-        const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as any[]) : [];
-        const filtered = cabinets.filter((c: any) => c.role === role);
+        const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
+        const filtered = cabinets.filter((c) => (c as Record<string, unknown>)['role'] === role);
         const userCabinet = filtered[0] || null;
         if (userCabinet) {
           try {
-            const { data: sharedDossiers } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
+            const cabinetIdParam = String((userCabinet as Record<string, unknown>)['id'] ?? '');
+            const { data: sharedDossiers } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: cabinetIdParam });
             if (Array.isArray(sharedDossiers) && sharedDossiers.length > 0) {
               // Map cabinet_dossiers rows to DossierRow while marking them as shared
-              const mapped = (sharedDossiers as any[]).map((sd) => ({
-                id: sd.dossier_id || sd.id,
-                title: sd.title,
-                status: sd.status || '—',
-                created_at: sd.shared_at || sd.created_at || null,
-                // attach helper meta used in rendering
-                // @ts-ignore
-                _shared: true,
-                // @ts-ignore
-                _cabinet_row_id: sd.id,
-                // @ts-ignore
-                _attached_document_count: Array.isArray(sd.attached_document_ids) ? sd.attached_document_ids.length : 0,
-              } as DossierRow));
+              const mapped = (sharedDossiers as unknown[]).map((sd) => {
+                const s = sd as Record<string, unknown>;
+                return {
+                  id: String(s['dossier_id'] ?? s['id'] ?? ''),
+                  title: String(s['title'] ?? ''),
+                  status: String(s['status'] ?? '—'),
+                  created_at: String(s['shared_at'] ?? s['created_at'] ?? ''),
+                  // helper metadata kept as properties on the object for later counting
+                  _shared: true,
+                  _cabinet_row_id: String(s['id'] ?? ''),
+                  _attached_document_count: Array.isArray(s['attached_document_ids'] as unknown) ? (s['attached_document_ids'] as unknown[]).length : 0,
+                } as unknown as DossierRow & Record<string, unknown>;
+              });
 
               // merge owned and shared, de-dup by original dossier id
-              const byId = new Map<string, DossierRow & { _shared?: boolean }>();
-              list.forEach((it) => byId.set(it.id, it));
-              mapped.forEach((it: any) => {
-                if (!byId.has(it.id)) byId.set(it.id, it);
+              const byId = new Map<string, DossierRow & Record<string, unknown>>();
+              list.forEach((it) => byId.set(it.id, it as DossierRow & Record<string, unknown>));
+              mapped.forEach((it) => {
+                if (!byId.has(it.id)) byId.set(it.id, it as DossierRow & Record<string, unknown>);
               });
               list = Array.from(byId.values());
             }
@@ -139,15 +140,16 @@ export default function Dossiers() {
           const cntContrats = new Map<string, number>();
           const cntDocs = new Map<string, number>();
           // Supabase doesn't group count by dossier_id with this API, fallback to fetching rows and counting client-side
-          if (dc.data) dc.data.forEach((row: any) => cntClients.set(row.dossier_id, (cntClients.get(row.dossier_id) || 0) + 1));
-          if (dco.data) dco.data.forEach((row: any) => cntContrats.set(row.dossier_id, (cntContrats.get(row.dossier_id) || 0) + 1));
-          if (dd.data) dd.data.forEach((row: any) => cntDocs.set(row.dossier_id, (cntDocs.get(row.dossier_id) || 0) + 1));
-          list.forEach((x: any) => {
+          if (dc.data) (dc.data as unknown[]).forEach((row) => { const r = row as Record<string, unknown>; const id = String(r['dossier_id'] ?? ''); cntClients.set(id, (cntClients.get(id) || 0) + 1); });
+          if (dco.data) (dco.data as unknown[]).forEach((row) => { const r = row as Record<string, unknown>; const id = String(r['dossier_id'] ?? ''); cntContrats.set(id, (cntContrats.get(id) || 0) + 1); });
+          if (dd.data) (dd.data as unknown[]).forEach((row) => { const r = row as Record<string, unknown>; const id = String(r['dossier_id'] ?? ''); cntDocs.set(id, (cntDocs.get(id) || 0) + 1); });
+          list.forEach((x) => {
+            const xr = x as DossierRow & Record<string, unknown>;
             // if shared entry has attached_document_count we prefer that
-            if (x._attached_document_count !== undefined) x.document_count = x._attached_document_count;
-            else x.document_count = cntDocs.get(x.id) || 0;
-            x.client_count = cntClients.get(x.id) || 0;
-            x.contrat_count = cntContrats.get(x.id) || 0;
+            if (typeof xr['_attached_document_count'] !== 'undefined') xr.document_count = Number(xr['_attached_document_count']) || 0;
+            else xr.document_count = cntDocs.get(x.id) || 0;
+            xr.client_count = cntClients.get(x.id) || 0;
+            xr.contrat_count = cntContrats.get(x.id) || 0;
           });
         }
         setDossiers(list);
@@ -168,7 +170,7 @@ export default function Dossiers() {
     load();
     loadRefs();
     return () => { mounted = false; };
-  }, [user, role]);
+  }, [user, role, debounced]);
 
   // debounce search
   useEffect(() => {
@@ -184,9 +186,10 @@ export default function Dossiers() {
       if (error) throw error;
       setDossiers((prev) => prev.filter((x) => x.id !== dossier.id));
       toast.success('Dossier supprimé');
-    } catch (err: any) {
+      } catch (err: unknown) {
       console.error('Erreur suppression dossier:', err);
-      toast.error('Erreur lors de la suppression', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la suppression', { description: message });
     }
   };
 
@@ -215,7 +218,7 @@ export default function Dossiers() {
       const dossierId = inserted!.id as string;
 
       // Insert associations
-      const inserts: Promise<any>[] = [];
+  const inserts: Promise<unknown>[] = [];
       if (selectedClients.length > 0) {
         const rows = selectedClients.map((client_id) => ({ owner_id: user.id, dossier_id: dossierId, client_id, role }));
         inserts.push(supabase.from('dossier_clients').insert(rows));
@@ -240,7 +243,10 @@ export default function Dossiers() {
           .eq('role', role)
           .in('client_id', selectedClients)
           .in('contrat_id', selectedContrats);
-        const existingSet = new Set((existing || []).map((r: any) => `${r.client_id}|${r.contrat_id}`));
+        const existingSet = new Set((existing || []).map((r) => {
+          const row = r as Record<string, unknown>;
+          return `${String(row['client_id'] ?? '')}|${String(row['contrat_id'] ?? '')}`;
+        }));
         const toInsert = [] as { owner_id: string; client_id: string; contrat_id: string; role: string }[];
         for (const cId of selectedClients) {
           for (const kId of selectedContrats) {
@@ -264,9 +270,10 @@ export default function Dossiers() {
         .eq('role', role)
         .order('created_at', { ascending: false });
       setDossiers((refreshed || []) as DossierRow[]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur création dossier:', err);
-      toast.error('Erreur création', { description: err?.message || String(err) });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur création', { description: message });
     }
   };
 
@@ -459,7 +466,7 @@ export default function Dossiers() {
                                     <Eye className="mr-2 h-4 w-4" />
                                     Voir
                                   </DropdownMenuItem>
-                                    {!(d as any)._shared && (
+                                    {(((d as unknown) as Record<string, unknown>)['_shared']) !== true && (
                                       <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Supprimer

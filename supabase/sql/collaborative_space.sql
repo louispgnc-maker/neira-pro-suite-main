@@ -242,6 +242,7 @@ as $$
 $$;
 
 -- Partager un document existant au cabinet
+-- share_document_to_cabinet disabled: replaced with explicit exception to prevent sharing.
 drop function if exists public.share_document_to_cabinet(uuid, uuid, text, text);
 create or replace function public.share_document_to_cabinet(
   cabinet_id_param uuid,
@@ -254,41 +255,8 @@ language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  v_shared_doc_id uuid;
-  v_storage_path text;
-  v_doc_name text;
 begin
-  -- Vérifier que l'utilisateur est membre actif du cabinet
-  if not exists (
-    select 1 from cabinet_members
-    where cabinet_id = cabinet_id_param
-      and user_id = auth.uid()
-      and status = 'active'
-  ) then
-    raise exception 'Not a member of this cabinet';
-  end if;
-
-  -- Récupérer les infos du document
-  select storage_path, name
-  into v_storage_path, v_doc_name
-  from documents
-  where id = document_id_param and owner_id = auth.uid();
-
-  if not found then
-    raise exception 'Document not found or access denied';
-  end if;
-
-  -- Créer le document partagé
-  insert into cabinet_documents (
-    cabinet_id, document_id, title, description,
-    file_url, file_name, file_type, shared_by
-  ) values (
-    cabinet_id_param, document_id_param, title_param, description_param,
-    v_storage_path, v_doc_name, 'application/pdf', auth.uid()
-  ) returning id into v_shared_doc_id;
-
-  return v_shared_doc_id;
+  raise exception 'Sharing disabled: share_document_to_cabinet has been removed.';
 end;
 $$;
 
@@ -372,6 +340,7 @@ end;
 $$;
 
 -- Partager un dossier existant au cabinet
+-- share_dossier_to_cabinet disabled: replaced with explicit exception to prevent sharing.
 drop function if exists public.share_dossier_to_cabinet(uuid, uuid, text, text);
 create or replace function public.share_dossier_to_cabinet(
   cabinet_id_param uuid,
@@ -384,46 +353,13 @@ language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  v_shared_dossier_id uuid;
-  v_status text;
 begin
-  -- Vérifier que l'utilisateur est membre actif du cabinet
-  if not exists (
-    select 1 from cabinet_members
-    where cabinet_id = cabinet_id_param
-      and user_id = auth.uid()
-      and status = 'active'
-  ) then
-    raise exception 'Not a member of this cabinet';
-  end if;
-
-  -- Récupérer les infos du dossier
-  select status
-  into v_status
-  from dossiers
-  where id = dossier_id_param and owner_id = auth.uid();
-
-  if not found then
-    raise exception 'Dossier not found or access denied';
-  end if;
-
-  -- Créer le dossier partagé
-  insert into cabinet_dossiers (
-    cabinet_id, dossier_id, title, description,
-    status, shared_by
-  ) values (
-    cabinet_id_param, dossier_id_param, title_param, description_param,
-    -- normalize status: prefer 'En cours' rather than 'Ouvert' for shared items
-    CASE WHEN lower(coalesce(v_status,'')) = 'ouvert' THEN 'En cours' ELSE v_status END,
-    auth.uid()
-  ) returning id into v_shared_dossier_id;
-
-  return v_shared_dossier_id;
+  raise exception 'Sharing disabled: share_dossier_to_cabinet has been removed.';
 end;
 $$;
 
 -- Partager un contrat existant au cabinet
+-- share_contrat_to_cabinet disabled: replaced with explicit exception to prevent sharing.
 drop function if exists public.share_contrat_to_cabinet(uuid, uuid, text, text);
 create or replace function public.share_contrat_to_cabinet(
   cabinet_id_param uuid,
@@ -436,40 +372,7 @@ language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  v_shared_contrat_id uuid;
-  v_category text;
-  v_type text;
 begin
-  -- Vérifier que l'utilisateur est membre actif du cabinet
-  if not exists (
-    select 1 from cabinet_members
-    where cabinet_id = cabinet_id_param
-      and user_id = auth.uid()
-      and status = 'active'
-  ) then
-    raise exception 'Not a member of this cabinet';
-  end if;
-
-  -- Récupérer les infos du contrat
-  select category, type
-  into v_category, v_type
-  from contrats
-  where id = contrat_id_param and owner_id = auth.uid();
-
-  if not found then
-    raise exception 'Contrat not found or access denied';
-  end if;
-
-  -- Créer le contrat partagé
-  insert into cabinet_contrats (
-    cabinet_id, contrat_id, title, description,
-    category, contrat_type, shared_by
-  ) values (
-    cabinet_id_param, contrat_id_param, title_param, description_param,
-    v_category, v_type, auth.uid()
-  ) returning id into v_shared_contrat_id;
-
-  return v_shared_contrat_id;
+  raise exception 'Sharing disabled: share_contrat_to_cabinet has been removed.';
 end;
 $$;

@@ -89,7 +89,7 @@ export default function ContratDetail() {
 
   const goBack = () => {
     // If opened from the collaborative space, return to previous page
-    const fromCollaboratif = (location.state as any)?.fromCollaboratif;
+    const fromCollaboratif = Boolean(((location.state as unknown) as Record<string, unknown>)?.fromCollaboratif);
     if (fromCollaboratif) {
       navigate(-1);
       return;

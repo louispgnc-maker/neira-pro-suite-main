@@ -80,7 +80,8 @@ export default function DossierDetail() {
     let storagePath = raw.replace(/^\/+/, '');
     let bucket = 'documents';
     if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
-      bucket = storagePath.startsWith('shared-documents/') ? 'shared-documents' : 'shared_documents';
+      // normalize to canonical 'shared-documents' bucket
+      bucket = 'shared-documents';
       storagePath = storagePath.replace(/^shared[-_]documents\//, '');
     }
 
@@ -88,9 +89,9 @@ export default function DossierDetail() {
       const { data, error } = await supabase.storage.from(bucket).createSignedUrl(storagePath, 60);
       if (error || !data?.signedUrl) {
         // try public URL fallback
-        try {
+          try {
           const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath as string);
-          const publicUrl = pub?.data?.publicUrl || (pub as any)?.publicUrl;
+          const publicUrl = pub?.data?.publicUrl ?? (((pub as unknown) as Record<string, unknown>)?.publicUrl as string | undefined);
           if (publicUrl) {
             window.open(publicUrl, '_blank');
             return;
@@ -110,7 +111,7 @@ export default function DossierDetail() {
 
   const goBack = () => {
     // If opened from the collaborative space, return to previous page
-    const fromCollaboratif = (location.state as any)?.fromCollaboratif;
+    const fromCollaboratif = Boolean(((location.state as unknown) as Record<string, unknown>)?.fromCollaboratif);
     if (fromCollaboratif) {
       navigate(-1);
       return;

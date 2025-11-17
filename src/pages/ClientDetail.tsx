@@ -101,14 +101,14 @@ export default function ClientDetail() {
       // If not found as an owned client, attempt to load via cabinet_clients (shared client)
       if (mounted && !c) {
         try {
-          const cabinetClientId = (location.state as any)?.cabinetClientId;
+          const cabinetClientId = String(((location.state as unknown) as Record<string, unknown>)?.cabinetClientId ?? '');
           if (cabinetClientId) {
             const { data: rpcData, error: rpcErr } = await supabase.rpc('get_cabinet_client_details', { p_cabinet_client_id: cabinetClientId });
             if (!rpcErr && rpcData) {
               // rpcData is JSONB representing the client row
-              const parsed = rpcData as any;
+              const parsed = rpcData as unknown;
               // supabase.rpc may return the JSON as an array/object depending on setup
-              const clientObj = (typeof parsed === 'string') ? JSON.parse(parsed) : parsed;
+              const clientObj = (typeof parsed === 'string') ? JSON.parse(parsed) : parsed as Record<string, unknown>;
               if (clientObj) setClient(clientObj as Client);
             }
           }
@@ -126,7 +126,7 @@ export default function ClientDetail() {
         .eq('role', role)
         .eq('client_id', id);
       if (!linkErr && links && links.length > 0) {
-        const ids = links.map((l: any) => l.contrat_id);
+        const ids = (links as unknown[]).map((l: unknown) => String((l as Record<string, unknown>).contrat_id ?? ''));
         const { data: ct, error: cErr } = await supabase
           .from('contrats')
           .select('id,name,category,type')
@@ -140,13 +140,13 @@ export default function ClientDetail() {
     }
     load();
     return () => { mounted = false; };
-  }, [user, id]);
+  }, [user, id, location.state, role]);
 
   const goBack = () => {
     // Determine if we should return to the collaborative clients tab. Prefer location.state
     // but fall back to URL query params so the value survives a page refresh.
     const searchParams = new URLSearchParams(location.search || '');
-    const fromCollaboratif = (location.state as any)?.fromCollaboratif || (searchParams.get('fromCollaboratif') === '1');
+  const fromCollaboratif = Boolean(((location.state as unknown) as Record<string, unknown>)?.fromCollaboratif) || (searchParams.get('fromCollaboratif') === '1');
     if (fromCollaboratif) {
       // Explicitly return to the collaborative clients tab instead of the personal clients list
       navigate(`/${role}s/espace-collaboratif?tab=clients`);

@@ -8,7 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Zap, TrendingUp, Check } from "lucide-react";
+import { Shield, Zap, TrendingUp, Check, Users } from "lucide-react";
 
 
 interface FormElements extends HTMLFormElement {
@@ -111,16 +111,18 @@ export default function Auth() {
           navigate("/avocats/dashboard");
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur d\'authentification:', error);
-      if (error?.message === 'TIMEOUT') {
+      const msg = (typeof error === 'object' && error !== null && 'message' in error) ? String((error as { message?: unknown }).message) : String(error);
+      const lower = (msg || '').toLowerCase();
+      if (msg === 'TIMEOUT') {
         toast.error("Connexion trop longue", { description: "Vérifiez votre connexion internet ou réessayez dans un instant." });
-      } else if (error?.message?.toLowerCase?.().includes('email not confirmed')) {
+      } else if (lower.includes('email not confirmed')) {
         toast.error("Email non confirmé", { description: "Veuillez confirmer votre email puis réessayez." });
-      } else if (error?.message?.toLowerCase?.().includes('invalid login credentials')) {
+      } else if (lower.includes('invalid login credentials')) {
         toast.error("Identifiants invalides", { description: "Email ou mot de passe incorrect." });
       } else {
-        toast.error(error.message || "Une erreur est survenue");
+        toast.error(msg || "Une erreur est survenue");
       }
     } finally {
       setLoading(false);
@@ -141,154 +143,17 @@ export default function Auth() {
 
   // Main page with role selection OR auth forms
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
-      <div className="w-full max-w-2xl mx-auto mb-8">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-primary mb-4 shadow-glow animate-scale-in">
-            <span className="text-2xl font-bold text-white">N</span>
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-            Neira
-          </h1>
-          <p className="text-muted-foreground">
-            {role ? (role === "avocat" ? "Espace Avocats" : "Espace Notaires") : "Espace Professionnel Automatisé"}
-          </p>
+    <div onClick={() => setRole(null)} className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
+      {/* Top-left logo + small phrase */}
+      <div className="absolute top-6 left-6 flex items-start gap-3">
+  <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-12 h-12 rounded-lg object-cover" />
+        <div className="text-left">
+          <h1 className="text-xl font-bold text-foreground">Neira</h1>
+          <p className="text-sm text-muted-foreground">{role ? (role === "avocat" ? "Espace Avocats" : "Espace Notaires") : "Espace Professionnel Automatisé"}</p>
         </div>
-
-        {/* Single card containing everything */}
-        <Card className="bg-white dark:bg-card shadow-xl border-2">
-          <CardContent className="pt-6 space-y-6">
-            {/* Role selection cards in two columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Avocat Card */}
-              <div 
-                onClick={() => setRole("avocat")}
-                className={`cursor-pointer group transition-all duration-300 rounded-xl ${
-                  role === "avocat" 
-                    ? "ring-2 ring-blue-600 scale-105" 
-                    : "hover:scale-105 hover:shadow-lg"
-                }`}
-              >
-                <Card className={`${
-                  role === "avocat" 
-                    ? "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-600" 
-                    : "bg-white hover:bg-blue-50/50"
-                } transition-all duration-300`}>
-                  <CardContent className="pt-8 pb-6 text-center space-y-3">
-                    <div className="text-5xl mb-2">⚖️</div>
-                    <h3 className="text-2xl font-bold text-blue-900">Espace Avocats</h3>
-                    <p className="text-sm text-blue-700">
-                      Accès sécurisé dédié aux avocats
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Notaire Card */}
-              <div 
-                onClick={() => setRole("notaire")}
-                className={`cursor-pointer group transition-all duration-300 rounded-xl ${
-                  role === "notaire" 
-                    ? "ring-2 ring-orange-600 scale-105" 
-                    : "hover:scale-105 hover:shadow-lg"
-                }`}
-              >
-                <Card className={`${
-                  role === "notaire" 
-                    ? "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-600" 
-                    : "bg-white hover:bg-orange-50/50"
-                } transition-all duration-300`}>
-                  <CardContent className="pt-8 pb-6 text-center space-y-3">
-                    <div className="text-5xl mb-2">🏛️</div>
-                    <h3 className="text-2xl font-bold text-orange-900">Espace Notaires</h3>
-                    <p className="text-sm text-orange-700">
-                      Accès sécurisé dédié aux notaires
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Show auth forms once role is selected */}
-            {role && (
-              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="login">Connexion</TabsTrigger>
-                  <TabsTrigger value="signup">Créer un compte</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="login" className="space-y-4 mt-4">
-                  <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="nom@cabinet.fr"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Mot de passe</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        required
-                      />
-                    </div>
-                    <Button type="submit" className="w-full" disabled={loading}>
-                      {loading ? "Connexion..." : "Se connecter"}
-                    </Button>
-                  </form>
-                </TabsContent>
-
-                <TabsContent value="signup" className="space-y-4 mt-4">
-                  <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName">Prénom</Label>
-                        <Input
-                          id="firstName"
-                          placeholder="Jean"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName">Nom</Label>
-                        <Input
-                          id="lastName"
-                          placeholder="Dupont"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signupEmail">Email</Label>
-                      <Input
-                        id="signupEmail"
-                        type="email"
-                        placeholder="nom@cabinet.fr"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signupPassword">Mot de passe</Label>
-                      <Input
-                        id="signupPassword"
-                        type="password"
-                        required
-                      />
-                    </div>
-                    <Button type="submit" className="w-full" disabled={loading}>
-                      {loading ? "Création..." : "Créer mon compte"}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-            )}
-          </CardContent>
-        </Card>
       </div>
+
+      {/* auth card will be inserted under the role buttons further down */}
 
       {/* Features Section - Below Auth */}
       <div className="w-full max-w-4xl mx-auto mt-16">
@@ -301,33 +166,145 @@ export default function Auth() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="flex flex-col items-center text-center p-8 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-4 shadow-md">
-              <Shield className="w-7 h-7 text-white" />
+  {/* Role selection buttons placed under the hero */}
+  <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl mx-auto mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-border">
+            <div
+              onClick={() => setRole("avocat")}
+              className={`cursor-pointer group transition-all duration-300 rounded-xl ${
+                role === "avocat"
+                  ? "ring-2 ring-blue-600 scale-105"
+                  : "hover:scale-105 hover:shadow-lg"
+              }`}
+            >
+              <Card className={`${
+                role === "avocat"
+                  ? "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-600"
+                  : "bg-white hover:bg-blue-50/50"
+              } transition-all duration-300`}>
+                <CardContent className="pt-6 pb-4 text-center space-y-2">
+                  <div className="text-4xl">⚖️</div>
+                  <h3 className="text-lg font-bold text-blue-900">Espace Avocats</h3>
+                </CardContent>
+              </Card>
             </div>
-            <h3 className="font-bold text-lg text-foreground mb-3">Sécurité des données</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+
+            <div
+              onClick={() => setRole("notaire")}
+              className={`cursor-pointer group transition-all duration-300 rounded-xl ${
+                role === "notaire"
+                  ? "ring-2 ring-orange-600 scale-105"
+                  : "hover:scale-105 hover:shadow-lg"
+              }`}
+            >
+              <Card className={`${
+                role === "notaire"
+                  ? "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-600"
+                  : "bg-white hover:bg-orange-50/50"
+              } transition-all duration-300`}>
+                <CardContent className="pt-6 pb-4 text-center space-y-2">
+                  <div className="text-4xl">🏛️</div>
+                  <h3 className="text-lg font-bold text-orange-900">Espace Notaires</h3>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* Auth card (white bar) shown only when a role is selected */}
+        {role ? (
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl mx-auto mb-8">
+            <Card className="bg-white dark:bg-card shadow-xl border-2">
+              <CardContent className="pt-6 space-y-6">
+                <Tabs defaultValue="login" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="login">Connexion</TabsTrigger>
+                    <TabsTrigger value="signup">Créer un compte</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="login" className="space-y-4 mt-4">
+                    <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="nom@cabinet.fr"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Mot de passe</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          required
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? "Connexion..." : "Se connecter"}
+                      </Button>
+                    </form>
+                  </TabsContent>
+
+                  <TabsContent value="signup" className="space-y-4 mt-4">
+                    <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="firstName">Prénom</Label>
+                          <Input id="firstName" placeholder="Jean" required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lastName">Nom</Label>
+                          <Input id="lastName" placeholder="Dupont" required />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="signupEmail">Email</Label>
+                        <Input id="signupEmail" type="email" placeholder="nom@cabinet.fr" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="signupPassword">Mot de passe</Label>
+                        <Input id="signupPassword" type="password" required />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? "Création..." : "Créer mon compte"}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+        ) : null}
+
+        <div className="grid md:grid-cols-3 gap-6 mb-8 divide-y md:divide-y-0 md:divide-x divide-border">
+          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-transparent hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-2 shadow-sm">
+              <Shield className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="font-bold text-sm text-foreground mb-1">Sécurité des données</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Hébergement en Europe, chiffrement SSL, conformité RGPD
             </p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-8 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-4 shadow-md">
-              <Zap className="w-7 h-7 text-white" />
+          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-2 shadow-sm">
+              <Users className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-bold text-lg text-foreground mb-3">Automatisation intelligente</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Réduisez les tâches répétitives et gagnez du temps
+            <h3 className="font-bold text-sm text-foreground mb-1">Espace collaboratif</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Partagez des documents, collaborez en temps réel avec vos collègues et vos clients.
             </p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-8 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border border-success/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-4 shadow-md">
-              <TrendingUp className="w-7 h-7 text-white" />
+          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border border-success/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-2 shadow-sm">
+              <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-bold text-lg text-foreground mb-3">Pensé pour les professionnels</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <h3 className="font-bold text-sm text-foreground mb-1">Pensé pour les professionnels</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Gestion des documents, rendez-vous, contacts et statistiques
             </p>
           </div>

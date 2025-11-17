@@ -13,7 +13,7 @@ type NotificationRow = {
   body?: string | null;
   read?: boolean;
   created_at?: string;
-  metadata?: any;
+  metadata?: unknown;
 };
 
 export function NotificationBell({ role = 'avocat', compact = false, cabinetId }: { role?: 'avocat' | 'notaire', compact?: boolean, cabinetId?: string | null }) {
@@ -119,7 +119,8 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                     const { data, error } = await supabase.rpc('mark_all_notifications_read');
                     if (error) {
                       console.error('mark_all_notifications_read error', error);
-                      toast({ title: 'Erreur', description: error.message || JSON.stringify(error), variant: 'destructive' });
+                      const msg = (error && typeof error === 'object' && 'message' in error) ? String((error as { message?: unknown }).message) : String(error);
+                      toast({ title: 'Erreur', description: msg, variant: 'destructive' });
                       return;
                     }
 
@@ -128,7 +129,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                     setNotifications((cur) => cur.map(n => ({ ...n, read: true })));
                     setUnreadCount(0);
                     toast({ title: 'Notifications', description: marked ? `${marked} notification(s) marquée(s) comme lues` : 'Toutes les notifications ont été marquées comme lues' });
-                  } catch (e:any) { console.error('mark all read', e); toast({ title: 'Erreur', description: e?.message || String(e), variant: 'destructive' }); }
+                  } catch (e: unknown) { console.error('mark all read', e); toast({ title: 'Erreur', description: String(e), variant: 'destructive' }); }
                 }}>Tout marquer comme lu</Button>
               </div>
           </div>
@@ -163,7 +164,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                       }
                     };
 
-                    const onNavigate = async (meta?: any) => {
+                    const onNavigate = async (meta?: unknown) => {
                       try {
                         if (!n.read) {
                           const { data, error } = await supabase.rpc('mark_notification_read', { p_id: n.id });
@@ -175,7 +176,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                       setUnreadCount((c) => Math.max(0, c - (n.read ? 0 : 1)));
 
                       try {
-                        let metadataToUse = meta;
+                        let metadataToUse: unknown = meta;
                         // If metadata not present in the row, try to fetch it from the DB as a fallback
                         if ((!metadataToUse || typeof metadataToUse !== 'object') && n.id) {
                           try {
@@ -185,7 +186,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                               .eq('id', n.id)
                               .limit(1)
                               .single();
-                            if (!fetchErr && fetched && (fetched as any).metadata) metadataToUse = (fetched as any).metadata;
+                            if (!fetchErr && fetched && (fetched as { metadata?: unknown }).metadata) metadataToUse = (fetched as { metadata?: unknown }).metadata;
                           } catch (fe) {
                             console.error('fetch notification metadata fallback error', fe);
                           }
@@ -209,7 +210,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                     return (
                       <div key={n.id} className={`p-1`}> 
                         {/* make the whole card clickable for better UX */}
-                        <div role="button" tabIndex={0} onClick={() => onNavigate((n as any).metadata)} onKeyDown={(e) => { if (e.key === 'Enter') onNavigate((n as any).metadata); }} className={`flex items-start gap-3 p-3 border rounded-md cursor-pointer box-border overflow-hidden ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
+                        <div role="button" tabIndex={0} onClick={() => onNavigate(n.metadata)} onKeyDown={(e) => { if (e.key === 'Enter') onNavigate(n.metadata); }} className={`flex items-start gap-3 p-3 border rounded-md cursor-pointer box-border overflow-hidden ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
                           <div className="flex-1 text-sm">
                             <div className="font-medium text-sm mb-1">{n.title}</div>
                             {n.body && <div className="text-xs text-muted-foreground">{n.body}</div>}
@@ -217,7 +218,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                           <div className="flex flex-col items-end ml-2">
                             <div className="text-xs text-muted-foreground mb-2" title={when ? when.toLocaleString() : ''}>{timeAgo(when)}</div>
                             {/* colored circular open button so it's obvious and clickable */}
-                            <button onClick={(e) => { e.stopPropagation(); onNavigate((n as any).metadata); }} title="Ouvrir" className={`inline-flex items-center justify-center h-8 w-8 rounded-full ${accentBg}`}>
+                            <button onClick={(e) => { e.stopPropagation(); onNavigate(n.metadata); }} title="Ouvrir" className={`inline-flex items-center justify-center h-8 w-8 rounded-full ${accentBg}`}>
                               <ArrowRight className="h-4 w-4" />
                             </button>
                           </div>

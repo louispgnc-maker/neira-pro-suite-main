@@ -29,7 +29,7 @@ export default function CreateClientNotaire() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const role: 'notaire' = 'notaire';
+  const role = 'notaire' as const;
   const mainButtonColor = 'bg-orange-600 hover:bg-orange-700 text-white';
   const itemHover = 'cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white';
 
@@ -191,9 +191,10 @@ export default function CreateClientNotaire() {
 
       toast.success('Fiche client notaire créée');
       navigate('/notaires/clients');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
       console.error(err);
-      toast.error('Erreur création client', { description: err?.message || String(err) });
+      toast.error('Erreur création client', { description: message });
     } finally {
       setLoading(false);
     }

@@ -76,8 +76,9 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
       if (uploaded.length > 0) {
         toast.success(`Import terminé`, { description: `${uploaded.length} fichier(s) ajouté(s)` });
       }
-    } catch (err: any) {
-      toast.error("Erreur d'import", { description: err?.message || String(err) });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error("Erreur d'import", { description: message });
     } finally {
       setUploading(false);
       // Reset input to allow re-selecting the same file
@@ -99,8 +100,8 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           console.error('Erreur vérification cabinet:', error);
           setHasCabinet(false);
         } else {
-          const arr = Array.isArray(data) ? data as any[] : [];
-          const filtered = arr.filter(c => c.role === role);
+          const arr = Array.isArray(data) ? (data as unknown[]) : [];
+          const filtered = arr.filter(c => String((c as Record<string, unknown>)['role']) === role);
           setHasCabinet(filtered.length > 0);
         }
       } catch (err) {
