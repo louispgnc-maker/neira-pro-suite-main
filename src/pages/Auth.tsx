@@ -64,7 +64,7 @@ export default function Auth() {
         toast.error("Hors ligne", { description: "Vérifiez votre connexion internet." });
         return;
       }
-      if (isSignUp) {
+  if (isSignUp) {
         // Inscription directe avec Supabase
         const email = form.signupEmail.value;
         const password = form.signupPassword.value;
@@ -103,13 +103,10 @@ export default function Auth() {
         
         toast.success("Connexion réussie!");
         console.log('Utilisateur connecté:', data.user, 'Espace sélectionné:', role);
-        
-        // Redirect based on selected role (not profile role)
-        if (role === 'notaire') {
-          navigate("/notaires/dashboard");
-        } else {
-          navigate("/avocats/dashboard");
-        }
+
+        // Redirect with a quick zoom-to-white transition
+        const target = role === 'notaire' ? "/notaires/dashboard" : "/avocats/dashboard";
+        triggerTransitionAndNavigate(target);
       }
     } catch (error: unknown) {
       console.error('Erreur d\'authentification:', error);
@@ -127,6 +124,25 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Transition overlay state
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [overlayAnimate, setOverlayAnimate] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const triggerTransitionAndNavigate = (target: string) => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    setOverlayVisible(true);
+    // next frame to allow the element to mount and then animate
+    requestAnimationFrame(() => {
+      setOverlayAnimate(true);
+    });
+    // navigate after the animation (duration 300ms)
+    setTimeout(() => {
+      navigate(target);
+    }, 350);
   };
 
   // Email verification screen
@@ -154,6 +170,16 @@ export default function Auth() {
       </div>
 
       {/* auth card will be inserted under the role buttons further down */}
+
+      {/* Transition overlay (zoom to white) */}
+      {overlayVisible ? (
+        <div className={`fixed inset-0 z-[1000] flex items-center justify-center ${overlayAnimate ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+          <div
+            className={`absolute inset-0 bg-white transform transition-transform duration-300 ease-out ${overlayAnimate ? 'scale-150 opacity-100' : 'scale-90 opacity-0'}`}
+            style={{ transformOrigin: 'center' }}
+          />
+        </div>
+      ) : null}
 
       {/* Features Section - Below Auth */}
       <div className="w-full max-w-4xl mx-auto mt-16">
