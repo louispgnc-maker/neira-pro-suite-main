@@ -130,6 +130,8 @@ export default function Auth() {
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [overlayAnimate, setOverlayAnimate] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+  // transform-origin for the overlay (defaults to center)
+  const [overlayOrigin, setOverlayOrigin] = useState<string>('50% 50%');
 
   const triggerTransitionAndNavigate = (target: string) => {
     if (isNavigating) return;
@@ -143,6 +145,21 @@ export default function Auth() {
     setTimeout(() => {
       navigate(target);
     }, 350);
+  };
+
+  const handleRoleSelect = (e: React.MouseEvent<HTMLDivElement>, roleName: string) => {
+    e.stopPropagation();
+    setRole(roleName);
+    try {
+      const el = e.currentTarget as HTMLElement;
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      setOverlayOrigin(`${cx}px ${cy}px`);
+    } catch (err) {
+      // fallback to center
+      setOverlayOrigin('50% 50%');
+    }
   };
 
   // Email verification screen
@@ -176,7 +193,7 @@ export default function Auth() {
         <div className={`fixed inset-0 z-[1000] flex items-center justify-center ${overlayAnimate ? 'pointer-events-auto' : 'pointer-events-none'}`}>
           <div
             className={`absolute inset-0 bg-white transform transition-transform duration-300 ease-out ${overlayAnimate ? 'scale-150 opacity-100' : 'scale-90 opacity-0'}`}
-            style={{ transformOrigin: 'center' }}
+            style={{ transformOrigin: overlayOrigin }}
           />
         </div>
       ) : null}
@@ -196,12 +213,14 @@ export default function Auth() {
   <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl mx-auto mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-border">
             <div
-              onClick={() => setRole("avocat")}
+              onClick={(e) => handleRoleSelect(e, "avocat")}
               className={`cursor-pointer group transition-all duration-300 rounded-xl ${
                 role === "avocat"
                   ? "ring-2 ring-blue-600 scale-105"
                   : "hover:scale-105 hover:shadow-lg"
               }`}
+              role="button"
+              tabIndex={0}
             >
               <Card className={`${
                 role === "avocat"
@@ -216,12 +235,14 @@ export default function Auth() {
             </div>
 
             <div
-              onClick={() => setRole("notaire")}
+              onClick={(e) => handleRoleSelect(e, "notaire")}
               className={`cursor-pointer group transition-all duration-300 rounded-xl ${
                 role === "notaire"
                   ? "ring-2 ring-orange-600 scale-105"
                   : "hover:scale-105 hover:shadow-lg"
               }`}
+              role="button"
+              tabIndex={0}
             >
               <Card className={`${
                 role === "notaire"
