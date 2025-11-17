@@ -139,12 +139,13 @@ export default function Auth() {
     setOverlayVisible(true);
     // next frame to allow the element to mount and then animate
     requestAnimationFrame(() => {
+      // animate: collapse the overlay towards the origin (scale -> 0)
       setOverlayAnimate(true);
     });
-    // navigate after the animation (duration 300ms)
+    // navigate after the animation (duration 400ms)
     setTimeout(() => {
       navigate(target);
-    }, 350);
+    }, 450);
   };
 
   const handleRoleSelect = (e: React.MouseEvent<HTMLDivElement>, roleName: string) => {
@@ -192,7 +193,7 @@ export default function Auth() {
       {overlayVisible ? (
         <div className={`fixed inset-0 z-[1000] flex items-center justify-center ${overlayAnimate ? 'pointer-events-auto' : 'pointer-events-none'}`}>
           <div
-            className={`absolute inset-0 bg-white transform transition-transform duration-300 ease-out ${overlayAnimate ? 'scale-150 opacity-100' : 'scale-90 opacity-0'}`}
+            className={`absolute inset-0 bg-white transform transition-all duration-400 ease-out ${overlayAnimate ? 'scale-0 opacity-100' : 'scale-100 opacity-0'}`}
             style={{ transformOrigin: overlayOrigin }}
           />
         </div>
@@ -218,7 +219,7 @@ export default function Auth() {
                 role === "avocat"
                   ? "ring-2 ring-blue-600 scale-105"
                   : "hover:scale-105 hover:shadow-lg"
-              }`}
+              } ${isNavigating && role === 'avocat' ? 'scale-75 transform' : ''}`}
               role="button"
               tabIndex={0}
             >
@@ -228,11 +229,12 @@ export default function Auth() {
                   : "bg-white hover:bg-blue-50/50"
               } transition-all duration-300`}>
                 <CardContent className="pt-6 pb-4 text-center space-y-2">
-                  <div className="text-4xl">⚖️</div>
-                  <h3 className="text-lg font-bold text-blue-900">Espace Avocats</h3>
+                        <div className="text-4xl">⚖️</div>
+                        <h3 className="text-lg font-bold text-blue-900">Espace Avocats</h3>
                 </CardContent>
               </Card>
             </div>
+            
 
             <div
               onClick={(e) => handleRoleSelect(e, "notaire")}
@@ -240,7 +242,7 @@ export default function Auth() {
                 role === "notaire"
                   ? "ring-2 ring-orange-600 scale-105"
                   : "hover:scale-105 hover:shadow-lg"
-              }`}
+              } ${isNavigating && role === 'notaire' ? 'scale-75 transform' : ''}`}
               role="button"
               tabIndex={0}
             >
