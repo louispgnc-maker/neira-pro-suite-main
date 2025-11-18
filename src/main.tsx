@@ -2,6 +2,10 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// FullCalendar styles are loaded from CDN in index.html to avoid bundler resolution issues
+// Import FullCalendar styles from the installed npm packages so Vite bundles them
+import '@fullcalendar/core/main.css';
+import '@fullcalendar/daygrid/main.css';
+import '@fullcalendar/timegrid/main.css';
+import '@fullcalendar/list/main.css';
 
 createRoot(document.getElementById("root")!).render(<App />);
