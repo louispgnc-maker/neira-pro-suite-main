@@ -46,7 +46,7 @@ export default function Index() {
           <div className="flex flex-col items-start p-6 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border border-border shadow-sm">
             <div className="text-2xl mb-3">📊</div>
             <h3 className="font-semibold text-lg mb-2">Piloter votre activité</h3>
-            <p className="text-sm text-muted-foreground">Agenda, statistiques et indicateurs pour suivre vos dossiers et performances.</p>
+            <p className="text-sm text-muted-foreground">Agenda, statistiques, indicateurs et suivi des dossiers.</p>
           </div>
         </section>
 
