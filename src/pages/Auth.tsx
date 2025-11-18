@@ -234,7 +234,7 @@ export default function Auth() {
               <div className="mb-4 text-base text-slate-700 dark:text-slate-200 font-medium">Préparation de votre tableau de bord…</div>
               <div className="w-full h-3 bg-muted rounded-full overflow-hidden shadow-inner">
                 <div
-                  className="h-full bg-primary transition-all duration-300 ease-out"
+                  className={`h-full transition-all duration-300 ease-out ${role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600'}`}
                   style={{ width: `${progress}%` }}
                 />
               </div>
