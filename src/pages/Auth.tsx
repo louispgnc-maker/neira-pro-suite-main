@@ -132,6 +132,31 @@ export default function Auth() {
   const [isNavigating, setIsNavigating] = useState(false);
   // transform-origin for the overlay (defaults to center)
   const [overlayOrigin, setOverlayOrigin] = useState<string>('50% 50%');
+  // small progress indicator (0-100)
+  const [progress, setProgress] = useState<number>(0);
+
+  // progress auto-increment while overlay is visible
+  useEffect(() => {
+    if (!overlayVisible) {
+      setProgress(0);
+      return;
+    }
+    let mounted = true;
+    // start small
+    setProgress(6);
+    const interval = setInterval(() => {
+      setProgress((p) => {
+        if (!mounted) return p;
+        // increase gradually but don't hit 100 (until navigation)
+        const next = Math.min(95, p + Math.floor(Math.random() * 8) + 2);
+        return next;
+      });
+    }, 120);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [overlayVisible]);
 
   const triggerTransitionAndNavigate = (target: string) => {
     if (isNavigating) return;
@@ -139,10 +164,12 @@ export default function Auth() {
     setOverlayVisible(true);
     // next frame to allow the element to mount and then animate
     requestAnimationFrame(() => {
-      // animate: collapse the overlay towards the origin (scale -> 0)
+      // animate: grow the overlay from small to massive (screen zoom)
       setOverlayAnimate(true);
     });
-    // navigate after the animation (duration 400ms)
+    // push progress to 100% shortly before navigation
+    setTimeout(() => setProgress(100), 400);
+    // navigate after the animation (duration 450ms)
     setTimeout(() => {
       navigate(target);
     }, 450);
@@ -201,6 +228,15 @@ export default function Auth() {
               transition: 'transform 450ms ease-out, opacity 300ms ease-out',
             }}
           />
+          {/* progress bar */}
+          <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 w-11/12 max-w-2xl px-4">
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary transition-all duration-200 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
         </div>
       ) : null}
 
