@@ -147,11 +147,11 @@ export default function Auth() {
     const interval = setInterval(() => {
       setProgress((p) => {
         if (!mounted) return p;
-        // increase gradually but don't hit 100 (until navigation)
-        const next = Math.min(95, p + Math.floor(Math.random() * 8) + 2);
+        // increase more slowly so the bar is visible
+        const next = Math.min(90, p + Math.floor(Math.random() * 4) + 1);
         return next;
       });
-    }, 120);
+    }, 220);
     return () => {
       mounted = false;
       clearInterval(interval);
@@ -168,11 +168,11 @@ export default function Auth() {
       setOverlayAnimate(true);
     });
     // push progress to 100% shortly before navigation
-    setTimeout(() => setProgress(100), 400);
-    // navigate after the animation (duration 450ms)
+    setTimeout(() => setProgress(100), 700);
+    // navigate after the animation (duration 850ms)
     setTimeout(() => {
       navigate(target);
-    }, 450);
+    }, 850);
   };
 
   const handleRoleSelect = (e: React.MouseEvent<HTMLDivElement>, roleName: string) => {
@@ -225,16 +225,18 @@ export default function Auth() {
               transformOrigin: overlayOrigin,
               transform: overlayAnimate ? 'scale(20)' : 'scale(0.04)',
               opacity: overlayAnimate ? 1 : 0,
-              transition: 'transform 450ms ease-out, opacity 300ms ease-out',
+              transition: 'transform 800ms ease-out, opacity 500ms ease-out',
             }}
           />
-          {/* progress bar */}
-          <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 w-11/12 max-w-2xl px-4">
-            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary transition-all duration-200 ease-out"
-                style={{ width: `${progress}%` }}
-              />
+          {/* centered progress bar */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-2/3 max-w-lg px-4">
+              <div className="w-full h-3 bg-muted rounded-full overflow-hidden shadow-inner">
+                <div
+                  className="h-full bg-primary transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
