@@ -228,9 +228,10 @@ export default function Auth() {
               transition: 'transform 800ms ease-out, opacity 500ms ease-out',
             }}
           />
-          {/* centered progress bar */}
+          {/* centered progress area with status text */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-2/3 max-w-lg px-4">
+            <div className="w-2/3 max-w-lg px-4 text-center">
+              <div className="mb-4 text-sm text-foreground/80">Préparation de votre tableau de bord…</div>
               <div className="w-full h-3 bg-muted rounded-full overflow-hidden shadow-inner">
                 <div
                   className="h-full bg-primary transition-all duration-300 ease-out"
