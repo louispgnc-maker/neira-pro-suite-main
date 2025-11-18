@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 
 // Import FullCalendar styles from the installed npm packages so Vite bundles them
-import '@fullcalendar/core/main.css';
+import '@fullcalendar/common/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/timegrid/main.css';
 import '@fullcalendar/list/main.css';
