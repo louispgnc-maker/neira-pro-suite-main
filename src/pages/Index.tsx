@@ -13,7 +13,7 @@ export default function Index() {
 
       <main className="w-full max-w-5xl mx-auto">
         <header className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4">Automatisez votre activité juridique</h2>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4">Automatisez votre activité professionnelle</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">La plateforme tout-en-un qui simplifie votre quotidien de professionnel du juridique.</p>
         </header>
 
@@ -34,13 +34,13 @@ export default function Index() {
           <div className="flex flex-col items-start p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-border shadow-sm">
             <div className="text-2xl mb-3">📁</div>
             <h3 className="font-semibold text-lg mb-2">Gérer vos documents en toute sécurité</h3>
-            <p className="text-sm text-muted-foreground">Classement, partage, versioning et historique complet pour un accès maîtrisé.</p>
+            <p className="text-sm text-muted-foreground">Classement, partage, versionning, historique complet.</p>
           </div>
 
           <div className="flex flex-col items-start p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-border shadow-sm">
             <div className="text-2xl mb-3">👥</div>
             <h3 className="font-semibold text-lg mb-2">Collaborer avec vos clients et vos équipes</h3>
-            <p className="text-sm text-muted-foreground">Espace partagé, messages et échanges sécurisés pour une collaboration fluide.</p>
+            <p className="text-sm text-muted-foreground">Espace partagé, messages, échanges sécurisés.</p>
           </div>
 
           <div className="flex flex-col items-start p-6 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border border-border shadow-sm">
@@ -60,7 +60,7 @@ export default function Index() {
                 <li>Gestion de dossiers</li>
                 <li>Collaboration client</li>
                 <li>Automatisation de modèles</li>
-                <li>Sécurité & chiffrement</li>
+                <li>Communication simplifiée</li>
               </ul>
             </div>
 
