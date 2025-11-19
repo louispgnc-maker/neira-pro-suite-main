@@ -438,8 +438,8 @@ export default function Auth() {
             <Button onClick={() => navigate('/contact')} className="px-6 py-2">Découvrir notre solution</Button>
           </div>
 
-          {/* Social proof horizontal scroller with prev/next buttons (looping) - full-bleed */}
-          <div className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 px-4 md:px-8">
+          {/* Social proof horizontal scroller with prev/next buttons (full-bleed to viewport edges) */}
+          <div className="relative w-screen left-1/2 -translate-x-1/2">
             {/* hide native scrollbar for this scroller */}
             <style>{`#social-scroller::-webkit-scrollbar{display:none} #social-scroller{scrollbar-width:none}`}</style>
 
