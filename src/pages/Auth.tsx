@@ -169,25 +169,20 @@ export default function Auth() {
     if (!el) return;
     const curr = el.scrollLeft;
     const max = el.scrollWidth - el.clientWidth;
-    const next = curr + amount;
+    // Desired next position
+    let next = curr + amount;
 
+    // If beyond end, loop to the start
     if (next > max) {
-      // scroll to end then loop to start
-      el.scrollTo({ left: max, behavior: 'smooth' });
-      setTimeout(() => {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      }, 420);
-      return;
-    }
-    if (next < 0) {
-      // scroll to start then loop to end
-      el.scrollTo({ left: 0, behavior: 'smooth' });
-      setTimeout(() => {
-        el.scrollTo({ left: max, behavior: 'smooth' });
-      }, 420);
-      return;
+      next = 0;
     }
 
+    // If before start, loop to the end
+    if (next < 0) {
+      next = max;
+    }
+
+    // Smooth scroll to the computed position. Repeated clicks will cycle forever.
     el.scrollTo({ left: next, behavior: 'smooth' });
   };
 
