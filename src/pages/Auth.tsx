@@ -438,15 +438,15 @@ export default function Auth() {
             <Button onClick={() => navigate('/contact')} className="px-6 py-2">Découvrir notre solution</Button>
           </div>
 
-          {/* Social proof horizontal scroller with prev/next buttons (looping) */}
-          <div className="w-full relative">
+          {/* Social proof horizontal scroller with prev/next buttons (looping) - full-bleed */}
+          <div className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 px-4 md:px-8">
             {/* hide native scrollbar for this scroller */}
             <style>{`#social-scroller::-webkit-scrollbar{display:none} #social-scroller{scrollbar-width:none}`}</style>
 
             <div
               id="social-scroller"
               ref={scrollerRef}
-              className="flex gap-4 overflow-x-auto py-2 px-2 -mx-2 snap-x snap-mandatory scroll-smooth"
+              className="flex gap-4 overflow-x-auto py-2 snap-x snap-mandatory scroll-smooth max-w-none justify-start"
               aria-label="Témoignages et indicateurs"
               onScroll={() => {
                 const el = scrollerRef.current;
