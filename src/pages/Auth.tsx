@@ -134,6 +134,9 @@ export default function Auth() {
   const [overlayOrigin, setOverlayOrigin] = useState<string>('50% 50%');
   // small progress indicator (0-100)
   const [progress, setProgress] = useState<number>(0);
+  // Show the auth card as a compact popover under the fixed header
+  const [authAtTop, setAuthAtTop] = useState<boolean>(false);
+  // (auth panel is rendered as an absolute child of the header button container)
 
   // progress auto-increment while overlay is visible
   useEffect(() => {
@@ -175,9 +178,11 @@ export default function Auth() {
     }, 850);
   };
 
-  const handleRoleSelect = (e: React.MouseEvent<HTMLDivElement>, roleName: string) => {
+  const handleRoleSelect = (e: React.MouseEvent<HTMLElement>, roleName: string, topPopover = false) => {
     e.stopPropagation();
     setRole(roleName);
+    // do not open the auth panel here — we removed inline auth from this page
+    setAuthAtTop(false);
     try {
       const el = e.currentTarget as HTMLElement;
       const rect = el.getBoundingClientRect();
@@ -204,17 +209,67 @@ export default function Auth() {
 
   // Main page with role selection OR auth forms
   return (
-    <div onClick={() => setRole(null)} className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 py-12">
-      {/* Top-left logo + small phrase */}
-      <div className="absolute top-6 left-6 flex items-start gap-3">
-  <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-12 h-12 rounded-lg object-cover" />
-        <div className="text-left">
-          <h1 className="text-xl font-bold text-foreground">Neira</h1>
-          <p className="text-sm text-muted-foreground">{role ? (role === "avocat" ? "Espace Avocats" : "Espace Notaires") : "Espace Professionnel Automatisé"}</p>
-        </div>
-      </div>
+    <div onClick={() => { setRole(null); setAuthAtTop(false); }} className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 pt-28 pb-12">
+      {/* Fixed header */}
+  <header className={`fixed inset-x-0 top-0 z-[60] bg-white/70 backdrop-blur border-b ${role && authAtTop ? 'border-transparent' : 'border-border'}`}>
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
+            <div className="leading-tight">
+              <div className="text-base font-bold text-foreground">Neira</div>
+              <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
+            </div>
+          </div>
 
-      {/* auth card will be inserted under the role buttons further down */}
+          <div className="flex items-center gap-3">
+            {/* Header role buttons styled like the center large buttons (compact) */}
+            <div className={`relative transition-all duration-200 ${role === 'avocat' && authAtTop ? 'w-80 scale-105 ring-2 ring-blue-600 rounded-lg' : 'w-80'}`}>
+              <div
+                role="button"
+                tabIndex={0}
+                aria-expanded={role === 'avocat' && authAtTop}
+                onClick={(e) => handleRoleSelect(e as unknown as React.MouseEvent<HTMLElement>, 'avocat', true)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleRoleSelect(e as unknown as React.MouseEvent<HTMLElement>, 'avocat', true); }}
+                className={`inline-flex items-center gap-2 px-3 py-2 w-full text-left transition-all duration-200 ${
+                  role === 'avocat' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-blue-50 to-blue-100 border-b-0' : 'rounded-lg bg-blue-50 hover:scale-105'
+                }`}
+              >
+                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow text-lg">
+                  <span className={`${role === 'avocat' ? 'text-blue-600' : 'text-primary'}`}>⚖️</span>
+                </div>
+                <span className={`text-sm font-medium ${role === 'avocat' ? 'text-blue-900' : 'text-foreground'}`}>Espace Avocats</span>
+              </div>
+
+              {/* auth removed from this page - clicking the button now only sets the role */}
+            </div>
+
+            <div className={`relative transition-all duration-200 ${role === 'notaire' && authAtTop ? 'w-80 scale-105 ring-2 ring-orange-600 rounded-lg' : 'w-80'}`}>
+              <div
+                role="button"
+                tabIndex={0}
+                aria-expanded={role === 'notaire' && authAtTop}
+                onClick={(e) => handleRoleSelect(e as unknown as React.MouseEvent<HTMLElement>, 'notaire', true)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleRoleSelect(e as unknown as React.MouseEvent<HTMLElement>, 'notaire', true); }}
+                className={`inline-flex items-center gap-2 px-3 py-2 w-full text-left transition-all duration-200 ${
+                  role === 'notaire' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-orange-50 to-orange-100 border-b-0' : 'rounded-lg bg-orange-50 hover:scale-105'
+                }`}
+              >
+                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow text-lg">
+                  <span className={`${role === 'notaire' ? 'text-orange-600' : 'text-accent'}`}>🏛️</span>
+                </div>
+                <span className={`text-sm font-medium ${role === 'notaire' ? 'text-orange-900' : 'text-foreground'}`}>Espace Notaires</span>
+              </div>
+
+              {/* auth removed from this page - clicking the button now only sets the role */}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* When a header role is selected we show a compact auth card as a fixed popover anchored to the clicked button —
+          This prevents the header area from resizing or creating a second visible page. */}
+
+      {/* auth panels are rendered as absolute children of each header button container */}
 
       {/* Transition overlay (zoom to white) */}
       {overlayVisible ? (
@@ -254,122 +309,9 @@ export default function Auth() {
           </p>
         </div>
 
-  {/* Role selection buttons placed under the hero */}
-  <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl mx-auto mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-border">
-            <div
-              onClick={(e) => handleRoleSelect(e, "avocat")}
-              className={`cursor-pointer group transition-all duration-300 rounded-xl ${
-                role === "avocat"
-                  ? "ring-2 ring-blue-600 scale-105"
-                  : "hover:scale-105 hover:shadow-lg"
-              }`}
-              role="button"
-              tabIndex={0}
-            >
-              <Card className={`${
-                role === "avocat"
-                  ? "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-600"
-                  : "bg-white hover:bg-blue-50/50"
-              } transition-all duration-300`}>
-                <CardContent className="pt-6 pb-4 text-center space-y-2">
-                        <div className="text-4xl">⚖️</div>
-                        <h3 className="text-lg font-bold text-blue-900">Espace Avocats</h3>
-                </CardContent>
-              </Card>
-            </div>
-            
+        {/* Center role buttons removed per request: header buttons now control selection */}
 
-            <div
-              onClick={(e) => handleRoleSelect(e, "notaire")}
-              className={`cursor-pointer group transition-all duration-300 rounded-xl ${
-                role === "notaire"
-                  ? "ring-2 ring-orange-600 scale-105"
-                  : "hover:scale-105 hover:shadow-lg"
-              }`}
-              role="button"
-              tabIndex={0}
-            >
-              <Card className={`${
-                role === "notaire"
-                  ? "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-600"
-                  : "bg-white hover:bg-orange-50/50"
-              } transition-all duration-300`}>
-                <CardContent className="pt-6 pb-4 text-center space-y-2">
-                  <div className="text-4xl">🏛️</div>
-                  <h3 className="text-lg font-bold text-orange-900">Espace Notaires</h3>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-
-        {/* Auth card (white bar) shown only when a role is selected */}
-        {role ? (
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl mx-auto mb-8">
-            <Card className="bg-white dark:bg-card shadow-xl border-2">
-              <CardContent className="pt-6 space-y-6">
-                <Tabs defaultValue="login" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="login">Connexion</TabsTrigger>
-                    <TabsTrigger value="signup">Créer un compte</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="login" className="space-y-4 mt-4">
-                    <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="nom@cabinet.fr"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="password">Mot de passe</Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          required
-                        />
-                      </div>
-                      <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? "Connexion..." : "Se connecter"}
-                      </Button>
-                    </form>
-                  </TabsContent>
-
-                  <TabsContent value="signup" className="space-y-4 mt-4">
-                    <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="firstName">Prénom</Label>
-                          <Input id="firstName" placeholder="Jean" required />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="lastName">Nom</Label>
-                          <Input id="lastName" placeholder="Dupont" required />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="signupEmail">Email</Label>
-                        <Input id="signupEmail" type="email" placeholder="nom@cabinet.fr" required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="signupPassword">Mot de passe</Label>
-                        <Input id="signupPassword" type="password" required />
-                      </div>
-                      <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? "Création..." : "Créer mon compte"}
-                      </Button>
-                    </form>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
-          </div>
-        ) : null}
+        {/* Central auth card removed - header popover is used for login/signup */}
 
         <div className="grid md:grid-cols-4 gap-6 mb-8 divide-y md:divide-y-0 md:divide-x divide-border">
           <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-primary/10 to-primary/5 border border-transparent hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
@@ -431,6 +373,51 @@ export default function Auth() {
               <Check className="w-4 h-4 text-white" />
             </div>
             <span>Support dédié</span>
+          </div>
+        </div>
+
+        {/* "Pour qui ?" section - Avocats / Notaires */}
+        <div className="mt-10 bg-card p-6 rounded-xl border border-border shadow-sm">
+          <div className="text-center mb-6">
+            <h3 className="text-2xl font-bold">Pour qui ?</h3>
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto">Découvrez comment Neira s'adapte aux besoins des cabinets.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow">
+                  <Shield className="w-5 h-5 text-primary" />
+                </div>
+                <h4 className="text-lg font-semibold">Avocats</h4>
+              </div>
+              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                <li>Gestion des dossiers et contrats</li>
+                <li>Automatisation des actes et modèles</li>
+                <li>Suivi des échéances & agendas</li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow">
+                  <Users className="w-5 h-5 text-accent" />
+                </div>
+                <h4 className="text-lg font-semibold">Notaires</h4>
+              </div>
+              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                <li>Modèles d'actes et formalités</li>
+                <li>Signature sécurisée et archivage</li>
+                <li>Gestion clients & partage contrôlé</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground max-w-xl">Découvrez tous nos outils pour gagner du temps et sécuriser vos procédures.</p>
+            <div>
+              <Button onClick={() => navigate('/contact')} className="ml-auto">Découvrir notre solution</Button>
+            </div>
           </div>
         </div>
       </div>

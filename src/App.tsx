@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Auth from "./pages/Auth";
+import AvocatAuth from "./pages/AvocatAuth";
+import NotaireAuth from "./pages/NotaireAuth";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import AvocatDashboard from "./pages/avocats/Dashboard";
@@ -40,7 +42,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             
             {/* Routes Avocat */}
-            <Route path="/avocats/auth" element={<Auth />} />
+            <Route path="/avocats/auth" element={<AvocatAuth />} />
             <Route path="/avocats/dashboard" element={<AvocatDashboard />} />
             <Route path="/avocats/documents" element={<Documents />} />
             <Route path="/avocats/signatures" element={<Signatures />} />
@@ -58,7 +60,7 @@ const App = () => (
             <Route path="/avocats/espace-collaboratif" element={<EspaceCollaboratif />} />
             
             {/* Routes Notaire */}
-            <Route path="/notaires/auth" element={<Auth />} />
+            <Route path="/notaires/auth" element={<NotaireAuth />} />
             <Route path="/notaires/dashboard" element={<NotaireDashboard />} />
             <Route path="/notaires/documents" element={<Documents />} />
             <Route path="/notaires/signatures" element={<Signatures />} />

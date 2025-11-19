@@ -1,0 +1,186 @@
+import { useState, FormEvent, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/lib/supabaseClient";
+import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStatus";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+
+interface FormElements extends HTMLFormElement {
+  email: HTMLInputElement;
+  password: HTMLInputElement;
+  signupEmail: HTMLInputElement;
+  signupPassword: HTMLInputElement;
+  firstName: HTMLInputElement;
+  lastName: HTMLInputElement;
+}
+
+export default function AvocatAuth() {
+  const navigate = useNavigate();
+  const role = 'avocat';
+  const [loading, setLoading] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [overlayAnimate, setOverlayAnimate] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
+
+  const withTimeout = async <T,>(promise: Promise<T>, ms = 7000): Promise<T> => {
+    return await new Promise<T>((resolve, reject) => {
+      const id = setTimeout(() => reject(new Error('TIMEOUT')), ms);
+      promise
+        .then((res) => { clearTimeout(id); resolve(res); })
+        .catch((err) => { clearTimeout(id); reject(err); });
+    });
+  };
+
+  useEffect(() => {
+    if (!overlayVisible) { setProgress(0); return; }
+    let mounted = true;
+    setProgress(6);
+    const interval = setInterval(() => {
+      setProgress((p) => {
+        if (!mounted) return p;
+        const next = Math.min(90, p + Math.floor(Math.random() * 4) + 1);
+        return next;
+      });
+    }, 220);
+    return () => { mounted = false; clearInterval(interval); };
+  }, [overlayVisible]);
+
+  const triggerTransitionAndNavigate = (target: string) => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    setOverlayVisible(true);
+    requestAnimationFrame(() => setOverlayAnimate(true));
+    setTimeout(() => setProgress(100), 700);
+    setTimeout(() => navigate(target), 850);
+  };
+
+  const handleAuth = async (e: FormEvent<HTMLFormElement>, isSignUp: boolean) => {
+    e.preventDefault();
+    setLoading(true);
+    const form = e.target as FormElements;
+    try {
+      if (typeof navigator !== 'undefined' && navigator && navigator.onLine === false) {
+        toast.error("Hors ligne", { description: "Vérifiez votre connexion internet." });
+        setLoading(false);
+        return;
+      }
+
+      if (isSignUp) {
+        const email = form.signupEmail.value;
+        const password = form.signupPassword.value;
+        const resp = await withTimeout(supabase.auth.signUp({ email, password, options: { data: { first_name: form.firstName.value, last_name: form.lastName.value, role } } }));
+        // @ts-ignore
+        if ((resp as any).error) throw (resp as any).error;
+        setVerificationEmail(email);
+      } else {
+        const email = form.email.value;
+        const password = form.password.value;
+        const resp = await withTimeout(supabase.auth.signInWithPassword({ email, password }));
+        // @ts-ignore
+        if ((resp as any).error) throw (resp as any).error;
+        toast.success("Connexion réussie!");
+        triggerTransitionAndNavigate('/avocats/dashboard');
+      }
+    } catch (err: unknown) {
+      console.error('Auth error', err);
+      const msg = (typeof err === 'object' && err !== null && 'message' in err) ? String((err as any).message) : String(err);
+      const lower = (msg || '').toLowerCase();
+      if (msg === 'TIMEOUT') {
+        toast.error("Connexion trop longue");
+      } else if (lower.includes('invalid')) {
+        toast.error("Identifiants invalides");
+      } else {
+        toast.error(msg || "Erreur");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (verificationEmail) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-background p-6 flex items-center justify-center">
+        <EmailVerificationStatus email={verificationEmail} onBackToLogin={() => setVerificationEmail(null)} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-background p-6 flex items-center justify-center">
+      {overlayVisible ? (
+        <div className={`fixed inset-0 z-[1000] flex items-center justify-center`}>
+          <div className={`absolute inset-0 bg-white`} style={{ transform: overlayAnimate ? 'scale(20)' : 'scale(0.04)', opacity: overlayAnimate ? 1 : 0, transition: 'transform 800ms ease-out, opacity 500ms ease-out' }} />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-2/3 max-w-lg px-4 text-center">
+              <div className="mb-4 text-base text-slate-700 font-medium">Préparation de votre tableau de bord…</div>
+              <div className="w-full h-3 bg-muted rounded-full overflow-hidden shadow-inner">
+                <div className="h-full transition-all duration-300 ease-out bg-blue-600" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Connexion — Espace Avocats</CardTitle>
+          <CardDescription>Connectez-vous à votre espace Avocat</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="login">
+            <TabsList>
+              <TabsTrigger value="login">Connexion</TabsTrigger>
+              <TabsTrigger value="signup">Créer un compte</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="login">
+              <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
+                <div>
+                  <Label>Email</Label>
+                  <Input name="email" type="email" required />
+                </div>
+                <div>
+                  <Label>Mot de passe</Label>
+                  <Input name="password" type="password" required />
+                </div>
+                <div className="flex justify-end">
+                  <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">Se connecter</Button>
+                </div>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="signup">
+              <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
+                <div>
+                  <Label>Prénom</Label>
+                  <Input name="firstName" required />
+                </div>
+                <div>
+                  <Label>Nom</Label>
+                  <Input name="lastName" required />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input name="signupEmail" type="email" required />
+                </div>
+                <div>
+                  <Label>Mot de passe</Label>
+                  <Input name="signupPassword" type="password" required />
+                </div>
+                <div className="flex justify-end">
+                  <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">Créer un compte</Button>
+                </div>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
