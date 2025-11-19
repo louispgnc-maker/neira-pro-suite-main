@@ -371,14 +371,24 @@ export default function Auth() {
           </div>
         ) : null}
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8 divide-y md:divide-y-0 md:divide-x divide-border">
+        <div className="grid md:grid-cols-4 gap-6 mb-8 divide-y md:divide-y-0 md:divide-x divide-border">
           <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-transparent hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-2 shadow-sm">
-              <Shield className="w-4 h-4 text-white" />
+              <Zap className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-bold text-sm text-foreground mb-1">Sécurité des données</h3>
+            <h3 className="font-bold text-sm text-foreground mb-1">🔄 Automatiser vos tâches répétitives</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Hébergement en Europe, chiffrement SSL, conformité RGPD
+              Gagnez plusieurs heures par semaine en automatisant vos workflows juridiques et en réduisant les tâches manuelles.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-2 shadow-sm">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="font-bold text-sm text-foreground mb-1">📁 Gérer vos documents en toute sécurité</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Classement, partage, versioning et historique complet pour garder le contrôle et assurer la traçabilité des fichiers.
             </p>
           </div>
 
@@ -386,9 +396,9 @@ export default function Auth() {
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-2 shadow-sm">
               <Users className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-bold text-sm text-foreground mb-1">Espace collaboratif</h3>
+            <h3 className="font-bold text-sm text-foreground mb-1">👥 Collaborer avec vos clients et vos équipes</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Partagez des documents, collaborez en temps réel avec vos collègues et vos clients.
+              Partagez un espace sécurisé pour échanger des messages, travailler à plusieurs et garder toutes les conversations centralisées.
             </p>
           </div>
 
@@ -396,9 +406,9 @@ export default function Auth() {
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-2 shadow-sm">
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-bold text-sm text-foreground mb-1">Pensé pour les professionnels</h3>
+            <h3 className="font-bold text-sm text-foreground mb-1">📊 Piloter votre activité</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Gestion des documents, rendez-vous, contacts et statistiques
+              Suivez votre agenda, visualisez des indicateurs clés et gardez un oeil sur l'avancement de vos dossiers et performances.
             </p>
           </div>
         </div>
