@@ -219,11 +219,11 @@ export default function Auth() {
               <div className="text-base font-bold text-foreground">Neira</div>
               <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
             </div>
-            <div className="flex items-center gap-2">
-              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150">
+            <div className="ml-3 flex items-center gap-2">
+              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md bg-white/80 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150 shadow-sm">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150">
+              <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-8 h-8 rounded-md bg-white/80 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150 shadow-sm">
                 <Linkedin className="w-4 h-4" />
               </a>
             </div>
