@@ -197,7 +197,7 @@ export default function Auth() {
   const renderedCards = () => {
     const triple = [...socialItems, ...socialItems, ...socialItems];
     return triple.map((it, idx) => (
-      <div key={`${it.title}-${idx}`} data-card className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
+      <div key={`${it.title}-${idx}`} data-card className="snap-start min-w-[260px] md:min-w-[33vw] lg:min-w-[28vw] bg-card p-4 rounded-lg border border-border shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
             {it.icon}
@@ -438,15 +438,15 @@ export default function Auth() {
             <Button onClick={() => navigate('/contact')} className="px-6 py-2">Découvrir notre solution</Button>
           </div>
 
-          {/* Social proof horizontal scroller with prev/next buttons (full-bleed to viewport edges) */}
-          <div className="relative w-screen left-1/2 -translate-x-1/2">
+          {/* Social proof horizontal scroller centered and wider than before */}
+          <div className="w-full max-w-6xl mx-auto relative px-4 md:px-0">
             {/* hide native scrollbar for this scroller */}
             <style>{`#social-scroller::-webkit-scrollbar{display:none} #social-scroller{scrollbar-width:none}`}</style>
 
             <div
               id="social-scroller"
               ref={scrollerRef}
-              className="flex gap-4 overflow-x-auto py-2 snap-x snap-mandatory scroll-smooth max-w-none justify-start"
+              className="flex gap-6 overflow-x-auto py-2 snap-x snap-mandatory scroll-smooth max-w-none justify-start"
               aria-label="Témoignages et indicateurs"
               onScroll={() => {
                 const el = scrollerRef.current;
