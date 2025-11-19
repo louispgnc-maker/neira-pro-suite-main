@@ -13,7 +13,7 @@ export default function Index() {
 
       <main className="w-full max-w-5xl mx-auto">
         <header className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4">Automatisez votre activité professionnelle</h2>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4">Automatisez votre activité juridique</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">La plateforme tout-en-un qui simplifie votre quotidien de professionnel du juridique.</p>
         </header>
 
