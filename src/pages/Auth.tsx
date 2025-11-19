@@ -8,7 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star, Hourglass, ChevronLeft, ChevronRight } from "lucide-react";
+import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star, Hourglass, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 
 
 interface FormElements extends HTMLFormElement {
@@ -163,12 +163,19 @@ export default function Auth() {
 
   // social scroller ref for the horizontal social-proof carousel
   const scrollerRef = useRef<HTMLDivElement | null>(null);
+  // ref for the bottom detail panel to detect outside clicks
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  // Which social-proof is selected (null = none)
+  const [selectedProofIndex, setSelectedProofIndex] = useState<number | null>(null);
 
   // Auto-play controls
-  const [isPaused, setIsPaused] = useState(false);
+  // Disabled by default per user request: no automatic scrolling
+  const [isPaused, setIsPaused] = useState(true);
   // Continuous auto-scroll speed (pixels per second). Very small = très lent.
-  // Increase speed by ~33% from previous 10px/s -> ~13.33px/s ("plus vite, +1/3")
-  const AUTO_SCROLL_PX_PER_SEC = 13.333; // ~13.33px/s
+  // Set speed to 200 px/s and reset to 0 when the end is reached.
+  // The user asked: "avance de 200 pixels / seconde" with a jump back to start.
+  const AUTO_SCROLL_PX_PER_SEC = 200; // 200 px/s
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
 
@@ -176,63 +183,77 @@ export default function Auth() {
   // Social items and helpers for seamless infinite carousel
   const socialItems = [
     {
-      title: 'Gain de temps 25–40%',
-      subtitle: 'Basée sur les retours de nos clients',
-      text: 'Réduction du temps administratif de 25–40% selon nos retours clients.',
-      icon: (<Hourglass className="w-5 h-5 text-violet-600" />),
+      title: 'Automatisation juridique avancée',
+      subtitle: '',
+      text: "Créez et générez tous types de contrats en quelques clics grâce à notre rédaction assistée. Associez une fiche client au modèle désiré, personnalisez les clauses et les termes, puis envoyez automatiquement le document au client pour signature électronique sécurisée — tout est tracé et archivé.",
+      icon: (<span className="text-2xl">⚡️</span>),
     },
     {
-      title: '+120 Cabinets',
-      subtitle: 'Ont adopté Neira',
-      text: 'Gestion centralisée des dossiers et partage sécurisé pour les équipes.',
-      icon: (<Users className="w-5 h-5 text-accent" />),
+      title: 'Collaboration fluide',
+      subtitle: '',
+      text: "Espace partagé sécurisé pour vos équipes et vos clients : commentez les documents, attribuez des tâches, suivez l'avancement des dossiers et centralisez les échanges sans multiplications d'e‑mails. Les permissions sont granulaires pour garder le contrôle des accès.",
+      icon: (<span className="text-2xl">🤝</span>),
     },
     {
-      title: 'Conforme RGPD',
-      subtitle: 'Sécurité et confidentialité',
-      text: 'Archivage sécurisé et traçabilité des actions pour vos dossiers.',
-      icon: (<Check className="w-5 h-5 text-success" />),
+      title: 'Pilotage du cabinet',
+      subtitle: '',
+      text: "Tableau de bord personnalisé avec indicateurs clés (CA, dossiers ouverts, délais moyens, taux de signature) et rapports exportables : obtenez une vision 360° de votre activité et prenez des décisions basées sur des données concrètes.",
+      icon: (<span className="text-2xl">📊</span>),
     },
     {
-      title: '+30% Productivité',
-      subtitle: 'Gain moyen observé',
-      text: "Automatisations et modèles prêts à l'emploi.",
-      icon: (<TrendingUp className="w-5 h-5 text-success" />),
+      title: 'Sécurité & conformité RGPD',
+      subtitle: '',
+      text: "Chiffrement des données en transit et au repos, journalisation et traçabilité des accès, et hébergement conforme en Europe. Politiques de rétention et contrôles d'accès assurent la conformité RGPD et la protection de vos clients.",
+      icon: (<span className="text-2xl">🔒</span>),
+    },
+    {
+      title: 'Gestion documentaire intelligente',
+      subtitle: '',
+      text: "Organisation intelligente des documents avec métadonnées, recherche full‑text rapide (OCR), versions automatiques et nomenclatures paramétrables pour retrouver n'importe quel fichier en quelques secondes.",
+      icon: (<span className="text-2xl">🗂️</span>),
+    },
+    {
+      title: "Suivi automatisé des échéances",
+      subtitle: '',
+      text: "Alertes et rappels automatisés (e‑mail / SMS / notifications) synchronisés avec votre agenda, scénarios de relance personnalisables et escalades automatisées pour garantir le respect des délais.",
+      icon: (<span className="text-2xl">⏰</span>),
     },
   ];
   const originalItemsCount = socialItems.length;
   const GAP = 24; // gap-6 -> 1.5rem = 24px
 
   const renderedCards = () => {
-    const triple = [...socialItems, ...socialItems, ...socialItems];
-    return triple.map((it, idx) => (
-      <div key={`${it.title}-${idx}`} data-card className="snap-start basis-[80%] md:basis-1/3 lg:basis-1/4 flex-shrink-0 bg-card p-4 rounded-lg border border-border shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-            {it.icon}
+    // Calculate a width so that 6 cards fit side-by-side accounting for gaps (5 gaps).
+    const cardWidthCalc = `calc((100% - ${GAP * 5}px) / 6)`;
+    return socialItems.map((it, idx) => {
+      const selected = selectedProofIndex === idx;
+      return (
+        <button
+          key={`${it.title}-${idx}`}
+          data-card
+          onClick={() => setSelectedProofIndex(idx)}
+          aria-pressed={selected}
+          style={{ width: cardWidthCalc }}
+          className={`relative snap-start flex-shrink-0 bg-card p-4 rounded-lg border border-border shadow-sm text-left transition-all duration-150 hover:shadow-md ${selected ? 'ring-2 ring-primary' : ''}`}
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm mt-1">
+              {it.icon}
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-foreground">{it.title}</div>
+            </div>
           </div>
-          <div>
-            <div className="text-sm font-semibold">{it.title}</div>
-            {it.subtitle ? <div className="text-xs text-muted-foreground">{it.subtitle}</div> : null}
-          </div>
-        </div>
-        {it.text ? <p className="mt-3 text-sm text-muted-foreground">{it.text}</p> : null}
-      </div>
-    ));
+          {/* small click hint icon bottom-right */}
+          <span className="absolute bottom-2 right-2 rounded-full bg-primary/10 text-primary p-2 flex items-center justify-center" aria-hidden>
+            <Eye className="w-3 h-3" />
+          </span>
+        </button>
+      );
+    });
   };
 
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const id = requestAnimationFrame(() => {
-      const items = el.querySelectorAll('[data-card]');
-      if (!items || items.length === 0) return;
-      const firstWidth = (items[0] as HTMLElement).offsetWidth + GAP;
-      const singleSetWidth = firstWidth * originalItemsCount;
-      el.scrollLeft = singleSetWidth;
-    });
-    return () => cancelAnimationFrame(id);
-  }, []);
+  // Removed initial centering and any forced scroll movement — the social cards are now static.
 
   const getCardWidth = () => {
     const el = scrollerRef.current;
@@ -247,7 +268,8 @@ export default function Auth() {
     scrollByAmount(w * count);
   };
 
-  // Continuous auto-scroll using requestAnimationFrame for very slow smooth motion
+  // Continuous auto-scroll using requestAnimationFrame.
+  // The user requested a steady advance that, once at the end, jumps back to 0.
   useEffect(() => {
     const step = (time: number) => {
       const el = scrollerRef.current;
@@ -266,16 +288,12 @@ export default function Auth() {
       // advance
       el.scrollLeft = el.scrollLeft + delta;
 
-      // seamless wrap using the triple set
-      const items = el.querySelectorAll('[data-card]');
-      if (items.length) {
-        const singleSetWidth = Array.from(items).slice(0, originalItemsCount).reduce((acc, n) => acc + (n as HTMLElement).offsetWidth + GAP, 0);
-        if (el.scrollLeft >= singleSetWidth * 2 - el.clientWidth - 2) {
-          el.scrollLeft = el.scrollLeft - singleSetWidth;
-        }
-        if (el.scrollLeft <= 2) {
-          el.scrollLeft = el.scrollLeft + singleSetWidth;
-        }
+      // If we've reached (or passed) the end, jump back to 0 (start).
+      // This implements the requested behaviour: "advance slowly and once at the end return to 0".
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 1) {
+        el.scrollLeft = 0;
+        // Reset timing reference so dt doesn't accumulate when we resume
+        lastTimeRef.current = time;
       }
 
       rafRef.current = requestAnimationFrame(step);
@@ -363,10 +381,26 @@ export default function Auth() {
 
   // Main page with role selection OR auth forms
   return (
-    <div onClick={() => { setRole(null); setAuthAtTop(false); }} className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 pt-28 pb-12">
+  <div
+    onClick={(e) => {
+      // Deselect a selected proof when clicking the page background (outside the scroller and the detail panel).
+      const target = e.target as Node;
+      // If click was inside the scroller (cards), do nothing
+      if (scrollerRef.current && scrollerRef.current.contains(target)) return;
+      // If click was inside the bottom detail panel, do nothing
+      if (panelRef.current && panelRef.current.contains(target)) return;
+
+      // Otherwise clear selection / role state
+      setRole(null);
+      setAuthAtTop(false);
+      setSelectedProofIndex(null);
+    }}
+    style={{ paddingLeft: '1cm', paddingRight: '1cm' }}
+    className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-0 pt-28 pb-12"
+  >
       {/* Fixed header */}
       <header className={`fixed inset-x-0 top-0 z-[60] bg-white/70 backdrop-blur border-b ${role && authAtTop ? 'border-transparent' : 'border-border'}`}>
-            <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4">
               {/* Logo on the far left */}
               <div className="flex items-center gap-3">
                 <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
@@ -475,7 +509,7 @@ export default function Auth() {
       ) : null}
 
       {/* Features Section - Below Auth */}
-        <div className="w-full max-w-4xl mx-auto mt-16">
+  <div className="w-full mt-16">
           <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-foreground mb-3">
             Optimisez votre activité professionnelle
@@ -494,101 +528,45 @@ export default function Auth() {
           </div>
 
           {/* Social proof horizontal scroller centered and wider than before */}
-          <div className="w-full max-w-6xl mx-auto relative px-4 md:px-0">
+          <div className="w-full relative px-4 md:px-0">
             {/* hide native scrollbar for this scroller */}
             <style>{`#social-scroller::-webkit-scrollbar{display:none} #social-scroller{scrollbar-width:none}`}</style>
 
             <div
               id="social-scroller"
               ref={scrollerRef}
-              className="flex gap-6 overflow-x-auto py-2 snap-x snap-mandatory scroll-smooth max-w-none justify-start"
+              className="flex gap-6 py-2 justify-start overflow-visible"
               aria-label="Témoignages et indicateurs"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-              onTouchStart={() => setIsPaused(true)}
-              onTouchEnd={() => setTimeout(() => setIsPaused(false), 800)}
-              onScroll={() => {
-                const el = scrollerRef.current;
-                if (!el) return;
-                const items = el.querySelectorAll('[data-card]');
-                if (items.length === 0) return;
-                // recompute widths using GAP constant
-                const singleSetWidth = Array.from(items).slice(0, originalItemsCount).reduce((acc, n) => acc + (n as HTMLElement).offsetWidth + GAP, 0);
-                // when scrolled very far left or right, wrap seamlessly
-                if (el.scrollLeft <= 2) {
-                  el.scrollLeft = el.scrollLeft + singleSetWidth;
-                }
-                if (el.scrollLeft >= singleSetWidth * 2 - el.clientWidth - 2) {
-                  el.scrollLeft = el.scrollLeft - singleSetWidth;
-                }
-              }}
             >
               {
                 // Render items in triple: clones before + original + clones after
               }
               {renderedCards()}
             </div>
-
-            {/* Prev / Next buttons */}
-            <button
-              aria-label="Précédent"
-              onClick={() => scrollByItems(-1)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow rounded-full w-9 h-9 flex items-center justify-center"
-            >
-              <ChevronLeft className="w-4 h-4 text-foreground" />
-            </button>
-
-            <button
-              aria-label="Suivant"
-              onClick={() => scrollByItems(1)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow rounded-full w-9 h-9 flex items-center justify-center"
-            >
-              <ChevronRight className="w-4 h-4 text-foreground" />
-            </button>
+            {/* Static display: no prev/next buttons and no scroll handlers to avoid movement */}
           </div>
         </div>
 
         {/* Central auth card removed - header popover is used for login/signup */}
 
-        <div className="grid md:grid-cols-4 gap-6 mb-8 divide-y md:divide-y-0 md:divide-x divide-border">
-          <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-primary/10 to-primary/5 border border-transparent hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
-              <Zap className="w-6 h-6 text-primary" />
-            </div>
-            <h3 className="font-bold text-sm text-foreground mb-1">🔄 Automatiser vos tâches répétitives</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Automatisez les tâches répétitives pour gagner du temps chaque semaine.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
-              <Check className="w-6 h-6 text-accent" />
-            </div>
-            <h3 className="font-bold text-sm text-foreground mb-1">📁 Gérez vos documents en toute sérénité</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Stockage sécurisé, accès simplifié et partage maîtrisé avec vos équipes et vos clients.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
-              <Users className="w-6 h-6 text-accent" />
-            </div>
-            <h3 className="font-bold text-sm text-foreground mb-1">👥 Collaborer avec vos clients et vos équipes</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Espace partagé et échanges sécurisés pour collaborer efficacement.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-success/10 to-success/5 border border-success/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
-              <TrendingUp className="w-6 h-6 text-success" />
-            </div>
-            <h3 className="font-bold text-sm text-foreground mb-1">📊 Piloter votre activité</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Agenda, indicateurs et suivi des dossiers pour piloter votre cabinet.
-            </p>
+        <div className="mb-8">
+          <div ref={panelRef} className="w-full bg-white rounded-xl p-6 shadow-md border border-border min-h-[120px]">
+            {selectedProofIndex === null ? (
+              <>
+                <h3 className="text-xl font-bold text-foreground">Espace collaboratif</h3>
+                <p className="text-sm text-muted-foreground mt-2">Espace partagé pour vos équipes et clients — échangez, commentez et suivez les dossiers en toute simplicité.</p>
+              </>
+            ) : (
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-2xl">
+                  {socialItems[selectedProofIndex].icon}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">{socialItems[selectedProofIndex].title}</h3>
+                  <p className="text-sm text-muted-foreground mt-2">{socialItems[selectedProofIndex].text}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
