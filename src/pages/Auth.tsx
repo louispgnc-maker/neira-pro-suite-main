@@ -8,7 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Zap, TrendingUp, Check, Users } from "lucide-react";
+import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin } from "lucide-react";
 
 
 interface FormElements extends HTMLFormElement {
@@ -218,6 +218,14 @@ export default function Auth() {
             <div className="leading-tight">
               <div className="text-base font-bold text-foreground">Neira</div>
               <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150">
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150">
+                <Linkedin className="w-4 h-4" />
+              </a>
             </div>
           </div>
 
