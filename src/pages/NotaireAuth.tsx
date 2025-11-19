@@ -8,6 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 
 interface FormElements extends HTMLFormElement {
   email: HTMLInputElement;
@@ -105,14 +106,24 @@ export default function NotaireAuth() {
 
   if (verificationEmail) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-background p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white p-6 flex items-center justify-center">
+        <div className="fixed top-4 left-4 z-50">
+          <button onClick={() => navigate(-1)} aria-label="Retour" className="w-10 h-10 rounded-full flex items-center justify-center bg-orange-600 text-white shadow-md">
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+        </div>
         <EmailVerificationStatus email={verificationEmail} onBackToLogin={() => setVerificationEmail(null)} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-background p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white p-6 flex items-center justify-center">
+      <div className="fixed top-4 left-4 z-50">
+        <button onClick={() => navigate(-1)} aria-label="Retour" className="w-10 h-10 rounded-full flex items-center justify-center bg-orange-600 text-white shadow-md">
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+      </div>
       {overlayVisible ? (
         <div className={`fixed inset-0 z-[1000] flex items-center justify-center`}>
           <div className={`absolute inset-0 bg-white`} style={{ transform: overlayAnimate ? 'scale(20)' : 'scale(0.04)', opacity: overlayAnimate ? 1 : 0, transition: 'transform 800ms ease-out, opacity 500ms ease-out' }} />
