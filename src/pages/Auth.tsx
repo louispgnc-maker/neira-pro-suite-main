@@ -344,8 +344,8 @@ export default function Auth() {
             <div className="flex gap-4 overflow-x-auto py-2 px-2 -mx-2 snap-x snap-mandatory">
               <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <Hourglass className="w-5 h-5 text-slate-700" />
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <Hourglass className="w-5 h-5 text-violet-600" />
                   </div>
                   <div>
                     <div className="text-sm font-semibold">Gain de temps 25–40%</div>
