@@ -345,10 +345,10 @@ export default function Auth() {
               <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <Star className="w-5 h-5 text-yellow-500" />
+                    <Hourglass className="w-5 h-5 text-slate-700" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold">Note moyenne 4.8/5</div>
+                    <div className="text-sm font-semibold">Gain de temps 25–40%</div>
                     <div className="text-xs text-muted-foreground">Basée sur les retours de nos clients</div>
                   </div>
                 </div>
