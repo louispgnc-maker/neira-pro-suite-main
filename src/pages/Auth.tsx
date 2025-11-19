@@ -164,6 +164,80 @@ export default function Auth() {
   // social scroller ref for the horizontal social-proof carousel
   const scrollerRef = useRef<HTMLDivElement | null>(null);
 
+  // Social items and helpers for seamless infinite carousel
+  const socialItems = [
+    {
+      title: 'Gain de temps 25–40%',
+      subtitle: 'Basée sur les retours de nos clients',
+      text: 'Réduction du temps administratif de 25–40% selon nos retours clients.',
+      icon: (<Hourglass className="w-5 h-5 text-violet-600" />),
+    },
+    {
+      title: '+120 Cabinets',
+      subtitle: 'Ont adopté Neira',
+      text: 'Gestion centralisée des dossiers et partage sécurisé pour les équipes.',
+      icon: (<Users className="w-5 h-5 text-accent" />),
+    },
+    {
+      title: 'Conforme RGPD',
+      subtitle: 'Sécurité et confidentialité',
+      text: 'Archivage sécurisé et traçabilité des actions pour vos dossiers.',
+      icon: (<Check className="w-5 h-5 text-success" />),
+    },
+    {
+      title: '+30% Productivité',
+      subtitle: 'Gain moyen observé',
+      text: "Automatisations et modèles prêts à l'emploi.",
+      icon: (<TrendingUp className="w-5 h-5 text-success" />),
+    },
+  ];
+  const originalItemsCount = socialItems.length;
+  const GAP = 16;
+
+  const renderedCards = () => {
+    const triple = [...socialItems, ...socialItems, ...socialItems];
+    return triple.map((it, idx) => (
+      <div key={`${it.title}-${idx}`} data-card className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+            {it.icon}
+          </div>
+          <div>
+            <div className="text-sm font-semibold">{it.title}</div>
+            {it.subtitle ? <div className="text-xs text-muted-foreground">{it.subtitle}</div> : null}
+          </div>
+        </div>
+        {it.text ? <p className="mt-3 text-sm text-muted-foreground">{it.text}</p> : null}
+      </div>
+    ));
+  };
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const id = requestAnimationFrame(() => {
+      const items = el.querySelectorAll('[data-card]');
+      if (!items || items.length === 0) return;
+      const firstWidth = (items[0] as HTMLElement).offsetWidth + GAP;
+      const singleSetWidth = firstWidth * originalItemsCount;
+      el.scrollLeft = singleSetWidth;
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const getCardWidth = () => {
+    const el = scrollerRef.current;
+    if (!el) return (el?.clientWidth ?? 320) * 0.8;
+    const first = el.querySelector('[data-card]') as HTMLElement | null;
+    if (!first) return (el.clientWidth ?? 320) * 0.8;
+    return first.offsetWidth + GAP;
+  };
+
+  const scrollByItems = (count: number) => {
+    const w = getCardWidth();
+    scrollByAmount(w * count);
+  };
+
   const scrollByAmount = (amount: number) => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -374,76 +448,31 @@ export default function Auth() {
               ref={scrollerRef}
               className="flex gap-4 overflow-x-auto py-2 px-2 -mx-2 snap-x snap-mandatory scroll-smooth"
               aria-label="Témoignages et indicateurs"
+              onScroll={() => {
+                const el = scrollerRef.current;
+                if (!el) return;
+                const items = el.querySelectorAll('[data-card]');
+                if (items.length === 0) return;
+                const singleSetWidth = Array.from(items).slice(0, originalItemsCount).reduce((acc, n) => acc + (n as HTMLElement).offsetWidth + 16, 0); // 16 ~= gap
+                // when scrolled very far left or right, wrap seamlessly
+                if (el.scrollLeft <= 2) {
+                  el.scrollLeft = el.scrollLeft + singleSetWidth;
+                }
+                if (el.scrollLeft >= singleSetWidth * 2 - el.clientWidth - 2) {
+                  el.scrollLeft = el.scrollLeft - singleSetWidth;
+                }
+              }}
             >
-              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <Hourglass className="w-5 h-5 text-violet-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">Gain de temps 25–40%</div>
-                    <div className="text-xs text-muted-foreground">Basée sur les retours de nos clients</div>
-                  </div>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">Réduction du temps administratif de 25–40% selon nos retours clients.</p>
-              </div>
-
-              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <Users className="w-5 h-5 text-accent" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">+120 Cabinets</div>
-                    <div className="text-xs text-muted-foreground">Ont adopté Neira</div>
-                  </div>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">Gestion centralisée des dossiers et partage sécurisé pour les équipes.</p>
-              </div>
-
-              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <Check className="w-5 h-5 text-success" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">Conforme RGPD</div>
-                    <div className="text-xs text-muted-foreground">Sécurité et confidentialité</div>
-                  </div>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">Archivage sécurisé et traçabilité des actions pour vos dossiers.</p>
-              </div>
-
-              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <TrendingUp className="w-5 h-5 text-success" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">+30% Productivité</div>
-                    <div className="text-xs text-muted-foreground">Gain moyen observé</div>
-                  </div>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">Automatisations et modèles prêts à l'emploi.</p>
-              </div>
-              
-              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <Hourglass className="w-5 h-5 text-slate-700" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">Gain de temps 25–40%</div>
-                  </div>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">Réduction du travail administratif grâce aux automatisations et modèles de Neira.</p>
-              </div>
+              {
+                // Render items in triple: clones before + original + clones after
+              }
+              {renderedCards()}
             </div>
 
             {/* Prev / Next buttons */}
             <button
               aria-label="Précédent"
-              onClick={() => scrollByAmount(-(scrollerRef.current?.clientWidth ?? 320) * 0.8)}
+              onClick={() => scrollByItems(-1)}
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow rounded-full w-9 h-9 flex items-center justify-center"
             >
               <ChevronLeft className="w-4 h-4 text-foreground" />
@@ -451,7 +480,7 @@ export default function Auth() {
 
             <button
               aria-label="Suivant"
-              onClick={() => scrollByAmount((scrollerRef.current?.clientWidth ?? 320) * 0.8)}
+              onClick={() => scrollByItems(1)}
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow rounded-full w-9 h-9 flex items-center justify-center"
             >
               <ChevronRight className="w-4 h-4 text-foreground" />
