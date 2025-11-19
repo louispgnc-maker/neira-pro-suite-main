@@ -164,6 +164,11 @@ export default function Auth() {
   // social scroller ref for the horizontal social-proof carousel
   const scrollerRef = useRef<HTMLDivElement | null>(null);
 
+  // Auto-play controls
+  const [isPaused, setIsPaused] = useState(false);
+  const AUTO_SCROLL_MS = 3000; // time between auto scrolls
+
+
   // Social items and helpers for seamless infinite carousel
   const socialItems = [
     {
@@ -237,6 +242,17 @@ export default function Auth() {
     const w = getCardWidth();
     scrollByAmount(w * count);
   };
+
+  // Auto-scroll effect
+  useEffect(() => {
+    if (isPaused) return;
+    const id = setInterval(() => {
+      // Advance one card
+      scrollByItems(1);
+    }, AUTO_SCROLL_MS);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPaused]);
 
   const scrollByAmount = (amount: number) => {
     const el = scrollerRef.current;
@@ -448,12 +464,17 @@ export default function Auth() {
               ref={scrollerRef}
               className="flex gap-6 overflow-x-auto py-2 snap-x snap-mandatory scroll-smooth max-w-none justify-start"
               aria-label="Témoignages et indicateurs"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={() => setIsPaused(true)}
+              onTouchEnd={() => setTimeout(() => setIsPaused(false), 800)}
               onScroll={() => {
                 const el = scrollerRef.current;
                 if (!el) return;
                 const items = el.querySelectorAll('[data-card]');
                 if (items.length === 0) return;
-                const singleSetWidth = Array.from(items).slice(0, originalItemsCount).reduce((acc, n) => acc + (n as HTMLElement).offsetWidth + 16, 0); // 16 ~= gap
+                // recompute widths using GAP constant
+                const singleSetWidth = Array.from(items).slice(0, originalItemsCount).reduce((acc, n) => acc + (n as HTMLElement).offsetWidth + GAP, 0);
                 // when scrolled very far left or right, wrap seamlessly
                 if (el.scrollLeft <= 2) {
                   el.scrollLeft = el.scrollLeft + singleSetWidth;
