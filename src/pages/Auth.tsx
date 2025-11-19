@@ -386,9 +386,9 @@ export default function Auth() {
             <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
               <Check className="w-6 h-6 text-accent" />
             </div>
-            <h3 className="font-bold text-sm text-foreground mb-1">📁 Gérer vos documents en toute sécurité</h3>
+            <h3 className="font-bold text-sm text-foreground mb-1">📁 Gérez vos documents en toute sérénité</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Classement sécurisé, partage contrôlé et historique des versions.
+              Stockage sécurisé, accès simplifié et partage maîtrisé avec vos équipes et vos clients.
             </p>
           </div>
 
