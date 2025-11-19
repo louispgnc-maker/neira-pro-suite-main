@@ -161,6 +161,8 @@ export default function Auth() {
     };
   }, [overlayVisible]);
 
+  
+
   // social scroller ref for the horizontal social-proof carousel
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   // ref for the bottom detail panel to detect outside clicks
@@ -168,6 +170,20 @@ export default function Auth() {
 
   // Which social-proof is selected (null = none)
   const [selectedProofIndex, setSelectedProofIndex] = useState<number | null>(null);
+  // dropdown state for 'Pour qui ?' menu inside the features container
+  const [whoOpen, setWhoOpen] = useState(false);
+  const whoRef = useRef<HTMLDivElement | null>(null);
+
+  // close who menu on outside click
+  useEffect(() => {
+    if (!whoOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (whoRef.current && !whoRef.current.contains(t)) setWhoOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [whoOpen]);
 
   // Auto-play controls
   // Disabled by default per user request: no automatic scrolling
@@ -532,7 +548,37 @@ export default function Auth() {
           <div className="w-full relative px-4 md:px-0">
             {/* Large container that holds the 6 small cards */}
             <div className="w-full bg-white rounded-xl p-6 shadow-md border border-border">
-              <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-4">Fonctionnalités principales</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-3xl md:text-4xl font-bold text-foreground">Fonctionnalités principales</h3>
+                <div ref={whoRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setWhoOpen((s) => !s); }}
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted/80 hover:bg-muted text-sm font-medium border border-border"
+                  >
+                    Pour qui ?
+                    <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  {whoOpen ? (
+                    <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-md shadow-md z-40">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-primary/5"
+                        onClick={() => { setWhoOpen(false); setRole('avocat'); navigate('/avocats/auth'); }}
+                      >
+                        Avocats
+                      </button>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-primary/5"
+                        onClick={() => { setWhoOpen(false); setRole('notaire'); navigate('/notaires/auth'); }}
+                      >
+                        Notaires
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
               <div
                 ref={scrollerRef}
                 className="grid grid-cols-3 gap-6 py-4"
