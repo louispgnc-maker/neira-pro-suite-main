@@ -167,7 +167,8 @@ export default function Auth() {
   // Auto-play controls
   const [isPaused, setIsPaused] = useState(false);
   // Continuous auto-scroll speed (pixels per second). Very small = très lent.
-  const AUTO_SCROLL_PX_PER_SEC = 10; // ~10px/s
+  // Increase speed by ~33% from previous 10px/s -> ~13.33px/s ("plus vite, +1/3")
+  const AUTO_SCROLL_PX_PER_SEC = 13.333; // ~13.33px/s
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
 
