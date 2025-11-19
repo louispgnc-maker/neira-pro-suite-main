@@ -1,7 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Eye, Download, Trash2, Upload } from "lucide-react";
-npx vercel --prodimport { Plus, ArrowRight } from "lucide-react";
+import { MoreHorizontal, Eye, Download, Trash2, Upload, Plus, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
