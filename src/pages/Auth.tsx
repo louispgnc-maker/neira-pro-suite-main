@@ -214,36 +214,6 @@ export default function Auth() {
   <header className={`fixed inset-x-0 top-0 z-[60] bg-white/70 backdrop-blur border-b ${role && authAtTop ? 'border-transparent' : 'border-border'}`}>
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
-            <div className="leading-tight">
-              <div className="text-base font-bold text-foreground">Neira</div>
-              <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
-            </div>
-            <div className="ml-3 flex items-center gap-2">
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
-                style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
-              >
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a
-                href="https://www.linkedin.com/company/neira-doc"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
-                style={{ background: '#0A66C2' }}
-              >
-                <Linkedin className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
             {/* Header role buttons styled like the center large buttons (compact) */}
             <div className={`relative transition-all duration-200 ${role === 'avocat' && authAtTop ? 'inline-block scale-105 ring-2 ring-blue-600 rounded-lg' : 'inline-block'}`}>
               <div
@@ -265,7 +235,7 @@ export default function Auth() {
               {/* auth removed from this page - clicking the button now only sets the role */}
             </div>
 
-            <div className={`relative transition-all duration-200 ${role === 'notaire' && authAtTop ? 'inline-block scale-105 ring-2 ring-orange-600 rounded-lg' : 'inline-block'}`}>
+              <div className={`relative transition-all duration-200 ${role === 'notaire' && authAtTop ? 'inline-block scale-105 ring-2 ring-orange-600 rounded-lg' : 'inline-block'}`}>
               <div
                 role="button"
                 tabIndex={0}
@@ -284,7 +254,40 @@ export default function Auth() {
 
               {/* auth removed from this page - clicking the button now only sets the role */}
             </div>
-          </div>
+            
+              {/* social icons placed to the right of role buttons */}
+              <div className="ml-2 flex items-center gap-2">
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+                  style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/neira-doc"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+                  style={{ background: '#0A66C2' }}
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Logo moved to the far right */}
+            <div className="flex items-center gap-3">
+              <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
+              <div className="leading-tight text-right">
+                <div className="text-base font-bold text-foreground">Neira</div>
+                <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
+              </div>
+            </div>
         </div>
       </header>
 
