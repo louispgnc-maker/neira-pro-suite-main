@@ -8,7 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin } from "lucide-react";
+import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star } from "lucide-react";
 
 
 interface FormElements extends HTMLFormElement {
@@ -321,7 +321,7 @@ export default function Auth() {
       ) : null}
 
       {/* Features Section - Below Auth */}
-      <div className="w-full max-w-4xl mx-auto mt-16">
+        <div className="w-full max-w-4xl mx-auto mt-16">
           <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-foreground mb-3">
             Optimisez votre activité professionnelle
@@ -332,6 +332,71 @@ export default function Auth() {
         </div>
 
         {/* Center role buttons removed per request: header buttons now control selection */}
+
+        {/* CTA button above the four feature cards */}
+        <div className="flex flex-col items-center gap-4 mb-6">
+          <div className="flex justify-center w-full">
+            <Button onClick={() => navigate('/contact')} className="px-6 py-2">Découvrir notre solution</Button>
+          </div>
+
+          {/* Social proof horizontal scroller */}
+          <div className="w-full">
+            <div className="flex gap-4 overflow-x-auto py-2 px-2 -mx-2 snap-x snap-mandatory">
+              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">Note moyenne 4.8/5</div>
+                    <div className="text-xs text-muted-foreground">Basée sur les retours de nos clients</div>
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">"Neira nous a permis de réduire le temps administratif de 40%"</p>
+                <div className="mt-3 text-xs text-muted-foreground">— Cabinet Dupont, Avocats</div>
+              </div>
+
+              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <Users className="w-5 h-5 text-accent" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">+120 Cabinets</div>
+                    <div className="text-xs text-muted-foreground">Ont adopté Neira</div>
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">Gestion centralisée des dossiers et partage sécurisé pour les équipes.</p>
+              </div>
+
+              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <Check className="w-5 h-5 text-success" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">Conforme RGPD</div>
+                    <div className="text-xs text-muted-foreground">Sécurité et confidentialité</div>
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">Archivage sécurisé et traçabilité des actions pour vos dossiers.</p>
+              </div>
+
+              <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <TrendingUp className="w-5 h-5 text-success" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">+30% Productivité</div>
+                    <div className="text-xs text-muted-foreground">Gain moyen observé</div>
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">Automatisations et modèles prêts à l'emploi.</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Central auth card removed - header popover is used for login/signup */}
 
