@@ -372,9 +372,9 @@ export default function Auth() {
         ) : null}
 
         <div className="grid md:grid-cols-4 gap-6 mb-8 divide-y md:divide-y-0 md:divide-x divide-border">
-          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl h-44 justify-between bg-gradient-to-br from-primary/10 to-primary/5 border border-transparent hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-2 shadow-sm">
-              <Zap className="w-4 h-4 text-white" />
+          <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-primary/10 to-primary/5 border border-transparent hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
+              <Zap className="w-6 h-6 text-primary" />
             </div>
             <h3 className="font-bold text-sm text-foreground mb-1">🔄 Automatiser vos tâches répétitives</h3>
             <p className="text-sm text-muted-foreground mt-1">
@@ -382,9 +382,9 @@ export default function Auth() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl h-44 justify-between bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-2 shadow-sm">
-              <Check className="w-4 h-4 text-white" />
+          <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
+              <Check className="w-6 h-6 text-accent" />
             </div>
             <h3 className="font-bold text-sm text-foreground mb-1">📁 Gérer vos documents en toute sécurité</h3>
             <p className="text-sm text-muted-foreground mt-1">
@@ -392,9 +392,9 @@ export default function Auth() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl h-44 justify-between bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-2 shadow-sm">
-              <Users className="w-4 h-4 text-white" />
+          <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
+              <Users className="w-6 h-6 text-accent" />
             </div>
             <h3 className="font-bold text-sm text-foreground mb-1">👥 Collaborer avec vos clients et vos équipes</h3>
             <p className="text-sm text-muted-foreground mt-1">
@@ -402,9 +402,9 @@ export default function Auth() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-xl h-44 justify-between bg-gradient-to-br from-success/10 to-success/5 border border-success/20 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-2 shadow-sm">
-              <TrendingUp className="w-4 h-4 text-white" />
+          <div className="flex flex-col items-center text-center p-6 md:p-6 rounded-xl h-56 md:h-64 justify-between bg-gradient-to-br from-success/10 to-success/5 border border-success/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-2 shadow-md">
+              <TrendingUp className="w-6 h-6 text-success" />
             </div>
             <h3 className="font-bold text-sm text-foreground mb-1">📊 Piloter votre activité</h3>
             <p className="text-sm text-muted-foreground mt-1">
