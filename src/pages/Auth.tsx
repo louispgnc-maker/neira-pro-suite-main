@@ -353,7 +353,6 @@ export default function Auth() {
                   </div>
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground">Réduction du temps administratif de 25–40% selon nos retours clients.</p>
-                <div className="mt-3 text-xs text-muted-foreground">— Retours clients</div>
               </div>
 
               <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
