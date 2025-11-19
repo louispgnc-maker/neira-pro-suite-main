@@ -567,26 +567,7 @@ export default function Auth() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-8 p-6 rounded-xl bg-gradient-to-r from-card via-primary/5 to-card border border-border shadow-md">
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
-              <Check className="w-4 h-4 text-white" />
-            </div>
-            <span>Conforme RGPD</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
-              <Check className="w-4 h-4 text-white" />
-            </div>
-            <span>Données sauvegardées</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
-              <Check className="w-4 h-4 text-white" />
-            </div>
-            <span>Support dédié</span>
-          </div>
-        </div>
+        {/* Compliance/benefit badges removed per request */}
 
         {/* "Pour qui ?" section - Avocats / Notaires */}
         <div className="mt-10 bg-card p-6 rounded-xl border border-border shadow-sm">
