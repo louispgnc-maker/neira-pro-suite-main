@@ -233,8 +233,7 @@ export default function Auth() {
           data-card
           onClick={() => setSelectedProofIndex(idx)}
           aria-pressed={selected}
-          style={{ width: cardWidthCalc }}
-          className={`relative snap-start flex-shrink-0 bg-card p-4 rounded-lg border border-border shadow-sm text-left transition-all duration-150 hover:shadow-md ${selected ? 'ring-2 ring-primary' : ''}`}
+          className={`relative bg-muted p-4 rounded-lg border border-border shadow-sm text-left transition-all duration-150 hover:shadow-md w-full ${selected ? 'ring-2 ring-primary' : ''}`}
         >
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm mt-1">
@@ -527,23 +526,21 @@ export default function Auth() {
             <Button onClick={() => navigate('/contact')} className="px-6 py-2">Découvrir notre solution</Button>
           </div>
 
+          {/* title will be placed inside the big container per user request */}
+
           {/* Social proof horizontal scroller centered and wider than before */}
           <div className="w-full relative px-4 md:px-0">
-            {/* hide native scrollbar for this scroller */}
-            <style>{`#social-scroller::-webkit-scrollbar{display:none} #social-scroller{scrollbar-width:none}`}</style>
-
-            <div
-              id="social-scroller"
-              ref={scrollerRef}
-              className="flex gap-6 py-2 justify-start overflow-visible"
-              aria-label="Témoignages et indicateurs"
-            >
-              {
-                // Render items in triple: clones before + original + clones after
-              }
-              {renderedCards()}
+            {/* Large container that holds the 6 small cards */}
+            <div className="w-full bg-white rounded-xl p-6 shadow-md border border-border">
+              <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-4">Fonctionnalités principales</h3>
+              <div
+                ref={scrollerRef}
+                className="grid grid-cols-3 gap-6 py-4"
+                aria-label="Témoignages et indicateurs"
+              >
+                {renderedCards()}
+              </div>
             </div>
-            {/* Static display: no prev/next buttons and no scroll handlers to avoid movement */}
           </div>
         </div>
 
