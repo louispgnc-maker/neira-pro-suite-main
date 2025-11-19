@@ -247,10 +247,10 @@ export default function Auth() {
       <div className="w-full max-w-4xl mx-auto mt-16">
           <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-foreground mb-3">
-            Automatisez votre activité juridique
+            Optimisez votre activité professionnelle
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            La plateforme tout-en-un qui simplifie votre quotidien de professionnel du juridique.
+            La plateforme tout-en-un qui simplifie et fluidifie le quotidien des experts du juridique.
           </p>
         </div>
 
