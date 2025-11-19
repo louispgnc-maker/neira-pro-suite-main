@@ -197,7 +197,7 @@ export default function Auth() {
   const renderedCards = () => {
     const triple = [...socialItems, ...socialItems, ...socialItems];
     return triple.map((it, idx) => (
-      <div key={`${it.title}-${idx}`} data-card className="snap-start min-w-[260px] md:min-w-[33vw] lg:min-w-[28vw] bg-card p-4 rounded-lg border border-border shadow-sm">
+      <div key={`${it.title}-${idx}`} data-card className="snap-start min-w-[260px] md:min-w-[66vw] lg:min-w-[66vw] bg-card p-4 rounded-lg border border-border shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
             {it.icon}
