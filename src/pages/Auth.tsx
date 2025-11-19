@@ -250,9 +250,6 @@ export default function Auth() {
             Automatisez votre activité juridique
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Une plateforme sécurisée qui simplifie votre quotidien, optimise votre temps et celui de vos clients
-          </p>
-          <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto">
             La plateforme tout-en-un qui simplifie votre quotidien de professionnel du juridique.
           </p>
         </div>
