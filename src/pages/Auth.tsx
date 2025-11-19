@@ -211,85 +211,82 @@ export default function Auth() {
   return (
     <div onClick={() => { setRole(null); setAuthAtTop(false); }} className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-4 pt-28 pb-12">
       {/* Fixed header */}
-  <header className={`fixed inset-x-0 top-0 z-[60] bg-white/70 backdrop-blur border-b ${role && authAtTop ? 'border-transparent' : 'border-border'}`}>
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            {/* Header role buttons styled like the center large buttons (compact) */}
-            <div className={`relative transition-all duration-200 ${role === 'avocat' && authAtTop ? 'inline-block scale-105 ring-2 ring-blue-600 rounded-lg' : 'inline-block'}`}>
-              <div
-                role="button"
-                tabIndex={0}
-                aria-expanded={role === 'avocat' && authAtTop}
-                onClick={(e) => { e.stopPropagation(); setRole('avocat'); navigate('/avocats/auth'); }}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setRole('avocat'); navigate('/avocats/auth'); } }}
-                className={`inline-flex items-center gap-2 px-3 py-2 text-left transition-colors duration-150 ${
-                  role === 'avocat' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-blue-50 to-blue-100 border-b-0 border border-blue-200' : 'rounded-lg bg-blue-50 hover:bg-blue-100 hover:scale-105 border border-blue-100'
-                }`}
-              >
-                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow text-lg">
-                  <span className={`${role === 'avocat' ? 'text-blue-600' : 'text-primary'}`}>⚖️</span>
+      <header className={`fixed inset-x-0 top-0 z-[60] bg-white/70 backdrop-blur border-b ${role && authAtTop ? 'border-transparent' : 'border-border'}`}>
+            <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+              {/* Logo on the far left */}
+              <div className="flex items-center gap-3">
+                <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
+                <div className="leading-tight">
+                  <div className="text-base font-bold text-foreground">Neira</div>
+                  <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
                 </div>
-                <span className={`text-sm font-medium ${role === 'avocat' ? 'text-blue-900' : 'text-foreground'}`}>Espace Avocats</span>
               </div>
 
-              {/* auth removed from this page - clicking the button now only sets the role */}
-            </div>
+              {/* Role buttons and social icons aligned to the right */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
+                  <div className={`relative transition-all duration-200 ${role === 'avocat' && authAtTop ? 'inline-block scale-105 ring-2 ring-blue-600 rounded-lg' : 'inline-block'}`}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={role === 'avocat' && authAtTop}
+                      onClick={(e) => { e.stopPropagation(); setRole('avocat'); navigate('/avocats/auth'); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setRole('avocat'); navigate('/avocats/auth'); } }}
+                      className={`inline-flex items-center gap-2 px-3 py-2 text-left transition-colors duration-150 ${
+                        role === 'avocat' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-blue-50 to-blue-100 border-b-0 border border-blue-200' : 'rounded-lg bg-blue-50 hover:bg-blue-100 hover:scale-105 border border-blue-100'
+                      }`}
+                    >
+                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow text-lg">
+                        <span className={`${role === 'avocat' ? 'text-blue-600' : 'text-primary'}`}>⚖️</span>
+                      </div>
+                      <span className={`text-sm font-medium ${role === 'avocat' ? 'text-blue-900' : 'text-foreground'}`}>Espace Avocats</span>
+                    </div>
+                  </div>
 
-              <div className={`relative transition-all duration-200 ${role === 'notaire' && authAtTop ? 'inline-block scale-105 ring-2 ring-orange-600 rounded-lg' : 'inline-block'}`}>
-              <div
-                role="button"
-                tabIndex={0}
-                aria-expanded={role === 'notaire' && authAtTop}
-                onClick={(e) => { e.stopPropagation(); setRole('notaire'); navigate('/notaires/auth'); }}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setRole('notaire'); navigate('/notaires/auth'); } }}
-                className={`inline-flex items-center gap-2 px-3 py-2 text-left transition-colors duration-150 ${
-                  role === 'notaire' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-orange-50 to-orange-100 border-b-0 border border-orange-200' : 'rounded-lg bg-orange-50 hover:bg-orange-100 hover:scale-105 border border-orange-100'
-                }`}
-              >
-                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow text-lg">
-                  <span className={`${role === 'notaire' ? 'text-orange-600' : 'text-accent'}`}>🏛️</span>
+                  <div className={`relative transition-all duration-200 ${role === 'notaire' && authAtTop ? 'inline-block scale-105 ring-2 ring-orange-600 rounded-lg' : 'inline-block'}`}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={role === 'notaire' && authAtTop}
+                      onClick={(e) => { e.stopPropagation(); setRole('notaire'); navigate('/notaires/auth'); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setRole('notaire'); navigate('/notaires/auth'); } }}
+                      className={`inline-flex items-center gap-2 px-3 py-2 text-left transition-colors duration-150 ${
+                        role === 'notaire' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-orange-50 to-orange-100 border-b-0 border border-orange-200' : 'rounded-lg bg-orange-50 hover:bg-orange-100 hover:scale-105 border border-orange-100'
+                      }`}
+                    >
+                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow text-lg">
+                        <span className={`${role === 'notaire' ? 'text-orange-600' : 'text-accent'}`}>🏛️</span>
+                      </div>
+                      <span className={`text-sm font-medium ${role === 'notaire' ? 'text-orange-900' : 'text-foreground'}`}>Espace Notaires</span>
+                    </div>
+                  </div>
                 </div>
-                <span className={`text-sm font-medium ${role === 'notaire' ? 'text-orange-900' : 'text-foreground'}`}>Espace Notaires</span>
-              </div>
 
-              {/* auth removed from this page - clicking the button now only sets the role */}
-            </div>
-            
-              {/* social icons placed to the right of role buttons */}
-              <div className="ml-2 flex items-center gap-2">
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
-                  style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://www.linkedin.com/company/neira-doc"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                  className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
-                  style={{ background: '#0A66C2' }}
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
+                <div className="flex items-center gap-2">
+                  <a
+                    href="https://www.instagram.com/neira.doc/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+                    style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
+                  >
+                    <Instagram className="w-4 h-4" />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/company/neira-doc"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn"
+                    className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+                    style={{ background: '#0A66C2' }}
+                  >
+                    <Linkedin className="w-4 h-4" />
+                  </a>
+                </div>
               </div>
             </div>
-
-            {/* Logo moved to the far right */}
-            <div className="flex items-center gap-3">
-              <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
-              <div className="leading-tight text-right">
-                <div className="text-base font-bold text-foreground">Neira</div>
-                <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
-              </div>
-            </div>
-        </div>
-      </header>
+          </header>
 
       {/* When a header role is selected we show a compact auth card as a fixed popover anchored to the clicked button —
           This prevents the header area from resizing or creating a second visible page. */}
