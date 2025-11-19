@@ -166,7 +166,10 @@ export default function Auth() {
 
   // Auto-play controls
   const [isPaused, setIsPaused] = useState(false);
-  const AUTO_SCROLL_MS = 3000; // time between auto scrolls
+  // Continuous auto-scroll speed (pixels per second). Very small = très lent.
+  const AUTO_SCROLL_PX_PER_SEC = 10; // ~10px/s
+  const rafRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number | null>(null);
 
 
   // Social items and helpers for seamless infinite carousel
@@ -243,14 +246,49 @@ export default function Auth() {
     scrollByAmount(w * count);
   };
 
-  // Auto-scroll effect
+  // Continuous auto-scroll using requestAnimationFrame for very slow smooth motion
   useEffect(() => {
-    if (isPaused) return;
-    const id = setInterval(() => {
-      // Advance one card
-      scrollByItems(1);
-    }, AUTO_SCROLL_MS);
-    return () => clearInterval(id);
+    const step = (time: number) => {
+      const el = scrollerRef.current;
+      if (!el) {
+        rafRef.current = requestAnimationFrame(step);
+        return;
+      }
+      if (isPaused) {
+        lastTimeRef.current = null;
+        return;
+      }
+      if (lastTimeRef.current == null) lastTimeRef.current = time;
+      const dt = (time - (lastTimeRef.current ?? time)) / 1000; // seconds
+      lastTimeRef.current = time;
+      const delta = AUTO_SCROLL_PX_PER_SEC * dt;
+      // advance
+      el.scrollLeft = el.scrollLeft + delta;
+
+      // seamless wrap using the triple set
+      const items = el.querySelectorAll('[data-card]');
+      if (items.length) {
+        const singleSetWidth = Array.from(items).slice(0, originalItemsCount).reduce((acc, n) => acc + (n as HTMLElement).offsetWidth + GAP, 0);
+        if (el.scrollLeft >= singleSetWidth * 2 - el.clientWidth - 2) {
+          el.scrollLeft = el.scrollLeft - singleSetWidth;
+        }
+        if (el.scrollLeft <= 2) {
+          el.scrollLeft = el.scrollLeft + singleSetWidth;
+        }
+      }
+
+      rafRef.current = requestAnimationFrame(step);
+    };
+
+    if (!isPaused) {
+      rafRef.current = requestAnimationFrame(step);
+    }
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      lastTimeRef.current = null;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPaused]);
 
