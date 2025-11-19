@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star, Hourglass } from "lucide-react";
+import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star, Hourglass, ChevronLeft, ChevronRight } from "lucide-react";
 
 
 interface FormElements extends HTMLFormElement {
@@ -160,6 +160,36 @@ export default function Auth() {
       clearInterval(interval);
     };
   }, [overlayVisible]);
+
+  // social scroller ref for the horizontal social-proof carousel
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollByAmount = (amount: number) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const curr = el.scrollLeft;
+    const max = el.scrollWidth - el.clientWidth;
+    const next = curr + amount;
+
+    if (next > max) {
+      // scroll to end then loop to start
+      el.scrollTo({ left: max, behavior: 'smooth' });
+      setTimeout(() => {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      }, 420);
+      return;
+    }
+    if (next < 0) {
+      // scroll to start then loop to end
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        el.scrollTo({ left: max, behavior: 'smooth' });
+      }, 420);
+      return;
+    }
+
+    el.scrollTo({ left: next, behavior: 'smooth' });
+  };
 
   const triggerTransitionAndNavigate = (target: string) => {
     if (isNavigating) return;
@@ -339,9 +369,17 @@ export default function Auth() {
             <Button onClick={() => navigate('/contact')} className="px-6 py-2">Découvrir notre solution</Button>
           </div>
 
-          {/* Social proof horizontal scroller */}
-          <div className="w-full">
-            <div className="flex gap-4 overflow-x-auto py-2 px-2 -mx-2 snap-x snap-mandatory">
+          {/* Social proof horizontal scroller with prev/next buttons (looping) */}
+          <div className="w-full relative">
+            {/* hide native scrollbar for this scroller */}
+            <style>{`#social-scroller::-webkit-scrollbar{display:none} #social-scroller{scrollbar-width:none}`}</style>
+
+            <div
+              id="social-scroller"
+              ref={scrollerRef}
+              className="flex gap-4 overflow-x-auto py-2 px-2 -mx-2 snap-x snap-mandatory scroll-smooth"
+              aria-label="Témoignages et indicateurs"
+            >
               <div className="snap-start min-w-[260px] md:min-w-[300px] bg-card p-4 rounded-lg border border-border shadow-sm">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
@@ -406,6 +444,23 @@ export default function Auth() {
                 <p className="mt-3 text-sm text-muted-foreground">Réduction du travail administratif grâce aux automatisations et modèles de Neira.</p>
               </div>
             </div>
+
+            {/* Prev / Next buttons */}
+            <button
+              aria-label="Précédent"
+              onClick={() => scrollByAmount(-(scrollerRef.current?.clientWidth ?? 320) * 0.8)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow rounded-full w-9 h-9 flex items-center justify-center"
+            >
+              <ChevronLeft className="w-4 h-4 text-foreground" />
+            </button>
+
+            <button
+              aria-label="Suivant"
+              onClick={() => scrollByAmount((scrollerRef.current?.clientWidth ?? 320) * 0.8)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow rounded-full w-9 h-9 flex items-center justify-center"
+            >
+              <ChevronRight className="w-4 h-4 text-foreground" />
+            </button>
           </div>
         </div>
 
