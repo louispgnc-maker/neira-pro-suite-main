@@ -19,10 +19,10 @@ export default function Index() {
 
         {/* Role buttons */}
         <div className="flex items-center justify-center gap-6 mb-12">
-          <Button size="lg" className="text-lg px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 shadow-md ring-1 ring-blue-700 border border-blue-800/20 whitespace-nowrap" onClick={() => navigate("/avocats/auth")}>
+          <Button size="lg" className="text-lg px-6 py-3 bg-blue-600 text-white hover:bg-blue-800 shadow-md ring-1 ring-blue-700 border border-blue-800/20 whitespace-nowrap transition-colors duration-150" onClick={() => navigate("/avocats/auth")}>
             Espace Avocats
           </Button>
-          <Button size="lg" className="text-lg px-6 py-3 bg-orange-600 text-white hover:bg-orange-700 shadow-md ring-1 ring-orange-700 border border-orange-800/20 whitespace-nowrap" onClick={() => navigate("/notaires/auth")}>
+          <Button size="lg" className="text-lg px-6 py-3 bg-orange-600 text-white hover:bg-orange-800 shadow-md ring-1 ring-orange-700 border border-orange-800/20 whitespace-nowrap transition-colors duration-150" onClick={() => navigate("/notaires/auth")}>
             Espace Notaires
           </Button>
         </div>
