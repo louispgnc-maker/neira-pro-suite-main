@@ -223,7 +223,7 @@ export default function Auth() {
               <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150">
+              <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150">
                 <Linkedin className="w-4 h-4" />
               </a>
             </div>
