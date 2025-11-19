@@ -223,14 +223,14 @@ export default function Auth() {
 
           <div className="flex items-center gap-3">
             {/* Header role buttons styled like the center large buttons (compact) */}
-            <div className={`relative transition-all duration-200 ${role === 'avocat' && authAtTop ? 'w-80 scale-105 ring-2 ring-blue-600 rounded-lg' : 'w-80'}`}>
+            <div className={`relative transition-all duration-200 ${role === 'avocat' && authAtTop ? 'inline-block scale-105 ring-2 ring-blue-600 rounded-lg' : 'inline-block'}`}>
               <div
                 role="button"
                 tabIndex={0}
                 aria-expanded={role === 'avocat' && authAtTop}
                 onClick={(e) => { e.stopPropagation(); setRole('avocat'); navigate('/avocats/auth'); }}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setRole('avocat'); navigate('/avocats/auth'); } }}
-                className={`inline-flex items-center gap-2 px-3 py-2 w-full text-left transition-all duration-200 ${
+                className={`inline-flex items-center gap-2 px-3 py-2 text-left transition-all duration-200 ${
                   role === 'avocat' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-blue-50 to-blue-100 border-b-0 border border-blue-200' : 'rounded-lg bg-blue-50 hover:scale-105 border border-blue-100'
                 }`}
               >
@@ -243,14 +243,14 @@ export default function Auth() {
               {/* auth removed from this page - clicking the button now only sets the role */}
             </div>
 
-            <div className={`relative transition-all duration-200 ${role === 'notaire' && authAtTop ? 'w-80 scale-105 ring-2 ring-orange-600 rounded-lg' : 'w-80'}`}>
+            <div className={`relative transition-all duration-200 ${role === 'notaire' && authAtTop ? 'inline-block scale-105 ring-2 ring-orange-600 rounded-lg' : 'inline-block'}`}>
               <div
                 role="button"
                 tabIndex={0}
                 aria-expanded={role === 'notaire' && authAtTop}
                 onClick={(e) => { e.stopPropagation(); setRole('notaire'); navigate('/notaires/auth'); }}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setRole('notaire'); navigate('/notaires/auth'); } }}
-                className={`inline-flex items-center gap-2 px-3 py-2 w-full text-left transition-all duration-200 ${
+                className={`inline-flex items-center gap-2 px-3 py-2 text-left transition-all duration-200 ${
                   role === 'notaire' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-orange-50 to-orange-100 border-b-0 border border-orange-200' : 'rounded-lg bg-orange-50 hover:scale-105 border border-orange-100'
                 }`}
               >
