@@ -220,10 +220,24 @@ export default function Auth() {
               <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
             </div>
             <div className="ml-3 flex items-center gap-2">
-              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md bg-white/80 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150 shadow-sm">
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+                style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
+              >
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-8 h-8 rounded-md bg-white/80 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-150 shadow-sm">
+              <a
+                href="https://www.linkedin.com/company/neira-doc"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+                style={{ background: '#0A66C2' }}
+              >
                 <Linkedin className="w-4 h-4" />
               </a>
             </div>
