@@ -245,9 +245,9 @@ export default function Auth() {
 
       {/* Features Section - Below Auth */}
       <div className="w-full max-w-4xl mx-auto mt-16">
-        <div className="text-center mb-10">
+          <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-foreground mb-3">
-            Automatisez votre activité professionnelle
+            Automatisez votre activité juridique
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Une plateforme sécurisée qui simplifie votre quotidien, optimise votre temps et celui de vos clients
