@@ -191,6 +191,10 @@ export default function NotaireAuth() {
                   </div>
                 ) : null}
               </div>
+
+              <button type="button" onClick={() => navigate('/contact')} className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border">
+                Contact
+              </button>
             </div>
           </div>
 
