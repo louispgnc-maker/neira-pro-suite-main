@@ -149,7 +149,7 @@ export function DashboardAvocat() {
             </Badge>
           </div>
         </div>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-foreground mt-2">
           Voici un aperçu de votre activité juridique
         </p>
 
