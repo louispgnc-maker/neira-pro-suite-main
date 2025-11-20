@@ -32,6 +32,7 @@ import EspaceCollaboratif from "./pages/EspaceCollaboratif";
 import About from "./pages/About";
 import Solution from "./pages/Solution";
 import MentionsLegales from "./pages/MentionsLegales";
+import RGPD from "./pages/RGPD";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/solution" element={<Solution />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/rgpd" element={<RGPD />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/dashboard" element={<Dashboard />} />
             
