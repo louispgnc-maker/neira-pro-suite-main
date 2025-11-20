@@ -572,7 +572,7 @@ export default function Auth() {
               <div>
                 <h5 className="font-semibold mb-2 text-foreground text-sm">Légal</h5>
                 <ul className="space-y-1 text-xs text-muted-foreground">
-                  <li><a href="#" className="hover:text-foreground transition-colors">Mentions légales</a></li>
+                  <li><button onClick={() => navigate('/mentions-legales')} className="hover:text-foreground transition-colors text-left">Mentions légales</button></li>
                   <li><a href="#" className="hover:text-foreground transition-colors">RGPD</a></li>
                   <li><a href="#" className="hover:text-foreground transition-colors">CGU</a></li>
                 </ul>
