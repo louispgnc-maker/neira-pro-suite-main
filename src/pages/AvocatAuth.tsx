@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabaseClient";
 import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStatus";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -143,52 +142,19 @@ export default function AvocatAuth() {
           <CardDescription>Connectez-vous à votre espace Avocat</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login">
-            <TabsList>
-              <TabsTrigger value="login">Connexion</TabsTrigger>
-              <TabsTrigger value="signup">Créer un compte</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
-                <div>
-                  <Label>Email</Label>
-                  <Input name="email" type="email" required />
-                </div>
-                <div>
-                  <Label>Mot de passe</Label>
-                  <Input name="password" type="password" required />
-                </div>
-                <div className="flex justify-end">
-                  <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">Se connecter</Button>
-                </div>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={(e) => handleAuth(e, true)} className="space-y-4">
-                <div>
-                  <Label>Prénom</Label>
-                  <Input name="firstName" required />
-                </div>
-                <div>
-                  <Label>Nom</Label>
-                  <Input name="lastName" required />
-                </div>
-                <div>
-                  <Label>Email</Label>
-                  <Input name="signupEmail" type="email" required />
-                </div>
-                <div>
-                  <Label>Mot de passe</Label>
-                  <Input name="signupPassword" type="password" required />
-                </div>
-                <div className="flex justify-end">
-                  <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">Créer un compte</Button>
-                </div>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={(e) => handleAuth(e, false)} className="space-y-4">
+            <div>
+              <Label>Email</Label>
+              <Input name="email" type="email" required />
+            </div>
+            <div>
+              <Label>Mot de passe</Label>
+              <Input name="password" type="password" required />
+            </div>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">Se connecter</Button>
+            </div>
+          </form>
         </CardContent>
       </Card>
       </div>
