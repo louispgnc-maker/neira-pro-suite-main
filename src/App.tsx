@@ -30,6 +30,7 @@ import Profile from "./pages/Profile";
 import Cabinet from "./pages/Cabinet";
 import EspaceCollaboratif from "./pages/EspaceCollaboratif";
 import About from "./pages/About";
+import Solution from "./pages/Solution";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Auth />} />
             <Route path="/about" element={<About />} />
+            <Route path="/solution" element={<Solution />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/dashboard" element={<Dashboard />} />
             

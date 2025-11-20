@@ -555,7 +555,7 @@ export default function Auth() {
                 <ul className="space-y-1 text-xs text-muted-foreground">
                   <li><a href="/avocats/metier" className="hover:text-foreground transition-colors">Avocats</a></li>
                   <li><a href="/notaires/metier" className="hover:text-foreground transition-colors">Notaires</a></li>
-                  <li><button onClick={() => navigate('/about')} className="hover:text-foreground transition-colors text-left">Découvrir notre solution</button></li>
+                  <li><button onClick={() => navigate('/solution')} className="hover:text-foreground transition-colors text-left">Découvrir notre solution</button></li>
                 </ul>
               </div>
 
