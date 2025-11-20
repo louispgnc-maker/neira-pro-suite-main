@@ -69,70 +69,8 @@ export default function Solution() {
     >
       <PublicHeader />
 
-      {/* Hero Section */}
+      {/* Pricing Section */}
       <div className="container mx-auto px-4 py-24">
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Découvrez Neira
-          </h1>
-          <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-            La solution complète pour digitaliser et automatiser votre cabinet juridique. 
-            Gagnez du temps, améliorez votre productivité et concentrez-vous sur l'essentiel : votre métier.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-              onClick={() => navigate('/avocats/auth')}
-            >
-              Commencer gratuitement
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              onClick={() => navigate('/contact')}
-            >
-              Demander une démo
-            </Button>
-          </div>
-        </div>
-
-        {/* Features Grid */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
-            Une plateforme complète et intuitive
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <Card key={index} className="p-6 bg-white/80 backdrop-blur hover:shadow-xl transition-shadow">
-                <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center text-white mb-4`}>
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Benefits Section */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <Card className="p-8 bg-white/90 backdrop-blur">
-            <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">
-              Pourquoi choisir Neira ?
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                  <p className="text-gray-700">{benefit}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-
-        {/* Pricing Section */}
         <div className="max-w-6xl mx-auto mb-16">
           <h2 className="text-3xl font-bold text-center mb-4 text-gray-900">
             ⭐ Grille Tarifaire Neira
@@ -315,6 +253,68 @@ export default function Solution() {
               </Button>
             </Card>
           </div>
+        </div>
+
+        {/* Hero Section */}
+        <div className="max-w-4xl mx-auto text-center mb-16">
+          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Découvrez Neira
+          </h1>
+          <p className="text-xl text-gray-700 mb-8 leading-relaxed">
+            La solution complète pour digitaliser et automatiser votre cabinet juridique. 
+            Gagnez du temps, améliorez votre productivité et concentrez-vous sur l'essentiel : votre métier.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+              onClick={() => navigate('/avocats/auth')}
+            >
+              Commencer gratuitement
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => navigate('/contact')}
+            >
+              Demander une démo
+            </Button>
+          </div>
+        </div>
+
+        {/* Features Grid */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+            Une plateforme complète et intuitive
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <Card key={index} className="p-6 bg-white/80 backdrop-blur hover:shadow-xl transition-shadow">
+                <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center text-white mb-4`}>
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">{feature.title}</h3>
+                <p className="text-gray-600 text-sm">{feature.description}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Benefits Section */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <Card className="p-8 bg-white/90 backdrop-blur">
+            <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">
+              Pourquoi choisir Neira ?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {benefits.map((benefit, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                  <p className="text-gray-700">{benefit}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
 
         {/* Technology Section */}
