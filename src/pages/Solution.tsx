@@ -132,6 +132,191 @@ export default function Solution() {
           </Card>
         </div>
 
+        {/* Pricing Section */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <h2 className="text-3xl font-bold text-center mb-4 text-gray-900">
+            ⭐ Grille Tarifaire Neira
+          </h2>
+          <p className="text-center text-gray-600 mb-12">Version cohérente & ultra-compétitive</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Offre Essentiel */}
+            <Card className="p-6 bg-white/90 backdrop-blur hover:shadow-2xl transition-shadow">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
+                <div className="text-4xl font-bold text-blue-600 mb-2">39€</div>
+                <p className="text-sm text-gray-600">par mois / utilisateur</p>
+                <p className="text-sm text-gray-500 mt-2">Pour indépendants & petits cabinets</p>
+              </div>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Espace collaboratif complet</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Gestion documentaire intelligente</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Partage sécurisé + dépôt client</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Planning + tâches + rappels</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Signature électronique (5/mois)</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">20 Go de stockage</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Suivi des dossiers / clients</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Support email</span>
+                </div>
+              </div>
+              
+              <div className="bg-blue-50 rounded-lg p-3 mb-4">
+                <p className="text-xs text-blue-700 font-medium">🎯 Offre d'entrée attractive + simple à adopter</p>
+              </div>
+              
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/contact')}>
+                Choisir Essentiel
+              </Button>
+            </Card>
+
+            {/* Offre Professionnel */}
+            <Card className="p-6 bg-white/90 backdrop-blur hover:shadow-2xl transition-shadow border-2 border-purple-500 relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-xs font-semibold">
+                RECOMMANDÉ
+              </div>
+              
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA PROFESSIONNEL</h3>
+                <div className="text-4xl font-bold text-purple-600 mb-2">59€</div>
+                <p className="text-sm text-gray-600">par mois / utilisateur</p>
+                <p className="text-sm text-gray-500 mt-2">Offre cœur de gamme</p>
+              </div>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700 font-medium">Tout ce qu'il y a dans Essentiel</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Automatisations & workflows</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Génération automatique de documents</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Modèles juridiques personnalisables</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Signature électronique illimitée</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">100 Go de stockage</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Gestion des droits utilisateurs</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Tableaux de bord & reporting</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Historique d'activité avancé</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Support prioritaire</span>
+                </div>
+              </div>
+              
+              <div className="bg-purple-50 rounded-lg p-3 mb-4">
+                <p className="text-xs text-purple-700 font-medium">🎯 Le meilleur rapport qualité/prix du marché juridique</p>
+              </div>
+              
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/contact')}>
+                Choisir Professionnel
+              </Button>
+            </Card>
+
+            {/* Offre Cabinet+ */}
+            <Card className="p-6 bg-white/90 backdrop-blur hover:shadow-2xl transition-shadow">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
+                <div className="text-4xl font-bold text-orange-600 mb-2">129€</div>
+                <p className="text-sm text-gray-600">par mois / utilisateur</p>
+                <p className="text-sm text-gray-500 mt-2">Pour cabinets structurés (5-50 personnes)</p>
+              </div>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700 font-medium">Tout le Pro</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Automatisations illimitées</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Dossiers clients avancés</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">API + intégrations externes</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Stockage illimité</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Onboarding personnalisé</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Support 7j/7 + SLA</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Formation de l'équipe</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Accès anticipé aux futures features</span>
+                </div>
+              </div>
+              
+              <div className="bg-orange-50 rounded-lg p-3 mb-4">
+                <p className="text-xs text-orange-700 font-medium">🎯 Positionnement haut-de-gamme ultra rentable</p>
+              </div>
+              
+              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/contact')}>
+                Choisir Cabinet+
+              </Button>
+            </Card>
+          </div>
+        </div>
+
         {/* Technology Section */}
         <div className="max-w-6xl mx-auto mb-16">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
