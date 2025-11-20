@@ -134,7 +134,7 @@ export function DashboardNotaire() {
 
   return (
     <AppLayout>
-      <div className="bg-gradient-to-br from-primary/20 via-accent/10 to-background min-h-screen" style={{ backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20de%20page%20notaire.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+      <div className="min-h-screen">
         <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
