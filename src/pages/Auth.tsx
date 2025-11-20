@@ -440,7 +440,7 @@ export default function Auth() {
                 </div>
               </div>
 
-              {/* Centered controls: Pour qui ? + Connexion */}
+              {/* Centered controls: Pour qui ? + Connexion + Contact */}
               <div className="flex-1 flex justify-center items-center">
                 <div className="flex items-center gap-4">
                   <div ref={whoRef} className="relative">
@@ -502,6 +502,14 @@ export default function Auth() {
                       </div>
                     ) : null}
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => navigate('/contact')}
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border"
+                  >
+                    Contact
+                  </button>
                 </div>
               </div>
 
