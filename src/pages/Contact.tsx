@@ -15,7 +15,6 @@ export default function Contact() {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
     company: "",
     subject: "",
     message: "",
@@ -38,7 +37,6 @@ export default function Contact() {
         {
           from_name: `${formData.firstName} ${formData.lastName}`,
           from_email: formData.email,
-          phone: formData.phone,
           company: formData.company,
           subject: formData.subject,
           message: formData.message,
@@ -54,7 +52,6 @@ export default function Contact() {
         firstName: "",
         lastName: "",
         email: "",
-        phone: "",
         company: "",
         subject: "",
         message: "",
@@ -135,39 +132,6 @@ export default function Contact() {
                     <p className="text-gray-600">contact@neira.fr</p>
                   </div>
                 </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800 mb-1">Téléphone</h3>
-                    <p className="text-gray-600">+33 1 23 45 67 89</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800 mb-1">Adresse</h3>
-                    <p className="text-gray-600">
-                      123 Avenue des Champs-Élysées
-                      <br />
-                      75008 Paris, France
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <h3 className="font-semibold text-gray-800 mb-3">Horaires d'ouverture</h3>
-                <p className="text-gray-600 text-sm">
-                  Lundi - Vendredi : 9h00 - 18h00
-                  <br />
-                  Samedi - Dimanche : Fermé
-                </p>
               </div>
             </div>
 
@@ -213,18 +177,6 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     placeholder="jean.dupont@exemple.fr"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="phone">Téléphone</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+33 6 12 34 56 78"
                   />
                 </div>
 
