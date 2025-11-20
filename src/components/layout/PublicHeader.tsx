@@ -48,6 +48,13 @@ export function PublicHeader() {
             Accueil
           </button>
 
+          <button
+            onClick={() => navigate('/solution')}
+            className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+          >
+            Notre solution
+          </button>
+
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
