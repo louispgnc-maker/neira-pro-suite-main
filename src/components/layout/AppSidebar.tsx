@@ -124,7 +124,7 @@ export function AppSidebar() {
                 className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}
               >
                 <DropdownMenuItem
-                  onClick={() => navigate('/avocats/dashboard')}
+                  onClick={() => navigate('/avocats/auth')}
                   disabled={role === 'avocat'}
                   className={
                     role === 'avocat'
@@ -135,7 +135,7 @@ export function AppSidebar() {
                   Espace Avocat
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => navigate('/notaires/dashboard')}
+                  onClick={() => navigate('/notaires/auth')}
                   disabled={role === 'notaire'}
                   className={
                     role === 'notaire'
