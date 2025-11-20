@@ -624,51 +624,6 @@ export default function Auth() {
         </div>
 
         {/* Compliance/benefit badges removed per request */}
-
-        {/* "Pour qui ?" section - Avocats / Notaires */}
-        <div className="mt-10 bg-card p-6 rounded-xl border border-border shadow-sm">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold">Pour qui ?</h3>
-            <p className="text-sm text-muted-foreground max-w-2xl mx-auto">Découvrez comment Neira s'adapte aux besoins des cabinets.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow">
-                  <Shield className="w-5 h-5 text-primary" />
-                </div>
-                <h4 className="text-lg font-semibold">Avocats</h4>
-              </div>
-              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                <li>Gestion des dossiers et contrats</li>
-                <li>Automatisation des actes et modèles</li>
-                <li>Suivi des échéances & agendas</li>
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow">
-                  <Users className="w-5 h-5 text-accent" />
-                </div>
-                <h4 className="text-lg font-semibold">Notaires</h4>
-              </div>
-              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                <li>Modèles d'actes et formalités</li>
-                <li>Signature sécurisée et archivage</li>
-                <li>Gestion clients & partage contrôlé</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground max-w-xl">Découvrez tous nos outils pour gagner du temps et sécuriser vos procédures.</p>
-            <div>
-              <Button onClick={() => navigate('/contact')} className="ml-auto">Découvrir notre solution</Button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

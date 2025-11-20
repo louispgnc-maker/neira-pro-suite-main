@@ -11,6 +11,8 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import AvocatDashboard from "./pages/avocats/Dashboard";
 import NotaireDashboard from "./pages/notaires/Dashboard";
+import AvocatMetier from "./pages/avocats/Metier";
+import NotaireMetier from "./pages/notaires/Metier";
 import Documents from "./pages/Documents";
 import Signatures from "./pages/Signatures";
 import Clients from "./pages/Clients";
@@ -43,6 +45,7 @@ const App = () => (
             
             {/* Routes Avocat */}
             <Route path="/avocats/auth" element={<AvocatAuth />} />
+            <Route path="/avocats/metier" element={<AvocatMetier />} />
             <Route path="/avocats/dashboard" element={<AvocatDashboard />} />
             <Route path="/avocats/documents" element={<Documents />} />
             <Route path="/avocats/signatures" element={<Signatures />} />
@@ -61,6 +64,7 @@ const App = () => (
             
             {/* Routes Notaire */}
             <Route path="/notaires/auth" element={<NotaireAuth />} />
+            <Route path="/notaires/metier" element={<NotaireMetier />} />
             <Route path="/notaires/dashboard" element={<NotaireDashboard />} />
             <Route path="/notaires/documents" element={<Documents />} />
             <Route path="/notaires/signatures" element={<Signatures />} />

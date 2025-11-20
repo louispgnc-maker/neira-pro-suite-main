@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Instagram, Linkedin } from "lucide-react";
 
 interface FormElements extends HTMLFormElement {
   email: HTMLInputElement;
@@ -28,6 +28,30 @@ export default function NotaireAuth() {
   const [overlayAnimate, setOverlayAnimate] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const [progress, setProgress] = useState<number>(0);
+  const [whoOpen, setWhoOpen] = useState(false);
+  const [connOpen, setConnOpen] = useState(false);
+  const whoRef = useRef<HTMLDivElement | null>(null);
+  const connRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!whoOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (whoRef.current && !whoRef.current.contains(t)) setWhoOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [whoOpen]);
+
+  useEffect(() => {
+    if (!connOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (connRef.current && !connRef.current.contains(t)) setConnOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [connOpen]);
 
   const withTimeout = async <T,>(promise: Promise<T>, ms = 7000): Promise<T> => {
     return await new Promise<T>((resolve, reject) => {
@@ -118,12 +142,70 @@ export default function NotaireAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white p-6 flex items-center justify-center">
-      <div className="fixed top-4 left-4 z-50">
-        <button onClick={() => navigate(-1)} aria-label="Retour" className="w-10 h-10 rounded-full flex items-center justify-center bg-orange-600 text-white shadow-md">
-          <ArrowLeft className="w-4 h-4" />
-        </button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white">
+      {/* Fixed header */}
+      <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
+        <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
+            <div className="leading-tight">
+              <div className="text-base font-bold text-foreground">Neira</div>
+              <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
+            </div>
+          </div>
+
+          <div className="flex-1 flex justify-center items-center">
+            <div className="flex items-center gap-4">
+              <div ref={whoRef} className="relative">
+                <button type="button" onClick={(e) => { e.stopPropagation(); setWhoOpen((s) => !s); }} className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border">
+                  Pour qui ?
+                  <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {whoOpen ? (
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-md shadow-md z-40">
+                    <button className="w-full text-left px-4 py-2 hover:bg-primary/5" onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}>Avocats</button>
+                    <button className="w-full text-left px-4 py-2 hover:bg-primary/5" onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}>Notaires</button>
+                  </div>
+                ) : null}
+              </div>
+
+              <div ref={connRef} className="relative">
+                <button type="button" onClick={(e) => { e.stopPropagation(); setConnOpen((s) => !s); }} className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border">
+                  Connexion
+                  <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {connOpen ? (
+                  <div className="absolute right-0 mt-2 w-52 bg-white border border-border rounded-md shadow-md z-40">
+                    <button className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3" onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}>
+                      <span className="text-2xl">⚖️</span>
+                      <span>Espace Avocats</span>
+                    </button>
+                    <button className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3" onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}>
+                      <span className="text-2xl">🏛️</span>
+                      <span>Espace Notaires</span>
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
+              <Instagram className="w-4 h-4" />
+            </a>
+            <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm" style={{ background: '#0A66C2' }}>
+              <Linkedin className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <div className="p-6 pt-28 flex items-center justify-center min-h-screen">
       {overlayVisible ? (
         <div className={`fixed inset-0 z-[1000] flex items-center justify-center`}>
           <div className={`absolute inset-0 bg-white`} style={{ transform: overlayAnimate ? 'scale(20)' : 'scale(0.04)', opacity: overlayAnimate ? 1 : 0, transition: 'transform 800ms ease-out, opacity 500ms ease-out' }} />
@@ -192,6 +274,7 @@ export default function NotaireAuth() {
           </Tabs>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

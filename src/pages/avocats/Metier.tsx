@@ -1,61 +1,277 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Scale, Briefcase, FileText, UserCheck, Calculator, ShieldCheck, Users, ArrowRight, Instagram, Linkedin } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function AvocatsMetier() {
   const navigate = useNavigate();
+  const [whoOpen, setWhoOpen] = useState(false);
+  const [connOpen, setConnOpen] = useState(false);
+  const whoRef = useRef<HTMLDivElement | null>(null);
+  const connRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!whoOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (whoRef.current && !whoRef.current.contains(t)) setWhoOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [whoOpen]);
+
+  useEffect(() => {
+    if (!connOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (connRef.current && !connRef.current.contains(t)) setConnOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [connOpen]);
+
+  const roles = [
+    {
+      icon: <Scale className="w-8 h-8" />,
+      title: "Associé / Fondateur",
+      color: "from-blue-900 to-blue-800",
+      permissions: [
+        "Accès complet à tous les dossiers et documents",
+        "Gestion des membres et attribution des rôles",
+        "Configuration du cabinet et paramètres",
+        "Validation des contrats et signatures",
+        "Supervision financière et reporting",
+        "Droits d'administration totaux"
+      ]
+    },
+    {
+      icon: <ShieldCheck className="w-8 h-8" />,
+      title: "Responsable Qualité / RGPD",
+      color: "from-blue-800 to-blue-700",
+      permissions: [
+        "Audits internes et conformité",
+        "Gestion des données personnelles",
+        "Contrôle des processus qualité",
+        "Formation des équipes",
+        "Accès lecture à tous les dossiers"
+      ]
+    },
+    {
+      icon: <Briefcase className="w-8 h-8" />,
+      title: "Avocat Collaborateur",
+      color: "from-blue-700 to-blue-600",
+      permissions: [
+        "Gestion de ses propres dossiers clients",
+        "Rédaction et modification de contrats",
+        "Accès aux modèles et bibliothèque juridique",
+        "Communication avec les clients"
+      ]
+    },
+    {
+      icon: <FileText className="w-8 h-8" />,
+      title: "Juriste Senior",
+      color: "from-blue-600 to-blue-500",
+      permissions: [
+        "Relecture et validation des documents",
+        "Création et modification des modèles",
+        "Accès aux dossiers de son équipe"
+      ]
+    },
+    {
+      icon: <UserCheck className="w-8 h-8" />,
+      title: "Assistant Juridique / Paralegal",
+      color: "from-blue-500 to-blue-400",
+      permissions: [
+        "Préparation des dossiers clients",
+        "Collecte et organisation des pièces"
+      ]
+    },
+    {
+      icon: <Calculator className="w-8 h-8" />,
+      title: "Chargé de Facturation",
+      color: "from-blue-400 to-blue-300",
+      permissions: [
+        "Accès lecture aux dossiers"
+      ]
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background p-6 pt-28">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md border border-border p-8">
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold">Avocats — Ce que nous apportons</h1>
-            <p className="text-sm text-muted-foreground mt-2">Solutions pour optimiser la rédaction, la collaboration et le pilotage de votre cabinet.</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50">
+      {/* Fixed header */}
+      <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
+        <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4">
+          {/* Logo on the far left */}
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
+            <div className="leading-tight">
+              <div className="text-base font-bold text-foreground">Neira</div>
+              <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
+            </div>
           </div>
-          <div>
+
+          {/* Centered controls: Pour qui ? + Connexion */}
+          <div className="flex-1 flex justify-center items-center">
+            <div className="flex items-center gap-4">
+              <div ref={whoRef} className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setWhoOpen((s) => !s); }}
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border"
+                >
+                  Pour qui ?
+                  <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {whoOpen ? (
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-md shadow-md z-40">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-primary/5"
+                      onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}
+                    >
+                      Avocats
+                    </button>
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-primary/5"
+                      onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}
+                    >
+                      Notaires
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+
+              <div ref={connRef} className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setConnOpen((s) => !s); }}
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border"
+                >
+                  Connexion
+                  <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {connOpen ? (
+                  <div className="absolute right-0 mt-2 w-52 bg-white border border-border rounded-md shadow-md z-40">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3"
+                      onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
+                    >
+                      <span className="text-2xl">⚖️</span>
+                      <span>Espace Avocats</span>
+                    </button>
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3"
+                      onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}
+                    >
+                      <span className="text-2xl">🏛️</span>
+                      <span>Espace Notaires</span>
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          {/* Social icons on the far right */}
+          <div className="flex items-center gap-2">
+            <a
+              href="https://www.instagram.com/neira.doc/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+              style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
+            >
+              <Instagram className="w-4 h-4" />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/neira-doc"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+              style={{ background: '#0A66C2' }}
+            >
+              <Linkedin className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <div className="p-6 pt-28">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
+                <Scale className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold">Cabinets d'Avocats</h1>
+                <p className="text-muted-foreground mt-1">Rôles et permissions dans l'espace collaboratif</p>
+              </div>
+            </div>
             <Button onClick={() => navigate(-1)} variant="ghost">Retour</Button>
+          </div>
+          
+          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+            <Users className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-blue-900">
+              Attribuez des rôles spécifiques à chaque membre de votre cabinet pour contrôler les accès, 
+              organiser les responsabilités et collaborer efficacement sur tous vos dossiers.
+            </p>
           </div>
         </div>
 
-        <section className="space-y-4 mb-6">
-          <h2 className="text-xl font-semibold">Nos apports au métier</h2>
-          <ul className="list-disc list-inside text-sm space-y-2 text-muted-foreground">
-            <li>Automatisation de la rédaction d'actes et contrats (modèles paramétrables, clauses réutilisables).</li>
-            <li>Gestion centralisée des dossiers clients et des pièces (recherche, OCR, métadonnées).</li>
-            <li>Processus de signature sécurisée et d'archivage conforme.</li>
-            <li>Permissions granulaires pour gérer accès et responsabilités par rôle.</li>
-            <li>Tableaux de bord métier pour suivre chiffre d'affaires, charge et délais.</li>
-          </ul>
-        </section>
+        {/* Roles Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {roles.map((role, index) => (
+            <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className={`bg-gradient-to-r ${role.color} p-6 text-white`}>
+                <div className="flex items-center gap-3">
+                  {role.icon}
+                  <h3 className="text-xl font-bold">{role.title}</h3>
+                </div>
+              </div>
+              <div className="p-6">
+                <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
+                  Permissions
+                </h4>
+                <ul className="space-y-2.5">
+                  {role.permissions.map((permission, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm">
+                      <ArrowRight className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>{permission}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+          ))}
+        </div>
 
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold">Postes et rôles dans le cabinet</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-            <div className="space-y-3">
-              <h3 className="font-medium">Direction & avocats</h3>
-              <ul className="list-disc list-inside text-sm text-muted-foreground">
-                <li>Associés / Fondateurs — pilotage stratégique, conformité, business development.</li>
-                <li>Collaborateurs / Avocats — gestion des dossiers clients et représentation.</li>
-                <li>Juristes seniors — relecture, validation des modèles et encadrement.</li>
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="font-medium">Support & opérations</h3>
-              <ul className="list-disc list-inside text-sm text-muted-foreground">
-                <li>Paralegals / Assistants juridiques — préparation des dossiers, contacts clients.</li>
-                <li>Chargé(e) de facturation & administratif — suivi des factures et paiements.</li>
-                <li>Responsable qualité & conformité — audits internes et gestion RGPD.</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-6">
-          <h2 className="text-lg font-semibold">Comment Neira s'intègre</h2>
-          <p className="text-sm text-muted-foreground mt-2">Neira se connecte aux processus existants et propose des points d'automatisation progressifs : modèles de documents partagés, workflows de validation, notifications d'échéances, et rapports métiers. L'objectif est de réduire le temps passé sur les tâches répétitives et d'améliorer la traçabilité.</p>
-        </section>
+        {/* CTA */}
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-8 text-white text-center">
+          <h2 className="text-2xl font-bold mb-3">Prêt à optimiser votre cabinet ?</h2>
+          <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+            Commencez à utiliser Neira pour gérer vos équipes, vos dossiers et vos clients de manière collaborative et sécurisée.
+          </p>
+          <Button 
+            size="lg" 
+            variant="secondary"
+            onClick={() => navigate('/avocats/auth')}
+            className="gap-2"
+          >
+            Créer mon espace
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
       </div>
     </div>
   );

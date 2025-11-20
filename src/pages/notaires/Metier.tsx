@@ -1,61 +1,277 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Landmark, FileSignature, ClipboardCheck, UserCog, Archive, ShieldCheck, Users, ArrowRight, Instagram, Linkedin } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function NotairesMetier() {
   const navigate = useNavigate();
+  const [whoOpen, setWhoOpen] = useState(false);
+  const [connOpen, setConnOpen] = useState(false);
+  const whoRef = useRef<HTMLDivElement | null>(null);
+  const connRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!whoOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (whoRef.current && !whoRef.current.contains(t)) setWhoOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [whoOpen]);
+
+  useEffect(() => {
+    if (!connOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (connRef.current && !connRef.current.contains(t)) setConnOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [connOpen]);
+
+  const roles = [
+    {
+      icon: <Landmark className="w-8 h-8" />,
+      title: "Notaire Associé",
+      color: "from-orange-900 to-orange-800",
+      permissions: [
+        "Accès complet à tous les actes et dossiers",
+        "Gestion des membres et attribution des rôles",
+        "Configuration de l'étude et paramètres",
+        "Validation et signature des actes",
+        "Supervision financière et reporting",
+        "Droits d'administration totaux"
+      ]
+    },
+    {
+      icon: <ShieldCheck className="w-8 h-8" />,
+      title: "Responsable Qualité / RGPD",
+      color: "from-orange-800 to-orange-700",
+      permissions: [
+        "Audits internes et conformité",
+        "Gestion des données personnelles",
+        "Contrôle des processus qualité",
+        "Formation des équipes",
+        "Accès lecture à tous les dossiers"
+      ]
+    },
+    {
+      icon: <FileSignature className="w-8 h-8" />,
+      title: "Notaire Adjoint",
+      color: "from-orange-700 to-orange-600",
+      permissions: [
+        "Rédaction et contrôle des actes",
+        "Relations directes avec les clients",
+        "Accès aux modèles et bibliothèque d'actes",
+        "Gestion des dossiers assignés"
+      ]
+    },
+    {
+      icon: <ClipboardCheck className="w-8 h-8" />,
+      title: "Clerc / Formaliste",
+      color: "from-orange-600 to-orange-500",
+      permissions: [
+        "Préparation et constitution des dossiers",
+        "Enregistrement des formalités",
+        "Collecte des pièces justificatives"
+      ]
+    },
+    {
+      icon: <Archive className="w-8 h-8" />,
+      title: "Gestionnaire d'Actes",
+      color: "from-orange-500 to-orange-400",
+      permissions: [
+        "Organisation et archivage des actes",
+        "Suivi des signatures et envois"
+      ]
+    },
+    {
+      icon: <UserCog className="w-8 h-8" />,
+      title: "Responsable Administratif",
+      color: "from-orange-400 to-orange-300",
+      permissions: [
+        "Gestion de l'accueil et des rendez-vous"
+      ]
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background p-6 pt-28">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md border border-border p-8">
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold">Notaires — Ce que nous apportons</h1>
-            <p className="text-sm text-muted-foreground mt-2">Outils conçus pour sécuriser les actes, rationaliser les formalités et faciliter le travail des équipes notariales.</p>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-orange-50">
+      {/* Fixed header */}
+      <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
+        <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4">
+          {/* Logo on the far left */}
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
+            <div className="leading-tight">
+              <div className="text-base font-bold text-foreground">Neira</div>
+              <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
+            </div>
           </div>
-          <div>
+
+          {/* Centered controls: Pour qui ? + Connexion */}
+          <div className="flex-1 flex justify-center items-center">
+            <div className="flex items-center gap-4">
+              <div ref={whoRef} className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setWhoOpen((s) => !s); }}
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border"
+                >
+                  Pour qui ?
+                  <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {whoOpen ? (
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-md shadow-md z-40">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-primary/5"
+                      onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}
+                    >
+                      Avocats
+                    </button>
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-primary/5"
+                      onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}
+                    >
+                      Notaires
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+
+              <div ref={connRef} className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setConnOpen((s) => !s); }}
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border"
+                >
+                  Connexion
+                  <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {connOpen ? (
+                  <div className="absolute right-0 mt-2 w-52 bg-white border border-border rounded-md shadow-md z-40">
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3"
+                      onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
+                    >
+                      <span className="text-2xl">⚖️</span>
+                      <span>Espace Avocats</span>
+                    </button>
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3"
+                      onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}
+                    >
+                      <span className="text-2xl">🏛️</span>
+                      <span>Espace Notaires</span>
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          {/* Social icons on the far right */}
+          <div className="flex items-center gap-2">
+            <a
+              href="https://www.instagram.com/neira.doc/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+              style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
+            >
+              <Instagram className="w-4 h-4" />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/neira-doc"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+              style={{ background: '#0A66C2' }}
+            >
+              <Linkedin className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <div className="p-6 pt-28">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-700 flex items-center justify-center shadow-lg">
+                <Landmark className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold">Études Notariales</h1>
+                <p className="text-muted-foreground mt-1">Rôles et permissions dans l'espace collaboratif</p>
+              </div>
+            </div>
             <Button onClick={() => navigate(-1)} variant="ghost">Retour</Button>
+          </div>
+          
+          <div className="mt-6 bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
+            <Users className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-orange-900">
+              Organisez votre étude en attribuant des rôles précis à chaque membre. Contrôlez les accès aux actes, 
+              gérez les formalités et collaborez en toute sécurité sur l'ensemble de vos dossiers.
+            </p>
           </div>
         </div>
 
-        <section className="space-y-4 mb-6">
-          <h2 className="text-xl font-semibold">Nos apports au métier</h2>
-          <ul className="list-disc list-inside text-sm space-y-2 text-muted-foreground">
-            <li>Gestion des modèles d'actes et automatisation des clauses usuelles.</li>
-            <li>Suivi des formalités et pièces justificatives avec checklist paramétrable.</li>
-            <li>Signature sécurisée et archivage conforme des actes notariés.</li>
-            <li>Portail client pour dépôt de pièces et communication sécurisée.</li>
-            <li>Reporting pour suivre activité, volumes d'actes et délais de traitement.</li>
-          </ul>
-        </section>
+        {/* Roles Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {roles.map((role, index) => (
+            <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className={`bg-gradient-to-r ${role.color} p-6 text-white`}>
+                <div className="flex items-center gap-3">
+                  {role.icon}
+                  <h3 className="text-xl font-bold">{role.title}</h3>
+                </div>
+              </div>
+              <div className="p-6">
+                <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
+                  Permissions
+                </h4>
+                <ul className="space-y-2.5">
+                  {role.permissions.map((permission, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm">
+                      <ArrowRight className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>{permission}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+          ))}
+        </div>
 
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold">Postes et rôles dans l'étude</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-            <div className="space-y-3">
-              <h3 className="font-medium">Direction & notaires</h3>
-              <ul className="list-disc list-inside text-sm text-muted-foreground">
-                <li>Notaires associés — garantie de conformité et supervision des actes.</li>
-                <li>Adjoints notariaux — rédaction, contrôle et relations avec les clients.</li>
-                <li>Notaires remplaçants — gestion ponctuelle et continuité des services.</li>
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="font-medium">Support administratif</h3>
-              <ul className="list-disc list-inside text-sm text-muted-foreground">
-                <li>Clercs / Formalistes — préparation des dossiers et enregistrement des formalités.</li>
-                <li>Gestionnaires d'actes — suivi des signatures, envois et archivage.</li>
-                <li>Responsable qualité & conformité — audits et RGPD.</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-6">
-          <h2 className="text-lg font-semibold">Comment Neira s'intègre</h2>
-          <p className="text-sm text-muted-foreground mt-2">Neira facilite la constitution du dossier, l'ordonnancement des étapes et la conservation des actes. Nous proposons des workflows adaptables pour chaque type d'acte et un portail client sécurisé pour la collecte des pièces.</p>
-        </section>
+        {/* CTA */}
+        <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl shadow-lg p-8 text-white text-center">
+          <h2 className="text-2xl font-bold mb-3">Prêt à moderniser votre étude ?</h2>
+          <p className="text-orange-100 mb-6 max-w-2xl mx-auto">
+            Commencez à utiliser Neira pour gérer vos équipes, vos actes et vos clients de manière collaborative et sécurisée.
+          </p>
+          <Button 
+            size="lg" 
+            variant="secondary"
+            onClick={() => navigate('/notaires/auth')}
+            className="gap-2"
+          >
+            Créer mon espace
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
       </div>
     </div>
   );
