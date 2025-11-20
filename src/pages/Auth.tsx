@@ -555,7 +555,7 @@ export default function Auth() {
                 <ul className="space-y-1 text-xs text-muted-foreground">
                   <li><a href="/avocats/metier" className="hover:text-foreground transition-colors">Avocats</a></li>
                   <li><a href="/notaires/metier" className="hover:text-foreground transition-colors">Notaires</a></li>
-                  <li><a href="#" className="hover:text-foreground transition-colors">Espace Collaboratif</a></li>
+                  <li><button onClick={() => navigate('/about')} className="hover:text-foreground transition-colors text-left">Découvrir notre solution</button></li>
                 </ul>
               </div>
 
@@ -565,7 +565,6 @@ export default function Auth() {
                 <ul className="space-y-1 text-xs text-muted-foreground">
                   <li><button onClick={() => navigate('/about')} className="hover:text-foreground transition-colors text-left">À propos</button></li>
                   <li><button onClick={() => navigate('/contact')} className="hover:text-foreground transition-colors text-left">Contact</button></li>
-                  <li><a href="#" className="hover:text-foreground transition-colors">Carrières</a></li>
                 </ul>
               </div>
 
