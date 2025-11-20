@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { Instagram, Linkedin } from "lucide-react";
+import { Instagram, Linkedin, ChevronDown } from "lucide-react";
 
 export function PublicHeader() {
   const navigate = useNavigate();
@@ -43,14 +43,14 @@ export function PublicHeader() {
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8">
           <button
             onClick={() => navigate('/')}
-            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
           >
             Accueil
           </button>
 
           <button
             onClick={() => navigate('/solution')}
-            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
           >
             Notre solution
           </button>
@@ -58,9 +58,10 @@ export function PublicHeader() {
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
-              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200 flex items-center gap-1"
             >
               Pour qui ?
+              <ChevronDown className="w-3 h-3" />
             </button>
             {whoOpen && (
               <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
@@ -83,9 +84,10 @@ export function PublicHeader() {
           <div ref={connRef} className="relative">
             <button
               onClick={() => setConnOpen(!connOpen)}
-              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200 flex items-center gap-1"
             >
               Connexion
+              <ChevronDown className="w-3 h-3" />
             </button>
             {connOpen && (
               <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
@@ -107,14 +109,14 @@ export function PublicHeader() {
 
           <button
             onClick={() => navigate('/about')}
-            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
           >
             À propos
           </button>
 
           <button
             onClick={() => navigate('/contact')}
-            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
           >
             Contact
           </button>
