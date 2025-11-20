@@ -43,6 +43,19 @@ export default function Contact() {
         }
       );
 
+      // Send notification email to you
+      await emailjs.send(
+        'service_pplgv88',
+        'template_u6upq8f',
+        {
+          from_name: `${formData.firstName} ${formData.lastName}`,
+          from_email: formData.email,
+          company: formData.company,
+          subject: formData.subject,
+          message: formData.message,
+        }
+      );
+
       toast.success("Message envoyé avec succès !", {
         description: "Nous vous répondrons dans les plus brefs délais.",
       });
