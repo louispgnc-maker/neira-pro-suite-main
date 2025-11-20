@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,10 @@ import emailjs from '@emailjs/browser';
 export default function Contact() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [whoOpen, setWhoOpen] = useState(false);
+  const [connOpen, setConnOpen] = useState(false);
+  const whoRef = useRef<HTMLDivElement>(null);
+  const connRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -23,6 +27,20 @@ export default function Contact() {
   // Initialize EmailJS
   useEffect(() => {
     emailjs.init('5W-s-TGNKX6CkmGu3');
+  }, []);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (whoRef.current && !whoRef.current.contains(event.target as Node)) {
+        setWhoOpen(false);
+      }
+      if (connRef.current && !connRef.current.contains(event.target as Node)) {
+        setConnOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -104,8 +122,11 @@ export default function Contact() {
       {/* Header */}
       <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
         <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4 relative">
-          {/* Logo on the far left */}
-          <div className="flex items-center gap-3">
+          {/* Logo on the far left - Clickable */}
+          <div 
+            onClick={() => navigate('/')} 
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          >
             <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
             <div className="leading-tight">
               <div className="text-base font-bold text-foreground">Neira</div>
@@ -113,9 +134,79 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Centered - Contact Title */}
-          <div className="flex-1 flex justify-center">
-            <span className="text-base font-semibold text-foreground">Contact</span>
+          {/* Center buttons */}
+          <div className="flex gap-1">
+            {/* Pour qui ? */}
+            <div ref={whoRef} className="relative">
+              <button
+                onClick={() => setWhoOpen(!whoOpen)}
+                className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+              >
+                Pour qui ?
+              </button>
+              {whoOpen && (
+                <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                  <button
+                    onClick={() => {
+                      navigate('/avocats/metier');
+                      setWhoOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  >
+                    Avocats
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/notaires/metier');
+                      setWhoOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  >
+                    Notaires
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Connexion */}
+            <div ref={connRef} className="relative">
+              <button
+                onClick={() => setConnOpen(!connOpen)}
+                className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+              >
+                Connexion
+              </button>
+              {connOpen && (
+                <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                  <button
+                    onClick={() => {
+                      navigate('/avocats/auth');
+                      setConnOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  >
+                    Avocats
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/notaires/auth');
+                      setConnOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  >
+                    Notaires
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Contact */}
+            <button
+              onClick={() => navigate('/contact')}
+              className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            >
+              Contact
+            </button>
           </div>
 
           {/* Social icons on the far right */}
