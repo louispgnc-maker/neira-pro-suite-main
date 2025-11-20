@@ -400,7 +400,7 @@ export default function Dossiers() {
                   placeholder="Rechercher un dossier..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 bg-slate-100"
+                  className="pl-10 bg-white text-foreground placeholder:text-foreground/50"
                 />
               </div>
             </div>

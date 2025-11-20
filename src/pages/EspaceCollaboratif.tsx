@@ -915,7 +915,7 @@ export default function EspaceCollaboratif() {
                       placeholder="Rechercher activité..."
                       value={activitySearch}
                       onChange={(e) => setActivitySearch(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
                     />
                   </div>
 
@@ -1058,7 +1058,7 @@ export default function EspaceCollaboratif() {
                         placeholder="Rechercher documents..."
                         value={documentsSearch}
                         onChange={(e) => setDocumentsSearch(e.target.value)}
-                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
                       />
                     </div>
 
@@ -1158,7 +1158,7 @@ export default function EspaceCollaboratif() {
                         placeholder="Rechercher contrats..."
                         value={contratsSearch}
                         onChange={(e) => setContratsSearch(e.target.value)}
-                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
                       />
                     </div>
 
@@ -1250,7 +1250,7 @@ export default function EspaceCollaboratif() {
                       placeholder="Rechercher dossiers..."
                       value={dossiersSearch}
                       onChange={(e) => setDossiersSearch(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
                     />
                   </div>
 
@@ -1349,7 +1349,7 @@ export default function EspaceCollaboratif() {
                       placeholder="Rechercher clients..."
                       value={clientsSearch}
                       onChange={(e) => setClientsSearch(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
                     />
                   </div>
 
