@@ -154,48 +154,38 @@ export default function NotaireAuth() {
             </div>
           </div>
 
-          <div className="flex-1 flex justify-center items-center">
-            <div className="flex items-center gap-4">
-              <div ref={whoRef} className="relative">
-                <button type="button" onClick={(e) => { e.stopPropagation(); setWhoOpen((s) => !s); }} className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border">
-                  Pour qui ?
-                  <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                {whoOpen ? (
-                  <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-md shadow-md z-40">
-                    <button className="w-full text-left px-4 py-2 hover:bg-primary/5" onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}>Avocats</button>
-                    <button className="w-full text-left px-4 py-2 hover:bg-primary/5" onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}>Notaires</button>
-                  </div>
-                ) : null}
-              </div>
-
-              <div ref={connRef} className="relative">
-                <button type="button" onClick={(e) => { e.stopPropagation(); setConnOpen((s) => !s); }} className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border">
-                  Connexion
-                  <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                {connOpen ? (
-                  <div className="absolute right-0 mt-2 w-52 bg-white border border-border rounded-md shadow-md z-40">
-                    <button className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3" onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}>
-                      <span className="text-2xl">⚖️</span>
-                      <span>Espace Avocats</span>
-                    </button>
-                    <button className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3" onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}>
-                      <span className="text-2xl">🏛️</span>
-                      <span>Espace Notaires</span>
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-
-              <button type="button" onClick={() => navigate('/contact')} className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border">
-                Contact
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-16">
+            <div ref={whoRef} className="relative">
+              <button type="button" onClick={(e) => { e.stopPropagation(); setWhoOpen((s) => !s); }} className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors">
+                Pour qui ?
               </button>
+              {whoOpen ? (
+                <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors" onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}>Avocats</button>
+                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors" onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}>Notaires</button>
+                </div>
+              ) : null}
             </div>
+
+            <div ref={connRef} className="relative">
+              <button type="button" onClick={(e) => { e.stopPropagation(); setConnOpen((s) => !s); }} className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors">
+                Connexion
+              </button>
+              {connOpen ? (
+                <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors" onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}>
+                    Avocats
+                  </button>
+                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors" onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}>
+                    Notaires
+                  </button>
+                </div>
+              ) : null}
+            </div>
+
+            <button type="button" onClick={() => navigate('/contact')} className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors">
+              Contact
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
