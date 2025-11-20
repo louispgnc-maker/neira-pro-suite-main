@@ -1,14 +1,16 @@
 import { useState, FormEvent, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Mail } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
 import emailjs from '@emailjs/browser';
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function Contact() {
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -115,7 +117,7 @@ export default function Contact() {
                 Notre équipe est à votre disposition pour répondre à toutes vos questions sur Neira.
               </p>
 
-              <div className="space-y-6">
+              <div className="space-y-6 mb-8">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Mail className="w-6 h-6 text-blue-600" />
@@ -125,6 +127,20 @@ export default function Contact() {
                     <p className="text-gray-600">contact@neira.fr</p>
                   </div>
                 </div>
+              </div>
+
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl">
+                <h3 className="font-semibold text-gray-800 mb-2">Vous voulez en savoir plus ?</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Découvrez toutes les fonctionnalités de Neira et comment notre solution peut transformer votre cabinet.
+                </p>
+                <Button 
+                  onClick={() => navigate('/solution')}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                >
+                  Découvrir notre solution
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
               </div>
             </div>
 
