@@ -8,7 +8,7 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star, Hourglass, ChevronLeft, ChevronRight, Eye } 
+import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star, Hourglass, ChevronLeft, ChevronRight, Eye, Scale, Landmark, ArrowRight } 
 from "lucide-react";                                                                                                   
 
 interface FormElements extends HTMLFormElement {
@@ -426,7 +426,7 @@ export default function Auth() {
       setSelectedProofIndex(null);
     }}
     style={{ paddingLeft: '1cm', paddingRight: '1cm', backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design%20sans%20titre-4.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}
-    className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-0 pt-28 pb-12"
+    className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-0 pt-28 pb-0"
   >
       {/* Fixed header */}
       <header className={`fixed inset-x-0 top-0 z-[60] bg-white/70 backdrop-blur border-b ${role && authAtTop ? 'border-transparent' : 'border-border'}`}>
@@ -611,8 +611,113 @@ export default function Auth() {
           </div>
         )}
 
+        {/* Métiers - Avocats et Notaires */}
+        <div className="w-full bg-white rounded-xl p-8 shadow-md border border-border mb-6">
+          <h3 className="text-3xl font-bold text-foreground text-center mb-8">Pour qui ?</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Avocats */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/avocats/metier')}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                  <Scale className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="text-2xl font-bold text-blue-900">Avocats</h4>
+              </div>
+              <p className="text-blue-800 mb-4">
+                Optimisez la gestion de vos dossiers juridiques, collaborez avec vos clients et votre équipe en temps réel, et automatisez vos tâches administratives.
+              </p>
+              <div className="flex items-center text-blue-700 font-semibold">
+                <span>Découvrir</span>
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </div>
+            </div>
+
+            {/* Notaires */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/notaires/metier')}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center">
+                  <Landmark className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="text-2xl font-bold text-orange-900">Notaires</h4>
+              </div>
+              <p className="text-orange-800 mb-4">
+                Simplifiez la gestion de vos actes notariés, coordonnez vos équipes et clients, et sécurisez vos documents avec un espace collaboratif dédié.
+              </p>
+              <div className="flex items-center text-orange-700 font-semibold">
+                <span>Découvrir</span>
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Compliance/benefit badges removed per request */}
       </div>
+
+      {/* Footer - matching header style */}
+      <footer className="w-screen bg-white/70 backdrop-blur border-t border-border" style={{ marginLeft: '-1cm', marginRight: '-1cm' }}>
+        <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-4">
+          <div className="flex items-start justify-between gap-12">
+            {/* Left - Company Info */}
+            <div className="flex-shrink-0">
+              <div className="flex items-center gap-2 mb-2">
+                <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-7 h-7 rounded-md object-cover" />
+                <span className="text-sm font-bold text-foreground">Neira</span>
+              </div>
+              <p className="text-muted-foreground text-xs max-w-xs mb-2">
+                La plateforme collaborative pour les professionnels du juridique.
+              </p>
+              <div className="flex gap-2">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-pink-500 transition-colors">
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-blue-600 transition-colors">
+                  <Linkedin className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Center - Quick Links */}
+            <div className="flex gap-12">
+              {/* Solutions */}
+              <div>
+                <h5 className="font-semibold mb-2 text-foreground text-sm">Solutions</h5>
+                <ul className="space-y-1 text-xs text-muted-foreground">
+                  <li><a href="/avocats/metier" className="hover:text-foreground transition-colors">Avocats</a></li>
+                  <li><a href="/notaires/metier" className="hover:text-foreground transition-colors">Notaires</a></li>
+                  <li><a href="#" className="hover:text-foreground transition-colors">Espace Collaboratif</a></li>
+                </ul>
+              </div>
+
+              {/* Company */}
+              <div>
+                <h5 className="font-semibold mb-2 text-foreground text-sm">Entreprise</h5>
+                <ul className="space-y-1 text-xs text-muted-foreground">
+                  <li><a href="#" className="hover:text-foreground transition-colors">À propos</a></li>
+                  <li><button onClick={() => navigate('/contact')} className="hover:text-foreground transition-colors text-left">Contact</button></li>
+                  <li><a href="#" className="hover:text-foreground transition-colors">Carrières</a></li>
+                </ul>
+              </div>
+
+              {/* Legal */}
+              <div>
+                <h5 className="font-semibold mb-2 text-foreground text-sm">Légal</h5>
+                <ul className="space-y-1 text-xs text-muted-foreground">
+                  <li><a href="#" className="hover:text-foreground transition-colors">Mentions légales</a></li>
+                  <li><a href="#" className="hover:text-foreground transition-colors">RGPD</a></li>
+                  <li><a href="#" className="hover:text-foreground transition-colors">CGU</a></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Right - Copyright */}
+            <div className="flex-shrink-0 text-right">
+              <p className="text-xs text-muted-foreground">&copy; 2025 Neira</p>
+              <p className="text-xs text-muted-foreground">Tous droits réservés</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

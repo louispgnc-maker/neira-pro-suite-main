@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Auth from "./pages/Auth";
 import AvocatAuth from "./pages/AvocatAuth";
 import NotaireAuth from "./pages/NotaireAuth";
+import Contact from "./pages/Contact";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import AvocatDashboard from "./pages/avocats/Dashboard";
@@ -41,6 +42,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Auth />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/dashboard" element={<Dashboard />} />
             
             {/* Routes Avocat */}
