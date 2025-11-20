@@ -41,6 +41,13 @@ export function PublicHeader() {
         </div>
 
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-16">
+          <button
+            onClick={() => navigate('/')}
+            className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+          >
+            Accueil
+          </button>
+
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
