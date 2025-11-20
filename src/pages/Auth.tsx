@@ -435,21 +435,21 @@ export default function Auth() {
 
       {/* Features Section - Below Auth */}
   <div className="w-full mt-16 flex flex-col items-center">
-        {/* Title, description, CTA - First white container */}
-        <div className="bg-white rounded-xl p-8 shadow-md border border-border mb-6 max-w-3xl">
+        {/* Title, description, CTA - First white container - HERO SECTION */}
+        <div className="bg-white rounded-xl p-16 shadow-lg border-2 border-primary/20 mb-12 max-w-4xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-3">
+            <h2 className="text-5xl font-bold text-foreground mb-6 leading-tight">
               Optimisez votre activité professionnelle
             </h2>
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-2xl text-muted-foreground mb-8 leading-relaxed">
               La plateforme tout-en-un qui simplifie et fluidifie le quotidien des experts du juridique.
             </p>
-            <Button onClick={() => navigate('/solution')} className="px-6 py-2">Découvrir notre solution</Button>
+            <Button onClick={() => navigate('/solution')} size="lg" className="px-10 py-6 text-lg">Découvrir notre solution</Button>
           </div>
         </div>
 
         {/* Features - Second white container */}
-        <div className="w-full bg-white rounded-xl p-8 shadow-md border border-border mb-6">
+        <div className="w-full bg-white rounded-xl p-8 shadow-md border border-border mb-12">
           {/* Social proof cards */}
           <div>
             <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-6">Fonctionnalités principales</h3>
@@ -482,7 +482,7 @@ export default function Auth() {
         )}
 
         {/* Métiers - Avocats et Notaires */}
-        <div className="w-full bg-white rounded-xl p-8 shadow-md border border-border mb-6">
+        <div className="w-full bg-white rounded-xl p-8 shadow-md border border-border mb-12">
           <h3 className="text-3xl font-bold text-foreground text-center mb-8">Pour qui ?</h3>
           <div className="grid md:grid-cols-2 gap-6">
             {/* Avocats */}
