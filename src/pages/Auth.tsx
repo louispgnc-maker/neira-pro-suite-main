@@ -460,13 +460,13 @@ export default function Auth() {
                         onClick={() => { setWhoOpen(false); setRole('avocat'); navigate('/avocats/metier'); }}
                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
                       >
-                        Espace Avocats
+                        Avocats
                       </button>
                       <button
                         onClick={() => { setWhoOpen(false); setRole('notaire'); navigate('/notaires/metier'); }}
                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
                       >
-                        Espace Notaires
+                        Notaires
                       </button>
                     </div>
                   )}

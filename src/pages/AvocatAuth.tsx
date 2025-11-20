@@ -161,8 +161,8 @@ export default function AvocatAuth() {
               </button>
               {whoOpen ? (
                 <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
-                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors" onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}>Espace Avocats</button>
-                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors" onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}>Espace Notaires</button>
+                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors" onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}>Avocats</button>
+                  <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors" onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}>Notaires</button>
                 </div>
               ) : null}
             </div>

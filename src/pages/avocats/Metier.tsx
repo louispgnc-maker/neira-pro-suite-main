@@ -128,13 +128,13 @@ export default function AvocatsMetier() {
                     onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
                   >
-                    Espace Avocats
+                    Avocats
                   </button>
                   <button
                     onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
                   >
-                    Espace Notaires
+                    Notaires
                   </button>
                 </div>
               )}
