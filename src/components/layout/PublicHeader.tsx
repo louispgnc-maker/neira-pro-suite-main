@@ -40,17 +40,17 @@ export function PublicHeader() {
           </div>
         </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-16">
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8">
           <button
             onClick={() => navigate('/')}
-            className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
           >
             Accueil
           </button>
 
           <button
             onClick={() => navigate('/solution')}
-            className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
           >
             Notre solution
           </button>
@@ -58,7 +58,7 @@ export function PublicHeader() {
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
-              className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
             >
               Pour qui ?
             </button>
@@ -83,7 +83,7 @@ export function PublicHeader() {
           <div ref={connRef} className="relative">
             <button
               onClick={() => setConnOpen(!connOpen)}
-              className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
             >
               Connexion
             </button>
@@ -107,14 +107,14 @@ export function PublicHeader() {
 
           <button
             onClick={() => navigate('/about')}
-            className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
           >
             À propos
           </button>
 
           <button
             onClick={() => navigate('/contact')}
-            className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
           >
             Contact
           </button>
