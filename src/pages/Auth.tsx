@@ -425,7 +425,7 @@ export default function Auth() {
       setAuthAtTop(false);
       setSelectedProofIndex(null);
     }}
-    style={{ paddingLeft: '1cm', paddingRight: '1cm' }}
+    style={{ paddingLeft: '1cm', paddingRight: '1cm', backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design%20sans%20titre-4.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}
     className="relative min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background p-0 pt-28 pb-12"
   >
       {/* Fixed header */}
@@ -564,52 +564,40 @@ export default function Auth() {
       ) : null}
 
       {/* Features Section - Below Auth */}
-  <div className="w-full mt-16">
-          <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-foreground mb-3">
-            Optimisez votre activité professionnelle
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            La plateforme tout-en-un qui simplifie et fluidifie le quotidien des experts du juridique.
-          </p>
-        </div>
-
-        {/* Center role buttons removed per request: header buttons now control selection */}
-
-        {/* CTA button above the four feature cards */}
-        <div className="flex flex-col items-center gap-4 mb-6">
-          <div className="flex justify-center w-full">
+  <div className="w-full mt-16 flex flex-col items-center">
+        {/* Title, description, CTA - First white container */}
+        <div className="bg-white rounded-xl p-8 shadow-md border border-border mb-6 max-w-3xl">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-foreground mb-3">
+              Optimisez votre activité professionnelle
+            </h2>
+            <p className="text-lg text-muted-foreground mb-6">
+              La plateforme tout-en-un qui simplifie et fluidifie le quotidien des experts du juridique.
+            </p>
             <Button onClick={() => navigate('/contact')} className="px-6 py-2">Découvrir notre solution</Button>
           </div>
+        </div>
 
-          {/* title will be placed inside the big container per user request */}
-
-          {/* Social proof horizontal scroller centered and wider than before */}
-          <div className="w-full relative px-4 md:px-0">
-            {/* Large container that holds the 6 small cards */}
-            <div className="w-full bg-white rounded-xl p-6 shadow-md border border-border">
-              <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-4">Fonctionnalités principales</h3>
-              <div
-                ref={scrollerRef}
-                className="grid grid-cols-3 gap-6 py-4"
-                aria-label="Témoignages et indicateurs"
-              >
+        {/* Features - Second white container */}
+        <div className="w-full bg-white rounded-xl p-8 shadow-md border border-border mb-6">
+          {/* Social proof cards */}
+          <div>
+            <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-6">Fonctionnalités principales</h3>
+            <div
+              ref={scrollerRef}
+              className="grid grid-cols-3 gap-6 py-4"
+              aria-label="Témoignages et indicateurs"
+            >
                 {renderedCards()}
-              </div>
             </div>
           </div>
         </div>
 
         {/* Central auth card removed - header popover is used for login/signup */}
 
-        <div className="mb-8">
-          <div ref={panelRef} className="w-full bg-white rounded-xl p-6 shadow-md border border-border min-h-[120px]">
-            {selectedProofIndex === null ? (
-              <>
-                <h3 className="text-xl font-bold text-foreground">Espace collaboratif</h3>
-                <p className="text-sm text-muted-foreground mt-2">Espace partagé pour vos équipes et clients — échangez, commentez et suivez les dossiers en toute simplicité.</p>
-              </>
-            ) : (
+        {selectedProofIndex !== null && (
+          <div className="mb-8">
+            <div ref={panelRef} className="w-full bg-white rounded-xl p-6 shadow-md border border-border min-h-[120px]">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-2xl">
                   {socialItems[selectedProofIndex].icon}
@@ -619,9 +607,9 @@ export default function Auth() {
                   <p className="text-sm text-muted-foreground mt-2">{socialItems[selectedProofIndex].text}</p>
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Compliance/benefit badges removed per request */}
       </div>

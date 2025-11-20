@@ -98,7 +98,7 @@ export default function NotairesMetier() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-orange-50" style={{ backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design%20sans%20titre-4.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       {/* Fixed header */}
       <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
         <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4">
@@ -216,20 +216,14 @@ export default function NotairesMetier() {
                 <p className="text-muted-foreground mt-1">Rôles et permissions dans l'espace collaboratif</p>
               </div>
             </div>
-            <Button onClick={() => navigate(-1)} variant="ghost">Retour</Button>
-          </div>
-          
-          <div className="mt-6 bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
-            <Users className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-orange-900">
-              Organisez votre étude en attribuant des rôles précis à chaque membre. Contrôlez les accès aux actes, 
-              gérez les formalités et collaborez en toute sécurité sur l'ensemble de vos dossiers.
-            </p>
+            <Button onClick={() => navigate('/')} className="bg-orange-600 hover:bg-orange-700 text-white">Retour</Button>
           </div>
         </div>
 
-        {/* Roles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Roles Container */}
+        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
+          <h2 className="text-2xl font-bold mb-6">Rôles et permissions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {roles.map((role, index) => (
             <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className={`bg-gradient-to-r ${role.color} p-6 text-white`}>
@@ -253,6 +247,7 @@ export default function NotairesMetier() {
               </div>
             </Card>
           ))}
+          </div>
         </div>
 
         {/* CTA */}
