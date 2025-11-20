@@ -118,7 +118,7 @@ export default function NotaireAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white" style={{ paddingLeft: '1cm', paddingRight: '1cm', backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/orange%20notaire.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white" style={{ paddingLeft: '1cm', paddingRight: '1cm', backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20orange.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       <PublicHeader />
 
       <div className="p-6 pt-28 flex items-center justify-center min-h-screen">

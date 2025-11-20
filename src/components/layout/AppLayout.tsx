@@ -17,7 +17,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   
   // Définit le fond de page selon le rôle
   const backgroundImage = role === 'notaire'
-    ? 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/orange%20notaire.png)'
+    ? 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20orange.png)'
     : 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/fond%20de%20page%20.png)';
   
   return (
