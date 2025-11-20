@@ -8,8 +8,8 @@ import { EmailVerificationStatus } from "@/components/auth/EmailVerificationStat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star, Hourglass, ChevronLeft, ChevronRight, Eye } from "lucide-react";
-
+import { Shield, Zap, TrendingUp, Check, Users, Instagram, Linkedin, Star, Hourglass, ChevronLeft, ChevronRight, Eye } 
+from "lucide-react";                                                                                                   
 
 interface FormElements extends HTMLFormElement {
   email: HTMLInputElement;
@@ -174,6 +174,10 @@ export default function Auth() {
   const [whoOpen, setWhoOpen] = useState(false);
   const whoRef = useRef<HTMLDivElement | null>(null);
 
+  // dropdown state for 'Connexion' menu in header (identical behavior)
+  const [connOpen, setConnOpen] = useState(false);
+  const connRef = useRef<HTMLDivElement | null>(null);
+
   // close who menu on outside click
   useEffect(() => {
     if (!whoOpen) return;
@@ -184,6 +188,17 @@ export default function Auth() {
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
   }, [whoOpen]);
+
+  // close connexion menu on outside click
+  useEffect(() => {
+    if (!connOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (connRef.current && !connRef.current.contains(t)) setConnOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [connOpen]);
 
   // Auto-play controls
   // Disabled by default per user request: no automatic scrolling
@@ -415,7 +430,7 @@ export default function Auth() {
   >
       {/* Fixed header */}
       <header className={`fixed inset-x-0 top-0 z-[60] bg-white/70 backdrop-blur border-b ${role && authAtTop ? 'border-transparent' : 'border-border'}`}>
-            <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4">
+            <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4 relative">
               {/* Logo on the far left */}
               <div className="flex items-center gap-3">
                 <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
@@ -425,98 +440,93 @@ export default function Auth() {
                 </div>
               </div>
 
-              {/* Role buttons and social icons aligned to the right */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className={`relative transition-all duration-200 ${role === 'avocat' && authAtTop ? 'inline-block scale-105 ring-2 ring-blue-600 rounded-lg' : 'inline-block'}`}>
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={role === 'avocat' && authAtTop}
-                      onClick={(e) => { e.stopPropagation(); setRole('avocat'); navigate('/avocats/auth'); }}
-                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setRole('avocat'); navigate('/avocats/auth'); } }}
-                      className={`inline-flex items-center gap-2 px-3 py-2 text-left transition-colors duration-150 ${
-                        role === 'avocat' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-blue-50 to-blue-100 border-b-0 border border-blue-200' : 'rounded-lg bg-blue-50 hover:bg-blue-100 hover:scale-105 border border-blue-100'
-                      }`}
+              {/* Centered controls: Pour qui ? + Connexion */}
+              <div className="flex-1 flex justify-center items-center">
+                <div className="flex items-center gap-4">
+                  <div ref={whoRef} className="relative">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setWhoOpen((s) => !s); }}
+                      className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border"
                     >
-                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow text-lg">
-                        <span className={`${role === 'avocat' ? 'text-blue-600' : 'text-primary'}`}>⚖️</span>
+                      Pour qui ?
+                      <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                        <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    {whoOpen ? (
+                      <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-md shadow-md z-40">
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-primary/5"
+                          onClick={() => { setWhoOpen(false); setRole('avocat'); navigate('/avocats/metier'); }}
+                        >
+                          Avocats
+                        </button>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-primary/5"
+                          onClick={() => { setWhoOpen(false); setRole('notaire'); navigate('/notaires/metier'); }}
+                        >
+                          Notaires
+                        </button>
                       </div>
-                      <span className={`text-sm font-medium ${role === 'avocat' ? 'text-blue-900' : 'text-foreground'}`}>Espace Avocats</span>
-                    </div>
+                    ) : null}
                   </div>
 
-                  <div className={`relative transition-all duration-200 ${role === 'notaire' && authAtTop ? 'inline-block scale-105 ring-2 ring-orange-600 rounded-lg' : 'inline-block'}`}>
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={role === 'notaire' && authAtTop}
-                      onClick={(e) => { e.stopPropagation(); setRole('notaire'); navigate('/notaires/auth'); }}
-                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setRole('notaire'); navigate('/notaires/auth'); } }}
-                      className={`inline-flex items-center gap-2 px-3 py-2 text-left transition-colors duration-150 ${
-                        role === 'notaire' && authAtTop ? 'rounded-t-lg bg-gradient-to-br from-orange-50 to-orange-100 border-b-0 border border-orange-200' : 'rounded-lg bg-orange-50 hover:bg-orange-100 hover:scale-105 border border-orange-100'
-                      }`}
+                  <div ref={connRef} className="relative">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setConnOpen((s) => !s); }}
+                      className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/90 text-sm font-medium border border-border"
                     >
-                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow text-lg">
-                        <span className={`${role === 'notaire' ? 'text-orange-600' : 'text-accent'}`}>🏛️</span>
+                      Connexion
+                      <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                        <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    {connOpen ? (
+                      <div className="absolute right-0 mt-2 w-52 bg-white border border-border rounded-md shadow-md z-40">
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3"
+                          onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
+                        >
+                          <span className="text-2xl">⚖️</span>
+                          <span>Espace Avocats</span>
+                        </button>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-primary/5 flex items-center gap-3"
+                          onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}
+                        >
+                          <span className="text-2xl">🏛️</span>
+                          <span>Espace Notaires</span>
+                        </button>
                       </div>
-                      <span className={`text-sm font-medium ${role === 'notaire' ? 'text-orange-900' : 'text-foreground'}`}>Espace Notaires</span>
-                    </div>
+                    ) : null}
                   </div>
                 </div>
+              </div>
 
-                {/* 'Pour qui ?' dropdown moved to header */}
-                <div ref={whoRef} className="relative">
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setWhoOpen((s) => !s); }}
-                    className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted/80 hover:bg-muted text-sm font-medium border border-border"
-                  >
-                    Pour qui ?
-                    <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-                      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                  {whoOpen ? (
-                    <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-md shadow-md z-40">
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-primary/5"
-                        onClick={() => { setWhoOpen(false); setRole('avocat'); navigate('/avocats/auth'); }}
-                      >
-                        Avocats
-                      </button>
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-primary/5"
-                        onClick={() => { setWhoOpen(false); setRole('notaire'); navigate('/notaires/auth'); }}
-                      >
-                        Notaires
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <a
-                    href="https://www.instagram.com/neira.doc/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Instagram"
-                    className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
-                    style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
-                  >
-                    <Instagram className="w-4 h-4" />
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/company/neira-doc"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="LinkedIn"
-                    className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
-                    style={{ background: '#0A66C2' }}
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                </div>
+              {/* Social icons on the far right */}
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://www.instagram.com/neira.doc/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+                  style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/neira-doc"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+                  style={{ background: '#0A66C2' }}
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </header>
