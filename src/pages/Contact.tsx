@@ -135,7 +135,7 @@ export default function Contact() {
           </div>
 
           {/* Center buttons */}
-          <div className="flex gap-1">
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-16">
             {/* Pour qui ? */}
             <div ref={whoRef} className="relative">
               <button
