@@ -69,8 +69,19 @@ export default function Solution() {
     >
       <PublicHeader />
 
-      {/* Pricing Section */}
+      {/* Hero Section */}
       <div className="container mx-auto px-4 py-24">
+        <div className="max-w-4xl mx-auto text-center mb-16">
+          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Découvrez Neira
+          </h1>
+          <p className="text-xl text-gray-700 mb-8 leading-relaxed">
+            La solution complète pour digitaliser et automatiser votre cabinet juridique. 
+            Gagnez du temps, améliorez votre productivité et concentrez-vous sur l'essentiel : votre métier.
+          </p>
+        </div>
+
+        {/* Pricing Section */}
         <div className="max-w-6xl mx-auto mb-16">
           <h2 className="text-3xl font-bold text-center mb-4 text-gray-900">
             ⭐ Grille Tarifaire Neira
@@ -79,7 +90,7 @@ export default function Solution() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Offre Essentiel */}
-            <Card className="p-6 bg-white/90 backdrop-blur hover:shadow-2xl transition-shadow">
+            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-blue-500">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
                 <div className="text-4xl font-bold text-blue-600 mb-2">39€</div>
@@ -132,7 +143,7 @@ export default function Solution() {
             </Card>
 
             {/* Offre Professionnel */}
-            <Card className="p-6 bg-white/90 backdrop-blur hover:shadow-2xl transition-shadow border-2 border-purple-500 relative">
+            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 border-purple-500 relative">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-xs font-semibold">
                 RECOMMANDÉ
               </div>
@@ -197,7 +208,7 @@ export default function Solution() {
             </Card>
 
             {/* Offre Cabinet+ */}
-            <Card className="p-6 bg-white/90 backdrop-blur hover:shadow-2xl transition-shadow">
+            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-orange-500">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
                 <div className="text-4xl font-bold text-orange-600 mb-2">129€</div>
@@ -252,33 +263,6 @@ export default function Solution() {
                 Choisir Cabinet+
               </Button>
             </Card>
-          </div>
-        </div>
-
-        {/* Hero Section */}
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Découvrez Neira
-          </h1>
-          <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-            La solution complète pour digitaliser et automatiser votre cabinet juridique. 
-            Gagnez du temps, améliorez votre productivité et concentrez-vous sur l'essentiel : votre métier.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-              onClick={() => navigate('/avocats/auth')}
-            >
-              Commencer gratuitement
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              onClick={() => navigate('/contact')}
-            >
-              Demander une démo
-            </Button>
           </div>
         </div>
 
