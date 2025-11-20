@@ -155,13 +155,13 @@ export default function AvocatsMetier() {
                     onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
                   >
-                    Avocats
+                    Espace Avocats
                   </button>
                   <button
                     onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
                   >
-                    Notaires
+                    Espace Notaires
                   </button>
                 </div>
               )}
