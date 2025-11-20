@@ -436,15 +436,15 @@ export default function Auth() {
       {/* Features Section - Below Auth */}
   <div className="w-full mt-16 flex flex-col items-center">
         {/* Title, description, CTA - First white container - HERO SECTION */}
-        <div className="bg-white rounded-xl p-16 shadow-lg border-2 border-primary/20 mb-12 max-w-4xl">
+        <div className="bg-white rounded-xl p-12 shadow-lg border-2 border-primary/20 mb-12 max-w-3xl">
           <div className="text-center">
-            <h2 className="text-5xl font-bold text-foreground mb-6 leading-tight">
+            <h2 className="text-4xl font-bold text-foreground mb-5 leading-tight">
               Optimisez votre activité professionnelle
             </h2>
-            <p className="text-2xl text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
               La plateforme tout-en-un qui simplifie et fluidifie le quotidien des experts du juridique.
             </p>
-            <Button onClick={() => navigate('/solution')} size="lg" className="px-10 py-6 text-lg">Découvrir notre solution</Button>
+            <Button onClick={() => navigate('/solution')} size="lg" className="px-12 py-7 text-xl font-semibold">Découvrir notre solution</Button>
           </div>
         </div>
 
