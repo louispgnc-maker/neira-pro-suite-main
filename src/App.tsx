@@ -35,6 +35,7 @@ import MentionsLegales from "./pages/MentionsLegales";
 import RGPD from "./pages/RGPD";
 import CGU from "./pages/CGU";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Auth />} />
             <Route path="/about" element={<About />} />
