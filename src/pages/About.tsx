@@ -160,40 +160,40 @@ export default function About() {
           </div>
 
           {/* Notre Mission */}
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-xl p-10 mb-8 text-white">
+          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8">
             <div className="flex items-start gap-4 mb-6">
-              <div className="p-3 bg-white/20 rounded-lg backdrop-blur">
-                <Target className="w-8 h-8 text-white" />
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Target className="w-8 h-8 text-purple-600" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold">Notre mission</h2>
-                <p className="text-blue-100 mt-2">Un environnement de travail complet et moderne</p>
+                <h2 className="text-3xl font-bold text-gray-900">Notre mission</h2>
+                <p className="text-gray-600 mt-2">Un environnement de travail complet et moderne</p>
               </div>
             </div>
-            <p className="text-lg mb-6 pl-16">Créer un environnement de travail complet, moderne et intuitif, qui :</p>
+            <p className="text-lg mb-6 pl-16 text-gray-700">Créer un environnement de travail complet, moderne et intuitif, qui :</p>
             <div className="grid md:grid-cols-2 gap-4 pl-16">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1" />
+              <div className="flex items-start gap-3 text-gray-700">
+                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1 text-green-600" />
                 <p>Centralise l'intégralité de l'activité du cabinet</p>
               </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1" />
+              <div className="flex items-start gap-3 text-gray-700">
+                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1 text-green-600" />
                 <p>Fluidifie le travail collaboratif</p>
               </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1" />
+              <div className="flex items-start gap-3 text-gray-700">
+                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1 text-green-600" />
                 <p>Accélère les processus documentaires</p>
               </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1" />
+              <div className="flex items-start gap-3 text-gray-700">
+                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1 text-green-600" />
                 <p>Améliore la communication interne et avec les clients</p>
               </div>
-              <div className="flex items-start gap-3 md:col-span-2">
-                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1" />
+              <div className="flex items-start gap-3 md:col-span-2 text-gray-700">
+                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-1 text-green-600" />
                 <p>Redonne du temps aux professionnels du droit</p>
               </div>
             </div>
-            <p className="text-lg mt-6 pl-16 text-blue-100">
+            <p className="text-lg mt-6 pl-16 text-gray-600">
               Neira réunit tous les outils essentiels dans un espace unique, clair et cohérent.
             </p>
           </div>
@@ -310,31 +310,31 @@ export default function About() {
           </div>
 
           {/* L'humain au centre */}
-          <div className="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl shadow-xl p-10 text-white">
+          <div className="bg-white rounded-2xl shadow-xl p-10">
             <div className="flex items-start gap-4 mb-6">
-              <div className="p-3 bg-white/20 rounded-lg backdrop-blur">
-                <Heart className="w-8 h-8 text-white" />
+              <div className="p-3 bg-pink-100 rounded-lg">
+                <Heart className="w-8 h-8 text-pink-600" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold">L'humain au centre</h2>
-                <p className="text-pink-100 mt-2">La technologie au service de l'humain</p>
+                <h2 className="text-3xl font-bold text-gray-900">L'humain au centre</h2>
+                <p className="text-gray-600 mt-2">La technologie au service de l'humain</p>
               </div>
             </div>
-            <div className="space-y-4 pl-16">
+            <div className="space-y-4 pl-16 text-gray-700">
               <p className="text-lg">La technologie n'a de sens que si elle sert l'humain.</p>
               <p className="text-lg">Neira est pensée comme un partenaire, pas comme un logiciel de plus.</p>
               <div className="grid md:grid-cols-2 gap-4 mt-6">
-                <div className="p-4 bg-white/10 backdrop-blur rounded-lg border border-white/20">
-                  <p className="text-lg font-semibold">✨ Plus de sérénité</p>
+                <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-gray-200">
+                  <p className="text-lg font-semibold text-gray-900">✨ Plus de sérénité</p>
                 </div>
-                <div className="p-4 bg-white/10 backdrop-blur rounded-lg border border-white/20">
-                  <p className="text-lg font-semibold">👁️ Plus de visibilité</p>
+                <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-gray-200">
+                  <p className="text-lg font-semibold text-gray-900">👁️ Plus de visibilité</p>
                 </div>
-                <div className="p-4 bg-white/10 backdrop-blur rounded-lg border border-white/20">
-                  <p className="text-lg font-semibold">🎯 Plus de maîtrise</p>
+                <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-gray-200">
+                  <p className="text-lg font-semibold text-gray-900">🎯 Plus de maîtrise</p>
                 </div>
-                <div className="p-4 bg-white/10 backdrop-blur rounded-lg border border-white/20">
-                  <p className="text-lg font-semibold">🚀 Plus de liberté</p>
+                <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-gray-200">
+                  <p className="text-lg font-semibold text-gray-900">🚀 Plus de liberté</p>
                 </div>
               </div>
             </div>
