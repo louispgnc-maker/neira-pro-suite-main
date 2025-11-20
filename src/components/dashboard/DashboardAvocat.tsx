@@ -134,7 +134,7 @@ export function DashboardAvocat() {
 
   return (
     <AppLayout>
-      <div className="bg-gradient-to-br from-primary/20 via-accent/10 to-background min-h-screen" style={{ backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design%20sans%20titre-4.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+      <div className="bg-gradient-to-br from-primary/20 via-accent/10 to-background min-h-screen" style={{ backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20de%20page%20avocat.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
         <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
