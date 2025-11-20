@@ -91,7 +91,7 @@ export default function Clients() {
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Clients</h1>
-            <p className="text-muted-foreground mt-1">Gérez votre base clients et KYC</p>
+            <p className="text-foreground mt-1">Gérez votre base clients et KYC</p>
           </div>
           <div className="md:w-auto w-full flex justify-end">
             <FicheClientMenu variant="horizontal" colorClass={mainButtonColor} />
@@ -109,12 +109,12 @@ export default function Clients() {
         
         {loading ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground">Chargement…</p>
+            <p className="text-foreground">Chargement…</p>
           </div>
         ) : clients.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-muted-foreground">Aucun client pour le moment</p>
+              <p className="text-foreground">Aucun client pour le moment</p>
               <div className="mt-4 flex justify-center">
                 <FicheClientMenu
                   variant="horizontal"
@@ -152,7 +152,7 @@ export default function Clients() {
                             </p>
                           )}
                           {client.created_at && (
-                            <p className="text-xs text-muted-foreground mt-2">
+                            <p className="text-xs text-foreground mt-2">
                               Ajouté le {new Date(client.created_at).toLocaleDateString()}
                             </p>
                           )}

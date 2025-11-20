@@ -211,7 +211,7 @@ export default function Contrats() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold">Contrats</h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-foreground mt-1">
               Centralisez et créez vos modèles de contrats
             </p>
           </div>
@@ -257,12 +257,12 @@ export default function Contrats() {
 
         {loading ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground">Chargement…</p>
+            <p className="text-foreground">Chargement…</p>
           </div>
         ) : contrats.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-muted-foreground">Aucun contrat pour le moment</p>
+              <p className="text-foreground">Aucun contrat pour le moment</p>
               <div className="mt-4 flex justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -302,7 +302,7 @@ export default function Contrats() {
           <>
             <div className="flex items-center gap-4 mb-4 bg-white p-4 rounded-lg border">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground" />
                 <Input
                   placeholder="Rechercher un contrat..."
                   value={search}
@@ -343,7 +343,7 @@ export default function Contrats() {
                 <TableBody>
                   {filteredContrats.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground">
+                      <TableCell colSpan={5} className="text-center text-foreground">
                         Aucun contrat trouvé
                       </TableCell>
                     </TableRow>
@@ -351,7 +351,7 @@ export default function Contrats() {
                     filteredContrats.map((contrat) => (
                       <TableRow key={contrat.id}>
                         <TableCell className="font-medium">{contrat.name}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{contrat.type}</TableCell>
+                        <TableCell className="text-sm text-foreground">{contrat.type}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className={
                             role === 'notaire'
@@ -361,7 +361,7 @@ export default function Contrats() {
                             {contrat.category}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="text-sm text-foreground">
                           {new Date(contrat.created_at).toLocaleDateString()}
                         </TableCell>
                         <TableCell>

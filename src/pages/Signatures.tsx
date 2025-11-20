@@ -94,9 +94,9 @@ export default function Signatures() {
       return 'bg-warning/10 text-warning border-warning/20';
     }
     if (status.toLowerCase() === 'brouillon') {
-      return 'bg-muted text-muted-foreground border-border';
+      return 'bg-muted text-foreground border-border';
     }
-    return 'bg-muted text-muted-foreground border-border';
+    return 'bg-muted text-foreground border-border';
   }
 
   return (
@@ -105,7 +105,7 @@ export default function Signatures() {
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Signatures</h1>
-            <p className="text-muted-foreground mt-1">Suivez vos demandes de signature électronique</p>
+            <p className="text-foreground mt-1">Suivez vos demandes de signature électronique</p>
           </div>
           <Button className={mainButtonColor}>
             <Plus className="mr-2 h-4 w-4" />
@@ -134,12 +134,12 @@ export default function Signatures() {
 
         {loading ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground">Chargement…</p>
+            <p className="text-foreground">Chargement…</p>
           </div>
         ) : signatures.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-muted-foreground">Aucunes signatures</p>
+              <p className="text-foreground">Aucunes signatures</p>
               <Button className={mainButtonColor + " mt-4"}>
                 Ajoutez ici vos documents signés
               </Button>
@@ -166,7 +166,7 @@ export default function Signatures() {
                         {sig.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
+                    <TableCell className="text-foreground text-sm">
                       {sig.last_reminder_at
                         ? new Date(sig.last_reminder_at).toLocaleDateString()
                         : "Jamais"}

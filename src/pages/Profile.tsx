@@ -53,35 +53,35 @@ export default function Profile() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-sm text-muted-foreground">Nom</div>
+              <div className="text-sm text-foreground">Nom</div>
               <div className="font-medium">{profile?.last_name || '—'}</div>
             </div>
             
             <div>
-              <div className="text-sm text-muted-foreground">Prénom</div>
+              <div className="text-sm text-foreground">Prénom</div>
               <div className="font-medium">{profile?.first_name || '—'}</div>
             </div>
 
             <div>
-              <div className="text-sm text-muted-foreground">Email</div>
+              <div className="text-sm text-foreground">Email</div>
               <div className="font-medium">{user?.email || '—'}</div>
             </div>
 
             <div>
-              <div className="text-sm text-muted-foreground">Espace</div>
+              <div className="text-sm text-foreground">Espace</div>
               <Badge variant="outline" className={role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
                 {role}
               </Badge>
             </div>
 
             <div>
-              <div className="text-sm text-muted-foreground">Cabinet</div>
+              <div className="text-sm text-foreground">Cabinet</div>
               {loadingCabinet ? (
-                <div className="font-medium text-muted-foreground">Chargement...</div>
+                <div className="font-medium text-foreground">Chargement...</div>
               ) : cabinetName ? (
                 <div className="font-medium">{cabinetName}</div>
               ) : (
-                <div className="font-medium text-muted-foreground">Aucun cabinet</div>
+                <div className="font-medium text-foreground">Aucun cabinet</div>
               )}
             </div>
           </CardContent>

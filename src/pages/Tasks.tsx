@@ -171,7 +171,7 @@ export default function Tasks() {
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Tâches</h1>
-            <p className="text-muted-foreground mt-1">Gérez toutes vos tâches</p>
+            <p className="text-foreground mt-1">Gérez toutes vos tâches</p>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -228,12 +228,12 @@ export default function Tasks() {
 
         {loading ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground">Chargement…</p>
+            <p className="text-foreground">Chargement…</p>
           </div>
         ) : activeTasks.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-muted-foreground">Aucune tâche pour le moment</p>
+              <p className="text-foreground">Aucune tâche pour le moment</p>
               <div className="mt-4 flex justify-center">
                 <Button className={mainButtonColor} onClick={() => setOpen(true)}>
                   Ajouter une première tâche
@@ -275,13 +275,13 @@ export default function Tasks() {
                       />
                       <span className="font-medium text-lg">{task.title}</span>
                     </div>
-                    {task.description && <div className="text-sm text-muted-foreground mb-2 whitespace-pre-line">{task.description}</div>}
+                    {task.description && <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>}
                     <div className="flex-1" />
                     <div className="flex items-center justify-between mt-2">
                       {task.due_at ? (
                         <Badge variant={overdue ? "destructive" : "outline"}>{dateStr}</Badge>
                       ) : (
-                        <span className="text-muted-foreground text-xs">Pas d'échéance</span>
+                        <span className="text-foreground text-xs">Pas d'échéance</span>
                       )}
                     </div>
                   </div>

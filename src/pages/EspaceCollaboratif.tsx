@@ -801,7 +801,7 @@ export default function EspaceCollaboratif() {
         <div className="container mx-auto p-6">
           <Card>
             <CardContent className="py-8">
-              <p className="text-center text-muted-foreground">Chargement...</p>
+              <p className="text-center text-foreground">Chargement...</p>
             </CardContent>
           </Card>
         </div>
@@ -815,7 +815,7 @@ export default function EspaceCollaboratif() {
         <div className="container mx-auto p-6">
           <Card>
             <CardContent className="py-8">
-              <p className="text-center text-muted-foreground">
+              <p className="text-center text-foreground">
                 Vous devez rejoindre un cabinet pour accéder à l'espace collaboratif.
               </p>
             </CardContent>
@@ -833,7 +833,7 @@ export default function EspaceCollaboratif() {
         <h1 className="text-3xl font-bold mb-2">Espace Collaboratif</h1>
         <div className="flex items-center gap-2">
           <Badge className={colorClass}>{cabinet.nom}</Badge>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-foreground">
             {members.length} membre{members.length > 1 ? 's' : ''}
           </span>
         </div>
@@ -881,7 +881,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{documents.length + contrats.length}</div>
-                <p className="text-xs text-muted-foreground">documents et contrats au total</p>
+                <p className="text-xs text-foreground">documents et contrats au total</p>
               </CardContent>
             </Card>
             <Card>
@@ -890,7 +890,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{dossiers.length}</div>
-                <p className="text-xs text-muted-foreground">dossiers partagés</p>
+                <p className="text-xs text-foreground">dossiers partagés</p>
               </CardContent>
             </Card>
             <Card>
@@ -899,7 +899,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{members.filter(m => m.status === 'active').length}</div>
-                <p className="text-xs text-muted-foreground">membres du cabinet</p>
+                <p className="text-xs text-foreground">membres du cabinet</p>
               </CardContent>
             </Card>
           </div>
@@ -920,7 +920,7 @@ export default function EspaceCollaboratif() {
                   </div>
 
                   {documents.length === 0 && dossiers.length === 0 && contrats.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-foreground">
                   <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucune activité récente</p>
                 </div>
@@ -963,14 +963,14 @@ export default function EspaceCollaboratif() {
                           )}
                           <div>
                             <p className="font-medium">{item.title}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-foreground">
                               {item.type} partagé le {new Date(item.shared_at).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
                         {/* Right side: date, delete (if allowed) then type badge aligned to the right */}
                         <div className="flex flex-col items-end gap-2 ml-4">
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-foreground">
                             {item.type} partagé le {new Date(item.shared_at).toLocaleDateString()}
                           </p>
                           <div className="flex items-center gap-3">
@@ -983,7 +983,7 @@ export default function EspaceCollaboratif() {
                                 className="p-1 rounded hover:bg-gray-100"
                                 title="Supprimer"
                               >
-                                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                <Trash2 className="h-4 w-4 text-foreground" />
                               </button>
                             )}
 
@@ -1045,7 +1045,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 {documents.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-foreground">
                     <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
                     <p className="text-sm">Aucun document partagé</p>
                     <p className="text-xs mt-1">Utilisez le bouton de partage sur vos documents</p>
@@ -1074,12 +1074,12 @@ export default function EspaceCollaboratif() {
                               <div className="flex-1">
                                 <p className="font-medium">{doc.title}</p>
                                 {doc.description && (
-                                  <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
+                                  <p className="text-sm text-foreground mt-1">{doc.description}</p>
                                 )}
                               </div>
 
                               <div className="flex flex-col items-end gap-2 ml-4">
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-foreground">
                                   Partagé le {new Date(doc.shared_at).toLocaleDateString()}
                                 </p>
                                 <div className="flex items-center gap-3">
@@ -1089,7 +1089,7 @@ export default function EspaceCollaboratif() {
                                       className="p-1 rounded hover:bg-gray-100"
                                       title="Supprimer"
                                     >
-                                      <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                      <Trash2 className="h-4 w-4 text-foreground" />
                                     </button>
                                   )}
 
@@ -1145,7 +1145,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 {contrats.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-foreground">
                     <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
                     <p className="text-sm">Aucun contrat partagé</p>
                     <p className="text-xs mt-1">Utilisez le bouton de partage sur vos contrats</p>
@@ -1175,12 +1175,12 @@ export default function EspaceCollaboratif() {
                                   <p className="font-medium">{contrat.title}</p>
                                 </div>
                                 {contrat.description && (
-                                  <p className="text-sm text-muted-foreground mt-1">{contrat.description}</p>
+                                  <p className="text-sm text-foreground mt-1">{contrat.description}</p>
                                 )}
                               </div>
 
                               <div className="flex flex-col items-end gap-2 ml-4">
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-foreground">
                                   Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
                                 </p>
                                 <div className="flex items-center gap-3">
@@ -1190,7 +1190,7 @@ export default function EspaceCollaboratif() {
                                       className="p-1 rounded hover:bg-gray-100"
                                       title="Supprimer"
                                     >
-                                      <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                      <Trash2 className="h-4 w-4 text-foreground" />
                                     </button>
                                   )}
 
@@ -1237,7 +1237,7 @@ export default function EspaceCollaboratif() {
             </CardHeader>
             <CardContent>
               {dossiers.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-foreground">
                   <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucun dossier partagé</p>
                   <p className="text-sm mt-2">Utilisez le bouton de partage sur vos dossiers</p>
@@ -1271,15 +1271,15 @@ export default function EspaceCollaboratif() {
                                 <div>
                                   <p className="font-medium">{dossier.title}</p>
                                   {dossier.description && (
-                                    <p className="text-sm text-muted-foreground mt-1">{dossier.description}</p>
+                                    <p className="text-sm text-foreground mt-1">{dossier.description}</p>
                                   )}
                                 </div>
                               </div>
                             </div>
 
                             <div className="flex flex-col items-end gap-2 ml-4">
-                              <p className="text-xs text-muted-foreground">{dossier.status}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-foreground">{dossier.status}</p>
+                              <p className="text-xs text-foreground">
                                 Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
                               </p>
 
@@ -1290,7 +1290,7 @@ export default function EspaceCollaboratif() {
                                     className="p-1 rounded hover:bg-gray-100"
                                     title="Supprimer"
                                   >
-                                    <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                    <Trash2 className="h-4 w-4 text-foreground" />
                                   </button>
                                 )}
 
@@ -1336,7 +1336,7 @@ export default function EspaceCollaboratif() {
             </CardHeader>
             <CardContent>
                 {clientsShared.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-foreground">
                   <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucun client partagé</p>
                   <p className="text-sm mt-2">Utilisez le bouton de partage sur vos dossiers/clients</p>
@@ -1366,7 +1366,7 @@ export default function EspaceCollaboratif() {
                           </div>
 
                           <div className="flex flex-col items-end gap-2 ml-4">
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-foreground">
                               Partagé le {new Date(client.shared_at).toLocaleDateString()}
                             </p>
                             <div className="flex items-center gap-3">
@@ -1376,7 +1376,7 @@ export default function EspaceCollaboratif() {
                                   className="p-1 rounded hover:bg-gray-100"
                                   title="Supprimer"
                                 >
-                                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                                  <Trash2 className="h-4 w-4 text-foreground" />
                                 </button>
                               )}
 
@@ -1519,12 +1519,12 @@ export default function EspaceCollaboratif() {
             </CardHeader>
             <CardContent>
               {collabLoading ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-foreground">
                   <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Chargement…</p>
                 </div>
               ) : collabTasks.filter(t => !t.done).length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-foreground">
                   <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucune tâche pour le moment</p>
                   <p className="text-sm mt-2">Créez votre première tâche collaborative</p>
@@ -1589,7 +1589,7 @@ export default function EspaceCollaboratif() {
                           <span className="font-medium text-lg">{task.title}</span>
                         </div>
                         {task.description && (
-                          <div className="text-sm text-muted-foreground mb-2 whitespace-pre-line">{task.description}</div>
+                          <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>
                         )}
                         <div className="flex-1" />
                         <div className="flex items-center justify-between mt-2">
@@ -1598,7 +1598,7 @@ export default function EspaceCollaboratif() {
                               {dateStr}
                             </Badge>
                           ) : (
-                            <span className="text-muted-foreground text-xs">Pas d'échéance</span>
+                            <span className="text-foreground text-xs">Pas d'échéance</span>
                           )}
                         </div>
                       </div>
@@ -1620,7 +1620,7 @@ export default function EspaceCollaboratif() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
+              <div className="text-center py-12 text-foreground">
                 <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Aucune conversation pour le moment</p>
                 <p className="text-sm mt-2">Fonctionnalité en cours de développement</p>

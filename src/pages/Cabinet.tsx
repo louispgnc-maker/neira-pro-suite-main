@@ -86,7 +86,7 @@ export default function Cabinet() {
                   {joiningCabinet ? 'Vérification...' : 'Rejoindre'}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-foreground mt-2">
                 Saisissez le code d'invitation fourni par votre cabinet pour relier votre compte.
               </p>
             </div>
@@ -94,7 +94,7 @@ export default function Cabinet() {
             <div className="border-t pt-4">
               <div className="text-sm font-medium mb-2">Créer un cabinet</div>
               <CreateCabinetDialog role={role} onSuccess={refreshCabinet} />
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-foreground mt-2">
                 Créez votre propre cabinet et invitez vos collaborateurs.
               </p>
             </div>
