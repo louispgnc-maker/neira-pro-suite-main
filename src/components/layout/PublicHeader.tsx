@@ -81,32 +81,6 @@ export function PublicHeader() {
             )}
           </div>
 
-          <div ref={connRef} className="relative">
-            <button
-              onClick={() => setConnOpen(!connOpen)}
-              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200 flex items-center gap-1"
-            >
-              Connexion
-              <ChevronDown className="w-3 h-3" />
-            </button>
-            {connOpen && (
-              <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
-                <button
-                  onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
-                >
-                  Espace Avocats
-                </button>
-                <button
-                  onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
-                >
-                  Espace Notaires
-                </button>
-              </div>
-            )}
-          </div>
-
           <button
             onClick={() => navigate('/about')}
             className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
@@ -123,6 +97,32 @@ export function PublicHeader() {
         </div>
 
         <div className="flex items-center gap-2">
+          <div ref={connRef} className="relative">
+            <button
+              onClick={() => setConnOpen(!connOpen)}
+              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200 flex items-center gap-1"
+            >
+              Connexion
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            {connOpen && (
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                <button
+                  onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                >
+                  Espace Avocats
+                </button>
+                <button
+                  onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                >
+                  Espace Notaires
+                </button>
+              </div>
+            )}
+          </div>
+
           <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
             <Instagram className="w-4 h-4" />
           </a>
