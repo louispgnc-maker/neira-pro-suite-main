@@ -466,15 +466,19 @@ export default function Auth() {
         {/* Central auth card removed - header popover is used for login/signup */}
 
         {selectedProofIndex !== null && (
-          <div className="mb-8">
-            <div ref={panelRef} className="w-full bg-white rounded-xl p-6 shadow-md border border-border min-h-[120px]">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-2xl">
+          <div className="mb-8 w-full">
+            <div ref={panelRef} className="w-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-10 shadow-xl border-2 border-blue-400 min-h-[200px]">
+              <div className="flex items-start gap-6">
+                <div className="w-20 h-20 rounded-xl bg-white shadow-lg flex items-center justify-center text-4xl border-2 border-blue-300">
                   {socialItems[selectedProofIndex].icon}
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-foreground">{socialItems[selectedProofIndex].title}</h3>
-                  <p className="text-sm text-muted-foreground mt-2">{socialItems[selectedProofIndex].text}</p>
+                <div className="flex-1">
+                  <h3 className="text-3xl font-bold text-gray-800 mb-4">{socialItems[selectedProofIndex].title}</h3>
+                  <p className="text-lg text-gray-700 leading-relaxed">{socialItems[selectedProofIndex].text}</p>
+                  <div className="mt-6 flex items-center gap-2 text-blue-600 font-semibold">
+                    <ArrowRight className="w-5 h-5" />
+                    <span>Fonctionnalité clé de Neira</span>
+                  </div>
                 </div>
               </div>
             </div>
