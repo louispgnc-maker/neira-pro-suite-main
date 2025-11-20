@@ -142,7 +142,7 @@ export default function NotaireAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white" style={{ paddingLeft: '1cm', paddingRight: '1cm', backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design%20sans%20titre-4.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       {/* Fixed header */}
       <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
         <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4">
