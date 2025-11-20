@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ArrowLeft, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Instagram, Linkedin } from "lucide-react";
 import emailjs from '@emailjs/browser';
 
 export default function Contact() {
@@ -92,6 +92,8 @@ export default function Contact() {
     <div
       className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50"
       style={{
+        paddingLeft: '1cm',
+        paddingRight: '1cm',
         backgroundImage:
           'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design%20sans%20titre-4.png)',
         backgroundSize: 'cover',
@@ -101,23 +103,43 @@ export default function Contact() {
     >
       {/* Header */}
       <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Retour</span>
-            </button>
-            <div className="flex items-center gap-2">
-              <img
-                src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png"
-                alt="Neira"
-                className="w-8 h-8 rounded-md object-cover"
-              />
-              <span className="font-bold text-gray-800">Neira</span>
+        <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4 relative">
+          {/* Logo on the far left */}
+          <div className="flex items-center gap-3">
+            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
+            <div className="leading-tight">
+              <div className="text-base font-bold text-foreground">Neira</div>
+              <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
             </div>
+          </div>
+
+          {/* Centered - Contact Title */}
+          <div className="flex-1 flex justify-center">
+            <span className="text-base font-semibold text-foreground">Contact</span>
+          </div>
+
+          {/* Social icons on the far right */}
+          <div className="flex items-center gap-2">
+            <a
+              href="https://www.instagram.com/neira.doc/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+              style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}
+            >
+              <Instagram className="w-4 h-4" />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/neira-doc"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm"
+              style={{ background: '#0A66C2' }}
+            >
+              <Linkedin className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </header>
