@@ -235,19 +235,19 @@ export default function Auth() {
           data-card
           onClick={() => setSelectedProofIndex(idx)}
           aria-pressed={selected}
-          className={`relative bg-muted p-4 rounded-lg border border-border shadow-sm text-left transition-all duration-150 hover:shadow-md w-full ${selected ? 'ring-2 ring-primary' : ''}`}
+          className={`relative bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-lg border-2 border-blue-300 shadow-md text-left transition-all duration-150 hover:shadow-xl hover:border-blue-500 w-full ${selected ? 'ring-2 ring-primary border-primary' : ''}`}
         >
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm mt-1">
+            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm mt-1 border border-blue-200">
               {it.icon}
             </div>
             <div className="flex-1">
-              <div className="text-sm font-semibold text-foreground">{it.title}</div>
+              <div className="text-sm font-semibold text-gray-800">{it.title}</div>
             </div>
           </div>
           {/* small click hint icon bottom-right */}
-          <span className="absolute bottom-2 right-2 rounded-full bg-primary/10 text-primary p-2 flex items-center justify-center" aria-hidden>
-            <Eye className="w-3 h-3" />
+          <span className="absolute bottom-2 right-2 rounded-full bg-blue-500 text-white p-2 flex items-center justify-center shadow-sm" aria-hidden>
+            <ArrowRight className="w-3 h-3" />
           </span>
         </button>
       );
