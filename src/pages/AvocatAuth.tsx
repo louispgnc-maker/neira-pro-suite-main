@@ -183,6 +183,10 @@ export default function AvocatAuth() {
               ) : null}
             </div>
 
+            <button type="button" onClick={() => navigate('/about')} className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors">
+              À propos
+            </button>
+
             <button type="button" onClick={() => navigate('/contact')} className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors">
               Contact
             </button>

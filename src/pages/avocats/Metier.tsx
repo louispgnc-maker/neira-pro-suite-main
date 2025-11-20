@@ -111,7 +111,7 @@ export default function AvocatsMetier() {
             </div>
           </div>
 
-          {/* Centered controls: Pour qui ? + Connexion + Contact */}
+          {/* Centered controls: Pour qui ? + Connexion + À propos + Contact */}
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-16">
             {/* Pour qui ? */}
             <div ref={whoRef} className="relative">
