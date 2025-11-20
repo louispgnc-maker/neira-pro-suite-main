@@ -136,7 +136,7 @@ export default function Contact() {
                 </p>
                 <Button 
                   onClick={() => navigate('/solution')}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   Découvrir notre solution
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -228,7 +228,7 @@ export default function Contact() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
                 </Button>
