@@ -17,6 +17,7 @@ export default function Contact() {
     email: "",
     phone: "",
     company: "",
+    subject: "",
     message: "",
   });
 
@@ -30,7 +31,7 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      // Send email using EmailJS
+      // Send confirmation email to client
       await emailjs.send(
         'service_pplgv88',
         'template_ss4jq2s',
@@ -39,6 +40,7 @@ export default function Contact() {
           from_email: formData.email,
           phone: formData.phone,
           company: formData.company,
+          subject: formData.subject,
           message: formData.message,
         }
       );
@@ -54,6 +56,7 @@ export default function Contact() {
         email: "",
         phone: "",
         company: "",
+        subject: "",
         message: "",
       });
     } catch (error) {
@@ -233,6 +236,18 @@ export default function Contact() {
                     value={formData.company}
                     onChange={handleChange}
                     placeholder="Nom de votre cabinet"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="subject">Titre / Objet *</Label>
+                  <Input
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    placeholder="Objet de votre demande"
                   />
                 </div>
 
