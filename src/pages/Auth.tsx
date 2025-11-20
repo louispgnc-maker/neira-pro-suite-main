@@ -525,7 +525,7 @@ export default function Auth() {
       </div>
 
       {/* Footer - matching header style */}
-      <footer className="w-screen bg-white/70 backdrop-blur border-t border-border" style={{ marginLeft: '-1cm', marginRight: '-1cm' }}>
+      <footer className="w-screen backdrop-blur border-t border-border" style={{ marginLeft: '-1cm', marginRight: '-1cm', backgroundColor: '#D9DEE4' }}>
         <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-4">
           <div className="flex items-start justify-between gap-12">
             {/* Left - Company Info */}

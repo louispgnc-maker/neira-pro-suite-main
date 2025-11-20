@@ -30,7 +30,7 @@ export function PublicHeader() {
   }, [connOpen]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
+    <header className="fixed inset-x-0 top-0 z-50 backdrop-blur border-b border-border" style={{ backgroundColor: '#D9DEE4' }}>
       <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4 relative">
         <div onClick={() => navigate('/')} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
           <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
