@@ -153,7 +153,7 @@ export default function Contact() {
                     }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
                   >
-                    Avocats
+                    Espace Avocats
                   </button>
                   <button
                     onClick={() => {
@@ -162,7 +162,7 @@ export default function Contact() {
                     }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
                   >
-                    Notaires
+                    Espace Notaires
                   </button>
                 </div>
               )}
