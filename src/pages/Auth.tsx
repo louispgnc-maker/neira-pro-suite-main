@@ -444,7 +444,7 @@ export default function Auth() {
             <p className="text-lg text-muted-foreground mb-6">
               La plateforme tout-en-un qui simplifie et fluidifie le quotidien des experts du juridique.
             </p>
-            <Button onClick={() => navigate('/contact')} className="px-6 py-2">Découvrir notre solution</Button>
+            <Button onClick={() => navigate('/solution')} className="px-6 py-2">Découvrir notre solution</Button>
           </div>
         </div>
 
