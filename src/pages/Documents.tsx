@@ -159,54 +159,24 @@ export default function Documents() {
       }
     }
 
-    const { data, error } = await supabase.storage
+    // Utiliser getPublicUrl pour éviter l'expiration des URLs
+    const { data: publicData } = supabase.storage
       .from(bucket)
-      .createSignedUrl(storagePath, 3600);
-    if (error || !data?.signedUrl) {
-      console.error('createSignedUrl failed for', bucket, storagePath, error);
-      try {
-        const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
-        const publicUrl = (() => {
-          const p = pub as unknown as Record<string, unknown> | null | undefined;
-          if (!p) return undefined;
-          const dataObj = p['data'] as Record<string, unknown> | undefined;
-          if (dataObj && typeof dataObj['publicUrl'] === 'string') return dataObj['publicUrl'] as string;
-          if (typeof p['publicUrl'] === 'string') return p['publicUrl'] as string;
-          return undefined;
-        })();
-        if (publicUrl) {
-          if (mode === 'view') {
-            setViewerUrl(publicUrl);
-            setViewerDocName(doc.name);
-            setViewerOpen(true);
-            return;
-          } else {
-            const a = document.createElement('a');
-            a.href = publicUrl;
-            a.download = doc.name || 'document.pdf';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            return;
-          }
-        }
-      } catch (e) {
-        console.error('getPublicUrl fallback failed', e);
-      }
-
-      // Provide an actionable message instead of a generic error to avoid confusing the user
-      toast.error(
-        'Partage désactivé / stockage partagé indisponible. Pour corriger (admin) : voir supabase/CONNECT_SHARED_BUCKET.md'
-      );
+      .getPublicUrl(storagePath);
+    
+    if (!publicData?.publicUrl) {
+      console.error('getPublicUrl failed for', bucket, storagePath);
+      toast.error('Impossible d\'accéder au document');
       return;
     }
+    
     if (mode === 'view') {
-      setViewerUrl(data.signedUrl);
+      setViewerUrl(publicData.publicUrl);
       setViewerDocName(doc.name);
       setViewerOpen(true);
     } else {
       const a = document.createElement('a');
-      a.href = data.signedUrl;
+      a.href = publicData.publicUrl;
       a.download = doc.name || 'document.pdf';
       document.body.appendChild(a);
       a.click();

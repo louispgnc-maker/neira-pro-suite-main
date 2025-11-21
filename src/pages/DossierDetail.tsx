@@ -86,23 +86,13 @@ export default function DossierDetail() {
     }
 
     try {
-      const { data, error } = await supabase.storage.from(bucket).createSignedUrl(storagePath, 3600);
-      if (error || !data?.signedUrl) {
-        // try public URL fallback
-          try {
-          const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath as string);
-          const publicUrl = pub?.data?.publicUrl ?? (((pub as unknown) as Record<string, unknown>)?.publicUrl as string | undefined);
-          if (publicUrl) {
-            window.open(publicUrl, '_blank');
-            return;
-          }
-        } catch (e) {
-          // ignore
-        }
-        console.error('createSignedUrl failed for', bucket, storagePath, error);
+      // Utiliser getPublicUrl pour éviter l'expiration des URLs
+      const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(storagePath);
+      if (!publicData?.publicUrl) {
+        console.error('getPublicUrl failed for', bucket, storagePath);
         return;
       }
-      window.open(data.signedUrl, '_blank');
+      window.open(publicData.publicUrl, '_blank');
     } catch (e) {
       console.error('Erreur ouverture pièce jointe partagée:', e);
     }
