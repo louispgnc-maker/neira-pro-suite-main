@@ -82,8 +82,17 @@ interface SharedClient {
   id: string;
   client_id: string;
   name: string;
+  prenom?: string;
+  nom?: string;
+  email?: string;
+  telephone?: string;
+  kyc_status?: string;
+  missing_info?: string;
   shared_at: string;
   shared_by: string;
+  file_url?: string;
+  file_name?: string;
+  file_type?: string;
 }
 
 interface CollabTask {
@@ -550,39 +559,17 @@ export default function EspaceCollaboratif() {
         setContrats([]);
       }
 
-      // Clients: try RPC then fallback to table+profiles join
+      // Clients
       try {
-        const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { p_cabinet_id: userCabinet?.id, cabinet_id_param: userCabinet?.id });
+        const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { cabinet_id_param: userCabinet?.id });
         if (!clientsError && Array.isArray(clientsData)) {
-          const arr = clientsData as unknown[];
-          const mapped = arr.map((r) => {
-            const rr = r as { id: string; client_id: string; name?: string; full_name?: string; shared_at: string; shared_by: string };
-            return { id: rr.id, client_id: rr.client_id, name: rr.name || rr.full_name || rr.client_id, shared_at: rr.shared_at, shared_by: rr.shared_by };
-          });
-          setClientsShared(mapped as SharedClient[]);
+          setClientsShared(clientsData as SharedClient[]);
         } else {
-          // fallback implementation: read cabinet_clients then profiles
-          const { data: clientsTable } = await supabase.from('cabinet_clients').select('id,client_id,shared_at,shared_by').eq('cabinet_id', userCabinet?.id).order('shared_at', { ascending: false });
-          const rows = Array.isArray(clientsTable) ? clientsTable as unknown[] : [];
-          const ids = Array.from(new Set(rows.map(r => (r as { client_id?: string }).client_id).filter(Boolean)));
-          let profiles: unknown[] = [];
-          if (ids.length > 0) {
-            const { data: profilesData } = await supabase.from('profiles').select('id,prenom,nom,full_name').in('id', ids);
-            profiles = Array.isArray(profilesData) ? profilesData as unknown[] : [];
-          }
-          const byId = Object.fromEntries((profiles as unknown[]).map((p) => {
-            const pp = p as { id: string; prenom?: string; nom?: string; full_name?: string };
-            return [pp.id, pp];
-          }));
-          const mapped = rows.map((r) => {
-            const rr = r as { id: string; client_id: string; shared_at: string; shared_by: string };
-            const profile = byId[rr.client_id] as { full_name?: string; prenom?: string; nom?: string } | undefined;
-            const name = profile ? (profile.full_name || [profile.prenom, profile.nom].filter(Boolean).join(' ')) : rr.client_id;
-            return { id: rr.id, client_id: rr.client_id, name, shared_at: rr.shared_at, shared_by: rr.shared_by };
-          });
-          setClientsShared(mapped as SharedClient[]);
+          console.error('Error fetching clients:', clientsError);
+          setClientsShared([]);
         }
       } catch (e) {
+        console.error('Exception fetching clients:', e);
         setClientsShared([]);
       }
 
