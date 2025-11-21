@@ -41,7 +41,23 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
         return;
       }
 
-      if (itemType === 'dossier') {
+      if (itemType === 'client') {
+        // Pour les clients, utiliser la fonction RPC
+        const { data, error } = await supabase.rpc('share_client_to_cabinet', {
+          p_client_id: itemId,
+          p_cabinet_id: cabinetId,
+          p_shared_by: user.id
+        });
+        
+        if (error || !data) {
+          console.error('share_client_to_cabinet failed', error);
+          toast.error('Partage impossible');
+          return;
+        }
+        
+        toast.success('Client partagé sur l\'espace de votre cabinet');
+        if (onSuccess) onSuccess();
+      } else if (itemType === 'dossier') {
         // Pour les dossiers, utiliser la fonction RPC
         const { data, error } = await supabase.rpc('share_dossier_to_cabinet', {
           p_dossier_id: itemId,
