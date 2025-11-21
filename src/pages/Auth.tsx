@@ -235,7 +235,7 @@ export default function Auth() {
           data-card
           onClick={() => setSelectedProofIndex(idx)}
           aria-pressed={selected}
-          className={`relative bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-lg border-2 border-blue-300 shadow-md text-left transition-all duration-150 hover:shadow-xl hover:border-blue-500 w-full ${selected ? 'ring-2 ring-primary border-primary' : ''}`}
+          className={`relative bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-lg border-2 border-blue-300 shadow-md text-left transition-all duration-150 hover:shadow-xl hover:border-blue-500 w-full ${selected ? 'ring-1 ring-blue-400 border-blue-400 bg-gradient-to-br from-blue-25 to-indigo-50' : ''}`}
         >
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm mt-1 border border-blue-200">
@@ -467,9 +467,9 @@ export default function Auth() {
 
         {selectedProofIndex !== null && (
           <div className="mb-8 w-full">
-            <div ref={panelRef} className="w-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-10 shadow-xl border-2 border-blue-400 min-h-[200px]">
+            <div ref={panelRef} className="w-full bg-gradient-to-br from-blue-25 to-blue-50 rounded-xl p-10 shadow-xl border border-blue-300 min-h-[200px]">
               <div className="flex items-start gap-6">
-                <div className="w-20 h-20 rounded-xl bg-white shadow-lg flex items-center justify-center text-4xl border-2 border-blue-300">
+                <div className="w-20 h-20 rounded-xl bg-white shadow-lg flex items-center justify-center text-4xl border border-blue-200">
                   {socialItems[selectedProofIndex].icon}
                 </div>
                 <div className="flex-1">
