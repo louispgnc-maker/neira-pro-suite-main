@@ -86,7 +86,7 @@ export default function DossierDetail() {
     }
 
     try {
-      const { data, error } = await supabase.storage.from(bucket).createSignedUrl(storagePath, 60);
+      const { data, error } = await supabase.storage.from(bucket).createSignedUrl(storagePath, 3600);
       if (error || !data?.signedUrl) {
         // try public URL fallback
           try {

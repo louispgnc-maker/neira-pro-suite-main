@@ -161,7 +161,7 @@ export default function Documents() {
 
     const { data, error } = await supabase.storage
       .from(bucket)
-      .createSignedUrl(storagePath, 60);
+      .createSignedUrl(storagePath, 3600);
     if (error || !data?.signedUrl) {
       console.error('createSignedUrl failed for', bucket, storagePath, error);
       try {
