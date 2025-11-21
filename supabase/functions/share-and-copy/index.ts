@@ -16,7 +16,11 @@ if (!SUPABASE_URL || !SERVICE_KEY) {
   console.error('Missing SUPABASE_URL or service role key (SUPABASE_SERVICE_ROLE_KEY / SERVICE_ROLE_KEY / SERVICE_KEY) in function environment');
 }
 
-const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
+const admin = createClient(SUPABASE_URL, SERVICE_KEY, { 
+  auth: { persistSession: false },
+  db: { schema: 'public' },
+  global: { headers: { 'x-client-info': 'supabase-js-edge-function' } }
+});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -39,6 +43,8 @@ serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const documentId = body.document_id || body.documentId || null;
     const cabinetId = body.cabinet_id || body.cabinetId || null;
+
+    console.log('share-and-copy received:', { documentId, cabinetId });
 
     if (!documentId || !cabinetId) return new Response(JSON.stringify({ error: 'Missing document_id or cabinet_id' }), { status: 400, headers: corsHeaders });
 
@@ -63,14 +69,17 @@ serve(async (req) => {
       if (!isOwner) return new Response(JSON.stringify({ error: 'Not a member' }), { status: 403, headers: corsHeaders });
     }
 
-    // Fetch document metadata
-    const { data: docRow, error: docErr } = await admin
-      .from('documents')
-      .select('id,storage_path,name,content_type,file_size,owner_id')
-      .eq('id', documentId)
-      .limit(1)
-      .single();
-    if (docErr || !docRow) return new Response(JSON.stringify({ error: 'Document not found' }), { status: 404, headers: corsHeaders });
+    // Fetch document metadata - use rpc to bypass RLS properly
+    const { data: docRows, error: docErr } = await admin
+      .rpc('get_document_for_share', { doc_id: documentId });
+    
+    console.log('Document query result:', { docRows, docErr });
+    
+    const docRow = Array.isArray(docRows) && docRows.length > 0 ? docRows[0] : null;
+    if (docErr || !docRow) {
+      console.error('Document not found:', { documentId, docErr, docRows });
+      return new Response(JSON.stringify({ error: 'Document not found', details: docErr }), { status: 404, headers: corsHeaders });
+    }
 
     const sourceBucket = 'documents';
   const sourcePath = (docRow.storage_path || '').replace(/^\/+/, '');
@@ -95,7 +104,7 @@ serve(async (req) => {
 
     // Upload to shared bucket
     const { data: upData, error: upErr } = await admin.storage.from(targetBucket).upload(targetPath, buffer, {
-      contentType: docRow.content_type || undefined,
+      contentType: 'application/pdf',
       upsert: false,
     });
     if (upErr) {
@@ -115,8 +124,8 @@ serve(async (req) => {
       description: null,
       file_url: publicUrl,
       file_name: docRow.name || safeName,
-      file_size: docRow.file_size || null,
-      file_type: docRow.content_type || null,
+      file_size: null,
+      file_type: null,
       shared_by: callerId,
     };
 

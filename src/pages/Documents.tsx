@@ -407,7 +407,7 @@ export default function Documents() {
                           itemType="document"
                           role={role}
                           onSuccess={() => {
-                            toast.success('Document partagé');
+                            // Toast déjà affiché dans ShareToCollaborativeDialog
                           }}
                         />
                         <DropdownMenu>

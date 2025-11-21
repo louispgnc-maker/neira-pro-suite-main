@@ -43,7 +43,7 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
 
       const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: itemId });
         if (uploadedBucket && publicUrl) {
-        toast.success('Document partagé');
+        toast.success('Document partagé sur l\'espace de votre cabinet');
         if (onSuccess) onSuccess();
       } else {
         toast.error('Partage impossible');
