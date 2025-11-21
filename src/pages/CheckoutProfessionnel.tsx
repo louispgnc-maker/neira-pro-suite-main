@@ -50,9 +50,9 @@ export default function CheckoutProfessionnel() {
           Retour aux offres
         </button>
 
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="max-w-7xl mx-auto">
           {/* En-tête de l'offre */}
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-300">
+          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-300 mb-8">
             <CardContent className="p-8">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
@@ -71,250 +71,254 @@ export default function CheckoutProfessionnel() {
             </CardContent>
           </Card>
 
-          {/* Fonctionnalités détaillées */}
-          <Card className="bg-white/90 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="text-2xl">✨ Tout ce qui est inclus</CardTitle>
-              <CardDescription>Fonctionnalités complètes de l'offre Professionnel</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
+          {/* Layout 2 colonnes : Fonctionnalités à gauche, Paiement à droite */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Colonne gauche : Fonctionnalités détaillées */}
+            <div className="space-y-6">
+              <Card className="bg-white/90 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-2xl">✨ Tout ce qui est inclus</CardTitle>
+                  <CardDescription>Fonctionnalités complètes de l'offre Professionnel</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Tout ce qu'il y a dans Essentiel</h4>
+                        <p className="text-sm text-gray-600 mt-1">Base complète incluse</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Tout ce qu'il y a dans Essentiel</h4>
-                      <p className="text-sm text-gray-600 mt-1">Base complète incluse</p>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Automatisations & workflows</h4>
+                        <p className="text-sm text-gray-600 mt-1">Optimisez vos processus métier</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Génération automatique de documents</h4>
+                        <p className="text-sm text-gray-600 mt-1">Gagnez du temps sur la rédaction</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Modèles juridiques personnalisables</h4>
+                        <p className="text-sm text-gray-600 mt-1">Bibliothèque complète à votre disposition</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Signature électronique illimitée</h4>
+                        <p className="text-sm text-gray-600 mt-1">Signatures sans limites</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">100 Go de stockage</h4>
+                        <p className="text-sm text-gray-600 mt-1">Espace important pour vos besoins</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Gestion des droits d'accès</h4>
+                        <p className="text-sm text-gray-600 mt-1">Contrôle total des accès</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Tableaux de bord & reporting</h4>
+                        <p className="text-sm text-gray-600 mt-1">Analyses et statistiques détaillées</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Support prioritaire</h4>
+                        <p className="text-sm text-gray-600 mt-1">Assistance rapide et dédiée</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Automatisations & workflows</h4>
-                      <p className="text-sm text-gray-600 mt-1">Optimisez vos processus métier</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Génération automatique de documents</h4>
-                      <p className="text-sm text-gray-600 mt-1">Gagnez du temps sur la rédaction</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Modèles juridiques personnalisables</h4>
-                      <p className="text-sm text-gray-600 mt-1">Bibliothèque complète à votre disposition</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Signature électronique illimitée</h4>
-                      <p className="text-sm text-gray-600 mt-1">Signatures sans limites</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">100 Go de stockage</h4>
-                      <p className="text-sm text-gray-600 mt-1">Espace étendu pour vos documents</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Gestion des droits utilisateurs</h4>
-                      <p className="text-sm text-gray-600 mt-1">Contrôle total des accès</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Tableaux de bord & reporting</h4>
-                      <p className="text-sm text-gray-600 mt-1">Analyses et statistiques détaillées</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Support prioritaire</h4>
-                      <p className="text-sm text-gray-600 mt-1">Assistance rapide et dédiée</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </div>
 
-          {/* Choix du mode de paiement */}
-          <Card className="bg-white/90 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="text-xl">Choisissez votre mode de paiement</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setBillingPeriod('monthly')}
-                  className={`p-4 rounded-lg border-2 text-left transition-all ${
-                    billingPeriod === 'monthly'
-                      ? 'border-purple-600 bg-purple-50'
-                      : 'border-gray-200 bg-white hover:border-purple-300'
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-semibold text-gray-900 text-lg">Mensuel</div>
-                      <div className="text-2xl font-bold text-purple-600 mt-2">{monthlyPrice}€</div>
-                      <div className="text-sm text-gray-600">par mois</div>
+            {/* Colonne droite : Choix paiement + Formulaire */}
+            <div className="space-y-6">
+              {/* Choix du mode de paiement */}
+              <Card className="bg-white/90 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl">Choisissez votre mode de paiement</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setBillingPeriod('monthly')}
+                      className={`p-4 rounded-lg border-2 text-left transition-all ${
+                        billingPeriod === 'monthly'
+                          ? 'border-purple-600 bg-purple-50'
+                          : 'border-gray-200 bg-white hover:border-purple-300'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-semibold text-gray-900 text-lg">Mensuel</div>
+                          <div className="text-2xl font-bold text-purple-600 mt-2">{monthlyPrice}€</div>
+                          <div className="text-sm text-gray-600">par mois</div>
+                        </div>
+                        {billingPeriod === 'monthly' && (
+                          <CheckCircle2 className="w-6 h-6 text-purple-600" />
+                        )}
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBillingPeriod('yearly')}
+                      className={`p-4 rounded-lg border-2 text-left transition-all relative ${
+                        billingPeriod === 'yearly'
+                          ? 'border-purple-600 bg-purple-50'
+                          : 'border-gray-200 bg-white hover:border-purple-300'
+                      }`}
+                    >
+                      <div className="absolute -top-2 right-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                        -10%
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-semibold text-gray-900 text-lg">Annuel</div>
+                          <div className="text-2xl font-bold text-purple-600 mt-2">{yearlyPrice}€</div>
+                          <div className="text-sm text-gray-600">par an</div>
+                        </div>
+                        {billingPeriod === 'yearly' && (
+                          <CheckCircle2 className="w-6 h-6 text-purple-600" />
+                        )}
+                      </div>
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Formulaire de paiement compact */}
+              <Card className="bg-white/90 backdrop-blur border-2 border-purple-300">
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100">
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <CreditCard className="w-5 h-5 text-purple-600" />
+                    Finaliser le paiement
+                  </CardTitle>
+                  <CardDescription>Paiement 100% sécurisé</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <Label htmlFor="cardName">Nom sur la carte</Label>
+                        <Input id="cardName" placeholder="Jean Dupont" required />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email de facturation</Label>
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          placeholder="votre@email.com" 
+                          required 
+                        />
+                      </div>
                     </div>
-                    {billingPeriod === 'monthly' && (
-                      <CheckCircle2 className="w-6 h-6 text-purple-600" />
-                    )}
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBillingPeriod('yearly')}
-                  className={`p-4 rounded-lg border-2 text-left transition-all relative ${
-                    billingPeriod === 'yearly'
-                      ? 'border-purple-600 bg-purple-50'
-                      : 'border-gray-200 bg-white hover:border-purple-300'
-                  }`}
-                >
-                  <div className="absolute -top-2 right-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-                    -10%
-                  </div>
-                  <div className="flex justify-between items-start">
+
                     <div>
-                      <div className="font-semibold text-gray-900 text-lg">Annuel</div>
-                      <div className="text-2xl font-bold text-purple-600 mt-2">{yearlyPrice}€</div>
-                      <div className="text-sm text-gray-600">par an</div>
+                      <Label htmlFor="cardNumber">Numéro de carte</Label>
+                      <Input 
+                        id="cardNumber" 
+                        placeholder="1234 5678 9012 3456" 
+                        maxLength={19}
+                        required 
+                      />
                     </div>
-                    {billingPeriod === 'yearly' && (
-                      <CheckCircle2 className="w-6 h-6 text-purple-600" />
-                    )}
-                  </div>
-                </button>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Formulaire de paiement compact */}
-          <Card className="bg-white/90 backdrop-blur border-2 border-purple-300">
-            <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100">
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <CreditCard className="w-5 h-5 text-purple-600" />
-                Finaliser le paiement
-              </CardTitle>
-              <CardDescription>Paiement 100% sécurisé</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="cardName">Nom sur la carte</Label>
-                    <Input id="cardName" placeholder="Jean Dupont" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email de facturation</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      placeholder="votre@email.com" 
-                      required 
-                    />
-                  </div>
-                </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="expiry">Date d'expiration</Label>
+                        <Input 
+                          id="expiry" 
+                          placeholder="MM/AA" 
+                          maxLength={5}
+                          required 
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cvv">CVV</Label>
+                        <Input 
+                          id="cvv" 
+                          type="password" 
+                          placeholder="123" 
+                          maxLength={3}
+                          required 
+                        />
+                      </div>
+                    </div>
 
-                <div>
-                  <Label htmlFor="cardNumber">Numéro de carte</Label>
-                  <Input 
-                    id="cardNumber" 
-                    placeholder="1234 5678 9012 3456" 
-                    maxLength={19}
-                    required 
-                  />
-                </div>
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 space-y-2 border border-purple-200">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-700 font-medium">Sous-total ({billingPeriod === 'monthly' ? 'Mensuel' : 'Annuel'})</span>
+                        <span className="font-semibold text-gray-900">{price.toFixed(2)} €</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-700 font-medium">TVA (20%)</span>
+                        <span className="font-semibold text-gray-900">{tva.toFixed(2)} €</span>
+                      </div>
+                      <div className="border-t border-purple-300 pt-2 flex justify-between">
+                        <span className="font-bold text-gray-900">Total à payer</span>
+                        <span className="text-2xl font-bold text-purple-600">{total.toFixed(2)} €</span>
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="expiry">Date d'expiration</Label>
-                    <Input 
-                      id="expiry" 
-                      placeholder="MM/AA" 
-                      maxLength={5}
-                      required 
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="cvv">CVV</Label>
-                    <Input 
-                      id="cvv" 
-                      type="password" 
-                      placeholder="123" 
-                      maxLength={3}
-                      required 
-                    />
-                  </div>
-                </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-500 justify-center">
+                      <Lock className="w-4 h-4" />
+                      <span>Paiement 100% sécurisé SSL</span>
+                    </div>
 
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 space-y-2 border border-purple-200">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-700 font-medium">Sous-total ({billingPeriod === 'monthly' ? 'Mensuel' : 'Annuel'})</span>
-                    <span className="font-semibold text-gray-900">{price.toFixed(2)} €</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-700 font-medium">TVA (20%)</span>
-                    <span className="font-semibold text-gray-900">{tva.toFixed(2)} €</span>
-                  </div>
-                  <div className="border-t border-purple-300 pt-2 flex justify-between">
-                    <span className="font-bold text-gray-900">Total à payer</span>
-                    <span className="text-2xl font-bold text-purple-600">{total.toFixed(2)} €</span>
-                  </div>
-                </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-6"
+                      disabled={loading}
+                    >
+                      {loading ? "Traitement..." : "Confirmer le paiement"}
+                    </Button>
 
-                <div className="flex items-center gap-2 text-xs text-gray-500 justify-center">
-                  <Lock className="w-4 h-4" />
-                  <span>Paiement 100% sécurisé SSL</span>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-6"
-                  disabled={loading}
-                >
-                  {loading ? "Traitement..." : "Confirmer le paiement"}
-                </Button>
-
-                <p className="text-xs text-center text-gray-500">
-                  En confirmant, vous acceptez nos conditions générales de vente
-                </p>
-              </form>
-            </CardContent>
-          </Card>
+                    <p className="text-xs text-center text-gray-500">
+                      En confirmant, vous acceptez nos conditions générales de vente
+                    </p>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
