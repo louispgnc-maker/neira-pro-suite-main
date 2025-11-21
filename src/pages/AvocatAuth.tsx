@@ -155,6 +155,19 @@ export default function AvocatAuth() {
               <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">Se connecter</Button>
             </div>
           </form>
+          
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-center text-sm text-gray-600 mb-3">
+              Pas encore de compte ? Découvrez nos différentes offres
+            </p>
+            <Button 
+              variant="outline" 
+              className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+              onClick={() => navigate('/solution')}
+            >
+              Voir nos offres
+            </Button>
+          </div>
         </CardContent>
       </Card>
       </div>

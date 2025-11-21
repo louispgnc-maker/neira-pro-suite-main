@@ -155,6 +155,19 @@ export default function NotaireAuth() {
               <Button type="submit" disabled={loading} className="bg-orange-600 hover:bg-orange-700">Se connecter</Button>
             </div>
           </form>
+          
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-center text-sm text-gray-600 mb-3">
+              Pas encore de compte ? Découvrez nos différentes offres
+            </p>
+            <Button 
+              variant="outline" 
+              className="w-full border-orange-600 text-orange-600 hover:bg-orange-50"
+              onClick={() => navigate('/solution')}
+            >
+              Voir nos offres
+            </Button>
+          </div>
         </CardContent>
       </Card>
       </div>
