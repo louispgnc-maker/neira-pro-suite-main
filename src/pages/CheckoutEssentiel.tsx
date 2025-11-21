@@ -11,6 +11,13 @@ import { toast } from "sonner";
 export default function CheckoutEssentiel() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+
+  const monthlyPrice = 39;
+  const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
+  const price = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
+  const tva = Math.round(price * 0.2 * 100) / 100;
+  const total = Math.round((price + tva) * 100) / 100;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +59,53 @@ export default function CheckoutEssentiel() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <div className="text-4xl font-bold text-blue-600 mb-2">39€</div>
+                <div className="text-4xl font-bold text-blue-600 mb-2">{monthlyPrice}€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
                 <p className="text-sm text-gray-500 mt-1">Pour indépendants & petits cabinets</p>
+              </div>
+
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <Label className="text-sm font-semibold text-gray-900 mb-3 block">Choisissez votre mode de paiement :</Label>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setBillingPeriod('monthly')}
+                    className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                      billingPeriod === 'monthly'
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-gray-200 bg-white hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-semibold text-gray-900">Paiement mensuel</div>
+                        <div className="text-sm text-gray-600">{monthlyPrice}€ / mois</div>
+                      </div>
+                      {billingPeriod === 'monthly' && (
+                        <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                      )}
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBillingPeriod('yearly')}
+                    className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                      billingPeriod === 'yearly'
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-gray-200 bg-white hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-semibold text-gray-900">Paiement annuel</div>
+                        <div className="text-sm text-gray-600">{yearlyPrice}€ / an <span className="text-green-600 font-semibold">(-10%)</span></div>
+                      </div>
+                      {billingPeriod === 'yearly' && (
+                        <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                      )}
+                    </div>
+                  </button>
+                </div>
               </div>
 
               <div className="border-t pt-4">
@@ -89,13 +140,6 @@ export default function CheckoutEssentiel() {
                     <span className="text-sm text-gray-700">Support email</span>
                   </div>
                 </div>
-              </div>
-
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <p className="text-sm text-blue-700">
-                  <strong>✨ Essai gratuit de 14 jours</strong><br />
-                  Aucun engagement, annulation possible à tout moment
-                </p>
               </div>
             </CardContent>
           </Card>
@@ -160,16 +204,16 @@ export default function CheckoutEssentiel() {
 
                 <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Sous-total</span>
-                    <span className="font-medium">39,00 €</span>
+                    <span className="text-gray-600">Sous-total ({billingPeriod === 'monthly' ? 'Mensuel' : 'Annuel'})</span>
+                    <span className="font-medium">{price.toFixed(2)} €</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">TVA (20%)</span>
-                    <span className="font-medium">7,80 €</span>
+                    <span className="font-medium">{tva.toFixed(2)} €</span>
                   </div>
                   <div className="border-t pt-2 flex justify-between">
                     <span className="font-semibold">Total</span>
-                    <span className="text-xl font-bold text-blue-600">46,80 €</span>
+                    <span className="text-xl font-bold text-blue-600">{total.toFixed(2)} €</span>
                   </div>
                 </div>
 
