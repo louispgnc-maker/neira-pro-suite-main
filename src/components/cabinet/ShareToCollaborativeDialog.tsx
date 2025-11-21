@@ -141,6 +141,11 @@ export function ShareToCollaborativeDialog({
     }
   };
 
+  // Classe de couleur selon le rôle
+  const buttonColorClass = role === 'notaire'
+    ? 'bg-orange-600 hover:bg-orange-700 text-white'
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+
   if (hideTrigger) {
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -155,7 +160,7 @@ export function ShareToCollaborativeDialog({
             <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={busy}>
               Annuler
             </Button>
-            <Button onClick={handleShare} disabled={busy}>
+            <Button onClick={handleShare} disabled={busy} className={buttonColorClass}>
               {busy ? 'Partage en cours...' : 'Partager'}
             </Button>
           </DialogFooter>
