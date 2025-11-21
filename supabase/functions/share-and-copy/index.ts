@@ -18,23 +18,33 @@ if (!SUPABASE_URL || !SERVICE_KEY) {
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
-    if (req.method !== 'POST') return new Response('Method Not Allowed', { status: 405 });
+    if (req.method !== 'POST') return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
 
     const auth = req.headers.get('Authorization') || '';
     const jwt = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-    if (!jwt) return new Response(JSON.stringify({ error: 'Missing bearer token' }), { status: 401 });
+    if (!jwt) return new Response(JSON.stringify({ error: 'Missing bearer token' }), { status: 401, headers: corsHeaders });
 
     const body = await req.json().catch(() => ({}));
     const documentId = body.document_id || body.documentId || null;
     const cabinetId = body.cabinet_id || body.cabinetId || null;
 
-    if (!documentId || !cabinetId) return new Response(JSON.stringify({ error: 'Missing document_id or cabinet_id' }), { status: 400 });
+    if (!documentId || !cabinetId) return new Response(JSON.stringify({ error: 'Missing document_id or cabinet_id' }), { status: 400, headers: corsHeaders });
 
     // Validate the calling user
     const { data: userInfo, error: userErr } = await admin.auth.getUser(jwt);
-    if (userErr || !userInfo?.user) return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401 });
+    if (userErr || !userInfo?.user) return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401, headers: corsHeaders });
     const callerId = userInfo.user.id;
 
     // Verify membership: either owner OR active member of provided cabinet
@@ -45,12 +55,12 @@ serve(async (req) => {
       .eq('user_id', callerId)
       .eq('status', 'active')
       .limit(1);
-    if (membersErr) return new Response(JSON.stringify({ error: 'Membership check failed' }), { status: 500 });
+    if (membersErr) return new Response(JSON.stringify({ error: 'Membership check failed' }), { status: 500, headers: corsHeaders });
     const isMember = Array.isArray(membersData) && membersData.length > 0;
     if (!isMember) {
       const { data: ownerData } = await admin.rpc('is_cabinet_owner', { cabinet_id_param: cabinetId, user_id_param: callerId });
       const isOwner = (typeof ownerData === 'boolean' && ownerData) || (Array.isArray(ownerData) && ownerData.length > 0 && ownerData[0]);
-      if (!isOwner) return new Response(JSON.stringify({ error: 'Not a member' }), { status: 403 });
+      if (!isOwner) return new Response(JSON.stringify({ error: 'Not a member' }), { status: 403, headers: corsHeaders });
     }
 
     // Fetch document metadata
@@ -60,22 +70,22 @@ serve(async (req) => {
       .eq('id', documentId)
       .limit(1)
       .single();
-    if (docErr || !docRow) return new Response(JSON.stringify({ error: 'Document not found' }), { status: 404 });
+    if (docErr || !docRow) return new Response(JSON.stringify({ error: 'Document not found' }), { status: 404, headers: corsHeaders });
 
     const sourceBucket = 'documents';
   const sourcePath = (docRow.storage_path || '').replace(/^\/+/, '');
-    if (!sourcePath) return new Response(JSON.stringify({ error: 'Document has no storage_path' }), { status: 400 });
+    if (!sourcePath) return new Response(JSON.stringify({ error: 'Document has no storage_path' }), { status: 400, headers: corsHeaders });
 
     // Create a signed URL for the source and fetch the bytes
     const expires = 120;
     const { data: srcSigned, error: srcSignedErr } = await admin.storage.from(sourceBucket).createSignedUrl(sourcePath, expires);
     if (srcSignedErr || !srcSigned?.signedUrl) {
       console.error('createSignedUrl(source) failed', srcSignedErr);
-      return new Response(JSON.stringify({ error: 'Failed to create signed URL for source' }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'Failed to create signed URL for source' }), { status: 500, headers: corsHeaders });
     }
 
     const fetchResp = await fetch(srcSigned.signedUrl);
-    if (!fetchResp.ok) return new Response(JSON.stringify({ error: 'Failed to fetch source object' }), { status: 500 });
+    if (!fetchResp.ok) return new Response(JSON.stringify({ error: 'Failed to fetch source object' }), { status: 500, headers: corsHeaders });
     const buffer = new Uint8Array(await fetchResp.arrayBuffer());
 
     // Prepare target path in shared bucket
@@ -90,7 +100,7 @@ serve(async (req) => {
     });
     if (upErr) {
       console.error('upload to shared-documents failed', upErr);
-      return new Response(JSON.stringify({ error: 'Upload to shared bucket failed', details: upErr }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'Upload to shared bucket failed', details: upErr }), { status: 500, headers: corsHeaders });
     }
 
     // Create a signed URL for the uploaded object (short-lived) to return to the client
@@ -113,12 +123,12 @@ serve(async (req) => {
     const { data: inserted, error: insertErr } = await admin.from('cabinet_documents').insert(insertPayload).select().single();
     if (insertErr) {
       console.error('failed to insert cabinet_documents', insertErr);
-      return new Response(JSON.stringify({ error: 'Failed to create cabinet_documents row', details: insertErr }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'Failed to create cabinet_documents row', details: insertErr }), { status: 500, headers: corsHeaders });
     }
 
-    return new Response(JSON.stringify({ ok: true, inserted, uploadedBucket: targetBucket, targetPath, publicUrl }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ ok: true, inserted, uploadedBucket: targetBucket, targetPath, publicUrl }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {
     console.error('share-and-copy function error', e);
-    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
+    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: corsHeaders });
   }
 });
