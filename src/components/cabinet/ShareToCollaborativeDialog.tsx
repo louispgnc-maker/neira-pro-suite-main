@@ -38,11 +38,22 @@ export function ShareToCollaborativeDialog({
 }: ShareToCollaborativeDialogProps) {
   const { user } = useAuth();
   const [busy, setBusy] = useState(false);
-  const [open, setOpen] = useState(initialOpen);
+  const [internalOpen, setInternalOpen] = useState(false);
 
-  useEffect(() => {
-    setOpen(initialOpen);
-  }, [initialOpen]);
+  // Use initialOpen prop directly when hideTrigger is true (controlled mode)
+  const open = hideTrigger ? initialOpen : internalOpen;
+  
+  const setOpen = (value: boolean) => {
+    if (hideTrigger) {
+      // In controlled mode, don't update internal state
+      // Let parent handle it via onClose
+      if (!value && onClose) {
+        onClose();
+      }
+    } else {
+      setInternalOpen(value);
+    }
+  };
 
   const handleShare = async () => {
     if (!user) { toast.error('Connexion requise'); return; }
