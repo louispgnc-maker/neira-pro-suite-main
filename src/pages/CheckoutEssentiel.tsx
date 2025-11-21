@@ -50,114 +50,192 @@ export default function CheckoutEssentiel() {
           Retour aux offres
         </button>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Résumé de l'offre */}
-          <Card className="bg-white/90 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="text-2xl text-blue-600">Neira Essentiel</CardTitle>
-              <CardDescription>Votre offre sélectionnée</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <div className="text-4xl font-bold text-blue-600 mb-2">{monthlyPrice}€</div>
-                <p className="text-sm text-gray-600">par mois / utilisateur</p>
-                <p className="text-sm text-gray-500 mt-1">Pour indépendants & petits cabinets</p>
-              </div>
-
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <Label className="text-sm font-semibold text-gray-900 mb-3 block">Choisissez votre mode de paiement :</Label>
-                <div className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => setBillingPeriod('monthly')}
-                    className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                      billingPeriod === 'monthly'
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-200 bg-white hover:border-blue-300'
-                    }`}
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-semibold text-gray-900">Paiement mensuel</div>
-                        <div className="text-sm text-gray-600">{monthlyPrice}€ / mois</div>
-                      </div>
-                      {billingPeriod === 'monthly' && (
-                        <CheckCircle2 className="w-5 h-5 text-blue-600" />
-                      )}
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBillingPeriod('yearly')}
-                    className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                      billingPeriod === 'yearly'
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-200 bg-white hover:border-blue-300'
-                    }`}
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-semibold text-gray-900">Paiement annuel</div>
-                        <div className="text-sm text-gray-600">{yearlyPrice}€ / an <span className="text-green-600 font-semibold">(-10%)</span></div>
-                      </div>
-                      {billingPeriod === 'yearly' && (
-                        <CheckCircle2 className="w-5 h-5 text-blue-600" />
-                      )}
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              <div className="border-t pt-4">
-                <h4 className="font-semibold mb-3 text-gray-900">Fonctionnalités incluses :</h4>
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Espace collaboratif complet</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Gestion documentaire intelligente</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Partage sécurisé + dépôt client</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Planning + tâches + rappels</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Signature électronique (5/mois)</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">20 Go de stockage</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Support email</span>
+        <div className="max-w-5xl mx-auto space-y-8">
+          {/* En-tête de l'offre */}
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300">
+            <CardContent className="p-8">
+              <div className="text-center">
+                <h1 className="text-4xl font-bold text-blue-600 mb-2">Neira Essentiel</h1>
+                <p className="text-gray-600 mb-6">Pour indépendants & petits cabinets</p>
+                <div className="flex items-center justify-center gap-8">
+                  <div className="text-5xl font-bold text-blue-600">{monthlyPrice}€</div>
+                  <div className="text-left">
+                    <p className="text-sm text-gray-600">par mois / utilisateur</p>
+                    <p className="text-xs text-gray-500">Facturation mensuelle</p>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Formulaire de paiement */}
+          {/* Choix du mode de paiement */}
           <Card className="bg-white/90 backdrop-blur">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5" />
-                Informations de paiement
-              </CardTitle>
-              <CardDescription>Paiement sécurisé par carte bancaire</CardDescription>
+              <CardTitle className="text-xl">Choisissez votre mode de paiement</CardTitle>
             </CardHeader>
             <CardContent>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setBillingPeriod('monthly')}
+                  className={`p-4 rounded-lg border-2 text-left transition-all ${
+                    billingPeriod === 'monthly'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 bg-white hover:border-blue-300'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-semibold text-gray-900 text-lg">Mensuel</div>
+                      <div className="text-2xl font-bold text-blue-600 mt-2">{monthlyPrice}€</div>
+                      <div className="text-sm text-gray-600">par mois</div>
+                    </div>
+                    {billingPeriod === 'monthly' && (
+                      <CheckCircle2 className="w-6 h-6 text-blue-600" />
+                    )}
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillingPeriod('yearly')}
+                  className={`p-4 rounded-lg border-2 text-left transition-all relative ${
+                    billingPeriod === 'yearly'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 bg-white hover:border-blue-300'
+                  }`}
+                >
+                  <div className="absolute -top-2 right-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                    -10%
+                  </div>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-semibold text-gray-900 text-lg">Annuel</div>
+                      <div className="text-2xl font-bold text-blue-600 mt-2">{yearlyPrice}€</div>
+                      <div className="text-sm text-gray-600">par an</div>
+                    </div>
+                    {billingPeriod === 'yearly' && (
+                      <CheckCircle2 className="w-6 h-6 text-blue-600" />
+                    )}
+                  </div>
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Fonctionnalités détaillées */}
+          <Card className="bg-white/90 backdrop-blur">
+            <CardHeader>
+              <CardTitle className="text-2xl">✨ Tout ce qui est inclus</CardTitle>
+              <CardDescription>Fonctionnalités complètes de l'offre Essentiel</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Espace collaboratif complet</h4>
+                      <p className="text-sm text-gray-600 mt-1">Travaillez en équipe en temps réel</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Gestion documentaire intelligente</h4>
+                      <p className="text-sm text-gray-600 mt-1">Organisez vos documents efficacement</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Partage sécurisé + dépôt client</h4>
+                      <p className="text-sm text-gray-600 mt-1">Protection maximale de vos données</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Planning + tâches + rappels</h4>
+                      <p className="text-sm text-gray-600 mt-1">Ne manquez plus aucune échéance</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Signature électronique</h4>
+                      <p className="text-sm text-gray-600 mt-1">5 signatures incluses par mois</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">20 Go de stockage</h4>
+                      <p className="text-sm text-gray-600 mt-1">Espace suffisant pour vos dossiers</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Suivi des dossiers / clients</h4>
+                      <p className="text-sm text-gray-600 mt-1">Vue d'ensemble de votre activité</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Support email</h4>
+                      <p className="text-sm text-gray-600 mt-1">Assistance réactive à vos questions</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Formulaire de paiement compact */}
+          <Card className="bg-white/90 backdrop-blur border-2 border-blue-300">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <CreditCard className="w-5 h-5 text-blue-600" />
+                Finaliser le paiement
+              </CardTitle>
+              <CardDescription>Paiement 100% sécurisé</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="cardName">Nom sur la carte</Label>
-                  <Input id="cardName" placeholder="Jean Dupont" required />
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="cardName">Nom sur la carte</Label>
+                    <Input id="cardName" placeholder="Jean Dupont" required />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email de facturation</Label>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="votre@email.com" 
+                      required 
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -192,39 +270,29 @@ export default function CheckoutEssentiel() {
                   </div>
                 </div>
 
-                <div className="border-t pt-4">
-                  <Label htmlFor="email">Email de facturation</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="votre@email.com" 
-                    required 
-                  />
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 space-y-2 border border-blue-200">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Sous-total ({billingPeriod === 'monthly' ? 'Mensuel' : 'Annuel'})</span>
-                    <span className="font-medium">{price.toFixed(2)} €</span>
+                    <span className="text-gray-700 font-medium">Sous-total ({billingPeriod === 'monthly' ? 'Mensuel' : 'Annuel'})</span>
+                    <span className="font-semibold text-gray-900">{price.toFixed(2)} €</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">TVA (20%)</span>
-                    <span className="font-medium">{tva.toFixed(2)} €</span>
+                    <span className="text-gray-700 font-medium">TVA (20%)</span>
+                    <span className="font-semibold text-gray-900">{tva.toFixed(2)} €</span>
                   </div>
-                  <div className="border-t pt-2 flex justify-between">
-                    <span className="font-semibold">Total</span>
-                    <span className="text-xl font-bold text-blue-600">{total.toFixed(2)} €</span>
+                  <div className="border-t border-blue-300 pt-2 flex justify-between">
+                    <span className="font-bold text-gray-900">Total à payer</span>
+                    <span className="text-2xl font-bold text-blue-600">{total.toFixed(2)} €</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 text-xs text-gray-500 justify-center">
                   <Lock className="w-4 h-4" />
                   <span>Paiement 100% sécurisé SSL</span>
                 </div>
 
                 <Button 
                   type="submit" 
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6"
                   disabled={loading}
                 >
                   {loading ? "Traitement..." : "Confirmer le paiement"}
