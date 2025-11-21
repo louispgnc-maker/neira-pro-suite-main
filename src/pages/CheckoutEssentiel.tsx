@@ -286,9 +286,30 @@ export default function CheckoutEssentiel() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-gray-500 justify-center">
-                      <Lock className="w-4 h-4" />
-                      <span>Paiement 100% sécurisé SSL</span>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-xs text-gray-500 justify-center">
+                        <Lock className="w-4 h-4" />
+                        <span>Paiement 100% sécurisé SSL</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-3 opacity-70">
+                        <svg className="h-8" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="48" height="32" rx="4" fill="#1434CB"/>
+                          <path d="M18.5 10L14 22h3l4.5-12h-3zm7 0l-1.5 4h3l1.5-4h-3zm3 8l-1.5 4h3l1.5-4h-3z" fill="white"/>
+                        </svg>
+                        <svg className="h-8" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="48" height="32" rx="4" fill="#EB001B"/>
+                          <circle cx="19" cy="16" r="9" fill="#FF5F00"/>
+                          <circle cx="29" cy="16" r="9" fill="#F79E1B"/>
+                        </svg>
+                        <svg className="h-8" viewBox="0 0 60 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="60" height="32" rx="4" fill="#635BFF"/>
+                          <text x="8" y="21" fill="white" fontSize="14" fontWeight="bold">stripe</text>
+                        </svg>
+                        <div className="flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 rounded">
+                          <Lock className="w-3 h-3 text-green-600" />
+                          <span className="text-xs font-semibold text-green-600">SSL</span>
+                        </div>
+                      </div>
                     </div>
 
                     <Button 
