@@ -1,10 +1,18 @@
 import { Button } from '@/components/ui/button';
 import { Share2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { copyDocumentToShared } from '@/lib/sharedCopy';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface ShareToCollaborativeDialogProps {
   itemId: string;
@@ -12,15 +20,29 @@ interface ShareToCollaborativeDialogProps {
   itemType: 'document' | 'dossier' | 'contrat' | 'client';
   role: 'avocat' | 'notaire';
   onSuccess?: () => void;
+  onClose?: () => void;
   // When true, the dialog will not render its built-in trigger button.
   hideTrigger?: boolean;
+  initialOpen?: boolean;
 }
 
-export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemName, itemType, role, onSuccess }: ShareToCollaborativeDialogProps) {
+export function ShareToCollaborativeDialog({ 
+  hideTrigger = false, 
+  itemId, 
+  itemName, 
+  itemType, 
+  role, 
+  onSuccess, 
+  onClose,
+  initialOpen = false 
+}: ShareToCollaborativeDialogProps) {
   const { user } = useAuth();
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState(initialOpen);
 
-  if (hideTrigger) return null;
+  useEffect(() => {
+    setOpen(initialOpen);
+  }, [initialOpen]);
 
   const handleShare = async () => {
     if (!user) { toast.error('Connexion requise'); return; }
@@ -30,6 +52,7 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
       const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
       if (cabinetsErr || !Array.isArray(cabinetsData)) {
         toast.error('Impossible de récupérer vos cabinets');
+        setBusy(false);
         return;
       }
   const arr = cabinetsData as unknown[];
@@ -38,6 +61,7 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
   const cabinetId = found?.id || (arr[0] && (arr[0] as MaybeCab).id);
       if (!cabinetId) {
         toast.error('Aucun cabinet trouvé pour partager');
+        setBusy(false);
         return;
       }
 
@@ -52,11 +76,14 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
         if (error || !data) {
           console.error('share_client_to_cabinet failed', error);
           toast.error('Partage impossible');
+          setBusy(false);
           return;
         }
         
         toast.success('Client partagé sur l\'espace de votre cabinet');
+        setOpen(false);
         if (onSuccess) onSuccess();
+        if (onClose) onClose();
       } else if (itemType === 'dossier') {
         // Pour les dossiers, utiliser la fonction RPC
         const { data, error } = await supabase.rpc('share_dossier_to_cabinet', {
@@ -68,19 +95,25 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
         if (error || !data || (data as any).error) {
           console.error('share_dossier_to_cabinet failed', error || data);
           toast.error('Partage impossible');
+          setBusy(false);
           return;
         }
         
         toast.success('Dossier partagé sur l\'espace de votre cabinet');
+        setOpen(false);
         if (onSuccess) onSuccess();
+        if (onClose) onClose();
       } else {
         // Pour les documents, utiliser l'Edge Function
         const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: itemId });
         if (uploadedBucket && publicUrl) {
           toast.success('Document partagé sur l\'espace de votre cabinet');
+          setOpen(false);
           if (onSuccess) onSuccess();
+          if (onClose) onClose();
         } else {
           toast.error('Partage impossible');
+          setBusy(false);
         }
       }
     } catch (e) {
@@ -90,6 +123,36 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
       setBusy(false);
     }
   };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen && onClose) {
+      onClose();
+    }
+  };
+
+  if (hideTrigger) {
+    return (
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Partager sur l'espace collaboratif</DialogTitle>
+            <DialogDescription>
+              Êtes-vous sûr de vouloir partager "{itemName}" sur l'espace collaboratif de votre cabinet ?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={busy}>
+              Annuler
+            </Button>
+            <Button onClick={handleShare} disabled={busy}>
+              {busy ? 'Partage en cours...' : 'Partager'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Button variant="ghost" size="sm" onClick={handleShare} disabled={busy} title={busy ? 'Partage en cours' : `Partager ${itemName}`}>
