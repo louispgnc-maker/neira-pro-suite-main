@@ -235,7 +235,7 @@ export default function Auth() {
           data-card
           onClick={() => setSelectedProofIndex(idx)}
           aria-pressed={selected}
-          className={`relative bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-lg border-2 border-blue-300 shadow-md text-left transition-all duration-150 hover:shadow-xl hover:border-blue-500 w-full ${selected ? 'ring-1 ring-blue-400 border-blue-400 bg-gradient-to-br from-blue-25 to-indigo-50' : ''}`}
+          className={`relative bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-lg border-2 border-blue-300 shadow-md text-left transition-all duration-150 hover:shadow-xl hover:border-blue-500 w-full ${selected ? 'border-blue-400 bg-gradient-to-br from-blue-25 to-indigo-50' : ''}`}
         >
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm mt-1 border border-blue-200">
