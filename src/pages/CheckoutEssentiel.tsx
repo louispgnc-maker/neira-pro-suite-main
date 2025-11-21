@@ -68,60 +68,6 @@ export default function CheckoutEssentiel() {
             </CardContent>
           </Card>
 
-          {/* Choix du mode de paiement */}
-          <Card className="bg-white/90 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="text-xl">Choisissez votre mode de paiement</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setBillingPeriod('monthly')}
-                  className={`p-4 rounded-lg border-2 text-left transition-all ${
-                    billingPeriod === 'monthly'
-                      ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-200 bg-white hover:border-blue-300'
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-semibold text-gray-900 text-lg">Mensuel</div>
-                      <div className="text-2xl font-bold text-blue-600 mt-2">{monthlyPrice}€</div>
-                      <div className="text-sm text-gray-600">par mois</div>
-                    </div>
-                    {billingPeriod === 'monthly' && (
-                      <CheckCircle2 className="w-6 h-6 text-blue-600" />
-                    )}
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBillingPeriod('yearly')}
-                  className={`p-4 rounded-lg border-2 text-left transition-all relative ${
-                    billingPeriod === 'yearly'
-                      ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-200 bg-white hover:border-blue-300'
-                  }`}
-                >
-                  <div className="absolute -top-2 right-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-                    -10%
-                  </div>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-semibold text-gray-900 text-lg">Annuel</div>
-                      <div className="text-2xl font-bold text-blue-600 mt-2">{yearlyPrice}€</div>
-                      <div className="text-sm text-gray-600">par an</div>
-                    </div>
-                    {billingPeriod === 'yearly' && (
-                      <CheckCircle2 className="w-6 h-6 text-blue-600" />
-                    )}
-                  </div>
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Fonctionnalités détaillées */}
           <Card className="bg-white/90 backdrop-blur">
             <CardHeader>
@@ -206,6 +152,60 @@ export default function CheckoutEssentiel() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Choix du mode de paiement */}
+          <Card className="bg-white/90 backdrop-blur">
+            <CardHeader>
+              <CardTitle className="text-xl">Choisissez votre mode de paiement</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setBillingPeriod('monthly')}
+                  className={`p-4 rounded-lg border-2 text-left transition-all ${
+                    billingPeriod === 'monthly'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 bg-white hover:border-blue-300'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-semibold text-gray-900 text-lg">Mensuel</div>
+                      <div className="text-2xl font-bold text-blue-600 mt-2">{monthlyPrice}€</div>
+                      <div className="text-sm text-gray-600">par mois</div>
+                    </div>
+                    {billingPeriod === 'monthly' && (
+                      <CheckCircle2 className="w-6 h-6 text-blue-600" />
+                    )}
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillingPeriod('yearly')}
+                  className={`p-4 rounded-lg border-2 text-left transition-all relative ${
+                    billingPeriod === 'yearly'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 bg-white hover:border-blue-300'
+                  }`}
+                >
+                  <div className="absolute -top-2 right-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                    -10%
+                  </div>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-semibold text-gray-900 text-lg">Annuel</div>
+                      <div className="text-2xl font-bold text-blue-600 mt-2">{yearlyPrice}€</div>
+                      <div className="text-sm text-gray-600">par an</div>
+                    </div>
+                    {billingPeriod === 'yearly' && (
+                      <CheckCircle2 className="w-6 h-6 text-blue-600" />
+                    )}
+                  </div>
+                </button>
               </div>
             </CardContent>
           </Card>
