@@ -132,7 +132,7 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-3">
             <Badge className="bg-gradient-primary text-white border-0 px-4 py-1.5">
-              Premium
+              {profile?.subscription_plan || 'Neira Essentiel'}
             </Badge>
             <Button>Créer un document</Button>
             <Button variant="secondary">Nouveau client</Button>

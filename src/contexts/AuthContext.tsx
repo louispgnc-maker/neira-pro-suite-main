@@ -11,6 +11,7 @@ interface UserProfile {
   role?: string; // 'avocat' | 'notaire'
   cabinet_id?: string | null;
   created_at?: string;
+  subscription_plan?: string; // 'Neira Essentiel' | 'Neira Professionnel' | 'Neira Cabinet+'
 }
 
 interface AuthContextType {
