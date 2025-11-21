@@ -137,7 +137,7 @@ export default function Solution() {
                 <p className="text-xs text-blue-700 font-medium">🎯 Offre d'entrée attractive + simple à adopter</p>
               </div>
               
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/contact')}>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/checkout/essentiel')}>
                 Choisir Essentiel
               </Button>
             </Card>
@@ -202,7 +202,7 @@ export default function Solution() {
                 <p className="text-xs text-purple-700 font-medium">🎯 Le meilleur rapport qualité/prix du marché juridique</p>
               </div>
               
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/contact')}>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/checkout/professionnel')}>
                 Choisir Professionnel
               </Button>
             </Card>
@@ -259,7 +259,7 @@ export default function Solution() {
                 <p className="text-xs text-orange-700 font-medium">🎯 Positionnement haut-de-gamme ultra rentable</p>
               </div>
               
-              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/contact')}>
+              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout/cabinet-plus')}>
                 Choisir Cabinet+
               </Button>
             </Card>

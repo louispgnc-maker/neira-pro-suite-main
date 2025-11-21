@@ -31,6 +31,9 @@ import Cabinet from "./pages/Cabinet";
 import EspaceCollaboratif from "./pages/EspaceCollaboratif";
 import About from "./pages/About";
 import Solution from "./pages/Solution";
+import CheckoutEssentiel from "./pages/CheckoutEssentiel";
+import CheckoutProfessionnel from "./pages/CheckoutProfessionnel";
+import CheckoutCabinetPlus from "./pages/CheckoutCabinetPlus";
 import MentionsLegales from "./pages/MentionsLegales";
 import RGPD from "./pages/RGPD";
 import CGU from "./pages/CGU";
@@ -51,6 +54,9 @@ const App = () => (
             <Route path="/" element={<Auth />} />
             <Route path="/about" element={<About />} />
             <Route path="/solution" element={<Solution />} />
+            <Route path="/checkout/essentiel" element={<CheckoutEssentiel />} />
+            <Route path="/checkout/professionnel" element={<CheckoutProfessionnel />} />
+            <Route path="/checkout/cabinet-plus" element={<CheckoutCabinetPlus />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             <Route path="/rgpd" element={<RGPD />} />
             <Route path="/cgu" element={<CGU />} />
