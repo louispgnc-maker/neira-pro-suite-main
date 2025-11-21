@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { copyDocumentToShared } from '@/lib/sharedCopy';
+import { copyDocumentToShared, shareClientToCabinet } from '@/lib/sharedCopy';
 import {
   Dialog,
   DialogContent,
@@ -77,15 +77,14 @@ export function ShareToCollaborativeDialog({
       }
 
       if (itemType === 'client') {
-        // Pour les clients, utiliser la fonction RPC
-        const { data, error } = await supabase.rpc('share_client_to_cabinet', {
-          p_client_id: itemId,
-          p_cabinet_id: cabinetId,
-          p_shared_by: user.id
+        // Pour les clients, utiliser la fonction shareClientToCabinet
+        const result = await shareClientToCabinet({
+          clientId: itemId,
+          cabinetId: cabinetId,
         });
         
-        if (error || !data) {
-          console.error('share_client_to_cabinet failed', error);
+        if (!result.success) {
+          console.error('shareClientToCabinet failed', result.error);
           toast.error('Partage impossible');
           setBusy(false);
           return;

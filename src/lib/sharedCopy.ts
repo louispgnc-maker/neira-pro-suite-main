@@ -50,3 +50,33 @@ export async function copyClientFileToShared({ cabinetId, clientId }: { cabinetI
   console.warn('copyClientFileToShared: disabled (use document-based sharing)');
   return { uploadedBucket: null, publicUrl: null };
 }
+
+// Share a client to the cabinet collaborative space
+// This uses an RPC function on the backend to insert the client into cabinet_clients
+export async function shareClientToCabinet({ cabinetId, clientId }: { cabinetId: string; clientId: string }): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData?.user?.id;
+    
+    if (!userId) {
+      console.warn('shareClientToCabinet: no user session available');
+      return { success: false, error: 'No user session' };
+    }
+
+    const { data, error } = await supabase.rpc('share_client_to_cabinet', {
+      p_client_id: clientId,
+      p_cabinet_id: cabinetId,
+      p_shared_by: userId
+    });
+
+    if (error) {
+      console.error('shareClientToCabinet RPC error:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (e) {
+    console.error('shareClientToCabinet error', e);
+    return { success: false, error: e instanceof Error ? e.message : 'Unknown error' };
+  }
+}
