@@ -74,7 +74,6 @@ export default function CheckoutEssentiel() {
               <CardTitle className="text-xl">Choisissez votre mode de paiement</CardTitle>
             </CardHeader>
             <CardContent>
-            <CardContent>
               <div className="grid md:grid-cols-2 gap-4">
                 <button
                   type="button"
