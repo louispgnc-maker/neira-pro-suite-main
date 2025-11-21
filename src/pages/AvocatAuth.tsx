@@ -162,7 +162,7 @@ export default function AvocatAuth() {
             </p>
             <Button 
               variant="outline" 
-              className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+              className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-600"
               onClick={() => navigate('/solution')}
             >
               Voir nos offres

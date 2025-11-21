@@ -162,7 +162,7 @@ export default function NotaireAuth() {
             </p>
             <Button 
               variant="outline" 
-              className="w-full border-orange-600 text-orange-600 hover:bg-orange-50"
+              className="w-full border-orange-600 text-orange-600 hover:bg-orange-50 hover:text-orange-600"
               onClick={() => navigate('/solution')}
             >
               Voir nos offres
