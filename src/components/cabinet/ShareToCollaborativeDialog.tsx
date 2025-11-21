@@ -16,7 +16,7 @@ interface ShareToCollaborativeDialogProps {
   hideTrigger?: boolean;
 }
 
-export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemName, role, onSuccess }: ShareToCollaborativeDialogProps) {
+export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemName, itemType, role, onSuccess }: ShareToCollaborativeDialogProps) {
   const { user } = useAuth();
   const [busy, setBusy] = useState(false);
 
@@ -41,12 +41,31 @@ export function ShareToCollaborativeDialog({ hideTrigger = false, itemId, itemNa
         return;
       }
 
-      const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: itemId });
-        if (uploadedBucket && publicUrl) {
-        toast.success('Document partagé sur l\'espace de votre cabinet');
+      if (itemType === 'dossier') {
+        // Pour les dossiers, utiliser la fonction RPC
+        const { data, error } = await supabase.rpc('share_dossier_to_cabinet', {
+          p_dossier_id: itemId,
+          p_cabinet_id: cabinetId,
+          p_user_id: user.id
+        });
+        
+        if (error || !data || (data as any).error) {
+          console.error('share_dossier_to_cabinet failed', error || data);
+          toast.error('Partage impossible');
+          return;
+        }
+        
+        toast.success('Dossier partagé sur l\'espace de votre cabinet');
         if (onSuccess) onSuccess();
       } else {
-        toast.error('Partage impossible');
+        // Pour les documents, utiliser l'Edge Function
+        const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: itemId });
+        if (uploadedBucket && publicUrl) {
+          toast.success('Document partagé sur l\'espace de votre cabinet');
+          if (onSuccess) onSuccess();
+        } else {
+          toast.error('Partage impossible');
+        }
       }
     } catch (e) {
       console.error('share failed', e);

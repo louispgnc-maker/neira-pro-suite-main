@@ -448,7 +448,7 @@ export default function Dossiers() {
                                 itemType="dossier"
                                 role={role}
                                 onSuccess={() => {
-                                  toast.success('Dossier partagé');
+                                  // Toast déjà affiché dans ShareToCollaborativeDialog
                                 }}
                               />
                               <DropdownMenu>
