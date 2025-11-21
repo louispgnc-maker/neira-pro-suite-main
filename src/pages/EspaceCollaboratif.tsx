@@ -619,7 +619,6 @@ export default function EspaceCollaboratif() {
   const [contratsSearch, setContratsSearch] = useState('');
   const [dossiersSearch, setDossiersSearch] = useState('');
   const [clientsSearch, setClientsSearch] = useState('');
-  const [showClientsEmptyHint, setShowClientsEmptyHint] = useState(false);
 
   // Persist active tab across refreshes: read from URL ?tab= or localStorage
   const [selectedTab, setSelectedTab] = useState<string>(() => {
@@ -784,16 +783,6 @@ export default function EspaceCollaboratif() {
     } catch (e: unknown) { /* noop */ }
   }, [clientsShared, clientsSearch, clientsFiltered]);
 
-  // Show a small on-screen hint when clients list is empty to help debugging
-  useEffect(() => {
-    try {
-      if (!loading && clientsShared.length === 0) {
-        setShowClientsEmptyHint(true);
-      } else {
-        setShowClientsEmptyHint(false);
-      }
-    } catch (e) { /* noop */ }
-  }, [clientsShared, loading]);
 
   if (loading) {
     return (
@@ -1392,14 +1381,6 @@ export default function EspaceCollaboratif() {
                         </div>
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
-              {showClientsEmptyHint && (
-                <div className="fixed bottom-6 right-6 z-50">
-                  <div className="rounded bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm shadow">
-                    <strong className="block mb-1">Debug</strong>
-                    <div>La liste des clients partagés est vide — vérifiez la RPC <code>get_cabinet_clients_with_names</code> et la console réseau.</div>
                   </div>
                 </div>
               )}
