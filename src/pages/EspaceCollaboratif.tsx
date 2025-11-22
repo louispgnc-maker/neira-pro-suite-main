@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Trash2, UploadCloud } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
+import { CabinetChat } from '@/components/cabinet/CabinetChat';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -1744,21 +1745,7 @@ export default function EspaceCollaboratif() {
 
         {/* Discussion */}
         <TabsContent value="discussion" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Discussion d'équipe</CardTitle>
-              <CardDescription>
-                Communiquez avec les membres de votre cabinet
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12 text-foreground">
-                <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Aucune conversation pour le moment</p>
-                <p className="text-sm mt-2">Fonctionnalité en cours de développement</p>
-              </div>
-            </CardContent>
-          </Card>
+          <CabinetChat cabinetId={cabinet.id} role={cabinetRole} />
         </TabsContent>
       </Tabs>
   </div>
