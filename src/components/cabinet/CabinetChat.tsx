@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Send, Users, MessageSquare, Plus, UserPlus } from 'lucide-react';
+import { Send, Users, MessageSquare, Plus, UserPlus, Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface CabinetMember {
@@ -34,6 +34,8 @@ interface Conversation {
     first_name?: string;
     last_name?: string;
   }>;
+  last_message_at?: string;
+  unread_count?: number;
 }
 
 interface Message {
@@ -62,6 +64,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [membersLoading, setMembersLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [unreadMessages, setUnreadMessages] = useState<Map<string, number>>(new Map());
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [selectedConversation, setSelectedConversation] = useState<string | null>(() => {
@@ -95,6 +98,64 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Function to load unread counts for conversations
+  const loadUnreadCounts = async (convs: Conversation[]) => {
+    if (!user) return;
+
+    const counts = new Map<string, number>();
+
+    for (const conv of convs) {
+      if (conv.id === selectedConversation) {
+        // Current conversation has no unread
+        counts.set(conv.id, 0);
+        continue;
+      }
+
+      let query = supabase
+        .from('cabinet_messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('cabinet_id', cabinetId)
+        .neq('sender_id', user.id);
+
+      if (conv.id === 'general') {
+        query = query.is('recipient_id', null).is('conversation_id', null);
+      } else if (conv.id.startsWith('direct-')) {
+        const recipientId = conv.id.replace('direct-', '');
+        query = query.eq('sender_id', recipientId).eq('recipient_id', user.id);
+      } else {
+        query = query.eq('conversation_id', conv.id);
+      }
+
+      // Only count messages created after the user last viewed
+      const lastViewedKey = `chat-last-viewed-${cabinetId}-${conv.id}`;
+      const lastViewed = sessionStorage.getItem(lastViewedKey);
+      if (lastViewed) {
+        query = query.gt('created_at', lastViewed);
+      }
+
+      const { count } = await query;
+      counts.set(conv.id, count || 0);
+    }
+
+    setUnreadMessages(counts);
+  };
+
+  // Mark conversation as read when selected
+  useEffect(() => {
+    if (selectedConversation) {
+      // Mark as read
+      setUnreadMessages(prev => {
+        const newMap = new Map(prev);
+        newMap.set(selectedConversation, 0);
+        return newMap;
+      });
+      
+      // Save last viewed time
+      const lastViewedKey = `chat-last-viewed-${cabinetId}-${selectedConversation}`;
+      sessionStorage.setItem(lastViewedKey, new Date().toISOString());
+    }
+  }, [selectedConversation, cabinetId]);
 
   // Load cabinet members
   useEffect(() => {
@@ -187,12 +248,24 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       // Load members for each conversation
       const conversationsWithMembers: Conversation[] = [];
       
+      // Get last message time for general channel
+      const { data: generalLastMsg } = await supabase
+        .from('cabinet_messages')
+        .select('created_at')
+        .eq('cabinet_id', cabinetId)
+        .is('recipient_id', null)
+        .is('conversation_id', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      
       // Add general channel
       conversationsWithMembers.push({
         id: 'general',
         name: 'Salon général',
         is_group: true,
-        member_ids: members.map(m => m.user_id)
+        member_ids: members.map(m => m.user_id),
+        last_message_at: generalLastMsg?.created_at || new Date(0).toISOString()
       });
 
       // Add group conversations
@@ -212,12 +285,22 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             .select('id, first_name, last_name')
             .in('id', memberIds);
 
+          // Get last message time
+          const { data: lastMsg } = await supabase
+            .from('cabinet_messages')
+            .select('created_at')
+            .eq('conversation_id', conv.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
           conversationsWithMembers.push({
             id: conv.id,
             name: conv.name,
             is_group: true,
             member_ids: memberIds,
-            member_profiles: profilesData || []
+            member_profiles: profilesData || [],
+            last_message_at: lastMsg?.created_at || new Date(0).toISOString()
           });
         }
       }
@@ -225,16 +308,37 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       // Add direct conversations (existing private messages)
       const otherMembers = members.filter(m => m.user_id !== user.id);
       for (const member of otherMembers) {
+        // Get last message time for this direct conversation
+        const { data: directLastMsg } = await supabase
+          .from('cabinet_messages')
+          .select('created_at')
+          .eq('cabinet_id', cabinetId)
+          .or(`and(sender_id.eq.${user.id},recipient_id.eq.${member.user_id}),and(sender_id.eq.${member.user_id},recipient_id.eq.${user.id})`)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
         conversationsWithMembers.push({
           id: `direct-${member.user_id}`,
           name: getDisplayName(member.profile),
           is_group: false,
           member_ids: [user.id, member.user_id],
-          member_profiles: [member.profile] as any
+          member_profiles: [member.profile] as any,
+          last_message_at: directLastMsg?.created_at || new Date(0).toISOString()
         });
       }
 
+      // Sort conversations by last message time (most recent first)
+      conversationsWithMembers.sort((a, b) => {
+        const timeA = new Date(a.last_message_at || 0).getTime();
+        const timeB = new Date(b.last_message_at || 0).getTime();
+        return timeB - timeA;
+      });
+
       setConversations(conversationsWithMembers);
+      
+      // Load unread counts for all conversations
+      await loadUnreadCounts(conversationsWithMembers);
     };
 
     loadConversations();
@@ -332,6 +436,39 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               ...newMsg,
               sender_profile: profileData || undefined
             }]);
+          } else {
+            // Message is for a different conversation - increment unread count
+            let conversationId = '';
+            if (!newMsg.recipient_id && !newMsg.conversation_id) {
+              conversationId = 'general';
+            } else if (newMsg.recipient_id && !newMsg.conversation_id) {
+              conversationId = `direct-${newMsg.sender_id}`;
+            } else if (newMsg.conversation_id) {
+              conversationId = newMsg.conversation_id;
+            }
+
+            if (conversationId && newMsg.sender_id !== user.id) {
+              setUnreadMessages(prev => {
+                const newMap = new Map(prev);
+                const current = newMap.get(conversationId) || 0;
+                newMap.set(conversationId, current + 1);
+                return newMap;
+              });
+
+              // Update conversation order (move to top)
+              setConversations(prev => {
+                const updated = prev.map(c => 
+                  c.id === conversationId 
+                    ? { ...c, last_message_at: newMsg.created_at }
+                    : c
+                );
+                return updated.sort((a, b) => {
+                  const timeA = new Date(a.last_message_at || 0).getTime();
+                  const timeB = new Date(b.last_message_at || 0).getTime();
+                  return timeB - timeA;
+                });
+              });
+            }
           }
         }
       )
@@ -375,6 +512,20 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       if (error) throw error;
 
       setNewMessage('');
+      
+      // Update conversation timestamp and move to top
+      setConversations(prev => {
+        const updated = prev.map(c => 
+          c.id === selectedConversation 
+            ? { ...c, last_message_at: new Date().toISOString() }
+            : c
+        );
+        return updated.sort((a, b) => {
+          const timeA = new Date(a.last_message_at || 0).getTime();
+          const timeB = new Date(b.last_message_at || 0).getTime();
+          return timeB - timeA;
+        });
+      });
     } catch (error: any) {
       console.error('Error sending message:', error);
       toast({
@@ -709,42 +860,56 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           </div>
         </CardHeader>
         <CardContent className="space-y-1">
-          {conversations.map(conv => (
-            <Button
-              key={conv.id}
-              variant={selectedConversation === conv.id ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
-                selectedConversation === conv.id
-                  ? role === 'notaire'
-                    ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                    : 'bg-blue-500 hover:bg-blue-600 text-white'
-                  : role === 'notaire' 
-                    ? 'hover:bg-orange-100 hover:text-orange-600' 
-                    : 'hover:bg-blue-100 hover:text-blue-600'
-              }`}
-              onClick={() => setSelectedConversation(conv.id)}
-            >
-              {conv.is_group ? (
-                <>
-                  {conv.id === 'general' ? (
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                  ) : (
-                    <Users className="h-4 w-4 mr-2" />
-                  )}
-                  <span className="text-sm truncate">{conv.name}</span>
-                </>
-              ) : (
-                <>
-                  <Avatar className="h-6 w-6 mr-2">
-                    <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
-                      {getInitials(conv.member_profiles?.[0])}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm truncate">{conv.name}</span>
-                </>
-              )}
-            </Button>
-          ))}
+          {conversations.map(conv => {
+            const unreadCount = unreadMessages.get(conv.id) || 0;
+            return (
+              <Button
+                key={conv.id}
+                variant={selectedConversation === conv.id ? 'default' : 'ghost'}
+                className={`w-full justify-start relative ${
+                  selectedConversation === conv.id
+                    ? role === 'notaire'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white'
+                    : role === 'notaire' 
+                      ? 'hover:bg-orange-100 hover:text-orange-600' 
+                      : 'hover:bg-blue-100 hover:text-blue-600'
+                }`}
+                onClick={() => setSelectedConversation(conv.id)}
+              >
+                {conv.is_group ? (
+                  <>
+                    {conv.id === 'general' ? (
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Users className="h-4 w-4 mr-2" />
+                    )}
+                    <span className="text-sm truncate flex-1 text-left">{conv.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <Avatar className="h-6 w-6 mr-2">
+                      <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
+                        {getInitials(conv.member_profiles?.[0])}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm truncate flex-1 text-left">{conv.name}</span>
+                  </>
+                )}
+                {unreadCount > 0 && (
+                  <Badge 
+                    className={`ml-auto ${
+                      role === 'notaire' 
+                        ? 'bg-orange-600 text-white' 
+                        : 'bg-blue-600 text-white'
+                    }`}
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            );
+          })}
         </CardContent>
       </Card>
 
