@@ -55,6 +55,10 @@ interface SharedDocument {
   shared_at: string;
   shared_by: string;
   document_id: string;
+  sharer_profile?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 interface SharedDossier {
@@ -65,6 +69,10 @@ interface SharedDossier {
   shared_at: string;
   shared_by: string;
   dossier_id: string;
+  sharer_profile?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 interface SharedContrat {
@@ -76,6 +84,10 @@ interface SharedContrat {
   shared_at: string;
   shared_by: string;
   contrat_id: string;
+  sharer_profile?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 interface SharedClient {
@@ -93,6 +105,10 @@ interface SharedClient {
   file_url?: string;
   file_name?: string;
   file_type?: string;
+  sharer_profile?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 interface CollabTask {
@@ -631,6 +647,52 @@ export default function EspaceCollaboratif() {
         setIsCabinetOwner(false);
       }
 
+      // Load sharer profiles for all shared items
+      try {
+        const allSharerIds = new Set<string>();
+        documents.forEach(d => d.shared_by && allSharerIds.add(d.shared_by));
+        dossiers.forEach(d => d.shared_by && allSharerIds.add(d.shared_by));
+        contrats.forEach(c => c.shared_by && allSharerIds.add(c.shared_by));
+        clientsData.forEach(c => c.shared_by && allSharerIds.add(c.shared_by));
+        
+        if (allSharerIds.size > 0) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, first_name, last_name')
+            .in('id', Array.from(allSharerIds));
+          
+          const profilesMap = new Map(
+            (profilesData || []).map(p => [p.id, { first_name: p.first_name, last_name: p.last_name }])
+          );
+          
+          // Add profiles to documents
+          setDocuments(prev => prev.map(d => ({
+            ...d,
+            sharer_profile: d.shared_by ? profilesMap.get(d.shared_by) : undefined
+          })));
+          
+          // Add profiles to dossiers
+          setDossiers(prev => prev.map(d => ({
+            ...d,
+            sharer_profile: d.shared_by ? profilesMap.get(d.shared_by) : undefined
+          })));
+          
+          // Add profiles to contrats
+          setContrats(prev => prev.map(c => ({
+            ...c,
+            sharer_profile: c.shared_by ? profilesMap.get(c.shared_by) : undefined
+          })));
+          
+          // Add profiles to clients
+          setClientsShared(prev => prev.map(c => ({
+            ...c,
+            sharer_profile: c.shared_by ? profilesMap.get(c.shared_by) : undefined
+          })));
+        }
+      } catch (e) {
+        console.error('Error loading sharer profiles:', e);
+      }
+
     } catch (e: unknown) {
       console.error('Erreur chargement espace collaboratif:', e);
       try { toast({ title: 'Erreur', description: String(e), variant: 'destructive' }); } catch (_) { /* noop */ }
@@ -1098,6 +1160,11 @@ export default function EspaceCollaboratif() {
                                 {doc.description && (
                                   <p className="text-sm text-foreground mt-1">{doc.description}</p>
                                 )}
+                                {doc.sharer_profile && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Partagé par {doc.sharer_profile.first_name} {doc.sharer_profile.last_name}
+                                  </p>
+                                )}
                               </div>
 
                               <div className="flex flex-col items-end gap-2 ml-4">
@@ -1199,6 +1266,11 @@ export default function EspaceCollaboratif() {
                                 {contrat.description && (
                                   <p className="text-sm text-foreground mt-1">{contrat.description}</p>
                                 )}
+                                {contrat.sharer_profile && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Partagé par {contrat.sharer_profile.first_name} {contrat.sharer_profile.last_name}
+                                  </p>
+                                )}
                               </div>
 
                               <div className="flex flex-col items-end gap-2 ml-4">
@@ -1295,6 +1367,11 @@ export default function EspaceCollaboratif() {
                                   {dossier.description && (
                                     <p className="text-sm text-foreground mt-1">{dossier.description}</p>
                                   )}
+                                  {dossier.sharer_profile && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      Partagé par {dossier.sharer_profile.first_name} {dossier.sharer_profile.last_name}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1385,6 +1462,11 @@ export default function EspaceCollaboratif() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <p className="font-medium">{client.name || client.client_id}</p>
+                            {client.sharer_profile && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Partagé par {client.sharer_profile.first_name} {client.sharer_profile.last_name}
+                              </p>
+                            )}
                           </div>
 
                           <div className="flex flex-col items-end gap-2 ml-4">
