@@ -170,7 +170,11 @@ export default function EspaceCollaboratif() {
   useEffect(() => {
     let mounted = true;
     async function load() {
-      if (!user || !cabinet) return;
+      if (!user || !cabinet) {
+        console.log('Tasks load skipped - user:', !!user, 'cabinet:', !!cabinet);
+        return;
+      }
+      console.log('Loading tasks for cabinet:', cabinet.id);
       setCollabLoading(true);
       
       // Charger les tâches
@@ -179,6 +183,8 @@ export default function EspaceCollaboratif() {
         .select('id, title, description, due_at, done, assigned_to, shared_by, cabinet_id')
         .eq('cabinet_id', cabinet.id)
         .order('due_at', { ascending: true, nullsFirst: false });
+      
+      console.log('Tasks loaded:', { count: tasksData?.length, error });
       
       if (error || !tasksData || !mounted) {
         setCollabLoading(false);
@@ -194,6 +200,8 @@ export default function EspaceCollaboratif() {
         .select('id, first_name, last_name')
         .in('id', userIds);
       
+      console.log('Profiles loaded:', { count: profilesData?.length });
+      
       // Mapper les profils
       const profilesMap = new Map(
         (profilesData || []).map(p => [p.id, { first_name: p.first_name, last_name: p.last_name }])
@@ -204,6 +212,8 @@ export default function EspaceCollaboratif() {
         ...task,
         creator_profile: task.shared_by ? profilesMap.get(task.shared_by) : undefined
       }));
+      
+      console.log('Tasks with creator:', tasksWithCreator);
       
       if (mounted) setCollabTasks(tasksWithCreator as CollabTask[]);
       setCollabLoading(false);
