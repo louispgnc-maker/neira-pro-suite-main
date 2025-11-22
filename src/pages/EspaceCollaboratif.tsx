@@ -297,11 +297,9 @@ export default function EspaceCollaboratif() {
     try {
       const raw = (doc.file_url || '').trim();
 
-      // If file_url already contains a full HTTP URL (public copy), open it directly
+      // If file_url already contains a full HTTP URL (public copy), open it directly in new tab
       if (/^https?:\/\//i.test(raw)) {
-        setViewerUrl(raw);
-        setViewerDocName(doc.title);
-        setViewerOpen(true);
+        window.open(raw, '_blank');
         return;
       }
 
