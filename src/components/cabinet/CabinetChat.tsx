@@ -501,7 +501,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                   <div className="space-y-3">
                     <Button
                       variant="outline"
-                      className="w-full justify-start"
+                      className={`w-full justify-start ${role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}`}
                       onClick={() => setCreateMode('direct')}
                     >
                       <UserPlus className="h-4 w-4 mr-2" />
@@ -509,7 +509,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full justify-start"
+                      className={`w-full justify-start ${role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}`}
                       onClick={() => setCreateMode('group')}
                     >
                       <Users className="h-4 w-4 mr-2" />
@@ -517,7 +517,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full"
+                      className={`w-full ${role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}`}
                       onClick={() => setShowCreateDialog(false)}
                     >
                       Annuler
