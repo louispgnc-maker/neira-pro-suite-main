@@ -401,6 +401,23 @@ export default function EspaceCollaboratif() {
       setTaskDate('');
       setTaskTime('');
       setTaskDialogOpen(false);
+      // Recharger la liste des tâches
+      const { data } = await supabase
+        .from('cabinet_tasks')
+        .select(`
+          id,
+          title,
+          description,
+          due_at,
+          done,
+          assigned_to,
+          shared_by,
+          cabinet_id,
+          creator_profile:shared_by(first_name, last_name)
+        `)
+        .eq('cabinet_id', cabinet.id)
+        .order('due_at', { ascending: true, nullsFirst: false });
+      if (data) setCollabTasks(data as CollabTask[]);
     } catch (e: unknown) {
       console.error('Erreur création tâche collaborative:', e);
       const msg = e instanceof Error ? e.message : 'Création impossible';
