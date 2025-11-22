@@ -112,9 +112,9 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Upload to shared bucket failed', details: upErr }), { status: 500, headers: corsHeaders });
     }
 
-    // Create a signed URL for the uploaded object (short-lived) to return to the client
-    const { data: newSigned, error: newSignedErr } = await admin.storage.from(targetBucket).createSignedUrl(targetPath, 60);
-    const publicUrl = newSigned?.signedUrl ?? null;
+    // Get permanent public URL instead of expiring signed URL
+    const { data: publicUrlData } = await admin.storage.from(targetBucket).getPublicUrl(targetPath);
+    const publicUrl = publicUrlData?.publicUrl ?? null;
 
     // Insert cabinet_documents row
     const insertPayload: Record<string, unknown> = {
