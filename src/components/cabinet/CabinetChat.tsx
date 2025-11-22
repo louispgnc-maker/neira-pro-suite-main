@@ -97,6 +97,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
     if (!cabinetId) return;
 
     const loadMembers = async () => {
+      console.log('Loading members for cabinet:', cabinetId);
       const { data, error } = await supabase
         .from('cabinet_members')
         .select(`
@@ -123,6 +124,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         profile: Array.isArray(m.profiles) ? m.profiles[0] : m.profiles
       }));
 
+      console.log('Members loaded:', membersWithProfiles.length, membersWithProfiles);
       setMembers(membersWithProfiles);
     };
 
@@ -131,9 +133,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
   // Load conversations
   useEffect(() => {
-    if (!cabinetId || !user) return;
+    if (!cabinetId || !user || members.length === 0) {
+      console.log('Conversations load skipped - cabinetId:', cabinetId, 'user:', !!user, 'members:', members.length);
+      return;
+    }
 
     const loadConversations = async () => {
+      console.log('Loading conversations for cabinet:', cabinetId, 'with', members.length, 'members');
       // Load group conversations where user is a member
       const { data: groupConvs, error: groupError } = await supabase
         .from('cabinet_conversations')
