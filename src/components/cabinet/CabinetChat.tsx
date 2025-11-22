@@ -860,56 +860,101 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           </div>
         </CardHeader>
         <CardContent className="space-y-1">
-          {conversations.map(conv => {
-            const unreadCount = unreadMessages.get(conv.id) || 0;
+          {/* General channel section */}
+          {(() => {
+            const generalConv = conversations.find(c => c.id === 'general');
+            if (!generalConv) return null;
+            
+            const unreadCount = unreadMessages.get(generalConv.id) || 0;
             return (
-              <Button
-                key={conv.id}
-                variant={selectedConversation === conv.id ? 'default' : 'ghost'}
-                className={`w-full justify-start relative ${
-                  selectedConversation === conv.id
-                    ? role === 'notaire'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                      : 'bg-blue-500 hover:bg-blue-600 text-white'
-                    : role === 'notaire' 
-                      ? 'hover:bg-orange-100 hover:text-orange-600' 
-                      : 'hover:bg-blue-100 hover:text-blue-600'
-                }`}
-                onClick={() => setSelectedConversation(conv.id)}
-              >
-                {conv.is_group ? (
-                  <>
-                    {conv.id === 'general' ? (
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                    ) : (
-                      <Users className="h-4 w-4 mr-2" />
-                    )}
-                    <span className="text-sm truncate flex-1 text-left">{conv.name}</span>
-                  </>
-                ) : (
-                  <>
-                    <Avatar className="h-6 w-6 mr-2">
-                      <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
-                        {getInitials(conv.member_profiles?.[0])}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm truncate flex-1 text-left">{conv.name}</span>
-                  </>
-                )}
-                {unreadCount > 0 && (
-                  <Badge 
-                    className={`ml-auto ${
-                      role === 'notaire' 
-                        ? 'bg-orange-600 text-white' 
-                        : 'bg-blue-600 text-white'
-                    }`}
-                  >
-                    {unreadCount}
-                  </Badge>
-                )}
-              </Button>
+              <>
+                <Button
+                  key={generalConv.id}
+                  variant={selectedConversation === generalConv.id ? 'default' : 'ghost'}
+                  className={`w-full justify-start relative ${
+                    selectedConversation === generalConv.id
+                      ? role === 'notaire'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                      : role === 'notaire' 
+                        ? 'hover:bg-orange-100 hover:text-orange-600' 
+                        : 'hover:bg-blue-100 hover:text-blue-600'
+                  }`}
+                  onClick={() => setSelectedConversation(generalConv.id)}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  <span className="text-sm truncate flex-1 text-left">{generalConv.name}</span>
+                  {unreadCount > 0 && (
+                    <Badge 
+                      className={`ml-auto ${
+                        role === 'notaire' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'bg-blue-600 text-white'
+                      }`}
+                    >
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+                
+                {/* Separator */}
+                <div className="py-2">
+                  <div className="border-t border-gray-200"></div>
+                  <p className="text-xs text-muted-foreground mt-2 px-2">Messages directs</p>
+                </div>
+              </>
             );
-          })}
+          })()}
+          
+          {/* Direct messages and groups - sorted by most recent */}
+          {conversations
+            .filter(conv => conv.id !== 'general')
+            .map(conv => {
+              const unreadCount = unreadMessages.get(conv.id) || 0;
+              return (
+                <Button
+                  key={conv.id}
+                  variant={selectedConversation === conv.id ? 'default' : 'ghost'}
+                  className={`w-full justify-start relative ${
+                    selectedConversation === conv.id
+                      ? role === 'notaire'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                      : role === 'notaire' 
+                        ? 'hover:bg-orange-100 hover:text-orange-600' 
+                        : 'hover:bg-blue-100 hover:text-blue-600'
+                  }`}
+                  onClick={() => setSelectedConversation(conv.id)}
+                >
+                  {conv.is_group ? (
+                    <>
+                      <Users className="h-4 w-4 mr-2" />
+                      <span className="text-sm truncate flex-1 text-left">{conv.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Avatar className="h-6 w-6 mr-2">
+                        <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
+                          {getInitials(conv.member_profiles?.[0])}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm truncate flex-1 text-left">{conv.name}</span>
+                    </>
+                  )}
+                  {unreadCount > 0 && (
+                    <Badge 
+                      className={`ml-auto ${
+                        role === 'notaire' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'bg-blue-600 text-white'
+                      }`}
+                    >
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              );
+            })}
         </CardContent>
       </Card>
 
