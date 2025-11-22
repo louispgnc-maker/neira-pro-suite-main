@@ -27,11 +27,21 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
         </div>
         <div className="flex-1 overflow-hidden h-[calc(90vh-4rem)]">
           {documentUrl ? (
-            <iframe
-              src={documentUrl}
-              className="w-full h-full border-0"
-              title={documentName}
-            />
+            <object
+              data={documentUrl}
+              type="application/pdf"
+              className="w-full h-full"
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4 p-4">
+                <p className="text-gray-600">Impossible d'afficher le PDF dans le navigateur</p>
+                <Button 
+                  onClick={() => window.open(documentUrl, '_blank')}
+                  className={closeButtonClass}
+                >
+                  Ouvrir dans un nouvel onglet
+                </Button>
+              </div>
+            </object>
           ) : (
             <div className="flex items-center justify-center h-full">
               <p className="text-gray-500">Aucun document à afficher</p>
