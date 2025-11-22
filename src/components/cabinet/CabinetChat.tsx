@@ -58,6 +58,9 @@ interface CabinetChatProps {
 export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  console.log('CabinetChat mounted with:', { cabinetId, role, userId: user?.id });
+  
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [membersLoading, setMembersLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -97,7 +100,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
   // Load cabinet members
   useEffect(() => {
-    if (!cabinetId) return;
+    console.log('Members useEffect triggered - cabinetId:', cabinetId);
+    if (!cabinetId) {
+      console.log('Members load skipped - no cabinetId');
+      return;
+    }
 
     const loadMembers = async () => {
       console.log('Loading members for cabinet:', cabinetId);
