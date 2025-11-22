@@ -549,30 +549,35 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                         {membersLoading ? (
                           <p className="text-sm text-muted-foreground">Chargement des membres...</p>
                         ) : members.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">Aucun membre disponible</p>
+                          <p className="text-sm text-muted-foreground">
+                            Aucun membre disponible (total: {members.length}, user: {user?.id ? 'présent' : 'absent'})
+                          </p>
                         ) : (
-                          members
-                            .filter(m => m.user_id !== user?.id)
-                            .filter(m => {
-                              if (!memberSearchDirect) return true;
-                              const name = getDisplayName(m.profile).toLowerCase();
-                              return name.includes(memberSearchDirect.toLowerCase());
-                            })
-                            .map(member => (
-                              <Button
-                                key={member.id}
-                                variant={selectedDirectMember === member.user_id ? 'default' : 'outline'}
-                                className="w-full justify-start"
-                                onClick={() => setSelectedDirectMember(member.user_id)}
-                              >
-                                <Avatar className="h-6 w-6 mr-2">
-                                  <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
-                                    {getInitials(member.profile)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                {getDisplayName(member.profile)}
-                              </Button>
-                            ))
+                          (() => {
+                            const filtered = members.filter(m => m.user_id !== user?.id);
+                            console.log('Direct conversation - Total members:', members.length, 'Filtered:', filtered.length);
+                            return filtered
+                              .filter(m => {
+                                if (!memberSearchDirect) return true;
+                                const name = getDisplayName(m.profile).toLowerCase();
+                                return name.includes(memberSearchDirect.toLowerCase());
+                              })
+                              .map(member => (
+                                <Button
+                                  key={member.id}
+                                  variant={selectedDirectMember === member.user_id ? 'default' : 'outline'}
+                                  className="w-full justify-start"
+                                  onClick={() => setSelectedDirectMember(member.user_id)}
+                                >
+                                  <Avatar className="h-6 w-6 mr-2">
+                                    <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
+                                      {getInitials(member.profile)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  {getDisplayName(member.profile)}
+                                </Button>
+                              ));
+                          })()
                         )}
                       </div>
                     </div>
@@ -617,16 +622,20 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                         {membersLoading ? (
                           <p className="text-sm text-muted-foreground">Chargement des membres...</p>
                         ) : members.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">Aucun membre disponible</p>
+                          <p className="text-sm text-muted-foreground">
+                            Aucun membre disponible (total: {members.length}, user: {user?.id ? 'présent' : 'absent'})
+                          </p>
                         ) : (
-                          members
-                            .filter(m => m.user_id !== user?.id)
-                            .filter(m => {
-                              if (!memberSearchGroup) return true;
-                              const name = getDisplayName(m.profile).toLowerCase();
-                              return name.includes(memberSearchGroup.toLowerCase());
-                            })
-                            .map(member => (
+                          (() => {
+                            const filtered = members.filter(m => m.user_id !== user?.id);
+                            console.log('Group conversation - Total members:', members.length, 'Filtered:', filtered.length);
+                            return filtered
+                              .filter(m => {
+                                if (!memberSearchGroup) return true;
+                                const name = getDisplayName(m.profile).toLowerCase();
+                                return name.includes(memberSearchGroup.toLowerCase());
+                              })
+                              .map(member => (
                               <div key={member.id} className="flex items-center space-x-2">
                                 <Checkbox
                                   id={`member-${member.id}`}
@@ -651,7 +660,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                                   <span className="text-sm">{getDisplayName(member.profile)}</span>
                                 </label>
                               </div>
-                            ))
+                            ));
+                          })()
                         )}
                       </div>
                     </div>
