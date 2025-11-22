@@ -747,13 +747,13 @@ export default function EspaceCollaboratif() {
   const [dossiersSearch, setDossiersSearch] = useState('');
   const [clientsSearch, setClientsSearch] = useState('');
 
-  // Persist active tab across refreshes: read from URL ?tab= or localStorage
+  // Persist active tab across refreshes: read from URL ?tab= or sessionStorage
   const [selectedTab, setSelectedTab] = useState<string>(() => {
     try {
       const params = new URLSearchParams(location.search);
-      return params.get('tab') || (localStorage.getItem('collab_tab') ?? 'dashboard');
+      return params.get('tab') || (sessionStorage.getItem('collab_tab') ?? 'dashboard');
     } catch (e) {
-      return localStorage.getItem('collab_tab') ?? 'dashboard';
+      return sessionStorage.getItem('collab_tab') ?? 'dashboard';
     }
   });
 
@@ -777,7 +777,7 @@ export default function EspaceCollaboratif() {
     } catch (e) {
       // ignore
     }
-    try { localStorage.setItem('collab_tab', value); } catch (e) { /* ignore */ }
+    try { sessionStorage.setItem('collab_tab', value); } catch (e) { /* ignore */ }
   }, [location.pathname, location.search, navigate]);
 
   // If navigated here from a notification, open the related resource

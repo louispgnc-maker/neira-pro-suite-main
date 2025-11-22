@@ -62,7 +62,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(() => {
+    // Restore last selected conversation from sessionStorage
+    const saved = sessionStorage.getItem(`chat-selected-conversation-${cabinetId}`);
+    return saved || null;
+  });
   const [sending, setSending] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [createMode, setCreateMode] = useState<'direct' | 'group' | null>(null);
@@ -71,6 +75,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [selectedDirectMember, setSelectedDirectMember] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Save selected conversation to sessionStorage whenever it changes
+  useEffect(() => {
+    if (selectedConversation) {
+      sessionStorage.setItem(`chat-selected-conversation-${cabinetId}`, selectedConversation);
+    }
+  }, [selectedConversation, cabinetId]);
 
   // Scroll to bottom when messages change
   const scrollToBottom = () => {
