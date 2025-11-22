@@ -172,22 +172,40 @@ export default function EspaceCollaboratif() {
     async function load() {
       if (!user || !cabinet) return;
       setCollabLoading(true);
-      const { data, error } = await supabase
+      
+      // Charger les tâches
+      const { data: tasksData, error } = await supabase
         .from('cabinet_tasks')
-        .select(`
-          id,
-          title,
-          description,
-          due_at,
-          done,
-          assigned_to,
-          shared_by,
-          cabinet_id,
-          creator_profile:shared_by(first_name, last_name)
-        `)
+        .select('id, title, description, due_at, done, assigned_to, shared_by, cabinet_id')
         .eq('cabinet_id', cabinet.id)
         .order('due_at', { ascending: true, nullsFirst: false });
-    if (!error && mounted) setCollabTasks((data || []) as CollabTask[]);
+      
+      if (error || !tasksData || !mounted) {
+        setCollabLoading(false);
+        return;
+      }
+      
+      // Récupérer les user_ids uniques
+      const userIds = [...new Set(tasksData.map(t => t.shared_by).filter(Boolean))];
+      
+      // Charger les profils
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .in('id', userIds);
+      
+      // Mapper les profils
+      const profilesMap = new Map(
+        (profilesData || []).map(p => [p.id, { first_name: p.first_name, last_name: p.last_name }])
+      );
+      
+      // Ajouter les infos du créateur à chaque tâche
+      const tasksWithCreator = tasksData.map(task => ({
+        ...task,
+        creator_profile: task.shared_by ? profilesMap.get(task.shared_by) : undefined
+      }));
+      
+      if (mounted) setCollabTasks(tasksWithCreator as CollabTask[]);
       setCollabLoading(false);
     }
     load();
@@ -401,23 +419,37 @@ export default function EspaceCollaboratif() {
       setTaskDate('');
       setTaskTime('');
       setTaskDialogOpen(false);
+      
       // Recharger la liste des tâches
-      const { data } = await supabase
+      const { data: tasksData } = await supabase
         .from('cabinet_tasks')
-        .select(`
-          id,
-          title,
-          description,
-          due_at,
-          done,
-          assigned_to,
-          shared_by,
-          cabinet_id,
-          creator_profile:shared_by(first_name, last_name)
-        `)
+        .select('id, title, description, due_at, done, assigned_to, shared_by, cabinet_id')
         .eq('cabinet_id', cabinet.id)
         .order('due_at', { ascending: true, nullsFirst: false });
-      if (data) setCollabTasks(data as CollabTask[]);
+      
+      if (tasksData) {
+        // Récupérer les user_ids uniques
+        const userIds = [...new Set(tasksData.map(t => t.shared_by).filter(Boolean))];
+        
+        // Charger les profils
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', userIds);
+        
+        // Mapper les profils
+        const profilesMap = new Map(
+          (profilesData || []).map(p => [p.id, { first_name: p.first_name, last_name: p.last_name }])
+        );
+        
+        // Ajouter les infos du créateur à chaque tâche
+        const tasksWithCreator = tasksData.map(task => ({
+          ...task,
+          creator_profile: task.shared_by ? profilesMap.get(task.shared_by) : undefined
+        }));
+        
+        setCollabTasks(tasksWithCreator as CollabTask[]);
+      }
     } catch (e: unknown) {
       console.error('Erreur création tâche collaborative:', e);
       const msg = e instanceof Error ? e.message : 'Création impossible';
