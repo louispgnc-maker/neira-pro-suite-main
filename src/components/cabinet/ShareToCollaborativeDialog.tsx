@@ -133,18 +133,29 @@ export function ShareToCollaborativeDialog({
         // 3. Partager automatiquement les documents liés
         const { data: linkedDocs } = await supabase
           .from('dossier_documents')
-          .select('document_id, documents(id, name)')
+          .select('document_id, documents(id, name, storage_path)')
           .eq('dossier_id', itemId);
         
         if (linkedDocs && linkedDocs.length > 0) {
           for (const link of linkedDocs) {
             const doc = (link as any).documents;
             if (doc) {
+              // Générer l'URL publique du document
+              let fileUrl = doc.storage_path;
+              if (doc.storage_path && !doc.storage_path.startsWith('http')) {
+                const storagePath = doc.storage_path.replace(/^\/+/, '');
+                const { data: publicData } = supabase.storage.from('documents').getPublicUrl(storagePath);
+                if (publicData?.publicUrl) {
+                  fileUrl = publicData.publicUrl;
+                }
+              }
+              
               await supabase.from('cabinet_documents').insert({
                 cabinet_id: cabinetId,
                 document_id: doc.id,
                 title: doc.name,
                 file_name: doc.name,
+                file_url: fileUrl,
                 shared_by: user.id,
                 shared_at: new Date().toISOString()
               }).then(res => {
