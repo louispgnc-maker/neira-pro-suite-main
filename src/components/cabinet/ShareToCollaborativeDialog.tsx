@@ -331,10 +331,9 @@ export function ShareToCollaborativeDialog({
       onClick={handleShare} 
       disabled={busy} 
       title={busy ? 'Partage en cours' : `Partager ${itemName}`}
-      className={`gap-2 ${role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}`}
+      className={`${role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}`}
     >
       <Share2 className="h-4 w-4" />
-      <span className="hidden sm:inline">Partager</span>
     </Button>
   );
 }
