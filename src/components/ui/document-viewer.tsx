@@ -32,11 +32,24 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
           </Button>
         </div>
         <div className="flex-1 min-h-0">
-          <iframe
-            src={documentUrl}
-            className="w-full h-full border-0"
-            title={documentName}
-          />
+          {documentUrl ? (
+            <object
+              data={documentUrl}
+              type="application/pdf"
+              className="w-full h-full"
+              title={documentName}
+            >
+              <embed
+                src={documentUrl}
+                type="application/pdf"
+                className="w-full h-full"
+              />
+            </object>
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              Aucun document à afficher
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
