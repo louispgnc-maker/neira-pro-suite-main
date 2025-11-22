@@ -791,7 +791,8 @@ export default function EspaceCollaboratif() {
                 conversationIds.add('general');
               } else if (msg.conversation_id) {
                 conversationIds.add(msg.conversation_id);
-              } else if (msg.recipient_id) {
+              } else if (msg.recipient_id === user.id) {
+                // For direct messages to me, use sender_id to identify the conversation
                 conversationIds.add(`direct-${msg.recipient_id}`);
               }
             });
@@ -805,8 +806,12 @@ export default function EspaceCollaboratif() {
               if (convId === 'general') {
                 convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
               } else if (convId.startsWith('direct-')) {
-                const recipientId = convId.replace('direct-', '');
-                convMessages = allMessages.filter(m => m.recipient_id === recipientId);
+                const senderId = convId.replace('direct-', '');
+                // For direct messages: messages where the other person is the sender and I'm the recipient
+                convMessages = allMessages.filter(m => 
+                  m.recipient_id === user.id && 
+                  !m.conversation_id
+                );
               } else {
                 convMessages = allMessages.filter(m => m.conversation_id === convId);
               }
