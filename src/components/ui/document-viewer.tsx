@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X } from "lucide-react";
+import { X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DocumentViewerProps {
@@ -25,23 +25,23 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
             Fermer
           </Button>
         </div>
-        <div className="flex-1 overflow-hidden h-[calc(90vh-4rem)]">
+        <div className="flex-1 overflow-hidden h-[calc(90vh-4rem)] flex items-center justify-center bg-gray-50">
           {documentUrl ? (
-            <object
-              data={documentUrl}
-              type="application/pdf"
-              className="w-full h-full"
-            >
-              <div className="flex flex-col items-center justify-center h-full gap-4 p-4">
-                <p className="text-gray-600">Impossible d'afficher le PDF dans le navigateur</p>
-                <Button 
-                  onClick={() => window.open(documentUrl, '_blank')}
-                  className={closeButtonClass}
-                >
-                  Ouvrir dans un nouvel onglet
-                </Button>
+            <div className="flex flex-col items-center gap-4 p-8 text-center">
+              <FileText className="h-16 w-16 text-gray-400" />
+              <div className="space-y-2">
+                <p className="text-lg font-medium text-gray-700">Document prêt à visualiser</p>
+                <p className="text-sm text-gray-500">Cliquez sur le bouton ci-dessous pour ouvrir le document</p>
               </div>
-            </object>
+              <Button 
+                onClick={() => window.open(documentUrl, '_blank')}
+                className={closeButtonClass}
+                size="lg"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Ouvrir le document
+              </Button>
+            </div>
           ) : (
             <div className="flex items-center justify-center h-full">
               <p className="text-gray-500">Aucun document à afficher</p>
