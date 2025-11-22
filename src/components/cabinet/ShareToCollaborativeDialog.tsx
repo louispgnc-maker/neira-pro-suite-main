@@ -251,7 +251,7 @@ export function ShareToCollaborativeDialog({
             cabinet_id: cabinetId,
             contrat_id: itemId,
             title: contrat.name,
-            type: contrat.type,
+            contrat_type: contrat.type,
             category: contrat.category,
             shared_by: user.id,
             shared_at: new Date().toISOString()
