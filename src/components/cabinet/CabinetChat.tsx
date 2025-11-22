@@ -154,6 +154,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       // Save last viewed time
       const lastViewedKey = `chat-last-viewed-${cabinetId}-${selectedConversation}`;
       sessionStorage.setItem(lastViewedKey, new Date().toISOString());
+
+      // Notify parent component to update global unread count
+      window.dispatchEvent(new CustomEvent('cabinet-conversation-read', { 
+        detail: { cabinetId, conversationId: selectedConversation } 
+      }));
     }
   }, [selectedConversation, cabinetId]);
 

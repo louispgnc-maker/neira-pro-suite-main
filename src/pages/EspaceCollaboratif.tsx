@@ -848,8 +848,16 @@ export default function EspaceCollaboratif() {
       )
       .subscribe();
 
+    // Listen for conversation read events from CabinetChat
+    const handleConversationRead = () => {
+      loadUnreadCount();
+    };
+
+    window.addEventListener('cabinet-conversation-read', handleConversationRead);
+
     return () => {
       supabase.removeChannel(channel);
+      window.removeEventListener('cabinet-conversation-read', handleConversationRead);
     };
   }, [user, cabinet]);
 
