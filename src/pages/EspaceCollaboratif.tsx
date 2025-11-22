@@ -104,6 +104,10 @@ interface CollabTask {
   assigned_to?: string | null;
   shared_by?: string;
   cabinet_id?: string;
+  creator_profile?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 type CombinedActivity = (SharedDocument & { type: 'Document' }) | (SharedDossier & { type: 'Dossier' }) | (SharedContrat & { type: 'Contrat' });
@@ -170,7 +174,17 @@ export default function EspaceCollaboratif() {
       setCollabLoading(true);
       const { data, error } = await supabase
         .from('cabinet_tasks')
-        .select('id,title,description,due_at,done,assigned_to,shared_by,cabinet_id')
+        .select(`
+          id,
+          title,
+          description,
+          due_at,
+          done,
+          assigned_to,
+          shared_by,
+          cabinet_id,
+          creator_profile:shared_by(first_name, last_name)
+        `)
         .eq('cabinet_id', cabinet.id)
         .order('due_at', { ascending: true, nullsFirst: false });
     if (!error && mounted) setCollabTasks((data || []) as CollabTask[]);
@@ -1533,6 +1547,11 @@ export default function EspaceCollaboratif() {
                           <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>
                         )}
                         <div className="flex-1" />
+                        {task.creator_profile && (
+                          <div className="text-xs text-muted-foreground mb-2">
+                            Créé par {task.creator_profile.first_name} {task.creator_profile.last_name}
+                          </div>
+                        )}
                         <div className="flex items-center justify-between mt-2">
                           {task.due_at ? (
                             <Badge variant={overdue ? "destructive" : "outline"}>
