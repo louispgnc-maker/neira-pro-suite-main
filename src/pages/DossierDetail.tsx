@@ -47,7 +47,7 @@ export default function DossierDetail() {
 
       setLoading(true);
       try {
-        // Minimal owner-first load to avoid complex RPC fallbacks during build-time checks.
+        // Charger le dossier
         const { data: d, error } = await supabase
           .from('dossiers')
           .select('id,title,status,description,created_at')
@@ -56,8 +56,68 @@ export default function DossierDetail() {
           .eq('id', id)
           .maybeSingle();
         if (!error && d && mounted) setDossier(d as Dossier);
+        
+        // Charger les clients liés
+        const { data: clientLinks } = await supabase
+          .from('dossier_clients')
+          .select('client_id, clients(id, nom, prenom)')
+          .eq('dossier_id', id);
+        
+        if (clientLinks && mounted) {
+          const clientList = clientLinks.map((link: any) => {
+            const c = link.clients;
+            return {
+              id: c.id,
+              name: c.prenom ? `${c.prenom} ${c.nom}` : c.nom
+            };
+          });
+          setClients(clientList);
+        }
+        
+        // Charger les contrats liés
+        const { data: contratLinks } = await supabase
+          .from('dossier_contrats')
+          .select('contrat_id, contrats(id, name, category)')
+          .eq('dossier_id', id);
+        
+        if (contratLinks && mounted) {
+          const contratList = contratLinks.map((link: any) => ({
+            id: link.contrats.id,
+            name: link.contrats.name,
+            category: link.contrats.category
+          }));
+          setContrats(contratList);
+        }
+        
+        // Charger les documents liés
+        const { data: docLinks } = await supabase
+          .from('dossier_documents')
+          .select('document_id, documents(id, name, storage_path)')
+          .eq('dossier_id', id);
+        
+        if (docLinks && mounted) {
+          const docList = docLinks.map((link: any) => {
+            const doc = link.documents;
+            // Générer l'URL publique
+            let fileUrl = doc.storage_path;
+            if (doc.storage_path && !doc.storage_path.startsWith('http')) {
+              const storagePath = doc.storage_path.replace(/^\/+/, '');
+              const { data: publicData } = supabase.storage.from('documents').getPublicUrl(storagePath);
+              if (publicData?.publicUrl) {
+                fileUrl = publicData.publicUrl;
+              }
+            }
+            return {
+              id: doc.id,
+              name: doc.name,
+              file_url: fileUrl,
+              file_name: doc.name
+            };
+          });
+          setDocuments(docList);
+        }
       } catch (e) {
-        // ignore errors for now
+        console.error('Error loading dossier:', e);
       } finally {
         if (mounted) setLoading(false);
       }
