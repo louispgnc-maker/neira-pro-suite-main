@@ -79,6 +79,7 @@ export default function ClientDetail() {
     async function load() {
       if (!user || !id) return;
       setLoading(true);
+      // Try loading with owner_id first
       const { data: c, error } = await supabase
         .from('clients')
         .select(`id,name,role,created_at,kyc_status,missing_info,
@@ -87,35 +88,14 @@ export default function ClientDetail() {
           profession,employeur,adresse_professionnelle,siret,situation_fiscale,revenus,justificatifs_financiers,comptes_bancaires,
           type_dossier,contrat_souhaite,historique_litiges,enfants,documents_objet
         `)
-        .eq('owner_id', user.id)
-        .eq('role', role)
         .eq('id', id)
         .maybeSingle();
+      
       if (error) {
         console.error('Erreur chargement client:', error);
         if (mounted) setClient(null);
-      } else if (mounted) {
+      } else if (mounted && c) {
         setClient(c as Client);
-      }
-
-      // If not found as an owned client, attempt to load via cabinet_clients (shared client)
-      if (mounted && !c) {
-        try {
-          const cabinetClientId = String(((location.state as unknown) as Record<string, unknown>)?.cabinetClientId ?? '');
-          if (cabinetClientId) {
-            const { data: rpcData, error: rpcErr } = await supabase.rpc('get_cabinet_client_details', { p_cabinet_client_id: cabinetClientId });
-            if (!rpcErr && rpcData) {
-              // rpcData is JSONB representing the client row
-              const parsed = rpcData as unknown;
-              // supabase.rpc may return the JSON as an array/object depending on setup
-              const clientObj = (typeof parsed === 'string') ? JSON.parse(parsed) : parsed as Record<string, unknown>;
-              if (clientObj) setClient(clientObj as Client);
-            }
-          }
-        } catch (e) {
-          // ignore RPC errors
-          console.error('Erreur chargement client partagé:', e);
-        }
       }
 
       // Load associated contrats
