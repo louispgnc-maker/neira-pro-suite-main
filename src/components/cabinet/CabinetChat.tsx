@@ -554,7 +554,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" onClick={() => { setCreateMode(null); setSelectedDirectMember(null); }}>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => { setCreateMode(null); setSelectedDirectMember(null); }}
+                        className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                      >
                         Retour
                       </Button>
                       <Button 
@@ -616,7 +620,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" onClick={() => { setCreateMode(null); setGroupName(''); setSelectedMembers([]); }}>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => { setCreateMode(null); setGroupName(''); setSelectedMembers([]); }}
+                        className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                      >
                         Retour
                       </Button>
                       <Button 
