@@ -108,10 +108,10 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       console.log('Loading members for cabinet:', cabinetId);
       setMembersLoading(true);
       
-      // First get cabinet members
+      // First get cabinet members (including email from this table)
       const { data: membersData, error: membersError } = await supabase
         .from('cabinet_members')
-        .select('id, user_id, role_cabinet, status')
+        .select('id, user_id, role_cabinet, status, email')
         .eq('cabinet_id', cabinetId)
         .eq('status', 'active');
 
@@ -128,11 +128,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         return;
       }
 
-      // Then get profiles for those users
+      // Then get profiles for those users (first_name and last_name only)
       const userIds = membersData.map(m => m.user_id).filter(Boolean);
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, email')
+        .select('id, first_name, last_name')
         .in('id', userIds);
 
       if (profilesError) {
@@ -144,7 +144,10 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       // Merge members with their profiles
       const membersWithProfiles = membersData.map(member => ({
         ...member,
-        profile: profilesData?.find(p => p.id === member.user_id)
+        profile: {
+          ...profilesData?.find(p => p.id === member.user_id),
+          email: member.email // Use email from cabinet_members
+        }
       }));
 
       console.log('Members loaded:', membersWithProfiles.length, membersWithProfiles);
