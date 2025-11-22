@@ -15,6 +15,10 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
     ? 'bg-orange-600 hover:bg-orange-700 text-white' 
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
+  // Add #toolbar=0 to hide PDF toolbar and use Google Docs Viewer as fallback
+  const pdfUrl = documentUrl ? `${documentUrl}#toolbar=0` : '';
+  const googleViewerUrl = documentUrl ? `https://docs.google.com/viewer?url=${encodeURIComponent(documentUrl)}&embedded=true` : '';
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl h-[90vh] p-0 gap-0 [&>button]:hidden flex flex-col">
@@ -33,18 +37,12 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
         </div>
         <div className="flex-1 min-h-0">
           {documentUrl ? (
-            <object
-              data={documentUrl}
-              type="application/pdf"
-              className="w-full h-full"
+            <iframe
+              src={googleViewerUrl}
+              className="w-full h-full border-0"
               title={documentName}
-            >
-              <embed
-                src={documentUrl}
-                type="application/pdf"
-                className="w-full h-full"
-              />
-            </object>
+              allow="autoplay"
+            />
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               Aucun document à afficher
