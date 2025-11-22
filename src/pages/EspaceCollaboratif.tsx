@@ -101,8 +101,9 @@ interface CollabTask {
   description?: string | null;
   due_at?: string | null;
   done?: boolean;
-  owner_id?: string;
-  role?: string;
+  assigned_to?: string | null;
+  shared_by?: string;
+  cabinet_id?: string;
 }
 
 type CombinedActivity = (SharedDocument & { type: 'Document' }) | (SharedDossier & { type: 'Dossier' }) | (SharedContrat & { type: 'Contrat' });
@@ -161,24 +162,23 @@ export default function EspaceCollaboratif() {
   const [editTaskSaving, setEditTaskSaving] = useState(false);
   const [collabTasks, setCollabTasks] = useState<CollabTask[]>([]);
   const [collabLoading, setCollabLoading] = useState(true);
-  // Load collaborative tasks (role/cabinet)
+  // Load collaborative tasks from cabinet_tasks
   useEffect(() => {
     let mounted = true;
     async function load() {
-      if (!user) return;
+      if (!user || !cabinet) return;
       setCollabLoading(true);
       const { data, error } = await supabase
-        .from('tasks')
-        .select('id,title,description,due_at,done')
-        .eq('owner_id', user.id)
-        .eq('role', cabinetRole)
+        .from('cabinet_tasks')
+        .select('id,title,description,due_at,done,assigned_to,shared_by,cabinet_id')
+        .eq('cabinet_id', cabinet.id)
         .order('due_at', { ascending: true, nullsFirst: false });
     if (!error && mounted) setCollabTasks((data || []) as CollabTask[]);
       setCollabLoading(false);
     }
     load();
     return () => { mounted = false; };
-  }, [user, cabinetRole, taskDialogOpen]);
+  }, [user, cabinet, taskDialogOpen]);
 
   
 
@@ -365,13 +365,17 @@ export default function EspaceCollaboratif() {
     }
     setTaskSaving(true);
     try {
+      if (!cabinet) {
+        toast({ title: 'Cabinet introuvable', variant: 'destructive' });
+        return;
+      }
       let due_at = null;
       if (taskDate) {
         due_at = taskTime ? `${taskDate}T${taskTime}` : `${taskDate}T00:00`;
       }
-      const { error } = await supabase.from('tasks').insert({
-        owner_id: user.id,
-        role: cabinetRole,
+      const { error } = await supabase.from('cabinet_tasks').insert({
+        cabinet_id: cabinet.id,
+        shared_by: user.id,
         title,
         description: taskNotes || null,
         due_at
@@ -406,7 +410,7 @@ export default function EspaceCollaboratif() {
       if (editTaskDate) {
         due_at = editTaskTime ? `${editTaskDate}T${editTaskTime}` : `${editTaskDate}T00:00`;
       }
-      const { error } = await supabase.from('tasks').update({ title, description: editTaskNotes || null, due_at }).eq('id', editTaskId);
+      const { error } = await supabase.from('cabinet_tasks').update({ title, description: editTaskNotes || null, due_at }).eq('id', editTaskId);
       if (error) throw error;
       // update local state
       setCollabTasks(prev => prev.map(t => t.id === editTaskId ? { ...t, title, description: editTaskNotes || null, due_at } : t));
@@ -1518,7 +1522,7 @@ export default function EspaceCollaboratif() {
                             type="checkbox"
                             checked={task.done}
                             onChange={async () => {
-                              await supabase.from('tasks').update({ done: true }).eq('id', task.id);
+                              await supabase.from('cabinet_tasks').update({ done: true }).eq('id', task.id);
                               setCollabTasks(prev => prev.map(t => t.id === task.id ? { ...t, done: true } : t));
                             }}
                             className={`accent-${cabinetRole === 'notaire' ? 'orange' : 'blue'}-600 h-5 w-5 rounded`}
