@@ -741,6 +741,23 @@ export default function EspaceCollaboratif() {
     }
   }, [user, cabinetRole, loadCabinetData]);
 
+  // Search states for lists
+  const [activitySearch, setActivitySearch] = useState('');
+  const [documentsSearch, setDocumentsSearch] = useState('');
+  const [contratsSearch, setContratsSearch] = useState('');
+  const [dossiersSearch, setDossiersSearch] = useState('');
+  const [clientsSearch, setClientsSearch] = useState('');
+
+  // Persist active tab across refreshes: read from URL ?tab= or sessionStorage
+  const [selectedTab, setSelectedTab] = useState<string>(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      return params.get('tab') || (sessionStorage.getItem('collab_tab') ?? 'dashboard');
+    } catch (e) {
+      return sessionStorage.getItem('collab_tab') ?? 'dashboard';
+    }
+  });
+
   // Load total unread message count for all conversations
   useEffect(() => {
     if (!user || !cabinet) return;
@@ -843,24 +860,6 @@ export default function EspaceCollaboratif() {
       // We just need to track when user views the tab
     }
   }, [selectedTab, totalUnreadCount]);
-
-  
-  // Search states for lists
-  const [activitySearch, setActivitySearch] = useState('');
-  const [documentsSearch, setDocumentsSearch] = useState('');
-  const [contratsSearch, setContratsSearch] = useState('');
-  const [dossiersSearch, setDossiersSearch] = useState('');
-  const [clientsSearch, setClientsSearch] = useState('');
-
-  // Persist active tab across refreshes: read from URL ?tab= or sessionStorage
-  const [selectedTab, setSelectedTab] = useState<string>(() => {
-    try {
-      const params = new URLSearchParams(location.search);
-      return params.get('tab') || (sessionStorage.getItem('collab_tab') ?? 'dashboard');
-    } catch (e) {
-      return sessionStorage.getItem('collab_tab') ?? 'dashboard';
-    }
-  });
 
   // Keep selectedTab in sync when location.search changes (back/forward/navigation)
   useEffect(() => {
