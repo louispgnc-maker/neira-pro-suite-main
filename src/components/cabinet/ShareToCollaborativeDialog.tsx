@@ -123,16 +123,95 @@ export function ShareToCollaborativeDialog({
             shared_at: new Date().toISOString()
           });
         
-        if (insertError) {
-          // Si c'est une erreur de conflit (déjà partagé), c'est OK
-          if (insertError.code === '23505') {
-            toast.success('Dossier déjà partagé');
-          } else {
-            console.error('Insert failed', insertError);
-            toast.error('Partage impossible');
-            setBusy(false);
-            return;
+        if (insertError && insertError.code !== '23505') {
+          console.error('Insert failed', insertError);
+          toast.error('Partage impossible');
+          setBusy(false);
+          return;
+        }
+        
+        // 3. Partager automatiquement les documents liés
+        const { data: linkedDocs } = await supabase
+          .from('dossier_documents')
+          .select('document_id, documents(id, name)')
+          .eq('dossier_id', itemId);
+        
+        if (linkedDocs && linkedDocs.length > 0) {
+          for (const link of linkedDocs) {
+            const doc = (link as any).documents;
+            if (doc) {
+              await supabase.from('cabinet_documents').insert({
+                cabinet_id: cabinetId,
+                document_id: doc.id,
+                title: doc.name,
+                file_name: doc.name,
+                shared_by: user.id,
+                shared_at: new Date().toISOString()
+              }).then(res => {
+                if (res.error && res.error.code !== '23505') {
+                  console.error('Failed to share document', res.error);
+                }
+              });
+            }
           }
+        }
+        
+        // 4. Partager automatiquement les contrats liés
+        const { data: linkedContrats } = await supabase
+          .from('dossier_contrats')
+          .select('contrat_id, contrats(id, name)')
+          .eq('dossier_id', itemId);
+        
+        if (linkedContrats && linkedContrats.length > 0) {
+          for (const link of linkedContrats) {
+            const contrat = (link as any).contrats;
+            if (contrat) {
+              await supabase.from('cabinet_contrats').insert({
+                cabinet_id: cabinetId,
+                contrat_id: contrat.id,
+                title: contrat.name,
+                shared_by: user.id,
+                shared_at: new Date().toISOString()
+              }).then(res => {
+                if (res.error && res.error.code !== '23505') {
+                  console.error('Failed to share contrat', res.error);
+                }
+              });
+            }
+          }
+        }
+        
+        // 5. Partager automatiquement les clients liés
+        const { data: linkedClients } = await supabase
+          .from('dossier_clients')
+          .select('client_id, clients(id, nom, prenom, email, telephone)')
+          .eq('dossier_id', itemId);
+        
+        if (linkedClients && linkedClients.length > 0) {
+          for (const link of linkedClients) {
+            const client = (link as any).clients;
+            if (client) {
+              await supabase.from('cabinet_clients').insert({
+                cabinet_id: cabinetId,
+                client_id: client.id,
+                nom: client.nom,
+                prenom: client.prenom,
+                email: client.email,
+                telephone: client.telephone,
+                shared_by: user.id,
+                shared_at: new Date().toISOString()
+              }).then(res => {
+                if (res.error && res.error.code !== '23505') {
+                  console.error('Failed to share client', res.error);
+                }
+              });
+            }
+          }
+        }
+        
+        const totalShared = (linkedDocs?.length || 0) + (linkedContrats?.length || 0) + (linkedClients?.length || 0);
+        if (totalShared > 0) {
+          toast.success(`Dossier partagé avec ${totalShared} élément(s) associé(s)`);
         } else {
           toast.success('Dossier partagé sur l\'espace de votre cabinet');
         }
