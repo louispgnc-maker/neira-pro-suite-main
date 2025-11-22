@@ -753,40 +753,112 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       {/* Main chat area */}
       <Card className="md:col-span-3 flex flex-col">
         <CardHeader>
-          <CardTitle className="text-lg">
-            Membres du cabinet ({members.length})
+          <CardTitle className="text-lg flex items-center gap-2">
+            {selectedConversation === 'general' ? (
+              <>
+                <MessageSquare className="h-5 w-5" />
+                {conversationTitle}
+              </>
+            ) : currentConversation?.is_group ? (
+              <>
+                <Users className="h-5 w-5" />
+                {conversationTitle}
+              </>
+            ) : (
+              <>
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
+                    {getInitials(currentConversation?.member_profiles?.[0])}
+                  </AvatarFallback>
+                </Avatar>
+                {conversationTitle}
+              </>
+            )}
           </CardTitle>
           <CardDescription>
-            Liste de tous les membres actifs
+            {selectedConversation === 'general' 
+              ? 'Discutez avec tous les membres du cabinet'
+              : currentConversation?.is_group
+              ? `${currentConversation.member_ids.length} membres`
+              : 'Conversation privée'}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {membersLoading ? (
-            <div className="text-center text-muted-foreground py-8">
-              Chargement des membres...
-            </div>
-          ) : members.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
-              Aucun membre trouvé
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {members.map(member => (
-                <div key={member.id} className="flex items-center gap-3 p-3 rounded-lg border">
-                  <Avatar>
-                    <AvatarFallback className={getRoleBadgeColor(member.role_cabinet)}>
-                      {getInitials(member.profile)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="font-medium">{getDisplayName(member.profile)}</div>
-                    <div className="text-sm text-muted-foreground">{member.profile?.email}</div>
+        
+        <CardContent className="flex-1 flex flex-col min-h-0">
+          {/* Messages area */}
+          <div className="flex-1 overflow-y-auto mb-4 space-y-3" ref={scrollAreaRef}>
+            {!selectedConversation ? (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                <p>Sélectionnez une conversation pour commencer</p>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                <p>Aucun message pour le moment</p>
+              </div>
+            ) : (
+              messages.map(msg => {
+                const isOwnMessage = msg.sender_id === user?.id;
+                return (
+                  <div
+                    key={msg.id}
+                    className={`flex gap-3 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className={`text-xs ${
+                        isOwnMessage 
+                          ? getRoleBadgeColor(role)
+                          : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {getInitials(msg.sender_profile)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className={`flex-1 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <span className={`text-sm font-medium ${isOwnMessage ? 'order-2' : 'order-1'}`}>
+                          {isOwnMessage ? 'Vous' : getDisplayName(msg.sender_profile)}
+                        </span>
+                        <span className={`text-xs text-muted-foreground ${isOwnMessage ? 'order-1' : 'order-2'}`}>
+                          {new Date(msg.created_at).toLocaleTimeString('fr-FR', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </span>
+                      </div>
+                      <div className={`inline-block px-3 py-2 rounded-lg ${
+                        isOwnMessage
+                          ? role === 'notaire' 
+                            ? 'bg-orange-500 text-white' 
+                            : 'bg-blue-500 text-white'
+                          : 'bg-muted'
+                      }`}>
+                        <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                      </div>
+                    </div>
                   </div>
-                  <Badge className={getRoleBadgeColor(member.role_cabinet)}>
-                    {member.role_cabinet}
-                  </Badge>
-                </div>
-              ))}
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Message input */}
+          {selectedConversation && (
+            <div className="flex gap-2">
+              <Textarea
+                placeholder="Écrivez votre message..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="flex-1 min-h-[60px] max-h-[120px]"
+                disabled={sending}
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim() || sending}
+                className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-500 hover:bg-blue-600'}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
             </div>
           )}
         </CardContent>
