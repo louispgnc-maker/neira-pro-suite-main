@@ -505,11 +505,26 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         messageData.conversation_id = selectedConversation;
       }
 
-      const { error } = await supabase
+      const { data: insertedMessage, error } = await supabase
         .from('cabinet_messages')
-        .insert(messageData);
+        .insert(messageData)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Get sender profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .eq('id', user.id)
+        .single();
+
+      // Add message to UI immediately
+      setMessages(prev => [...prev, {
+        ...insertedMessage,
+        sender_profile: profileData || undefined
+      }]);
 
       setNewMessage('');
       
