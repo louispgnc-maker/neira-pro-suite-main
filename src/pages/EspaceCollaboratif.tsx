@@ -616,6 +616,7 @@ export default function EspaceCollaboratif() {
       }
 
       // Clients
+      let clientsDataLoaded: SharedClient[] = [];
       try {
         const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { cabinet_id_param: userCabinet?.id });
         console.log('RPC get_cabinet_clients_with_names:', { 
@@ -625,7 +626,8 @@ export default function EspaceCollaboratif() {
           count: Array.isArray(clientsData) ? clientsData.length : 0
         });
         if (!clientsError && Array.isArray(clientsData)) {
-          setClientsShared(clientsData as SharedClient[]);
+          clientsDataLoaded = clientsData as SharedClient[];
+          setClientsShared(clientsDataLoaded);
         } else {
           console.error('Error fetching clients:', clientsError);
           setClientsShared([]);
@@ -647,44 +649,73 @@ export default function EspaceCollaboratif() {
         setIsCabinetOwner(false);
       }
 
-      // Load sharer profiles for all shared items
+      // Load sharer profiles for all shared items AFTER data is loaded
       try {
         const allSharerIds = new Set<string>();
-        documents.forEach(d => d.shared_by && allSharerIds.add(d.shared_by));
-        dossiers.forEach(d => d.shared_by && allSharerIds.add(d.shared_by));
-        contrats.forEach(c => c.shared_by && allSharerIds.add(c.shared_by));
-        clientsData.forEach(c => c.shared_by && allSharerIds.add(c.shared_by));
+        
+        // Get all documents that were just loaded
+        const { data: docsDataForProfiles } = await supabase.rpc('get_cabinet_documents', { cabinet_id_param: userCabinet?.id });
+        if (Array.isArray(docsDataForProfiles)) {
+          (docsDataForProfiles as SharedDocument[]).forEach(d => d.shared_by && allSharerIds.add(d.shared_by));
+        }
+        
+        // Get all dossiers that were just loaded
+        const { data: dossiersDataForProfiles } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet?.id });
+        if (Array.isArray(dossiersDataForProfiles)) {
+          (dossiersDataForProfiles as SharedDossier[]).forEach(d => d.shared_by && allSharerIds.add(d.shared_by));
+        }
+        
+        // Get all contrats that were just loaded
+        const { data: contratsDataForProfiles } = await supabase.rpc('get_cabinet_contrats', { cabinet_id_param: userCabinet?.id });
+        if (Array.isArray(contratsDataForProfiles)) {
+          (contratsDataForProfiles as SharedContrat[]).forEach(c => c.shared_by && allSharerIds.add(c.shared_by));
+        }
+        
+        // Add clients
+        clientsDataLoaded.forEach(c => c.shared_by && allSharerIds.add(c.shared_by));
+        
+        console.log('Loading sharer profiles for IDs:', Array.from(allSharerIds));
         
         if (allSharerIds.size > 0) {
-          const { data: profilesData } = await supabase
+          const { data: profilesData, error: profilesError } = await supabase
             .from('profiles')
             .select('id, first_name, last_name')
             .in('id', Array.from(allSharerIds));
+          
+          console.log('Sharer profiles loaded:', { count: profilesData?.length, error: profilesError, data: profilesData });
           
           const profilesMap = new Map(
             (profilesData || []).map(p => [p.id, { first_name: p.first_name, last_name: p.last_name }])
           );
           
           // Add profiles to documents
-          setDocuments(prev => prev.map(d => ({
-            ...d,
-            sharer_profile: d.shared_by ? profilesMap.get(d.shared_by) : undefined
-          })));
+          if (Array.isArray(docsDataForProfiles)) {
+            const docsWithProfiles = (docsDataForProfiles as SharedDocument[]).map(d => ({
+              ...d,
+              sharer_profile: d.shared_by ? profilesMap.get(d.shared_by) : undefined
+            }));
+            console.log('Documents with profiles:', docsWithProfiles);
+            setDocuments(docsWithProfiles);
+          }
           
           // Add profiles to dossiers
-          setDossiers(prev => prev.map(d => ({
-            ...d,
-            sharer_profile: d.shared_by ? profilesMap.get(d.shared_by) : undefined
-          })));
+          if (Array.isArray(dossiersDataForProfiles)) {
+            setDossiers((dossiersDataForProfiles as SharedDossier[]).map(d => ({
+              ...d,
+              sharer_profile: d.shared_by ? profilesMap.get(d.shared_by) : undefined
+            })));
+          }
           
           // Add profiles to contrats
-          setContrats(prev => prev.map(c => ({
-            ...c,
-            sharer_profile: c.shared_by ? profilesMap.get(c.shared_by) : undefined
-          })));
+          if (Array.isArray(contratsDataForProfiles)) {
+            setContrats((contratsDataForProfiles as SharedContrat[]).map(c => ({
+              ...c,
+              sharer_profile: c.shared_by ? profilesMap.get(c.shared_by) : undefined
+            })));
+          }
           
           // Add profiles to clients
-          setClientsShared(prev => prev.map(c => ({
+          setClientsShared(clientsDataLoaded.map(c => ({
             ...c,
             sharer_profile: c.shared_by ? profilesMap.get(c.shared_by) : undefined
           })));
