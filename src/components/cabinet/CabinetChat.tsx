@@ -73,6 +73,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [groupName, setGroupName] = useState('');
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [selectedDirectMember, setSelectedDirectMember] = useState<string | null>(null);
+  const [memberSearchDirect, setMemberSearchDirect] = useState('');
+  const [memberSearchGroup, setMemberSearchGroup] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -533,24 +535,39 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                   <div className="space-y-4">
                     <div>
                       <Label>Sélectionner un membre</Label>
-                      <div className="mt-2 space-y-2">
-                        {members
-                          .filter(m => m.user_id !== user?.id)
-                          .map(member => (
-                            <Button
-                              key={member.id}
-                              variant={selectedDirectMember === member.user_id ? 'default' : 'outline'}
-                              className="w-full justify-start"
-                              onClick={() => setSelectedDirectMember(member.user_id)}
-                            >
-                              <Avatar className="h-6 w-6 mr-2">
-                                <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
-                                  {getInitials(member.profile)}
-                                </AvatarFallback>
-                              </Avatar>
-                              {getDisplayName(member.profile)}
-                            </Button>
-                          ))}
+                      <Input
+                        placeholder="Rechercher un membre..."
+                        value={memberSearchDirect}
+                        onChange={(e) => setMemberSearchDirect(e.target.value)}
+                        className="mt-2"
+                      />
+                      <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                        {members.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">Chargement des membres...</p>
+                        ) : (
+                          members
+                            .filter(m => m.user_id !== user?.id)
+                            .filter(m => {
+                              if (!memberSearchDirect) return true;
+                              const name = getDisplayName(m.profile).toLowerCase();
+                              return name.includes(memberSearchDirect.toLowerCase());
+                            })
+                            .map(member => (
+                              <Button
+                                key={member.id}
+                                variant={selectedDirectMember === member.user_id ? 'default' : 'outline'}
+                                className="w-full justify-start"
+                                onClick={() => setSelectedDirectMember(member.user_id)}
+                              >
+                                <Avatar className="h-6 w-6 mr-2">
+                                  <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
+                                    {getInitials(member.profile)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                {getDisplayName(member.profile)}
+                              </Button>
+                            ))
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -584,12 +601,23 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     </div>
                     <div>
                       <Label>Membres du groupe</Label>
-                      <div className="mt-2 space-y-2 max-h-[200px] overflow-y-auto">
+                      <Input
+                        placeholder="Rechercher un membre..."
+                        value={memberSearchGroup}
+                        onChange={(e) => setMemberSearchGroup(e.target.value)}
+                        className="mt-2"
+                      />
+                      <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto pr-2">
                         {members.length === 0 ? (
                           <p className="text-sm text-muted-foreground">Chargement des membres...</p>
                         ) : (
                           members
                             .filter(m => m.user_id !== user?.id)
+                            .filter(m => {
+                              if (!memberSearchGroup) return true;
+                              const name = getDisplayName(m.profile).toLowerCase();
+                              return name.includes(memberSearchGroup.toLowerCase());
+                            })
                             .map(member => (
                               <div key={member.id} className="flex items-center space-x-2">
                                 <Checkbox
