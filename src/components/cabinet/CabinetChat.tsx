@@ -504,6 +504,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                       <Users className="h-4 w-4 mr-2" />
                       Créer un groupe
                     </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setShowCreateDialog(false)}
+                    >
+                      Annuler
+                    </Button>
                   </div>
                 ) : createMode === 'direct' ? (
                   <div className="space-y-4">
@@ -557,34 +564,38 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     <div>
                       <Label>Membres du groupe</Label>
                       <div className="mt-2 space-y-2 max-h-[200px] overflow-y-auto">
-                        {members
-                          .filter(m => m.user_id !== user?.id)
-                          .map(member => (
-                            <div key={member.id} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`member-${member.id}`}
-                                checked={selectedMembers.includes(member.user_id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setSelectedMembers(prev => [...prev, member.user_id]);
-                                  } else {
-                                    setSelectedMembers(prev => prev.filter(id => id !== member.user_id));
-                                  }
-                                }}
-                              />
-                              <label
-                                htmlFor={`member-${member.id}`}
-                                className="flex items-center gap-2 cursor-pointer flex-1"
-                              >
-                                <Avatar className="h-6 w-6">
-                                  <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
-                                    {getInitials(member.profile)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-sm">{getDisplayName(member.profile)}</span>
-                              </label>
-                            </div>
-                          ))}
+                        {members.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">Chargement des membres...</p>
+                        ) : (
+                          members
+                            .filter(m => m.user_id !== user?.id)
+                            .map(member => (
+                              <div key={member.id} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={`member-${member.id}`}
+                                  checked={selectedMembers.includes(member.user_id)}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setSelectedMembers(prev => [...prev, member.user_id]);
+                                    } else {
+                                      setSelectedMembers(prev => prev.filter(id => id !== member.user_id));
+                                    }
+                                  }}
+                                />
+                                <label
+                                  htmlFor={`member-${member.id}`}
+                                  className="flex items-center gap-2 cursor-pointer flex-1"
+                                >
+                                  <Avatar className="h-6 w-6">
+                                    <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
+                                      {getInitials(member.profile)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <span className="text-sm">{getDisplayName(member.profile)}</span>
+                                </label>
+                              </div>
+                            ))
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -610,7 +621,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             <Button
               key={conv.id}
               variant={selectedConversation === conv.id ? 'default' : 'ghost'}
-              className="w-full justify-start"
+              className={`w-full justify-start ${
+                conv.id === 'general' 
+                  ? role === 'notaire' 
+                    ? 'hover:bg-orange-100 hover:text-orange-600' 
+                    : 'hover:bg-blue-100 hover:text-blue-600'
+                  : ''
+              }`}
               onClick={() => setSelectedConversation(conv.id)}
             >
               {conv.is_group ? (
