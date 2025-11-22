@@ -911,7 +911,7 @@ export default function EspaceCollaboratif() {
   }, [clientsShared, clientsSearch, clientsFiltered]);
 
 
-  if (loading) {
+  if (!cabinet && loading) {
     return (
       <AppLayout>
         <div className="container mx-auto p-6">
