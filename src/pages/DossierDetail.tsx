@@ -47,14 +47,34 @@ export default function DossierDetail() {
 
       setLoading(true);
       try {
-        // Charger le dossier
-        const { data: d, error } = await supabase
+        // Essayer de charger le dossier en tant que propriétaire
+        let { data: d, error } = await supabase
           .from('dossiers')
           .select('id,title,status,description,created_at')
           .eq('owner_id', user.id)
           .eq('role', role)
           .eq('id', id)
           .maybeSingle();
+        
+        // Si pas trouvé, essayer de charger depuis cabinet_dossiers (dossier partagé)
+        if (!d) {
+          const { data: sharedDossier } = await supabase
+            .from('cabinet_dossiers')
+            .select('dossier_id, title, description, status, dossiers(created_at)')
+            .eq('dossier_id', id)
+            .maybeSingle();
+          
+          if (sharedDossier) {
+            d = {
+              id: sharedDossier.dossier_id,
+              title: sharedDossier.title,
+              status: sharedDossier.status,
+              description: sharedDossier.description,
+              created_at: (sharedDossier as any).dossiers?.created_at || null
+            };
+          }
+        }
+        
         if (!error && d && mounted) setDossier(d as Dossier);
         
         // Charger les clients liés
