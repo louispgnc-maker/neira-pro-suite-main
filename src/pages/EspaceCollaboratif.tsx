@@ -18,7 +18,8 @@ import {
   Calendar, 
   FolderOpen,
   Plus,
-  ArrowRight
+  ArrowRight,
+  Settings
 } from 'lucide-react';
 import { Trash2, UploadCloud } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
@@ -945,14 +946,27 @@ export default function EspaceCollaboratif() {
     <AppLayout>
       <div className="container mx-auto p-6 space-y-6">
       {/* En-tête */}
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Espace Collaboratif</h1>
-        <div className="flex items-center gap-2">
-          <Badge className={colorClass}>{cabinet.nom}</Badge>
-          <span className="text-sm text-foreground">
-            {members.length} membre{members.length > 1 ? 's' : ''}
-          </span>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Espace Collaboratif</h1>
+          <div className="flex items-center gap-2">
+            <Badge className={colorClass}>{cabinet.nom}</Badge>
+            <span className="text-sm text-foreground">
+              {members.length} membre{members.length > 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
+        
+        {/* Management button for cabinet founder */}
+        {isCabinetOwner && (
+          <Button
+            onClick={() => navigate(`/${cabinetRole}s/cabinet`)}
+            className={colorClass}
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Gérer le cabinet
+          </Button>
+        )}
       </div>
 
       {/* Onglets principaux */}
