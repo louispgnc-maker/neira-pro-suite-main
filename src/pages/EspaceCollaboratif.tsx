@@ -563,6 +563,12 @@ export default function EspaceCollaboratif() {
       // Clients
       try {
         const { data: clientsData, error: clientsError } = await supabase.rpc('get_cabinet_clients_with_names', { cabinet_id_param: userCabinet?.id });
+        console.log('RPC get_cabinet_clients_with_names:', { 
+          cabinet_id: userCabinet?.id,
+          error: clientsError, 
+          data: clientsData,
+          count: Array.isArray(clientsData) ? clientsData.length : 0
+        });
         if (!clientsError && Array.isArray(clientsData)) {
           setClientsShared(clientsData as SharedClient[]);
         } else {
