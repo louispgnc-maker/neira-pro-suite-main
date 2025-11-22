@@ -27,8 +27,9 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
         </div>
         <div className="flex-1 overflow-hidden h-[calc(90vh-4rem)]">
           {documentUrl ? (
-            <iframe
+            <embed
               src={documentUrl}
+              type="application/pdf"
               className="w-full h-full border-0"
               title={documentName}
             />
