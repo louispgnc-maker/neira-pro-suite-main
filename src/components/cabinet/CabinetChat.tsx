@@ -714,15 +714,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               key={conv.id}
               variant={selectedConversation === conv.id ? 'default' : 'ghost'}
               className={`w-full justify-start ${
-                conv.id === 'general' 
-                  ? selectedConversation === conv.id
-                    ? role === 'notaire'
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                      : 'bg-blue-500 hover:bg-blue-600 text-white'
-                    : role === 'notaire' 
-                      ? 'hover:bg-orange-100 hover:text-orange-600' 
-                      : 'hover:bg-blue-100 hover:text-blue-600'
-                  : ''
+                selectedConversation === conv.id
+                  ? role === 'notaire'
+                    ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                  : role === 'notaire' 
+                    ? 'hover:bg-orange-100 hover:text-orange-600' 
+                    : 'hover:bg-blue-100 hover:text-blue-600'
               }`}
               onClick={() => setSelectedConversation(conv.id)}
             >
