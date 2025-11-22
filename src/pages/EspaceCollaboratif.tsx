@@ -310,64 +310,40 @@ export default function EspaceCollaboratif() {
       let storagePath = raw.replace(/^\/+/, '');
 
       // If the stored path includes an explicit bucket prefix like "shared_documents/...",
-      // split bucket and path accordingly. Otherwise assume original 'documents' bucket.
-      let bucket = 'documents';
+      // split bucket and path accordingly. Otherwise assume 'shared-documents' bucket.
+      let bucket = 'shared-documents';
       if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
         // Normalize any historical variant to the canonical bucket name
         bucket = 'shared-documents';
         storagePath = storagePath.replace(/^shared[-_]documents\//, '');
+      } else if (storagePath.startsWith('documents/')) {
+        bucket = 'documents';
+        storagePath = storagePath.replace(/^documents\//, '');
       } else if (storagePath.includes('/')) {
-        // Heuristic: if path looks like '<bucket>/rest/of/path', and bucket exists, use it.
         const maybeBucket = storagePath.split('/')[0];
-        // conservative: only switch if maybeBucket is 'documents' or a historical shared bucket
         if (maybeBucket === 'documents' || maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') {
-          // Always map historical variants to the canonical 'shared-documents'
           if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = 'shared-documents';
+          else if (maybeBucket === 'documents') bucket = 'documents';
           storagePath = storagePath.split('/').slice(1).join('/');
         }
       }
 
-      // try signed url via Edge Function (membership-checked) with client fallback
-      const signed = await getSignedUrlForPath({ bucket, path: storagePath, cabinetId: cabinet?.id, expires: 60 });
-      if (!signed.signedUrl) {
-        // provide richer diagnostics to help reproduce the fallback in the browser
-        try {
-          console.error('signed url generation failed for', bucket, storagePath);
-          if (console.groupCollapsed) console.groupCollapsed('Signed URL diagnostics');
-          console.log('getSignedUrlForPath result:', signed);
-          if (console.groupEnd) console.groupEnd();
-        } catch (_e) {
-          // ignore console errors
-        }
-        // Try a public URL fallback if the bucket/object is public
-        try {
-          const pub = await supabase.storage.from(bucket).getPublicUrl(storagePath);
-          const pubResp = pub as unknown as { data?: { publicUrl?: string }; publicUrl?: string } | null;
-          const publicUrl = pubResp?.data?.publicUrl ?? pubResp?.publicUrl;
-          if (publicUrl) {
-            setViewerUrl(publicUrl);
-            setViewerDocName(doc.title);
-            setViewerOpen(true);
-            return;
-          }
-        } catch (e) {
-          console.error('getPublicUrl fallback failed', e);
-        }
-
-        // show a compact, actionable diagnostic in the toast so the developer/user has a hint
-  const triedBuckets = (signed as { triedBuckets?: string[] } | null | undefined)?.triedBuckets;
-  const tried = triedBuckets && Array.isArray(triedBuckets) ? triedBuckets.join(', ') : undefined;
-        const repoDoc = 'supabase/CONNECT_SHARED_BUCKET.md';
-        const baseDesc = tried
-          ? `Partage désactivé / stockage partagé indisponible. Buckets essayés: ${tried}.` 
-          : 'Partage désactivé / stockage partagé indisponible.';
-        const desc = `${baseDesc} Pour corriger (admin) : voir ${repoDoc}`;
-        // Use a neutral title to indicate sharing is disabled rather than an internal error
-        toast({ title: 'Partagé (désactivé)', description: desc, variant: 'destructive' });
+      // Utiliser getPublicUrl pour éviter l'expiration des URLs (comme dans Documents.tsx)
+      const { data: publicData } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(storagePath);
+      
+      if (!publicData?.publicUrl) {
+        console.error('getPublicUrl failed for', bucket, storagePath);
+        toast({
+          title: 'Erreur',
+          description: 'Impossible d\'accéder au document',
+          variant: 'destructive',
+        });
         return;
       }
 
-      setViewerUrl(signed.signedUrl);
+      setViewerUrl(publicData.publicUrl);
       setViewerDocName(doc.title);
       setViewerOpen(true);
     } catch (error) {
@@ -378,7 +354,7 @@ export default function EspaceCollaboratif() {
         variant: 'destructive',
       });
     }
-  }, [cabinet?.id, toast]);
+  }, [toast]);
 
   const createCollaborativeTask = async () => {
     if (!user) return;

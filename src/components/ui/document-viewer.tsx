@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X, FileText } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DocumentViewerProps {
@@ -25,23 +25,13 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
             Fermer
           </Button>
         </div>
-        <div className="flex-1 overflow-hidden h-[calc(90vh-4rem)] flex items-center justify-center bg-gray-50">
+        <div className="flex-1 overflow-hidden h-[calc(90vh-4rem)]">
           {documentUrl ? (
-            <div className="flex flex-col items-center gap-4 p-8 text-center">
-              <FileText className="h-16 w-16 text-gray-400" />
-              <div className="space-y-2">
-                <p className="text-lg font-medium text-gray-700">Document prêt à visualiser</p>
-                <p className="text-sm text-gray-500">Cliquez sur le bouton ci-dessous pour ouvrir le document</p>
-              </div>
-              <Button 
-                onClick={() => window.open(documentUrl, '_blank')}
-                className={closeButtonClass}
-                size="lg"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Ouvrir le document
-              </Button>
-            </div>
+            <iframe
+              src={documentUrl}
+              className="w-full h-full border-0"
+              title={documentName}
+            />
           ) : (
             <div className="flex items-center justify-center h-full">
               <p className="text-gray-500">Aucun document à afficher</p>
