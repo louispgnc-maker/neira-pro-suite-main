@@ -6,6 +6,12 @@ import { createClient } from '@supabase/supabase-js'
 let supabaseUrl = import.meta?.env?.VITE_SUPABASE_URL
 let supabaseKey = import.meta?.env?.VITE_SUPABASE_ANON_KEY
 
+console.log('[supabaseClient] Loaded env vars:', {
+  url: supabaseUrl,
+  keyLength: supabaseKey?.length,
+  hasKey: !!supabaseKey
+});
+
 if (!supabaseUrl || !supabaseKey) {
   // Fallback to previous public values so the online site keeps working even if env vars are missing.
   // You can override these at build time with VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY.
