@@ -36,14 +36,15 @@ const fetchWithTimeout = (timeoutMs = 7000) => {
   }
 }
 
-// Use localStorage for auth storage so sessions persist across tabs and page refreshes.
-// This allows staying logged in even after closing and reopening the browser.
+// Use sessionStorage for auth storage to allow multiple accounts in different tabs.
+// sessionStorage is isolated per-tab, enabling simultaneous login with different accounts.
+// Note: Sessions will be lost when closing the tab (not persisted across browser restarts).
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   global: { fetch: fetchWithTimeout(7000) },
   auth: { 
     persistSession: true, 
     detectSessionInUrl: true, 
-    storage: localStorage,
+    storage: sessionStorage, // Changed from localStorage to sessionStorage for per-tab isolation
     autoRefreshToken: true,
     storageKey: 'neira-auth-token'
   },
