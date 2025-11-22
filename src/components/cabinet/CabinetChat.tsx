@@ -107,31 +107,44 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
     const loadMembers = async () => {
       console.log('Loading members for cabinet:', cabinetId);
       setMembersLoading(true);
-      const { data, error } = await supabase
+      
+      // First get cabinet members
+      const { data: membersData, error: membersError } = await supabase
         .from('cabinet_members')
-        .select(`
-          id,
-          user_id,
-          role_cabinet,
-          status,
-          profiles!cabinet_members_user_id_fkey (
-            first_name,
-            last_name,
-            email
-          )
-        `)
+        .select('id, user_id, role_cabinet, status')
         .eq('cabinet_id', cabinetId)
         .eq('status', 'active');
 
-      if (error) {
-        console.error('Error loading members:', error);
+      if (membersError) {
+        console.error('Error loading members:', membersError);
         setMembersLoading(false);
         return;
       }
 
-      const membersWithProfiles = (data || []).map(m => ({
-        ...m,
-        profile: Array.isArray(m.profiles) ? m.profiles[0] : m.profiles
+      if (!membersData || membersData.length === 0) {
+        console.log('No members found');
+        setMembers([]);
+        setMembersLoading(false);
+        return;
+      }
+
+      // Then get profiles for those users
+      const userIds = membersData.map(m => m.user_id).filter(Boolean);
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error loading profiles:', profilesError);
+        setMembersLoading(false);
+        return;
+      }
+
+      // Merge members with their profiles
+      const membersWithProfiles = membersData.map(member => ({
+        ...member,
+        profile: profilesData?.find(p => p.id === member.user_id)
       }));
 
       console.log('Members loaded:', membersWithProfiles.length, membersWithProfiles);
