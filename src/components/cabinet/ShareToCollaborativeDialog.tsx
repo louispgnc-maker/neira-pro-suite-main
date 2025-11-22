@@ -95,21 +95,48 @@ export function ShareToCollaborativeDialog({
         if (onSuccess) onSuccess();
         if (onClose) onClose();
       } else if (itemType === 'dossier') {
-        // Pour les dossiers, utiliser la fonction RPC
-        const { data, error } = await supabase.rpc('share_dossier_to_cabinet', {
-          p_dossier_id: itemId,
-          p_cabinet_id: cabinetId,
-          p_user_id: user.id
-        });
+        // Pour les dossiers, faire l'insertion directe
+        // 1. Récupérer les infos du dossier
+        const { data: dossier, error: dossierError } = await supabase
+          .from('dossiers')
+          .select('title, description, status')
+          .eq('id', itemId)
+          .single();
         
-        if (error || !data || (data as any).error) {
-          console.error('share_dossier_to_cabinet failed', error || data);
-          toast.error('Partage impossible');
+        if (dossierError || !dossier) {
+          console.error('Dossier not found', dossierError);
+          toast.error('Dossier introuvable');
           setBusy(false);
           return;
         }
         
-        toast.success('Dossier partagé sur l\'espace de votre cabinet');
+        // 2. Insérer dans cabinet_dossiers
+        const { error: insertError } = await supabase
+          .from('cabinet_dossiers')
+          .insert({
+            cabinet_id: cabinetId,
+            dossier_id: itemId,
+            title: dossier.title,
+            description: dossier.description,
+            status: dossier.status,
+            shared_by: user.id,
+            shared_at: new Date().toISOString()
+          });
+        
+        if (insertError) {
+          // Si c'est une erreur de conflit (déjà partagé), c'est OK
+          if (insertError.code === '23505') {
+            toast.success('Dossier déjà partagé');
+          } else {
+            console.error('Insert failed', insertError);
+            toast.error('Partage impossible');
+            setBusy(false);
+            return;
+          }
+        } else {
+          toast.success('Dossier partagé sur l\'espace de votre cabinet');
+        }
+        
         setOpen(false);
         if (onSuccess) onSuccess();
         if (onClose) onClose();
