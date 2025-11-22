@@ -230,6 +230,44 @@ export function ShareToCollaborativeDialog({
         setOpen(false);
         if (onSuccess) onSuccess();
         if (onClose) onClose();
+      } else if (itemType === 'contrat') {
+        // Pour les contrats, insertion directe dans cabinet_contrats
+        const { data: contrat, error: contratError } = await supabase
+          .from('contrats')
+          .select('name, type, category')
+          .eq('id', itemId)
+          .single();
+        
+        if (contratError || !contrat) {
+          console.error('Contrat not found', contratError);
+          toast.error('Contrat introuvable');
+          setBusy(false);
+          return;
+        }
+        
+        const { error: insertError } = await supabase
+          .from('cabinet_contrats')
+          .insert({
+            cabinet_id: cabinetId,
+            contrat_id: itemId,
+            title: contrat.name,
+            type: contrat.type,
+            category: contrat.category,
+            shared_by: user.id,
+            shared_at: new Date().toISOString()
+          });
+        
+        if (insertError && insertError.code !== '23505') {
+          console.error('Insert failed', insertError);
+          toast.error('Partage impossible');
+          setBusy(false);
+          return;
+        }
+        
+        toast.success('Contrat partagé sur l\'espace de votre cabinet');
+        setOpen(false);
+        if (onSuccess) onSuccess();
+        if (onClose) onClose();
       } else {
         // Pour les documents, utiliser l'Edge Function
         const { uploadedBucket, publicUrl } = await copyDocumentToShared({ cabinetId, documentId: itemId });
