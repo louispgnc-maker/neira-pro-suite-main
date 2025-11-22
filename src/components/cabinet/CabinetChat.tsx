@@ -59,6 +59,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [members, setMembers] = useState<CabinetMember[]>([]);
+  const [membersLoading, setMembersLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -100,6 +101,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
     const loadMembers = async () => {
       console.log('Loading members for cabinet:', cabinetId);
+      setMembersLoading(true);
       const { data, error } = await supabase
         .from('cabinet_members')
         .select(`
@@ -118,6 +120,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
       if (error) {
         console.error('Error loading members:', error);
+        setMembersLoading(false);
         return;
       }
 
@@ -128,6 +131,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
       console.log('Members loaded:', membersWithProfiles.length, membersWithProfiles);
       setMembers(membersWithProfiles);
+      setMembersLoading(false);
     };
 
     loadMembers();
@@ -542,8 +546,10 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                         className="mt-2"
                       />
                       <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto pr-2">
-                        {members.length === 0 ? (
+                        {membersLoading ? (
                           <p className="text-sm text-muted-foreground">Chargement des membres...</p>
+                        ) : members.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">Aucun membre disponible</p>
                         ) : (
                           members
                             .filter(m => m.user_id !== user?.id)
@@ -608,8 +614,10 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                         className="mt-2"
                       />
                       <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto pr-2">
-                        {members.length === 0 ? (
+                        {membersLoading ? (
                           <p className="text-sm text-muted-foreground">Chargement des membres...</p>
+                        ) : members.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">Aucun membre disponible</p>
                         ) : (
                           members
                             .filter(m => m.user_id !== user?.id)
