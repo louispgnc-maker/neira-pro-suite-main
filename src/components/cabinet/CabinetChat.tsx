@@ -114,7 +114,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           user_id,
           role_cabinet,
           status,
-          profiles:user_id (
+          profiles!cabinet_members_user_id_fkey (
             first_name,
             last_name,
             email
