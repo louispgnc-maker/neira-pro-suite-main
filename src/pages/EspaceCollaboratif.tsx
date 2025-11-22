@@ -297,10 +297,12 @@ export default function EspaceCollaboratif() {
     try {
       const raw = (doc.file_url || '').trim();
 
-      // If file_url already contains a full HTTP URL (public copy), open it directly in new tab
+      // If file_url already contains a full HTTP URL (public copy), open it in viewer
       if (/^https?:\/\//i.test(raw)) {
         console.log('Opening document with URL:', raw);
-        window.open(raw, '_blank');
+        setViewerUrl(raw);
+        setViewerDocName(doc.title || 'Document');
+        setViewerOpen(true);
         return;
       }
 
@@ -343,7 +345,9 @@ export default function EspaceCollaboratif() {
           const pubResp = pub as unknown as { data?: { publicUrl?: string }; publicUrl?: string } | null;
           const publicUrl = pubResp?.data?.publicUrl ?? pubResp?.publicUrl;
           if (publicUrl) {
-            window.open(publicUrl, '_blank');
+            setViewerUrl(publicUrl);
+            setViewerDocName(doc.title);
+            setViewerOpen(true);
             return;
           }
         } catch (e) {
@@ -363,7 +367,9 @@ export default function EspaceCollaboratif() {
         return;
       }
 
-      window.open(signed.signedUrl, '_blank');
+      setViewerUrl(signed.signedUrl);
+      setViewerDocName(doc.title);
+      setViewerOpen(true);
     } catch (error) {
       console.error('Erreur ouverture document:', error);
       toast({
