@@ -423,42 +423,28 @@ export default function EspaceCollaboratif() {
 
   const navigateToDossier = useCallback(async (dossier: SharedDossier) => {
     try {
-      if (dossier.id) {
-        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+      // Utiliser dossier_id pour naviguer vers le dossier original
+      const dossierId = dossier.dossier_id || dossier.id;
+      if (dossierId) {
+        navigate(`/${cabinetRole}s/dossiers/${dossierId}`, { state: { fromCollaboratif: true } });
         return;
       }
 
-      const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
-      if (cabinetsErr || !Array.isArray(cabinetsData)) {
-        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-        return;
-      }
-      const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
-      const filtered = cabinets.filter((c) => ((c as unknown as { role?: string }).role) === cabinetRole);
-  const userCabinet = (filtered[0] as unknown as Cabinet) || null;
-      if (!userCabinet) {
-        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-        return;
-      }
-
-      const { data: sharedDossiersData, error: sharedErr } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: userCabinet.id });
-      if (sharedErr || !Array.isArray(sharedDossiersData)) {
-        navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-        return;
-      }
-
-      const found = (Array.isArray(sharedDossiersData) ? (sharedDossiersData as unknown[]) : []).find((sd) => ((sd as unknown as SharedDossier).dossier_id === dossier.dossier_id) || ((sd as unknown as SharedDossier).dossier_id === dossier.id) || ((sd as unknown as SharedDossier).id === dossier.id)) as SharedDossier | undefined;
-      if (found) {
-        const target = found.dossier_id || found.id || dossier.id;
-        navigate(`/${cabinetRole}s/dossiers/${target}`, { state: { fromCollaboratif: true } });
-        return;
-      }
-
-      navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
-    } catch (e) {
-      navigate(`/${cabinetRole}s/dossiers/${dossier.id}`, { state: { fromCollaboratif: true } });
+      // Fallback si pas d'ID
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'ouvrir ce dossier',
+        variant: 'destructive',
+      });
+    } catch (error) {
+      console.error('Erreur navigation dossier:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'ouvrir ce dossier',
+        variant: 'destructive',
+      });
     }
-  }, [cabinetRole, navigate]);
+  }, [cabinetRole, navigate, toast]);
 
   const loadCabinetData = useCallback(async () => {
     setLoading(true);
