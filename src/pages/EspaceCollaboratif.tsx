@@ -142,6 +142,7 @@ export default function EspaceCollaboratif() {
   const [clientsShared, setClientsShared] = useState<SharedClient[]>([]);
   const [isCabinetOwner, setIsCabinetOwner] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   
   const { toast } = useToast();
 
@@ -740,6 +741,109 @@ export default function EspaceCollaboratif() {
     }
   }, [user, cabinetRole, loadCabinetData]);
 
+  // Load total unread message count for all conversations
+  useEffect(() => {
+    if (!user || !cabinet) return;
+
+    const loadUnreadCount = async () => {
+      try {
+        // Count all unread messages in the cabinet where user is not the sender
+        const { count, error } = await supabase
+          .from('cabinet_messages')
+          .select('id', { count: 'exact', head: true })
+          .eq('cabinet_id', cabinet.id)
+          .neq('sender_id', user.id);
+
+        if (!error && count !== null) {
+          // Filter by last viewed times
+          let totalUnread = 0;
+          
+          // Get all conversation IDs and calculate unread per conversation
+          const { data: allMessages } = await supabase
+            .from('cabinet_messages')
+            .select('id, conversation_id, recipient_id, created_at')
+            .eq('cabinet_id', cabinet.id)
+            .neq('sender_id', user.id);
+
+          if (allMessages) {
+            const conversationIds = new Set<string>();
+            
+            // Identify all conversations
+            allMessages.forEach(msg => {
+              if (!msg.conversation_id && !msg.recipient_id) {
+                conversationIds.add('general');
+              } else if (msg.conversation_id) {
+                conversationIds.add(msg.conversation_id);
+              } else if (msg.recipient_id) {
+                conversationIds.add(`direct-${msg.recipient_id}`);
+              }
+            });
+
+            // Count unread for each conversation
+            for (const convId of conversationIds) {
+              const lastViewedKey = `chat-last-viewed-${cabinet.id}-${convId}`;
+              const lastViewed = sessionStorage.getItem(lastViewedKey);
+              
+              let convMessages = [];
+              if (convId === 'general') {
+                convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
+              } else if (convId.startsWith('direct-')) {
+                const recipientId = convId.replace('direct-', '');
+                convMessages = allMessages.filter(m => m.recipient_id === recipientId);
+              } else {
+                convMessages = allMessages.filter(m => m.conversation_id === convId);
+              }
+
+              if (lastViewed) {
+                totalUnread += convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed)).length;
+              } else {
+                totalUnread += convMessages.length;
+              }
+            }
+          }
+
+          setTotalUnreadCount(totalUnread);
+        }
+      } catch (error) {
+        console.error('Error loading unread count:', error);
+      }
+    };
+
+    loadUnreadCount();
+
+    // Subscribe to new messages to update counter in real-time
+    const channel = supabase
+      .channel(`unread-messages-${cabinet.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'cabinet_messages',
+          filter: `cabinet_id=eq.${cabinet.id}`
+        },
+        (payload) => {
+          const newMsg = payload.new as { sender_id: string };
+          if (newMsg.sender_id !== user.id) {
+            setTotalUnreadCount(prev => prev + 1);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, cabinet]);
+
+  // Reset unread count when discussion tab is opened
+  useEffect(() => {
+    if (selectedTab === 'discussion' && totalUnreadCount > 0) {
+      // Counter will be managed by CabinetChat component
+      // We just need to track when user views the tab
+    }
+  }, [selectedTab, totalUnreadCount]);
+
   
   // Search states for lists
   const [activitySearch, setActivitySearch] = useState('');
@@ -996,9 +1100,20 @@ export default function EspaceCollaboratif() {
             <CheckSquare className="h-4 w-4 mr-2" />
             Tâches
           </TabsTrigger>
-          <TabsTrigger value="discussion">
+          <TabsTrigger value="discussion" className="relative">
             <MessageSquare className="h-4 w-4 mr-2" />
             Discussion
+            {totalUnreadCount > 0 && (
+              <Badge 
+                className={`ml-2 ${
+                  cabinetRole === 'notaire' 
+                    ? 'bg-orange-600 text-white' 
+                    : 'bg-blue-600 text-white'
+                }`}
+              >
+                {totalUnreadCount}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
