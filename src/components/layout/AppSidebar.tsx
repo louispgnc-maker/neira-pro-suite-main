@@ -286,7 +286,6 @@ export function AppSidebar() {
       <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
         <div className={`flex ${isCollapsed ? 'flex-col items-center' : 'items-center justify-start'} gap-2`}> 
           <Button
-            variant="ghost"
             className={`h-8 w-8 p-0 flex items-center justify-center rounded-md flex-shrink-0 relative ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
             onClick={() => navigate(`${role === 'notaire' ? '/notaires' : '/avocats'}/espace-collaboratif?tab=discussion`)}
             title="Messages"
