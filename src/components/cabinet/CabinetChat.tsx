@@ -1058,7 +1058,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         
         <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {/* Messages area with fixed height and scroll */}
-          <div className="flex-1 overflow-y-auto mb-4 space-y-3 pr-2" ref={scrollAreaRef}>
+          <div className="overflow-y-auto mb-4 space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 450px)' }} ref={scrollAreaRef}>
             {!selectedConversation ? (
               <div className="flex items-center justify-center h-full text-muted-foreground">
                 <p>Sélectionnez une conversation pour commencer</p>
