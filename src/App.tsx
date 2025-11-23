@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { NotificationFloatingButton } from "@/components/NotificationFloatingButton";
 import Auth from "./pages/Auth";
 import AvocatAuth from "./pages/AvocatAuth";
 import NotaireAuth from "./pages/NotaireAuth";
@@ -50,6 +51,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <NotificationFloatingButton />
           <Routes>
             <Route path="/" element={<Auth />} />
             <Route path="/about" element={<About />} />
