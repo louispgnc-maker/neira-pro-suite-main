@@ -564,10 +564,14 @@ export default function EspaceCollaboratif() {
           .eq('id', userCabinet.id)
           .single();
         
+        console.log('Cabinet subscription_tier loaded:', cabinetDetails);
+        
         if (cabinetDetails) {
           userCabinet = { ...userCabinet, subscription_tier: cabinetDetails.subscription_tier };
         }
       }
+      
+      console.log('Final cabinet object:', userCabinet);
       
       setCabinet(userCabinet as Cabinet | null);
 
@@ -1092,7 +1096,10 @@ export default function EspaceCollaboratif() {
           {/* Subscription badge button */}
           <Button
             variant="outline"
-            onClick={() => navigate(`/${cabinetRole}s/subscription`)}
+            onClick={() => {
+              console.log('Subscription button clicked', { cabinetRole, path: `/${cabinetRole}s/subscription` });
+              navigate(`/${cabinetRole}s/subscription`);
+            }}
             className="flex items-center gap-2"
           >
             <Crown className="h-4 w-4" />
