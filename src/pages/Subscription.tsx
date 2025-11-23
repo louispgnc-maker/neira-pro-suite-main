@@ -187,13 +187,8 @@ export default function Subscription() {
                 return (
                   <Card
                     key={plan.id}
-                    className={`relative ${isCurrentPlan ? 'border-2 border-primary shadow-lg' : ''} ${plan.popular ? 'border-2 border-purple-300' : ''}`}
+                    className={`relative ${isCurrentPlan ? 'border-2 border-primary shadow-lg' : ''}`}
                   >
-                    {plan.popular && (
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <Badge className="bg-purple-600 text-white">Recommandé</Badge>
-                      </div>
-                    )}
                     {isCurrentPlan && (
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                         <Badge className="bg-primary text-white">Actuel</Badge>
