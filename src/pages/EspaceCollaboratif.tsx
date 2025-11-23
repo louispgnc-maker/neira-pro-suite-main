@@ -1093,19 +1093,6 @@ export default function EspaceCollaboratif() {
         </div>
         
         <div className="flex items-center gap-3">
-          {/* Subscription badge button */}
-          <Button
-            variant="outline"
-            onClick={() => {
-              console.log('Subscription button clicked', { cabinetRole, path: `/${cabinetRole}s/subscription` });
-              navigate(`/${cabinetRole}s/subscription`);
-            }}
-            className="flex items-center gap-2"
-          >
-            <Crown className="h-4 w-4" />
-            <span>{cabinet.subscription_tier === 'cabinet-plus' ? 'Cabinet+' : cabinet.subscription_tier === 'professionnel' ? 'Professionnel' : 'Essentiel'}</span>
-          </Button>
-          
           {/* Management button for cabinet founder */}
           {isCabinetOwner && (
             <Button
