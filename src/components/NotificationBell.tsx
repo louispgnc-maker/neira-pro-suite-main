@@ -1,5 +1,6 @@
 import { Bell, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { useToast } from '@/hooks/use-toast';
@@ -104,7 +105,11 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
         <Button variant="ghost" className={`relative ${btnSizeClass} ${baseColor}`}> 
           <Bell className={compact ? 'h-4 w-4 text-white' : 'h-5 w-5 text-white'} />
           {unread > 0 && (
-            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold leading-none text-white bg-destructive rounded-full">{unread}</span>
+            <Badge 
+              className="absolute -top-1 -right-1 h-4 min-w-4 flex items-center justify-center p-0.5 bg-red-600 text-white text-[10px] font-bold"
+            >
+              {unread > 99 ? '99+' : unread}
+            </Badge>
           )}
         </Button>
       </DialogTrigger>
