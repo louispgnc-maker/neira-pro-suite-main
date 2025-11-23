@@ -79,7 +79,7 @@ const plans = [
 ];
 
 export default function Subscription() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -112,6 +112,7 @@ export default function Subscription() {
             .single();
 
           if (cabinet) {
+            console.log('Loaded subscription_tier:', cabinet.subscription_tier);
             setCurrentPlan(cabinet.subscription_tier || 'essentiel');
           }
         }
@@ -154,7 +155,16 @@ export default function Subscription() {
               </Button>
               <h1 className="text-3xl font-bold">Gérer votre abonnement</h1>
               <p className="text-muted-foreground mt-2">
-                Choisissez l'offre qui correspond le mieux à vos besoins
+                {currentPlan ? (
+                  <>
+                    Bonjour {profile?.first_name || 'Utilisateur'}, voici votre abonnement actuel :
+                    <span className="font-semibold text-foreground ml-1">
+                      Neira {plans.find(p => p.id === currentPlan)?.name || 'Essentiel'}
+                    </span>
+                  </>
+                ) : (
+                  'Choisissez l\'offre qui correspond le mieux à vos besoins'
+                )}
               </p>
             </div>
 
