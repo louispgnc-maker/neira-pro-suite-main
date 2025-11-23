@@ -127,7 +127,7 @@ export default function Subscription() {
       <SidebarProvider>
         <div className="flex h-screen w-full">
           <AppSidebar />
-          <main className="flex-1 overflow-y-auto bg-sidebar">
+          <main className="flex-1 overflow-y-auto bg-gradient-to-br from-primary/20 via-accent/10 to-background">
             <div className="container mx-auto p-8">
               <p>Chargement...</p>
             </div>
@@ -141,7 +141,7 @@ export default function Subscription() {
     <SidebarProvider>
       <div className="flex h-screen w-full">
         <AppSidebar />
-        <main className="flex-1 overflow-y-auto bg-sidebar">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-primary/20 via-accent/10 to-background">
           <div className="container mx-auto p-8">
             <div className="mb-6">
               <Button
