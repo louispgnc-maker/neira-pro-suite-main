@@ -6,8 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Crown, Zap, Users, ArrowLeft } from 'lucide-react';
-import { AppSidebar } from '@/components/layout/AppSidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const plans = [
   {
@@ -124,25 +123,17 @@ export default function Subscription() {
 
   if (loading) {
     return (
-      <SidebarProvider>
-        <div className="flex h-screen w-full">
-          <AppSidebar />
-          <main className="flex-1 overflow-y-auto bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-            <div className="container mx-auto p-8">
-              <p>Chargement...</p>
-            </div>
-          </main>
+      <AppLayout>
+        <div className="container mx-auto p-8">
+          <p>Chargement...</p>
         </div>
-      </SidebarProvider>
+      </AppLayout>
     );
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-full">
-        <AppSidebar />
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-          <div className="container mx-auto p-8">
+    <AppLayout>
+      <div className="container mx-auto p-8">
             <div className="mb-6">
               <Button
                 variant="ghost"
@@ -262,9 +253,7 @@ export default function Subscription() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </main>
       </div>
-    </SidebarProvider>
+    </AppLayout>
   );
 }
