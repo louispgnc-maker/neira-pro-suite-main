@@ -91,7 +91,8 @@ export default function Subscription() {
   useEffect(() => {
     const loadSubscription = async () => {
       if (!user) {
-        navigate(`${prefix}/auth`);
+        // Don't redirect immediately, wait for auth to load
+        setLoading(false);
         return;
       }
 
@@ -124,7 +125,7 @@ export default function Subscription() {
     };
 
     loadSubscription();
-  }, [user, navigate, prefix]);
+  }, [user]);
 
   const handleUpgrade = (planId: string) => {
     // Redirect to checkout page
