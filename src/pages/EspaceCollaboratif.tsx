@@ -19,7 +19,8 @@ import {
   FolderOpen,
   Plus,
   ArrowRight,
-  Settings
+  Settings,
+  Crown
 } from 'lucide-react';
 import { Trash2, UploadCloud } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
@@ -37,6 +38,7 @@ interface Cabinet {
   id: string;
   nom: string;
   role: string;
+  subscription_tier?: string;
 }
 
 interface CabinetMember {
@@ -1072,16 +1074,28 @@ export default function EspaceCollaboratif() {
           </div>
         </div>
         
-        {/* Management button for cabinet founder */}
-        {isCabinetOwner && (
+        <div className="flex items-center gap-3">
+          {/* Subscription badge button */}
           <Button
-            onClick={() => navigate(`/${cabinetRole}s/cabinet`)}
-            className={colorClass}
+            variant="outline"
+            onClick={() => navigate(`/${cabinetRole}s/subscription`)}
+            className="flex items-center gap-2"
           >
-            <Settings className="h-4 w-4 mr-2" />
-            Gérer le cabinet
+            <Crown className="h-4 w-4" />
+            <span>{cabinet.subscription_tier === 'cabinet-plus' ? 'Cabinet+' : cabinet.subscription_tier === 'professionnel' ? 'Professionnel' : 'Essentiel'}</span>
           </Button>
-        )}
+          
+          {/* Management button for cabinet founder */}
+          {isCabinetOwner && (
+            <Button
+              onClick={() => navigate(`/${cabinetRole}s/cabinet`)}
+              className={colorClass}
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Gérer le cabinet
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Onglets principaux */}

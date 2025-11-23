@@ -29,6 +29,7 @@ import DossierDetail from "./pages/DossierDetail";
 import Profile from "./pages/Profile";
 import Cabinet from "./pages/Cabinet";
 import EspaceCollaboratif from "./pages/EspaceCollaboratif";
+import Subscription from "./pages/Subscription";
 import About from "./pages/About";
 import Solution from "./pages/Solution";
 import CheckoutEssentiel from "./pages/CheckoutEssentiel";
@@ -81,6 +82,7 @@ const App = () => (
             <Route path="/avocats/profile" element={<Profile />} />
             <Route path="/avocats/cabinet" element={<Cabinet />} />
             <Route path="/avocats/espace-collaboratif" element={<EspaceCollaboratif />} />
+            <Route path="/avocats/subscription" element={<Subscription />} />
             
             {/* Routes Notaire */}
             <Route path="/notaires/auth" element={<NotaireAuth />} />
@@ -100,6 +102,7 @@ const App = () => (
             <Route path="/notaires/profile" element={<Profile />} />
             <Route path="/notaires/cabinet" element={<Cabinet />} />
             <Route path="/notaires/espace-collaboratif" element={<EspaceCollaboratif />} />
+            <Route path="/notaires/subscription" element={<Subscription />} />
             
             {/* Routes génériques (legacy) */}
             <Route path="/documents" element={<Documents />} />
