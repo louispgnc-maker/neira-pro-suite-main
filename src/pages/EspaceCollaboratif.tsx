@@ -764,68 +764,67 @@ export default function EspaceCollaboratif() {
 
     const loadUnreadCount = async () => {
       try {
-        // Count all unread messages in the cabinet where user is not the sender
-        const { count, error } = await supabase
+        // Get all messages in the cabinet where user is not the sender
+        const { data: allMessages, error } = await supabase
           .from('cabinet_messages')
-          .select('id', { count: 'exact', head: true })
+          .select('id, conversation_id, recipient_id, sender_id, created_at')
           .eq('cabinet_id', cabinet.id)
           .neq('sender_id', user.id);
 
-        if (!error && count !== null) {
-          // Filter by last viewed times
-          let totalUnread = 0;
+        if (error) {
+          console.error('Error loading messages:', error);
+          return;
+        }
+
+        if (!allMessages || allMessages.length === 0) {
+          setTotalUnreadCount(0);
+          return;
+        }
+
+        let totalUnread = 0;
+        const conversationIds = new Set<string>();
+        
+        // Identify all conversations
+        allMessages.forEach(msg => {
+          if (!msg.conversation_id && !msg.recipient_id) {
+            conversationIds.add('general');
+          } else if (msg.conversation_id) {
+            conversationIds.add(msg.conversation_id);
+          } else if (msg.recipient_id === user.id) {
+            // For direct messages to me, use sender_id to identify the conversation
+            conversationIds.add(`direct-${msg.sender_id}`);
+          }
+        });
+
+        // Count unread for each conversation
+        for (const convId of conversationIds) {
+          const lastViewedKey = `chat-last-viewed-${cabinet.id}-${convId}`;
+          const lastViewed = sessionStorage.getItem(lastViewedKey);
           
-          // Get all conversation IDs and calculate unread per conversation
-          const { data: allMessages } = await supabase
-            .from('cabinet_messages')
-            .select('id, conversation_id, recipient_id, created_at')
-            .eq('cabinet_id', cabinet.id)
-            .neq('sender_id', user.id);
-
-          if (allMessages) {
-            const conversationIds = new Set<string>();
-            
-            // Identify all conversations
-            allMessages.forEach(msg => {
-              if (!msg.conversation_id && !msg.recipient_id) {
-                conversationIds.add('general');
-              } else if (msg.conversation_id) {
-                conversationIds.add(msg.conversation_id);
-              } else if (msg.recipient_id === user.id) {
-                // For direct messages to me, use sender_id to identify the conversation
-                conversationIds.add(`direct-${msg.recipient_id}`);
-              }
-            });
-
-            // Count unread for each conversation
-            for (const convId of conversationIds) {
-              const lastViewedKey = `chat-last-viewed-${cabinet.id}-${convId}`;
-              const lastViewed = sessionStorage.getItem(lastViewedKey);
-              
-              let convMessages = [];
-              if (convId === 'general') {
-                convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
-              } else if (convId.startsWith('direct-')) {
-                const senderId = convId.replace('direct-', '');
-                // For direct messages: messages where the other person is the sender and I'm the recipient
-                convMessages = allMessages.filter(m => 
-                  m.recipient_id === user.id && 
-                  !m.conversation_id
-                );
-              } else {
-                convMessages = allMessages.filter(m => m.conversation_id === convId);
-              }
-
-              if (lastViewed) {
-                totalUnread += convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed)).length;
-              } else {
-                totalUnread += convMessages.length;
-              }
-            }
+          let convMessages = [];
+          if (convId === 'general') {
+            convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
+          } else if (convId.startsWith('direct-')) {
+            const senderId = convId.replace('direct-', '');
+            // For direct messages: messages from the specific sender to me
+            convMessages = allMessages.filter(m => 
+              m.sender_id === senderId && 
+              m.recipient_id === user.id && 
+              !m.conversation_id
+            );
+          } else {
+            convMessages = allMessages.filter(m => m.conversation_id === convId);
           }
 
-          setTotalUnreadCount(totalUnread);
+          if (lastViewed) {
+            const unreadInConv = convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed)).length;
+            totalUnread += unreadInConv;
+          } else {
+            totalUnread += convMessages.length;
+          }
         }
+
+        setTotalUnreadCount(totalUnread);
       } catch (error) {
         console.error('Error loading unread count:', error);
       }
