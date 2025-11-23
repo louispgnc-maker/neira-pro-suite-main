@@ -153,14 +153,13 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
+            <button
               onClick={() => {
                 console.log('Dashboard subscription button clicked', { role: profile?.role, subscriptionTier });
                 const role = profile?.role || 'notaire';
                 navigate(`/${role}s/subscription`);
               }}
-              className="flex items-center gap-2 bg-gradient-primary text-white border-0 px-4 py-1.5 hover:opacity-90"
+              className="flex items-center gap-2 bg-gradient-primary text-white border-0 px-4 py-1.5 rounded-md hover:opacity-90 cursor-pointer transition-opacity"
             >
               <Crown className="h-4 w-4" />
               <span>
@@ -170,7 +169,7 @@ export default function Dashboard() {
                   ? 'Neira Professionnel' 
                   : 'Neira Essentiel'}
               </span>
-            </Button>
+            </button>
             <Button>Créer un document</Button>
             <Button variant="secondary">Nouveau client</Button>
           </div>
