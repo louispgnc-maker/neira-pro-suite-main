@@ -12,15 +12,18 @@ const plans = [
   {
     id: 'essentiel',
     name: 'Essentiel',
-    price: '49€',
+    price: '39€',
     period: '/mois',
-    description: 'Pour les professionnels indépendants',
+    description: 'Pour indépendants & petits cabinets',
     features: [
-      'Gestion de documents',
-      'Signatures électroniques',
-      'Jusqu\'à 50 clients',
-      'Support par email',
-      '5 Go de stockage'
+      'Espace collaboratif complet',
+      'Gestion documentaire intelligente',
+      'Partage sécurisé + dépôt client',
+      'Planning + tâches + rappels',
+      'Signature électronique (5/mois)',
+      '20 Go de stockage',
+      'Suivi des dossiers / clients',
+      'Support email'
     ],
     icon: Zap,
     color: 'text-blue-600',
@@ -30,42 +33,48 @@ const plans = [
   {
     id: 'professionnel',
     name: 'Professionnel',
-    price: '99€',
+    price: '59€',
     period: '/mois',
-    description: 'Pour les cabinets en croissance',
+    description: 'Offre cœur de gamme',
     features: [
-      'Toutes les fonctionnalités Essentiel',
-      'Gestion de dossiers avancée',
-      'Jusqu\'à 200 clients',
-      'Support prioritaire',
-      '50 Go de stockage',
-      'Rapports personnalisés'
+      'Tout ce qu\'il y a dans Essentiel',
+      'Automatisations & workflows',
+      'Génération automatique de documents',
+      'Modèles juridiques personnalisables',
+      'Signature électronique illimitée',
+      '100 Go de stockage',
+      'Gestion des droits utilisateurs',
+      'Tableaux de bord & reporting',
+      'Historique d\'activité avancé',
+      'Support prioritaire'
     ],
     icon: Crown,
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-50',
-    buttonClass: 'bg-orange-600 hover:bg-orange-700',
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    buttonClass: 'bg-purple-600 hover:bg-purple-700',
     popular: true
   },
   {
     id: 'cabinet-plus',
     name: 'Cabinet+',
-    price: '199€',
+    price: '129€',
     period: '/mois',
-    description: 'Pour les cabinets collaboratifs',
+    description: 'Pour cabinets structurés (5-50 personnes)',
     features: [
-      'Toutes les fonctionnalités Professionnel',
-      'Collaboration multi-utilisateurs',
-      'Clients illimités',
-      'Support dédié 24/7',
+      'Tout le Pro',
+      'Automatisations illimitées',
+      'Dossiers clients avancés',
+      'API + intégrations externes',
       'Stockage illimité',
-      'API et intégrations avancées',
-      'Espace collaboratif complet'
+      'Onboarding personnalisé',
+      'Support 7j/7 + SLA',
+      'Formation de l\'équipe',
+      'Accès anticipé aux futures features'
     ],
     icon: Users,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    buttonClass: 'bg-purple-600 hover:bg-purple-700'
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    buttonClass: 'bg-orange-600 hover:bg-orange-700'
   }
 ];
 
@@ -178,11 +187,11 @@ export default function Subscription() {
                 return (
                   <Card
                     key={plan.id}
-                    className={`relative ${isCurrentPlan ? 'border-2 border-primary shadow-lg' : ''} ${plan.popular ? 'border-2 border-orange-300' : ''}`}
+                    className={`relative ${isCurrentPlan ? 'border-2 border-primary shadow-lg' : ''} ${plan.popular ? 'border-2 border-purple-300' : ''}`}
                   >
                     {plan.popular && (
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <Badge className="bg-orange-600 text-white">Populaire</Badge>
+                        <Badge className="bg-purple-600 text-white">Recommandé</Badge>
                       </div>
                     )}
                     {isCurrentPlan && (
