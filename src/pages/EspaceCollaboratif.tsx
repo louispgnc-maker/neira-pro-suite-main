@@ -554,7 +554,21 @@ export default function EspaceCollaboratif() {
       if (cabinetsError) throw cabinetsError;
   const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
   const filtered = cabinets.filter((c) => ((c as unknown as { role?: string }).role) === cabinetRole);
-  const userCabinet = (filtered[0] as unknown as Cabinet) || null;
+  let userCabinet = (filtered[0] as unknown as Cabinet) || null;
+  
+      // Load subscription_tier from cabinets table
+      if (userCabinet && userCabinet.id) {
+        const { data: cabinetDetails } = await supabase
+          .from('cabinets')
+          .select('subscription_tier')
+          .eq('id', userCabinet.id)
+          .single();
+        
+        if (cabinetDetails) {
+          userCabinet = { ...userCabinet, subscription_tier: cabinetDetails.subscription_tier };
+        }
+      }
+      
       setCabinet(userCabinet as Cabinet | null);
 
       if (!userCabinet) {
