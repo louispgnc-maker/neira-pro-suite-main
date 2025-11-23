@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [pendingSigPrevCount, setPendingSigPrevCount] = useState(0);
   const [clientsToFollow, setClientsToFollow] = useState(0);
   const [todayTasks, setTodayTasks] = useState(0);
+  const [subscriptionTier, setSubscriptionTier] = useState<string>('essentiel');
 
   useEffect(() => {
     let isMounted = true;
@@ -36,6 +37,25 @@ export default function Dashboard() {
         setClientsToFollow(0);
         setTodayTasks(0);
         return;
+      }
+
+      // Load subscription tier from cabinet
+      const { data: cabinetMember } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (cabinetMember) {
+        const { data: cabinetData } = await supabase
+          .from('cabinets')
+          .select('subscription_tier')
+          .eq('id', cabinetMember.cabinet_id)
+          .single();
+        
+        if (cabinetData?.subscription_tier) {
+          setSubscriptionTier(cabinetData.subscription_tier);
+        }
       }
 
       // Dates for current and previous month
@@ -136,13 +156,20 @@ export default function Dashboard() {
             <Button
               variant="outline"
               onClick={() => {
+                console.log('Dashboard subscription button clicked', { role: profile?.role, subscriptionTier });
                 const role = profile?.role || 'notaire';
                 navigate(`/${role}s/subscription`);
               }}
               className="flex items-center gap-2 bg-gradient-primary text-white border-0 px-4 py-1.5 hover:opacity-90"
             >
               <Crown className="h-4 w-4" />
-              <span>{profile?.subscription_plan || 'Neira Essentiel'}</span>
+              <span>
+                {subscriptionTier === 'cabinet-plus' 
+                  ? 'Neira Cabinet+' 
+                  : subscriptionTier === 'professionnel' 
+                  ? 'Neira Professionnel' 
+                  : 'Neira Essentiel'}
+              </span>
             </Button>
             <Button>Créer un document</Button>
             <Button variant="secondary">Nouveau client</Button>
