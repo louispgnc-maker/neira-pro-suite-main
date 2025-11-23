@@ -1,4 +1,4 @@
-import { FileText, PenTool, Users, Clock } from "lucide-react";
+import { FileText, PenTool, Users, Clock, Crown } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { TasksSummaryCard } from "@/components/dashboard/TasksSummaryCard";
@@ -13,9 +13,11 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const { profile, user } = useAuth();
+  const navigate = useNavigate();
   const [docCount, setDocCount] = useState(0);
   const [docPrevCount, setDocPrevCount] = useState(0);
   const [pendingSigCount, setPendingSigCount] = useState(0);
@@ -131,9 +133,17 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Badge className="bg-gradient-primary text-white border-0 px-4 py-1.5">
-              {profile?.subscription_plan || 'Neira Essentiel'}
-            </Badge>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const role = profile?.role || 'notaire';
+                navigate(`/${role}s/subscription`);
+              }}
+              className="flex items-center gap-2 bg-gradient-primary text-white border-0 px-4 py-1.5 hover:opacity-90"
+            >
+              <Crown className="h-4 w-4" />
+              <span>{profile?.subscription_plan || 'Neira Essentiel'}</span>
+            </Button>
             <Button>Créer un document</Button>
             <Button variant="secondary">Nouveau client</Button>
           </div>
