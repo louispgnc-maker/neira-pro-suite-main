@@ -1023,7 +1023,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       </Card>
 
       {/* Main chat area */}
-      <Card className="md:col-span-3 flex flex-col">
+      <Card className="md:col-span-3 flex flex-col h-full">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             {selectedConversation === 'general' ? (
@@ -1056,9 +1056,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="flex-1 flex flex-col min-h-0">
-          {/* Messages area */}
-          <div className="flex-1 overflow-y-auto mb-4 space-y-3" ref={scrollAreaRef}>
+        <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          {/* Messages area with fixed height and scroll */}
+          <div className="flex-1 overflow-y-auto mb-4 space-y-3 pr-2" ref={scrollAreaRef}>
             {!selectedConversation ? (
               <div className="flex items-center justify-center h-full text-muted-foreground">
                 <p>Sélectionnez une conversation pour commencer</p>
@@ -1113,15 +1113,15 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Message input */}
+          {/* Message input - fixed at bottom */}
           {selectedConversation && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-shrink-0">
               <Textarea
                 placeholder="Écrivez votre message..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="flex-1 min-h-[60px] max-h-[120px]"
+                className="flex-1 min-h-[60px] max-h-[120px] resize-none"
                 disabled={sending}
               />
               <Button
