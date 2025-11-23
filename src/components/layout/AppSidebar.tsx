@@ -9,6 +9,7 @@ import {
   Folder,
   LogOut,
   UserCircle2,
+  Mail,
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -96,6 +98,103 @@ export function AppSidebar() {
     loadCabinetForRole();
     return () => { mounted = false; };
   }, [user, role, profile]);
+
+  // Load unread message count
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user || !currentCabinetId) return;
+
+    const loadUnreadCount = async () => {
+      try {
+        const { data: allMessages, error } = await supabase
+          .from('cabinet_messages')
+          .select('id, conversation_id, recipient_id, sender_id, created_at')
+          .eq('cabinet_id', currentCabinetId)
+          .neq('sender_id', user.id);
+
+        if (error || !allMessages || allMessages.length === 0) {
+          setTotalUnreadCount(0);
+          return;
+        }
+
+        let totalUnread = 0;
+        const conversationIds = new Set<string>();
+        
+        allMessages.forEach(msg => {
+          if (!msg.conversation_id && !msg.recipient_id) {
+            conversationIds.add('general');
+          } else if (msg.conversation_id) {
+            conversationIds.add(msg.conversation_id);
+          } else if (msg.recipient_id === user.id) {
+            conversationIds.add(`direct-${msg.sender_id}`);
+          }
+        });
+
+        for (const convId of conversationIds) {
+          const lastViewedKey = `chat-last-viewed-${currentCabinetId}-${convId}`;
+          const lastViewed = sessionStorage.getItem(lastViewedKey);
+          
+          let convMessages = [];
+          if (convId === 'general') {
+            convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
+          } else if (convId.startsWith('direct-')) {
+            const senderId = convId.replace('direct-', '');
+            convMessages = allMessages.filter(m => 
+              m.sender_id === senderId && 
+              m.recipient_id === user.id && 
+              !m.conversation_id
+            );
+          } else {
+            convMessages = allMessages.filter(m => m.conversation_id === convId);
+          }
+
+          if (lastViewed) {
+            totalUnread += convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed)).length;
+          } else {
+            totalUnread += convMessages.length;
+          }
+        }
+
+        setTotalUnreadCount(totalUnread);
+      } catch (error) {
+        console.error('Error loading unread count:', error);
+      }
+    };
+
+    loadUnreadCount();
+
+    const channel = supabase
+      .channel(`sidebar-unread-messages-${currentCabinetId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'cabinet_messages',
+          filter: `cabinet_id=eq.${currentCabinetId}`
+        },
+        (payload) => {
+          const newMsg = payload.new as { sender_id: string };
+          if (newMsg.sender_id !== user.id) {
+            setTotalUnreadCount(prev => prev + 1);
+          }
+        }
+      )
+      .subscribe();
+
+    const handleConversationRead = () => {
+      loadUnreadCount();
+    };
+
+    window.addEventListener('cabinet-conversation-read', handleConversationRead);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener('cabinet-conversation-read', handleConversationRead);
+    };
+  }, [user, currentCabinetId]);
+
   // Couleurs espace selon rôle
   const spaceBtnClass = role === 'notaire'
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
@@ -186,6 +285,21 @@ export function AppSidebar() {
 
       <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
         <div className={`flex ${isCollapsed ? 'flex-col items-center' : 'items-center justify-start'} gap-2`}> 
+          <Button
+            variant="ghost"
+            className={`h-8 w-8 p-0 flex items-center justify-center rounded-md flex-shrink-0 relative ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+            onClick={() => navigate(`${role === 'notaire' ? '/notaires' : '/avocats'}/espace-collaboratif?tab=discussion`)}
+            title="Messages"
+          >
+            <Mail className="h-4 w-4 text-white" />
+            {totalUnreadCount > 0 && (
+              <Badge 
+                className="absolute -top-1 -right-1 h-4 min-w-4 flex items-center justify-center p-0.5 bg-red-600 text-white border border-sidebar text-[10px] font-bold"
+              >
+                {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+              </Badge>
+            )}
+          </Button>
           <NotificationBell role={role} compact={true} cabinetId={currentCabinetId} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
