@@ -25,6 +25,7 @@ const plans = [
     price: '39€',
     period: '/mois',
     description: 'Pour indépendants & petits cabinets',
+    summary: 'L\'offre Essentiel vous donne accès à tous les outils essentiels pour gérer efficacement votre activité : espace collaboratif, gestion documentaire, partage sécurisé avec vos clients, et signature électronique. Parfait pour démarrer avec 20 Go de stockage et un support dédié.',
     features: [
       'Espace collaboratif complet',
       'Gestion documentaire intelligente',
@@ -46,6 +47,7 @@ const plans = [
     price: '59€',
     period: '/mois',
     description: 'Offre cœur de gamme',
+    summary: 'L\'offre Professionnel ajoute des fonctionnalités avancées pour automatiser votre cabinet : workflows personnalisés, génération automatique de documents, modèles juridiques, signature illimitée et 100 Go de stockage. Idéal pour les cabinets en croissance qui cherchent à optimiser leur productivité avec un reporting détaillé et un support prioritaire.',
     features: [
       'Tout ce qu\'il y a dans Essentiel',
       'Automatisations & workflows',
@@ -70,6 +72,7 @@ const plans = [
     price: '129€',
     period: '/mois',
     description: 'Pour cabinets structurés (5-50 personnes)',
+    summary: 'L\'offre Cabinet+ est la solution premium pour les cabinets structurés : automatisations illimitées, dossiers clients avancés, intégrations API, stockage illimité. Bénéficiez d\'un accompagnement personnalisé avec onboarding dédié, formation de votre équipe, support 7j/7 avec SLA garanti et accès anticipé aux nouvelles fonctionnalités.',
     features: [
       'Tout le Pro',
       'Automatisations illimitées',
@@ -229,6 +232,16 @@ export default function Subscription() {
                     </div>
                   </CardHeader>
                   <CardContent>
+                    {/* Résumé de l'offre */}
+                    <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
+                      <h3 className="font-semibold text-base mb-2 flex items-center gap-2">
+                        À propos de votre offre {plans.find(p => p.id === subscriptionData.tier)?.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {plans.find(p => p.id === subscriptionData.tier)?.summary}
+                      </p>
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
