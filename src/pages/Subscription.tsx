@@ -5,8 +5,18 @@ import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Crown, Zap, Users, ArrowLeft } from 'lucide-react';
+import { Check, Crown, Zap, Users, ArrowLeft, Calendar, HardDrive, CreditCard, Clock } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
+
+type SubscriptionData = {
+  tier: string;
+  status: string;
+  started_at: string;
+  expires_at: string | null;
+  storage_used: number;
+  storage_limit: number;
+  cabinet_name: string;
+};
 
 const plans = [
   {
@@ -84,14 +94,40 @@ export default function Subscription() {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
 
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 Go';
+    const gb = bytes / (1024 * 1024 * 1024);
+    return `${gb.toFixed(2)} Go`;
+  };
+
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return 'N/A';
+    return new Date(dateStr).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const getStatusBadge = (status: string) => {
+    const statusMap: Record<string, { label: string; variant: 'default' | 'destructive' | 'secondary' | 'outline' }> = {
+      active: { label: 'Actif', variant: 'default' },
+      trial: { label: 'Essai', variant: 'secondary' },
+      cancelled: { label: 'Annulé', variant: 'destructive' },
+      expired: { label: 'Expiré', variant: 'outline' }
+    };
+    const config = statusMap[status] || statusMap.active;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
   useEffect(() => {
     const loadSubscription = async () => {
       if (!user) {
-        // Don't redirect immediately, wait for auth to load
         setLoading(false);
         return;
       }
@@ -108,13 +144,22 @@ export default function Subscription() {
         if (cabinetData) {
           const { data: cabinet } = await supabase
             .from('cabinets')
-            .select('subscription_tier')
+            .select('subscription_tier, subscription_status, subscription_started_at, subscription_expires_at, storage_used, storage_limit, nom')
             .eq('id', cabinetData.cabinet_id)
             .single();
 
           if (cabinet) {
-            console.log('Loaded subscription_tier:', cabinet.subscription_tier);
+            console.log('Loaded subscription:', cabinet);
             setCurrentPlan(cabinet.subscription_tier || 'essentiel');
+            setSubscriptionData({
+              tier: cabinet.subscription_tier || 'essentiel',
+              status: cabinet.subscription_status || 'active',
+              started_at: cabinet.subscription_started_at,
+              expires_at: cabinet.subscription_expires_at,
+              storage_used: cabinet.storage_used || 0,
+              storage_limit: cabinet.storage_limit || 21474836480,
+              cabinet_name: cabinet.nom
+            });
           }
         }
       } catch (error) {
@@ -169,26 +214,140 @@ export default function Subscription() {
               </p>
             </div>
 
-            {currentPlan && (
-              <Card className="mb-8 border-2 border-primary">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Votre abonnement actuel</CardTitle>
-                      <CardDescription>
-                        Vous êtes actuellement sur l'offre{' '}
-                        <span className="font-semibold">
-                          {plans.find(p => p.id === currentPlan)?.name || currentPlan}
-                        </span>
-                      </CardDescription>
+            {currentPlan && subscriptionData && (
+              <div className="mb-8 space-y-4">
+                <Card className="border-2 border-primary">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-2xl">Votre abonnement actuel</CardTitle>
+                        <CardDescription className="text-base mt-1">
+                          Cabinet : <span className="font-semibold">{subscriptionData.cabinet_name}</span>
+                        </CardDescription>
+                      </div>
+                      {getStatusBadge(subscriptionData.status)}
                     </div>
-                    <Badge variant="default" className="text-lg px-4 py-2">
-                      Actif
-                    </Badge>
-                  </div>
-                </CardHeader>
-              </Card>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                          <CreditCard className="h-5 w-5 text-primary" />
+                          Formule d'abonnement
+                        </h3>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                            <span className="text-sm text-muted-foreground">Offre</span>
+                            <span className="font-semibold text-lg">
+                              Neira {plans.find(p => p.id === subscriptionData.tier)?.name || 'Essentiel'}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                            <span className="text-sm text-muted-foreground">Prix</span>
+                            <span className="font-semibold text-lg">
+                              {plans.find(p => p.id === subscriptionData.tier)?.price || '39€'}/mois
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                            <span className="text-sm text-muted-foreground flex items-center gap-2">
+                              <Calendar className="h-4 w-4" />
+                              Date de début
+                            </span>
+                            <span className="font-medium">
+                              {formatDate(subscriptionData.started_at)}
+                            </span>
+                          </div>
+                          {subscriptionData.expires_at && (
+                            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                              <span className="text-sm text-muted-foreground flex items-center gap-2">
+                                <Clock className="h-4 w-4" />
+                                Date d'expiration
+                              </span>
+                              <span className="font-medium">
+                                {formatDate(subscriptionData.expires_at)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                          <HardDrive className="h-5 w-5 text-primary" />
+                          Stockage
+                        </h3>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-muted rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm text-muted-foreground">Utilisé</span>
+                              <span className="font-medium">
+                                {formatBytes(subscriptionData.storage_used)} / {formatBytes(subscriptionData.storage_limit)}
+                              </span>
+                            </div>
+                            <div className="w-full bg-background rounded-full h-2.5">
+                              <div
+                                className="bg-primary h-2.5 rounded-full transition-all"
+                                style={{
+                                  width: `${Math.min((subscriptionData.storage_used / subscriptionData.storage_limit) * 100, 100)}%`
+                                }}
+                              />
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {((subscriptionData.storage_used / subscriptionData.storage_limit) * 100).toFixed(1)}% utilisé
+                            </p>
+                          </div>
+                          
+                          <div className="p-4 border rounded-lg bg-card">
+                            <h4 className="font-medium mb-2">Fonctionnalités incluses :</h4>
+                            <ul className="space-y-1.5">
+                              {plans.find(p => p.id === subscriptionData.tier)?.features.slice(0, 5).map((feature, idx) => (
+                                <li key={idx} className="flex items-center gap-2 text-sm">
+                                  <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                  <span>{feature}</span>
+                                </li>
+                              ))}
+                              {plans.find(p => p.id === subscriptionData.tier)?.features && 
+                               plans.find(p => p.id === subscriptionData.tier)!.features.length > 5 && (
+                                <li className="text-sm text-muted-foreground ml-6">
+                                  + {plans.find(p => p.id === subscriptionData.tier)!.features.length - 5} autres fonctionnalités
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex gap-3">
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          const element = document.getElementById('all-plans');
+                          element?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                      >
+                        Comparer les offres
+                      </Button>
+                      <Button variant="outline">
+                        Gérer le paiement
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
+
+            <div id="all-plans">
+              <h2 className="text-2xl font-bold mb-4">
+                {currentPlan ? 'Changer d\'offre' : 'Choisissez votre offre'}
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                {currentPlan 
+                  ? 'Vous pouvez passer à une offre supérieure à tout moment'
+                  : 'Sélectionnez l\'offre qui correspond le mieux à vos besoins'
+                }
+              </p>
+            </div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {plans.map((plan) => {
