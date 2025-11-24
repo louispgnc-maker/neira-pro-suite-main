@@ -210,21 +210,53 @@ export default function Subscription() {
 
             {currentPlan && subscriptionData && (
               <div className="mb-8 space-y-4">
-                {/* Message personnalisé - bien visible */}
-                <div className="mb-6 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border-2 border-primary/20">
-                  <h2 className="text-3xl font-bold text-foreground">
-                    {profile?.first_name || 'Utilisateur'}, voici votre abonnement actuel !
+                {/* Message personnalisé */}
+                <div className="mb-4">
+                  <h2 className="text-2xl font-semibold text-foreground">
+                    {profile?.first_name || 'Utilisateur'}, voici votre abonnement actuel
                   </h2>
-                  <p className="text-lg text-muted-foreground mt-2">
-                    Vous êtes actuellement sur l'offre <span className="font-semibold text-foreground">Neira {plans.find(p => p.id === subscriptionData.tier)?.name}</span>
-                  </p>
                 </div>
+
+                {/* Case avec le nom de l'abonnement */}
+                <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        {(() => {
+                          const plan = plans.find(p => p.id === subscriptionData.tier);
+                          const Icon = plan?.icon || Zap;
+                          return (
+                            <>
+                              <div className={`w-16 h-16 rounded-xl ${plan?.bgColor} flex items-center justify-center`}>
+                                <Icon className={`h-8 w-8 ${plan?.color}`} />
+                              </div>
+                              <div>
+                                <h3 className="text-3xl font-bold text-foreground">
+                                  Neira {plan?.name}
+                                </h3>
+                                <p className="text-muted-foreground mt-1">
+                                  {plan?.description}
+                                </p>
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+                      <div className="text-right">
+                        <div className="text-4xl font-bold text-foreground">
+                          {plans.find(p => p.id === subscriptionData.tier)?.price}
+                        </div>
+                        <div className="text-muted-foreground">/mois</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
                 
                 <Card className="border-2 border-primary">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-2xl">Votre abonnement actuel</CardTitle>
+                        <CardTitle className="text-2xl">Détails de votre abonnement</CardTitle>
                         <CardDescription className="text-base mt-1">
                           Cabinet : <span className="font-semibold">{subscriptionData.cabinet_name}</span>
                         </CardDescription>
@@ -233,16 +265,6 @@ export default function Subscription() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    {/* Résumé de l'offre */}
-                    <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
-                      <h3 className="font-semibold text-base mb-2 flex items-center gap-2">
-                        À propos de votre offre {plans.find(p => p.id === subscriptionData.tier)?.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {plans.find(p => p.id === subscriptionData.tier)?.summary}
-                      </p>
-                    </div>
-
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
