@@ -204,21 +204,22 @@ export default function Subscription() {
               </Button>
               <h1 className="text-3xl font-bold">Gérer votre abonnement</h1>
               <p className="text-muted-foreground mt-2">
-                {currentPlan ? (
-                  <>
-                    Bonjour {profile?.first_name || 'Utilisateur'}, voici votre abonnement actuel :
-                    <span className="font-semibold text-foreground ml-1">
-                      Neira {plans.find(p => p.id === currentPlan)?.name || 'Essentiel'}
-                    </span>
-                  </>
-                ) : (
-                  'Choisissez l\'offre qui correspond le mieux à vos besoins'
-                )}
+                Choisissez l'offre qui correspond le mieux à vos besoins
               </p>
             </div>
 
             {currentPlan && subscriptionData && (
               <div className="mb-8 space-y-4">
+                {/* Message personnalisé - bien visible */}
+                <div className="mb-6 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border-2 border-primary/20">
+                  <h2 className="text-3xl font-bold text-foreground">
+                    {profile?.first_name || 'Utilisateur'}, voici votre abonnement actuel !
+                  </h2>
+                  <p className="text-lg text-muted-foreground mt-2">
+                    Vous êtes actuellement sur l'offre <span className="font-semibold text-foreground">Neira {plans.find(p => p.id === subscriptionData.tier)?.name}</span>
+                  </p>
+                </div>
+                
                 <Card className="border-2 border-primary">
                   <CardHeader>
                     <div className="flex items-center justify-between">
