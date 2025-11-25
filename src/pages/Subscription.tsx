@@ -196,16 +196,12 @@ export default function Subscription() {
             <div className="mb-6">
               <Button
                 variant="ghost"
-                onClick={() => navigate(`${prefix}/espace-collaboratif`)}
+                onClick={() => navigate('/espace-collaboratif')}
                 className="mb-4"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour à l'espace collaboratif
               </Button>
-              <h1 className="text-3xl font-bold">Gérer votre abonnement</h1>
-              <p className="text-muted-foreground mt-2">
-                Choisissez l'offre qui correspond le mieux à vos besoins
-              </p>
             </div>
 
             {currentPlan && subscriptionData && (
@@ -374,15 +370,6 @@ export default function Subscription() {
             )}
 
             <div id="all-plans">
-              <h2 className="text-2xl font-bold mb-4">
-                {currentPlan ? 'Changer d\'offre' : 'Choisissez votre offre'}
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                {currentPlan 
-                  ? 'Vous pouvez passer à une offre supérieure à tout moment'
-                  : 'Sélectionnez l\'offre qui correspond le mieux à vos besoins'
-                }
-              </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
