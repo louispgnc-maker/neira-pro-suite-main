@@ -202,13 +202,14 @@ export default function Subscription() {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour à l'espace collaboratif
               </Button>
-              <h2 className="text-2xl font-semibold text-foreground">
-                {profile?.first_name || 'Utilisateur'}, voici l'abonnement actuel
-              </h2>
             </div>
+            
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
+              {profile?.first_name || 'Utilisateur'}, voici l'abonnement actuel
+            </h2>
 
             {currentPlan && subscriptionData && (
-              <div className="mb-8 space-y-4">
+              <div className="mb-8">
                 {/* Case avec le nom de l'abonnement */}
                 <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
                   <CardContent className="p-6">
