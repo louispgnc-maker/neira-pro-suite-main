@@ -445,7 +445,7 @@ export default function Subscription() {
               })}
             </div>
 
-            <Card className="mt-8">
+            <Card className="mt-8 max-w-md">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm">Besoin d'aide ?</CardTitle>
                 <CardDescription className="text-xs">
