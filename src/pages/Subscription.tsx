@@ -445,19 +445,21 @@ export default function Subscription() {
               })}
             </div>
 
-            <Card className="mt-8 max-w-md">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Besoin d'aide ?</CardTitle>
-                <CardDescription className="text-xs">
-                  Notre équipe est là pour vous accompagner dans le choix de votre abonnement
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => navigate('/contact')}>
-                  Nous contacter
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="mt-8 flex justify-end">
+              <Card className="w-fit">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Besoin d'aide ?</CardTitle>
+                  <CardDescription className="text-xs">
+                    Notre équipe est là pour vous accompagner dans le choix de votre abonnement
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => navigate('/contact')}>
+                    Nous contacter
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
       </div>
     </AppLayout>
   );
