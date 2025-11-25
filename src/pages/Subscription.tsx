@@ -454,10 +454,10 @@ export default function Subscription() {
               </CardHeader>
               <CardContent>
                 <div className="flex gap-4">
-                  <Button variant="outline" onClick={() => navigate('/contact')}>
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => navigate('/contact')}>
                     Nous contacter
                   </Button>
-                  <Button variant="outline">
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-white">
                     Comparer les offres
                   </Button>
                 </div>
