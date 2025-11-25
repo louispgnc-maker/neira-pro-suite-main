@@ -245,7 +245,7 @@ export default function Subscription() {
               {profile?.first_name || 'Utilisateur'}, voici l'abonnement actuel
             </h2>
 
-            {currentPlan && subscriptionData && (
+            {subscriptionData ? (
               <div className="mb-8">
                 {/* Case avec le nom de l'abonnement */}
                 <Card className="border-4 border-primary bg-gradient-to-br from-primary/10 to-primary/20 shadow-xl mb-6">
@@ -279,6 +279,14 @@ export default function Subscription() {
                         <div className="text-muted-foreground text-lg">/mois</div>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <div className="mb-8">
+                <Card className="border-2 border-muted">
+                  <CardContent className="p-6">
+                    <p className="text-muted-foreground">Chargement de votre abonnement...</p>
                   </CardContent>
                 </Card>
               </div>
