@@ -247,69 +247,6 @@ export default function Subscription() {
               </div>
             )}
 
-            <div id="all-plans">
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {plans.map((plan) => {
-                const Icon = plan.icon;
-                const isCurrentPlan = currentPlan === plan.id;
-                
-                return (
-                  <Card
-                    key={plan.id}
-                    className={`relative ${isCurrentPlan ? 'border-2 border-primary shadow-lg' : ''}`}
-                  >
-                    {isCurrentPlan && (
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <Badge className="bg-primary text-white">Actuel</Badge>
-                      </div>
-                    )}
-                    
-                    <CardHeader>
-                      <div className={`w-12 h-12 rounded-lg ${plan.bgColor} flex items-center justify-center mb-4`}>
-                        <Icon className={`h-6 w-6 ${plan.color}`} />
-                      </div>
-                      <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                      <CardDescription>{plan.description}</CardDescription>
-                      <div className="mt-4">
-                        <span className="text-4xl font-bold">{plan.price}</span>
-                        <span className="text-muted-foreground">{plan.period}</span>
-                      </div>
-                    </CardHeader>
-
-                    <CardContent>
-                      <ul className="space-y-3 mb-6">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                            <span className="text-sm">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      {isCurrentPlan ? (
-                        <Button className="w-full" variant="outline" disabled>
-                          Abonnement actuel
-                        </Button>
-                      ) : (
-                        <Button
-                          className={`w-full ${plan.buttonClass} text-white`}
-                          onClick={() => handleUpgrade(plan.id)}
-                        >
-                          {currentPlan && plans.findIndex(p => p.id === plan.id) > plans.findIndex(p => p.id === currentPlan)
-                            ? 'Passer à cette offre'
-                            : currentPlan
-                            ? 'Rétrograder'
-                            : 'Choisir cette offre'}
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-
             <div className="mt-8 flex justify-end">
               <Card className="w-fit">
                 <CardHeader className="pb-3">
