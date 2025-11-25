@@ -136,19 +136,32 @@ export default function Subscription() {
       }
 
       try {
-        // Load current subscription from cabinet
-        const { data: cabinetData } = await supabase
-          .from('cabinet_members')
+        // First, check if user has a cabinet_id in their profile
+        const { data: profileData } = await supabase
+          .from('profiles')
           .select('cabinet_id')
-          .eq('user_id', user.id)
-          .eq('status', 'active')
+          .eq('id', user.id)
           .single();
 
-        if (cabinetData) {
+        let cabinetId = profileData?.cabinet_id;
+
+        // If no cabinet in profile, check cabinet_members
+        if (!cabinetId) {
+          const { data: memberData } = await supabase
+            .from('cabinet_members')
+            .select('cabinet_id')
+            .eq('user_id', user.id)
+            .eq('status', 'active')
+            .single();
+          
+          cabinetId = memberData?.cabinet_id;
+        }
+
+        if (cabinetId) {
           const { data: cabinet } = await supabase
             .from('cabinets')
             .select('subscription_tier, subscription_status, subscription_started_at, subscription_expires_at, storage_used, storage_limit, nom')
-            .eq('id', cabinetData.cabinet_id)
+            .eq('id', cabinetId)
             .single();
 
           if (cabinet) {
@@ -157,16 +170,40 @@ export default function Subscription() {
             setSubscriptionData({
               tier: cabinet.subscription_tier || 'essentiel',
               status: cabinet.subscription_status || 'active',
-              started_at: cabinet.subscription_started_at,
+              started_at: cabinet.subscription_started_at || new Date().toISOString(),
               expires_at: cabinet.subscription_expires_at,
               storage_used: cabinet.storage_used || 0,
               storage_limit: cabinet.storage_limit || 21474836480,
-              cabinet_name: cabinet.nom
+              cabinet_name: cabinet.nom || 'Mon Cabinet'
             });
           }
+        } else {
+          // No cabinet found, set default subscription
+          console.log('No cabinet found, using default subscription');
+          setCurrentPlan('essentiel');
+          setSubscriptionData({
+            tier: 'essentiel',
+            status: 'active',
+            started_at: new Date().toISOString(),
+            expires_at: null,
+            storage_used: 0,
+            storage_limit: 21474836480,
+            cabinet_name: 'Mon Cabinet'
+          });
         }
       } catch (error) {
         console.error('Error loading subscription:', error);
+        // Set default on error
+        setCurrentPlan('essentiel');
+        setSubscriptionData({
+          tier: 'essentiel',
+          status: 'active',
+          started_at: new Date().toISOString(),
+          expires_at: null,
+          storage_used: 0,
+          storage_limit: 21474836480,
+          cabinet_name: 'Mon Cabinet'
+        });
       } finally {
         setLoading(false);
       }
