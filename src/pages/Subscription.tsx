@@ -211,23 +211,23 @@ export default function Subscription() {
             {currentPlan && subscriptionData && (
               <div className="mb-8">
                 {/* Case avec le nom de l'abonnement */}
-                <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
-                  <CardContent className="p-6">
+                <Card className="border-4 border-primary bg-gradient-to-br from-primary/10 to-primary/20 shadow-xl mb-6">
+                  <CardContent className="p-8">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-6">
                         {(() => {
                           const plan = plans.find(p => p.id === subscriptionData.tier);
                           const Icon = plan?.icon || Zap;
                           return (
                             <>
-                              <div className={`w-16 h-16 rounded-xl ${plan?.bgColor} flex items-center justify-center`}>
-                                <Icon className={`h-8 w-8 ${plan?.color}`} />
+                              <div className={`w-20 h-20 rounded-xl ${plan?.bgColor} flex items-center justify-center shadow-lg`}>
+                                <Icon className={`h-10 w-10 ${plan?.color}`} />
                               </div>
                               <div>
-                                <h3 className="text-3xl font-bold text-foreground">
+                                <h3 className="text-4xl font-bold text-foreground">
                                   Neira {plan?.name}
                                 </h3>
-                                <p className="text-muted-foreground mt-1">
+                                <p className="text-muted-foreground mt-2 text-lg">
                                   {plan?.description}
                                 </p>
                               </div>
@@ -236,16 +236,16 @@ export default function Subscription() {
                         })()}
                       </div>
                       <div className="text-right">
-                        <div className="text-4xl font-bold text-foreground">
+                        <div className="text-5xl font-bold text-foreground">
                           {plans.find(p => p.id === subscriptionData.tier)?.price}
                         </div>
-                        <div className="text-muted-foreground">/mois</div>
+                        <div className="text-muted-foreground text-lg">/mois</div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
                 
-                <Card className="border-2 border-primary">
+                <Card className="border border-muted">,
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
