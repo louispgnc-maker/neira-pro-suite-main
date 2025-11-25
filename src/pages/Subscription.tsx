@@ -453,14 +453,9 @@ export default function Subscription() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-4">
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => navigate('/contact')}>
-                    Nous contacter
-                  </Button>
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                    Comparer les offres
-                  </Button>
-                </div>
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => navigate('/contact')}>
+                  Nous contacter
+                </Button>
               </CardContent>
             </Card>
       </div>
