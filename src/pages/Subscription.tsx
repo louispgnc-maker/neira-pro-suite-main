@@ -96,8 +96,16 @@ export default function Subscription() {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
-  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<string>('essentiel');
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData>({
+    tier: 'essentiel',
+    status: 'active',
+    started_at: new Date().toISOString(),
+    expires_at: null,
+    storage_used: 0,
+    storage_limit: 21474836480,
+    cabinet_name: 'Mon Cabinet'
+  });
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -131,41 +139,50 @@ export default function Subscription() {
   useEffect(() => {
     const loadSubscription = async () => {
       if (!user) {
+        console.log('No user found');
         setLoading(false);
         return;
       }
 
       try {
+        console.log('Loading subscription for user:', user.id);
+        
         // First, check if user has a cabinet_id in their profile
-        const { data: profileData } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('cabinet_id')
           .eq('id', user.id)
           .single();
 
+        console.log('Profile data:', profileData, 'Error:', profileError);
+
         let cabinetId = profileData?.cabinet_id;
 
         // If no cabinet in profile, check cabinet_members
         if (!cabinetId) {
-          const { data: memberData } = await supabase
+          const { data: memberData, error: memberError } = await supabase
             .from('cabinet_members')
             .select('cabinet_id')
             .eq('user_id', user.id)
             .eq('status', 'active')
             .single();
           
+          console.log('Member data:', memberData, 'Error:', memberError);
           cabinetId = memberData?.cabinet_id;
         }
 
         if (cabinetId) {
-          const { data: cabinet } = await supabase
+          console.log('Found cabinet:', cabinetId);
+          const { data: cabinet, error: cabinetError } = await supabase
             .from('cabinets')
             .select('subscription_tier, subscription_status, subscription_started_at, subscription_expires_at, storage_used, storage_limit, nom')
             .eq('id', cabinetId)
             .single();
 
+          console.log('Cabinet data:', cabinet, 'Error:', cabinetError);
+
           if (cabinet) {
-            console.log('Loaded subscription:', cabinet);
+            console.log('Setting subscription from cabinet:', cabinet);
             setCurrentPlan(cabinet.subscription_tier || 'essentiel');
             setSubscriptionData({
               tier: cabinet.subscription_tier || 'essentiel',
@@ -178,34 +195,13 @@ export default function Subscription() {
             });
           }
         } else {
-          // No cabinet found, set default subscription
-          console.log('No cabinet found, using default subscription');
-          setCurrentPlan('essentiel');
-          setSubscriptionData({
-            tier: 'essentiel',
-            status: 'active',
-            started_at: new Date().toISOString(),
-            expires_at: null,
-            storage_used: 0,
-            storage_limit: 21474836480,
-            cabinet_name: 'Mon Cabinet'
-          });
+          console.log('No cabinet found, keeping default subscription');
         }
       } catch (error) {
         console.error('Error loading subscription:', error);
-        // Set default on error
-        setCurrentPlan('essentiel');
-        setSubscriptionData({
-          tier: 'essentiel',
-          status: 'active',
-          started_at: new Date().toISOString(),
-          expires_at: null,
-          storage_used: 0,
-          storage_limit: 21474836480,
-          cabinet_name: 'Mon Cabinet'
-        });
       } finally {
         setLoading(false);
+        console.log('Loading complete. subscriptionData:', subscriptionData);
       }
     };
 
@@ -245,10 +241,9 @@ export default function Subscription() {
               {profile?.first_name || 'Utilisateur'}, voici l'abonnement actuel
             </h2>
 
-            {subscriptionData ? (
-              <div className="mb-8">
-                {/* Case avec le nom de l'abonnement */}
-                <Card className="border-4 border-primary bg-gradient-to-br from-primary/10 to-primary/20 shadow-xl mb-6">
+            <div className="mb-8">
+              {/* Case avec le nom de l'abonnement */}
+              <Card className="border-4 border-primary bg-gradient-to-br from-primary/10 to-primary/20 shadow-xl mb-6">
                   <CardContent className="p-8">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
@@ -282,15 +277,6 @@ export default function Subscription() {
                   </CardContent>
                 </Card>
               </div>
-            ) : (
-              <div className="mb-8">
-                <Card className="border-2 border-muted">
-                  <CardContent className="p-6">
-                    <p className="text-muted-foreground">Chargement de votre abonnement...</p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
 
             <div className="mt-8 flex justify-end">
               <Card className="w-fit">
