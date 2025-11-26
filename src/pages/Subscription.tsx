@@ -231,9 +231,8 @@ export default function Subscription() {
       <div className="container mx-auto p-8">
             <div className="mb-6">
               <Button
-                variant="outline"
-                onClick={() => navigate(`${prefix}/espace-collaboratif`)}
-                className="mb-4"
+                onClick={() => navigate(`${prefix}/dashboard`)}
+                className="mb-4 bg-orange-500 hover:bg-orange-600 text-white"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour à l'espace collaboratif
