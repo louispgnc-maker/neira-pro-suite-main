@@ -173,13 +173,14 @@ export default function Subscription() {
 
         if (cabinetId) {
           console.log('Found cabinet:', cabinetId);
-          const { data: cabinet, error: cabinetError } = await supabase
+          const { data: cabinetData, error: cabinetError } = await supabase
             .from('cabinets')
             .select('subscription_tier, subscription_status, subscription_started_at, subscription_expires_at, storage_used, storage_limit, nom')
-            .eq('id', cabinetId)
-            .single();
+            .eq('id', cabinetId);
 
-          console.log('Cabinet data:', cabinet, 'Error:', cabinetError);
+          console.log('Cabinet data (array):', cabinetData, 'Error:', cabinetError);
+
+          const cabinet = cabinetData && cabinetData.length > 0 ? cabinetData[0] : null;
 
           if (cabinet) {
             console.log('Setting subscription from cabinet:', cabinet);
@@ -193,6 +194,8 @@ export default function Subscription() {
               storage_limit: cabinet.storage_limit || 21474836480,
               cabinet_name: cabinet.nom || 'Mon Cabinet'
             });
+          } else {
+            console.log('Cabinet found but no data returned - possible RLS issue');
           }
         } else {
           console.log('No cabinet found, keeping default subscription');
