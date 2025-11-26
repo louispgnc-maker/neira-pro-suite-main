@@ -43,21 +43,34 @@ export function DashboardNotaire() {
       }
 
       // Load subscription tier from cabinet
-      const { data: cabinetMember } = await supabase
-        .from('cabinet_members')
+      const { data: profileData } = await supabase
+        .from('profiles')
         .select('cabinet_id')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .single();
 
-      if (cabinetMember) {
+      let cabinetId = profileData?.cabinet_id;
+
+      // If no cabinet in profile, check cabinet_members
+      if (!cabinetId) {
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .single();
+        
+        cabinetId = memberData?.cabinet_id;
+      }
+
+      if (cabinetId) {
         const { data: cabinetData } = await supabase
           .from('cabinets')
           .select('subscription_tier')
-          .eq('id', cabinetMember.cabinet_id)
-          .single();
+          .eq('id', cabinetId);
         
-        if (cabinetData?.subscription_tier) {
-          setSubscriptionTier(cabinetData.subscription_tier);
+        if (cabinetData && cabinetData.length > 0 && cabinetData[0].subscription_tier) {
+          setSubscriptionTier(cabinetData[0].subscription_tier);
         }
       }
 
