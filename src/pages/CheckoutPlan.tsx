@@ -109,13 +109,15 @@ export default function CheckoutPlan() {
   return (
     <AppLayout>
       <div className="container mx-auto p-8 max-w-7xl">
-        <button 
-          onClick={() => navigate(`${prefix}/subscription`)} 
-          className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Retour à l'espace abonnement
-        </button>
+        <div className="mb-6">
+          <Button
+            onClick={() => navigate(`${prefix}/subscription`)}
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour à l'espace abonnement
+          </Button>
+        </div>
 
         {/* En-tête de l'offre */}
         <Card className={`bg-gradient-to-br from-${planConfig.color}-50 to-${planConfig.color}-100 border-2 border-${planConfig.color}-300 mb-8 bg-card`}>
