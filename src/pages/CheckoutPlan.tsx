@@ -132,7 +132,6 @@ export default function CheckoutPlan() {
                 <div className="text-5xl font-bold text-black">{monthlyPrice}€</div>
                 <div className="text-left">
                   <p className="text-sm text-black">par mois / utilisateur</p>
-                  <p className="text-xs text-black/70">Facturation mensuelle</p>
                 </div>
               </div>
             </div>
@@ -202,13 +201,13 @@ export default function CheckoutPlan() {
                   <div className="space-y-3">
                     <Label className="text-black">Période de facturation</Label>
                     <RadioGroup value={billingPeriod} onValueChange={(v) => setBillingPeriod(v as 'monthly' | 'yearly')}>
-                      <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-accent">
+                      <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-orange-500/20 transition-colors">
                         <RadioGroupItem value="monthly" id="monthly" />
                         <Label htmlFor="monthly" className="flex-1 cursor-pointer text-black">
                           Mensuel - {monthlyPrice}€/mois
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-accent">
+                      <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-orange-500/20 transition-colors">
                         <RadioGroupItem value="yearly" id="yearly" />
                         <Label htmlFor="yearly" className="flex-1 cursor-pointer text-black">
                           Annuel - {yearlyPrice}€/an
