@@ -268,7 +268,7 @@ export default function Subscription() {
                         </CardDescription>
                       </div>
                     </div>
-                    <Badge variant="default" className="bg-green-600 text-white border-green-700 px-6 py-2 text-lg font-bold shadow-lg">
+                    <Badge variant="default" className="bg-green-600 text-white border-green-700 px-4 py-1.5 text-base">
                       Actif
                     </Badge>
                   </div>
