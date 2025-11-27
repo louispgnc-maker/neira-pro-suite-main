@@ -61,7 +61,6 @@ export default function CheckoutEssentiel() {
                   <div className="text-5xl font-bold text-blue-600">{monthlyPrice}€</div>
                   <div className="text-left">
                     <p className="text-sm text-gray-600">par mois / utilisateur</p>
-                    <p className="text-xs text-gray-500">Facturation mensuelle</p>
                   </div>
                 </div>
               </div>
