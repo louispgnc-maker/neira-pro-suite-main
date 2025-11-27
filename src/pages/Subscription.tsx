@@ -392,7 +392,7 @@ export default function Subscription() {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => navigate('/contact')}
+                onClick={() => navigate(`${prefix}/contact-support`)}
                 className="bg-orange-500 hover:bg-orange-600 text-white"
               >
                 Nous contacter
