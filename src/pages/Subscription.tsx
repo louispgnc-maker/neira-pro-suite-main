@@ -239,10 +239,10 @@ export default function Subscription() {
 
           {/* 1) En-tête */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
+            <h1 className="text-3xl font-bold text-black mb-2">
               Mon abonnement actuel
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-black text-lg">
               Vous utilisez actuellement l'offre ci-dessous. Vous pouvez consulter les détails de votre abonnement ou choisir une autre offre si nécessaire.
             </p>
           </div>
@@ -260,15 +260,15 @@ export default function Subscription() {
                         <Icon className={`h-8 w-8 ${plan?.color}`} />
                       </div>
                       <div>
-                        <CardTitle className="text-2xl mb-1">
+                        <CardTitle className="text-2xl mb-1 text-black">
                           Neira {plan?.name}
                         </CardTitle>
-                        <CardDescription className="text-base">
+                        <CardDescription className="text-base text-black">
                           {plan?.description}
                         </CardDescription>
                       </div>
                     </div>
-                    <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/30">
+                    <Badge variant="default" className="bg-green-600 text-white border-green-700">
                       Actif
                     </Badge>
                   </div>
@@ -280,7 +280,7 @@ export default function Subscription() {
                         <CreditCard className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">Prix mensuel</p>
+                        <p className="font-semibold text-black">Prix mensuel</p>
                         <p className="text-2xl font-bold text-primary">{plan?.price}</p>
                       </div>
                     </div>
@@ -289,8 +289,8 @@ export default function Subscription() {
                         <Clock className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">Statut d'abonnement</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="font-semibold text-black">Statut d'abonnement</p>
+                        <p className="text-sm text-black">
                           {subscriptionData.expires_at 
                             ? `Expire le ${new Date(subscriptionData.expires_at).toLocaleDateString('fr-FR')}`
                             : 'Renouvellement automatique'}
@@ -302,8 +302,8 @@ export default function Subscription() {
                         <HardDrive className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">Stockage</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="font-semibold text-black">Stockage</p>
+                        <p className="text-sm text-black">
                           {subscriptionData.storage_limit === 0 || subscriptionData.storage_limit > 1000000000000
                             ? 'Illimité' 
                             : `${Math.round(subscriptionData.storage_limit / (1024 * 1024 * 1024))} Go`}
@@ -315,8 +315,8 @@ export default function Subscription() {
                         <Calendar className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">Date de début</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="font-semibold text-black">Date de début</p>
+                        <p className="text-sm text-black">
                           {new Date(subscriptionData.started_at).toLocaleDateString('fr-FR')}
                         </p>
                       </div>
@@ -324,12 +324,12 @@ export default function Subscription() {
                   </div>
                   
                   <div className="pt-4 border-t border-primary/20">
-                    <h4 className="font-semibold text-foreground mb-3">Options actives :</h4>
+                    <h4 className="font-semibold text-black mb-3">Options actives :</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {plan?.features.slice(0, 6).map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-green-400 shrink-0" />
-                          <span className="text-sm text-muted-foreground">{feature}</span>
+                          <Check className="h-4 w-4 text-green-600 shrink-0" />
+                          <span className="text-sm text-black">{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -347,10 +347,10 @@ export default function Subscription() {
 
           {/* 3) Section "Changer d'abonnement" */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-foreground mb-2">
+            <h2 className="text-2xl font-bold text-black mb-2">
               Changer d'abonnement
             </h2>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-black mb-6">
               Besoin d'une offre différente ? Découvrez ci-dessous les autres abonnements disponibles.
             </p>
 
@@ -363,19 +363,19 @@ export default function Subscription() {
                       <div className={`w-12 h-12 rounded-lg ${plan.bgColor} bg-opacity-20 flex items-center justify-center mb-3`}>
                         <Icon className={`h-6 w-6 ${plan.color}`} />
                       </div>
-                      <CardTitle className="text-xl">Neira {plan.name}</CardTitle>
-                      <CardDescription>{plan.description}</CardDescription>
+                      <CardTitle className="text-xl text-black">Neira {plan.name}</CardTitle>
+                      <CardDescription className="text-black">{plan.description}</CardDescription>
                       <div className="mt-4">
-                        <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                        <span className="text-muted-foreground">/mois</span>
+                        <span className="text-3xl font-bold text-black">{plan.price}</span>
+                        <span className="text-black">/mois</span>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2 mb-4">
                         {plan.features.slice(0, 4).map((feature, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-sm">
-                            <Check className="h-4 w-4 text-green-400 shrink-0 mt-0.5" />
-                            <span className="text-muted-foreground">{feature}</span>
+                            <Check className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                            <span className="text-black">{feature}</span>
                           </li>
                         ))}
                       </ul>
@@ -392,8 +392,8 @@ export default function Subscription() {
           {/* 4) Section "Besoin d'aide ?" - Version statique en bas de page */}
           <Card className="bg-card border-2 border-primary/30">
             <CardHeader>
-              <CardTitle className="text-xl">Besoin d'aide pour choisir ?</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-xl text-black">Besoin d'aide pour choisir ?</CardTitle>
+              <CardDescription className="text-black">
                 Notre équipe est disponible pour vous accompagner dans le choix de votre abonnement.
               </CardDescription>
             </CardHeader>
