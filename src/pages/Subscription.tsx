@@ -252,7 +252,7 @@ export default function Subscription() {
             const plan = plans.find(p => p.id === subscriptionData.tier);
             const Icon = plan?.icon || Zap;
             return (
-              <Card className="mb-12 border-2 border-primary/30 shadow-xl bg-card/50 backdrop-blur">
+              <Card className="mb-12 border-2 border-primary shadow-xl bg-card">
                 <CardHeader className="border-b border-primary/20">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -358,7 +358,7 @@ export default function Subscription() {
               {plans.filter(p => p.id !== subscriptionData?.tier).map((plan) => {
                 const Icon = plan.icon;
                 return (
-                  <Card key={plan.id} className="border border-primary/20 hover:border-primary/50 transition-all hover:shadow-lg bg-card/40 backdrop-blur opacity-80 hover:opacity-100">
+                  <Card key={plan.id} className="border-2 border-primary/30 hover:border-primary transition-all hover:shadow-lg bg-card">
                     <CardHeader className="pb-3">
                       <div className={`w-12 h-12 rounded-lg ${plan.bgColor} bg-opacity-20 flex items-center justify-center mb-3`}>
                         <Icon className={`h-6 w-6 ${plan.color}`} />
@@ -390,7 +390,7 @@ export default function Subscription() {
           </div>
 
           {/* 4) Section "Besoin d'aide ?" - Version statique en bas de page */}
-          <Card className="bg-card/40 backdrop-blur border border-primary/20">
+          <Card className="bg-card border-2 border-primary/30">
             <CardHeader>
               <CardTitle className="text-xl">Besoin d'aide pour choisir ?</CardTitle>
               <CardDescription>
