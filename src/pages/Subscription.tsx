@@ -229,8 +229,7 @@ export default function Subscription() {
           <div className="mb-8">
             <Button
               onClick={() => navigate(`${prefix}/dashboard`)}
-              variant="ghost"
-              className="hover:bg-primary/10"
+              variant="outline"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Retour à l'espace collaboratif
@@ -333,12 +332,6 @@ export default function Subscription() {
                         </div>
                       ))}
                     </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <Button variant="outline" className="w-full md:w-auto">
-                      Gérer mon abonnement
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
