@@ -97,15 +97,7 @@ export default function Subscription() {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState<string>('essentiel');
-  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData>({
-    tier: 'essentiel',
-    status: 'active',
-    started_at: new Date().toISOString(),
-    expires_at: null,
-    storage_used: 0,
-    storage_limit: 21474836480,
-    cabinet_name: 'Mon Cabinet'
-  });
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -219,85 +211,203 @@ export default function Subscription() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="container mx-auto p-8">
-          <p>Chargement...</p>
+        <div className="container mx-auto p-8 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Chargement de votre abonnement...</p>
+          </div>
         </div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="container mx-auto p-8">
-            <div className="mb-6">
-              <Button
-                onClick={() => navigate(`${prefix}/dashboard`)}
-                className="mb-4 bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Retour à l'espace collaboratif
-              </Button>
-            </div>
-            
-            {profile && (
-              <h2 className="text-xl font-semibold text-foreground mb-4">
-                {profile.first_name}, voici l'abonnement actuel
-              </h2>
-            )}
+    <>
+      <AppLayout>
+        <div className="container mx-auto p-8 max-w-6xl">
+          {/* Bouton retour */}
+          <div className="mb-8">
+            <Button
+              onClick={() => navigate(`${prefix}/dashboard`)}
+              variant="ghost"
+              className="hover:bg-primary/10"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Retour à l'espace collaboratif
+            </Button>
+          </div>
 
-            <div className="mb-8 max-w-2xl">
-              {/* Case avec le nom de l'abonnement */}
-              <Card className="border-2 border-primary bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        {(() => {
-                          const plan = plans.find(p => p.id === subscriptionData.tier);
-                          const Icon = plan?.icon || Zap;
-                          return (
-                            <>
-                              <div className={`w-12 h-12 rounded-lg ${plan?.bgColor} flex items-center justify-center`}>
-                                <Icon className={`h-6 w-6 ${plan?.color}`} />
-                              </div>
-                              <div>
-                                <h3 className="text-2xl font-bold text-foreground">
-                                  Neira {plan?.name}
-                                </h3>
-                                <p className="text-muted-foreground text-sm">
-                                  {plan?.description}
-                                </p>
-                              </div>
-                            </>
-                          );
-                        })()}
+          {/* 1) En-tête */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Mon abonnement actuel
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Vous utilisez actuellement l'offre ci-dessous. Vous pouvez consulter les détails de votre abonnement ou choisir une autre offre si nécessaire.
+            </p>
+          </div>
+
+          {/* 2) Carte "Abonnement actuel" */}
+          {subscriptionData && (() => {
+            const plan = plans.find(p => p.id === subscriptionData.tier);
+            const Icon = plan?.icon || Zap;
+            return (
+              <Card className="mb-12 border-2 border-primary shadow-xl">
+                <CardHeader className="bg-gradient-to-br from-primary/5 to-primary/10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-16 h-16 rounded-xl ${plan?.bgColor} flex items-center justify-center`}>
+                        <Icon className={`h-8 w-8 ${plan?.color}`} />
                       </div>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold text-foreground">
-                          {plans.find(p => p.id === subscriptionData.tier)?.price}
-                        </div>
-                        <div className="text-muted-foreground text-sm">/mois</div>
+                      <div>
+                        <CardTitle className="text-2xl mb-1">
+                          Neira {plan?.name}
+                        </CardTitle>
+                        <CardDescription className="text-base">
+                          {plan?.description}
+                        </CardDescription>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-            <div className="mt-8 flex justify-end">
-              <Card className="w-fit">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Besoin d'aide ?</CardTitle>
-                  <CardDescription className="text-xs">
-                    Notre équipe est là pour vous accompagner dans le choix de votre abonnement
-                  </CardDescription>
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                      Actif
+                    </Badge>
+                  </div>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => navigate('/contact')}>
-                    Nous contacter
-                  </Button>
+                <CardContent className="pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <CreditCard className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Prix mensuel</p>
+                        <p className="text-2xl font-bold text-primary">{plan?.price}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Statut d'abonnement</p>
+                        <p className="text-sm text-muted-foreground">
+                          {subscriptionData.expires_at 
+                            ? `Expire le ${new Date(subscriptionData.expires_at).toLocaleDateString('fr-FR')}`
+                            : 'Renouvellement automatique'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <HardDrive className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Stockage</p>
+                        <p className="text-sm text-muted-foreground">
+                          {subscriptionData.storage_limit === 0 
+                            ? 'Illimité' 
+                            : `${subscriptionData.storage_limit} Go`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Calendar className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Date de début</p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(subscriptionData.started_at).toLocaleDateString('fr-FR')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t">
+                    <h4 className="font-semibold text-foreground mb-3">Options actives :</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {plan?.features.slice(0, 6).map((feature, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <Check className="h-4 w-4 text-green-600 shrink-0" />
+                          <span className="text-sm text-muted-foreground">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <Button variant="outline" className="w-full md:w-auto">
+                      Gérer mon abonnement
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
+            );
+          })()}
+
+          {/* 3) Section "Changer d'abonnement" */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              Changer d'abonnement
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Besoin d'une offre différente ? Découvrez ci-dessous les autres abonnements disponibles.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {plans.filter(p => p.id !== subscriptionData?.tier).map((plan) => {
+                const Icon = plan.icon;
+                return (
+                  <Card key={plan.id} className="border hover:border-primary/50 transition-all hover:shadow-lg opacity-75 hover:opacity-100">
+                    <CardHeader className="pb-3">
+                      <div className={`w-12 h-12 rounded-lg ${plan.bgColor} flex items-center justify-center mb-3`}>
+                        <Icon className={`h-6 w-6 ${plan.color}`} />
+                      </div>
+                      <CardTitle className="text-xl">Neira {plan.name}</CardTitle>
+                      <CardDescription>{plan.description}</CardDescription>
+                      <div className="mt-4">
+                        <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                        <span className="text-muted-foreground">/mois</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2 mb-4">
+                        {plan.features.slice(0, 4).map((feature, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm">
+                            <Check className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                            <span className="text-muted-foreground">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <Button className={`w-full ${plan.buttonClass}`}>
+                        Passer à cette offre
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
-      </div>
-    </AppLayout>
+          </div>
+
+          {/* 4) Section "Besoin d'aide ?" - Version statique en bas de page */}
+          <Card className="bg-muted/30 border-2">
+            <CardHeader>
+              <CardTitle className="text-xl">Besoin d'aide pour choisir ?</CardTitle>
+              <CardDescription>
+                Notre équipe est disponible pour vous accompagner dans le choix de votre abonnement.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => navigate('/contact')}
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                Nous contacter
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </AppLayout>
+    </>
   );
 }
