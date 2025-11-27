@@ -31,6 +31,7 @@ import Cabinet from "./pages/Cabinet";
 import EspaceCollaboratif from "./pages/EspaceCollaboratif";
 import Subscription from "./pages/Subscription";
 import ContactSupport from "./pages/ContactSupport";
+import CheckoutPlan from "./pages/CheckoutPlan";
 import About from "./pages/About";
 import Solution from "./pages/Solution";
 import CheckoutEssentiel from "./pages/CheckoutEssentiel";
@@ -85,6 +86,7 @@ const App = () => (
             <Route path="/avocats/espace-collaboratif" element={<EspaceCollaboratif />} />
             <Route path="/avocats/subscription" element={<Subscription />} />
             <Route path="/avocats/contact-support" element={<ContactSupport />} />
+            <Route path="/avocats/checkout/:planId" element={<CheckoutPlan />} />
             
             {/* Routes Notaire */}
             <Route path="/notaires/auth" element={<NotaireAuth />} />
@@ -106,6 +108,7 @@ const App = () => (
             <Route path="/notaires/espace-collaboratif" element={<EspaceCollaboratif />} />
             <Route path="/notaires/subscription" element={<Subscription />} />
             <Route path="/notaires/contact-support" element={<ContactSupport />} />
+            <Route path="/notaires/checkout/:planId" element={<CheckoutPlan />} />
             
             {/* Routes génériques (legacy) */}
             <Route path="/documents" element={<Documents />} />

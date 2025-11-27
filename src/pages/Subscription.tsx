@@ -372,7 +372,10 @@ export default function Subscription() {
                           </li>
                         ))}
                       </ul>
-                      <Button className={`w-full ${plan.buttonClass}`}>
+                      <Button 
+                        className={`w-full ${plan.buttonClass}`}
+                        onClick={() => navigate(`${prefix}/checkout/${plan.id}`)}
+                      >
                         Passer à cette offre
                       </Button>
                     </CardContent>
