@@ -252,11 +252,11 @@ export default function Subscription() {
             const plan = plans.find(p => p.id === subscriptionData.tier);
             const Icon = plan?.icon || Zap;
             return (
-              <Card className="mb-12 border-2 border-primary shadow-xl">
-                <CardHeader className="bg-gradient-to-br from-primary/5 to-primary/10">
+              <Card className="mb-12 border-2 border-primary/30 shadow-xl bg-card/50 backdrop-blur">
+                <CardHeader className="border-b border-primary/20">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className={`w-16 h-16 rounded-xl ${plan?.bgColor} flex items-center justify-center`}>
+                      <div className={`w-16 h-16 rounded-xl ${plan?.bgColor} bg-opacity-20 flex items-center justify-center`}>
                         <Icon className={`h-8 w-8 ${plan?.color}`} />
                       </div>
                       <div>
@@ -268,7 +268,7 @@ export default function Subscription() {
                         </CardDescription>
                       </div>
                     </div>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/30">
                       Actif
                     </Badge>
                   </div>
@@ -276,7 +276,7 @@ export default function Subscription() {
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
                         <CreditCard className="h-5 w-5 text-primary" />
                       </div>
                       <div>
@@ -285,7 +285,7 @@ export default function Subscription() {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
                         <Clock className="h-5 w-5 text-primary" />
                       </div>
                       <div>
@@ -298,20 +298,20 @@ export default function Subscription() {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
                         <HardDrive className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <p className="font-semibold text-foreground">Stockage</p>
                         <p className="text-sm text-muted-foreground">
-                          {subscriptionData.storage_limit === 0 
+                          {subscriptionData.storage_limit === 0 || subscriptionData.storage_limit > 1000000000000
                             ? 'Illimité' 
-                            : `${subscriptionData.storage_limit} Go`}
+                            : `${Math.round(subscriptionData.storage_limit / (1024 * 1024 * 1024))} Go`}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
                         <Calendar className="h-5 w-5 text-primary" />
                       </div>
                       <div>
@@ -323,12 +323,12 @@ export default function Subscription() {
                     </div>
                   </div>
                   
-                  <div className="pt-4 border-t">
+                  <div className="pt-4 border-t border-primary/20">
                     <h4 className="font-semibold text-foreground mb-3">Options actives :</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {plan?.features.slice(0, 6).map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-green-600 shrink-0" />
+                          <Check className="h-4 w-4 text-green-400 shrink-0" />
                           <span className="text-sm text-muted-foreground">{feature}</span>
                         </div>
                       ))}
@@ -358,9 +358,9 @@ export default function Subscription() {
               {plans.filter(p => p.id !== subscriptionData?.tier).map((plan) => {
                 const Icon = plan.icon;
                 return (
-                  <Card key={plan.id} className="border hover:border-primary/50 transition-all hover:shadow-lg opacity-75 hover:opacity-100">
+                  <Card key={plan.id} className="border border-primary/20 hover:border-primary/50 transition-all hover:shadow-lg bg-card/40 backdrop-blur opacity-80 hover:opacity-100">
                     <CardHeader className="pb-3">
-                      <div className={`w-12 h-12 rounded-lg ${plan.bgColor} flex items-center justify-center mb-3`}>
+                      <div className={`w-12 h-12 rounded-lg ${plan.bgColor} bg-opacity-20 flex items-center justify-center mb-3`}>
                         <Icon className={`h-6 w-6 ${plan.color}`} />
                       </div>
                       <CardTitle className="text-xl">Neira {plan.name}</CardTitle>
@@ -374,7 +374,7 @@ export default function Subscription() {
                       <ul className="space-y-2 mb-4">
                         {plan.features.slice(0, 4).map((feature, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-sm">
-                            <Check className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                            <Check className="h-4 w-4 text-green-400 shrink-0 mt-0.5" />
                             <span className="text-muted-foreground">{feature}</span>
                           </li>
                         ))}
@@ -390,7 +390,7 @@ export default function Subscription() {
           </div>
 
           {/* 4) Section "Besoin d'aide ?" - Version statique en bas de page */}
-          <Card className="bg-muted/30 border-2">
+          <Card className="bg-card/40 backdrop-blur border border-primary/20">
             <CardHeader>
               <CardTitle className="text-xl">Besoin d'aide pour choisir ?</CardTitle>
               <CardDescription>
