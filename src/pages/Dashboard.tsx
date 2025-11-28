@@ -49,12 +49,12 @@ export default function Dashboard() {
       if (cabinetMember) {
         const { data: cabinetData } = await supabase
           .from('cabinets')
-          .select('subscription_tier')
+          .select('subscription_plan')
           .eq('id', cabinetMember.cabinet_id)
           .single();
         
-        if (cabinetData?.subscription_tier) {
-          setSubscriptionTier(cabinetData.subscription_tier);
+        if (cabinetData?.subscription_plan) {
+          setSubscriptionTier(cabinetData.subscription_plan);
         }
       }
 

@@ -70,11 +70,11 @@ export function DashboardNotaire() {
       if (cabinetId) {
         const { data: cabinetData } = await supabase
           .from('cabinets')
-          .select('subscription_tier')
+          .select('subscription_plan')
           .eq('id', cabinetId);
         
-        if (cabinetData && cabinetData.length > 0 && cabinetData[0].subscription_tier) {
-          setSubscriptionTier(cabinetData[0].subscription_tier);
+        if (cabinetData && cabinetData.length > 0 && cabinetData[0].subscription_plan) {
+          setSubscriptionTier(cabinetData[0].subscription_plan);
         }
       }
 

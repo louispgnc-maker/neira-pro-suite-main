@@ -38,7 +38,7 @@ interface Cabinet {
   id: string;
   nom: string;
   role: string;
-  subscription_tier?: string;
+  subscription_plan?: string;
 }
 
 interface CabinetMember {
@@ -556,18 +556,18 @@ export default function EspaceCollaboratif() {
   const filtered = cabinets.filter((c) => ((c as unknown as { role?: string }).role) === cabinetRole);
   let userCabinet = (filtered[0] as unknown as Cabinet) || null;
   
-      // Load subscription_tier from cabinets table
+      // Load subscription_plan from cabinets table
       if (userCabinet && userCabinet.id) {
         const { data: cabinetDetails } = await supabase
           .from('cabinets')
-          .select('subscription_tier')
+          .select('subscription_plan')
           .eq('id', userCabinet.id)
           .single();
         
-        console.log('Cabinet subscription_tier loaded:', cabinetDetails);
+        console.log('Cabinet subscription_plan loaded:', cabinetDetails);
         
         if (cabinetDetails) {
-          userCabinet = { ...userCabinet, subscription_tier: cabinetDetails.subscription_tier };
+          userCabinet = { ...userCabinet, subscription_plan: cabinetDetails.subscription_plan };
         }
       }
       

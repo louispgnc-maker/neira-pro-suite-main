@@ -104,6 +104,8 @@ export default function Subscription() {
   const [loading, setLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState<string>('essentiel');
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [isManager, setIsManager] = useState(false);
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -160,20 +162,39 @@ export default function Subscription() {
         if (!cabinetId) {
           const { data: memberData, error: memberError } = await supabase
             .from('cabinet_members')
-            .select('cabinet_id')
+            .select('cabinet_id, role_cabinet')
             .eq('user_id', user.id)
             .eq('status', 'active')
             .single();
           
           console.log('Member data:', memberData, 'Error:', memberError);
           cabinetId = memberData?.cabinet_id;
+          
+          if (memberData?.role_cabinet) {
+            setUserRole(memberData.role_cabinet);
+            setIsManager(memberData.role_cabinet === 'Fondateur');
+          }
+        } else {
+          // If cabinet_id exists in profile, also check the role in cabinet_members
+          const { data: memberData } = await supabase
+            .from('cabinet_members')
+            .select('role_cabinet')
+            .eq('user_id', user.id)
+            .eq('cabinet_id', cabinetId)
+            .eq('status', 'active')
+            .single();
+          
+          if (memberData?.role_cabinet) {
+            setUserRole(memberData.role_cabinet);
+            setIsManager(memberData.role_cabinet === 'Fondateur');
+          }
         }
 
         if (cabinetId) {
           console.log('Found cabinet:', cabinetId);
           const { data: cabinetData, error: cabinetError } = await supabase
             .from('cabinets')
-            .select('subscription_tier, subscription_status, subscription_started_at, subscription_expires_at, storage_used, storage_limit, nom')
+            .select('subscription_plan, subscription_status, subscription_started_at, subscription_expires_at, storage_used, storage_limit, nom')
             .eq('id', cabinetId);
 
           console.log('Cabinet data (array):', cabinetData, 'Error:', cabinetError);
@@ -182,9 +203,9 @@ export default function Subscription() {
 
           if (cabinet) {
             console.log('Setting subscription from cabinet:', cabinet);
-            setCurrentPlan(cabinet.subscription_tier || 'essentiel');
+            setCurrentPlan(cabinet.subscription_plan || 'essentiel');
             setSubscriptionData({
-              tier: cabinet.subscription_tier || 'essentiel',
+              tier: cabinet.subscription_plan || 'essentiel',
               status: cabinet.subscription_status || 'active',
               started_at: cabinet.subscription_started_at || new Date().toISOString(),
               expires_at: cabinet.subscription_expires_at,
@@ -362,15 +383,26 @@ export default function Subscription() {
             <h2 className="text-2xl font-bold text-black mb-2">
               Changer d'abonnement
             </h2>
-            <p className="text-black mb-6">
-              Besoin d'une offre différente ? Découvrez ci-dessous les autres abonnements disponibles.
-            </p>
+            {!isManager ? (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                <p className="text-orange-800 font-medium">
+                  Seul le gérant du cabinet (Fondateur) peut modifier l'abonnement.
+                </p>
+                <p className="text-orange-700 text-sm mt-1">
+                  Votre rôle actuel : <span className="font-semibold">{userRole || 'Non défini'}</span>
+                </p>
+              </div>
+            ) : (
+              <p className="text-black mb-6">
+                En tant que gérant du cabinet, vous pouvez modifier l'abonnement ci-dessous.
+              </p>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {plans.filter(p => p.id !== subscriptionData?.tier).map((plan) => {
                 const Icon = plan.icon;
                 return (
-                  <Card key={plan.id} className="border-2 border-primary/30 hover:border-primary transition-all hover:shadow-lg bg-card">
+                  <Card key={plan.id} className={`border-2 ${isManager ? 'border-primary/30 hover:border-primary transition-all hover:shadow-lg' : 'border-gray-200 opacity-60'} bg-card`}>
                     <CardHeader className="pb-3">
                       <div className={`w-12 h-12 rounded-lg ${plan.bgColor} bg-opacity-20 flex items-center justify-center mb-3`}>
                         <Icon className={`h-6 w-6 ${plan.color}`} />
@@ -418,8 +450,9 @@ export default function Subscription() {
                       <Button 
                         className={`w-full ${plan.buttonClass}`}
                         onClick={() => navigate(`${prefix}/checkout/${plan.id}`)}
+                        disabled={!isManager}
                       >
-                        Passer à cette offre
+                        {isManager ? 'Passer à cette offre' : 'Réservé au gérant'}
                       </Button>
                     </CardContent>
                   </Card>
