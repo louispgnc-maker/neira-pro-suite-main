@@ -18,13 +18,18 @@ const ADMIN_EMAILS = [
 ];
 
 export default function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const location = useLocation();
   const [userRole, setUserRole] = useState<'avocat' | 'notaire' | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkUserRole = async () => {
+      // Attendre que l'auth soit complètement chargée
+      if (authLoading) {
+        return;
+      }
+
       if (!user) {
         setLoading(false);
         return;
@@ -67,9 +72,9 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
     };
 
     checkUserRole();
-  }, [user, requiredRole]);
+  }, [user, requiredRole, authLoading]);
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
