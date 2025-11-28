@@ -91,6 +91,15 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
         // Utiliser les valeurs de la base de données, avec fallback sur PLAN_LIMITS
         const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.essentiel;
         
+        console.log('📊 Subscription limits loaded:', {
+          plan,
+          max_storage_go: cabinetDetails.max_storage_go,
+          max_dossiers: cabinetDetails.max_dossiers,
+          max_clients: cabinetDetails.max_clients,
+          max_signatures: cabinetDetails.max_signatures_per_month,
+          cabinet_id: cabinet.id
+        });
+        
         setLimits({
           subscription_plan: plan,
           // Convertir max_storage_go (en Go) en bytes, null = illimité
