@@ -148,7 +148,6 @@ export default function Solution() {
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-xs font-semibold z-10">
                 RECOMMANDÉ
               </div>
-              </div>
               
               {/* En-tête */}
               <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 text-center border-b-2 border-purple-200">
