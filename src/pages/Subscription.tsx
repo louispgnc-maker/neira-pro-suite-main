@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Crown, Zap, Users, ArrowLeft, Calendar, HardDrive, CreditCard, Clock } from 'lucide-react';
+import { Check, Crown, Zap, Users, ArrowLeft, Calendar, HardDrive, CreditCard, Clock, X } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 
 type SubscriptionData = {
@@ -24,17 +24,23 @@ const plans = [
     name: 'Essentiel',
     price: '39€',
     period: '/mois',
-    description: 'Pour indépendants & petits cabinets',
-    summary: 'L\'offre Essentiel vous donne accès à tous les outils essentiels pour gérer efficacement votre activité : espace collaboratif, gestion documentaire, partage sécurisé avec vos clients, et signature électronique. Parfait pour démarrer avec 20 Go de stockage et un support dédié.',
+    description: 'Pour avocats & notaires indépendants travaillant seuls',
+    summary: 'Conçu pour un seul professionnel qui travaille en autonomie. Outils essentiels pour gérer jusqu\'à 30 clients actifs et 100 dossiers avec workflows illimités.',
     features: [
-      'Espace collaboratif complet',
-      'Gestion documentaire intelligente',
-      'Partage sécurisé + dépôt client',
-      'Planning + tâches + rappels',
-      'Signature électronique (5/mois)',
-      '20 Go de stockage',
-      'Suivi des dossiers / clients',
-      'Support email'
+      '✅ Gestion documentaire (30 clients, 100 dossiers)',
+      '✅ Partage sécurisé + dépôt client',
+      '✅ Planning, tâches, rappels',
+      '✅ Workflows & automatisations illimités',
+      '✅ API illimitée',
+      '✅ 20 Go de stockage',
+      '✅ 5 signatures électroniques/mois',
+      '✅ Support email (48h)'
+    ],
+    limits: 'Clients actifs : 30 • Dossiers actifs : 100 • Stockage : 20 Go • Signatures : 5/mois • Collaborateurs : 1 (solo)',
+    notIncluded: [
+      '❌ Espace collaboratif (travail solo)',
+      '❌ Gestion des droits utilisateurs',
+      '❌ Reporting avancé'
     ],
     icon: Zap,
     color: 'text-blue-600',
@@ -46,19 +52,26 @@ const plans = [
     name: 'Professionnel',
     price: '59€',
     period: '/mois',
-    description: 'Offre cœur de gamme',
-    summary: 'L\'offre Professionnel ajoute des fonctionnalités avancées pour automatiser votre cabinet : workflows personnalisés, génération automatique de documents, modèles juridiques, signature illimitée et 100 Go de stockage. Idéal pour les cabinets en croissance qui cherchent à optimiser leur productivité avec un reporting détaillé et un support prioritaire.',
+    description: 'Pour petits cabinets 2–10 personnes',
+    summary: 'Idéal pour les cabinets de 2 à 10 personnes qui veulent structurer leurs workflows avec espace collaboratif complet, gestion d\'équipe et reporting avancé.',
     features: [
-      'Tout ce qu\'il y a dans Essentiel',
-      'Automatisations & workflows',
-      'Génération automatique de documents',
-      'Modèles juridiques personnalisables',
-      'Signature électronique illimitée',
-      '100 Go de stockage',
-      'Gestion des droits utilisateurs',
-      'Tableaux de bord & reporting',
-      'Historique d\'activité avancé',
-      'Support prioritaire'
+      '✅ Espace collaboratif (10 membres max)',
+      '✅ Gestion documentaire avancée (200 clients, 600 dossiers)',
+      '✅ Partage sécurisé + dépôt client',
+      '✅ Planning collaboratif + gestion d\'équipe',
+      '✅ Workflows & automatisations illimités',
+      '✅ API illimitée + intégrations',
+      '✅ 100 Go de stockage',
+      '✅ Signatures électroniques illimitées',
+      '✅ Tableaux de bord & reporting',
+      '✅ Gestion des droits utilisateurs',
+      '✅ Support prioritaire (24h)'
+    ],
+    limits: 'Membres : 10 max • Clients actifs : 200 • Documents : ~20 000 • Dossiers actifs : 600 • Stockage : 100 Go',
+    notIncluded: [
+      '❌ Stockage illimité',
+      '❌ Support 7j/7 avec SLA',
+      '❌ Formation équipe complète'
     ],
     icon: Crown,
     color: 'text-purple-600',
@@ -69,21 +82,24 @@ const plans = [
   {
     id: 'cabinet-plus',
     name: 'Cabinet+',
-    price: '129€',
+    price: '89€',
     period: '/mois',
-    description: 'Pour cabinets structurés (5-50 personnes)',
-    summary: 'L\'offre Cabinet+ est la solution premium pour les cabinets structurés : automatisations illimitées, dossiers clients avancés, intégrations API, stockage illimité. Bénéficiez d\'un accompagnement personnalisé avec onboarding dédié, formation de votre équipe, support 7j/7 avec SLA garanti et accès anticipé aux nouvelles fonctionnalités.',
+    description: 'Pour cabinets structurés 10 à 50+ personnes',
+    summary: 'Solution premium pour cabinets structurés avec tout illimité : membres, clients, stockage, workflows. API, intégrations, formation équipe et support 7j/7 avec SLA.',
     features: [
-      'Tout le Pro',
-      'Automatisations illimitées',
-      'Dossiers clients avancés',
-      'API + intégrations externes',
-      'Stockage illimité',
-      'Onboarding personnalisé',
-      'Support 7j/7 + SLA',
-      'Formation de l\'équipe',
-      'Accès anticipé aux futures features'
+      '✅ Espace collaboratif illimité',
+      '✅ Gestion documentaire illimitée',
+      '✅ Stockage illimité',
+      '✅ Membres & clients illimités',
+      '✅ Workflows illimités (priorité CPU)',
+      '✅ API + intégrations (ERP, CRM, GED, Microsoft 365)',
+      '✅ Signatures électroniques illimitées',
+      '✅ Reporting professionnel + exports Excel/PDF',
+      '✅ Onboarding + formation complète équipe',
+      '✅ Support 7j/7 + SLA garanti'
     ],
+    limits: 'Aucune limite — tout est illimité',
+    notIncluded: [],
     icon: Users,
     color: 'text-orange-600',
     bgColor: 'bg-orange-50',
@@ -323,15 +339,28 @@ export default function Subscription() {
                   </div>
                   
                   <div className="pt-4 border-t border-primary/20">
-                    <h4 className="font-semibold text-black mb-3">Options actives :</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {plan?.features.slice(0, 6).map((feature, idx) => (
+                    <h4 className="font-semibold text-black mb-3">✅ Ce qui est inclus :</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+                      {plan?.features.map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-2">
                           <Check className="h-4 w-4 text-green-600 shrink-0" />
                           <span className="text-sm text-black">{feature}</span>
                         </div>
                       ))}
                     </div>
+                    {plan?.notIncluded && plan.notIncluded.length > 0 && (
+                      <div className="pt-4 border-t border-primary/20">
+                        <h4 className="font-semibold text-black mb-3">❌ Ce qui n'est pas inclus :</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {plan.notIncluded.map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                              <X className="h-4 w-4 text-red-500 shrink-0" />
+                              <span className="text-sm text-muted-foreground">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -356,22 +385,46 @@ export default function Subscription() {
                       <div className={`w-12 h-12 rounded-lg ${plan.bgColor} bg-opacity-20 flex items-center justify-center mb-3`}>
                         <Icon className={`h-6 w-6 ${plan.color}`} />
                       </div>
+                      {plan.popular && (
+                        <Badge className="mb-2 w-fit bg-purple-600 text-white">Populaire</Badge>
+                      )}
                       <CardTitle className="text-xl text-black">Neira {plan.name}</CardTitle>
                       <CardDescription className="text-black">{plan.description}</CardDescription>
                       <div className="mt-4">
                         <span className="text-3xl font-bold text-black">{plan.price}</span>
                         <span className="text-black">/mois</span>
                       </div>
+                      {plan.limits && (
+                        <div className="mt-3 p-2 bg-muted/50 rounded-md">
+                          <p className="text-xs text-black font-medium">{plan.limits}</p>
+                        </div>
+                      )}
                     </CardHeader>
                     <CardContent>
-                      <ul className="space-y-2 mb-4">
-                        {plan.features.slice(0, 4).map((feature, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm">
-                            <Check className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
-                            <span className="text-black">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="mb-4">
+                        <h4 className="font-semibold text-black mb-3 text-sm">✅ Inclus :</h4>
+                        <ul className="space-y-2">
+                          {plan.features.map((feature, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-sm">
+                              <Check className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                              <span className="text-black">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      {plan.notIncluded && plan.notIncluded.length > 0 && (
+                        <div className="mb-4 pt-4 border-t">
+                          <h4 className="font-semibold text-black mb-3 text-sm">❌ Non inclus :</h4>
+                          <ul className="space-y-2">
+                            {plan.notIncluded.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-2 text-sm">
+                                <X className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                                <span className="text-muted-foreground">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <Button 
                         className={`w-full ${plan.buttonClass}`}
                         onClick={() => navigate(`${prefix}/checkout/${plan.id}`)}

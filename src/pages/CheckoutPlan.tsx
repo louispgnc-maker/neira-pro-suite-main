@@ -14,56 +14,72 @@ const planConfigs = {
   'essentiel': {
     name: 'Essentiel',
     monthlyPrice: 39,
-    description: 'Pour indépendants & petits cabinets',
+    description: 'Pour avocats & notaires indépendants travaillant seuls',
     icon: Zap,
     color: 'blue',
+    limits: 'Clients actifs : 30 • Dossiers actifs : 100 • Stockage : 20 Go • Signatures : 5/mois • Collaborateurs : 1 (solo)',
     features: [
-      { title: 'Espace collaboratif complet', description: 'Travaillez en équipe efficacement' },
-      { title: 'Gestion documentaire intelligente', description: 'Organisez vos documents facilement' },
-      { title: 'Partage sécurisé + dépôt client', description: 'Échangez en toute sécurité' },
-      { title: 'Planning + tâches + rappels', description: 'Ne manquez plus aucune échéance' },
-      { title: 'Signature électronique (5/mois)', description: 'Signez vos documents rapidement' },
-      { title: '20 Go de stockage', description: 'Espace suffisant pour démarrer' },
-      { title: 'Suivi des dossiers / clients', description: 'Vue d\'ensemble de votre activité' },
-      { title: 'Support email', description: 'Réponse sous 48h' },
+      { title: '✅ Gestion documentaire (30 clients, 100 dossiers)', description: 'Organisez tous vos documents juridiques' },
+      { title: '✅ Partage sécurisé + dépôt client', description: 'Échangez en toute sécurité avec vos clients' },
+      { title: '✅ Planning, tâches, rappels', description: 'Ne manquez plus aucune échéance' },
+      { title: '✅ Workflows & automatisations illimités', description: 'Automatisez vos tâches répétitives' },
+      { title: '✅ API illimitée', description: 'Accès complet à l\'API' },
+      { title: '✅ 20 Go de stockage', description: 'Espace suffisant pour démarrer' },
+      { title: '✅ 5 signatures électroniques/mois', description: 'Signez vos documents rapidement' },
+      { title: '✅ Support email (48h)', description: 'Réponse sous 48h' },
+    ],
+    notIncluded: [
+      '❌ Espace collaboratif (travail solo)',
+      '❌ Gestion des droits utilisateurs',
+      '❌ Reporting avancé'
     ]
   },
   'professionnel': {
     name: 'Professionnel',
     monthlyPrice: 59,
-    description: 'Offre cœur de gamme',
+    description: 'Pour petits cabinets 2–10 personnes',
     icon: Crown,
     color: 'purple',
+    limits: 'Membres : 10 max • Clients actifs : 200 • Documents : ~20 000 • Dossiers actifs : 600 • Stockage : 100 Go',
     features: [
-      { title: 'Tout ce qu\'il y a dans Essentiel', description: 'Toutes les fonctionnalités de base' },
-      { title: 'Automatisations & workflows', description: 'Gagnez du temps sur les tâches répétitives' },
-      { title: 'Génération automatique de documents', description: 'Créez vos documents en un clic' },
-      { title: 'Modèles juridiques personnalisables', description: 'Bibliothèque de modèles prêts à l\'emploi' },
-      { title: 'Signature électronique illimitée', description: 'Aucune limite mensuelle' },
-      { title: '100 Go de stockage', description: 'Pour tous vos documents' },
-      { title: 'Gestion des droits utilisateurs', description: 'Contrôlez les accès de votre équipe' },
-      { title: 'Tableaux de bord & reporting', description: 'Suivez vos performances' },
-      { title: 'Historique d\'activité avancé', description: 'Traçabilité complète' },
-      { title: 'Support prioritaire', description: 'Réponse sous 24h' },
+      { title: '✅ Espace collaboratif (10 membres max)', description: 'Travaillez en équipe efficacement' },
+      { title: '✅ Gestion documentaire avancée (200 clients, 600 dossiers)', description: 'Pour tous vos documents' },
+      { title: '✅ Partage sécurisé + dépôt client', description: 'Échangez avec de nombreux clients' },
+      { title: '✅ Planning collaboratif + gestion d\'équipe', description: 'Coordination d\'équipe optimale' },
+      { title: '✅ Workflows & automatisations illimités', description: 'Automatisez tout votre cabinet' },
+      { title: '✅ API illimitée + intégrations', description: 'Connectez tous vos outils' },
+      { title: '✅ 100 Go de stockage', description: 'Espace confortable pour votre cabinet' },
+      { title: '✅ Signatures électroniques illimitées', description: 'Aucune limite mensuelle' },
+      { title: '✅ Tableaux de bord & reporting', description: 'Suivez vos performances' },
+      { title: '✅ Gestion des droits utilisateurs', description: 'Contrôlez les accès de votre équipe' },
+      { title: '✅ Support prioritaire (24h)', description: 'Réponse sous 24h' },
+    ],
+    notIncluded: [
+      '❌ Stockage illimité',
+      '❌ Support 7j/7 avec SLA',
+      '❌ Formation équipe complète'
     ]
   },
   'cabinet-plus': {
     name: 'Cabinet+',
-    monthlyPrice: 129,
-    description: 'Pour cabinets structurés (5-50 personnes)',
+    monthlyPrice: 89,
+    description: 'Pour cabinets structurés 10 à 50+ personnes',
     icon: Users,
     color: 'orange',
+    limits: 'Aucune limite — tout est illimité',
     features: [
-      { title: 'Tout le Pro', description: 'Toutes les fonctionnalités Professionnel' },
-      { title: 'Automatisations illimitées', description: 'Aucune limite sur vos workflows' },
-      { title: 'Dossiers clients avancés', description: 'Gestion complète et détaillée' },
-      { title: 'API + intégrations externes', description: 'Connectez vos outils existants' },
-      { title: 'Stockage illimité', description: 'Aucune limite de stockage' },
-      { title: 'Onboarding personnalisé', description: 'Formation dédiée à votre équipe' },
-      { title: 'Support 7j/7 + SLA', description: 'Assistance prioritaire garantie' },
-      { title: 'Formation de l\'équipe', description: 'Sessions de formation incluses' },
-      { title: 'Accès anticipé aux futures features', description: 'Testez les nouveautés en avant-première' },
-    ]
+      { title: '✅ Espace collaboratif illimité', description: 'Aucune limite de membres' },
+      { title: '✅ Gestion documentaire illimitée', description: 'Stockez autant de documents que nécessaire' },
+      { title: '✅ Stockage illimité', description: 'Aucune limite de stockage' },
+      { title: '✅ Membres & clients illimités', description: 'Toute votre équipe peut collaborer' },
+      { title: '✅ Workflows illimités (priorité CPU)', description: 'Performance maximale garantie' },
+      { title: '✅ API + intégrations (ERP, CRM, GED, Microsoft 365)', description: 'Connectez tous vos outils existants' },
+      { title: '✅ Signatures électroniques illimitées', description: 'Aucune limite mensuelle' },
+      { title: '✅ Reporting professionnel + exports Excel/PDF', description: 'Analytics avancés pour votre cabinet' },
+      { title: '✅ Onboarding + formation complète équipe', description: 'Formation dédiée à votre équipe' },
+      { title: '✅ Support 7j/7 + SLA garanti', description: 'Assistance prioritaire garantie' },
+    ],
+    notIncluded: []
   }
 };
 
@@ -127,7 +143,12 @@ export default function CheckoutPlan() {
                 <Icon className={`h-10 w-10 text-${planConfig.color}-600`} />
                 <h1 className="text-4xl font-bold text-black">Neira {planConfig.name}</h1>
               </div>
-              <p className="text-black mb-6">{planConfig.description}</p>
+              <p className="text-black mb-4">{planConfig.description}</p>
+              {planConfig.limits && (
+                <div className="mb-6 p-3 bg-white/80 rounded-lg inline-block">
+                  <p className="text-sm text-black font-medium">{planConfig.limits}</p>
+                </div>
+              )}
               <div className="flex items-center justify-center gap-8">
                 <div className="text-5xl font-bold text-black">{monthlyPrice}€</div>
                 <div className="text-left">
@@ -161,6 +182,19 @@ export default function CheckoutPlan() {
                     </div>
                   ))}
                 </div>
+                {planConfig.notIncluded && planConfig.notIncluded.length > 0 && (
+                  <div className="mt-6 pt-6 border-t">
+                    <h4 className="font-semibold text-black mb-3">❌ Non inclus dans cette offre :</h4>
+                    <div className="space-y-2">
+                      {planConfig.notIncluded.map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="text-red-500">•</span>
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

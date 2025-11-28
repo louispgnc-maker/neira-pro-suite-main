@@ -13,7 +13,7 @@ export default function CheckoutCabinetPlus() {
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
-  const monthlyPrice = 129;
+  const monthlyPrice = 89;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
   const price = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
   const tva = Math.round(price * 0.2 * 100) / 100;
@@ -56,7 +56,10 @@ export default function CheckoutCabinetPlus() {
             <CardContent className="p-8">
               <div className="text-center">
                 <h1 className="text-4xl font-bold text-orange-600 mb-2">Neira Cabinet+</h1>
-                <p className="text-gray-600 mb-6">Pour cabinets structurés (5-50 personnes)</p>
+                <p className="text-gray-600 mb-4">Pour cabinets structurés 10 à 50+ personnes</p>
+                <div className="mb-6 p-3 bg-white/80 rounded-lg inline-block">
+                  <p className="text-sm text-gray-900 font-medium">Aucune limite — tout est illimité</p>
+                </div>
                 <div className="flex items-center justify-center gap-8">
                   <div className="text-5xl font-bold text-orange-600">{monthlyPrice}€</div>
                   <div className="text-left">
@@ -83,8 +86,8 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Tout le Professionnel</h4>
-                        <p className="text-sm text-gray-600 mt-1">Base complète incluse</p>
+                        <h4 className="font-semibold text-gray-900">Espace collaboratif illimité</h4>
+                        <p className="text-sm text-gray-600 mt-1">Aucune limite de membres</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -92,8 +95,8 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Automatisations illimitées</h4>
-                        <p className="text-sm text-gray-600 mt-1">Sans aucune restriction</p>
+                        <h4 className="font-semibold text-gray-900">Workflows illimités (priorité CPU + files dédiées)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Performance maximale garantie</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -101,8 +104,8 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Dossiers clients avancés</h4>
-                        <p className="text-sm text-gray-600 mt-1">Gestion approfondie des dossiers</p>
+                        <h4 className="font-semibold text-gray-900">Gestion documentaire illimitée</h4>
+                        <p className="text-sm text-gray-600 mt-1">Stockez autant de documents que nécessaire</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -110,8 +113,8 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">API + intégrations externes</h4>
-                        <p className="text-sm text-gray-600 mt-1">Connectez vos outils favoris</p>
+                        <h4 className="font-semibold text-gray-900">API + intégrations externes (ERP, CRM, GED, Septeo, Microsoft 365, Google)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Connectez tous vos outils existants</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -119,8 +122,8 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Utilisateurs illimités</h4>
-                        <p className="text-sm text-gray-600 mt-1">Toute votre équipe sans limite</p>
+                        <h4 className="font-semibold text-gray-900">Dossiers clients avancés (multi-collaborateurs, révisions)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Gestion complète et détaillée</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -129,7 +132,7 @@ export default function CheckoutCabinetPlus() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">Stockage illimité</h4>
-                        <p className="text-sm text-gray-600 mt-1">Espace sans limite</p>
+                        <p className="text-sm text-gray-600 mt-1">Aucune limite de stockage</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -137,8 +140,8 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Personnalisation complète</h4>
-                        <p className="text-sm text-gray-600 mt-1">Interface aux couleurs de votre cabinet</p>
+                        <h4 className="font-semibold text-gray-900">Membres illimités</h4>
+                        <p className="text-sm text-gray-600 mt-1">Toute votre équipe peut collaborer</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -146,8 +149,8 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Formation dédiée</h4>
-                        <p className="text-sm text-gray-600 mt-1">Accompagnement personnalisé</p>
+                        <h4 className="font-semibold text-gray-900">Clients actifs illimités</h4>
+                        <p className="text-sm text-gray-600 mt-1">Gérez autant de clients que nécessaire</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -155,8 +158,8 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Support VIP 24/7</h4>
-                        <p className="text-sm text-gray-600 mt-1">Assistance disponible en continu</p>
+                        <h4 className="font-semibold text-gray-900">Reporting professionnel + exports Excel/PDF</h4>
+                        <p className="text-sm text-gray-600 mt-1">Analytics avancés pour votre cabinet</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
@@ -164,8 +167,26 @@ export default function CheckoutCabinetPlus() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Account manager dédié</h4>
-                        <p className="text-sm text-gray-600 mt-1">Interlocuteur unique pour votre cabinet</p>
+                        <h4 className="font-semibold text-gray-900">Onboarding + formation complète de l'équipe</h4>
+                        <p className="text-sm text-gray-600 mt-1">Formation dédiée à votre équipe</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                      <div className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Support 7j/7 + SLA (temps de réponse prioritaire)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Assistance prioritaire garantie</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                      <div className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Accès anticipé aux nouvelles fonctionnalités</h4>
+                        <p className="text-sm text-gray-600 mt-1">Testez les nouveautés en avant-première</p>
                       </div>
                     </div>
                   </div>

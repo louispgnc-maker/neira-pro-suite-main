@@ -59,7 +59,10 @@ export default function CheckoutProfessionnel() {
                   <h1 className="text-4xl font-bold text-purple-600">Neira Professionnel</h1>
                   <span className="bg-purple-500 text-white px-2 py-1 rounded text-xs font-semibold">RECOMMANDÉ</span>
                 </div>
-                <p className="text-gray-600 mb-6">Offre cœur de gamme</p>
+                <p className="text-gray-600 mb-4">Pour petits cabinets 2–10 personnes</p>
+                <div className="mb-6 p-3 bg-white/80 rounded-lg inline-block">
+                  <p className="text-sm text-gray-900 font-medium">Membres : 10 max • Clients actifs : 200 • Documents : ~20 000 • Dossiers actifs : 600 • Stockage : 100 Go</p>
+                </div>
                 <div className="flex items-center justify-center gap-8">
                   <div className="text-5xl font-bold text-purple-600">{monthlyPrice}€</div>
                   <div className="text-left">
@@ -86,8 +89,8 @@ export default function CheckoutProfessionnel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Tout ce qu'il y a dans Essentiel</h4>
-                        <p className="text-sm text-gray-600 mt-1">Base complète incluse</p>
+                        <h4 className="font-semibold text-gray-900">Espace collaboratif complet (équipes, rôles, permissions)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Travaillez en équipe efficacement</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -95,8 +98,8 @@ export default function CheckoutProfessionnel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Automatisations & workflows</h4>
-                        <p className="text-sm text-gray-600 mt-1">Optimisez vos processus métier</p>
+                        <h4 className="font-semibold text-gray-900">Gestion documentaire avancée (jusqu'à 20 000 documents)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Pour tous vos documents</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -104,8 +107,8 @@ export default function CheckoutProfessionnel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Génération automatique de documents</h4>
-                        <p className="text-sm text-gray-600 mt-1">Gagnez du temps sur la rédaction</p>
+                        <h4 className="font-semibold text-gray-900">Partage sécurisé (jusqu'à 200 clients actifs)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Échangez avec de nombreux clients</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -113,8 +116,8 @@ export default function CheckoutProfessionnel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Modèles juridiques personnalisables</h4>
-                        <p className="text-sm text-gray-600 mt-1">Bibliothèque complète à votre disposition</p>
+                        <h4 className="font-semibold text-gray-900">Planning, tâches, rappels collaboratifs</h4>
+                        <p className="text-sm text-gray-600 mt-1">Coordination d'équipe optimale</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -123,7 +126,16 @@ export default function CheckoutProfessionnel() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">Signature électronique illimitée</h4>
-                        <p className="text-sm text-gray-600 mt-1">Signatures sans limites</p>
+                        <p className="text-sm text-gray-600 mt-1">Aucune limite mensuelle</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Suivi dossiers (jusqu'à 600 dossiers actifs)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Gestion complète et détaillée</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -132,7 +144,7 @@ export default function CheckoutProfessionnel() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">100 Go de stockage</h4>
-                        <p className="text-sm text-gray-600 mt-1">Espace important pour vos besoins</p>
+                        <p className="text-sm text-gray-600 mt-1">Espace confortable pour votre cabinet</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -140,8 +152,8 @@ export default function CheckoutProfessionnel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Gestion des droits d'accès</h4>
-                        <p className="text-sm text-gray-600 mt-1">Contrôle total des accès</p>
+                        <h4 className="font-semibold text-gray-900">Workflows & automatisations illimités</h4>
+                        <p className="text-sm text-gray-600 mt-1">Automatisez tout votre cabinet</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -150,7 +162,25 @@ export default function CheckoutProfessionnel() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">Tableaux de bord & reporting</h4>
-                        <p className="text-sm text-gray-600 mt-1">Analyses et statistiques détaillées</p>
+                        <p className="text-sm text-gray-600 mt-1">Suivez vos performances</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Historique d'activité complet</h4>
+                        <p className="text-sm text-gray-600 mt-1">Traçabilité complète</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Gestion des droits utilisateurs (jusqu'à 10 membres)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Contrôlez les accès de votre équipe</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -159,7 +189,7 @@ export default function CheckoutProfessionnel() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">Support prioritaire</h4>
-                        <p className="text-sm text-gray-600 mt-1">Assistance rapide et dédiée</p>
+                        <p className="text-sm text-gray-600 mt-1">Réponse sous 24h</p>
                       </div>
                     </div>
                   </div>

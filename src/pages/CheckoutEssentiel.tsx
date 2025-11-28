@@ -56,7 +56,10 @@ export default function CheckoutEssentiel() {
             <CardContent className="p-8">
               <div className="text-center">
                 <h1 className="text-4xl font-bold text-blue-600 mb-2">Neira Essentiel</h1>
-                <p className="text-gray-600 mb-6">Pour indépendants & petits cabinets</p>
+                <p className="text-gray-600 mb-4">Pour avocats & notaires indépendants travaillant seuls</p>
+                <div className="mb-6 p-3 bg-white/80 rounded-lg inline-block">
+                  <p className="text-sm text-gray-900 font-medium">Clients actifs : 30 • Dossiers actifs : 100 • Stockage : 20 Go • Signatures : 5/mois • Collaborateurs : 1 (solo)</p>
+                </div>
                 <div className="flex items-center justify-center gap-8">
                   <div className="text-5xl font-bold text-blue-600">{monthlyPrice}€</div>
                   <div className="text-left">
@@ -83,17 +86,8 @@ export default function CheckoutEssentiel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Espace collaboratif complet</h4>
-                        <p className="text-sm text-gray-600 mt-1">Travaillez en équipe efficacement</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                        <CheckCircle2 className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
                         <h4 className="font-semibold text-gray-900">Gestion documentaire intelligente</h4>
-                        <p className="text-sm text-gray-600 mt-1">Organisez vos documents facilement</p>
+                        <p className="text-sm text-gray-600 mt-1">Organisez tous vos documents juridiques</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -101,8 +95,8 @@ export default function CheckoutEssentiel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Partage sécurisé + dépôt client</h4>
-                        <p className="text-sm text-gray-600 mt-1">Échangez en toute sécurité</p>
+                        <h4 className="font-semibold text-gray-900">Partage sécurisé + dépôt client (jusqu'à 30 clients)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Échangez en toute sécurité avec vos clients</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -110,7 +104,7 @@ export default function CheckoutEssentiel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Planning + tâches + rappels</h4>
+                        <h4 className="font-semibold text-gray-900">Planning, tâches, rappels</h4>
                         <p className="text-sm text-gray-600 mt-1">Ne manquez plus aucune échéance</p>
                       </div>
                     </div>
@@ -119,8 +113,17 @@ export default function CheckoutEssentiel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Signature électronique (5/mois)</h4>
+                        <h4 className="font-semibold text-gray-900">Signature électronique : 5/mois</h4>
                         <p className="text-sm text-gray-600 mt-1">Signez vos documents rapidement</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Dossiers & suivi clients (jusqu'à 100 dossiers)</h4>
+                        <p className="text-sm text-gray-600 mt-1">Vue d'ensemble de votre activité</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -137,8 +140,8 @@ export default function CheckoutEssentiel() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Suivi des dossiers / clients</h4>
-                        <p className="text-sm text-gray-600 mt-1">Vue d'ensemble de votre activité</p>
+                        <h4 className="font-semibold text-gray-900">Workflows & automatisations : illimités</h4>
+                        <p className="text-sm text-gray-600 mt-1">Automatisez vos tâches répétitives</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -147,7 +150,7 @@ export default function CheckoutEssentiel() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">Support email</h4>
-                        <p className="text-sm text-gray-600 mt-1">Assistance réactive à vos questions</p>
+                        <p className="text-sm text-gray-600 mt-1">Réponse sous 48h</p>
                       </div>
                     </div>
                   </div>
