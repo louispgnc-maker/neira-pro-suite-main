@@ -148,11 +148,29 @@ export default function TestCreateCabinet() {
           insertData.numero_inscription = numeroInscription || null;
         }
 
-        const { error } = await supabase
+        const { data: newCabinet, error } = await supabase
           .from('cabinets')
-          .insert(insertData);
+          .insert(insertData)
+          .select()
+          .single();
 
         if (error) throw error;
+
+        // Ajouter automatiquement le créateur comme membre du cabinet
+        if (newCabinet) {
+          const { error: membreError } = await supabase
+            .from('membres')
+            .insert({
+              cabinet_id: newCabinet.id,
+              user_id: user.id,
+              role: 'responsable',
+              status: 'actif'
+            });
+
+          if (membreError) {
+            console.error('Erreur lors de l\'ajout du membre:', membreError);
+          }
+        }
 
         toast.success("Cabinet créé !", {
           description: "Votre cabinet de test est prêt avec le plan Cabinet+ (20 membres)."
