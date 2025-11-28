@@ -24,7 +24,13 @@ export function ResourceCounter({
   className = "" 
 }: ResourceCounterProps) {
   const navigate = useNavigate();
-  const isUnlimited = max === null || max === 0 || max > 10000;
+  
+  // Pour le stockage, max est en bytes, il faut le convertir en Go pour vérifier si illimité
+  const maxInDisplayUnits = type === 'storage' && max !== null 
+    ? max / (1024 * 1024 * 1024) 
+    : max;
+  
+  const isUnlimited = max === null || max === 0 || (maxInDisplayUnits !== null && maxInDisplayUnits > 10000);
   const percentage = isUnlimited ? 0 : Math.min((current / max) * 100, 100);
   const isNearLimit = !isUnlimited && percentage >= 80;
   const isAtLimit = !isUnlimited && current >= max;
@@ -35,9 +41,12 @@ export function ResourceCounter({
   };
 
   const formatMax = (value: number | null) => {
-    if (value === null || value === 0 || value > 10000) return '∞';
-    if (type === 'storage') return `${value} Go`;
-    return value.toString();
+    if (value === null || value === 0) return '∞';
+    if (type === 'storage') {
+      const gb = value / (1024 * 1024 * 1024);
+      return gb > 10000 ? '∞' : `${gb.toFixed(0)} Go`;
+    }
+    return value > 10000 ? '∞' : value.toString();
   };
 
   const displayCurrent = type === 'storage' ? formatStorage(current) : current;
