@@ -38,6 +38,10 @@ import CheckoutEssentiel from "./pages/CheckoutEssentiel";
 import CheckoutProfessionnel from "./pages/CheckoutProfessionnel";
 import CheckoutCabinetPlus from "./pages/CheckoutCabinetPlus";
 import TestSubscription from "./pages/TestSubscription";
+import TestPayment from "./pages/test/TestPayment";
+import TestThanks from "./pages/test/TestThanks";
+import TestLogin from "./pages/test/TestLogin";
+import TestCreateCabinet from "./pages/test/TestCreateCabinet";
 import ConfirmEmail from "./pages/ConfirmEmail";
 import MentionsLegales from "./pages/MentionsLegales";
 import RGPD from "./pages/RGPD";
@@ -66,6 +70,10 @@ const App = () => (
             <Route path="/checkout/professionnel" element={<CheckoutProfessionnel />} />
             <Route path="/checkout/cabinet-plus" element={<CheckoutCabinetPlus />} />
             <Route path="/test-subscription" element={<TestSubscription />} />
+            <Route path="/test-subscription/payment" element={<TestPayment />} />
+            <Route path="/test-subscription/thanks" element={<TestThanks />} />
+            <Route path="/test-subscription/login" element={<TestLogin />} />
+            <Route path="/test-subscription/create-cabinet" element={<TestCreateCabinet />} />
             <Route path="/confirm-email" element={<ConfirmEmail />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             <Route path="/rgpd" element={<RGPD />} />
