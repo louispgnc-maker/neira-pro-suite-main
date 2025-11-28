@@ -168,6 +168,9 @@ export default function CheckoutPlan() {
         toast.success("Abonnement mis à jour !", {
           description: `Votre cabinet est maintenant sur le plan ${planConfig.name}.`
         });
+
+        // Trigger subscription update event
+        window.dispatchEvent(new Event('subscription-updated'));
       } else {
         // Créer un nouveau cabinet
         const { error } = await supabase
@@ -189,6 +192,9 @@ export default function CheckoutPlan() {
         toast.success("Cabinet créé avec succès !", {
           description: `Votre cabinet est prêt avec le plan ${planConfig.name}.`
         });
+
+        // Trigger subscription update event
+        window.dispatchEvent(new Event('subscription-updated'));
       }
 
       setTimeout(() => {

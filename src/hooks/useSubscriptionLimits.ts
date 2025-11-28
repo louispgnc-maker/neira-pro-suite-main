@@ -41,6 +41,14 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
     ...PLAN_LIMITS.essentiel,
     loading: true,
   });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Listen for subscription changes via custom event
+  useEffect(() => {
+    const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
+    window.addEventListener('subscription-updated', handleRefresh);
+    return () => window.removeEventListener('subscription-updated', handleRefresh);
+  }, []);
 
   useEffect(() => {
     async function loadLimits() {
@@ -84,7 +92,7 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
     }
 
     loadLimits();
-  }, [user, role]);
+  }, [user, role, refreshTrigger]);
 
   return limits;
 }

@@ -25,6 +25,14 @@ export default function Dashboard() {
   const [clientsToFollow, setClientsToFollow] = useState(0);
   const [todayTasks, setTodayTasks] = useState(0);
   const [subscriptionTier, setSubscriptionTier] = useState<string>('essentiel');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Listen for subscription changes
+  useEffect(() => {
+    const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
+    window.addEventListener('subscription-updated', handleRefresh);
+    return () => window.removeEventListener('subscription-updated', handleRefresh);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -137,7 +145,7 @@ export default function Dashboard() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, refreshTrigger]);
   return (
     <AppLayout>
       <div className="bg-gradient-to-br from-primary/20 via-accent/10 to-background min-h-screen">

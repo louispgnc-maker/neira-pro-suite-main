@@ -106,9 +106,17 @@ export default function Subscription() {
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isManager, setIsManager] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
+
+  // Listen for subscription changes
+  useEffect(() => {
+    const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
+    window.addEventListener('subscription-updated', handleRefresh);
+    return () => window.removeEventListener('subscription-updated', handleRefresh);
+  }, []);
 
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 Go';
@@ -228,7 +236,7 @@ export default function Subscription() {
     };
 
     loadSubscription();
-  }, [user]);
+  }, [user, refreshTrigger]);
 
   const handleUpgrade = (planId: string) => {
     // Redirect to checkout page
