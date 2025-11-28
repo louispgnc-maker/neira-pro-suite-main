@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DocumentViewer } from "@/components/ui/document-viewer";
 import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
+import { ResourceCounter } from "@/components/subscription/ResourceCounter";
+import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
 
 type DocRow = {
   id: string;
@@ -59,6 +61,14 @@ export default function Documents() {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerUrl, setViewerUrl] = useState("");
   const [viewerDocName, setViewerDocName] = useState("");
+  const [storageUsed, setStorageUsed] = useState(0);
+
+  // Détecte le rôle depuis l'URL
+  let role: 'avocat' | 'notaire' = 'avocat';
+  if (location.pathname.includes('/notaires')) role = 'notaire';
+  if (location.pathname.includes('/avocats')) role = 'avocat';
+
+  const limits = useSubscriptionLimits(role);
 
   // Debounce search
   useEffect(() => {
@@ -66,10 +76,34 @@ export default function Documents() {
     return () => clearTimeout(t);
   }, [search]);
 
-  // Détecte le rôle depuis l'URL
-  let role: 'avocat' | 'notaire' = 'avocat';
-  if (location.pathname.includes('/notaires')) role = 'notaire';
-  if (location.pathname.includes('/avocats')) role = 'avocat';
+  // Load storage usage
+  useEffect(() => {
+    async function loadStorage() {
+      if (!user) return;
+      
+      try {
+        const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+        if (!cabinetsData || !Array.isArray(cabinetsData)) return;
+        
+        const cabinets = cabinetsData.filter((c: any) => String(c.role) === role);
+        const cabinet = cabinets[0];
+        
+        if (cabinet) {
+          const { data: cabinetDetails } = await supabase
+            .from('cabinets')
+            .select('storage_used')
+            .eq('id', cabinet.id)
+            .single();
+          
+          setStorageUsed(cabinetDetails?.storage_used || 0);
+        }
+      } catch (error) {
+        console.error('Error loading storage:', error);
+      }
+    }
+    
+    loadStorage();
+  }, [user, role, documents]); // Reload when documents change
 
   useEffect(() => {
     let isMounted = true;
@@ -309,6 +343,21 @@ export default function Documents() {
             </div>
           </div>
         </div>
+
+        {/* Storage Counter */}
+        <Card className="mb-4">
+          <CardContent className="pt-6">
+            <ResourceCounter
+              current={storageUsed}
+              max={limits.max_storage_bytes}
+              label="Stockage utilisé"
+              type="storage"
+              subscriptionPlan={limits.subscription_plan}
+              role={role}
+            />
+          </CardContent>
+        </Card>
+
         <div className="mb-4 bg-white p-4 rounded-lg border">
           <input
             type="text"

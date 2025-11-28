@@ -14,6 +14,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
+import { ResourceCounter } from "@/components/subscription/ResourceCounter";
+import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
 
 type DossierRow = {
   id: string;
@@ -35,6 +37,8 @@ export default function Dossiers() {
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
+
+  const limits = useSubscriptionLimits(role);
 
   const [loading, setLoading] = useState(true);
   const [dossiers, setDossiers] = useState<DossierRow[]>([]);
@@ -379,6 +383,20 @@ export default function Dossiers() {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Dossiers Counter */}
+        <Card>
+          <CardContent className="pt-6">
+            <ResourceCounter
+              current={dossiers.length}
+              max={limits.max_dossiers}
+              label="Dossiers actifs"
+              type="count"
+              subscriptionPlan={limits.subscription_plan}
+              role={role}
+            />
+          </CardContent>
+        </Card>
 
         {loading ? (
           <Card>

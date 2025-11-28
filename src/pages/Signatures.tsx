@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
+import { ResourceCounter } from "@/components/subscription/ResourceCounter";
+import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
 
 type SignatureRow = {
   id: string;
@@ -41,6 +43,8 @@ export default function Signatures() {
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
+
+  const limits = useSubscriptionLimits(role);
 
   useEffect(() => {
     let isMounted = true;
@@ -112,6 +116,20 @@ export default function Signatures() {
             Nouvelle signature
           </Button>
         </div>
+
+        {/* Signatures Counter */}
+        <Card className="mb-4">
+          <CardContent className="pt-6">
+            <ResourceCounter
+              current={signatures.length}
+              max={limits.max_signatures_per_month}
+              label="Signatures ce mois-ci"
+              type="count"
+              subscriptionPlan={limits.subscription_plan}
+              role={role}
+            />
+          </CardContent>
+        </Card>
 
         <div className="mb-4 bg-white p-4 rounded-lg border">
           <input
