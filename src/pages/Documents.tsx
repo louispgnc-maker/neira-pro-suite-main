@@ -71,6 +71,38 @@ export default function Documents() {
 
   const limits = useSubscriptionLimits(role);
 
+  // Helper function to update cabinet storage
+  const updateCabinetStorage = async (bytesChange: number) => {
+    if (!user) return;
+    
+    try {
+      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+      if (!cabinetsData || !Array.isArray(cabinetsData)) return;
+      
+      const cabinets = cabinetsData.filter((c: any) => String(c.role) === role);
+      const cabinet = cabinets[0];
+      
+      if (!cabinet) return;
+      
+      // Update storage_used
+      const { error } = await supabase
+        .from('cabinets')
+        .update({ 
+          storage_used: Math.max(0, (cabinet.storage_used || 0) + bytesChange)
+        })
+        .eq('id', cabinet.id);
+      
+      if (error) {
+        console.error('Error updating storage:', error);
+      } else {
+        // Trigger refresh of storage counter
+        setRefreshTrigger(prev => prev + 1);
+      }
+    } catch (error) {
+      console.error('Error updating cabinet storage:', error);
+    }
+  };
+
   // Listen for subscription changes
   useEffect(() => {
     const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
@@ -231,7 +263,24 @@ export default function Documents() {
     if (!confirm(`Supprimer "${doc.name}" ?`)) return;
     
     try {
+      let fileSize = 0;
+      
+      // Get file size before deleting
       if (doc.storage_path) {
+        try {
+          const { data: fileData } = await supabase.storage
+            .from('documents')
+            .list(doc.storage_path.split('/').slice(0, -1).join('/'), {
+              search: doc.storage_path.split('/').pop()
+            });
+          
+          if (fileData && fileData.length > 0) {
+            fileSize = fileData[0].metadata?.size || 0;
+          }
+        } catch (err) {
+          console.error('Error getting file size:', err);
+        }
+        
         const { error: storageErr } = await supabase.storage
           .from('documents')
           .remove([doc.storage_path]);
@@ -247,6 +296,11 @@ export default function Documents() {
         .eq('owner_id', user.id);
       
       if (dbErr) throw dbErr;
+      
+      // Update storage usage (subtract the file size)
+      if (fileSize > 0) {
+        await updateCabinetStorage(-fileSize);
+      }
       
       setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
       toast.success('Document supprimé');
@@ -300,6 +354,9 @@ export default function Documents() {
           uploaded.push(file.name);
           // Ajouter à l'état local
           if (inserted) setDocuments((prev) => [inserted as DocRow, ...prev]);
+          
+          // Update storage usage (add the file size)
+          await updateCabinetStorage(file.size);
 
         // Note: automatic sharing has been disabled. If you want to re-enable,
         // restore the logic that calls copyDocumentToShared and creates
