@@ -42,13 +42,22 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
         if (cabinetsError) throw cabinetsError;
 
         const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
-        const userCabinet = cabinets.find((c: any) => c.role === requiredRole);
-
-        if (userCabinet) {
-          setUserRole(userCabinet.role as 'avocat' | 'notaire');
-          console.log('[RoleProtectedRoute] User role set to:', userCabinet.role);
+        
+        // Chercher un cabinet avec le rôle requis
+        const matchingCabinet = cabinets.find((c: any) => c.role === requiredRole);
+        
+        if (matchingCabinet) {
+          setUserRole(matchingCabinet.role as 'avocat' | 'notaire');
+          console.log('[RoleProtectedRoute] Matching cabinet found, role set to:', matchingCabinet.role);
+        } else if (cabinets.length > 0) {
+          // L'utilisateur a des cabinets mais pas pour ce rôle
+          // Récupérer le premier cabinet pour afficher l'erreur correctement
+          setUserRole(cabinets[0].role as 'avocat' | 'notaire');
+          console.log('[RoleProtectedRoute] No matching cabinet, but user has:', cabinets[0].role);
         } else {
-          console.log('[RoleProtectedRoute] No cabinet found for required role:', requiredRole);
+          // Aucun cabinet trouvé
+          console.log('[RoleProtectedRoute] No cabinets found for user');
+          setUserRole(null);
         }
       } catch (error) {
         console.error('Erreur lors de la vérification du rôle:', error);
