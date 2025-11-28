@@ -439,10 +439,10 @@ export default function Auth() {
         <div className="bg-white rounded-xl p-12 shadow-lg border-2 border-primary/20 mb-12 max-w-3xl">
           <div className="text-center">
             <h2 className="text-4xl font-bold text-foreground mb-5 leading-tight">
-              Optimisez votre activité professionnelle
+              Vous êtes responsable de cabinet ?
             </h2>
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              La plateforme tout-en-un qui simplifie et fluidifie le quotidien des experts du juridique.
+              Équipez dès maintenant votre équipe de notre solution tout-en-un pour professionnels du juridique.
             </p>
             <Button onClick={() => navigate('/solution')} size="lg" className="px-12 py-7 text-xl font-semibold">Découvrir notre solution</Button>
           </div>
