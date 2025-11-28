@@ -330,16 +330,25 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
     if (subscriptionPlan === 'essentiel') {
       toast({
         title: 'Abonnement insuffisant',
-        description: "L'abonnement Essentiel ne permet qu'un seul membre. Passez à un abonnement supérieur pour ajouter des membres.",
+        description: "L'abonnement Essentiel ne permet qu'un seul membre. Passez à un abonnement supérieur pour inviter des collaborateurs.",
         variant: 'destructive',
       });
       return;
     }
 
-    if (currentMemberCount >= maxMembers) {
+    if (subscriptionPlan === 'professionnel' && currentMemberCount >= maxMembers) {
       toast({
         title: 'Limite atteinte',
-        description: `Votre abonnement permet ${maxMembers} membres maximum. Passez à un abonnement supérieur pour ajouter plus de membres.`,
+        description: `Votre abonnement Professionnel permet ${maxMembers} membres maximum. Passez à l'offre Cabinet+ pour inviter plus de collaborateurs.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (subscriptionPlan === 'cabinet-plus' && currentMemberCount >= 50) {
+      toast({
+        title: 'Cabinet de grande taille',
+        description: `Vous avez ${currentMemberCount} membres. Pour ajouter des membres supplémentaires, contactez-nous pour une offre personnalisée.`,
         variant: 'destructive',
       });
       return;
@@ -640,36 +649,53 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
           )}
 
           {/* Upgrade alert if at limit */}
-          {isOwner && (cabinet.subscription_plan === 'essentiel' || members.length >= (cabinet.max_members || 1)) && (
+          {isOwner && cabinet.subscription_plan === 'essentiel' && (
             <Alert className="border-orange-500 bg-orange-50">
               <AlertDescription className="text-sm">
-                {cabinet.subscription_plan === 'essentiel' ? (
-                  <>
-                    <strong>Abonnement Essentiel :</strong> Vous ne pouvez pas ajouter de membres supplémentaires. 
-                    <Button 
-                      size="sm" 
-                      variant="link" 
-                      className="text-orange-600 underline px-1 h-auto"
-                      onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
-                    >
-                      Passer à un abonnement supérieur
-                    </Button>
-                    pour inviter des collaborateurs.
-                  </>
-                ) : (
-                  <>
-                    <strong>Limite atteinte :</strong> Vous avez atteint la limite de {cabinet.max_members} membres. 
-                    <Button 
-                      size="sm" 
-                      variant="link" 
-                      className="text-orange-600 underline px-1 h-auto"
-                      onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
-                    >
-                      Augmenter votre limite
-                    </Button>
-                    pour ajouter plus de membres.
-                  </>
-                )}
+                <strong>Abonnement Essentiel :</strong> Vous ne pouvez pas ajouter de membres supplémentaires. 
+                <Button 
+                  size="sm" 
+                  variant="link" 
+                  className="text-orange-600 underline px-1 h-auto"
+                  onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
+                >
+                  Passer à un abonnement supérieur
+                </Button>
+                pour inviter des collaborateurs.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {isOwner && cabinet.subscription_plan === 'professionnel' && members.length >= (cabinet.max_members || 10) && (
+            <Alert className="border-orange-500 bg-orange-50">
+              <AlertDescription className="text-sm">
+                <strong>Limite atteinte :</strong> Votre abonnement Professionnel permet {cabinet.max_members} membres maximum. 
+                <Button 
+                  size="sm" 
+                  variant="link" 
+                  className="text-orange-600 underline px-1 h-auto"
+                  onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
+                >
+                  Passer à l'offre Cabinet+
+                </Button>
+                pour inviter plus de collaborateurs.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {isOwner && cabinet.subscription_plan === 'cabinet-plus' && members.length >= 50 && (
+            <Alert className="border-blue-500 bg-blue-50">
+              <AlertDescription className="text-sm">
+                <strong>Cabinet de grande taille :</strong> Vous avez {members.length} membres. Pour ajouter des membres supplémentaires à l'unité, 
+                <Button 
+                  size="sm" 
+                  variant="link" 
+                  className="text-blue-600 underline px-1 h-auto"
+                  onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/contact-support`)}
+                >
+                  contactez-nous
+                </Button>
+                pour une offre personnalisée.
               </AlertDescription>
             </Alert>
           )}
@@ -699,12 +725,18 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <Button 
                       size="sm" 
                       className={colorClass}
-                      disabled={cabinet.subscription_plan === 'essentiel' || members.length >= (cabinet.max_members || 1)}
+                      disabled={
+                        cabinet.subscription_plan === 'essentiel' || 
+                        (cabinet.subscription_plan === 'professionnel' && members.length >= (cabinet.max_members || 10)) ||
+                        (cabinet.subscription_plan === 'cabinet-plus' && members.length >= 50)
+                      }
                       title={
                         cabinet.subscription_plan === 'essentiel' 
                           ? "L'abonnement Essentiel ne permet qu'un seul membre"
-                          : members.length >= (cabinet.max_members || 1)
-                          ? 'Limite de membres atteinte'
+                          : cabinet.subscription_plan === 'professionnel' && members.length >= (cabinet.max_members || 10)
+                          ? 'Limite de 10 membres atteinte - Passez à Cabinet+'
+                          : cabinet.subscription_plan === 'cabinet-plus' && members.length >= 50
+                          ? 'Contactez-nous pour ajouter plus de 50 membres'
                           : 'Inviter un membre'
                       }
                     >
