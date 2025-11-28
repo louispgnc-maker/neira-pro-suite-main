@@ -46,6 +46,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     detectSessionInUrl: true, 
     storage: sessionStorage, // Changed from localStorage to sessionStorage for per-tab isolation
     autoRefreshToken: true,
-    storageKey: 'neira-auth-token'
+    storageKey: 'neira-auth-token',
+    redirectTo: `${window.location.origin}/confirm-email`
   },
 })

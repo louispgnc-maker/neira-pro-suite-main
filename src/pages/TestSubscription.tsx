@@ -24,6 +24,7 @@ export default function TestSubscription() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
+  const [accountCreated, setAccountCreated] = useState(false);
 
   // Vérifier l'état de l'utilisateur au chargement
   useEffect(() => {
@@ -101,7 +102,8 @@ export default function TestSubscription() {
             nom,
             prenom,
             role: selectedRole
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/confirm-email`
         }
       });
 
@@ -109,11 +111,13 @@ export default function TestSubscription() {
 
       if (data.user) {
         toast.success("Compte créé avec succès !", {
-          description: "Veuillez vous connecter maintenant"
+          description: "Veuillez vérifier votre email pour confirmer votre compte"
         });
-        setStep('login');
-        setPassword(''); // Réinitialiser le mot de passe pour la connexion
-        setConfirmPassword('');
+        // Afficher un message pour vérifier l'email
+        toast.info("Email de confirmation envoyé", {
+          description: "Cliquez sur le lien dans l'email pour activer votre compte"
+        });
+        setAccountCreated(true);
       }
     } catch (error: any) {
       console.error('Erreur inscription:', error);
@@ -392,12 +396,32 @@ export default function TestSubscription() {
                 </div>
                 <Button 
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || accountCreated}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6"
                   size="lg"
                 >
                   {loading ? "Création..." : "Créer mon compte"}
                 </Button>
+                
+                {accountCreated && (
+                  <div className="space-y-4 mt-4">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <p className="text-sm text-yellow-800 text-center">
+                        📧 Un email de confirmation a été envoyé à <strong>{email}</strong>
+                      </p>
+                      <p className="text-xs text-yellow-700 text-center mt-2">
+                        Veuillez cliquer sur le lien dans l'email pour activer votre compte
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => setStep('login')}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      J'ai confirmé mon email, me connecter
+                    </Button>
+                  </div>
+                )}
               </form>
             </CardContent>
           </Card>

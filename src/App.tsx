@@ -38,11 +38,13 @@ import CheckoutEssentiel from "./pages/CheckoutEssentiel";
 import CheckoutProfessionnel from "./pages/CheckoutProfessionnel";
 import CheckoutCabinetPlus from "./pages/CheckoutCabinetPlus";
 import TestSubscription from "./pages/TestSubscription";
+import ConfirmEmail from "./pages/ConfirmEmail";
 import MentionsLegales from "./pages/MentionsLegales";
 import RGPD from "./pages/RGPD";
 import CGU from "./pages/CGU";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import EmailConfirmHandler from "./components/EmailConfirmHandler";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +55,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <EmailConfirmHandler />
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Auth />} />
@@ -62,6 +65,7 @@ const App = () => (
             <Route path="/checkout/professionnel" element={<CheckoutProfessionnel />} />
             <Route path="/checkout/cabinet-plus" element={<CheckoutCabinetPlus />} />
             <Route path="/test-subscription" element={<TestSubscription />} />
+            <Route path="/confirm-email" element={<ConfirmEmail />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             <Route path="/rgpd" element={<RGPD />} />
             <Route path="/cgu" element={<CGU />} />
