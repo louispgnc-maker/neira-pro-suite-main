@@ -83,10 +83,9 @@ export default function Solution() {
 
         {/* Pricing Section */}
         <div className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-center mb-4 text-gray-900">
-            ⭐ Choisissez votre formule
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+            Choisissez l'offre adaptée à votre équipe
           </h2>
-          <p className="text-center text-gray-600 mb-12">Tarification transparente adaptée à chaque taille de cabinet</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Offre Essentiel */}
