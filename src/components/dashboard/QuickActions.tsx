@@ -8,6 +8,7 @@ import { useRef, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const actions = [
   { key: "create", label: "Créer un contrat", icon: FileText, variant: "default" as const },
@@ -23,6 +24,7 @@ interface QuickActionsProps {
 
 export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActionsProps = {}) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
   const [checkingCabinet, setCheckingCabinet] = useState(false);
@@ -123,12 +125,12 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
       return;
     }
     if (!hasCabinet) {
-      // Redirect to cabinet setup page
-      window.location.href = 'https://www.neira.fr/notaires/cabinet';
+      // Redirect to test subscription to create cabinet
+      navigate('/test-subscription');
       return;
     }
     // Redirect to collaborative space
-    window.location.href = 'https://www.neira.fr/notaires/espace-collaboratif';
+    navigate('/notaires/espace-collaboratif?tab=dashboard');
   };
 
   const hasCollaborative = role === 'notaire';
