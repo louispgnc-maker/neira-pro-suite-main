@@ -45,6 +45,7 @@ import CGU from "./pages/CGU";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import EmailConfirmHandler from "./components/EmailConfirmHandler";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -74,47 +75,47 @@ const App = () => (
             
             {/* Routes Avocat */}
             <Route path="/avocats/auth" element={<AvocatAuth />} />
-            <Route path="/avocats/metier" element={<AvocatMetier />} />
-            <Route path="/avocats/dashboard" element={<AvocatDashboard />} />
-            <Route path="/avocats/documents" element={<Documents />} />
-            <Route path="/avocats/signatures" element={<Signatures />} />
-            <Route path="/avocats/clients" element={<Clients />} />
-            <Route path="/avocats/clients/create" element={<CreateClientAvocat />} />
-            <Route path="/avocats/clients/:id" element={<ClientDetail />} />
-            <Route path="/avocats/clients/:id/edit" element={<EditClient />} />
-            <Route path="/avocats/tasks" element={<Tasks />} />
-            <Route path="/avocats/contrats" element={<Contrats />} />
-            <Route path="/avocats/contrats/:id" element={<ContratDetail />} />
-            <Route path="/avocats/dossiers" element={<Dossiers />} />
-            <Route path="/avocats/dossiers/:id" element={<DossierDetail />} />
-            <Route path="/avocats/profile" element={<Profile />} />
-            <Route path="/avocats/cabinet" element={<Cabinet />} />
-            <Route path="/avocats/espace-collaboratif" element={<EspaceCollaboratif />} />
-            <Route path="/avocats/subscription" element={<Subscription />} />
-            <Route path="/avocats/contact-support" element={<ContactSupport />} />
-            <Route path="/avocats/checkout/:planId" element={<CheckoutPlan />} />
+            <Route path="/avocats/metier" element={<RoleProtectedRoute requiredRole="avocat"><AvocatMetier /></RoleProtectedRoute>} />
+            <Route path="/avocats/dashboard" element={<RoleProtectedRoute requiredRole="avocat"><AvocatDashboard /></RoleProtectedRoute>} />
+            <Route path="/avocats/documents" element={<RoleProtectedRoute requiredRole="avocat"><Documents /></RoleProtectedRoute>} />
+            <Route path="/avocats/signatures" element={<RoleProtectedRoute requiredRole="avocat"><Signatures /></RoleProtectedRoute>} />
+            <Route path="/avocats/clients" element={<RoleProtectedRoute requiredRole="avocat"><Clients /></RoleProtectedRoute>} />
+            <Route path="/avocats/clients/create" element={<RoleProtectedRoute requiredRole="avocat"><CreateClientAvocat /></RoleProtectedRoute>} />
+            <Route path="/avocats/clients/:id" element={<RoleProtectedRoute requiredRole="avocat"><ClientDetail /></RoleProtectedRoute>} />
+            <Route path="/avocats/clients/:id/edit" element={<RoleProtectedRoute requiredRole="avocat"><EditClient /></RoleProtectedRoute>} />
+            <Route path="/avocats/tasks" element={<RoleProtectedRoute requiredRole="avocat"><Tasks /></RoleProtectedRoute>} />
+            <Route path="/avocats/contrats" element={<RoleProtectedRoute requiredRole="avocat"><Contrats /></RoleProtectedRoute>} />
+            <Route path="/avocats/contrats/:id" element={<RoleProtectedRoute requiredRole="avocat"><ContratDetail /></RoleProtectedRoute>} />
+            <Route path="/avocats/dossiers" element={<RoleProtectedRoute requiredRole="avocat"><Dossiers /></RoleProtectedRoute>} />
+            <Route path="/avocats/dossiers/:id" element={<RoleProtectedRoute requiredRole="avocat"><DossierDetail /></RoleProtectedRoute>} />
+            <Route path="/avocats/profile" element={<RoleProtectedRoute requiredRole="avocat"><Profile /></RoleProtectedRoute>} />
+            <Route path="/avocats/cabinet" element={<RoleProtectedRoute requiredRole="avocat"><Cabinet /></RoleProtectedRoute>} />
+            <Route path="/avocats/espace-collaboratif" element={<RoleProtectedRoute requiredRole="avocat"><EspaceCollaboratif /></RoleProtectedRoute>} />
+            <Route path="/avocats/subscription" element={<RoleProtectedRoute requiredRole="avocat"><Subscription /></RoleProtectedRoute>} />
+            <Route path="/avocats/contact-support" element={<RoleProtectedRoute requiredRole="avocat"><ContactSupport /></RoleProtectedRoute>} />
+            <Route path="/avocats/checkout/:planId" element={<RoleProtectedRoute requiredRole="avocat"><CheckoutPlan /></RoleProtectedRoute>} />
             
             {/* Routes Notaire */}
             <Route path="/notaires/auth" element={<NotaireAuth />} />
-            <Route path="/notaires/metier" element={<NotaireMetier />} />
-            <Route path="/notaires/dashboard" element={<NotaireDashboard />} />
-            <Route path="/notaires/documents" element={<Documents />} />
-            <Route path="/notaires/signatures" element={<Signatures />} />
-            <Route path="/notaires/clients" element={<Clients />} />
-            <Route path="/notaires/clients/create" element={<CreateClientNotaire />} />
-            <Route path="/notaires/clients/:id" element={<ClientDetail />} />
-            <Route path="/notaires/clients/:id/edit" element={<EditClient />} />
-            <Route path="/notaires/tasks" element={<Tasks />} />
-            <Route path="/notaires/contrats" element={<Contrats />} />
-            <Route path="/notaires/contrats/:id" element={<ContratDetail />} />
-            <Route path="/notaires/dossiers" element={<Dossiers />} />
-            <Route path="/notaires/dossiers/:id" element={<DossierDetail />} />
-            <Route path="/notaires/profile" element={<Profile />} />
-            <Route path="/notaires/cabinet" element={<Cabinet />} />
-            <Route path="/notaires/espace-collaboratif" element={<EspaceCollaboratif />} />
-            <Route path="/notaires/subscription" element={<Subscription />} />
-            <Route path="/notaires/contact-support" element={<ContactSupport />} />
-            <Route path="/notaires/checkout/:planId" element={<CheckoutPlan />} />
+            <Route path="/notaires/metier" element={<RoleProtectedRoute requiredRole="notaire"><NotaireMetier /></RoleProtectedRoute>} />
+            <Route path="/notaires/dashboard" element={<RoleProtectedRoute requiredRole="notaire"><NotaireDashboard /></RoleProtectedRoute>} />
+            <Route path="/notaires/documents" element={<RoleProtectedRoute requiredRole="notaire"><Documents /></RoleProtectedRoute>} />
+            <Route path="/notaires/signatures" element={<RoleProtectedRoute requiredRole="notaire"><Signatures /></RoleProtectedRoute>} />
+            <Route path="/notaires/clients" element={<RoleProtectedRoute requiredRole="notaire"><Clients /></RoleProtectedRoute>} />
+            <Route path="/notaires/clients/create" element={<RoleProtectedRoute requiredRole="notaire"><CreateClientNotaire /></RoleProtectedRoute>} />
+            <Route path="/notaires/clients/:id" element={<RoleProtectedRoute requiredRole="notaire"><ClientDetail /></RoleProtectedRoute>} />
+            <Route path="/notaires/clients/:id/edit" element={<RoleProtectedRoute requiredRole="notaire"><EditClient /></RoleProtectedRoute>} />
+            <Route path="/notaires/tasks" element={<RoleProtectedRoute requiredRole="notaire"><Tasks /></RoleProtectedRoute>} />
+            <Route path="/notaires/contrats" element={<RoleProtectedRoute requiredRole="notaire"><Contrats /></RoleProtectedRoute>} />
+            <Route path="/notaires/contrats/:id" element={<RoleProtectedRoute requiredRole="notaire"><ContratDetail /></RoleProtectedRoute>} />
+            <Route path="/notaires/dossiers" element={<RoleProtectedRoute requiredRole="notaire"><Dossiers /></RoleProtectedRoute>} />
+            <Route path="/notaires/dossiers/:id" element={<RoleProtectedRoute requiredRole="notaire"><DossierDetail /></RoleProtectedRoute>} />
+            <Route path="/notaires/profile" element={<RoleProtectedRoute requiredRole="notaire"><Profile /></RoleProtectedRoute>} />
+            <Route path="/notaires/cabinet" element={<RoleProtectedRoute requiredRole="notaire"><Cabinet /></RoleProtectedRoute>} />
+            <Route path="/notaires/espace-collaboratif" element={<RoleProtectedRoute requiredRole="notaire"><EspaceCollaboratif /></RoleProtectedRoute>} />
+            <Route path="/notaires/subscription" element={<RoleProtectedRoute requiredRole="notaire"><Subscription /></RoleProtectedRoute>} />
+            <Route path="/notaires/contact-support" element={<RoleProtectedRoute requiredRole="notaire"><ContactSupport /></RoleProtectedRoute>} />
+            <Route path="/notaires/checkout/:planId" element={<RoleProtectedRoute requiredRole="notaire"><CheckoutPlan /></RoleProtectedRoute>} />
             
             {/* Routes génériques (legacy) */}
             <Route path="/documents" element={<Documents />} />
