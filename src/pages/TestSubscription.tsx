@@ -111,11 +111,7 @@ export default function TestSubscription() {
 
       if (data.user) {
         toast.success("Compte créé avec succès !", {
-          description: "Veuillez vérifier votre email pour confirmer votre compte"
-        });
-        // Afficher un message pour vérifier l'email
-        toast.info("Email de confirmation envoyé", {
-          description: "Cliquez sur le lien dans l'email pour activer votre compte"
+          description: "Un email de confirmation a été envoyé à votre adresse"
         });
         setAccountCreated(true);
       }
@@ -415,8 +411,7 @@ export default function TestSubscription() {
                     </div>
                     <Button
                       onClick={() => setStep('login')}
-                      variant="outline"
-                      className="w-full"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
                     >
                       J'ai confirmé mon email, me connecter
                     </Button>
