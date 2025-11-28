@@ -74,17 +74,34 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
           return;
         }
 
-        // Récupérer les détails du cabinet
+        // Récupérer les détails du cabinet avec les limites réelles
         const { data: cabinetDetails } = await supabase
           .from('cabinets')
-          .select('subscription_plan')
+          .select('subscription_plan, max_storage_go, max_dossiers, max_clients, max_signatures_per_month')
           .eq('id', cabinet.id)
           .single();
 
-        const plan = cabinetDetails?.subscription_plan || 'essentiel';
-        const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.essentiel;
+        if (!cabinetDetails) {
+          setLimits({ ...PLAN_LIMITS.essentiel, loading: false });
+          return;
+        }
 
-        setLimits({ ...planLimits, loading: false });
+        const plan = cabinetDetails.subscription_plan || 'essentiel';
+        
+        // Utiliser les valeurs de la base de données, avec fallback sur PLAN_LIMITS
+        const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.essentiel;
+        
+        setLimits({
+          subscription_plan: plan,
+          // Convertir max_storage_go (en Go) en bytes, null = illimité
+          max_storage_bytes: cabinetDetails.max_storage_go 
+            ? cabinetDetails.max_storage_go * 1024 * 1024 * 1024 
+            : null,
+          max_dossiers: cabinetDetails.max_dossiers ?? planLimits.max_dossiers,
+          max_clients: cabinetDetails.max_clients ?? planLimits.max_clients,
+          max_signatures_per_month: cabinetDetails.max_signatures_per_month ?? planLimits.max_signatures_per_month,
+          loading: false,
+        });
       } catch (error) {
         console.error('Error loading subscription limits:', error);
         setLimits({ ...PLAN_LIMITS.essentiel, loading: false });
