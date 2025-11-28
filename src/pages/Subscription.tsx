@@ -27,20 +27,20 @@ const plans = [
     description: 'Pour avocats & notaires indépendants travaillant seuls',
     summary: 'Conçu pour un seul professionnel qui travaille en autonomie. Outils essentiels pour gérer jusqu\'à 30 clients actifs et 100 dossiers avec workflows illimités.',
     features: [
-      '✅ Gestion documentaire (30 clients, 100 dossiers)',
-      '✅ Partage sécurisé + dépôt client',
-      '✅ Planning, tâches, rappels',
-      '✅ Workflows & automatisations illimités',
-      '✅ API illimitée',
-      '✅ 20 Go de stockage',
-      '✅ 5 signatures électroniques/mois',
-      '✅ Support email (48h)'
+      'Gestion documentaire (30 clients, 100 dossiers)',
+      'Partage sécurisé + dépôt client',
+      'Planning, tâches, rappels',
+      'Workflows & automatisations illimités',
+      'API illimitée',
+      '20 Go de stockage',
+      '5 signatures électroniques/mois',
+      'Support email (48h)'
     ],
     limits: 'Clients actifs : 30 • Dossiers actifs : 100 • Stockage : 20 Go • Signatures : 5/mois • Collaborateurs : 1 (solo)',
     notIncluded: [
-      '❌ Espace collaboratif (travail solo)',
-      '❌ Gestion des droits utilisateurs',
-      '❌ Reporting avancé'
+      'Espace collaboratif (travail solo)',
+      'Gestion des droits utilisateurs',
+      'Reporting avancé'
     ],
     icon: Zap,
     color: 'text-blue-600',
@@ -55,23 +55,23 @@ const plans = [
     description: 'Pour petits cabinets 2–10 personnes',
     summary: 'Idéal pour les cabinets de 2 à 10 personnes qui veulent structurer leurs workflows avec espace collaboratif complet, gestion d\'équipe et reporting avancé.',
     features: [
-      '✅ Espace collaboratif (10 membres max)',
-      '✅ Gestion documentaire avancée (200 clients, 600 dossiers)',
-      '✅ Partage sécurisé + dépôt client',
-      '✅ Planning collaboratif + gestion d\'équipe',
-      '✅ Workflows & automatisations illimités',
-      '✅ API illimitée + intégrations',
-      '✅ 100 Go de stockage',
-      '✅ Signatures électroniques illimitées',
-      '✅ Tableaux de bord & reporting',
-      '✅ Gestion des droits utilisateurs',
-      '✅ Support prioritaire (24h)'
+      'Espace collaboratif (10 membres max)',
+      'Gestion documentaire avancée (200 clients, 600 dossiers)',
+      'Partage sécurisé + dépôt client',
+      'Planning collaboratif + gestion d\'équipe',
+      'Workflows & automatisations illimités',
+      'API illimitée + intégrations',
+      '100 Go de stockage',
+      'Signatures électroniques illimitées',
+      'Tableaux de bord & reporting',
+      'Gestion des droits utilisateurs',
+      'Support prioritaire (24h)'
     ],
     limits: 'Membres : 10 max • Clients actifs : 200 • Documents : ~20 000 • Dossiers actifs : 600 • Stockage : 100 Go',
     notIncluded: [
-      '❌ Stockage illimité',
-      '❌ Support 7j/7 avec SLA',
-      '❌ Formation équipe complète'
+      'Stockage illimité',
+      'Support 7j/7 avec SLA',
+      'Formation équipe complète'
     ],
     icon: Crown,
     color: 'text-purple-600',
@@ -87,16 +87,16 @@ const plans = [
     description: 'Pour cabinets structurés 10 à 50+ personnes',
     summary: 'Solution premium pour cabinets structurés avec tout illimité : membres, clients, stockage, workflows. API, intégrations, formation équipe et support 7j/7 avec SLA.',
     features: [
-      '✅ Espace collaboratif illimité',
-      '✅ Gestion documentaire illimitée',
-      '✅ Stockage illimité',
-      '✅ Membres & clients illimités',
-      '✅ Workflows illimités (priorité CPU)',
-      '✅ API + intégrations (ERP, CRM, GED, Microsoft 365)',
-      '✅ Signatures électroniques illimitées',
-      '✅ Reporting professionnel + exports Excel/PDF',
-      '✅ Onboarding + formation complète équipe',
-      '✅ Support 7j/7 + SLA garanti'
+      'Espace collaboratif illimité',
+      'Gestion documentaire illimitée',
+      'Stockage illimité',
+      'Membres & clients illimités',
+      'Workflows illimités (priorité CPU)',
+      'API + intégrations (ERP, CRM, GED, Microsoft 365)',
+      'Signatures électroniques illimitées',
+      'Reporting professionnel + exports Excel/PDF',
+      'Onboarding + formation complète équipe',
+      'Support 7j/7 + SLA garanti'
     ],
     limits: 'Aucune limite — tout est illimité',
     notIncluded: [],
@@ -339,7 +339,7 @@ export default function Subscription() {
                   </div>
                   
                   <div className="pt-4 border-t border-primary/20">
-                    <h4 className="font-semibold text-black mb-3">✅ Ce qui est inclus :</h4>
+                    <h4 className="font-semibold text-black mb-3">Ce qui est inclus :</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
                       {plan?.features.map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-2">
@@ -350,7 +350,7 @@ export default function Subscription() {
                     </div>
                     {plan?.notIncluded && plan.notIncluded.length > 0 && (
                       <div className="pt-4 border-t border-primary/20">
-                        <h4 className="font-semibold text-black mb-3">❌ Ce qui n'est pas inclus :</h4>
+                        <h4 className="font-semibold text-black mb-3">Ce qui n'est pas inclus :</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                           {plan.notIncluded.map((item, idx) => (
                             <div key={idx} className="flex items-center gap-2">
@@ -402,7 +402,7 @@ export default function Subscription() {
                     </CardHeader>
                     <CardContent>
                       <div className="mb-4">
-                        <h4 className="font-semibold text-black mb-3 text-sm">✅ Inclus :</h4>
+                        <h4 className="font-semibold text-black mb-3 text-sm">Inclus :</h4>
                         <ul className="space-y-2">
                           {plan.features.map((feature, idx) => (
                             <li key={idx} className="flex items-start gap-2 text-sm">
@@ -414,7 +414,7 @@ export default function Subscription() {
                       </div>
                       {plan.notIncluded && plan.notIncluded.length > 0 && (
                         <div className="mb-4 pt-4 border-t">
-                          <h4 className="font-semibold text-black mb-3 text-sm">❌ Non inclus :</h4>
+                          <h4 className="font-semibold text-black mb-3 text-sm">Non inclus :</h4>
                           <ul className="space-y-2">
                             {plan.notIncluded.map((item, idx) => (
                               <li key={idx} className="flex items-start gap-2 text-sm">
