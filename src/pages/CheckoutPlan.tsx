@@ -81,8 +81,7 @@ export default function CheckoutPlan() {
   const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
-  const [numberOfUsers, setNumberOfUsers] = useState<number>(1);
-
+  
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
 
@@ -92,6 +91,10 @@ export default function CheckoutPlan() {
     navigate(`${prefix}/subscription`);
     return null;
   }
+
+  // Initialisation du nombre d'utilisateurs selon la formule
+  const initialUsers = planId === 'essentiel' ? 1 : planId === 'professionnel' ? 2 : 1;
+  const [numberOfUsers, setNumberOfUsers] = useState<number>(initialUsers);
 
   const Icon = planConfig.icon;
   const monthlyPrice = planConfig.monthlyPrice * numberOfUsers;
@@ -103,6 +106,7 @@ export default function CheckoutPlan() {
   // Détermine si on affiche le sélecteur de membres
   const showUserSelector = planId === 'professionnel' || planId === 'cabinet-plus';
   const maxUsers = planId === 'professionnel' ? 10 : 50;
+  const minUsers = planId === 'professionnel' ? 2 : 1;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -228,7 +232,7 @@ export default function CheckoutPlan() {
                           <SelectValue placeholder="Sélectionnez le nombre de membres" />
                         </SelectTrigger>
                         <SelectContent>
-                          {Array.from({ length: maxUsers }, (_, i) => i + 1).map((num) => (
+                          {Array.from({ length: maxUsers - minUsers + 1 }, (_, i) => i + minUsers).map((num) => (
                             <SelectItem key={num} value={num.toString()}>
                               {num} {num === 1 ? 'membre' : 'membres'} - {planConfig.monthlyPrice * num}€/mois
                             </SelectItem>
