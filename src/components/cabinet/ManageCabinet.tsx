@@ -350,9 +350,18 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       setInviteName('');
       setInviteDialogOpen(false);
       loadCabinet();
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Erreur invitation membre:', error);
-      const message = error instanceof Error ? error.message : String(error ?? 'Impossible d\'inviter ce membre');
+      // Gérer les erreurs Supabase qui ont une structure spécifique
+      let message = 'Impossible d\'inviter ce membre';
+      if (error?.message) {
+        message = error.message;
+      } else if (error?.error) {
+        message = error.error;
+      } else if (typeof error === 'string') {
+        message = error;
+      }
+      
       toast({
         title: 'Erreur',
         description: message,
