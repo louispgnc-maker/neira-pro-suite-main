@@ -79,12 +79,6 @@ export default function Solution() {
             Choisissez la formule adaptée à la taille de votre équipe et équipez votre cabinet 
             d'une solution tout-en-un pour digitaliser et automatiser votre activité juridique.
           </p>
-          <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mb-8 max-w-2xl mx-auto">
-            <p className="text-sm text-orange-800">
-              💡 <strong>Décideurs de cabinets :</strong> Ces formules sont conçues pour vous permettre d'équiper 
-              l'ensemble de votre équipe. Le prix indiqué est par utilisateur/mois.
-            </p>
-          </div>
         </div>
 
         {/* Pricing Section */}
