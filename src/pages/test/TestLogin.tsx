@@ -27,8 +27,8 @@ export default function TestLogin() {
       if (error) throw error;
 
       toast.success("Connexion réussie !");
-      // Rediriger vers la création de cabinet
-      navigate('/test-subscription/create-cabinet');
+      // Rediriger vers la page de sélection (Avocat/Notaire)
+      navigate('/test-subscription/payment');
     } catch (error: any) {
       console.error('Erreur connexion:', error);
       toast.error("Erreur lors de la connexion", {

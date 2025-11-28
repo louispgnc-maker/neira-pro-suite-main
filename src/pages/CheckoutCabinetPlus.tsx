@@ -38,9 +38,9 @@ export default function CheckoutCabinetPlus() {
       description: "Veuillez créer votre compte pour finaliser votre abonnement."
     });
     
-    // Rediriger vers l'inscription
+    // Rediriger vers la page de remerciement
     setTimeout(() => {
-      navigate('/auth?plan=cabinet-plus&billing=' + billingPeriod + '&members=' + userCount);
+      navigate('/test-subscription/thanks');
     }, 1500);
   };
 
