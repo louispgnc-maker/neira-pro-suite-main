@@ -51,6 +51,8 @@ interface Cabinet {
   adresse?: string;
   telephone?: string;
   email?: string;
+  subscription_plan?: string;
+  max_members?: number;
 }
 
 interface CabinetMember {
@@ -186,9 +188,22 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       const firstCabinet = ownedCabinet || (filtered && filtered.length > 0 ? filtered[0] : null);
 
       if (firstCabinet) {
-        setCabinet(firstCabinet as unknown as Cabinet);
-        setIsOwner(String((firstCabinet as Record<string, unknown>)['owner_id']) === userId);
+        // Load subscription details from cabinets table
         const cabinetId = String((firstCabinet as Record<string, unknown>)['id'] ?? '');
+        const { data: cabinetDetails } = await supabase
+          .from('cabinets')
+          .select('subscription_plan, max_members')
+          .eq('id', cabinetId)
+          .single();
+        
+        const enrichedCabinet = {
+          ...(firstCabinet as unknown as Cabinet),
+          subscription_plan: cabinetDetails?.subscription_plan || 'essentiel',
+          max_members: cabinetDetails?.max_members || 1
+        };
+        
+        setCabinet(enrichedCabinet);
+        setIsOwner(String((firstCabinet as Record<string, unknown>)['owner_id']) === userId);
 
         // Charger les membres via RPC, sinon fallback table, puis fallback profils (owner + user)
         let membersRes: unknown[] = [];
@@ -306,6 +321,29 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
   const inviteMember = async () => {
     if (!cabinet || !inviteEmail.trim()) return;
+
+    // Check subscription limits
+    const currentMemberCount = members.length;
+    const maxMembers = cabinet.max_members || 1;
+    const subscriptionPlan = cabinet.subscription_plan || 'essentiel';
+
+    if (subscriptionPlan === 'essentiel') {
+      toast({
+        title: 'Abonnement insuffisant',
+        description: "L'abonnement Essentiel ne permet qu'un seul membre. Passez à un abonnement supérieur pour ajouter des membres.",
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (currentMemberCount >= maxMembers) {
+      toast({
+        title: 'Limite atteinte',
+        description: `Votre abonnement permet ${maxMembers} membres maximum. Passez à un abonnement supérieur pour ajouter plus de membres.`,
+        variant: 'destructive',
+      });
+      return;
+    }
 
     setInviteLoading(true);
     try {
@@ -601,16 +639,75 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
             </div>
           )}
 
+          {/* Upgrade alert if at limit */}
+          {isOwner && (cabinet.subscription_plan === 'essentiel' || members.length >= (cabinet.max_members || 1)) && (
+            <Alert className="border-orange-500 bg-orange-50">
+              <AlertDescription className="text-sm">
+                {cabinet.subscription_plan === 'essentiel' ? (
+                  <>
+                    <strong>Abonnement Essentiel :</strong> Vous ne pouvez pas ajouter de membres supplémentaires. 
+                    <Button 
+                      size="sm" 
+                      variant="link" 
+                      className="text-orange-600 underline px-1 h-auto"
+                      onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
+                    >
+                      Passer à un abonnement supérieur
+                    </Button>
+                    pour inviter des collaborateurs.
+                  </>
+                ) : (
+                  <>
+                    <strong>Limite atteinte :</strong> Vous avez atteint la limite de {cabinet.max_members} membres. 
+                    <Button 
+                      size="sm" 
+                      variant="link" 
+                      className="text-orange-600 underline px-1 h-auto"
+                      onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
+                    >
+                      Augmenter votre limite
+                    </Button>
+                    pour ajouter plus de membres.
+                  </>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>
-                <Users className="inline h-4 w-4 mr-1" />
-                Membres du cabinet ({members.length})
-              </Label>
+              <div className="flex items-center gap-3">
+                <Label>
+                  <Users className="inline h-4 w-4 mr-1" />
+                  Membres du cabinet
+                </Label>
+                <Badge
+                  variant={members.length >= (cabinet.max_members || 1) ? 'destructive' : 'default'}
+                  className={members.length >= (cabinet.max_members || 1) ? '' : (role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600')}
+                >
+                  {members.length} / {cabinet.max_members === 0 || cabinet.max_members === 999 ? '∞' : cabinet.max_members}
+                </Badge>
+                {cabinet.subscription_plan === 'essentiel' && (
+                  <Badge variant="secondary" className="text-xs">
+                    Plan Essentiel
+                  </Badge>
+                )}
+              </div>
               {isOwner && (
                 <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className={colorClass}>
+                    <Button 
+                      size="sm" 
+                      className={colorClass}
+                      disabled={cabinet.subscription_plan === 'essentiel' || members.length >= (cabinet.max_members || 1)}
+                      title={
+                        cabinet.subscription_plan === 'essentiel' 
+                          ? "L'abonnement Essentiel ne permet qu'un seul membre"
+                          : members.length >= (cabinet.max_members || 1)
+                          ? 'Limite de membres atteinte'
+                          : 'Inviter un membre'
+                      }
+                    >
                       <Mail className="h-4 w-4 mr-1" />
                       Inviter par email
                     </Button>
