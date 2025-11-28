@@ -95,31 +95,15 @@ export default function Solution() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
                 <div className="text-4xl font-bold text-blue-600 mb-2">39€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
-                <p className="text-sm text-gray-500 mt-2">Pour avocats & notaires indépendants travaillant seuls</p>
+                <p className="text-sm text-gray-500 mt-2">Pour avocats et notaires indépendants</p>
               </div>
               
               <div className="mb-4">
-                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Inclus :</h4>
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Comprend :</h4>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Gestion documentaire (30 clients, 100 dossiers)</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Partage sécurisé + dépôt client</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Planning, tâches, rappels</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Workflows & automatisations illimités</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">API illimitée</span>
+                    <span className="text-sm text-gray-700">1 utilisateur</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -127,35 +111,41 @@ export default function Solution() {
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">5 signatures électroniques/mois</span>
+                    <span className="text-sm text-gray-700">100 dossiers actifs</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Support email (48h)</span>
+                    <span className="text-sm text-gray-700">30 clients actifs</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">15 signatures / mois</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Gestion documentaire</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Partage sécurisé client</span>
                   </div>
                 </div>
               </div>
 
               <div className="mb-4 pt-4 border-t">
-                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Non inclus :</h4>
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Ne comprend pas :</h4>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
                       <div className="w-3 h-3 rounded-full bg-red-500"></div>
                     </div>
-                    <span className="text-sm text-gray-500">Espace collaboratif (travail solo)</span>
+                    <span className="text-sm text-gray-500">Espace collaboratif</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
                       <div className="w-3 h-3 rounded-full bg-red-500"></div>
                     </div>
-                    <span className="text-sm text-gray-500">Gestion des droits utilisateurs</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    </div>
-                    <span className="text-sm text-gray-500">Reporting avancé</span>
+                    <span className="text-sm text-gray-500">Données analysées</span>
                   </div>
                 </div>
               </div>
@@ -175,35 +165,15 @@ export default function Solution() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA PROFESSIONNEL</h3>
                 <div className="text-4xl font-bold text-purple-600 mb-2">59€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
-                <p className="text-sm text-gray-500 mt-2">Pour petits cabinets 2–10 personnes</p>
+                <p className="text-sm text-gray-500 mt-2">Pour cabinets de 2 à 10 utilisateurs</p>
               </div>
               
               <div className="mb-4">
-                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Inclus :</h4>
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Comprend :</h4>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Espace collaboratif (10 membres max)</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Gestion documentaire avancée (200 clients, 600 dossiers)</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Partage sécurisé + dépôt client</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Planning collaboratif + gestion d'équipe</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Workflows & automatisations illimités</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">API illimitée + intégrations</span>
+                    <span className="text-sm text-gray-700">Jusqu'à 10 utilisateurs</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -211,45 +181,33 @@ export default function Solution() {
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Signatures électroniques illimitées</span>
+                    <span className="text-sm text-gray-700">600 dossiers actifs</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Tableaux de bord & reporting</span>
+                    <span className="text-sm text-gray-700">200 clients actifs</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Gestion des droits utilisateurs</span>
+                    <span className="text-sm text-gray-700">80 signatures / mois</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Support prioritaire (24h)</span>
+                    <span className="text-sm text-gray-700">Espace collaboratif complet</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Gestion documentaire avancée</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Tableaux de bord</span>
                   </div>
                 </div>
               </div>
 
               <div className="mb-4 pt-4 border-t">
-                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Non inclus :</h4>
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    </div>
-                    <span className="text-sm text-gray-500">Stockage illimité</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    </div>
-                    <span className="text-sm text-gray-500">Support 7j/7 avec SLA</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    </div>
-                    <span className="text-sm text-gray-500">Formation équipe complète</span>
-                  </div>
-                </div>
+                <p className="text-sm text-green-700 font-semibold">✨ Tout compris - Aucune limitation supplémentaire</p>
               </div>
               
               <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/checkout/professionnel')}>
@@ -263,19 +221,15 @@ export default function Solution() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
                 <div className="text-4xl font-bold text-orange-600 mb-2">89€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
-                <p className="text-sm text-gray-500 mt-2">Pour cabinets structurés 10 à 50+ personnes</p>
+                <p className="text-sm text-gray-500 mt-2">Pour cabinets de 10 à 50+ utilisateurs</p>
               </div>
               
               <div className="mb-4">
-                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Inclus :</h4>
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Comprend :</h4>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Espace collaboratif illimité</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Gestion documentaire illimitée</span>
+                    <span className="text-sm text-gray-700">Utilisateurs illimités</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -283,37 +237,37 @@ export default function Solution() {
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Membres & clients illimités</span>
+                    <span className="text-sm text-gray-700">Dossiers illimités</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Workflows illimités (priorité CPU)</span>
+                    <span className="text-sm text-gray-700">Clients illimités</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">API + intégrations (ERP, CRM, GED, Microsoft 365)</span>
+                    <span className="text-sm text-gray-700">Signatures illimitées</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Signatures électroniques illimitées</span>
+                    <span className="text-sm text-gray-700">Collaboration sans limite</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Reporting professionnel + exports Excel/PDF</span>
+                    <span className="text-sm text-gray-700">Tableaux de bord avancés</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Onboarding + formation complète équipe</span>
+                    <span className="text-sm text-gray-700">Onboarding & formation de l'équipe</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Support 7j/7 + SLA garanti</span>
+                    <span className="text-sm text-gray-700">Accès anticipé aux nouveautés</span>
                   </div>
                 </div>
               </div>
 
               <div className="mb-4 pt-4 border-t">
-                <p className="text-sm text-green-700 font-semibold">✨ Tout est illimité - Aucune restriction</p>
+                <p className="text-sm text-orange-700 font-semibold">🚀 Tout illimité - Solution premium complète</p>
               </div>
               
               <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout/cabinet-plus')}>
