@@ -71,35 +71,41 @@ export default function TestCreateCabinet() {
 
       if (existingCabinet) {
         // Mettre à jour le cabinet existant
+        const updateData: any = {
+          nom: cabinetNom,
+          raison_sociale: raisonSociale || null,
+          siret: siret || null,
+          numero_tva: numeroTVA || null,
+          forme_juridique: formeJuridique || null,
+          capital_social: capitalSocial || null,
+          adresse: adresse,
+          code_postal: codePostal || null,
+          ville: ville || null,
+          pays: pays,
+          telephone: telephone || null,
+          email: cabinetEmail,
+          site_web: siteWeb || null,
+          subscription_plan: 'cabinet-plus',
+          max_members: 20,
+          max_storage_go: null,
+          max_dossiers: null,
+          max_clients: null,
+          max_signatures_per_month: null,
+          billing_period: 'monthly',
+          subscription_status: 'active',
+          subscription_started_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
+        // Ajouter les champs spécifiques aux avocats
+        if (selectedRole === 'avocat') {
+          updateData.barreau = barreau || null;
+          updateData.numero_inscription = numeroInscription || null;
+        }
+
         const { error } = await supabase
           .from('cabinets')
-          .update({
-            nom: cabinetNom,
-            raison_sociale: raisonSociale || null,
-            siret: siret || null,
-            numero_tva: numeroTVA || null,
-            forme_juridique: formeJuridique || null,
-            capital_social: capitalSocial || null,
-            adresse: adresse,
-            code_postal: codePostal || null,
-            ville: ville || null,
-            pays: pays,
-            telephone: telephone || null,
-            email: cabinetEmail,
-            site_web: siteWeb || null,
-            barreau: barreau || null,
-            numero_inscription: numeroInscription || null,
-            subscription_plan: 'cabinet-plus',
-            max_members: 20,
-            max_storage_go: null,
-            max_dossiers: null,
-            max_clients: null,
-            max_signatures_per_month: null,
-            billing_period: 'monthly',
-            subscription_status: 'active',
-            subscription_started_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
+          .update(updateData)
           .eq('id', existingCabinet.id);
 
         if (error) throw error;
@@ -109,36 +115,42 @@ export default function TestCreateCabinet() {
         });
       } else {
         // Créer un nouveau cabinet
+        const insertData: any = {
+          role: selectedRole || 'avocat',
+          nom: cabinetNom,
+          raison_sociale: raisonSociale || null,
+          siret: siret || null,
+          numero_tva: numeroTVA || null,
+          forme_juridique: formeJuridique || null,
+          capital_social: capitalSocial || null,
+          adresse: adresse,
+          code_postal: codePostal || null,
+          ville: ville || null,
+          pays: pays,
+          telephone: telephone || null,
+          email: cabinetEmail,
+          site_web: siteWeb || null,
+          owner_id: user.id,
+          subscription_plan: 'cabinet-plus',
+          max_members: 20,
+          max_storage_go: null,
+          max_dossiers: null,
+          max_clients: null,
+          max_signatures_per_month: null,
+          billing_period: 'monthly',
+          subscription_status: 'active',
+          subscription_started_at: new Date().toISOString()
+        };
+
+        // Ajouter les champs spécifiques aux avocats
+        if (selectedRole === 'avocat') {
+          insertData.barreau = barreau || null;
+          insertData.numero_inscription = numeroInscription || null;
+        }
+
         const { error } = await supabase
           .from('cabinets')
-          .insert({
-            role: selectedRole || 'avocat',
-            nom: cabinetNom,
-            raison_sociale: raisonSociale || null,
-            siret: siret || null,
-            numero_tva: numeroTVA || null,
-            forme_juridique: formeJuridique || null,
-            capital_social: capitalSocial || null,
-            adresse: adresse,
-            code_postal: codePostal || null,
-            ville: ville || null,
-            pays: pays,
-            telephone: telephone || null,
-            email: cabinetEmail,
-            site_web: siteWeb || null,
-            barreau: barreau || null,
-            numero_inscription: numeroInscription || null,
-            owner_id: user.id,
-            subscription_plan: 'cabinet-plus',
-            max_members: 20,
-            max_storage_go: null,
-            max_dossiers: null,
-            max_clients: null,
-            max_signatures_per_month: null,
-            billing_period: 'monthly',
-            subscription_status: 'active',
-            subscription_started_at: new Date().toISOString()
-          });
+          .insert(insertData);
 
         if (error) throw error;
 
