@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
+import AccessDenied from '@/pages/AccessDenied';
 
 interface RoleProtectedRouteProps {
   children: React.ReactNode;
@@ -74,14 +75,8 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
   }
 
   if (userRole && userRole !== requiredRole) {
-    // L'utilisateur a un rôle mais ce n'est pas le bon
-    toast.error("Accès refusé", {
-      description: `Vous avez un compte ${userRole}. Vous ne pouvez pas accéder à l'espace ${requiredRole}.`
-    });
-    
-    // Rediriger vers le dashboard approprié pour son rôle
-    const correctPath = userRole === 'avocat' ? '/avocats/dashboard' : '/notaires/dashboard';
-    return <Navigate to={correctPath} replace />;
+    // L'utilisateur a un rôle mais ce n'est pas le bon - afficher la page d'erreur
+    return <AccessDenied userRole={userRole} attemptedRole={requiredRole} />;
   }
 
   return <>{children}</>;
