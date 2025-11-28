@@ -513,6 +513,13 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <ArrowRight className="h-4 w-4 mr-2" />
                     Espace collaboratif
                   </Button>
+                  <Button 
+                    size="sm" 
+                    className={colorClass}
+                    onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
+                  >
+                    Modifier l'offre
+                  </Button>
                   <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
                     <DialogTrigger asChild>
                       <Button size="sm" className={colorClass} onClick={openEditDialog}>
