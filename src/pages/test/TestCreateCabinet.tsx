@@ -158,13 +158,18 @@ export default function TestCreateCabinet() {
 
         // Ajouter automatiquement le créateur comme membre du cabinet
         if (newCabinet) {
+          // Récupérer l'email de l'utilisateur
+          const { data: userData } = await supabase.auth.getUser();
+          
           const { error: membreError } = await supabase
-            .from('membres')
+            .from('cabinet_members')
             .insert({
               cabinet_id: newCabinet.id,
               user_id: user.id,
-              role: 'responsable',
-              status: 'actif'
+              email: userData?.user?.email || '',
+              role_cabinet: 'Fondateur',
+              status: 'active',
+              joined_at: new Date().toISOString()
             });
 
           if (membreError) {
