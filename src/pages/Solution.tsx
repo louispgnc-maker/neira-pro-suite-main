@@ -89,160 +89,189 @@ export default function Solution() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Offre Essentiel */}
-            <Card className="bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-blue-500 overflow-hidden">
-              {/* En-tête */}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 text-center border-b-2 border-blue-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
-                <div className="text-3xl font-bold text-blue-600 mb-1">39€</div>
-                <p className="text-xs text-gray-600">par mois / utilisateur</p>
-                <p className="text-xs text-gray-500 mt-2">Idéal pour avocats et notaires indépendants</p>
+            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-blue-500">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
+                <div className="text-4xl font-bold text-blue-600 mb-2">39€</div>
+                <p className="text-sm text-gray-600">par mois / utilisateur</p>
+                <p className="text-sm text-gray-500 mt-2">Idéal pour avocats et notaires indépendants</p>
               </div>
               
-              {/* Caractéristiques */}
-              <div className="p-4 bg-blue-50/30">
-                <p className="text-xs text-gray-700 font-medium">1 utilisateur • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois</p>
-              </div>
-
-              {/* Contenu */}
-              <div className="p-6">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2 text-xs">Comprend :</h4>
-                  <div className="space-y-1.5">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Gestion documentaire</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Partage sécurisé client</span>
-                    </div>
+              <div className="mb-4">
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Comprend :</h4>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">1 utilisateur</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">20 Go de stockage</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">100 dossiers actifs</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">30 clients actifs</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">15 signatures / mois</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Gestion documentaire</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Partage sécurisé client</span>
                   </div>
                 </div>
+              </div>
 
-                <div className="mb-4 pt-3 border-t">
-                  <h4 className="font-semibold text-gray-900 mb-2 text-xs">Ne comprend pas :</h4>
-                  <div className="space-y-1.5">
-                    <div className="flex items-start gap-2">
-                      <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                      </div>
-                      <span className="text-xs text-gray-500">Espace collaboratif</span>
+              <div className="mb-4 pt-4 border-t">
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Ne comprend pas :</h4>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
                     </div>
-                    <div className="flex items-start gap-2">
-                      <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                      </div>
-                      <span className="text-xs text-gray-500">Données analysées</span>
+                    <span className="text-sm text-gray-500">Espace collaboratif</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
                     </div>
+                    <span className="text-sm text-gray-500">Données analysées</span>
                   </div>
                 </div>
-                
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/checkout/essentiel')}>
-                  Choisir Essentiel
-                </Button>
               </div>
+              
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/checkout/essentiel')}>
+                Choisir Essentiel
+              </Button>
             </Card>
 
             {/* Offre Professionnel */}
-            <Card className="bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 border-purple-500 relative overflow-hidden">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-xs font-semibold z-10">
+            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 border-purple-500 relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-xs font-semibold">
                 RECOMMANDÉ
               </div>
               
-              {/* En-tête */}
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 text-center border-b-2 border-purple-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">NEIRA PROFESSIONNEL</h3>
-                <div className="text-3xl font-bold text-purple-600 mb-1">59€</div>
-                <p className="text-xs text-gray-600">par mois / utilisateur</p>
-                <p className="text-xs text-gray-500 mt-2">Idéal pour cabinets de 2 à 10 utilisateurs</p>
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA PROFESSIONNEL</h3>
+                <div className="text-4xl font-bold text-purple-600 mb-2">59€</div>
+                <p className="text-sm text-gray-600">par mois / utilisateur</p>
+                <p className="text-sm text-gray-500 mt-2">Idéal pour cabinets de 2 à 10 utilisateurs</p>
               </div>
               
-              {/* Caractéristiques */}
-              <div className="p-4 bg-purple-50/30">
-                <p className="text-xs text-gray-700 font-medium">Jusqu'à 10 utilisateurs • 100 Go • 600 dossiers • 200 clients • 80 signatures/mois</p>
-              </div>
-
-              {/* Contenu */}
-              <div className="p-6">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2 text-xs">Comprend :</h4>
-                  <div className="space-y-1.5">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Espace collaboratif complet</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Gestion documentaire avancée</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Tableaux de bord</span>
-                    </div>
+              <div className="mb-4">
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Comprend :</h4>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Jusqu'à 10 utilisateurs</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">100 Go de stockage</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">600 dossiers actifs</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">200 clients actifs</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">80 signatures / mois</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Espace collaboratif complet</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Gestion documentaire avancée</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Tableaux de bord</span>
                   </div>
                 </div>
-
-                <div className="mb-4 pt-3 border-t">
-                  <p className="text-xs text-green-700 font-semibold">✨ Tout compris</p>
-                </div>
-                
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/checkout/professionnel')}>
-                  Choisir Professionnel
-                </Button>
               </div>
+
+              <div className="mb-4 pt-4 border-t">
+                <p className="text-sm text-green-700 font-semibold">✨ Tout compris - Aucune limitation supplémentaire</p>
+              </div>
+              
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/checkout/professionnel')}>
+                Choisir Professionnel
+              </Button>
             </Card>
 
             {/* Offre Cabinet+ */}
-            <Card className="bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-orange-500 overflow-hidden">
-              {/* En-tête */}
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 text-center border-b-2 border-orange-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
-                <div className="text-3xl font-bold text-orange-600 mb-1">89€</div>
-                <p className="text-xs text-gray-600">par mois / utilisateur</p>
-                <p className="text-xs text-gray-500 mt-2">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
+            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-orange-500">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
+                <div className="text-4xl font-bold text-orange-600 mb-2">89€</div>
+                <p className="text-sm text-gray-600">par mois / utilisateur</p>
+                <p className="text-sm text-gray-500 mt-2">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
               </div>
               
-              {/* Caractéristiques */}
-              <div className="p-4 bg-orange-50/30">
-                <p className="text-xs text-gray-700 font-medium">Tout illimité — aucune restriction</p>
-              </div>
-
-              {/* Contenu */}
-              <div className="p-6">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2 text-xs">Comprend :</h4>
-                  <div className="space-y-1.5">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Utilisateurs, stockage, dossiers illimités</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Collaboration sans limite</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Tableaux de bord avancés</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Onboarding & formation équipe</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-700">Accès anticipé nouveautés</span>
-                    </div>
+              <div className="mb-4">
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Comprend :</h4>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Utilisateurs illimités</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Stockage illimité</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Dossiers illimités</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Clients illimités</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Signatures illimitées</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Collaboration sans limite</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Tableaux de bord avancés</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Onboarding & formation de l'équipe</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">Accès anticipé aux nouveautés</span>
                   </div>
                 </div>
-
-                <div className="mb-4 pt-3 border-t">
-                  <p className="text-xs text-orange-700 font-semibold">🚀 Solution premium complète</p>
-                </div>
-                
-                <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout/cabinet-plus')}>
-                  Choisir Cabinet+
-                </Button>
               </div>
+
+              <div className="mb-4 pt-4 border-t">
+                <p className="text-sm text-orange-700 font-semibold">🚀 Tout illimité - Solution premium complète</p>
+              </div>
+              
+              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout/cabinet-plus')}>
+                Choisir Cabinet+
+              </Button>
             </Card>
           </div>
         </div>
