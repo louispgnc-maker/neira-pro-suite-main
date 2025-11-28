@@ -431,7 +431,7 @@ export default function Dossiers() {
                       dossiers.map((d) => (
                         <TableRow
                           key={d.id}
-                          onDoubleClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}
+                          onClick={() => navigate(role === 'notaire' ? `/notaires/dossiers/${d.id}` : `/avocats/dossiers/${d.id}`)}
                           className="cursor-pointer"
                         >
                           <TableCell className="font-medium">{d.title}</TableCell>
