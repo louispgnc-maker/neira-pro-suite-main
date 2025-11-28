@@ -65,6 +65,14 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
     return <Navigate to={authPath} state={{ from: location }} replace />;
   }
 
+  if (!userRole) {
+    // L'utilisateur n'a pas de cabinet, rediriger vers la page de test pour créer son cabinet
+    toast.error("Aucun cabinet trouvé", {
+      description: "Veuillez créer votre cabinet pour accéder à cet espace."
+    });
+    return <Navigate to="/test-subscription" replace />;
+  }
+
   if (userRole && userRole !== requiredRole) {
     // L'utilisateur a un rôle mais ce n'est pas le bon
     toast.error("Accès refusé", {
