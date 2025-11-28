@@ -48,8 +48,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const meta = ((u as unknown) as { user_metadata?: Record<string, unknown> }).user_metadata ?? {};
   const metaTyped = meta as Record<string, unknown>;
-  const first_name = typeof metaTyped.first_name === 'string' ? metaTyped.first_name : (existing?.first_name ?? '');
-  const last_name = typeof metaTyped.last_name === 'string' ? metaTyped.last_name : (existing?.last_name ?? '');
+  // Support both 'first_name'/'last_name' and 'prenom'/'nom' formats
+  const first_name = typeof metaTyped.first_name === 'string' ? metaTyped.first_name : 
+                     typeof metaTyped.prenom === 'string' ? metaTyped.prenom : 
+                     (existing?.first_name ?? '');
+  const last_name = typeof metaTyped.last_name === 'string' ? metaTyped.last_name : 
+                    typeof metaTyped.nom === 'string' ? metaTyped.nom : 
+                    (existing?.last_name ?? '');
   const email = u.email ?? existing?.email ?? '';
   const role = typeof metaTyped.role === 'string' ? metaTyped.role : (existing?.role ?? 'avocat'); // Default role is 'avocat'
 
