@@ -16,10 +16,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAutoCreateCabinet } from "@/hooks/use-auto-create-cabinet";
 
 export function DashboardNotaire() {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
+  
+  // Hook pour créer automatiquement le cabinet après inscription
+  useAutoCreateCabinet(user, 'notaire');
   const [docCount, setDocCount] = useState(0);
   const [docPrevCount, setDocPrevCount] = useState(0);
   const [pendingSigCount, setPendingSigCount] = useState(0);

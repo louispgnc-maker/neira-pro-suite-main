@@ -10,6 +10,7 @@ import { CheckCircle2, ArrowLeft, CreditCard, Lock, Zap, Crown, Users } from "lu
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabaseClient";
 
 const planConfigs = {
   'essentiel': {
@@ -112,14 +113,95 @@ export default function CheckoutPlan() {
     e.preventDefault();
     setLoading(true);
     
-    // Simuler le traitement du paiement
-    setTimeout(() => {
-      toast.success("Changement d'abonnement en cours...", {
-        description: "Votre nouvel abonnement sera actif dans quelques instants."
+    try {
+      // Vérifier si l'utilisateur a déjà un cabinet
+      const { data: existingCabinets } = await supabase
+        .from('cabinets')
+        .select('id')
+        .eq('owner_id', user?.id)
+        .eq('role', role)
+        .single();
+
+      // Définir les limites selon le plan
+      const subscriptionLimits = {
+        essentiel: {
+          max_members: 1,
+          max_storage_go: 20,
+          max_dossiers: 100,
+          max_clients: 30,
+          max_signatures_per_month: 15
+        },
+        professionnel: {
+          max_members: numberOfUsers,
+          max_storage_go: 100,
+          max_dossiers: 600,
+          max_clients: 200,
+          max_signatures_per_month: 80
+        },
+        'cabinet-plus': {
+          max_members: numberOfUsers,
+          max_storage_go: null, // illimité
+          max_dossiers: null, // illimité
+          max_clients: null, // illimité
+          max_signatures_per_month: null // illimité
+        }
+      };
+
+      const limits = subscriptionLimits[planId as keyof typeof subscriptionLimits];
+
+      if (existingCabinets) {
+        // Mettre à jour le cabinet existant
+        const { error } = await supabase
+          .from('cabinets')
+          .update({
+            subscription_plan: planId,
+            ...limits,
+            billing_period: billingPeriod,
+            subscription_status: 'active',
+            subscription_started_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingCabinets.id);
+
+        if (error) throw error;
+
+        toast.success("Abonnement mis à jour !", {
+          description: `Votre cabinet est maintenant sur le plan ${planConfig.name}.`
+        });
+      } else {
+        // Créer un nouveau cabinet
+        const { error } = await supabase
+          .from('cabinets')
+          .insert({
+            role: role,
+            nom: `Cabinet ${user?.email?.split('@')[0] || 'Sans nom'}`,
+            adresse: 'À compléter',
+            owner_id: user?.id,
+            subscription_plan: planId,
+            ...limits,
+            billing_period: billingPeriod,
+            subscription_status: 'active',
+            subscription_started_at: new Date().toISOString()
+          });
+
+        if (error) throw error;
+
+        toast.success("Cabinet créé avec succès !", {
+          description: `Votre cabinet est prêt avec le plan ${planConfig.name}.`
+        });
+      }
+
+      setTimeout(() => {
+        navigate(`${prefix}/cabinet`);
+      }, 1500);
+    } catch (error: any) {
+      console.error('Erreur lors de la souscription:', error);
+      toast.error("Erreur lors de la souscription", {
+        description: error.message || "Une erreur est survenue."
       });
+    } finally {
       setLoading(false);
-      navigate(`${prefix}/subscription`);
-    }, 2000);
+    }
   };
 
   return (

@@ -23,13 +23,22 @@ export default function CheckoutEssentiel() {
     e.preventDefault();
     setLoading(true);
     
-    // Simuler le traitement du paiement
+    // Stocker les infos du plan dans sessionStorage
+    sessionStorage.setItem('pendingSubscription', JSON.stringify({
+      plan: 'essentiel',
+      billingPeriod: billingPeriod,
+      members: 1,
+      price: total
+    }));
+    
+    toast.info("Étape suivante : Création de compte", {
+      description: "Veuillez créer votre compte pour finaliser votre abonnement."
+    });
+    
+    // Rediriger vers l'inscription
     setTimeout(() => {
-      toast.success("Paiement en cours de traitement...");
-      setLoading(false);
-      // Rediriger vers la page d'inscription après paiement
-      navigate('/');
-    }, 2000);
+      navigate('/auth?plan=essentiel&billing=' + billingPeriod);
+    }, 1500);
   };
 
   return (
