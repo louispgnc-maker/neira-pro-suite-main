@@ -10,6 +10,13 @@ interface RoleProtectedRouteProps {
   requiredRole: 'avocat' | 'notaire';
 }
 
+// Liste des emails admin qui ont accès à tous les espaces
+const ADMIN_EMAILS = [
+  'simontom33@sfr.fr',
+  'louispgnc@gmail.com',
+  'louis.poignonec@essca.eu'
+];
+
 export default function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {
   const { user } = useAuth();
   const location = useLocation();
@@ -64,6 +71,12 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
     // Rediriger vers la page de connexion appropriée
     const authPath = requiredRole === 'avocat' ? '/avocats/auth' : '/notaires/auth';
     return <Navigate to={authPath} state={{ from: location }} replace />;
+  }
+
+  // Les admins ont accès à tous les espaces
+  if (user.email && ADMIN_EMAILS.includes(user.email)) {
+    console.log('[RoleProtectedRoute] Admin user detected:', user.email);
+    return <>{children}</>;
   }
 
   if (!userRole) {
