@@ -199,54 +199,16 @@ export function AppSidebar() {
   const spaceBtnClass = role === 'notaire'
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
-  const spaceLabel = "Changer d'espace";
+  
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarHeader className={`border-b border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} gap-2`}>
+        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start'} gap-2`}>
           <SidebarTrigger
             className={
               `h-8 w-8 rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
             }
           />
-          {!isCollapsed && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  className={`h-8 px-3 text-xs font-semibold rounded-md shadow-sm text-white ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}`}
-                >
-                  Changer d'espace
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="start"
-                className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}
-              >
-                <DropdownMenuItem
-                  onClick={() => navigate('/avocats/auth')}
-                  disabled={role === 'avocat'}
-                  className={
-                    role === 'avocat'
-                      ? 'opacity-60 text-muted-foreground'
-                      : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white data-[highlighted]:bg-blue-600 data-[highlighted]:text-white'
-                  }
-                >
-                  Espace Avocat
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => navigate('/notaires/auth')}
-                  disabled={role === 'notaire'}
-                  className={
-                    role === 'notaire'
-                      ? 'opacity-60 text-muted-foreground'
-                      : 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white data-[highlighted]:bg-orange-600 data-[highlighted]:text-white'
-                  }
-                >
-                  Espace Notaire
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
         </div>
       </SidebarHeader>
 
