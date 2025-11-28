@@ -135,7 +135,7 @@ export default function CheckoutProfessionnel() {
                   </div>
                 </CardContent>
               </Card>
-
+            </div>
 
             {/* Colonne droite : Formulaire de paiement */}
             <div className="space-y-6">
@@ -301,23 +301,6 @@ export default function CheckoutProfessionnel() {
 
                     <p className="text-xs text-gray-600 text-center">
                       En confirmant, vous acceptez nos CGV. Résiliation possible à tout moment.
-                    </p>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-                    >
-                      {loading ? "Traitement..." : "Confirmer le paiement"}
-                    </Button>
-
-                    <p className="text-xs text-center text-gray-500">
-                      En confirmant, vous acceptez nos conditions générales de vente
                     </p>
                   </form>
                 </CardContent>
