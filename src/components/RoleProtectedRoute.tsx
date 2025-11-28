@@ -24,14 +24,22 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
 
       try {
         // Récupérer le cabinet de l'utilisateur
-        const { data: cabinet } = await supabase
+        const { data: cabinet, error } = await supabase
           .from('cabinets')
           .select('role')
           .eq('owner_id', user.id)
           .single();
 
+        console.log('[RoleProtectedRoute] User:', user.id);
+        console.log('[RoleProtectedRoute] Cabinet data:', cabinet);
+        console.log('[RoleProtectedRoute] Cabinet error:', error);
+        console.log('[RoleProtectedRoute] Required role:', requiredRole);
+
         if (cabinet) {
           setUserRole(cabinet.role as 'avocat' | 'notaire');
+          console.log('[RoleProtectedRoute] User role set to:', cabinet.role);
+        } else {
+          console.log('[RoleProtectedRoute] No cabinet found for user');
         }
       } catch (error) {
         console.error('Erreur lors de la vérification du rôle:', error);
