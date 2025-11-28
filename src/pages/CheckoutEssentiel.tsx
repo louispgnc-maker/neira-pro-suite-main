@@ -140,25 +140,6 @@ export default function CheckoutEssentiel() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">{/* Période de facturation */}
-                      <div>
-                        <h4 className="font-semibold text-gray-900">Support email</h4>
-                        <p className="text-sm text-gray-600 mt-1">Réponse sous 48h</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Colonne droite : Choix paiement + Formulaire */}
-            <div className="space-y-6">
-              {/* Choix du mode de paiement */}
-              <Card className="bg-white/90 backdrop-blur">
-                <CardHeader>
-                  <CardTitle className="text-xl">Choisissez votre mode de paiement</CardTitle>
-                </CardHeader>
-                <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Période de facturation */}
                     <div className="space-y-3">
@@ -291,45 +272,6 @@ export default function CheckoutEssentiel() {
 
                     <p className="text-xs text-gray-600 text-center">
                       En confirmant, vous acceptez nos CGV. Résiliation possible à tout moment.
-                    </p>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-                        <img 
-                          src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Image%201.jpeg" 
-                          alt="Mastercard" 
-                          className="h-8 object-contain"
-                        />
-                        <img 
-                          src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Image%202.jpeg" 
-                          alt="Stripe" 
-                          className="h-8 object-contain"
-                        />
-                        <img 
-                          src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Image%203.jpeg" 
-                          alt="PayPal" 
-                          className="h-8 object-contain"
-                        />
-                      </div>
-                    </div>
-
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6"
-                      disabled={loading}
-                    >
-                      {loading ? "Traitement..." : "Confirmer le paiement"}
-                    </Button>
-
-                    <p className="text-xs text-center text-gray-500">
-                      En confirmant, vous acceptez nos conditions générales de vente
                     </p>
                   </form>
                 </CardContent>
