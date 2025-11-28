@@ -158,9 +158,19 @@ export default function CheckoutCabinetPlus() {
                               {num} utilisateur{num > 1 ? 's' : ''}
                             </SelectItem>
                           ))}
+                          <SelectItem value="contact" disabled>
+                            Plus de 50 ? Contactez-nous
+                          </SelectItem>
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-gray-600">Prix par utilisateur</p>
+                      <p className="text-xs text-gray-600">
+                        {userCount >= 50 ? "Plus de 50 utilisateurs ? " : "Prix par utilisateur"}
+                        {userCount >= 50 && (
+                          <a href="/contact" className="text-orange-600 hover:text-orange-700 underline">
+                            Contactez-nous
+                          </a>
+                        )}
+                      </p>
                     </div>
 
                     {/* Période de facturation */}

@@ -237,10 +237,24 @@ export default function CheckoutPlan() {
                               {num} {num === 1 ? 'membre' : 'membres'} - {planConfig.monthlyPrice * num}€/mois
                             </SelectItem>
                           ))}
+                          {planId === 'cabinet-plus' && (
+                            <SelectItem value="contact" disabled>
+                              Plus de 50 ? Contactez-nous
+                            </SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-black/60">
-                        Prix unitaire : {planConfig.monthlyPrice}€/mois par membre
+                        {planId === 'cabinet-plus' && numberOfUsers >= 50 ? (
+                          <>
+                            Plus de 50 membres ?{' '}
+                            <a href="/contact" className="text-orange-600 hover:text-orange-700 underline">
+                              Contactez-nous
+                            </a>
+                          </>
+                        ) : (
+                          `Prix unitaire : ${planConfig.monthlyPrice}€/mois par membre`
+                        )}
                       </p>
                     </div>
                   )}
