@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle2, ArrowLeft, CreditCard, Lock, Zap, Crown, Users } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -80,6 +81,7 @@ export default function CheckoutPlan() {
   const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [numberOfUsers, setNumberOfUsers] = useState<number>(1);
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -92,11 +94,15 @@ export default function CheckoutPlan() {
   }
 
   const Icon = planConfig.icon;
-  const monthlyPrice = planConfig.monthlyPrice;
+  const monthlyPrice = planConfig.monthlyPrice * numberOfUsers;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
   const price = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
   const tva = Math.round(price * 0.2 * 100) / 100;
   const total = Math.round((price + tva) * 100) / 100;
+
+  // Détermine si on affiche le sélecteur de membres
+  const showUserSelector = planId === 'professionnel' || planId === 'cabinet-plus';
+  const maxUsers = planId === 'professionnel' ? 10 : 50;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,58 +132,53 @@ export default function CheckoutPlan() {
         </div>
 
         {/* En-tête de l'offre */}
-        <Card className={`bg-gradient-to-br from-${planConfig.color}-50 to-${planConfig.color}-100 border-2 border-${planConfig.color}-300 mb-8 bg-card`}>
-          <CardContent className="p-8">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <Icon className={`h-10 w-10 text-${planConfig.color}-600`} />
-                <h1 className="text-4xl font-bold text-black">Neira {planConfig.name}</h1>
+        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+          {/* Nom de la formule */}
+          <Card className="bg-card">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <Icon className={`h-8 w-8 text-${planConfig.color}-600`} />
+                <h1 className="text-2xl font-bold text-black">Neira {planConfig.name}</h1>
               </div>
-              <p className="text-black mb-4">{planConfig.description}</p>
-              {planConfig.limits && (
-                <div className="mb-6 p-3 bg-white/80 rounded-lg inline-block">
-                  <p className="text-sm text-black font-medium">{planConfig.limits}</p>
-                </div>
-              )}
-              <div className="flex items-center justify-center gap-8">
-                <div className="text-5xl font-bold text-black">{monthlyPrice}€</div>
-                <div className="text-left">
-                  <p className="text-sm text-black">par mois / utilisateur</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              <p className="text-sm text-black/70">{planConfig.description}</p>
+            </CardContent>
+          </Card>
+
+          {/* Limites et specs */}
+          <Card className="lg:col-span-2 bg-card">
+            <CardContent className="p-6">
+              <h3 className="font-semibold text-black mb-3">Caractéristiques</h3>
+              <p className="text-sm text-black">{planConfig.limits}</p>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Layout 2 colonnes : Fonctionnalités à gauche, Paiement à droite */}
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Colonne gauche : Fonctionnalités détaillées */}
+          {/* Colonne gauche : Atouts */}
           <div className="space-y-6">
             <Card className="bg-card">
               <CardHeader>
-                <CardTitle className="text-2xl text-black">✨ Tout ce qui est inclus</CardTitle>
-                <CardDescription className="text-black">Fonctionnalités complètes de l'offre {planConfig.name}</CardDescription>
+                <CardTitle className="text-xl text-black">Ce qui est inclus</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {planConfig.features.map((feature, idx) => (
-                    <div key={idx} className={`flex items-start gap-3 p-3 bg-${planConfig.color}-50/50 rounded-lg border border-${planConfig.color}-200/50`}>
-                      <div className={`w-10 h-10 rounded-full bg-${planConfig.color}-600 flex items-center justify-center flex-shrink-0`}>
-                        <CheckCircle2 className="w-6 h-6 text-white" />
-                      </div>
+                    <div key={idx} className="flex items-start gap-3">
+                      <CheckCircle2 className={`w-5 h-5 text-${planConfig.color}-600 flex-shrink-0 mt-0.5`} />
                       <div>
-                        <h4 className="font-semibold text-black">{feature.title}</h4>
-                        <p className="text-sm text-black/70 mt-1">{feature.description}</p>
+                        <h4 className="font-medium text-black text-sm">{feature.title}</h4>
+                        <p className="text-xs text-black/60 mt-0.5">{feature.description}</p>
                       </div>
                     </div>
                   ))}
                 </div>
                 {planConfig.notIncluded && planConfig.notIncluded.length > 0 && (
                   <div className="mt-6 pt-6 border-t">
-                    <h4 className="font-semibold text-black mb-3">❌ Non inclus dans cette offre :</h4>
+                    <h4 className="font-semibold text-black mb-3 text-sm">Non inclus :</h4>
                     <div className="space-y-2">
                       {planConfig.notIncluded.map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <div key={idx} className="flex items-start gap-2 text-sm text-black/60">
                           <span className="text-red-500">•</span>
                           <span>{item}</span>
                         </div>
@@ -192,10 +193,10 @@ export default function CheckoutPlan() {
             <Card className="bg-card border border-green-200">
               <CardContent className="p-6">
                 <div className="flex items-start gap-3">
-                  <Lock className="w-8 h-8 text-green-600 flex-shrink-0" />
+                  <Lock className="w-6 h-6 text-green-600 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-black mb-2">Paiement 100% sécurisé</h4>
-                    <ul className="text-sm text-black/70 space-y-1">
+                    <h4 className="font-semibold text-black mb-2 text-sm">Paiement 100% sécurisé</h4>
+                    <ul className="text-xs text-black/70 space-y-1">
                       <li>• Cryptage SSL de bout en bout</li>
                       <li>• Aucune donnée bancaire stockée</li>
                       <li>• Résiliation possible à tout moment</li>
@@ -211,31 +212,50 @@ export default function CheckoutPlan() {
           <div className="space-y-6">
             <Card className="bg-card border-2 border-primary">
               <CardHeader>
-                <CardTitle className="text-2xl text-black flex items-center gap-2">
-                  <CreditCard className="w-6 h-6" />
-                  Finaliser le changement
+                <CardTitle className="text-xl text-black flex items-center gap-2">
+                  <CreditCard className="w-5 h-5" />
+                  Espace de paiement
                 </CardTitle>
-                <CardDescription className="text-black">
-                  Passez à l'offre {planConfig.name} dès maintenant
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Sélecteur de nombre d'utilisateurs */}
+                  {showUserSelector && (
+                    <div className="space-y-2">
+                      <Label className="text-black">Nombre de membres</Label>
+                      <Select value={numberOfUsers.toString()} onValueChange={(v) => setNumberOfUsers(parseInt(v))}>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Sélectionnez le nombre de membres" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: maxUsers }, (_, i) => i + 1).map((num) => (
+                            <SelectItem key={num} value={num.toString()}>
+                              {num} {num === 1 ? 'membre' : 'membres'} - {planConfig.monthlyPrice * num}€/mois
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-black/60">
+                        Prix unitaire : {planConfig.monthlyPrice}€/mois par membre
+                      </p>
+                    </div>
+                  )}
+
                   {/* Période de facturation */}
                   <div className="space-y-3">
                     <Label className="text-black">Période de facturation</Label>
                     <RadioGroup value={billingPeriod} onValueChange={(v) => setBillingPeriod(v as 'monthly' | 'yearly')}>
                       <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-orange-500/20 transition-colors">
                         <RadioGroupItem value="monthly" id="monthly" />
-                        <Label htmlFor="monthly" className="flex-1 cursor-pointer text-black">
+                        <Label htmlFor="monthly" className="flex-1 cursor-pointer text-black text-sm">
                           Mensuel - {monthlyPrice}€/mois
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-orange-500/20 transition-colors">
                         <RadioGroupItem value="yearly" id="yearly" />
-                        <Label htmlFor="yearly" className="flex-1 cursor-pointer text-black">
+                        <Label htmlFor="yearly" className="flex-1 cursor-pointer text-black text-sm">
                           Annuel - {yearlyPrice}€/an
-                          <span className="ml-2 text-green-600 font-semibold">(10% d'économie)</span>
+                          <span className="ml-2 text-green-600 font-semibold text-xs">(10% d'économie)</span>
                         </Label>
                       </div>
                     </RadioGroup>
@@ -244,7 +264,7 @@ export default function CheckoutPlan() {
                   {/* Informations de carte */}
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="cardNumber" className="text-black">Numéro de carte</Label>
+                      <Label htmlFor="cardNumber" className="text-black text-sm">Numéro de carte</Label>
                       <Input 
                         id="cardNumber"
                         placeholder="1234 5678 9012 3456"
@@ -255,7 +275,7 @@ export default function CheckoutPlan() {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="expiry" className="text-black">Date d'expiration</Label>
+                        <Label htmlFor="expiry" className="text-black text-sm">Date d'expiration</Label>
                         <Input 
                           id="expiry"
                           placeholder="MM/AA"
@@ -264,7 +284,7 @@ export default function CheckoutPlan() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="cvc" className="text-black">CVC</Label>
+                        <Label htmlFor="cvc" className="text-black text-sm">CVC</Label>
                         <Input 
                           id="cvc"
                           placeholder="123"
@@ -275,7 +295,7 @@ export default function CheckoutPlan() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-black">Nom sur la carte</Label>
+                      <Label htmlFor="name" className="text-black text-sm">Nom sur la carte</Label>
                       <Input 
                         id="name"
                         placeholder={`${profile?.first_name || ''} ${profile?.last_name || ''}`}
@@ -296,7 +316,7 @@ export default function CheckoutPlan() {
                       <span>TVA (20%)</span>
                       <span>{tva}€</span>
                     </div>
-                    <div className="flex justify-between font-bold text-lg border-t pt-2 text-black">
+                    <div className="flex justify-between font-bold text-base border-t pt-2 text-black">
                       <span>Total</span>
                       <span>{total}€</span>
                     </div>
@@ -307,12 +327,11 @@ export default function CheckoutPlan() {
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                     disabled={loading}
                   >
-                    {loading ? "Traitement en cours..." : `Confirmer le changement - ${total}€`}
+                    {loading ? "Traitement en cours..." : `Confirmer - ${total}€`}
                   </Button>
 
                   <p className="text-xs text-black/60 text-center">
-                    En confirmant, vous acceptez nos conditions générales de vente.
-                    Vous pouvez résilier à tout moment.
+                    En confirmant, vous acceptez nos CGV. Résiliation possible à tout moment.
                   </p>
                 </form>
               </CardContent>
