@@ -10,6 +10,8 @@ import {
   LogOut,
   UserCircle2,
   Mail,
+  BarChart3,
+  Lock,
 } from "lucide-react";
 import {
   Sidebar,
@@ -39,6 +41,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 
 function getMenuItems(role: 'avocat' | 'notaire') {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -64,6 +67,10 @@ export function AppSidebar() {
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
+  
+  const limits = useSubscriptionLimits(role);
+  const hasStatisticsAccess = limits.subscription_plan === 'cabinet-plus';
+  
   const menuItems = getMenuItems(role);
   const primaryItems = menuItems.filter((m) => ["Tableau de bord", "Mon cabinet"].includes(m.title));
   const secondaryItems = menuItems.filter((m) => !["Tableau de bord", "Mon cabinet"].includes(m.title));
@@ -240,6 +247,33 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              
+              {/* Statistiques - Cabinet+ uniquement */}
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  asChild={hasStatisticsAccess} 
+                  isActive={isActive(`${role === 'notaire' ? '/notaires' : '/avocats'}/statistiques`)}
+                  disabled={!hasStatisticsAccess}
+                  className={!hasStatisticsAccess ? 'opacity-50 cursor-not-allowed' : ''}
+                >
+                  {hasStatisticsAccess ? (
+                    <NavLink to={`${role === 'notaire' ? '/notaires' : '/avocats'}/statistiques`} className="flex items-center gap-3">
+                      <BarChart3 className="h-4 w-4" />
+                      {!isCollapsed && <span>Statistiques</span>}
+                    </NavLink>
+                  ) : (
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <BarChart3 className="h-4 w-4" />
+                      {!isCollapsed && (
+                        <>
+                          <span>Statistiques</span>
+                          <Lock className="h-3 w-3 ml-auto" />
+                        </>
+                      )}
+                    </div>
+                  )}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
