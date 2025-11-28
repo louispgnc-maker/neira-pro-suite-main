@@ -14,7 +14,7 @@ const planConfigs = {
   'essentiel': {
     name: 'Essentiel',
     monthlyPrice: 39,
-    description: 'Pour avocats et notaires indépendants',
+    description: 'Idéal pour avocats et notaires indépendants',
     icon: Zap,
     color: 'blue',
     limits: '1 utilisateur • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois',
@@ -35,7 +35,7 @@ const planConfigs = {
   'professionnel': {
     name: 'Professionnel',
     monthlyPrice: 59,
-    description: 'Pour cabinets de 2 à 10 utilisateurs',
+    description: 'Idéal pour cabinets de 2 à 10 utilisateurs',
     icon: Crown,
     color: 'purple',
     limits: 'Jusqu\'à 10 utilisateurs • 100 Go • 600 dossiers • 200 clients • 80 signatures/mois',
@@ -54,7 +54,7 @@ const planConfigs = {
   'cabinet-plus': {
     name: 'Cabinet+',
     monthlyPrice: 89,
-    description: 'Pour cabinets de 10 à 50+ utilisateurs',
+    description: 'Idéal pour cabinets de 10 à 50+ utilisateurs',
     icon: Users,
     color: 'orange',
     limits: 'Tout illimité — aucune restriction',

@@ -24,7 +24,7 @@ const plans = [
     name: 'Essentiel',
     price: '39€',
     period: '/mois',
-    description: 'Pour avocats et notaires indépendants',
+    description: 'Idéal pour avocats et notaires indépendants',
     summary: 'Conçu pour un seul professionnel qui travaille en autonomie.',
     features: [
       '1 utilisateur',
@@ -50,7 +50,7 @@ const plans = [
     name: 'Professionnel',
     price: '59€',
     period: '/mois',
-    description: 'Pour cabinets de 2 à 10 utilisateurs',
+    description: 'Idéal pour cabinets de 2 à 10 utilisateurs',
     summary: 'Idéal pour les cabinets qui veulent structurer leurs workflows avec espace collaboratif complet.',
     features: [
       'Jusqu\'à 10 utilisateurs',
@@ -75,7 +75,7 @@ const plans = [
     name: 'Cabinet+',
     price: '89€',
     period: '/mois',
-    description: 'Pour cabinets de 10 à 50+ utilisateurs',
+    description: 'Idéal pour cabinets de 10 à 50+ utilisateurs',
     summary: 'Solution premium pour cabinets structurés avec tout illimité.',
     features: [
       'Utilisateurs illimités',
