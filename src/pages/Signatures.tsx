@@ -46,6 +46,15 @@ export default function Signatures() {
 
   const limits = useSubscriptionLimits(role);
 
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Listen for subscription changes
+  useEffect(() => {
+    const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
+    window.addEventListener('subscription-updated', handleRefresh);
+    return () => window.removeEventListener('subscription-updated', handleRefresh);
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
     async function load() {
@@ -77,7 +86,7 @@ export default function Signatures() {
     return () => {
       isMounted = false;
     };
-  }, [user, role, debounced]);
+  }, [user, role, debounced, refreshTrigger]);
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'

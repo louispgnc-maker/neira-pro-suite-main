@@ -44,6 +44,14 @@ export default function Dossiers() {
   const [dossiers, setDossiers] = useState<DossierRow[]>([]);
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Listen for subscription changes
+  useEffect(() => {
+    const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
+    window.addEventListener('subscription-updated', handleRefresh);
+    return () => window.removeEventListener('subscription-updated', handleRefresh);
+  }, []);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -174,7 +182,7 @@ export default function Dossiers() {
     load();
     loadRefs();
     return () => { mounted = false; };
-  }, [user, role, debounced]);
+  }, [user, role, debounced, refreshTrigger]);
 
   // debounce search
   useEffect(() => {

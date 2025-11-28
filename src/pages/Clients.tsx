@@ -43,6 +43,15 @@ export default function Clients() {
 
   const limits = useSubscriptionLimits(role);
 
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Listen for subscription changes
+  useEffect(() => {
+    const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
+    window.addEventListener('subscription-updated', handleRefresh);
+    return () => window.removeEventListener('subscription-updated', handleRefresh);
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
     async function load() {
@@ -74,7 +83,7 @@ export default function Clients() {
     return () => {
       isMounted = false;
     };
-  }, [user, debounced, role]);
+  }, [user, debounced, role, refreshTrigger]);
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'

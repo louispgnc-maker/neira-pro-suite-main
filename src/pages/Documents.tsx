@@ -62,6 +62,7 @@ export default function Documents() {
   const [viewerUrl, setViewerUrl] = useState("");
   const [viewerDocName, setViewerDocName] = useState("");
   const [storageUsed, setStorageUsed] = useState(0);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -69,6 +70,13 @@ export default function Documents() {
   if (location.pathname.includes('/avocats')) role = 'avocat';
 
   const limits = useSubscriptionLimits(role);
+
+  // Listen for subscription changes
+  useEffect(() => {
+    const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
+    window.addEventListener('subscription-updated', handleRefresh);
+    return () => window.removeEventListener('subscription-updated', handleRefresh);
+  }, []);
 
   // Debounce search
   useEffect(() => {
@@ -103,7 +111,7 @@ export default function Documents() {
     }
     
     loadStorage();
-  }, [user, role, documents]); // Reload when documents change
+  }, [user, role, documents, refreshTrigger]); // Reload when documents change or subscription updates
 
   useEffect(() => {
     let isMounted = true;
