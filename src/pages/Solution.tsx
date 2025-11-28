@@ -73,20 +73,26 @@ export default function Solution() {
       <div className="container mx-auto px-4 py-24">
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Découvrez Neira
+            Vous êtes responsable de cabinet ?
           </h1>
           <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-            La solution complète pour digitaliser et automatiser votre cabinet juridique. 
-            Gagnez du temps, améliorez votre productivité et concentrez-vous sur l'essentiel : votre métier.
+            Choisissez la formule adaptée à la taille de votre équipe et équipez votre cabinet 
+            d'une solution tout-en-un pour digitaliser et automatiser votre activité juridique.
           </p>
+          <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mb-8 max-w-2xl mx-auto">
+            <p className="text-sm text-orange-800">
+              💡 <strong>Décideurs de cabinets :</strong> Ces formules sont conçues pour vous permettre d'équiper 
+              l'ensemble de votre équipe. Le prix indiqué est par utilisateur/mois.
+            </p>
+          </div>
         </div>
 
         {/* Pricing Section */}
         <div className="max-w-6xl mx-auto mb-16">
           <h2 className="text-3xl font-bold text-center mb-4 text-gray-900">
-            ⭐ Grille Tarifaire Neira
+            ⭐ Choisissez votre formule
           </h2>
-          <p className="text-center text-gray-600 mb-12">Version cohérente & ultra-compétitive</p>
+          <p className="text-center text-gray-600 mb-12">Tarification transparente adaptée à chaque taille de cabinet</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Offre Essentiel */}
