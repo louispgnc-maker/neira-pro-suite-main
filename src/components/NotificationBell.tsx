@@ -26,38 +26,48 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const { toast } = useToast();
 
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
-      if (!user) {
-        setNotifications([]);
-        setUnreadCount(0);
-        setLoading(false);
-        return;
+  const loadNotifications = async () => {
+    if (!user) {
+      setNotifications([]);
+      setUnreadCount(0);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      // Use RPCs added in the DB to get unread count and notifications
+      const { data: unreadData, error: unreadErr } = await supabase.rpc('get_unread_notifications_count', { p_cabinet_id: cabinetId ?? null });
+      if (!unreadErr) {
+        const cnt = typeof unreadData === 'number' ? unreadData : (Array.isArray(unreadData) ? Number(unreadData[0]) : 0);
+        setUnreadCount(cnt ?? 0);
       }
-      setLoading(true);
-      try {
-          // Use RPCs added in the DB to get unread count and notifications
-          const { data: unreadData, error: unreadErr } = await supabase.rpc('get_unread_notifications_count', { p_cabinet_id: cabinetId ?? null });
-        if (!unreadErr) {
-          const cnt = typeof unreadData === 'number' ? unreadData : (Array.isArray(unreadData) ? Number(unreadData[0]) : 0);
-          if (active) setUnreadCount(cnt ?? 0);
-        }
 
-          const { data: list, error: listErr } = await supabase.rpc('get_notifications', { p_limit: 20, p_offset: 0, p_cabinet_id: cabinetId ?? null });
-        if (!listErr && active && Array.isArray(list)) {
-          setNotifications(list as NotificationRow[]);
-        }
-      } catch (e) {
-        console.error('[NotificationBell] load error', e);
-        if (active) setNotifications([]);
-      } finally {
-        if (active) setLoading(false);
-      } 
-    };
-    load();
-    return () => { active = false; };
+      const { data: list, error: listErr } = await supabase.rpc('get_notifications', { p_limit: 20, p_offset: 0, p_cabinet_id: cabinetId ?? null });
+      if (!listErr && Array.isArray(list)) {
+        setNotifications(list as NotificationRow[]);
+      }
+    } catch (e) {
+      console.error('[NotificationBell] load error', e);
+      setNotifications([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
   }, [user, role, cabinetId]);
+
+  // Recharger quand la modal se ferme pour s'assurer d'avoir le bon compteur
+  useEffect(() => {
+    if (!open && user) {
+      // Petit délai pour laisser le temps aux updates de se propager
+      const timer = setTimeout(() => {
+        loadNotifications();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [open, user]);
 
   // Realtime subscription to the notifications table for this user
   useEffect(() => {
@@ -172,13 +182,18 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                     const onNavigate = async (meta?: unknown) => {
                       try {
                         if (!n.read) {
-                          const { data, error } = await supabase.rpc('mark_notification_read', { p_id: n.id });
-                          if (error) console.error('mark_notification_read error', error);
+                          const { error } = await supabase.rpc('mark_notification_read', { p_id: n.id });
+                          if (error) {
+                            console.error('mark_notification_read error', error);
+                          } else {
+                            // Mise à jour réussie, mettre à jour l'état local
+                            setNotifications((cur) => cur.map(x => x.id === n.id ? { ...x, read: true } : x));
+                            setUnreadCount((c) => Math.max(0, c - 1));
+                          }
                         }
-                      } catch (e) { console.error('mark_notification_read error', e); }
-
-                      setNotifications((cur) => cur.map(x => x.id === n.id ? { ...x, read: true } : x));
-                      setUnreadCount((c) => Math.max(0, c - (n.read ? 0 : 1)));
+                      } catch (e) { 
+                        console.error('mark_notification_read error', e); 
+                      }
 
                       try {
                         let metadataToUse: unknown = meta;
