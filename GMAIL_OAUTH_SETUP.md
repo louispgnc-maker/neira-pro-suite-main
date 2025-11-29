@@ -23,18 +23,17 @@
 3. Si demandé, configurez l'écran de consentement OAuth d'abord :
    - User Type: **External**
    - App name: **Neira**
-   - User support email: votre email
-   - Developer contact: votre email
-   - Scopes: Ajoutez `/auth/gmail.readonly` et `/auth/gmail.send`
-   - Test users: Ajoutez votre email Gmail
+   - User support email: `contact@neira.fr`
+   - Developer contact: `contact@neira.fr`
+   - Scopes: Ajoutez `https://www.googleapis.com/auth/gmail.readonly`, `https://www.googleapis.com/auth/gmail.send`, et `https://www.googleapis.com/auth/gmail.compose`
+   - **Publishing status**: Cliquez "PUBLISH APP" pour autoriser tous les utilisateurs (sinon seuls les "Test users" pourront se connecter)
 4. Retournez à Credentials → **Create Credentials** → **OAuth client ID**
 5. Application type: **Web application**
 6. Name: **Neira Web Client**
 7. **Authorized redirect URIs** : Ajoutez
    ```
-   https://VOTRE-PROJET.supabase.co/functions/v1/gmail-oauth-callback
+   https://xxeccstsrnwjxcdprwjd.supabase.co/functions/v1/gmail-oauth-callback
    ```
-   ⚠️ Remplacez `VOTRE-PROJET` par votre vrai projet Supabase !
 
 8. Cliquez **Create**
 9. **📝 NOTEZ** : `Client ID` et `Client secret` (vous en aurez besoin !)
@@ -56,7 +55,7 @@ supabase login
 ### 2.3 Link votre projet
 ```bash
 cd /Users/louispgnc/Desktop/neira-pro-suite-main
-supabase link --project-ref VOTRE-PROJET-REF
+supabase link --project-ref xxeccstsrnwjxcdprwjd
 ```
 
 ### 2.4 Configurer les secrets (IMPORTANT !)
@@ -120,7 +119,7 @@ supabase functions deploy gmail-oauth-callback
 ### Erreur "redirect_uri_mismatch"
 ➡️ Vérifiez que l'URI dans Google Console est exactement :
 ```
-https://VOTRE-PROJET.supabase.co/functions/v1/gmail-oauth-callback
+https://xxeccstsrnwjxcdprwjd.supabase.co/functions/v1/gmail-oauth-callback
 ```
 
 ### Erreur "invalid_client"
