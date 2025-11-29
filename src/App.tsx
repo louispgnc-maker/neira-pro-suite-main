@@ -33,6 +33,7 @@ import Subscription from "./pages/Subscription";
 import ContactSupport from "./pages/ContactSupport";
 import CheckoutPlan from "./pages/CheckoutPlan";
 import ManageMembersCount from "./pages/ManageMembersCount";
+import EmailIntegration from "./pages/EmailIntegration";
 import Statistiques from "./pages/Statistiques";
 import About from "./pages/About";
 import Solution from "./pages/Solution";
@@ -101,6 +102,7 @@ const App = () => (
             <Route path="/avocats/profile" element={<RoleProtectedRoute requiredRole="avocat"><Profile /></RoleProtectedRoute>} />
             <Route path="/avocats/cabinet" element={<RoleProtectedRoute requiredRole="avocat"><Cabinet /></RoleProtectedRoute>} />
             <Route path="/avocats/espace-collaboratif" element={<RoleProtectedRoute requiredRole="avocat"><EspaceCollaboratif /></RoleProtectedRoute>} />
+            <Route path="/avocats/email-integration" element={<RoleProtectedRoute requiredRole="avocat"><EmailIntegration /></RoleProtectedRoute>} />
             <Route path="/avocats/subscription" element={<RoleProtectedRoute requiredRole="avocat"><Subscription /></RoleProtectedRoute>} />
             <Route path="/avocats/subscription/manage-members" element={<RoleProtectedRoute requiredRole="avocat"><ManageMembersCount /></RoleProtectedRoute>} />
             <Route path="/avocats/statistiques" element={<RoleProtectedRoute requiredRole="avocat"><Statistiques /></RoleProtectedRoute>} />
@@ -125,6 +127,7 @@ const App = () => (
             <Route path="/notaires/profile" element={<RoleProtectedRoute requiredRole="notaire"><Profile /></RoleProtectedRoute>} />
             <Route path="/notaires/cabinet" element={<RoleProtectedRoute requiredRole="notaire"><Cabinet /></RoleProtectedRoute>} />
             <Route path="/notaires/espace-collaboratif" element={<RoleProtectedRoute requiredRole="notaire"><EspaceCollaboratif /></RoleProtectedRoute>} />
+            <Route path="/notaires/email-integration" element={<RoleProtectedRoute requiredRole="notaire"><EmailIntegration /></RoleProtectedRoute>} />
             <Route path="/notaires/subscription" element={<RoleProtectedRoute requiredRole="notaire"><Subscription /></RoleProtectedRoute>} />
             <Route path="/notaires/subscription/manage-members" element={<RoleProtectedRoute requiredRole="notaire"><ManageMembersCount /></RoleProtectedRoute>} />
             <Route path="/notaires/statistiques" element={<RoleProtectedRoute requiredRole="notaire"><Statistiques /></RoleProtectedRoute>} />

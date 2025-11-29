@@ -53,6 +53,7 @@ function getMenuItems(role: 'avocat' | 'notaire') {
     { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
     { title: "Clients", url: `${prefix}/clients`, icon: Users },
     { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare },
+    { title: "Email Pro", url: `${prefix}/email-integration`, icon: Mail },
     { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users },
   ];
 }
