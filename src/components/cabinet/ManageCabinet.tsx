@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { canChangeRoles, canInviteMembers, canRemoveMembers, canAssignRole, canModifyMemberRole } from '@/lib/cabinetPermissions';
 import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight } from 'lucide-react';
 import {
   Table,
@@ -74,6 +75,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteName, setInviteName] = useState('');
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
@@ -264,6 +266,10 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
             joined_at: (m as Record<string, unknown>)['joined_at'] ? String((m as Record<string, unknown>)['joined_at']) : undefined,
           }));
           setMembers(normalized);
+          
+          // Set current user's role for permissions
+          const currentMember = normalized.find(m => m.id === userId);
+          setCurrentUserRole(currentMember?.role_cabinet || null);
         }
       } else {
         setCabinet(null);
@@ -486,9 +492,15 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
     return null;
   }
 
-  const roleOptions = role === 'notaire'
-    ? ['Fondateur', 'Notaire', 'Clerc de Notaire', 'Formaliste', 'Juriste Notarial']
-    : ['Fondateur', 'Avocat Associé', 'Avocat Collaborateur', 'Juriste', 'Responsable Administratif'];
+  const allRoleOptions = role === 'notaire'
+    ? ['Fondateur', 'Associé', 'Notaire', 'Clerc de Notaire', 'Formaliste', 'Juriste Notarial']
+    : ['Fondateur', 'Associé', 'Avocat Associé', 'Avocat Collaborateur', 'Juriste', 'Responsable Administratif'];
+
+  // Filtrer les options de rôles en fonction des permissions de l'utilisateur
+  const getAvailableRoles = (userRole: string | null) => {
+    if (!userRole) return [];
+    return allRoleOptions.filter(opt => canAssignRole(userRole, opt));
+  };
 
   return (
     <div className="space-y-4">
@@ -726,7 +738,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                   </Badge>
                 )}
               </div>
-              {isOwner && (
+              {currentUserRole && canInviteMembers(currentUserRole) && (
                 <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                   <DialogTrigger asChild>
                     <Button 
@@ -807,7 +819,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                   <TableHead>Nom</TableHead>
                   <TableHead>Rôle</TableHead>
                   <TableHead>Statut</TableHead>
-                  {isOwner && <TableHead className="text-right">Actions</TableHead>}
+                  {currentUserRole && canRemoveMembers(currentUserRole) && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -816,7 +828,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     <TableCell className="font-mono text-xs">{member.email}</TableCell>
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
-                      {isOwner ? (
+                      {currentUserRole && canChangeRoles(currentUserRole) && canModifyMemberRole(currentUserRole, member.role_cabinet) ? (
                         (member.role_cabinet === 'owner' || member.role_cabinet === 'Fondateur') ? (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -830,7 +842,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                              {roleOptions.map((opt) => (
+                              {getAvailableRoles(currentUserRole).map((opt) => (
                                 <DropdownMenuItem
                                   key={opt}
                                   onClick={() => updateMemberRole(member.id, opt)}
@@ -850,7 +862,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                               <SelectValue placeholder="Sélectionner un rôle" />
                             </SelectTrigger>
                             <SelectContent>
-                              {roleOptions.map((opt) => (
+                              {getAvailableRoles(currentUserRole).map((opt) => (
                                 <SelectItem 
                                   key={opt} 
                                   value={opt}
@@ -864,8 +876,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                         )
                         ) : (
                           <Badge
-                            variant={(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? 'default' : 'secondary'}
-                            className={`text-xs ${(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner') ? (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white') : (['Notaire','Clerc de Notaire','Formaliste','Juriste Notarial'].includes(member.role_cabinet || '') ? 'bg-orange-600 hover:bg-orange-700 text-white' : '')}`}
+                            variant={(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner' || member.role_cabinet === 'Associé') ? 'default' : 'secondary'}
+                            className={`text-xs ${(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner' || member.role_cabinet === 'Associé') ? (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white') : (['Notaire','Clerc de Notaire','Formaliste','Juriste Notarial'].includes(member.role_cabinet || '') ? 'bg-orange-600 hover:bg-orange-700 text-white' : '')}`}
                           >
                             {member.role_cabinet === 'owner' ? 'Fondateur' : member.role_cabinet}
                           </Badge>
@@ -885,7 +897,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                         {member.status === 'active' ? 'Actif' : 'En attente'}
                       </Badge>
                     </TableCell>
-                    {isOwner && (
+                    {currentUserRole && canRemoveMembers(currentUserRole) && (
                       <TableCell className="text-right">
                         {member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
                           <Dialog>
@@ -921,7 +933,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                 ))}
                 {members.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={isOwner ? 5 : 4} className="text-center text-muted-foreground">
+                    <TableCell colSpan={(currentUserRole && canRemoveMembers(currentUserRole)) ? 5 : 4} className="text-center text-muted-foreground">
                       Aucun membre pour le moment
                     </TableCell>
                   </TableRow>

@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
+import { canDeleteResources } from "@/lib/cabinetPermissions";
 import {
   Table,
   TableBody,
@@ -63,6 +64,7 @@ export default function Documents() {
   const [viewerDocName, setViewerDocName] = useState("");
   const [storageUsed, setStorageUsed] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -109,6 +111,38 @@ export default function Documents() {
     window.addEventListener('subscription-updated', handleRefresh);
     return () => window.removeEventListener('subscription-updated', handleRefresh);
   }, []);
+
+  // Load current user role
+  useEffect(() => {
+    async function loadUserRole() {
+      if (!user) return;
+      
+      try {
+        const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+        if (!cabinetsData || !Array.isArray(cabinetsData)) return;
+        
+        const cabinets = cabinetsData.filter((c: any) => String(c.role) === role);
+        const cabinet = cabinets[0];
+        if (!cabinet) return;
+        
+        const cabinetId = String(cabinet.id);
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('role_cabinet')
+          .eq('cabinet_id', cabinetId)
+          .eq('user_id', user.id)
+          .single();
+        
+        if (memberData) {
+          setCurrentUserRole(memberData.role_cabinet);
+        }
+      } catch (err) {
+        console.error('Error loading user role:', err);
+      }
+    }
+    
+    loadUserRole();
+  }, [user, role]);
 
   // Debounce search
   useEffect(() => {
@@ -542,13 +576,15 @@ export default function Documents() {
                                 <Download className="mr-2 h-4 w-4" />
                                 Télécharger
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                className={`text-destructive ${menuItemClass}`}
-                                onClick={() => handleDelete(doc)}
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Supprimer
-                              </DropdownMenuItem>
+                              {currentUserRole && canDeleteResources(currentUserRole) && (
+                                <DropdownMenuItem 
+                                  className={`text-destructive ${menuItemClass}`}
+                                  onClick={() => handleDelete(doc)}
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Supprimer
+                                </DropdownMenuItem>
+                              )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

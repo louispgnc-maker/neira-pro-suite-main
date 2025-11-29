@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
 import { ResourceCounter } from "@/components/subscription/ResourceCounter";
 import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
+import { canDeleteResources } from "@/lib/cabinetPermissions";
 
 type DossierRow = {
   id: string;
@@ -45,6 +46,7 @@ export default function Dossiers() {
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
   // Vérifier si limite de dossiers atteinte
   const isDossierLimitReached = limits.max_dossiers !== null && dossiers.length >= limits.max_dossiers;
@@ -55,6 +57,39 @@ export default function Dossiers() {
     window.addEventListener('subscription-updated', handleRefresh);
     return () => window.removeEventListener('subscription-updated', handleRefresh);
   }, []);
+  
+  // Load current user role
+  useEffect(() => {
+    async function loadUserRole() {
+      if (!user) return;
+      
+      try {
+        const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+        if (!cabinetsData || !Array.isArray(cabinetsData)) return;
+        
+        const cabinets = cabinetsData.filter((c: any) => String(c.role) === role);
+        const cabinet = cabinets[0];
+        if (!cabinet) return;
+        
+        const cabinetId = String(cabinet.id);
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('role_cabinet')
+          .eq('cabinet_id', cabinetId)
+          .eq('user_id', user.id)
+          .single();
+        
+        if (memberData) {
+          setCurrentUserRole(memberData.role_cabinet);
+        }
+      } catch (err) {
+        console.error('Error loading user role:', err);
+      }
+    }
+    
+    loadUserRole();
+  }, [user, role]);
+  
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -507,7 +542,7 @@ export default function Dossiers() {
                                     <Eye className="mr-2 h-4 w-4" />
                                     Voir
                                   </DropdownMenuItem>
-                                    {(((d as unknown) as Record<string, unknown>)['_shared']) !== true && (
+                                    {currentUserRole && canDeleteResources(currentUserRole) && (((d as unknown) as Record<string, unknown>)['_shared']) !== true && (
                                       <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Supprimer
