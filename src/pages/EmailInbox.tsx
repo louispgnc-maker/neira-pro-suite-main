@@ -149,49 +149,22 @@ export default function EmailInbox() {
     
     setSyncing(true);
     try {
-      // En production, appeler une edge function pour synchroniser
-      // Pour l'instant, simuler avec des données de test
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Créer quelques emails de test si la boîte est vide
-      if (emails.length === 0) {
-        const testEmails = [
-          {
-            account_id: selectedAccount,
-            subject: 'Bienvenue dans votre messagerie',
-            from: 'support@neira.fr',
-            to: user?.email || '',
-            body: 'Bienvenue dans votre nouvelle messagerie intégrée. Vous pouvez maintenant gérer tous vos emails professionnels directement depuis Neira.',
-            received_at: new Date().toISOString(),
-            read: false,
-            starred: false,
-            has_attachments: false,
-            folder: 'inbox' as const,
-          },
-          {
-            account_id: selectedAccount,
-            subject: 'Dossier Client - Dupont',
-            from: 'client@exemple.fr',
-            to: user?.email || '',
-            body: 'Bonjour,\n\nJe vous contacte au sujet du dossier en cours. Pourriez-vous me faire un point sur l\'avancement ?\n\nCordialement',
-            received_at: new Date(Date.now() - 3600000).toISOString(),
-            read: false,
-            starred: false,
-            has_attachments: true,
-            folder: 'inbox' as const,
-          }
-        ];
-
-        for (const email of testEmails) {
-          await supabase.from('emails').insert(email);
+      // Appeler l'edge function pour synchroniser avec Gmail
+      const { data, error } = await supabase.functions.invoke('gmail-sync', {
+        body: { 
+          action: 'sync',
+          account_id: selectedAccount 
         }
-      }
+      });
+
+      if (error) throw error;
       
-      toast.success('Synchronisation réussie');
+      const syncedCount = data?.synced || 0;
+      toast.success(`${syncedCount} nouveau(x) email(s) synchronisé(s)`);
       loadEmails();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error syncing:', error);
-      toast.error('Erreur lors de la synchronisation');
+      toast.error(error.message || 'Erreur lors de la synchronisation');
     } finally {
       setSyncing(false);
     }
@@ -269,18 +242,33 @@ export default function EmailInbox() {
       return;
     }
 
+    if (!selectedAccount) {
+      toast.error('Aucun compte sélectionné');
+      return;
+    }
+
     try {
-      // En production, appeler une edge function pour envoyer l'email
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Appeler l'edge function pour envoyer l'email via Gmail API
+      const { error } = await supabase.functions.invoke('gmail-sync', {
+        body: { 
+          action: 'send',
+          account_id: selectedAccount,
+          to: composeTo,
+          subject: composeSubject,
+          body: composeBody
+        }
+      });
+
+      if (error) throw error;
       
       toast.success('Email envoyé avec succès');
       setShowCompose(false);
       setComposeTo('');
       setComposeSubject('');
       setComposeBody('');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending email:', error);
-      toast.error('Erreur lors de l\'envoi');
+      toast.error(error.message || 'Erreur lors de l\'envoi');
     }
   };
 

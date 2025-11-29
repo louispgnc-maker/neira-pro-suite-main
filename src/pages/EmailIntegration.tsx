@@ -82,38 +82,68 @@ export default function EmailIntegration() {
   };
 
   const handleAddAccount = async () => {
-    if (!email || !provider) {
-      toast.error('Veuillez remplir tous les champs requis');
-      return;
-    }
-
-    // Validation email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast.error('Adresse email invalide');
+    if (!provider) {
+      toast.error('Veuillez sélectionner un fournisseur');
       return;
     }
 
     try {
-      const { error } = await supabase.from('email_accounts').insert({
-        user_id: user?.id,
-        email: email,
-        provider: provider,
-        status: 'pending',
-        // En production, ces données sensibles seraient chiffrées
-        credentials: {
-          password: password,
-          imap_server: provider === 'other' ? imapServer : undefined,
-          imap_port: provider === 'other' ? imapPort : undefined,
+      if (provider === 'gmail') {
+        // Pour Gmail, utiliser OAuth2
+        const { data, error } = await supabase.functions.invoke('gmail-sync', {
+          body: { action: 'get-auth-url' }
+        });
+
+        if (error) throw error;
+        
+        if (data?.authUrl) {
+          // Ouvrir la popup OAuth
+          const width = 600;
+          const height = 700;
+          const left = window.screen.width / 2 - width / 2;
+          const top = window.screen.height / 2 - height / 2;
+          
+          window.open(
+            data.authUrl,
+            'Gmail Authorization',
+            `width=${width},height=${height},left=${left},top=${top}`
+          );
+          
+          toast.success('Veuillez autoriser l\'accès à votre compte Gmail');
+          setOpenAdd(false);
         }
-      });
+      } else {
+        // Pour les autres providers, utiliser IMAP
+        if (!email || !password) {
+          toast.error('Veuillez remplir tous les champs requis');
+          return;
+        }
 
-      if (error) throw error;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          toast.error('Adresse email invalide');
+          return;
+        }
 
-      toast.success('Compte email ajouté avec succès');
-      setOpenAdd(false);
-      resetForm();
-      loadAccounts();
+        const { error } = await supabase.from('email_accounts').insert({
+          user_id: user?.id,
+          email: email,
+          provider: provider,
+          status: 'pending',
+          credentials: {
+            password: password,
+            imap_server: provider === 'other' ? imapServer : undefined,
+            imap_port: provider === 'other' ? imapPort : undefined,
+          }
+        });
+
+        if (error) throw error;
+
+        toast.success('Compte email ajouté avec succès');
+        setOpenAdd(false);
+        resetForm();
+        loadAccounts();
+      }
     } catch (error: any) {
       console.error('Error adding email account:', error);
       toast.error(error.message || 'Erreur lors de l\'ajout du compte');
