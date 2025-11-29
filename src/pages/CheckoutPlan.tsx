@@ -107,40 +107,65 @@ export default function CheckoutPlan() {
       try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         
-        if (!currentUser) return;
+        if (!currentUser) {
+          // Pas d'utilisateur, on utilise les valeurs par défaut
+          setMembersLoaded(true);
+          return;
+        }
         
-        const { data: memberData } = await supabase
+        const { data: memberData, error: memberError } = await supabase
           .from('cabinet_members')
           .select('cabinet_id')
           .eq('user_id', currentUser.id)
           .eq('status', 'active')
           .single();
         
-        if (memberData?.cabinet_id) {
-          const { data: membersData } = await supabase
-            .from('cabinet_members')
-            .select('id')
-            .eq('cabinet_id', memberData.cabinet_id)
-            .eq('status', 'active');
-          
-          const count = membersData?.length || initialUsers;
-          
-          // Définir le minimum selon le plan
-          let minCount = count;
-          if (planId === 'professionnel') {
-            minCount = Math.min(Math.max(count, 2), 10); // Entre 2 et 10
-          }
-          
-          setMinMembers(minCount);
-          setNumberOfUsers(minCount);
+        if (memberError || !memberData?.cabinet_id) {
+          // Erreur ou pas de cabinet, on utilise les valeurs par défaut
           setMembersLoaded(true);
+          return;
         }
+        
+        const { data: membersData, error: membersError } = await supabase
+          .from('cabinet_members')
+          .select('id')
+          .eq('cabinet_id', memberData.cabinet_id)
+          .eq('status', 'active');
+        
+        if (membersError) {
+          // Erreur de chargement, on utilise les valeurs par défaut
+          setMembersLoaded(true);
+          return;
+        }
+        
+        const count = membersData?.length || initialUsers;
+        
+        // Définir le minimum selon le plan
+        let minCount = count;
+        if (planId === 'professionnel') {
+          minCount = Math.min(Math.max(count, 2), 10); // Entre 2 et 10
+        }
+        
+        setMinMembers(minCount);
+        setNumberOfUsers(minCount);
+        setMembersLoaded(true);
       } catch (error) {
         console.error('Error loading members count:', error);
+        // En cas d'erreur, on affiche quand même le formulaire
+        setMembersLoaded(true);
       }
     };
     
+    // Timeout de sécurité : afficher le formulaire après 2 secondes même si le chargement n'est pas terminé
+    const timeout = setTimeout(() => {
+      if (!membersLoaded) {
+        setMembersLoaded(true);
+      }
+    }, 2000);
+    
     loadActiveMembersCount();
+    
+    return () => clearTimeout(timeout);
   }, [membersLoaded, planId, initialUsers]);
 
   const Icon = planConfig.icon;
