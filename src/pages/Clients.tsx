@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { ResourceCounter } from "@/components/subscription/ResourceCounter";
 import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
+import { calculateClientCompleteness } from "@/lib/clientValidation";
 // sharing removed: no client-side sharing RPCs
 
 type ClientRow = {
@@ -63,7 +64,7 @@ export default function Clients() {
       setLoading(true);
       let query = supabase
         .from("clients")
-        .select("id,name,kyc_status,missing_info,created_at")
+        .select("*")
         .eq("owner_id", user.id)
         .eq("role", role)
         .order("created_at", { ascending: false });
@@ -74,8 +75,30 @@ export default function Clients() {
       if (error) {
         console.error("Erreur chargement clients:", error);
         if (isMounted) setClients([]);
-      } else if (isMounted) {
-        setClients(data as ClientRow[]);
+      } else if (isMounted && data) {
+        // Recalculer le statut de complétude pour chaque client
+        const clientsWithUpdatedStatus = data.map(client => {
+          const { kyc_status, missing_info } = calculateClientCompleteness(client);
+          
+          // Si le statut a changé, on met à jour en base de données
+          if (client.kyc_status !== kyc_status || client.missing_info !== missing_info) {
+            supabase
+              .from('clients')
+              .update({ kyc_status, missing_info })
+              .eq('id', client.id)
+              .then(() => {
+                console.log(`Client ${client.name} updated: ${kyc_status}`);
+              });
+          }
+          
+          return {
+            ...client,
+            kyc_status,
+            missing_info,
+          };
+        });
+        
+        setClients(clientsWithUpdatedStatus as ClientRow[]);
       }
       if (isMounted) setLoading(false);
     }
