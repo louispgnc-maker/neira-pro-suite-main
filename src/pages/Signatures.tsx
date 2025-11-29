@@ -48,6 +48,9 @@ export default function Signatures() {
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // Vérifier si limite de signatures atteinte
+  const isSignatureLimitReached = limits.max_signatures_per_month !== null && signatures.length >= limits.max_signatures_per_month;
+
   // Listen for subscription changes
   useEffect(() => {
     const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
@@ -120,10 +123,22 @@ export default function Signatures() {
             <h1 className="text-3xl font-bold">Signatures</h1>
             <p className="text-foreground mt-1">Suivez vos demandes de signature électronique</p>
           </div>
-          <Button className={mainButtonColor}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nouvelle signature
-          </Button>
+          {isSignatureLimitReached ? (
+            <div className="text-right">
+              <Button disabled className="mb-2">
+                <Plus className="mr-2 h-4 w-4" />
+                Limite atteinte
+              </Button>
+              <p className="text-xs text-destructive">
+                Passez à un abonnement supérieur pour plus de signatures
+              </p>
+            </div>
+          ) : (
+            <Button className={mainButtonColor}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nouvelle signature
+            </Button>
+          )}
         </div>
 
         {/* Signatures Counter */}

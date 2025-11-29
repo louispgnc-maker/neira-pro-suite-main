@@ -316,16 +316,45 @@ export default function Documents() {
       toast.error("Connexion requise");
       return;
     }
+    
+    // Vérifier la limite de stockage
+    const isStorageLimitReached = limits.max_storage_bytes !== null && storageUsed >= limits.max_storage_bytes;
+    if (isStorageLimitReached) {
+      toast.error("Limite de stockage atteinte", { 
+        description: "Passez à un abonnement supérieur pour ajouter plus de documents" 
+      });
+      return;
+    }
+    
     fileInputRef.current?.click();
   };
 
   const onFilesSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0 || !user) return;
+    
+    // Vérifier la limite de stockage avant upload
+    const isStorageLimitReached = limits.max_storage_bytes !== null && storageUsed >= limits.max_storage_bytes;
+    if (isStorageLimitReached) {
+      toast.error("Limite de stockage atteinte", { 
+        description: "Passez à un abonnement supérieur pour ajouter plus de documents" 
+      });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+    
     setUploading(true);
     try {
       const uploaded: string[] = [];
       for (const file of Array.from(files)) {
+        // Vérifier si l'ajout de ce fichier dépasserait la limite
+        if (limits.max_storage_bytes !== null && (storageUsed + file.size) > limits.max_storage_bytes) {
+          toast.error(`Stockage insuffisant pour ${file.name}`, { 
+            description: "Ce fichier dépasserait votre limite de stockage" 
+          });
+          continue;
+        }
+        
         if (file.type !== 'application/pdf') {
           toast.error(`Format non supporté: ${file.name}`, { description: "Seuls les PDF sont acceptés." });
           continue;

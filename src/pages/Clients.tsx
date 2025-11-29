@@ -108,6 +108,9 @@ export default function Clients() {
     };
   }, [user, debounced, role, refreshTrigger]);
 
+  // Vérifier si limite de clients atteinte
+  const isLimitReached = limits.max_clients !== null && clients.length >= limits.max_clients;
+
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
@@ -130,7 +133,22 @@ export default function Clients() {
             <p className="text-foreground mt-1">Gérez votre base clients et KYC</p>
           </div>
           <div className="md:w-auto w-full flex justify-end">
-            <FicheClientMenu variant="horizontal" colorClass={mainButtonColor} />
+            {isLimitReached ? (
+              <div className="text-right">
+                <Button 
+                  disabled 
+                  className="mb-2"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Limite atteinte
+                </Button>
+                <p className="text-xs text-destructive">
+                  Passez à un abonnement supérieur pour ajouter plus de clients
+                </p>
+              </div>
+            ) : (
+              <FicheClientMenu variant="horizontal" colorClass={mainButtonColor} />
+            )}
           </div>
         </div>
 

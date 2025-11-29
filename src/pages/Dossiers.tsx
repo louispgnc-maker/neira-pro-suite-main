@@ -46,6 +46,9 @@ export default function Dossiers() {
   const [debounced, setDebounced] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // Vérifier si limite de dossiers atteinte
+  const isDossierLimitReached = limits.max_dossiers !== null && dossiers.length >= limits.max_dossiers;
+
   // Listen for subscription changes
   useEffect(() => {
     const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
@@ -297,10 +300,22 @@ export default function Dossiers() {
             <h1 className="text-3xl font-bold">Dossiers</h1>
             <p className="text-foreground mt-1">Gérez vos dossiers et leurs associations</p>
           </div>
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
+          <Dialog open={open} onOpenChange={(v) => { 
+            if (isDossierLimitReached && v) {
+              toast.error("Limite de dossiers atteinte", { 
+                description: "Passez à un abonnement supérieur pour créer plus de dossiers" 
+              });
+              return;
+            }
+            setOpen(v); 
+            if (!v) resetForm(); 
+          }}>
             <DialogTrigger asChild>
-              <Button className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}>
-                Nouveau dossier
+              <Button 
+                className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}
+                disabled={isDossierLimitReached}
+              >
+                {isDossierLimitReached ? 'Limite atteinte' : 'Nouveau dossier'}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl">
