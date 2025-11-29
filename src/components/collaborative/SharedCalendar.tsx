@@ -203,10 +203,14 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
               let owner_email = null;
               if (payload.record?.owner_id) {
                 try {
-                  const { data: p } = await supabase.from('profiles').select('id, nom, full_name, email').eq('id', payload.record.owner_id).maybeSingle();
+                  const { data: p } = await supabase.from('profiles').select('id, first_name, last_name, email').eq('id', payload.record.owner_id).maybeSingle();
                   if (p) {
-                    owner_name = p.nom || p.full_name || p.email || p.id;
-                    owner_email = p.email || null;
+                    const rp = p as Record<string, unknown>;
+                    const fName = rp['first_name'] ? String(rp['first_name']) : '';
+                    const lName = rp['last_name'] ? String(rp['last_name']) : '';
+                    const fullN = [fName, lName].filter(Boolean).join(' ');
+                    owner_name = fullN || String(rp['email'] ?? rp['id']);
+                    owner_email = rp['email'] ? String(rp['email']) : null;
                   }
                 } catch (_e: unknown) { /* noop */ }
               }
