@@ -59,9 +59,22 @@ export default function ManageMembersCount() {
           .single();
 
         if (cabinetData) {
-          setCurrentPlan(cabinetData.subscription_plan as 'professionnel' | 'cabinet-plus');
-          setCurrentMembers(cabinetData.max_members || 1);
-          setNewMembersCount(cabinetData.max_members || 1);
+          const plan = cabinetData.subscription_plan as 'professionnel' | 'cabinet-plus';
+          setCurrentPlan(plan);
+          
+          // Pour Cabinet+, max_members peut être null (illimité)
+          // On utilise le nombre de membres actifs comme référence si max_members est null ou 0
+          let maxMembers = cabinetData.max_members;
+          if (!maxMembers || maxMembers === 0) {
+            // Compter les membres actifs d'abord
+            const { data: tempMembersData } = await supabase
+              .rpc('get_cabinet_members_simple', { cabinet_id_param: memberData.cabinet_id });
+            const tempActiveCount = tempMembersData?.filter((m: any) => m.status === 'active').length || 0;
+            maxMembers = Math.max(tempActiveCount, plan === 'professionnel' ? 2 : 1);
+          }
+          
+          setCurrentMembers(maxMembers);
+          setNewMembersCount(maxMembers);
           setBillingPeriod(cabinetData.billing_period || 'monthly');
         }
 
@@ -154,8 +167,7 @@ export default function ManageMembersCount() {
       <div className="container mx-auto p-8 max-w-4xl">
         <Button
           onClick={() => navigate(`${prefix}/subscription`)}
-          variant="outline"
-          className="mb-6"
+          className="mb-6 bg-orange-600 hover:bg-orange-700 text-white"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour à l'abonnement
@@ -193,8 +205,8 @@ export default function ManageMembersCount() {
               <div className="flex items-center gap-4 mb-4">
                 <Button
                   type="button"
-                  variant="outline"
                   size="icon"
+                  className="bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => setNewMembersCount(Math.max(activeMembersCount, newMembersCount - 1))}
                   disabled={newMembersCount <= activeMembersCount}
                 >
@@ -208,8 +220,8 @@ export default function ManageMembersCount() {
                 
                 <Button
                   type="button"
-                  variant="outline"
                   size="icon"
+                  className="bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => {
                     if (currentPlan === 'professionnel' && newMembersCount >= 10) {
                       toast.error('Le plan Professionnel est limité à 10 membres');
@@ -249,8 +261,7 @@ export default function ManageMembersCount() {
             <div className="flex gap-4">
               <Button
                 onClick={() => navigate(`${prefix}/subscription`)}
-                variant="outline"
-                className="flex-1"
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
                 disabled={loading}
               >
                 Annuler
