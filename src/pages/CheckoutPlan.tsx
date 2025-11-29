@@ -387,10 +387,9 @@ export default function CheckoutPlan() {
                           <SelectValue placeholder="Sélectionnez le nombre de membres" />
                         </SelectTrigger>
                         <SelectContent>
-                          {Array.from({ length: maxUsers - minUsers + 1 }, (_, i) => i + minUsers).map((num) => (
-                            <SelectItem key={num} value={num.toString()} disabled={num < minMembers}>
+                          {Array.from({ length: maxUsers - minMembers + 1 }, (_, i) => i + minMembers).map((num) => (
+                            <SelectItem key={num} value={num.toString()}>
                               {num} {num === 1 ? 'membre' : 'membres'} - {planConfig.monthlyPrice * num}€/mois
-                              {num < minMembers && ' (minimum requis: ' + minMembers + ')'}
                             </SelectItem>
                           ))}
                           {planId === 'cabinet-plus' && (
@@ -401,7 +400,7 @@ export default function CheckoutPlan() {
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-black/60">
-                        {minMembers > (planId === 'professionnel' ? 2 : 1) && `Votre cabinet compte actuellement ${minMembers} membres actifs. `}
+                        {minMembers > (planId === 'professionnel' ? 2 : 1) && `Votre cabinet compte actuellement ${minMembers} membres actifs. Vous ne pouvez pas sélectionner moins. `}
                         {planId === 'cabinet-plus' && numberOfUsers >= 50 ? (
                           <>
                             Plus de 50 membres ?{' '}
