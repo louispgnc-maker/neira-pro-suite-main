@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Crown, Zap, Users, ArrowLeft, Calendar, HardDrive, CreditCard, Clock, X } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { toast } from 'sonner';
 
 type SubscriptionData = {
   tier: string;
@@ -107,6 +108,7 @@ export default function Subscription() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isManager, setIsManager] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [activeMembersCount, setActiveMembersCount] = useState<number>(0);
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -200,6 +202,18 @@ export default function Subscription() {
 
         if (cabinetId) {
           console.log('Found cabinet:', cabinetId);
+          
+          // Charger le nombre de membres actifs
+          const { data: membersData } = await supabase
+            .from('cabinet_members')
+            .select('id', { count: 'exact' })
+            .eq('cabinet_id', cabinetId)
+            .eq('status', 'active');
+          
+          const memberCount = membersData?.length || 0;
+          setActiveMembersCount(memberCount);
+          console.log('Active members count:', memberCount);
+          
           const { data: cabinetData, error: cabinetError } = await supabase
             .from('cabinets')
             .select('subscription_plan, subscription_status, subscription_started_at, subscription_expires_at, storage_used, storage_limit, nom')
@@ -239,6 +253,26 @@ export default function Subscription() {
   }, [user, refreshTrigger]);
 
   const handleUpgrade = (planId: string) => {
+    // Vérifier si le plan choisi peut accueillir le nombre actuel de membres
+    const planLimits: { [key: string]: number } = {
+      'essentiel': 1,
+      'professionnel': 10,
+      'cabinet-plus': 999
+    };
+    
+    const maxMembers = planLimits[planId];
+    
+    if (maxMembers && activeMembersCount > maxMembers) {
+      toast.error(
+        `Impossible de passer à cette offre`,
+        {
+          description: `Votre cabinet compte actuellement ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''} actif${activeMembersCount > 1 ? 's' : ''}. L'offre ${planId === 'essentiel' ? 'Essentiel' : 'Professionnel'} est limitée à ${maxMembers} membre${maxMembers > 1 ? 's' : ''}. Veuillez d'abord retirer des membres ou choisir une offre supérieure.`,
+          duration: 6000,
+        }
+      );
+      return;
+    }
+    
     // Redirect to checkout page
     navigate(`/checkout/${planId}`);
   };
@@ -457,7 +491,7 @@ export default function Subscription() {
                       )}
                       <Button 
                         className={`w-full ${plan.buttonClass}`}
-                        onClick={() => navigate(`${prefix}/checkout/${plan.id}`)}
+                        onClick={() => handleUpgrade(plan.id)}
                         disabled={!isManager}
                       >
                         {isManager ? 'Passer à cette offre' : 'Réservé au gérant'}
