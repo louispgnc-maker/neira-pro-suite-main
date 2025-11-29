@@ -41,6 +41,8 @@ export default function ManageMembersCount() {
       if (!user) return;
 
       try {
+        console.log('Current user ID:', user.id);
+        
         // Récupérer les infos du cabinet via RPC (bypass RLS)
         const { data: cabinetData, error: cabinetError } = await supabase
           .rpc('get_cabinet_subscription_info', { user_id_param: user.id });
@@ -50,6 +52,13 @@ export default function ManageMembersCount() {
 
         if (cabinetData && cabinetData.length > 0) {
           const cabinet = cabinetData[0];
+          console.log('Cabinet details:', {
+            cabinet_id: cabinet.cabinet_id,
+            plan: cabinet.subscription_plan,
+            max_members: cabinet.max_members,
+            billing_period: cabinet.billing_period
+          });
+          
           const plan = cabinet.subscription_plan as 'professionnel' | 'cabinet-plus';
           setCurrentPlan(plan);
           
@@ -67,7 +76,7 @@ export default function ManageMembersCount() {
             console.log('max_members was null, using:', maxMembers);
           }
           
-          console.log('Final maxMembers:', maxMembers);
+          console.log('Final maxMembers to display:', maxMembers);
           setCurrentMembers(maxMembers);
           setNewMembersCount(maxMembers);
           setBillingPeriod(cabinet.billing_period || 'monthly');
@@ -76,7 +85,9 @@ export default function ManageMembersCount() {
           const { data: membersData } = await supabase
             .rpc('get_cabinet_members_simple', { cabinet_id_param: cabinet.cabinet_id });
 
+          console.log('Members data:', membersData);
           const activeCount = membersData?.filter((m: any) => m.status === 'active').length || 0;
+          console.log('Active members count:', activeCount);
           setActiveMembersCount(activeCount);
         }
       } catch (error) {
