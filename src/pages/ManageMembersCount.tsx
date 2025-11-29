@@ -42,34 +42,25 @@ export default function ManageMembersCount() {
 
       try {
         console.log('Current user ID:', user.id);
+        console.log('Current role/space:', role);
         
-        // First, get cabinet_id from profile or cabinet_members
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('cabinet_id')
-          .eq('id', user.id)
-          .single();
+        // Récupérer le cabinet_id pour le rôle actuel (notaire ou avocat)
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id, cabinets!inner(role)')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .eq('cabinets.role', role);
 
-        let cabinetId = profileData?.cabinet_id;
+        console.log('Member data for role', role, ':', memberData);
 
-        // If no cabinet in profile, get it from cabinet_members
-        if (!cabinetId) {
-          const { data: memberData } = await supabase
-            .from('cabinet_members')
-            .select('cabinet_id')
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .single();
-          
-          cabinetId = memberData?.cabinet_id;
-        }
-
-        if (!cabinetId) {
-          console.error('No cabinet found for user');
+        if (!memberData || memberData.length === 0) {
+          console.error('No cabinet found for user in role:', role);
           return;
         }
 
-        console.log('Cabinet ID:', cabinetId);
+        const cabinetId = memberData[0].cabinet_id;
+        console.log('Cabinet ID for role', role, ':', cabinetId);
 
         // Récupérer les infos du cabinet via RPC (bypass RLS)
         const { data: cabinetData, error: cabinetError } = await supabase
@@ -79,8 +70,13 @@ export default function ManageMembersCount() {
         console.log('Cabinet error:', cabinetError);
 
         if (cabinetData && cabinetData.length > 0) {
-          // Find the cabinet that matches the user's active cabinet_id
-          const cabinet = cabinetData.find((c: any) => c.cabinet_id === cabinetId) || cabinetData[0];
+          // Find the cabinet that matches the cabinetId for current role
+          const cabinet = cabinetData.find((c: any) => c.cabinet_id === cabinetId);
+          
+          if (!cabinet) {
+            console.error('Cabinet not found in RPC results for cabinet_id:', cabinetId);
+            return;
+          }
           
           console.log('Selected cabinet details:', {
             cabinet_id: cabinet.cabinet_id,
@@ -126,7 +122,7 @@ export default function ManageMembersCount() {
     };
 
     loadCabinetData();
-  }, [user]);
+  }, [user, role]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -152,17 +148,21 @@ export default function ManageMembersCount() {
         return;
       }
 
-      // Récupérer le cabinet_id via RPC
-      const { data: cabinetInfo } = await supabase
-        .rpc('get_cabinet_subscription_info', { user_id_param: user?.id });
+      // Récupérer le cabinet_id pour le rôle actuel
+      const { data: memberData } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id, cabinets!inner(role)')
+        .eq('user_id', user?.id)
+        .eq('status', 'active')
+        .eq('cabinets.role', role);
 
-      if (!cabinetInfo || cabinetInfo.length === 0) {
-        toast.error('Cabinet introuvable');
+      if (!memberData || memberData.length === 0) {
+        toast.error('Cabinet introuvable pour cet espace');
         setLoading(false);
         return;
       }
 
-      const cabinetId = cabinetInfo[0].cabinet_id;
+      const cabinetId = memberData[0].cabinet_id;
 
       // Mettre à jour le nombre de membres
       const { error } = await supabase
