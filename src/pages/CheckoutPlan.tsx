@@ -101,18 +101,18 @@ export default function CheckoutPlan() {
 
   // Charger le nombre de membres actifs du cabinet
   useEffect(() => {
-    if (membersLoaded) return; // Éviter les rechargements multiples
+    if (membersLoaded) return;
     
     const loadActiveMembersCount = async () => {
       try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         
         if (!currentUser) {
-          // Pas d'utilisateur, on utilise les valeurs par défaut
           setMembersLoaded(true);
           return;
         }
         
+        // Récupérer le cabinet_id de l'utilisateur
         const { data: memberData, error: memberError } = await supabase
           .from('cabinet_members')
           .select('cabinet_id')
@@ -121,29 +121,28 @@ export default function CheckoutPlan() {
           .single();
         
         if (memberError || !memberData?.cabinet_id) {
-          // Erreur ou pas de cabinet, on utilise les valeurs par défaut
           setMembersLoaded(true);
           return;
         }
         
-        const { data: membersData, error: membersError } = await supabase
-          .from('cabinet_members')
-          .select('id')
-          .eq('cabinet_id', memberData.cabinet_id)
-          .eq('status', 'active');
+        // Utiliser la RPC pour compter les membres (gère automatiquement les permissions)
+        const { data: membersData, error: rpcError } = await supabase
+          .rpc('get_cabinet_members_simple', { cabinet_id_param: memberData.cabinet_id });
         
-        if (membersError) {
-          // Erreur de chargement, on utilise les valeurs par défaut
+        if (rpcError) {
+          console.error('RPC error:', rpcError);
           setMembersLoaded(true);
           return;
         }
         
-        const count = membersData?.length || initialUsers;
+        // Compter seulement les membres actifs
+        const activeMembers = membersData?.filter((m: any) => m.status === 'active') || [];
+        const count = activeMembers.length || initialUsers;
         
         // Définir le minimum selon le plan
         let minCount = count;
         if (planId === 'professionnel') {
-          minCount = Math.min(Math.max(count, 2), 10); // Entre 2 et 10
+          minCount = Math.min(Math.max(count, 2), 10);
         }
         
         setMinMembers(minCount);
@@ -151,12 +150,10 @@ export default function CheckoutPlan() {
         setMembersLoaded(true);
       } catch (error) {
         console.error('Error loading members count:', error);
-        // En cas d'erreur, on affiche quand même le formulaire
         setMembersLoaded(true);
       }
     };
     
-    // Timeout de sécurité : afficher le formulaire après 2 secondes même si le chargement n'est pas terminé
     const timeout = setTimeout(() => {
       if (!membersLoaded) {
         setMembersLoaded(true);
