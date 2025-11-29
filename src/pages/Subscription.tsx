@@ -273,8 +273,8 @@ export default function Subscription() {
       return;
     }
     
-    // Redirect to checkout page
-    navigate(`/checkout/${planId}`);
+    // Redirect to checkout page with prefix
+    navigate(`${prefix}/checkout/${planId}`);
   };
 
   if (loading) {
