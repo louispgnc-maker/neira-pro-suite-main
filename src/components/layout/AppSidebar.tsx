@@ -42,18 +42,19 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
+import { useUnreadEmailCount } from '@/hooks/useUnreadEmailCount';
 
 function getMenuItems(role: 'avocat' | 'notaire') {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
   return [
     { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard },
     { title: "Documents", url: `${prefix}/documents`, icon: FileText },
+    { title: "Messagerie", url: `${prefix}/messagerie`, icon: Mail },
     { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder },
     { title: "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
     { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
     { title: "Clients", url: `${prefix}/clients`, icon: Users },
     { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare },
-    { title: "Email Pro", url: `${prefix}/email-integration`, icon: Mail },
     { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users },
   ];
 }
@@ -81,6 +82,7 @@ export function AppSidebar() {
   const profileEmail = user?.email || '—';
   const displayName = profile?.first_name || profile?.email?.split('@')[0] || 'Compte';
   const [currentCabinetId, setCurrentCabinetId] = useState<string | null>(null);
+  const unreadEmailCount = useUnreadEmailCount();
 
   useEffect(() => {
     let mounted = true;
@@ -244,6 +246,11 @@ export function AppSidebar() {
                     <NavLink to={item.url} className="flex items-center gap-3">
                       <item.icon className="h-4 w-4" />
                       {!isCollapsed && <span>{item.title}</span>}
+                      {item.title === "Messagerie" && unreadEmailCount > 0 && (
+                        <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                          {unreadEmailCount > 99 ? '99+' : unreadEmailCount}
+                        </Badge>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
