@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,6 +96,60 @@ export default function CheckoutPlan() {
   // Initialisation du nombre d'utilisateurs selon la formule
   const initialUsers = planId === 'essentiel' ? 1 : planId === 'professionnel' ? 2 : 1;
   const [numberOfUsers, setNumberOfUsers] = useState<number>(initialUsers);
+  const [minMembers, setMinMembers] = useState<number>(initialUsers);
+
+  // Charger le nombre de membres actifs du cabinet
+  useEffect(() => {
+    const loadActiveMembersCount = async () => {
+      if (!user) {
+        // Essayer de charger l'utilisateur directement depuis Supabase
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        
+        if (!currentUser) {
+          return;
+        }
+        
+        await loadMembersForUser(currentUser.id);
+        return;
+      }
+      
+      await loadMembersForUser(user.id);
+    };
+    
+    const loadMembersForUser = async (userId: string) => {
+      try {
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id')
+          .eq('user_id', userId)
+          .eq('status', 'active')
+          .single();
+        
+        if (memberData?.cabinet_id) {
+          const { data: membersData } = await supabase
+            .from('cabinet_members')
+            .select('id', { count: 'exact' })
+            .eq('cabinet_id', memberData.cabinet_id)
+            .eq('status', 'active');
+          
+          const count = membersData?.length || initialUsers;
+          
+          // Définir le minimum selon le plan
+          let minCount = count;
+          if (planId === 'professionnel') {
+            minCount = Math.min(Math.max(count, 2), 10); // Entre 2 et 10
+          }
+          
+          setMinMembers(minCount);
+          setNumberOfUsers(minCount);
+        }
+      } catch (error) {
+        console.error('Error loading members count:', error);
+      }
+    };
+    
+    loadActiveMembersCount();
+  }, [user, planId, initialUsers]);
 
   const Icon = planConfig.icon;
   const monthlyPrice = planConfig.monthlyPrice * numberOfUsers;
@@ -321,8 +375,9 @@ export default function CheckoutPlan() {
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from({ length: maxUsers - minUsers + 1 }, (_, i) => i + minUsers).map((num) => (
-                            <SelectItem key={num} value={num.toString()}>
+                            <SelectItem key={num} value={num.toString()} disabled={num < minMembers}>
                               {num} {num === 1 ? 'membre' : 'membres'} - {planConfig.monthlyPrice * num}€/mois
+                              {num < minMembers && ' (minimum requis: ' + minMembers + ')'}
                             </SelectItem>
                           ))}
                           {planId === 'cabinet-plus' && (
@@ -333,6 +388,7 @@ export default function CheckoutPlan() {
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-black/60">
+                        {minMembers > (planId === 'professionnel' ? 2 : 1) && `Votre cabinet compte actuellement ${minMembers} membres actifs. `}
                         {planId === 'cabinet-plus' && numberOfUsers >= 50 ? (
                           <>
                             Plus de 50 membres ?{' '}
