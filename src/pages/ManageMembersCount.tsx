@@ -229,20 +229,9 @@ export default function ManageMembersCount() {
                   Membres actifs dans le cabinet : <span className="font-medium text-black">{activeMembersCount} membre{activeMembersCount > 1 ? 's' : ''} actif{activeMembersCount > 1 ? 's' : ''}</span>
                 </p>
                 <div className="mt-3 pt-3 border-t border-gray-200">
-                  <p className="text-sm text-gray-600">
-                    Prix unitaire : <span className="font-medium text-black">{pricePerMember}€ HT / membre / mois</span>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Prix unitaire TTC : <span className="font-medium text-black">{Math.round(pricePerMember * 1.2 * 100) / 100}€ TTC / membre / mois</span>
-                  </p>
-                  <p className="text-base font-semibold text-black mt-2">
+                  <p className="text-base font-semibold text-black">
                     Prix total actuel : <span className="text-orange-600">{currentTTC}€ TTC / {billingPeriod === 'monthly' ? 'mois' : 'an'}</span>
                   </p>
-                  {billingPeriod === 'monthly' && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Soit {currentMembers} × {Math.round(pricePerMember * 1.2 * 100) / 100}€ TTC par mois
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
