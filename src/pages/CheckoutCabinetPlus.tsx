@@ -22,31 +22,43 @@ export default function CheckoutCabinetPlus() {
   // Charger le nombre de membres actifs du cabinet
   useEffect(() => {
     const loadActiveMembersCount = async () => {
-      if (!user) return;
+      if (!user) {
+        console.log('CheckoutCabinetPlus: No user available yet');
+        return;
+      }
+      
+      console.log('CheckoutCabinetPlus: Loading members count for user', user.id);
       
       try {
         // Récupérer le cabinet de l'utilisateur
-        const { data: memberData } = await supabase
+        const { data: memberData, error: memberError } = await supabase
           .from('cabinet_members')
           .select('cabinet_id')
           .eq('user_id', user.id)
           .eq('status', 'active')
           .single();
         
+        console.log('CheckoutCabinetPlus: Member data:', memberData, 'Error:', memberError);
+        
         if (memberData?.cabinet_id) {
           // Compter les membres actifs
-          const { data: membersData } = await supabase
+          const { data: membersData, error: membersError } = await supabase
             .from('cabinet_members')
             .select('id', { count: 'exact' })
             .eq('cabinet_id', memberData.cabinet_id)
             .eq('status', 'active');
           
+          console.log('CheckoutCabinetPlus: Members data:', membersData, 'Count:', membersData?.length, 'Error:', membersError);
+          
           const count = membersData?.length || 1;
+          console.log('CheckoutCabinetPlus: Setting minMembers to', count);
           setMinMembers(count);
           setUserCount(count); // Définir le nombre initial au minimum
+        } else {
+          console.log('CheckoutCabinetPlus: No cabinet found for user');
         }
       } catch (error) {
-        console.error('Error loading members count:', error);
+        console.error('CheckoutCabinetPlus: Error loading members count:', error);
       }
     };
     
