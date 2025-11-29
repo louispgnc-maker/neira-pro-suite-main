@@ -46,7 +46,6 @@ export default function CheckoutCabinetPlus() {
     };
     
     const loadMembersForUser = async (userId: string) => {
-    const loadMembersForUser = async (userId: string) => {
       console.log('CheckoutCabinetPlus: Loading members count for user', userId);
       
       try {
