@@ -245,8 +245,11 @@ export default function ManageMembersCount() {
                   type="button"
                   size="icon"
                   className="bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => setNewMembersCount(Math.max(activeMembersCount, newMembersCount - 1))}
-                  disabled={newMembersCount <= activeMembersCount}
+                  onClick={() => {
+                    const minAllowed = currentPlan === 'professionnel' ? 2 : 1;
+                    setNewMembersCount(Math.max(minAllowed, newMembersCount - 1));
+                  }}
+                  disabled={newMembersCount <= (currentPlan === 'professionnel' ? 2 : 1)}
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -278,6 +281,16 @@ export default function ManageMembersCount() {
                   ? `Le plan Professionnel accepte entre 2 et 10 membres (${pricePerMember}€/mois par membre)`
                   : `Prix : ${pricePerMember}€/mois par membre`}
               </p>
+              
+              {/* Avertissement si en dessous du nombre de membres actifs */}
+              {newMembersCount < activeMembersCount && (
+                <div className="mt-3 bg-orange-50 border border-orange-200 rounded-lg p-3">
+                  <p className="text-sm text-orange-800">
+                    ⚠️ Attention : Vous avez actuellement <strong>{activeMembersCount} membre{activeMembersCount > 1 ? 's' : ''} actif{activeMembersCount > 1 ? 's' : ''}</strong> dans votre cabinet.
+                    Vous devrez retirer {activeMembersCount - newMembersCount} membre{(activeMembersCount - newMembersCount) > 1 ? 's' : ''} avant de valider cette modification.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Résumé */}
