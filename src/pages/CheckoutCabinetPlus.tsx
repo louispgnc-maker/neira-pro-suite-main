@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,12 +8,50 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CheckCircle2, ArrowLeft, CreditCard, Lock } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function CheckoutCabinetPlus() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [userCount, setUserCount] = useState(1);
+  const [minMembers, setMinMembers] = useState(1);
+
+  // Charger le nombre de membres actifs du cabinet
+  useEffect(() => {
+    const loadActiveMembersCount = async () => {
+      if (!user) return;
+      
+      try {
+        // Récupérer le cabinet de l'utilisateur
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .single();
+        
+        if (memberData?.cabinet_id) {
+          // Compter les membres actifs
+          const { data: membersData } = await supabase
+            .from('cabinet_members')
+            .select('id', { count: 'exact' })
+            .eq('cabinet_id', memberData.cabinet_id)
+            .eq('status', 'active');
+          
+          const count = membersData?.length || 1;
+          setMinMembers(count);
+          setUserCount(count); // Définir le nombre initial au minimum
+        }
+      } catch (error) {
+        console.error('Error loading members count:', error);
+      }
+    };
+    
+    loadActiveMembersCount();
+  }, [user]);
 
   const monthlyPrice = 89;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
@@ -163,8 +201,9 @@ export default function CheckoutCabinetPlus() {
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
-                            <SelectItem key={num} value={num.toString()}>
+                            <SelectItem key={num} value={num.toString()} disabled={num < minMembers}>
                               {num} utilisateur{num > 1 ? 's' : ''}
+                              {num < minMembers && ' (minimum requis: ' + minMembers + ')'}
                             </SelectItem>
                           ))}
                           <SelectItem value="contact" disabled>
@@ -173,6 +212,7 @@ export default function CheckoutCabinetPlus() {
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-gray-600">
+                        {minMembers > 1 && `Votre cabinet compte actuellement ${minMembers} membres actifs. `}
                         {userCount >= 50 ? "Plus de 50 utilisateurs ? " : "Prix par utilisateur"}
                         {userCount >= 50 && (
                           <a href="/contact" className="text-orange-600 hover:text-orange-700 underline">
