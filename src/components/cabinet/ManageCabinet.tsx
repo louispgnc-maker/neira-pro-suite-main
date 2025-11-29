@@ -58,6 +58,7 @@ interface Cabinet {
 
 interface CabinetMember {
   id: string;
+  user_id?: string;
   email: string;
   nom?: string;
   role_cabinet: string;
@@ -259,6 +260,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
           // Normalize unknown items into CabinetMember[]
           const normalized: CabinetMember[] = (membersRes as unknown[]).map((m) => ({
             id: String((m as Record<string, unknown>)['id'] ?? ''),
+            user_id: String((m as Record<string, unknown>)['user_id'] ?? ''),
             email: String((m as Record<string, unknown>)['email'] ?? ''),
             nom: String((m as Record<string, unknown>)['nom'] ?? '') || undefined,
             role_cabinet: String((m as Record<string, unknown>)['role_cabinet'] ?? ''),
@@ -267,8 +269,8 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
           }));
           setMembers(normalized);
           
-          // Set current user's role for permissions
-          const currentMember = normalized.find(m => m.id === userId);
+          // Set current user's role for permissions - use user_id to match
+          const currentMember = normalized.find(m => m.user_id === userId);
           setCurrentUserRole(currentMember?.role_cabinet || null);
         }
       } else {
