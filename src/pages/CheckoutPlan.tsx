@@ -96,74 +96,6 @@ export default function CheckoutPlan() {
   // Initialisation du nombre d'utilisateurs selon la formule
   const initialUsers = planId === 'essentiel' ? 1 : planId === 'professionnel' ? 2 : 1;
   const [numberOfUsers, setNumberOfUsers] = useState<number>(initialUsers);
-  const [minMembers, setMinMembers] = useState<number>(initialUsers);
-  const [membersLoaded, setMembersLoaded] = useState(false);
-
-  // Charger le nombre de membres actifs du cabinet
-  useEffect(() => {
-    if (membersLoaded) return;
-    
-    const loadActiveMembersCount = async () => {
-      try {
-        const { data: { user: currentUser } } = await supabase.auth.getUser();
-        
-        if (!currentUser) {
-          setMembersLoaded(true);
-          return;
-        }
-        
-        // Récupérer le cabinet_id de l'utilisateur
-        const { data: memberData, error: memberError } = await supabase
-          .from('cabinet_members')
-          .select('cabinet_id')
-          .eq('user_id', currentUser.id)
-          .eq('status', 'active')
-          .single();
-        
-        if (memberError || !memberData?.cabinet_id) {
-          setMembersLoaded(true);
-          return;
-        }
-        
-        // Utiliser la RPC pour compter les membres (gère automatiquement les permissions)
-        const { data: membersData, error: rpcError } = await supabase
-          .rpc('get_cabinet_members_simple', { cabinet_id_param: memberData.cabinet_id });
-        
-        if (rpcError) {
-          console.error('RPC error:', rpcError);
-          setMembersLoaded(true);
-          return;
-        }
-        
-        // Compter seulement les membres actifs
-        const activeMembers = membersData?.filter((m: any) => m.status === 'active') || [];
-        const count = activeMembers.length || initialUsers;
-        
-        // Définir le minimum selon le plan
-        let minCount = count;
-        if (planId === 'professionnel') {
-          minCount = Math.min(Math.max(count, 2), 10);
-        }
-        
-        setMinMembers(minCount);
-        setNumberOfUsers(minCount);
-        setMembersLoaded(true);
-      } catch (error) {
-        console.error('Error loading members count:', error);
-        setMembersLoaded(true);
-      }
-    };
-    
-    const timeout = setTimeout(() => {
-      if (!membersLoaded) {
-        setMembersLoaded(true);
-      }
-    }, 2000);
-    
-    loadActiveMembersCount();
-    
-    return () => clearTimeout(timeout);
-  }, [membersLoaded, planId, initialUsers]);
 
   const Icon = planConfig.icon;
   const monthlyPrice = planConfig.monthlyPrice * numberOfUsers;
@@ -189,6 +121,24 @@ export default function CheckoutPlan() {
         .eq('owner_id', user?.id)
         .eq('role', role)
         .single();
+
+      // Si cabinet existant, vérifier le nombre de membres actifs
+      if (existingCabinets) {
+        const { data: membersData } = await supabase
+          .rpc('get_cabinet_members_simple', { cabinet_id_param: existingCabinets.id });
+        
+        const activeMembersCount = membersData?.filter((m: any) => m.status === 'active').length || 0;
+        const maxMembersForPlan = planId === 'essentiel' ? 1 : numberOfUsers;
+        
+        if (activeMembersCount > maxMembersForPlan) {
+          setLoading(false);
+          toast.error("Nombre de membres insuffisant", {
+            description: `Votre cabinet compte actuellement ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''} actif${activeMembersCount > 1 ? 's' : ''}. Vous devez sélectionner au moins ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''} pour ce plan ou retirer des membres avant de changer d'offre.`,
+            duration: 6000
+          });
+          return;
+        }
+      }
 
       // Définir les limites selon le plan
       const subscriptionLimits = {
@@ -383,44 +333,35 @@ export default function CheckoutPlan() {
                   {showUserSelector && (
                     <div className="space-y-2">
                       <Label className="text-black">Nombre de membres</Label>
-                      {!membersLoaded ? (
-                        <div className="text-sm text-gray-500 p-3 bg-gray-50 rounded-lg">
-                          Chargement du nombre de membres actuels...
-                        </div>
-                      ) : (
-                        <>
-                          <Select value={numberOfUsers.toString()} onValueChange={(v) => setNumberOfUsers(parseInt(v))}>
-                            <SelectTrigger className="bg-background">
-                              <SelectValue placeholder="Sélectionnez le nombre de membres" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Array.from({ length: maxUsers - minMembers + 1 }, (_, i) => i + minMembers).map((num) => (
-                                <SelectItem key={num} value={num.toString()}>
-                                  {num} {num === 1 ? 'membre' : 'membres'} - {planConfig.monthlyPrice * num}€/mois
-                                </SelectItem>
-                              ))}
-                              {planId === 'cabinet-plus' && (
-                                <SelectItem value="contact" disabled>
-                                  Plus de 50 ? Contactez-nous
-                                </SelectItem>
-                              )}
-                            </SelectContent>
-                          </Select>
-                          <p className="text-xs text-black/60">
-                            {minMembers > (planId === 'professionnel' ? 2 : 1) && `Votre cabinet compte actuellement ${minMembers} membres actifs. Vous ne pouvez pas sélectionner moins. `}
-                            {planId === 'cabinet-plus' && numberOfUsers >= 50 ? (
-                              <>
-                                Plus de 50 membres ?{' '}
-                                <a href="/contact" className="text-orange-600 hover:text-orange-700 underline">
-                                  Contactez-nous
-                                </a>
-                              </>
-                            ) : (
-                              `Prix unitaire : ${planConfig.monthlyPrice}€/mois par membre`
-                            )}
-                          </p>
-                        </>
-                      )}
+                      <Select value={numberOfUsers.toString()} onValueChange={(v) => setNumberOfUsers(parseInt(v))}>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Sélectionnez le nombre de membres" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: maxUsers - minUsers + 1 }, (_, i) => i + minUsers).map((num) => (
+                            <SelectItem key={num} value={num.toString()}>
+                              {num} {num === 1 ? 'membre' : 'membres'} - {planConfig.monthlyPrice * num}€/mois
+                            </SelectItem>
+                          ))}
+                          {planId === 'cabinet-plus' && (
+                            <SelectItem value="contact" disabled>
+                              Plus de 50 ? Contactez-nous
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-black/60">
+                        {planId === 'cabinet-plus' && numberOfUsers >= 50 ? (
+                          <>
+                            Plus de 50 membres ?{' '}
+                            <a href="/contact" className="text-orange-600 hover:text-orange-700 underline">
+                              Contactez-nous
+                            </a>
+                          </>
+                        ) : (
+                          `Prix unitaire : ${planConfig.monthlyPrice}€/mois par membre`
+                        )}
+                      </p>
                     </div>
                   )}
 
