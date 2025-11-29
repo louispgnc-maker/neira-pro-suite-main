@@ -100,7 +100,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
         let profilesMap: Record<string, Record<string, unknown>> = {};
         if (ownerIds.length > 0) {
           try {
-            const { data: profiles } = await supabase.from('profiles').select('id, nom, full_name, email').in('id', ownerIds as string[]);
+            const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, email').in('id', ownerIds as string[]);
             if (Array.isArray(profiles)) {
               profilesMap = (profiles as unknown[]).reduce((acc, p) => {
                 const rp = p as Record<string, unknown>;
@@ -120,7 +120,10 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
           const ownerKey = r.owner_id || r.id;
           const color = r.color || generateColorFromString(String(ownerKey));
           const ownerProfile = r.owner_id ? profilesMap[String(r.owner_id)] : null;
-          const owner_name = ownerProfile ? (String(ownerProfile['nom'] ?? ownerProfile['full_name'] ?? ownerProfile['email'] ?? ownerProfile['id'])) : (r.owner_id ?? null);
+          const firstName = ownerProfile?.['first_name'] ? String(ownerProfile['first_name']) : '';
+          const lastName = ownerProfile?.['last_name'] ? String(ownerProfile['last_name']) : '';
+          const fullName = [firstName, lastName].filter(Boolean).join(' ');
+          const owner_name = ownerProfile ? (fullName || String(ownerProfile['email'] ?? ownerProfile['id'])) : (r.owner_id ?? null);
           const owner_email = ownerProfile ? (ownerProfile['email'] ? String(ownerProfile['email']) : null) : null;
           const src = r.source as Record<string, unknown> | undefined;
           const allDay = Boolean(src?.['all_day'] ?? src?.['allDay'] ?? false);
@@ -170,10 +173,13 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
               let owner_email = null;
               if (evt.owner_id) {
                 try {
-                  const { data: p } = await supabase.from('profiles').select('id, nom, full_name, email').eq('id', evt.owner_id).maybeSingle();
+                  const { data: p } = await supabase.from('profiles').select('id, first_name, last_name, email').eq('id', evt.owner_id).maybeSingle();
                   if (p) {
                     const rp = p as Record<string, unknown>;
-                    owner_name = String(rp['nom'] ?? rp['full_name'] ?? rp['email'] ?? rp['id']);
+                    const fName = rp['first_name'] ? String(rp['first_name']) : '';
+                    const lName = rp['last_name'] ? String(rp['last_name']) : '';
+                    const fullN = [fName, lName].filter(Boolean).join(' ');
+                    owner_name = fullN || String(rp['email'] ?? rp['id']);
                     owner_email = rp['email'] ? String(rp['email']) : null;
                   }
                 } catch (_e: unknown) {
@@ -470,12 +476,16 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  {editingEvent && user && (editingEvent.owner_id === user.id || isCabinetOwner) && (
+                  {editingEvent && user && (editingEvent.owner_id === user.id || isCabinetOwner || role === 'Fondateur' || role === 'Associé') && (
                     <Button className={`${mainButtonClass} mr-2`} onClick={() => deleteEvent(editingEvent.id)}>
                       Supprimer
                     </Button>
                   )}
-                  <Button className={mainButtonClass} onClick={() => { if (editingEvent) updateEvent(); else createEvent(); }}>
+                  <Button 
+                    className={mainButtonClass} 
+                    onClick={() => { if (editingEvent) updateEvent(); else createEvent(); }}
+                    disabled={editingEvent && user && editingEvent.owner_id !== user.id && !isCabinetOwner && role !== 'Fondateur' && role !== 'Associé'}
+                  >
                     {editingEvent ? 'Enregistrer' : 'Créer'}
                   </Button>
                 </div>
