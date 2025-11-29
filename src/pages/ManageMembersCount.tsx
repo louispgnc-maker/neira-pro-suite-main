@@ -41,39 +41,27 @@ export default function ManageMembersCount() {
       if (!user) return;
 
       try {
-        // Récupérer le cabinet
-        const { data: memberData } = await supabase
-          .from('cabinet_members')
-          .select('cabinet_id')
-          .eq('user_id', user.id)
-          .eq('status', 'active')
-          .single();
-
-        if (!memberData?.cabinet_id) return;
-
-        // Récupérer les infos du cabinet
+        // Récupérer les infos du cabinet via RPC (bypass RLS)
         const { data: cabinetData, error: cabinetError } = await supabase
-          .from('cabinets')
-          .select('subscription_plan, max_members, billing_period')
-          .eq('id', memberData.cabinet_id)
-          .single();
+          .rpc('get_cabinet_subscription_info', { user_id_param: user.id });
 
-        console.log('Cabinet data:', cabinetData);
+        console.log('Cabinet data from RPC:', cabinetData);
         console.log('Cabinet error:', cabinetError);
 
-        if (cabinetData) {
-          const plan = cabinetData.subscription_plan as 'professionnel' | 'cabinet-plus';
+        if (cabinetData && cabinetData.length > 0) {
+          const cabinet = cabinetData[0];
+          const plan = cabinet.subscription_plan as 'professionnel' | 'cabinet-plus';
           setCurrentPlan(plan);
           
           // Pour Cabinet+, max_members peut être null (illimité)
           // On utilise le nombre de membres actifs comme référence si max_members est null
-          let maxMembers = cabinetData.max_members;
+          let maxMembers = cabinet.max_members;
           console.log('max_members from DB:', maxMembers, 'type:', typeof maxMembers);
           
           if (maxMembers === null || maxMembers === undefined) {
             // Compter les membres actifs d'abord
             const { data: tempMembersData } = await supabase
-              .rpc('get_cabinet_members_simple', { cabinet_id_param: memberData.cabinet_id });
+              .rpc('get_cabinet_members_simple', { cabinet_id_param: cabinet.cabinet_id });
             const tempActiveCount = tempMembersData?.filter((m: any) => m.status === 'active').length || 0;
             maxMembers = Math.max(tempActiveCount, plan === 'professionnel' ? 2 : 1);
             console.log('max_members was null, using:', maxMembers);
@@ -82,15 +70,15 @@ export default function ManageMembersCount() {
           console.log('Final maxMembers:', maxMembers);
           setCurrentMembers(maxMembers);
           setNewMembersCount(maxMembers);
-          setBillingPeriod(cabinetData.billing_period || 'monthly');
+          setBillingPeriod(cabinet.billing_period || 'monthly');
+
+          // Compter les membres actifs
+          const { data: membersData } = await supabase
+            .rpc('get_cabinet_members_simple', { cabinet_id_param: cabinet.cabinet_id });
+
+          const activeCount = membersData?.filter((m: any) => m.status === 'active').length || 0;
+          setActiveMembersCount(activeCount);
         }
-
-        // Compter les membres actifs
-        const { data: membersData } = await supabase
-          .rpc('get_cabinet_members_simple', { cabinet_id_param: memberData.cabinet_id });
-
-        const activeCount = membersData?.filter((m: any) => m.status === 'active').length || 0;
-        setActiveMembersCount(activeCount);
       } catch (error) {
         console.error('Error loading cabinet data:', error);
       }
@@ -123,19 +111,17 @@ export default function ManageMembersCount() {
         return;
       }
 
-      // Récupérer le cabinet
-      const { data: memberData } = await supabase
-        .from('cabinet_members')
-        .select('cabinet_id')
-        .eq('user_id', user?.id)
-        .eq('status', 'active')
-        .single();
+      // Récupérer le cabinet_id via RPC
+      const { data: cabinetInfo } = await supabase
+        .rpc('get_cabinet_subscription_info', { user_id_param: user?.id });
 
-      if (!memberData?.cabinet_id) {
+      if (!cabinetInfo || cabinetInfo.length === 0) {
         toast.error('Cabinet introuvable');
         setLoading(false);
         return;
       }
+
+      const cabinetId = cabinetInfo[0].cabinet_id;
 
       // Mettre à jour le nombre de membres
       const { error } = await supabase
@@ -144,7 +130,7 @@ export default function ManageMembersCount() {
           max_members: newMembersCount,
           updated_at: new Date().toISOString()
         })
-        .eq('id', memberData.cabinet_id);
+        .eq('id', cabinetId);
 
       if (error) throw error;
 
