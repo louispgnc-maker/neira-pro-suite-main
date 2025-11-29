@@ -100,7 +100,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
         let profilesMap: Record<string, Record<string, unknown>> = {};
         if (ownerIds.length > 0) {
           try {
-            const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, email').in('id', ownerIds as string[]);
+            const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name').in('id', ownerIds as string[]);
             if (Array.isArray(profiles)) {
               profilesMap = (profiles as unknown[]).reduce((acc, p) => {
                 const rp = p as Record<string, unknown>;
@@ -123,8 +123,8 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
           const firstName = ownerProfile?.['first_name'] ? String(ownerProfile['first_name']) : '';
           const lastName = ownerProfile?.['last_name'] ? String(ownerProfile['last_name']) : '';
           const fullName = [firstName, lastName].filter(Boolean).join(' ');
-          const owner_name = ownerProfile ? (fullName || String(ownerProfile['email'] ?? ownerProfile['id'])) : (r.owner_id ?? null);
-          const owner_email = ownerProfile ? (ownerProfile['email'] ? String(ownerProfile['email']) : null) : null;
+          const owner_name = ownerProfile ? (fullName || String(ownerProfile['id'])) : (r.owner_id ?? null);
+          const owner_email = null;
           const src = r.source as Record<string, unknown> | undefined;
           const allDay = Boolean(src?.['all_day'] ?? src?.['allDay'] ?? false);
           // If event is all-day, FullCalendar expects an exclusive end date. Our DB stores end_at as inclusive (23:59:59), so add 1 day for display.
@@ -173,14 +173,13 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
               let owner_email = null;
               if (evt.owner_id) {
                 try {
-                  const { data: p } = await supabase.from('profiles').select('id, first_name, last_name, email').eq('id', evt.owner_id).maybeSingle();
+                  const { data: p } = await supabase.from('profiles').select('id, first_name, last_name').eq('id', evt.owner_id).maybeSingle();
                   if (p) {
                     const rp = p as Record<string, unknown>;
                     const fName = rp['first_name'] ? String(rp['first_name']) : '';
                     const lName = rp['last_name'] ? String(rp['last_name']) : '';
                     const fullN = [fName, lName].filter(Boolean).join(' ');
-                    owner_name = fullN || String(rp['email'] ?? rp['id']);
-                    owner_email = rp['email'] ? String(rp['email']) : null;
+                    owner_name = fullN || String(rp['id']);
                   }
                 } catch (_e: unknown) {
                   // ignore
@@ -203,14 +202,13 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
               let owner_email = null;
               if (payload.record?.owner_id) {
                 try {
-                  const { data: p } = await supabase.from('profiles').select('id, first_name, last_name, email').eq('id', payload.record.owner_id).maybeSingle();
+                  const { data: p } = await supabase.from('profiles').select('id, first_name, last_name').eq('id', payload.record.owner_id).maybeSingle();
                   if (p) {
                     const rp = p as Record<string, unknown>;
                     const fName = rp['first_name'] ? String(rp['first_name']) : '';
                     const lName = rp['last_name'] ? String(rp['last_name']) : '';
                     const fullN = [fName, lName].filter(Boolean).join(' ');
-                    owner_name = fullN || String(rp['email'] ?? rp['id']);
-                    owner_email = rp['email'] ? String(rp['email']) : null;
+                    owner_name = fullN || String(rp['id']);
                   }
                 } catch (_e: unknown) { /* noop */ }
               }
@@ -445,7 +443,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
               </DialogHeader>
               {editingEvent && (
                 <div className="text-sm text-muted-foreground mb-2">
-                  <p>Créé par : <strong>{editingEvent.owner_name || editingEvent.owner_id || '—'}</strong>{editingEvent.owner_email ? ` (${editingEvent.owner_email})` : ''}</p>
+                  <p>Créé par : <strong>{editingEvent.owner_name || editingEvent.owner_id || '—'}</strong></p>
                 </div>
               )}
 
