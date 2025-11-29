@@ -290,22 +290,12 @@ export default function ManageMembersCount() {
                     <span className="font-semibold">{Math.abs(memberDiff)} membre{Math.abs(memberDiff) > 1 ? 's' : ''}</span>
                     {isAdding ? ' supplémentaire' : ''}{Math.abs(memberDiff) > 1 ? 's' : ''} :
                   </p>
-                  <div className="ml-4 space-y-1">
-                    <p className="text-sm text-blue-700">
-                      • Ancien total : <span className="font-medium">{currentMembers} membre{currentMembers > 1 ? 's' : ''}</span> = {currentTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
-                    </p>
-                    <p className="text-sm text-blue-700">
-                      • Nouveau total : <span className="font-medium">{newMembersCount} membre{newMembersCount > 1 ? 's' : ''}</span> = {newTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
-                    </p>
-                    <p className="text-sm font-semibold text-blue-900 mt-2">
-                      → Différence : {priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
-                    </p>
-                  </div>
-                  {billingPeriod === 'monthly' && (
-                    <p className="text-xs text-blue-600 mt-2">
-                      Calcul : {newMembersCount} × {Math.round(pricePerMember * 1.2 * 100) / 100}€ TTC = {newTTC}€ TTC/mois
-                    </p>
-                  )}
+                  <p className="text-lg font-semibold text-blue-900 mt-2">
+                    Nouveau total : {newTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Différence : {priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                  </p>
                 </div>
               </div>
             )}
