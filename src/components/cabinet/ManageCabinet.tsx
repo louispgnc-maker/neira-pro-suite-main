@@ -643,7 +643,7 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {isOwner && (
+          {currentUserRole && (currentUserRole === 'Fondateur' || currentUserRole === 'Associé') && (
             <div className="space-y-2">
               <Label>Code d'accès du cabinet</Label>
               <div className="flex gap-2">
@@ -656,15 +656,17 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                 >
                   <Copy className="h-4 w-4" />
                 </Button>
-                <Button
-                  type="button"
-                  size="icon"
-                  onClick={regenerateCode}
-                  title="Régénérer le code"
-                  className={colorClass}
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
+                {currentUserRole === 'Fondateur' && (
+                  <Button
+                    type="button"
+                    size="icon"
+                    onClick={regenerateCode}
+                    title="Régénérer le code"
+                    className={colorClass}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
           )}
