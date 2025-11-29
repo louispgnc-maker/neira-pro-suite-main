@@ -169,18 +169,23 @@ export default function Clients() {
                         <div className="flex-1" onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}>
                           <h3 className="font-semibold text-lg">{client.name}</h3>
                           {client.missing_info ? (
-                            <p className="text-xs text-destructive flex items-center gap-1 mt-2">
-                              <AlertCircle className="h-3 w-3" />
-                              Manque: {client.missing_info}
-                            </p>
+                            <>
+                              <p className="text-xs text-destructive flex items-center gap-1 mt-2 font-semibold">
+                                <AlertCircle className="h-3 w-3" />
+                                Dossier incomplet
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Manque: {client.missing_info}
+                              </p>
+                            </>
                           ) : (
-                            <p className="text-xs text-success flex items-center gap-1 mt-2">
+                            <p className="text-xs text-success flex items-center gap-1 mt-2 font-semibold">
                               <CheckCircle2 className="h-3 w-3" />
                               Dossier complet
                             </p>
                           )}
                           {client.created_at && (
-                            <p className="text-xs text-foreground mt-2">
+                            <p className="text-xs text-muted-foreground mt-2">
                               Ajouté le {new Date(client.created_at).toLocaleDateString()}
                             </p>
                           )}
