@@ -184,16 +184,24 @@ export default function Statistiques() {
             return date >= startOfLastMonth && date <= endOfLastMonth;
           }).length;
 
-          // Clients avec dossiers actifs
-          const { data: dossiersWithClients } = await supabase
-            .from('dossiers')
-            .select('client_id')
-            .eq('owner_id', user.id)
-            .eq('role', role)
-            .not('client_id', 'is', null);
-
-          const clientsAvecDossiers = new Set(dossiersWithClients?.map(d => d.client_id) || []);
-          const avecDossiersActifs = clientsAvecDossiers.size;
+          // Vérifier pour chaque client s'il est dans un dossier
+          let avecDossiersActifs = 0;
+          
+          for (const client of allClients) {
+            // Vérifier dans la table dossiers si ce client est lié
+            const { data: clientDossiers } = await supabase
+              .from('dossiers')
+              .select('id')
+              .eq('owner_id', user.id)
+              .eq('role', role)
+              .eq('client_id', client.id)
+              .limit(1);
+            
+            if (clientDossiers && clientDossiers.length > 0) {
+              avecDossiersActifs++;
+            }
+          }
+          
           const sansActivite = allClients.length - avecDossiersActifs;
 
           setClientStats({
