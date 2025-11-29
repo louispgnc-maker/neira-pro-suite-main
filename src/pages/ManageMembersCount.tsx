@@ -43,6 +43,34 @@ export default function ManageMembersCount() {
       try {
         console.log('Current user ID:', user.id);
         
+        // First, get cabinet_id from profile or cabinet_members
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('cabinet_id')
+          .eq('id', user.id)
+          .single();
+
+        let cabinetId = profileData?.cabinet_id;
+
+        // If no cabinet in profile, get it from cabinet_members
+        if (!cabinetId) {
+          const { data: memberData } = await supabase
+            .from('cabinet_members')
+            .select('cabinet_id')
+            .eq('user_id', user.id)
+            .eq('status', 'active')
+            .single();
+          
+          cabinetId = memberData?.cabinet_id;
+        }
+
+        if (!cabinetId) {
+          console.error('No cabinet found for user');
+          return;
+        }
+
+        console.log('Cabinet ID:', cabinetId);
+
         // Récupérer les infos du cabinet via RPC (bypass RLS)
         const { data: cabinetData, error: cabinetError } = await supabase
           .rpc('get_cabinet_subscription_info', { user_id_param: user.id });
@@ -51,8 +79,10 @@ export default function ManageMembersCount() {
         console.log('Cabinet error:', cabinetError);
 
         if (cabinetData && cabinetData.length > 0) {
-          const cabinet = cabinetData[0];
-          console.log('Cabinet details:', {
+          // Find the cabinet that matches the user's active cabinet_id
+          const cabinet = cabinetData.find((c: any) => c.cabinet_id === cabinetId) || cabinetData[0];
+          
+          console.log('Selected cabinet details:', {
             cabinet_id: cabinet.cabinet_id,
             plan: cabinet.subscription_plan,
             max_members: cabinet.max_members,
