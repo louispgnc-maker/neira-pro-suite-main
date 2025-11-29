@@ -439,7 +439,13 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>{editingEvent ? 'Modifier l\'événement' : 'Nouvel événement'}</DialogTitle>
+                <DialogTitle>
+                  {editingEvent 
+                    ? (user && (editingEvent.owner_id === user.id || isCabinetOwner || role === 'Fondateur' || role === 'Associé')
+                        ? 'Modifier l\'événement'
+                        : 'Détails de l\'événement')
+                    : 'Nouvel événement'}
+                </DialogTitle>
               </DialogHeader>
               {editingEvent && (
                 <div className="text-sm text-muted-foreground mb-2">
@@ -447,51 +453,92 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                 </div>
               )}
 
-              <div className="space-y-4">
-                <div className="flex flex-col">
-                  <label className="text-sm mb-1">Titre</label>
-                  <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} className="w-full" />
-                </div>
+              {/* Mode lecture seule si pas de permissions */}
+              {editingEvent && user && editingEvent.owner_id !== user.id && !isCabinetOwner && role !== 'Fondateur' && role !== 'Associé' ? (
+                <div className="space-y-4">
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium mb-1">Titre</label>
+                    <p className="text-base p-3 bg-muted rounded-md">{formTitle || '—'}</p>
+                  </div>
 
-                <div className="flex flex-col">
-                  <label className="text-sm mb-1">Description</label>
-                  <Textarea value={formDescription} onChange={(e) => setFormDescription(e.target.value)} className="w-full" />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="flex flex-col">
-                    <label className="text-sm mb-1">Date début</label>
-                    <input type="date" value={formStartDate} onChange={(e) => setFormStartDate(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-sm mb-1">Heure (optionnel)</label>
-                    <input type="time" value={formStartTime} onChange={(e) => setFormStartTime(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-sm mb-1">Date fin (optionnel)</label>
-                    <input type="date" value={formEndDate} onChange={(e) => setFormEndDate(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-sm mb-1">Heure fin (optionnel)</label>
-                    <input type="time" value={formEndTime} onChange={(e) => setFormEndTime(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-2">
-                  {editingEvent && user && (editingEvent.owner_id === user.id || isCabinetOwner || role === 'Fondateur' || role === 'Associé') && (
-                    <Button className={`${mainButtonClass} mr-2`} onClick={() => deleteEvent(editingEvent.id)}>
-                      Supprimer
-                    </Button>
+                  {formDescription && (
+                    <div className="flex flex-col">
+                      <label className="text-sm font-medium mb-1">Description</label>
+                      <p className="text-base p-3 bg-muted rounded-md whitespace-pre-wrap">{formDescription}</p>
+                    </div>
                   )}
-                  <Button 
-                    className={mainButtonClass} 
-                    onClick={() => { if (editingEvent) updateEvent(); else createEvent(); }}
-                    disabled={editingEvent && user && editingEvent.owner_id !== user.id && !isCabinetOwner && role !== 'Fondateur' && role !== 'Associé'}
-                  >
-                    {editingEvent ? 'Enregistrer' : 'Créer'}
-                  </Button>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col">
+                      <label className="text-sm font-medium mb-1">Date de début</label>
+                      <p className="text-base p-3 bg-muted rounded-md">
+                        {formStartDate ? new Date(formStartDate).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '—'}
+                        {formStartTime && <span className="ml-2 font-medium">à {formStartTime}</span>}
+                      </p>
+                    </div>
+                    {formEndDate && (
+                      <div className="flex flex-col">
+                        <label className="text-sm font-medium mb-1">Date de fin</label>
+                        <p className="text-base p-3 bg-muted rounded-md">
+                          {new Date(formEndDate).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                          {formEndTime && <span className="ml-2 font-medium">à {formEndTime}</span>}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button variant="outline" onClick={() => setOpenCreate(false)}>
+                      Fermer
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex flex-col">
+                    <label className="text-sm mb-1">Titre</label>
+                    <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} className="w-full" />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label className="text-sm mb-1">Description</label>
+                    <Textarea value={formDescription} onChange={(e) => setFormDescription(e.target.value)} className="w-full" />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="flex flex-col">
+                      <label className="text-sm mb-1">Date début</label>
+                      <input type="date" value={formStartDate} onChange={(e) => setFormStartDate(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-sm mb-1">Heure (optionnel)</label>
+                      <input type="time" value={formStartTime} onChange={(e) => setFormStartTime(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-sm mb-1">Date fin (optionnel)</label>
+                      <input type="date" value={formEndDate} onChange={(e) => setFormEndDate(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-sm mb-1">Heure fin (optionnel)</label>
+                      <input type="time" value={formEndTime} onChange={(e) => setFormEndTime(e.target.value)} className="w-full rounded-md border border-input px-3 py-2" />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    {editingEvent && user && (editingEvent.owner_id === user.id || isCabinetOwner || role === 'Fondateur' || role === 'Associé') && (
+                      <Button className={`${mainButtonClass} mr-2`} onClick={() => deleteEvent(editingEvent.id)}>
+                        Supprimer
+                      </Button>
+                    )}
+                    <Button 
+                      className={mainButtonClass} 
+                      onClick={() => { if (editingEvent) updateEvent(); else createEvent(); }}
+                    >
+                      {editingEvent ? 'Enregistrer' : 'Créer'}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </div>
