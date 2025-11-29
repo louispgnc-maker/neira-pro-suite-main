@@ -750,16 +750,13 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                       className={colorClass}
                       disabled={
                         cabinet.subscription_plan === 'essentiel' || 
-                        (cabinet.subscription_plan === 'professionnel' && members.length >= (cabinet.max_members || 10)) ||
-                        (cabinet.subscription_plan === 'cabinet-plus' && members.length >= 50)
+                        (cabinet.max_members && members.filter(m => m.status === 'active').length >= cabinet.max_members)
                       }
                       title={
                         cabinet.subscription_plan === 'essentiel' 
                           ? "L'abonnement Essentiel ne permet qu'un seul membre"
-                          : cabinet.subscription_plan === 'professionnel' && members.length >= (cabinet.max_members || 10)
-                          ? 'Limite de 10 membres atteinte - Passez à Cabinet+'
-                          : cabinet.subscription_plan === 'cabinet-plus' && members.length >= 50
-                          ? 'Contactez-nous pour ajouter plus de 50 membres'
+                          : (cabinet.max_members && members.filter(m => m.status === 'active').length >= cabinet.max_members)
+                          ? `Limite de ${cabinet.max_members} membre${cabinet.max_members > 1 ? 's' : ''} atteinte - Augmentez votre abonnement`
                           : 'Inviter un membre'
                       }
                     >
