@@ -187,19 +187,34 @@ export default function ManageMembersCount() {
           <CardContent className="space-y-6">
             {/* Abonnement actuel */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-semibold mb-2">Abonnement actuel</h3>
-              <p className="text-sm text-gray-600">
-                Plan : <span className="font-medium text-black">{currentPlan === 'professionnel' ? 'Professionnel' : 'Cabinet+'}</span>
-              </p>
-              <p className="text-sm text-gray-600">
-                Nombre de membres : <span className="font-medium text-black">{currentMembers} membre{currentMembers > 1 ? 's' : ''}</span>
-              </p>
-              <p className="text-sm text-gray-600">
-                Membres actifs : <span className="font-medium text-black">{activeMembersCount} membre{activeMembersCount > 1 ? 's' : ''} actif{activeMembersCount > 1 ? 's' : ''}</span>
-              </p>
-              <p className="text-sm text-gray-600">
-                Prix actuel : <span className="font-medium text-black">{currentTTC}€ TTC / {billingPeriod === 'monthly' ? 'mois' : 'an'}</span>
-              </p>
+              <h3 className="font-semibold mb-3">Abonnement actuel</h3>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  Plan : <span className="font-medium text-black">{currentPlan === 'professionnel' ? 'Professionnel' : 'Cabinet+'}</span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Nombre de membres (abonnements payés) : <span className="font-medium text-black">{currentMembers} membre{currentMembers > 1 ? 's' : ''}</span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Membres actifs dans le cabinet : <span className="font-medium text-black">{activeMembersCount} membre{activeMembersCount > 1 ? 's' : ''} actif{activeMembersCount > 1 ? 's' : ''}</span>
+                </p>
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    Prix unitaire : <span className="font-medium text-black">{pricePerMember}€ HT / membre / mois</span>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Prix unitaire TTC : <span className="font-medium text-black">{Math.round(pricePerMember * 1.2 * 100) / 100}€ TTC / membre / mois</span>
+                  </p>
+                  <p className="text-base font-semibold text-black mt-2">
+                    Prix total actuel : <span className="text-orange-600">{currentTTC}€ TTC / {billingPeriod === 'monthly' ? 'mois' : 'an'}</span>
+                  </p>
+                  {billingPeriod === 'monthly' && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Soit {currentMembers} × {Math.round(pricePerMember * 1.2 * 100) / 100}€ TTC par mois
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Ajuster le nombre de membres */}
@@ -249,15 +264,30 @@ export default function ManageMembersCount() {
             {/* Résumé */}
             {memberDiff !== 0 && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold mb-2 text-blue-900">Résumé de la modification</h3>
-                <p className="text-sm text-blue-800">
-                  En {isAdding ? 'ajoutant' : 'supprimant'} un abonnement à{' '}
-                  <span className="font-semibold">{Math.abs(memberDiff)} membre{Math.abs(memberDiff) > 1 ? 's' : ''}</span>
-                  {isAdding ? ' supplémentaire' : ''}{Math.abs(memberDiff) > 1 ? 's' : ''}, 
-                  votre abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'} est maintenant de{' '}
-                  <span className="font-semibold text-blue-900">{newTTC}€ TTC</span>
-                  {' '}({priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€).
-                </p>
+                <h3 className="font-semibold mb-3 text-blue-900">Résumé de la modification</h3>
+                <div className="space-y-2">
+                  <p className="text-sm text-blue-800">
+                    En {isAdding ? 'ajoutant' : 'supprimant'}{' '}
+                    <span className="font-semibold">{Math.abs(memberDiff)} membre{Math.abs(memberDiff) > 1 ? 's' : ''}</span>
+                    {isAdding ? ' supplémentaire' : ''}{Math.abs(memberDiff) > 1 ? 's' : ''} :
+                  </p>
+                  <div className="ml-4 space-y-1">
+                    <p className="text-sm text-blue-700">
+                      • Ancien total : <span className="font-medium">{currentMembers} membre{currentMembers > 1 ? 's' : ''}</span> = {currentTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      • Nouveau total : <span className="font-medium">{newMembersCount} membre{newMembersCount > 1 ? 's' : ''}</span> = {newTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                    </p>
+                    <p className="text-sm font-semibold text-blue-900 mt-2">
+                      → Différence : {priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                    </p>
+                  </div>
+                  {billingPeriod === 'monthly' && (
+                    <p className="text-xs text-blue-600 mt-2">
+                      Calcul : {newMembersCount} × {Math.round(pricePerMember * 1.2 * 100) / 100}€ TTC = {newTTC}€ TTC/mois
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
