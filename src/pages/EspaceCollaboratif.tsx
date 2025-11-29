@@ -20,7 +20,8 @@ import {
   Plus,
   ArrowRight,
   Settings,
-  Crown
+  Crown,
+  User
 } from 'lucide-react';
 import { Trash2, UploadCloud } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
@@ -43,6 +44,7 @@ interface Cabinet {
 
 interface CabinetMember {
   id: string;
+  user_id?: string;
   email: string;
   nom?: string;
   role_cabinet: string;
@@ -143,6 +145,7 @@ export default function EspaceCollaboratif() {
   const [contrats, setContrats] = useState<SharedContrat[]>([]);
   const [clientsShared, setClientsShared] = useState<SharedClient[]>([]);
   const [isCabinetOwner, setIsCabinetOwner] = useState<boolean>(false);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   
@@ -590,25 +593,37 @@ export default function EspaceCollaboratif() {
         const { data: membersData, error: membersError } = await supabase.rpc('get_cabinet_members_simple', { cabinet_id_param: userCabinet?.id });
         if (!membersError && Array.isArray(membersData)) {
           const arr = membersData as unknown[];
-          setMembers(arr.map(m => {
-            const mm = m as { id: string; email: string; nom?: string; role_cabinet: string; status: string };
-            return { id: mm.id, email: mm.email, nom: mm.nom || undefined, role_cabinet: mm.role_cabinet, status: mm.status };
-          }));
+          const mappedMembers = arr.map(m => {
+            const mm = m as { id: string; user_id?: string; email: string; nom?: string; role_cabinet: string; status: string };
+            return { id: mm.id, user_id: mm.user_id, email: mm.email, nom: mm.nom || undefined, role_cabinet: mm.role_cabinet, status: mm.status };
+          });
+          setMembers(mappedMembers);
+          
+          // Set current user's role
+          const currentMember = mappedMembers.find(m => m.user_id === user?.id || m.email === user?.email);
+          setCurrentUserRole(currentMember?.role_cabinet || null);
         } else {
           // fallback
-          const { data: membersTable } = await supabase.from('cabinet_members').select('id,email,nom,role_cabinet,status').eq('cabinet_id', userCabinet?.id);
+          const { data: membersTable } = await supabase.from('cabinet_members').select('id,user_id,email,nom,role_cabinet,status').eq('cabinet_id', userCabinet?.id);
           if (Array.isArray(membersTable)) {
             const arr = membersTable as unknown[];
-            setMembers(arr.map(m => {
-              const mm = m as { id: string; email: string; nom?: string; role_cabinet: string; status: string };
-              return { id: mm.id, email: mm.email, nom: mm.nom || undefined, role_cabinet: mm.role_cabinet, status: mm.status };
-            }));
+            const mappedMembers = arr.map(m => {
+              const mm = m as { id: string; user_id?: string; email: string; nom?: string; role_cabinet: string; status: string };
+              return { id: mm.id, user_id: mm.user_id, email: mm.email, nom: mm.nom || undefined, role_cabinet: mm.role_cabinet, status: mm.status };
+            });
+            setMembers(mappedMembers);
+            
+            // Set current user's role
+            const currentMember = mappedMembers.find(m => m.user_id === user?.id || m.email === user?.email);
+            setCurrentUserRole(currentMember?.role_cabinet || null);
           } else {
             setMembers([]);
+            setCurrentUserRole(null);
           }
         }
       } catch (e) {
         setMembers([]);
+        setCurrentUserRole(null);
       }
 
       // Documents
@@ -1093,8 +1108,19 @@ export default function EspaceCollaboratif() {
         </div>
         
         <div className="flex items-center gap-3">
-          {/* Management button for cabinet founder */}
-          {isCabinetOwner && (
+          {/* Display current user's role */}
+          {currentUserRole && (
+            <Badge 
+              variant="outline" 
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium ${cabinetRole === 'notaire' ? 'border-orange-500 text-orange-700 bg-orange-50' : 'border-blue-500 text-blue-700 bg-blue-50'}`}
+            >
+              <User className="h-3.5 w-3.5" />
+              {currentUserRole}
+            </Badge>
+          )}
+          
+          {/* Management button for cabinet founder and Associé */}
+          {(isCabinetOwner || currentUserRole === 'Associé') && (
             <Button
               onClick={() => navigate(`/${cabinetRole}s/cabinet`)}
               className={colorClass}
