@@ -19,33 +19,64 @@ export default function CheckoutProfessionnel() {
   const [userCount, setUserCount] = useState(2);
   const [minMembers, setMinMembers] = useState(2);
 
+  console.log('CheckoutProfessionnel component mounted, user:', user);
+
   // Charger le nombre de membres actifs du cabinet
   useEffect(() => {
+    console.log('CheckoutProfessionnel useEffect triggered, user:', user);
+    
     const loadActiveMembersCount = async () => {
-      if (!user) return;
+      if (!user) {
+        console.log('CheckoutProfessionnel: No user available yet');
+        // Essayer de charger l'utilisateur directement depuis Supabase
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        console.log('CheckoutProfessionnel: Loaded user from Supabase:', currentUser);
+        
+        if (!currentUser) {
+          console.log('CheckoutProfessionnel: Still no user, setting defaults');
+          return;
+        }
+        
+        // Utiliser currentUser au lieu de user
+        await loadMembersForUser(currentUser.id);
+        return;
+      }
+      
+      await loadMembersForUser(user.id);
+    };
+    
+    const loadMembersForUser = async (userId: string) => {
+      console.log('CheckoutProfessionnel: Loading members count for user', userId);
       
       try {
-        const { data: memberData } = await supabase
+        const { data: memberData, error: memberError } = await supabase
           .from('cabinet_members')
           .select('cabinet_id')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .eq('status', 'active')
           .single();
         
+        console.log('CheckoutProfessionnel: Member data:', memberData, 'Error:', memberError);
+        
         if (memberData?.cabinet_id) {
-          const { data: membersData } = await supabase
+          const { data: membersData, error: membersError } = await supabase
             .from('cabinet_members')
             .select('id', { count: 'exact' })
             .eq('cabinet_id', memberData.cabinet_id)
             .eq('status', 'active');
           
+          console.log('CheckoutProfessionnel: Members data:', membersData, 'Count:', membersData?.length, 'Error:', membersError);
+          
           const count = membersData?.length || 2;
           const minCount = Math.min(Math.max(count, 2), 10); // Entre 2 et 10
+          console.log('CheckoutProfessionnel: Setting minMembers to', minCount);
           setMinMembers(minCount);
           setUserCount(minCount);
+        } else {
+          console.log('CheckoutProfessionnel: No cabinet found for user');
         }
       } catch (error) {
-        console.error('Error loading members count:', error);
+        console.error('CheckoutProfessionnel: Error loading members count:', error);
       }
     };
     

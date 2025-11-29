@@ -19,22 +19,42 @@ export default function CheckoutCabinetPlus() {
   const [userCount, setUserCount] = useState(1);
   const [minMembers, setMinMembers] = useState(1);
 
+  console.log('CheckoutCabinetPlus component mounted, user:', user);
+
   // Charger le nombre de membres actifs du cabinet
   useEffect(() => {
+    console.log('CheckoutCabinetPlus useEffect triggered, user:', user);
+    
     const loadActiveMembersCount = async () => {
       if (!user) {
         console.log('CheckoutCabinetPlus: No user available yet');
+        // Essayer de charger l'utilisateur directement depuis Supabase
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        console.log('CheckoutCabinetPlus: Loaded user from Supabase:', currentUser);
+        
+        if (!currentUser) {
+          console.log('CheckoutCabinetPlus: Still no user, setting defaults');
+          return;
+        }
+        
+        // Utiliser currentUser au lieu de user
+        await loadMembersForUser(currentUser.id);
         return;
       }
       
-      console.log('CheckoutCabinetPlus: Loading members count for user', user.id);
+      await loadMembersForUser(user.id);
+    };
+    
+    const loadMembersForUser = async (userId: string) => {
+    const loadMembersForUser = async (userId: string) => {
+      console.log('CheckoutCabinetPlus: Loading members count for user', userId);
       
       try {
         // Récupérer le cabinet de l'utilisateur
         const { data: memberData, error: memberError } = await supabase
           .from('cabinet_members')
           .select('cabinet_id')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .eq('status', 'active')
           .single();
         
