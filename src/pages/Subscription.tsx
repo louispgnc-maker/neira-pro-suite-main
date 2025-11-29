@@ -420,6 +420,39 @@ export default function Subscription() {
             );
           })()}
 
+          {/* Section Gérer le nombre de membres (seulement pour Professionnel et Cabinet+) */}
+          {(currentPlan === 'professionnel' || currentPlan === 'cabinet-plus') && (
+            <Card className="mb-12 border-2 border-orange-200 bg-orange-50/50">
+              <CardHeader>
+                <CardTitle className="text-xl text-black flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Gérer le nombre de membres
+                </CardTitle>
+                <CardDescription className="text-black">
+                  Augmentez ou réduisez le nombre de membres de votre abonnement {currentPlan === 'professionnel' ? 'Professionnel' : 'Cabinet+'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-white rounded-lg p-4 border border-orange-200">
+                  <p className="text-sm text-black mb-4">
+                    Vous avez actuellement <strong>{activeMembersCount} membre{activeMembersCount > 1 ? 's' : ''} actif{activeMembersCount > 1 ? 's' : ''}</strong> dans votre cabinet.
+                  </p>
+                  <Button
+                    onClick={() => navigate(`${prefix}/checkout/${currentPlan}`)}
+                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                  >
+                    Modifier le nombre de membres
+                  </Button>
+                  <p className="text-xs text-gray-600 mt-2">
+                    {currentPlan === 'professionnel' 
+                      ? 'Prix : 59€/mois par membre (2 à 10 membres)'
+                      : 'Prix : 89€/mois par membre (illimité)'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* 3) Section "Changer d'abonnement" */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-black mb-2">
