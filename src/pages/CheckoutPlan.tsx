@@ -100,12 +100,17 @@ export default function CheckoutPlan() {
 
   // Charger le nombre de membres actifs du cabinet
   useEffect(() => {
+    console.log('CheckoutPlan: useEffect triggered, user:', user, 'planId:', planId);
+    
     const loadActiveMembersCount = async () => {
       if (!user) {
+        console.log('CheckoutPlan: No user in context, trying Supabase auth');
         // Essayer de charger l'utilisateur directement depuis Supabase
         const { data: { user: currentUser } } = await supabase.auth.getUser();
+        console.log('CheckoutPlan: User from Supabase:', currentUser);
         
         if (!currentUser) {
+          console.log('CheckoutPlan: Still no user, aborting');
           return;
         }
         
@@ -117,20 +122,25 @@ export default function CheckoutPlan() {
     };
     
     const loadMembersForUser = async (userId: string) => {
+      console.log('CheckoutPlan: Loading members for user:', userId);
       try {
-        const { data: memberData } = await supabase
+        const { data: memberData, error: memberError } = await supabase
           .from('cabinet_members')
           .select('cabinet_id')
           .eq('user_id', userId)
           .eq('status', 'active')
           .single();
         
+        console.log('CheckoutPlan: Member data:', memberData, 'Error:', memberError);
+        
         if (memberData?.cabinet_id) {
-          const { data: membersData } = await supabase
+          const { data: membersData, error: membersError } = await supabase
             .from('cabinet_members')
             .select('id', { count: 'exact' })
             .eq('cabinet_id', memberData.cabinet_id)
             .eq('status', 'active');
+          
+          console.log('CheckoutPlan: Members data:', membersData, 'Count:', membersData?.length, 'Error:', membersError);
           
           const count = membersData?.length || initialUsers;
           
@@ -140,11 +150,14 @@ export default function CheckoutPlan() {
             minCount = Math.min(Math.max(count, 2), 10); // Entre 2 et 10
           }
           
+          console.log('CheckoutPlan: Setting minMembers to:', minCount, 'numberOfUsers to:', minCount);
           setMinMembers(minCount);
           setNumberOfUsers(minCount);
+        } else {
+          console.log('CheckoutPlan: No cabinet found for user');
         }
       } catch (error) {
-        console.error('Error loading members count:', error);
+        console.error('CheckoutPlan: Error loading members count:', error);
       }
     };
     
