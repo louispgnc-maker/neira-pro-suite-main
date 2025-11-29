@@ -438,7 +438,7 @@ export default function Subscription() {
                     Vous avez actuellement <strong>{activeMembersCount} membre{activeMembersCount > 1 ? 's' : ''} actif{activeMembersCount > 1 ? 's' : ''}</strong> dans votre cabinet.
                   </p>
                   <Button
-                    onClick={() => navigate(`${prefix}/checkout/${currentPlan}`)}
+                    onClick={() => navigate(`${prefix}/subscription/manage-members`)}
                     className="bg-orange-600 hover:bg-orange-700 text-white"
                   >
                     Modifier le nombre de membres
