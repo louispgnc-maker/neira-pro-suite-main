@@ -176,8 +176,18 @@ export default function EmailIntegration() {
       console.log('[EmailIntegration] Parsed data:', data);
       
       if (data?.authUrl) {
-        // Redirect to Google OAuth on the same page instead of popup
-        window.location.href = data.authUrl;
+        const width = 600;
+        const height = 700;
+        const left = window.screen.width / 2 - width / 2;
+        const top = window.screen.height / 2 - height / 2;
+        
+        window.open(
+          data.authUrl,
+          'Gmail OAuth',
+          `width=${width},height=${height},left=${left},top=${top}`
+        );
+        
+        toast.success('Veuillez autoriser l\'accès à votre Gmail');
       }
     } catch (error: any) {
       console.error('Error connecting provider:', error);
