@@ -8,10 +8,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type EmailAccount = {
   id: string;
@@ -35,15 +31,7 @@ export default function EmailIntegration() {
   const location = useLocation();
   const [accounts, setAccounts] = useState<EmailAccount[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openAdd, setOpenAdd] = useState(false);
   const [syncing, setSyncing] = useState<string | null>(null);
-
-  // Form state
-  const [provider, setProvider] = useState('gmail');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [imapServer, setImapServer] = useState('');
-  const [imapPort, setImapPort] = useState('993');
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -81,15 +69,10 @@ export default function EmailIntegration() {
     }
   };
 
-  const handleAddAccount = async () => {
-    if (!provider) {
-      toast.error('Veuillez sélectionner un fournisseur');
-      return;
-    }
-
+  const handleConnectProvider = async (selectedProvider: string) => {
     try {
-      if (provider === 'gmail') {
-        // Pour Gmail, utiliser OAuth2
+      // Pour l'instant, seul Gmail est supporté avec OAuth2
+      if (selectedProvider === 'gmail') {
         const { data, error } = await supabase.functions.invoke('gmail-sync', {
           body: { action: 'get-auth-url' }
         });
@@ -110,43 +93,14 @@ export default function EmailIntegration() {
           );
           
           toast.success('Veuillez autoriser l\'accès à votre compte Gmail');
-          setOpenAdd(false);
         }
       } else {
-        // Pour les autres providers, utiliser IMAP
-        if (!email || !password) {
-          toast.error('Veuillez remplir tous les champs requis');
-          return;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          toast.error('Adresse email invalide');
-          return;
-        }
-
-        const { error } = await supabase.from('email_accounts').insert({
-          user_id: user?.id,
-          email: email,
-          provider: provider,
-          status: 'pending',
-          credentials: {
-            password: password,
-            imap_server: provider === 'other' ? imapServer : undefined,
-            imap_port: provider === 'other' ? imapPort : undefined,
-          }
-        });
-
-        if (error) throw error;
-
-        toast.success('Compte email ajouté avec succès');
-        setOpenAdd(false);
-        resetForm();
-        loadAccounts();
+        // Les autres providers ne sont pas encore implémentés
+        toast.info(`${selectedProvider} sera bientôt disponible`);
       }
     } catch (error: any) {
-      console.error('Error adding email account:', error);
-      toast.error(error.message || 'Erreur lors de l\'ajout du compte');
+      console.error('Error connecting provider:', error);
+      toast.error(error.message || 'Erreur lors de la connexion');
     }
   };
 
@@ -192,14 +146,6 @@ export default function EmailIntegration() {
     }
   };
 
-  const resetForm = () => {
-    setEmail('');
-    setPassword('');
-    setImapServer('');
-    setImapPort('993');
-    setProvider('gmail');
-  };
-
   const getProviderConfig = (providerValue: string) => {
     return EMAIL_PROVIDERS.find(p => p.value === providerValue) || EMAIL_PROVIDERS[0];
   };
@@ -207,118 +153,55 @@ export default function EmailIntegration() {
   return (
     <AppLayout>
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Intégration Email</h1>
-            <p className="text-foreground mt-1">Connectez vos comptes email professionnels</p>
-          </div>
-          <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-            <DialogTrigger asChild>
-              <Button className={mainButtonColor}>
-                <Mail className="mr-2 h-4 w-4" />
-                Ajouter un compte
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Connecter un compte email</DialogTitle>
-                <DialogDescription>
-                  Ajoutez votre adresse email professionnelle pour synchroniser vos messages
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <Label>Fournisseur</Label>
-                  <Select value={provider} onValueChange={setProvider}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {EMAIL_PROVIDERS.map(p => (
-                        <SelectItem key={p.value} value={p.value}>
-                          {p.icon} {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Adresse email</Label>
-                  <Input
-                    type="email"
-                    placeholder="votre@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Mot de passe d'application</Label>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {provider === 'gmail' && 'Utilisez un mot de passe d\'application Google'}
-                    {provider === 'outlook' && 'Utilisez un mot de passe d\'application Microsoft'}
-                    {provider === 'yahoo' && 'Utilisez un mot de passe d\'application Yahoo'}
-                    {provider === 'other' && 'Mot de passe IMAP de votre compte'}
-                  </p>
-                </div>
-
-                {provider === 'other' && (
-                  <>
-                    <div className="space-y-2">
-                      <Label>Serveur IMAP</Label>
-                      <Input
-                        placeholder="imap.exemple.com"
-                        value={imapServer}
-                        onChange={(e) => setImapServer(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Port IMAP</Label>
-                      <Input
-                        placeholder="993"
-                        value={imapPort}
-                        onChange={(e) => setImapPort(e.target.value)}
-                      />
-                    </div>
-                  </>
-                )}
-
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button variant="outline" onClick={() => { setOpenAdd(false); resetForm(); }}>
-                    Annuler
-                  </Button>
-                  <Button className={mainButtonColor} onClick={handleAddAccount}>
-                    Connecter
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+        <div>
+          <h1 className="text-3xl font-bold">Intégration Email</h1>
+          <p className="text-muted-foreground mt-1">Connectez vos comptes email professionnels</p>
         </div>
 
-        {/* Info Card */}
-        <Card className="border-blue-200 bg-blue-50">
-          <CardContent className="pt-6">
-            <div className="flex gap-3">
-              <Mail className="h-5 w-5 text-blue-600 mt-0.5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-blue-900">
-                  Comment obtenir un mot de passe d'application ?
-                </p>
-                <p className="text-xs text-blue-700">
-                  <strong>Gmail :</strong> Compte Google → Sécurité → Mots de passe d'application<br />
-                  <strong>Outlook :</strong> Account → Sécurité → Vérification en deux étapes → Mot de passe d'application<br />
-                  <strong>Yahoo :</strong> Paramètres → Sécurité → Générer un mot de passe d'application
-                </p>
-              </div>
+        {/* Provider Selection Cards */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Connecter un compte email
+            </CardTitle>
+            <CardDescription>
+              Choisissez votre fournisseur d'email pour connecter votre boîte de réception
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {EMAIL_PROVIDERS.map((p) => (
+                <button
+                  key={p.value}
+                  onClick={() => handleConnectProvider(p.value)}
+                  className={`
+                    relative p-6 rounded-lg border-2 transition-all
+                    hover:border-blue-500 hover:shadow-md hover:scale-105
+                    flex flex-col items-center gap-3
+                    ${p.value === 'gmail' ? 'border-blue-200 bg-blue-50/50' : 'border-gray-200'}
+                  `}
+                >
+                  <div className={`h-12 w-12 rounded-full ${p.color} flex items-center justify-center text-white text-2xl`}>
+                    {p.icon}
+                  </div>
+                  <span className="text-sm font-medium text-center">{p.label}</span>
+                  {p.value === 'gmail' && (
+                    <span className="absolute top-2 right-2 px-2 py-0.5 bg-green-500 text-white text-xs rounded-full">
+                      Disponible
+                    </span>
+                  )}
+                  {p.value !== 'gmail' && (
+                    <span className="absolute top-2 right-2 px-2 py-0.5 bg-gray-400 text-white text-xs rounded-full">
+                      Bientôt
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
+            <p className="text-xs text-muted-foreground mt-4 text-center">
+              Cliquez sur un fournisseur pour connecter votre compte via OAuth2 sécurisé
+            </p>
           </CardContent>
         </Card>
 
