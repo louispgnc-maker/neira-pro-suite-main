@@ -154,22 +154,26 @@ export default function EmailIntegration() {
       );
 
       console.log('[EmailIntegration] Response status:', response.status);
+      
+      // Always read the response text first
+      const responseText = await response.text();
+      console.log('[EmailIntegration] Raw response:', responseText);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('[EmailIntegration] Error response:', errorText);
+        console.error('[EmailIntegration] Error response:', responseText);
         
         let errorData;
         try {
-          errorData = JSON.parse(errorText);
+          errorData = JSON.parse(responseText);
         } catch {
-          errorData = { error: errorText };
+          errorData = { error: responseText };
         }
         
-        throw new Error(errorData.error || `Erreur ${response.status}`);
+        throw new Error(errorData.error || errorData.message || `Erreur ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = JSON.parse(responseText);
+      console.log('[EmailIntegration] Parsed data:', data);
       
       if (data?.authUrl) {
         const width = 600;
