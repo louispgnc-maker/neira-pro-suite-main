@@ -1,98 +1,155 @@
-// Gmail OAuth Callback Handler
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
-const GOOGLE_CLIENT_ID = Deno.env.get('GOOGLE_CLIENT_ID')!
-const GOOGLE_CLIENT_SECRET = Deno.env.get('GOOGLE_CLIENT_SECRET')!
-const GOOGLE_REDIRECT_URI = `${Deno.env.get('SUPABASE_URL')}/functions/v1/gmail-oauth-callback`
-const FRONTEND_URL = Deno.env.get('FRONTEND_URL') || 'https://neira.fr'
+const GOOGLE_CLIENT_ID = Deno.env.get("GOOGLE_CLIENT_ID")!;
+const GOOGLE_CLIENT_SECRET = Deno.env.get("GOOGLE_CLIENT_SECRET")!;
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const FRONTEND_URL = Deno.env.get("FRONTEND_URL") || "http://localhost:5173";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
-  try {
-    const url = new URL(req.url)
-    const code = url.searchParams.get('code')
-    const state = url.searchParams.get('state')
-    const error = url.searchParams.get('error')
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
 
+  try {
+    const url = new URL(req.url);
+    const code = url.searchParams.get("code");
+    const state = url.searchParams.get("state");
+    const error = url.searchParams.get("error");
+
+    console.log("Callback received:", { hasCode: !!code, hasState: !!state, error });
+
+    // Handle OAuth denial
     if (error) {
-      return Response.redirect(`${FRONTEND_URL}/email-integration?error=${error}`)
+      return Response.redirect(
+        `${FRONTEND_URL}/email-integration?error=${encodeURIComponent(error)}`
+      );
     }
 
     if (!code || !state) {
-      return Response.redirect(`${FRONTEND_URL}/email-integration?error=invalid_request`)
+      return Response.redirect(
+        `${FRONTEND_URL}/email-integration?error=missing_parameters`
+      );
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    // Create Supabase client with SERVICE ROLE KEY (no user auth needed)
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Vérifier le state
-    const { data: stateData } = await supabaseClient
-      .from('oauth_states')
-      .select('*')
-      .eq('state', state)
-      .single()
+    // Validate state and get user_id
+    const { data: stateData, error: stateError } = await supabase
+      .from("oauth_states")
+      .select("user_id")
+      .eq("state", state)
+      .gt("expires_at", new Date().toISOString())
+      .single();
 
-    if (!stateData || new Date(stateData.expires_at) < new Date()) {
-      return Response.redirect(`${FRONTEND_URL}/email-integration?error=invalid_state`)
+    if (stateError || !stateData) {
+      console.error("Invalid state:", stateError);
+      return Response.redirect(
+        `${FRONTEND_URL}/email-integration?error=invalid_state`
+      );
     }
 
-    // Échanger le code contre les tokens
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    const userId = stateData.user_id;
+    console.log("State validated for user:", userId);
+
+    // Exchange code for tokens
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         code,
         client_id: GOOGLE_CLIENT_ID,
         client_secret: GOOGLE_CLIENT_SECRET,
-        redirect_uri: GOOGLE_REDIRECT_URI,
-        grant_type: 'authorization_code'
-      })
-    })
+        redirect_uri: `${SUPABASE_URL}/functions/v1/gmail-oauth-callback`,
+        grant_type: "authorization_code",
+      }),
+    });
 
-    const tokens = await tokenResponse.json()
-
-    if (!tokens.access_token) {
-      return Response.redirect(`${FRONTEND_URL}/email-integration?error=token_failed`)
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      console.error("Token exchange failed:", errorText);
+      return Response.redirect(
+        `${FRONTEND_URL}/email-integration?error=token_exchange_failed`
+      );
     }
 
-    // Récupérer l'email de l'utilisateur Gmail
-    const profileResponse = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
-      headers: { Authorization: `Bearer ${tokens.access_token}` }
-    })
-    const profile = await profileResponse.json()
+    const tokens = await tokenResponse.json();
+    console.log("Tokens received:", {
+      hasAccessToken: !!tokens.access_token,
+      hasRefreshToken: !!tokens.refresh_token,
+      expiresIn: tokens.expires_in,
+    });
 
-    // Créer ou mettre à jour le compte email
-    const { error: upsertError } = await supabaseClient
-      .from('email_accounts')
-      .upsert({
-        user_id: stateData.user_id,
-        email: profile.emailAddress,
-        provider: 'gmail',
-        status: 'connected',
-        credentials: {
+    // Get user's Gmail profile
+    const profileResponse = await fetch(
+      "https://gmail.googleapis.com/gmail/v1/users/me/profile",
+      {
+        headers: { Authorization: `Bearer ${tokens.access_token}` },
+      }
+    );
+
+    if (!profileResponse.ok) {
+      console.error("Profile fetch failed");
+      return Response.redirect(
+        `${FRONTEND_URL}/email-integration?error=profile_fetch_failed`
+      );
+    }
+
+    const profile = await profileResponse.json();
+    const emailAddress = profile.emailAddress;
+    console.log("Profile fetched:", emailAddress);
+
+    // Calculate token expiry
+    const expiresAt = new Date(Date.now() + tokens.expires_in * 1000).toISOString();
+
+    // Store/update email account using SERVICE ROLE KEY
+    const { data: account, error: upsertError } = await supabase
+      .from("email_accounts")
+      .upsert(
+        {
+          user_id: userId,
+          email: emailAddress,
+          provider: "gmail",
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,
-          expires_at: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
-          token_type: tokens.token_type
+          token_expires_at: expiresAt,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: "user_id,email",
         }
-      }, {
-        onConflict: 'user_id,email'
-      })
+      )
+      .select()
+      .single();
 
     if (upsertError) {
-      console.error('Upsert error:', upsertError)
-      return Response.redirect(`${FRONTEND_URL}/email-integration?error=save_failed`)
+      console.error("Account upsert error:", upsertError);
+      return Response.redirect(
+        `${FRONTEND_URL}/email-integration?error=database_error`
+      );
     }
 
-    // Supprimer le state
-    await supabaseClient.from('oauth_states').delete().eq('state', state)
+    console.log("Account saved:", account.id);
 
-    return Response.redirect(`${FRONTEND_URL}/email-integration?success=true`)
+    // Clean up state
+    await supabase.from("oauth_states").delete().eq("state", state);
 
-  } catch (error) {
-    console.error('OAuth callback error:', error)
-    return Response.redirect(`${FRONTEND_URL}/email-integration?error=unknown`)
+    // Redirect to success
+    return Response.redirect(
+      `${FRONTEND_URL}/email-integration?success=true&email=${encodeURIComponent(emailAddress)}`
+    );
+  } catch (err) {
+    console.error("Callback error:", err);
+    return Response.redirect(
+      `${FRONTEND_URL}/email-integration?error=server_error`
+    );
   }
-})
+});
