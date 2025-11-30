@@ -128,8 +128,15 @@ export default function EmailIntegration() {
     try {
       // Get the session token
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('Session non trouvée');
+      
+      console.log('[EmailIntegration] Session status:', {
+        hasSession: !!session,
+        hasAccessToken: !!session?.access_token,
+        userId: session?.user?.id
+      });
+      
+      if (!session || !session.access_token) {
+        throw new Error('Vous devez être connecté. Veuillez vous reconnecter.');
       }
 
       // Use fetch directly to ensure headers are sent properly
@@ -146,9 +153,20 @@ export default function EmailIntegration() {
         }
       );
 
+      console.log('[EmailIntegration] Response status:', response.status);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la connexion');
+        const errorText = await response.text();
+        console.error('[EmailIntegration] Error response:', errorText);
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
+        
+        throw new Error(errorData.error || `Erreur ${response.status}`);
       }
 
       const data = await response.json();
