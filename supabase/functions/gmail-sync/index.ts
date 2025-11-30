@@ -32,8 +32,9 @@ serve(async (req) => {
       throw new Error('Not authenticated')
     }
 
-    const url = new URL(req.url)
-    const action = url.searchParams.get('action')
+    // Lire le body de la requête
+    const body = await req.json()
+    const { action, account_id, to, subject } = body
 
     if (action === 'get-auth-url') {
       // Générer l'URL d'autorisation OAuth2
@@ -63,8 +64,7 @@ serve(async (req) => {
 
     if (action === 'sync') {
       // Synchroniser les emails
-      const accountId = url.searchParams.get('account_id')
-      if (!accountId) {
+      if (!account_id) {
         throw new Error('account_id required')
       }
 
@@ -72,7 +72,7 @@ serve(async (req) => {
       const { data: account } = await supabaseClient
         .from('email_accounts')
         .select('*')
-        .eq('id', accountId)
+        .eq('id', account_id)
         .eq('user_id', user.id)
         .single()
 
@@ -106,7 +106,7 @@ serve(async (req) => {
               expires_at: new Date(Date.now() + refreshData.expires_in * 1000).toISOString()
             }
           })
-          .eq('id', accountId)
+          .eq('id', account_id)
       }
 
       // Récupérer les messages via Gmail API
@@ -163,14 +163,14 @@ serve(async (req) => {
         const { data: existing } = await supabaseClient
           .from('emails')
           .select('id')
-          .eq('account_id', accountId)
+          .eq('account_id', account_id)
           .eq('message_id', message.id)
           .single()
 
         if (!existing) {
           // Insérer le message
           await supabaseClient.from('emails').insert({
-            account_id: accountId,
+            account_id: account_id,
             message_id: message.id,
             subject,
             from,
@@ -190,7 +190,7 @@ serve(async (req) => {
       await supabaseClient
         .from('email_accounts')
         .update({ last_sync: new Date().toISOString(), status: 'connected' })
-        .eq('id', accountId)
+        .eq('id', account_id)
 
       return new Response(
         JSON.stringify({ synced: syncedCount }),
@@ -200,7 +200,9 @@ serve(async (req) => {
 
     if (action === 'send') {
       // Envoyer un email
-      const { account_id, to, subject, body } = await req.json()
+      if (!account_id || !to || !subject) {
+        throw new Error('account_id, to, and subject are required')
+      }
 
       const { data: account } = await supabaseClient
         .from('email_accounts')
@@ -247,7 +249,7 @@ serve(async (req) => {
 
     throw new Error('Invalid action')
 
-  } catch (error) {
+  } catch (error: any) {
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
