@@ -15,6 +15,37 @@ interface EmailAccount {
   created_at: string;
 }
 
+const EMAIL_PROVIDERS = [
+  { 
+    value: 'gmail', 
+    label: 'Gmail', 
+    icon: '📧', 
+    color: 'bg-red-500',
+    available: true 
+  },
+  { 
+    value: 'outlook', 
+    label: 'Outlook / Office 365', 
+    icon: '📨', 
+    color: 'bg-blue-500',
+    available: false 
+  },
+  { 
+    value: 'sfr', 
+    label: 'SFR Mail', 
+    icon: '📮', 
+    color: 'bg-rose-500',
+    available: false 
+  },
+  { 
+    value: 'yahoo', 
+    label: 'Yahoo Mail', 
+    icon: '💌', 
+    color: 'bg-purple-500',
+    available: false 
+  },
+];
+
 export default function EmailIntegration() {
   const { user } = useAuth();
   const location = useLocation();
@@ -22,7 +53,7 @@ export default function EmailIntegration() {
   const [searchParams] = useSearchParams();
   const [accounts, setAccounts] = useState<EmailAccount[]>([]);
   const [loading, setLoading] = useState(true);
-  const [connecting, setConnecting] = useState(false);
+  const [connectingProvider, setConnectingProvider] = useState<string | null>(null);
 
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
@@ -82,8 +113,13 @@ export default function EmailIntegration() {
     }
   };
 
-  const handleConnectGmail = async () => {
-    setConnecting(true);
+  const handleConnectProvider = async (provider: string) => {
+    if (provider !== 'gmail') {
+      toast.info(`${EMAIL_PROVIDERS.find(p => p.value === provider)?.label} sera bientôt disponible`);
+      return;
+    }
+
+    setConnectingProvider(provider);
     try {
       const { data, error } = await supabase.functions.invoke('gmail-operations', {
         body: { action: 'get-auth-url' }
@@ -106,10 +142,10 @@ export default function EmailIntegration() {
         toast.success('Veuillez autoriser l\'accès à votre Gmail');
       }
     } catch (error: any) {
-      console.error('Error connecting Gmail:', error);
+      console.error('Error connecting provider:', error);
       toast.error(error.message || 'Erreur de connexion');
     } finally {
-      setConnecting(false);
+      setConnectingProvider(null);
     }
   };
 
@@ -136,37 +172,58 @@ export default function EmailIntegration() {
       <div className="p-6 space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Intégration Email</h1>
-          <p className="text-muted-foreground mt-1">Connectez votre compte Gmail</p>
+          <p className="text-muted-foreground mt-1">Connectez vos comptes email professionnels</p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              Connecter Gmail
+              Connecter un compte email
             </CardTitle>
             <CardDescription>
-              Autorisez l'accès à votre compte Gmail pour envoyer et recevoir des emails
+              Choisissez votre fournisseur d'email pour connecter votre boîte de réception
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              onClick={handleConnectGmail}
-              disabled={connecting}
-              className="w-full sm:w-auto"
-            >
-              {connecting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Connexion...
-                </>
-              ) : (
-                <>
-                  <Mail className="mr-2 h-4 w-4" />
-                  Connecter mon Gmail
-                </>
-              )}
-            </Button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {EMAIL_PROVIDERS.map((provider) => (
+                <Card 
+                  key={provider.value}
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    !provider.available ? 'opacity-60' : ''
+                  }`}
+                  onClick={() => handleConnectProvider(provider.value)}
+                >
+                  <CardContent className="p-6 flex flex-col items-center gap-3">
+                    <div className={`w-16 h-16 ${provider.color} rounded-full flex items-center justify-center text-3xl`}>
+                      {provider.icon}
+                    </div>
+                    <div className="text-center">
+                      <p className="font-medium">{provider.label}</p>
+                      {provider.available ? (
+                        <Button
+                          size="sm"
+                          className="mt-2 w-full"
+                          disabled={connectingProvider === provider.value}
+                        >
+                          {connectingProvider === provider.value ? (
+                            <>
+                              <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                              Connexion...
+                            </>
+                          ) : (
+                            'Connecter'
+                          )}
+                        </Button>
+                      ) : (
+                        <p className="text-xs text-muted-foreground mt-2">Bientôt disponible</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
