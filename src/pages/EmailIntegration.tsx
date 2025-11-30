@@ -132,14 +132,26 @@ export default function EmailIntegration() {
         throw new Error('Session non trouvée');
       }
 
-      const { data, error } = await supabase.functions.invoke('gmail-operations', {
-        body: { action: 'get-auth-url' },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
+      // Use fetch directly to ensure headers are sent properly
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-operations',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA'
+          },
+          body: JSON.stringify({ action: 'get-auth-url' })
         }
-      });
+      );
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors de la connexion');
+      }
+
+      const data = await response.json();
       
       if (data?.authUrl) {
         const width = 600;
