@@ -18,6 +18,8 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
+    console.log('[gmail-operations] Auth header present:', !!authHeader);
+    
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Missing authorization" }), {
         status: 401,
@@ -32,9 +34,18 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
+    console.log('[gmail-operations] Checking user auth...');
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    
+    console.log('[gmail-operations] User auth result:', {
+      hasUser: !!user,
+      userId: user?.id,
+      error: userError?.message
+    });
+    
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      console.error('[gmail-operations] Auth failed:', userError);
+      return new Response(JSON.stringify({ error: "Unauthorized", details: userError?.message }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
