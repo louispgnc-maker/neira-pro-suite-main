@@ -119,10 +119,24 @@ export default function EmailIntegration() {
       return;
     }
 
+    if (!user) {
+      toast.error('Vous devez être connecté pour ajouter un compte email');
+      return;
+    }
+
     setConnectingProvider(provider);
     try {
+      // Get the session token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Session non trouvée');
+      }
+
       const { data, error } = await supabase.functions.invoke('gmail-operations', {
-        body: { action: 'get-auth-url' }
+        body: { action: 'get-auth-url' },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
       if (error) throw error;
