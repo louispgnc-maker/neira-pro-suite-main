@@ -32,7 +32,7 @@
 6. Name: **Neira Web Client**
 7. **Authorized redirect URIs** : Ajoutez
    ```
-   https://xxeccstsrnwjxcdprwjd.supabase.co/functions/v1/gmail-oauth-callback
+   https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-oauth-callback
    ```
 
 8. Cliquez **Create**
@@ -55,7 +55,7 @@ supabase login
 ### 2.3 Link votre projet
 ```bash
 cd /Users/louispgnc/Desktop/neira-pro-suite-main
-supabase link --project-ref xxeccstsrnwjxcdprwjd
+supabase link --project-ref elysrdqujzlbvnjfilvh
 ```
 
 ### 2.4 Configurer les secrets (IMPORTANT !)
@@ -119,7 +119,7 @@ supabase functions deploy gmail-oauth-callback
 ### Erreur "redirect_uri_mismatch"
 ➡️ Vérifiez que l'URI dans Google Console est exactement :
 ```
-https://xxeccstsrnwjxcdprwjd.supabase.co/functions/v1/gmail-oauth-callback
+https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-oauth-callback
 ```
 
 ### Erreur "invalid_client"

@@ -33,7 +33,12 @@ serve(async (req) => {
     }
 
     // Lire le body de la requête
-    const body = await req.json()
+    let body: any = {}
+    try {
+      body = await req.json()
+    } catch (e) {
+      // Body vide ou invalide
+    }
     const { action, account_id, to, subject } = body
 
     if (action === 'get-auth-url') {
