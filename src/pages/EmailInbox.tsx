@@ -428,9 +428,10 @@ export default function EmailInbox() {
           </div>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
-          {/* Email List */}
-          <div className="w-96 border-r overflow-y-auto">
+        <CardContent className="flex-1 overflow-hidden p-0">
+          <div className="flex h-full overflow-hidden rounded-lg border bg-card">
+            {/* Email List */}
+            <div className="w-96 border-r overflow-y-auto bg-background">
             {loading ? (
               <div className="p-8 text-center">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
@@ -613,6 +614,8 @@ export default function EmailInbox() {
             )}
           </div>
         </div>
+        </CardContent>
+      </Card>
       </div>
 
       {/* Compose Dialog */}
