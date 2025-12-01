@@ -297,11 +297,11 @@ export default function Subscription() {
           {/* Bouton retour */}
           <div className="mb-8">
             <Button
-              onClick={() => navigate(`${prefix}/cabinet`)}
+              onClick={() => navigate(-1)}
               className="bg-orange-500 hover:bg-orange-600 text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Retour au cabinet
+              Retour
             </Button>
           </div>
 
