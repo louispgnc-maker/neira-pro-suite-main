@@ -2,6 +2,7 @@ import { FileText, Upload, PenTool, Users } from "lucide-react";
 import { ContractSelectorNotaire } from "@/components/dashboard/ContractSelectorNotaire";
 import { ContractSelectorAvocat } from "@/components/dashboard/ContractSelectorAvocat";
 import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
+import { SignatureDialog } from "@/components/dashboard/SignatureDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRef, useState, useEffect } from "react";
@@ -29,6 +30,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
   const [uploading, setUploading] = useState(false);
   const [checkingCabinet, setCheckingCabinet] = useState(false);
   const [hasCabinet, setHasCabinet] = useState(false);
+  const [signatureDialogOpen, setSignatureDialogOpen] = useState(false);
 
   const triggerImport = () => {
     if (!user) {
@@ -173,6 +175,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
         {actions.slice(1).filter(a => a.key !== 'collect').map((action) => {
           const onClick = () => {
             if (action.key === 'import') return triggerImport();
+            if (action.key === 'sign') return setSignatureDialogOpen(true);
             // TODO: wire other actions
           };
           const colorClass = primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white');
@@ -198,6 +201,15 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           />
         </div>
       </CardContent>
+      
+      {/* Signature Dialog */}
+      <SignatureDialog 
+        open={signatureDialogOpen} 
+        onOpenChange={setSignatureDialogOpen}
+        onSuccess={() => {
+          toast.success('Signature lancée avec succès!');
+        }}
+      />
     </Card>
   );
 }
