@@ -60,22 +60,6 @@ serve(async (req) => {
     const userId = stateData.user_id;
     console.log("State validated for user:", userId);
 
-    // Get user role to determine redirect path
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .single();
-
-    if (profileError || !profileData) {
-      console.error("Failed to fetch user profile:", profileError);
-      // Default to avocat if profile not found
-      var userRole = "avocat";
-    } else {
-      var userRole = profileData.role || "avocat";
-    }
-    console.log("User role:", userRole);
-
     // Exchange code for tokens
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
@@ -113,7 +97,8 @@ serve(async (req) => {
     );
 
     if (!profileResponse.ok) {
-      console.error("Profile fetch failed:", profileData);
+      const errorText = await profileResponse.text();
+      console.error("Profile fetch failed:", errorText);
       return Response.redirect(
         `${FRONTEND_URL}/oauth-callback?error=profile_fetch_failed`
       );
@@ -158,14 +143,12 @@ serve(async (req) => {
     // Clean up state
     await supabase.from("oauth_states").delete().eq("state", state);
 
-    // Redirect to success with role-based path
-    const rolePath = userRole === "notaire" ? "notaires" : "avocats";
+    // Redirect to oauth-callback page (popup will handle communication)
     return Response.redirect(
       `${FRONTEND_URL}/oauth-callback?success=true&email=${encodeURIComponent(emailAddress)}`
     );
   } catch (err) {
     console.error("Callback error:", err);
-    // Default to avocats path on error
     return Response.redirect(
       `${FRONTEND_URL}/oauth-callback?error=server_error`
     );
