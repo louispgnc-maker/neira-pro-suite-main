@@ -132,19 +132,26 @@ All colors MUST be HSL.
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   line-height: 1.6;
   color: inherit;
+  overflow-x: hidden;
 }
 
 .email-body img {
-  max-width: 100%;
-  height: auto;
+  max-width: 100% !important;
+  height: auto !important;
   display: block;
   margin: 1rem 0;
 }
 
 .email-body table {
+  max-width: 100% !important;
+  width: auto !important;
   border-collapse: collapse;
-  width: 100%;
+}
+
+.email-body td,
+.email-body th {
   max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 .email-body a {
