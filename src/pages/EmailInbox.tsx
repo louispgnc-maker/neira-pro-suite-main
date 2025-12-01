@@ -101,9 +101,15 @@ export default function EmailInbox() {
         // Get account to check provider
         const { data: accountData } = await supabase
           .from('email_accounts')
-          .select('provider')
+          .select('provider, access_token')
           .eq('id', selectedAccount)
           .single();
+
+        // If no access token, skip sync
+        if (!accountData?.access_token) {
+          console.log('[Auto-sync] No access token found, skipping sync');
+          return;
+        }
 
         const provider = accountData?.provider || 'gmail';
         const refreshUrl = provider === 'outlook'
@@ -114,11 +120,17 @@ export default function EmailInbox() {
           : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync';
 
         // First, refresh token if needed
-        await fetch(refreshUrl, {
+        const refreshResponse = await fetch(refreshUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ accountId: selectedAccount })
         });
+
+        // If refresh failed with 401, the account needs re-authentication
+        if (refreshResponse.status === 401) {
+          console.log('[Auto-sync] Token refresh failed - account needs re-authentication');
+          return;
+        }
 
         // Then sync emails
         const response = await fetch(syncUrl, {
@@ -126,6 +138,12 @@ export default function EmailInbox() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ accountId: selectedAccount })
         });
+
+        // If sync failed with 401, skip silently
+        if (response.status === 401) {
+          console.log('[Auto-sync] Sync failed - authentication issue');
+          return;
+        }
 
         if (response.ok) {
           const data = await response.json();
