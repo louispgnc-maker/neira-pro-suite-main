@@ -402,7 +402,13 @@ export default function EmailInbox() {
         <Card className="shadow-lg">
           <div className="p-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
-            <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+            <Select value={selectedAccount} onValueChange={(value) => {
+              if (value === 'add-account') {
+                navigate(`/${role}s/email-integration`);
+              } else {
+                setSelectedAccount(value);
+              }
+            }}>
               <SelectTrigger className="w-[250px]">
                 <SelectValue />
               </SelectTrigger>
@@ -412,6 +418,12 @@ export default function EmailInbox() {
                     {acc.email}
                   </SelectItem>
                 ))}
+                <SelectItem value="add-account" className="text-orange-600 font-medium">
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Ajouter un compte
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
             
