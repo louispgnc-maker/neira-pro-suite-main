@@ -169,10 +169,23 @@ export default function EmailInbox() {
     
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('emails')
         .select('*')
-        .eq('account_id', selectedAccount)
+        .eq('account_id', selectedAccount);
+
+      // Filter by folder based on Gmail labels
+      if (currentFolder === 'inbox') {
+        query = query.contains('labels', ['INBOX']);
+      } else if (currentFolder === 'sent') {
+        query = query.contains('labels', ['SENT']);
+      } else if (currentFolder === 'archive') {
+        query = query.not('labels', 'cs', '{"INBOX"}'); // Not in inbox = archived
+      } else if (currentFolder === 'trash') {
+        query = query.contains('labels', ['TRASH']);
+      }
+
+      const { data, error } = await query
         .order('received_at', { ascending: false })
         .limit(100);
 
