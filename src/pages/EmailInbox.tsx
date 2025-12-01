@@ -92,7 +92,9 @@ export default function EmailInbox() {
     }
   }, [selectedAccount, currentFolder]);
 
-  // Auto-sync every 3 seconds for near real-time updates
+  // Auto-sync disabled - use manual sync button instead
+  // Automatic sync causes too many errors if token is invalid
+  /*
   useEffect(() => {
     if (!selectedAccount) return;
 
@@ -197,6 +199,7 @@ export default function EmailInbox() {
       clearInterval(interval);
     };
   }, [selectedAccount]);
+  */
 
   const loadAccounts = async () => {
     if (!user) return;
