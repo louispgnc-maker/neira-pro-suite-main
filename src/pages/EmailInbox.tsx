@@ -98,13 +98,22 @@ export default function EmailInbox() {
 
     const autoSync = async () => {
       try {
+        // First, refresh token if needed
+        await fetch(
+          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-refresh-token',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accountId: selectedAccount })
+          }
+        );
+
+        // Then sync emails
         const response = await fetch(
           'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync',
           {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ accountId: selectedAccount })
           }
         );
