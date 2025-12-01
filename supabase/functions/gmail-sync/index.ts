@@ -43,6 +43,7 @@ serve(async (req) => {
     }
 
     console.log("Syncing emails for account:", account.email);
+    console.log("Using access token:", account.access_token?.substring(0, 20) + "...");
 
     // Fetch messages from Gmail API (last 50 messages)
     const messagesResponse = await fetch(
@@ -52,17 +53,23 @@ serve(async (req) => {
       }
     );
 
+    console.log("Gmail API response status:", messagesResponse.status);
+
     if (!messagesResponse.ok) {
       const errorText = await messagesResponse.text();
       console.error("Failed to fetch messages:", errorText);
+      console.error("Response status:", messagesResponse.status);
       return new Response(
-        JSON.stringify({ error: "Failed to fetch messages from Gmail" }),
+        JSON.stringify({ error: "Failed to fetch messages from Gmail", details: errorText }),
         { status: messagesResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const messagesData = await messagesResponse.json();
     const messages = messagesData.messages || [];
+
+    console.log(`Gmail returned ${messages.length} messages`);
+    console.log("Messages data:", JSON.stringify(messagesData).substring(0, 200));
 
     console.log(`Found ${messages.length} messages`);
 
