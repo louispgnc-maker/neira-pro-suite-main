@@ -384,44 +384,48 @@ export default function EmailInbox() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <div className="w-64 border-r bg-muted/10 p-4 space-y-2 overflow-y-auto">
+          <div className="w-48 border-r bg-muted/10 p-3 space-y-1 overflow-y-auto">
             <Button
               variant={currentFolder === 'inbox' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${currentFolder === 'inbox' ? mainButtonColor : ''}`}
+              size="sm"
+              className={`w-full justify-center relative ${currentFolder === 'inbox' ? mainButtonColor : ''}`}
               onClick={() => setCurrentFolder('inbox')}
+              title="Boîte de réception"
             >
-              <Inbox className="h-4 w-4 mr-2" />
-              Boîte de réception
+              <Inbox className="h-4 w-4" />
               {unreadCount > 0 && (
-                <Badge className="ml-auto" variant="secondary">{unreadCount}</Badge>
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
               )}
             </Button>
             
             <Button
               variant={currentFolder === 'sent' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${currentFolder === 'sent' ? mainButtonColor : ''}`}
+              size="sm"
+              className={`w-full justify-center ${currentFolder === 'sent' ? mainButtonColor : ''}`}
               onClick={() => setCurrentFolder('sent')}
+              title="Envoyés"
             >
-              <Send className="h-4 w-4 mr-2" />
-              Envoyés
+              <Send className="h-4 w-4" />
             </Button>
             
             <Button
               variant={currentFolder === 'archive' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${currentFolder === 'archive' ? mainButtonColor : ''}`}
+              size="sm"
+              className={`w-full justify-center ${currentFolder === 'archive' ? mainButtonColor : ''}`}
               onClick={() => setCurrentFolder('archive')}
+              title="Archivés"
             >
-              <Archive className="h-4 w-4 mr-2" />
-              Archivés
+              <Archive className="h-4 w-4" />
             </Button>
             
             <Button
               variant={currentFolder === 'trash' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${currentFolder === 'trash' ? mainButtonColor : ''}`}
+              size="sm"
+              className={`w-full justify-center ${currentFolder === 'trash' ? mainButtonColor : ''}`}
               onClick={() => setCurrentFolder('trash')}
+              title="Corbeille"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Corbeille
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
 
