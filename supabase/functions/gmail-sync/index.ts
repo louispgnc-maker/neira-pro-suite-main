@@ -4,14 +4,24 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
     const { accountId } = await req.json();
     
     if (!accountId) {
       return new Response(
         JSON.stringify({ error: "accountId is required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -28,7 +38,7 @@ serve(async (req) => {
       console.error("Account not found:", accountError);
       return new Response(
         JSON.stringify({ error: "Account not found" }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -47,7 +57,7 @@ serve(async (req) => {
       console.error("Failed to fetch messages:", errorText);
       return new Response(
         JSON.stringify({ error: "Failed to fetch messages from Gmail" }),
-        { status: messagesResponse.status, headers: { "Content-Type": "application/json" } }
+        { status: messagesResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -156,13 +166,13 @@ serve(async (req) => {
         skipped: skippedCount,
         total: messages.length 
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: any) {
     console.error("Sync error:", error);
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
