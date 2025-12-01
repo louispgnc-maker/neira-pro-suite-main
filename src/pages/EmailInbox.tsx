@@ -556,7 +556,7 @@ export default function EmailInbox() {
               <div className="p-6">
                 <div className="flex items-start justify-between mb-6">
                   <Button
-                    variant="ghost"
+                    className={mainButtonColor}
                     size="sm"
                     onClick={() => setSelectedEmail(null)}
                   >
@@ -565,18 +565,18 @@ export default function EmailInbox() {
                   </Button>
                   
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => handleReply(selectedEmail)}>
+                    <Button className={mainButtonColor} size="sm" onClick={() => handleReply(selectedEmail)}>
                       <Reply className="h-4 w-4 mr-1" />
                       Répondre
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button className={mainButtonColor} size="sm">
                       <Forward className="h-4 w-4 mr-1" />
                       Transférer
                     </Button>
                     
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
+                        <Button className={mainButtonColor} size="sm">
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
