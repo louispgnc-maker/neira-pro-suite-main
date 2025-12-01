@@ -230,14 +230,14 @@ export default function EmailInbox() {
     try {
       const { error } = await supabase
         .from('emails')
-        .update({ read: true })
+        .update({ is_read: true })
         .eq('id', emailId);
 
       if (error) throw error;
       
-      setEmails(prev => prev.map(e => e.id === emailId ? { ...e, read: true } : e));
+      setEmails(prev => prev.map(e => e.id === emailId ? { ...e, is_read: true } : e));
       if (selectedEmail?.id === emailId) {
-        setSelectedEmail({ ...selectedEmail, read: true });
+        setSelectedEmail({ ...selectedEmail, is_read: true });
       }
     } catch (error) {
       console.error('Error marking as read:', error);
@@ -353,7 +353,7 @@ export default function EmailInbox() {
     );
   });
 
-  const unreadCount = emails.filter(e => !e.read).length;
+  const unreadCount = emails.filter(e => !e.is_read).length;
 
   if (accounts.length === 0) {
     return (
