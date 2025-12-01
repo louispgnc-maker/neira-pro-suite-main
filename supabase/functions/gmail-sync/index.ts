@@ -25,7 +25,10 @@ serve(async (req) => {
       );
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      db: { schema: 'public' },
+      auth: { persistSession: false }
+    });
 
     // Get account details with tokens
     const { data: account, error: accountError } = await supabase
