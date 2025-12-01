@@ -478,7 +478,7 @@ export default function EmailInbox() {
         <Card className="flex-1 flex flex-col overflow-hidden shadow-lg">        <CardContent className="flex-1 overflow-hidden p-0">
           <div className="flex h-full overflow-hidden rounded-lg border bg-card">
             {/* Email List */}
-            <div className="w-96 border-r overflow-y-auto bg-background">
+            <div className="w-[450px] border-r overflow-y-auto bg-background">
             {loading ? (
               <div className="p-8 text-center">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
