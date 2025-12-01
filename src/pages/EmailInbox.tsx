@@ -635,13 +635,40 @@ export default function EmailInbox() {
 
                   <div className="prose prose-sm max-w-none">
                     {selectedEmail.body_html ? (
-                      <div 
-                        className="email-body"
-                        dangerouslySetInnerHTML={{ __html: selectedEmail.body_html }}
-                        style={{ 
-                          wordBreak: 'break-word',
-                          overflowWrap: 'break-word'
-                        }}
+                      <iframe
+                        title="Email Content"
+                        srcDoc={`
+                          <!DOCTYPE html>
+                          <html>
+                            <head>
+                              <meta charset="UTF-8">
+                              <style>
+                                body {
+                                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                  line-height: 1.6;
+                                  color: #1f2937;
+                                  margin: 0;
+                                  padding: 16px;
+                                  overflow-x: hidden;
+                                }
+                                img {
+                                  max-width: 100% !important;
+                                  height: auto !important;
+                                }
+                                table {
+                                  max-width: 100% !important;
+                                }
+                                a {
+                                  color: #2563eb;
+                                }
+                              </style>
+                            </head>
+                            <body>${selectedEmail.body_html}</body>
+                          </html>
+                        `}
+                        className="w-full border-0"
+                        style={{ minHeight: '400px' }}
+                        sandbox="allow-same-origin"
                       />
                     ) : (
                       <pre className="whitespace-pre-wrap font-sans text-sm">
