@@ -96,9 +96,31 @@ export default function EmailInbox() {
   useEffect(() => {
     if (!selectedAccount) return;
 
-    const interval = setInterval(() => {
-      handleSync();
-    }, 5000); // 5 seconds
+    const autoSync = async () => {
+      try {
+        const response = await fetch(
+          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ accountId: selectedAccount })
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.synced > 0) {
+            await loadEmails();
+          }
+        }
+      } catch (error) {
+        console.error('Auto-sync failed silently:', error);
+      }
+    };
+
+    const interval = setInterval(autoSync, 5000);
 
     return () => clearInterval(interval);
   }, [selectedAccount]);
