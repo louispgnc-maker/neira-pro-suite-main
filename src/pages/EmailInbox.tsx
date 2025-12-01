@@ -101,7 +101,6 @@ export default function EmailInbox() {
         .from('email_accounts')
         .select('*')
         .eq('user_id', user.id)
-        .eq('status', 'connected')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -130,7 +129,6 @@ export default function EmailInbox() {
         .from('emails')
         .select('*')
         .eq('account_id', selectedAccount)
-        .eq('folder', currentFolder)
         .order('received_at', { ascending: false })
         .limit(100);
 
@@ -149,19 +147,33 @@ export default function EmailInbox() {
     
     setSyncing(true);
     try {
-      // Appeler l'edge function pour synchroniser avec Gmail
-      const { data, error } = await supabase.functions.invoke('gmail-sync', {
-        body: { 
-          action: 'sync',
-          account_id: selectedAccount 
+      console.log('[EmailInbox] Starting sync for account:', selectedAccount);
+      
+      // Call edge function to sync with Gmail
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ accountId: selectedAccount })
         }
-      });
+      );
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[EmailInbox] Sync error:', errorText);
+        throw new Error('Erreur lors de la synchronisation');
+      }
+
+      const data = await response.json();
+      console.log('[EmailInbox] Sync result:', data);
       
       const syncedCount = data?.synced || 0;
-      toast.success(`${syncedCount} nouveau(x) email(s) synchronisé(s)`);
-      loadEmails();
+      const skippedCount = data?.skipped || 0;
+      toast.success(`${syncedCount} nouveau(x) email(s) synchronisé(s) (${skippedCount} déjà présent(s))`);
+      await loadEmails();
     } catch (error: any) {
       console.error('Error syncing:', error);
       toast.error(error.message || 'Erreur lors de la synchronisation');
