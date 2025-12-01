@@ -28,7 +28,8 @@ const EMAIL_PROVIDERS = [
     label: 'Outlook / Office 365', 
     icon: '📨', 
     color: 'bg-blue-500',
-    available: true 
+    available: true,
+    description: 'Comptes @outlook.com, @hotmail.com ou Office 365 uniquement'
   },
   { 
     value: 'sfr', 
@@ -171,6 +172,11 @@ export default function EmailIntegration() {
         const data = JSON.parse(responseText);
         authUrl = data.authUrl;
       } else if (provider === 'outlook') {
+        // Show informational message
+        toast.info('⚠️ Outlook nécessite un compte @outlook.com, @hotmail.com ou Office 365', {
+          duration: 5000,
+        });
+        
         // Generate Outlook OAuth URL
         const clientId = '5c2e5ad7-f18e-4b4c-ba53-1d96a5b8d1af'; // You'll need to register your app
         const redirectUri = encodeURIComponent('https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-oauth-callback');
@@ -254,6 +260,9 @@ export default function EmailIntegration() {
                     </div>
                     <div className="text-center">
                       <p className="font-medium">{provider.label}</p>
+                      {provider.description && (
+                        <p className="text-xs text-muted-foreground mt-1">{provider.description}</p>
+                      )}
                       {provider.available ? (
                         <Button
                           size="sm"
