@@ -414,9 +414,8 @@ export default function EmailInbox() {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 mr-2">
               <Button
-                variant={currentFolder === 'inbox' ? 'default' : 'ghost'}
                 size="icon"
-                className={`relative ${currentFolder === 'inbox' ? mainButtonColor : ''}`}
+                className={`relative ${mainButtonColor}`}
                 onClick={() => setCurrentFolder('inbox')}
                 title="Boîte de réception"
               >
@@ -427,9 +426,8 @@ export default function EmailInbox() {
               </Button>
               
               <Button
-                variant={currentFolder === 'sent' ? 'default' : 'ghost'}
                 size="icon"
-                className={currentFolder === 'sent' ? mainButtonColor : ''}
+                className={mainButtonColor}
                 onClick={() => setCurrentFolder('sent')}
                 title="Envoyés"
               >
@@ -437,9 +435,8 @@ export default function EmailInbox() {
               </Button>
               
               <Button
-                variant={currentFolder === 'archive' ? 'default' : 'ghost'}
                 size="icon"
-                className={currentFolder === 'archive' ? mainButtonColor : ''}
+                className={mainButtonColor}
                 onClick={() => setCurrentFolder('archive')}
                 title="Archivés"
               >
@@ -447,9 +444,8 @@ export default function EmailInbox() {
               </Button>
               
               <Button
-                variant={currentFolder === 'trash' ? 'default' : 'ghost'}
                 size="icon"
-                className={currentFolder === 'trash' ? mainButtonColor : ''}
+                className={mainButtonColor}
                 onClick={() => setCurrentFolder('trash')}
                 title="Corbeille"
               >
@@ -458,7 +454,7 @@ export default function EmailInbox() {
             </div>
 
             <Button
-              variant="outline"
+              className={mainButtonColor}
               size="sm"
               onClick={handleSync}
               disabled={syncing}
