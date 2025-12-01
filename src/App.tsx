@@ -35,6 +35,7 @@ import CheckoutPlan from "./pages/CheckoutPlan";
 import ManageMembersCount from "./pages/ManageMembersCount";
 import EmailIntegration from "./pages/EmailIntegration";
 import EmailInbox from "./pages/EmailInbox";
+import OAuthCallback from "./pages/OAuthCallback";
 import Statistiques from "./pages/Statistiques";
 import About from "./pages/About";
 import Solution from "./pages/Solution";
@@ -79,6 +80,7 @@ const App = () => (
             <Route path="/test-subscription/login" element={<TestLogin />} />
             <Route path="/test-subscription/create-cabinet" element={<TestCreateCabinet />} />
             <Route path="/confirm-email" element={<ConfirmEmail />} />
+            <Route path="/oauth-callback" element={<OAuthCallback />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             <Route path="/rgpd" element={<RGPD />} />
             <Route path="/cgu" element={<CGU />} />

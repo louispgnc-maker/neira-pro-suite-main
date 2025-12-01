@@ -62,33 +62,38 @@ export default function EmailIntegration() {
     loadAccounts();
   }, [user]);
 
+  // Listen for OAuth callback messages from popup
   useEffect(() => {
-    const success = searchParams.get("success");
-    const error = searchParams.get("error");
-    const email = searchParams.get("email");
+    const handleMessage = (event: MessageEvent) => {
+      // Verify origin for security
+      if (event.origin !== window.location.origin) return;
 
-    if (success) {
-      toast.success(`✅ Connexion réussie - ${email}`);
-      loadAccounts();
-      const basePath = role === 'notaire' ? '/notaires/email-integration' : '/avocats/email-integration';
-      navigate(basePath, { replace: true });
-    }
+      if (event.data?.type === 'oauth-callback') {
+        const { success, error, email } = event.data;
 
-    if (error) {
-      const messages: Record<string, string> = {
-        missing_parameters: "Paramètres manquants",
-        invalid_state: "État OAuth invalide",
-        token_exchange_failed: "Échec de l'échange du code",
-        profile_fetch_failed: "Impossible de récupérer le profil",
-        database_error: "Erreur d'enregistrement",
-        server_error: "Erreur serveur",
-        access_denied: "Accès refusé",
-      };
-      toast.error(`❌ ${messages[error] || "Une erreur est survenue"}`);
-      const basePath = role === 'notaire' ? '/notaires/email-integration' : '/avocats/email-integration';
-      navigate(basePath, { replace: true });
-    }
-  }, [searchParams]);
+        if (success) {
+          toast.success(`✅ Connexion réussie - ${email}`);
+          loadAccounts();
+        } else if (error) {
+          const messages: Record<string, string> = {
+            missing_parameters: "Paramètres manquants",
+            invalid_state: "État OAuth invalide",
+            token_exchange_failed: "Échec de l'échange du code",
+            profile_fetch_failed: "Impossible de récupérer le profil",
+            database_error: "Erreur d'enregistrement",
+            server_error: "Erreur serveur",
+            access_denied: "Accès refusé",
+          };
+          toast.error(`❌ ${messages[error] || "Une erreur est survenue"}`);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Remove old useEffect for searchParams (no longer needed)
 
   const loadAccounts = async () => {
     if (!user) {

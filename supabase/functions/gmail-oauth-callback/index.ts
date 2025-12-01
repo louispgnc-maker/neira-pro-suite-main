@@ -29,13 +29,13 @@ serve(async (req) => {
     // Handle OAuth denial
     if (error) {
       return Response.redirect(
-        `${FRONTEND_URL}/email-integration?error=${encodeURIComponent(error)}`
+        `${FRONTEND_URL}/oauth-callback?error=${encodeURIComponent(error)}`
       );
     }
 
     if (!code || !state) {
       return Response.redirect(
-        `${FRONTEND_URL}/email-integration?error=missing_parameters`
+        `${FRONTEND_URL}/oauth-callback?error=missing_parameters`
       );
     }
 
@@ -53,12 +53,28 @@ serve(async (req) => {
     if (stateError || !stateData) {
       console.error("Invalid state:", stateError);
       return Response.redirect(
-        `${FRONTEND_URL}/email-integration?error=invalid_state`
+        `${FRONTEND_URL}/oauth-callback?error=invalid_state`
       );
     }
 
     const userId = stateData.user_id;
     console.log("State validated for user:", userId);
+
+    // Get user role to determine redirect path
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .single();
+
+    if (profileError || !profileData) {
+      console.error("Failed to fetch user profile:", profileError);
+      // Default to avocat if profile not found
+      var userRole = "avocat";
+    } else {
+      var userRole = profileData.role || "avocat";
+    }
+    console.log("User role:", userRole);
 
     // Exchange code for tokens
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
@@ -77,7 +93,7 @@ serve(async (req) => {
       const errorText = await tokenResponse.text();
       console.error("Token exchange failed:", errorText);
       return Response.redirect(
-        `${FRONTEND_URL}/email-integration?error=token_exchange_failed`
+        `${FRONTEND_URL}/oauth-callback?error=token_exchange_failed`
       );
     }
 
@@ -97,9 +113,9 @@ serve(async (req) => {
     );
 
     if (!profileResponse.ok) {
-      console.error("Profile fetch failed");
+      console.error("Profile fetch failed:", profileData);
       return Response.redirect(
-        `${FRONTEND_URL}/email-integration?error=profile_fetch_failed`
+        `${FRONTEND_URL}/oauth-callback?error=profile_fetch_failed`
       );
     }
 
@@ -133,7 +149,7 @@ serve(async (req) => {
     if (upsertError) {
       console.error("Account upsert error:", upsertError);
       return Response.redirect(
-        `${FRONTEND_URL}/email-integration?error=database_error`
+        `${FRONTEND_URL}/oauth-callback?error=database_error`
       );
     }
 
@@ -142,14 +158,16 @@ serve(async (req) => {
     // Clean up state
     await supabase.from("oauth_states").delete().eq("state", state);
 
-    // Redirect to success
+    // Redirect to success with role-based path
+    const rolePath = userRole === "notaire" ? "notaires" : "avocats";
     return Response.redirect(
-      `${FRONTEND_URL}/email-integration?success=true&email=${encodeURIComponent(emailAddress)}`
+      `${FRONTEND_URL}/oauth-callback?success=true&email=${encodeURIComponent(emailAddress)}`
     );
   } catch (err) {
     console.error("Callback error:", err);
+    // Default to avocats path on error
     return Response.redirect(
-      `${FRONTEND_URL}/email-integration?error=server_error`
+      `${FRONTEND_URL}/oauth-callback?error=server_error`
     );
   }
 });
