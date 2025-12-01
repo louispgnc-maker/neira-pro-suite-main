@@ -616,6 +616,7 @@ export default function EmailInbox() {
           </div>
         </CardContent>
       </Card>
+      </div>
 
       {/* Compose Dialog */}
       <Dialog open={showCompose} onOpenChange={setShowCompose}>
@@ -658,8 +659,6 @@ export default function EmailInbox() {
           </div>
         </DialogContent>
       </Dialog>
-        </Card>
-      </div>
     </AppLayout>
   );
 }
