@@ -538,7 +538,7 @@ export default function EmailInbox() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <span className={`text-sm truncate ${!email.is_read ? 'font-bold' : ''}`}>
-                            {email.from_address}
+                            {currentFolder === 'sent' ? email.to_address : email.from_address}
                           </span>
                           <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
                             {new Date(email.received_at).toLocaleDateString('fr-FR', {
