@@ -526,47 +526,25 @@ export default function Subscription() {
             </div>
           )}
 
-          {!isManager && (
-            <div className="mb-12">
-              <Card className="bg-orange-50 border-2 border-orange-200">
-                <CardHeader>
-                  <CardTitle className="text-xl text-orange-800 flex items-center gap-2">
-                    <Crown className="h-5 w-5" />
-                    Gestion de l'abonnement réservée au Fondateur
-                  </CardTitle>
-                  <CardDescription className="text-orange-700">
-                    Seul le fondateur du cabinet peut modifier l'abonnement et gérer le nombre de membres.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-orange-800 font-medium mb-2">
-                    Votre rôle actuel : <span className="font-bold">{userRole || 'Non défini'}</span>
-                  </p>
-                  <p className="text-orange-700 text-sm">
-                    Pour toute modification de l'abonnement, veuillez contacter le fondateur de votre cabinet.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+          {/* 4) Section "Besoin d'aide ?" - Seulement visible pour le Fondateur */}
+          {isManager && (
+            <Card className="bg-card border-2 border-primary/30">
+              <CardHeader>
+                <CardTitle className="text-xl text-black">Besoin d'aide pour choisir ?</CardTitle>
+                <CardDescription className="text-black">
+                  Notre équipe est disponible pour vous accompagner dans le choix de votre abonnement.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  onClick={() => navigate(`${prefix}/contact-support`)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  Nous contacter
+                </Button>
+              </CardContent>
+            </Card>
           )}
-
-          {/* 4) Section "Besoin d'aide ?" - Version statique en bas de page */}
-          <Card className="bg-card border-2 border-primary/30">
-            <CardHeader>
-              <CardTitle className="text-xl text-black">Besoin d'aide pour choisir ?</CardTitle>
-              <CardDescription className="text-black">
-                Notre équipe est disponible pour vous accompagner dans le choix de votre abonnement.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={() => navigate(`${prefix}/contact-support`)}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                Nous contacter
-              </Button>
-            </CardContent>
-          </Card>
         </div>
       </AppLayout>
     </>
