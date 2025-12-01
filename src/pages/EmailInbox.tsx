@@ -92,13 +92,13 @@ export default function EmailInbox() {
     }
   }, [selectedAccount, currentFolder]);
 
-  // Auto-sync every 30 seconds
+  // Auto-sync every 5 seconds
   useEffect(() => {
     if (!selectedAccount) return;
 
     const interval = setInterval(() => {
       handleSync();
-    }, 30000); // 30 seconds
+    }, 5000); // 5 seconds
 
     return () => clearInterval(interval);
   }, [selectedAccount]);
