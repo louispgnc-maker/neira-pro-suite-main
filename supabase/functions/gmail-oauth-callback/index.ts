@@ -111,6 +111,15 @@ serve(async (req) => {
     // Calculate token expiry
     const expiresAt = new Date(Date.now() + tokens.expires_in * 1000).toISOString();
 
+    console.log("Attempting to upsert account:", {
+      user_id: userId,
+      email: emailAddress,
+      provider: "gmail",
+      has_access_token: !!tokens.access_token,
+      has_refresh_token: !!tokens.refresh_token,
+      expires_at: expiresAt
+    });
+
     // Store/update email account using SERVICE ROLE KEY
     const { data: account, error: upsertError } = await supabase
       .from("email_accounts")
@@ -132,13 +141,19 @@ serve(async (req) => {
       .single();
 
     if (upsertError) {
-      console.error("Account upsert error:", upsertError);
+      console.error("Account upsert error:", JSON.stringify(upsertError, null, 2));
+      console.error("Error details:", {
+        message: upsertError.message,
+        details: upsertError.details,
+        hint: upsertError.hint,
+        code: upsertError.code
+      });
       return Response.redirect(
         `${FRONTEND_URL}/oauth-callback?error=database_error`
       );
     }
 
-    console.log("Account saved:", account.id);
+    console.log("Account saved successfully:", account.id);
 
     // Clean up state
     await supabase.from("oauth_states").delete().eq("state", state);
