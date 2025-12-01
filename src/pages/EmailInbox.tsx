@@ -462,9 +462,13 @@ export default function EmailInbox() {
             >
               <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
             </Button>
-            <Button className={mainButtonColor} size="sm" onClick={handleCompose}>
-              <Send className="h-4 w-4 mr-2" />
-              Nouveau
+            <Button 
+              className={mainButtonColor} 
+              size="icon" 
+              onClick={handleCompose}
+              title="Nouveau message"
+            >
+              <Send className="h-4 w-4" />
             </Button>
           </div>
         </div>
