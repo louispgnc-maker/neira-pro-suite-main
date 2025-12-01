@@ -131,8 +131,26 @@ All colors MUST be HSL.
 .email-body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   line-height: 1.6;
-  color: inherit;
+  color: #1f2937 !important;
   overflow-x: hidden;
+  background: transparent !important;
+}
+
+.email-body * {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
+.email-body table {
+  background-color: transparent !important;
+}
+
+.email-body td,
+.email-body th,
+.email-body div,
+.email-body span {
+  background-color: transparent !important;
+  color: #1f2937 !important;
 }
 
 .email-body img {
@@ -140,6 +158,7 @@ All colors MUST be HSL.
   height: auto !important;
   display: block;
   margin: 1rem 0;
+  background-color: transparent !important;
 }
 
 .email-body table {
@@ -155,7 +174,7 @@ All colors MUST be HSL.
 }
 
 .email-body a {
-  color: #2563eb;
+  color: #2563eb !important;
   text-decoration: underline;
 }
 
@@ -167,6 +186,6 @@ All colors MUST be HSL.
   border-left: 3px solid #e5e7eb;
   padding-left: 1rem;
   margin: 1rem 0;
-  color: #6b7280;
+  color: #6b7280 !important;
 }
 
