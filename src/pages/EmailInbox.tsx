@@ -455,12 +455,12 @@ export default function EmailInbox() {
 
             <Button
               className={mainButtonColor}
-              size="sm"
+              size="icon"
               onClick={handleSync}
               disabled={syncing}
+              title="Synchroniser"
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
-              Synchroniser
+              <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
             </Button>
             <Button className={mainButtonColor} size="sm" onClick={handleCompose}>
               <Send className="h-4 w-4 mr-2" />
