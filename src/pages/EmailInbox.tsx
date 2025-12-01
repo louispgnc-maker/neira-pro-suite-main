@@ -96,18 +96,26 @@ export default function EmailInbox() {
   useEffect(() => {
     if (!selectedAccount) return;
 
+    let syncAttempts = 0;
+    const MAX_FAILED_ATTEMPTS = 3;
+
     const autoSync = async () => {
       try {
-        // Get account to check provider
-        const { data: accountData } = await supabase
+        // Get account to check provider and token
+        const { data: accountData, error: accountError } = await supabase
           .from('email_accounts')
-          .select('provider, access_token')
+          .select('provider, access_token, status')
           .eq('id', selectedAccount)
           .single();
 
-        // If no access token, skip sync
-        if (!accountData?.access_token) {
-          console.log('[Auto-sync] No access token found, skipping sync');
+        if (accountError || !accountData) {
+          console.log('[Auto-sync] Account not found');
+          return;
+        }
+
+        // If no access token or account is not active, skip sync
+        if (!accountData?.access_token || accountData?.status !== 'active') {
+          console.log('[Auto-sync] Account not ready for sync (no token or inactive)');
           return;
         }
 
@@ -128,8 +136,25 @@ export default function EmailInbox() {
 
         // If refresh failed with 401, the account needs re-authentication
         if (refreshResponse.status === 401) {
-          console.log('[Auto-sync] Token refresh failed - account needs re-authentication');
+          syncAttempts++;
+          if (syncAttempts >= MAX_FAILED_ATTEMPTS) {
+            console.log('[Auto-sync] Too many failed attempts - stopping auto-sync');
+            // Mark account as needing re-auth
+            await supabase
+              .from('email_accounts')
+              .update({ status: 'error' })
+              .eq('id', selectedAccount);
+            toast.error('Votre compte email nécessite une reconnexion', {
+              description: 'Veuillez vous rendre sur la page d\'intégration email pour reconnecter votre compte.',
+              duration: 10000
+            });
+          }
           return;
+        }
+
+        // Reset counter on success
+        if (refreshResponse.ok) {
+          syncAttempts = 0;
         }
 
         // Then sync emails
@@ -139,29 +164,38 @@ export default function EmailInbox() {
           body: JSON.stringify({ accountId: selectedAccount })
         });
 
-        // If sync failed with 401, skip silently
-        if (response.status === 401) {
-          console.log('[Auto-sync] Sync failed - authentication issue');
+        // If sync failed with 401 or 500, handle appropriately
+        if (response.status === 401 || response.status === 500) {
+          syncAttempts++;
+          if (syncAttempts >= MAX_FAILED_ATTEMPTS) {
+            console.log('[Auto-sync] Too many failed sync attempts - stopping');
+            return;
+          }
           return;
         }
 
         if (response.ok) {
+          syncAttempts = 0; // Reset on success
           const data = await response.json();
           if (data?.synced > 0) {
             await loadEmails();
           }
         }
       } catch (error) {
-        console.error('Auto-sync failed silently:', error);
+        syncAttempts++;
+        console.error('Auto-sync failed:', error);
       }
     };
 
-    // Initial sync immediately
-    autoSync();
+    // Initial sync after a short delay
+    const initialTimeout = setTimeout(autoSync, 1000);
 
-    const interval = setInterval(autoSync, 3000); // Check every 3 seconds
+    const interval = setInterval(autoSync, 5000); // Check every 5 seconds (less aggressive)
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
   }, [selectedAccount]);
 
   const loadAccounts = async () => {
