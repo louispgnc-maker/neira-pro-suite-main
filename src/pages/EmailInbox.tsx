@@ -174,13 +174,15 @@ export default function EmailInbox() {
         .select('*')
         .eq('account_id', selectedAccount);
 
-      // Filter by folder based on Gmail labels
+      // Filter by folder
       if (currentFolder === 'inbox') {
-        query = query.contains('labels', ['INBOX']);
+        // Inbox shows all emails (starred or not)
+        // No filter needed - shows everything
       } else if (currentFolder === 'sent') {
         query = query.contains('labels', ['SENT']);
       } else if (currentFolder === 'archive') {
-        query = query.not('labels', 'cs', '{"INBOX"}'); // Not in inbox = archived
+        // Archive shows only starred emails
+        query = query.eq('is_starred', true);
       } else if (currentFolder === 'trash') {
         query = query.contains('labels', ['TRASH']);
       }
@@ -261,13 +263,13 @@ export default function EmailInbox() {
     try {
       const { error } = await supabase
         .from('emails')
-        .update({ starred: !currentStarred })
+        .update({ is_starred: !currentStarred })
         .eq('id', emailId);
 
       if (error) throw error;
       
-      setEmails(prev => prev.map(e => e.id === emailId ? { ...e, starred: !currentStarred } : e));
-      toast.success(currentStarred ? 'Étoile retirée' : 'Email marqué');
+      setEmails(prev => prev.map(e => e.id === emailId ? { ...e, is_starred: !currentStarred } : e));
+      toast.success(currentStarred ? 'Retiré des archives' : 'Ajouté aux archives');
     } catch (error) {
       console.error('Error toggling star:', error);
     }
