@@ -324,7 +324,7 @@ export default function EmailIntegration() {
                         variant="outline"
                         size="sm"
                         onClick={() => navigate(`/${role}s/messagerie`)}
-                        className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-50' : 'border-blue-600 text-blue-600 hover:bg-blue-50'}
+                        className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-50 hover:text-black' : 'border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-black'}
                       >
                         <Mail className="mr-2 h-4 w-4" />
                         Accéder à la messagerie
