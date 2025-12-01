@@ -98,25 +98,34 @@ export default function EmailInbox() {
 
     const autoSync = async () => {
       try {
+        // Get account to check provider
+        const { data: accountData } = await supabase
+          .from('email_accounts')
+          .select('provider')
+          .eq('id', selectedAccount)
+          .single();
+
+        const provider = accountData?.provider || 'gmail';
+        const refreshUrl = provider === 'outlook'
+          ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-refresh-token'
+          : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-refresh-token';
+        const syncUrl = provider === 'outlook'
+          ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-sync'
+          : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync';
+
         // First, refresh token if needed
-        await fetch(
-          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-refresh-token',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accountId: selectedAccount })
-          }
-        );
+        await fetch(refreshUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accountId: selectedAccount })
+        });
 
         // Then sync emails
-        const response = await fetch(
-          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accountId: selectedAccount })
-          }
-        );
+        const response = await fetch(syncUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accountId: selectedAccount })
+        });
 
         if (response.ok) {
           const data = await response.json();
@@ -206,19 +215,25 @@ export default function EmailInbox() {
     
     setSyncing(true);
     try {
-      console.log('[EmailInbox] Starting sync for account:', selectedAccount);
+      // Get account to check provider
+      const { data: accountData } = await supabase
+        .from('email_accounts')
+        .select('provider')
+        .eq('id', selectedAccount)
+        .single();
+
+      const provider = accountData?.provider || 'gmail';
+      const syncUrl = provider === 'outlook' 
+        ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-sync'
+        : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync';
       
-      // Call edge function to sync with Gmail
-      const response = await fetch(
-        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ accountId: selectedAccount })
-        }
-      );
+      console.log('[EmailInbox] Starting sync for', provider, 'account:', selectedAccount);
+      
+      const response = await fetch(syncUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId: selectedAccount })
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -230,8 +245,7 @@ export default function EmailInbox() {
       console.log('[EmailInbox] Sync result:', data);
       
       const syncedCount = data?.synced || 0;
-      const skippedCount = data?.skipped || 0;
-      toast.success(`${syncedCount} nouveau(x) email(s) synchronisé(s) (${skippedCount} déjà présent(s))`);
+      toast.success(`${syncedCount} nouveau(x) email(s) synchronisé(s)`);
       await loadEmails();
     } catch (error: any) {
       console.error('Error syncing:', error);

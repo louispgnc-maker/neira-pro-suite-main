@@ -28,7 +28,7 @@ const EMAIL_PROVIDERS = [
     label: 'Outlook / Office 365', 
     icon: '📨', 
     color: 'bg-blue-500',
-    available: false 
+    available: true 
   },
   { 
     value: 'sfr', 
@@ -129,7 +129,7 @@ export default function EmailIntegration() {
   };
 
   const handleConnectProvider = async (provider: string) => {
-    if (provider !== 'gmail') {
+    if (provider !== 'gmail' && provider !== 'outlook') {
       toast.info(`${EMAIL_PROVIDERS.find(p => p.value === provider)?.label} sera bientôt disponible`);
       return;
     }
@@ -144,65 +144,55 @@ export default function EmailIntegration() {
       // Get the session token
       const { data: { session } } = await supabase.auth.getSession();
       
-      console.log('[EmailIntegration] Session status:', {
-        hasSession: !!session,
-        hasAccessToken: !!session?.access_token,
-        userId: session?.user?.id
-      });
-      
       if (!session || !session.access_token) {
         throw new Error('Vous devez être connecté. Veuillez vous reconnecter.');
       }
 
-      // Use fetch directly to ensure headers are sent properly
-      const response = await fetch(
-        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-operations',
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA'
-          },
-          body: JSON.stringify({ action: 'get-auth-url' })
-        }
-      );
+      let authUrl;
 
-      console.log('[EmailIntegration] Response status:', response.status);
-      
-      // Always read the response text first
-      const responseText = await response.text();
-      console.log('[EmailIntegration] Raw response:', responseText);
+      if (provider === 'gmail') {
+        const response = await fetch(
+          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-operations',
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'Content-Type': 'application/json',
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA'
+            },
+            body: JSON.stringify({ action: 'get-auth-url' })
+          }
+        );
 
-      if (!response.ok) {
-        console.error('[EmailIntegration] Error response:', responseText);
-        
-        let errorData;
-        try {
-          errorData = JSON.parse(responseText);
-        } catch {
-          errorData = { error: responseText };
+        const responseText = await response.text();
+        if (!response.ok) {
+          throw new Error('Failed to get Gmail auth URL');
         }
+        const data = JSON.parse(responseText);
+        authUrl = data.authUrl;
+      } else if (provider === 'outlook') {
+        // Generate Outlook OAuth URL
+        const clientId = '5c2e5ad7-f18e-4b4c-ba53-1d96a5b8d1af'; // You'll need to register your app
+        const redirectUri = encodeURIComponent('https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-oauth-callback');
+        const state = btoa(JSON.stringify({ user_id: user.id, session_token: session.access_token }));
+        const scope = encodeURIComponent('https://graph.microsoft.com/Mail.ReadWrite https://graph.microsoft.com/Mail.Send https://graph.microsoft.com/User.Read offline_access');
         
-        throw new Error(errorData.error || errorData.message || `Erreur ${response.status}`);
+        authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&response_mode=query`;
       }
 
-      const data = JSON.parse(responseText);
-      console.log('[EmailIntegration] Parsed data:', data);
-      
-      if (data?.authUrl) {
+      if (authUrl) {
         const width = 600;
         const height = 700;
         const left = window.screen.width / 2 - width / 2;
         const top = window.screen.height / 2 - height / 2;
         
         window.open(
-          data.authUrl,
-          'Gmail OAuth',
+          authUrl,
+          `${provider === 'gmail' ? 'Gmail' : 'Outlook'} OAuth`,
           `width=${width},height=${height},left=${left},top=${top}`
         );
         
-        toast.success('Veuillez autoriser l\'accès à votre Gmail');
+        toast.success(`Veuillez autoriser l'accès à votre ${provider === 'gmail' ? 'Gmail' : 'Outlook'}`);
       }
     } catch (error: any) {
       console.error('Error connecting provider:', error);
