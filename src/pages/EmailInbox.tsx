@@ -366,6 +366,51 @@ export default function EmailInbox() {
           </div>
 
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 mr-2">
+              <Button
+                variant={currentFolder === 'inbox' ? 'default' : 'ghost'}
+                size="icon"
+                className={`relative ${currentFolder === 'inbox' ? mainButtonColor : ''}`}
+                onClick={() => setCurrentFolder('inbox')}
+                title="Boîte de réception"
+              >
+                <Inbox className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
+                )}
+              </Button>
+              
+              <Button
+                variant={currentFolder === 'sent' ? 'default' : 'ghost'}
+                size="icon"
+                className={currentFolder === 'sent' ? mainButtonColor : ''}
+                onClick={() => setCurrentFolder('sent')}
+                title="Envoyés"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant={currentFolder === 'archive' ? 'default' : 'ghost'}
+                size="icon"
+                className={currentFolder === 'archive' ? mainButtonColor : ''}
+                onClick={() => setCurrentFolder('archive')}
+                title="Archivés"
+              >
+                <Archive className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant={currentFolder === 'trash' ? 'default' : 'ghost'}
+                size="icon"
+                className={currentFolder === 'trash' ? mainButtonColor : ''}
+                onClick={() => setCurrentFolder('trash')}
+                title="Corbeille"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+
             <Button
               variant="outline"
               size="sm"
@@ -383,52 +428,6 @@ export default function EmailInbox() {
         </div>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar */}
-          <div className="w-16 border-r bg-muted/10 py-3 px-2 space-y-1 overflow-y-auto flex flex-col items-center">
-            <Button
-              variant={currentFolder === 'inbox' ? 'default' : 'ghost'}
-              size="icon"
-              className={`relative ${currentFolder === 'inbox' ? mainButtonColor : ''}`}
-              onClick={() => setCurrentFolder('inbox')}
-              title="Boîte de réception"
-            >
-              <Inbox className="h-4 w-4" />
-              {unreadCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
-              )}
-            </Button>
-            
-            <Button
-              variant={currentFolder === 'sent' ? 'default' : 'ghost'}
-              size="icon"
-              className={currentFolder === 'sent' ? mainButtonColor : ''}
-              onClick={() => setCurrentFolder('sent')}
-              title="Envoyés"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              variant={currentFolder === 'archive' ? 'default' : 'ghost'}
-              size="icon"
-              className={currentFolder === 'archive' ? mainButtonColor : ''}
-              onClick={() => setCurrentFolder('archive')}
-              title="Archivés"
-            >
-              <Archive className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              variant={currentFolder === 'trash' ? 'default' : 'ghost'}
-              size="icon"
-              className={currentFolder === 'trash' ? mainButtonColor : ''}
-              onClick={() => setCurrentFolder('trash')}
-              title="Corbeille"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-
           {/* Email List */}
           <div className="w-96 border-r bg-background overflow-y-auto">
             {loading ? (
