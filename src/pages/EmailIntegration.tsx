@@ -73,7 +73,10 @@ export default function EmailIntegration() {
 
         if (success) {
           toast.success(`✅ Connexion réussie - ${email}`);
-          loadAccounts();
+          // Reload accounts after a short delay to ensure database write completed
+          setTimeout(() => {
+            loadAccounts();
+          }, 1000);
         } else if (error) {
           const messages: Record<string, string> = {
             missing_parameters: "Paramètres manquants",
@@ -91,7 +94,7 @@ export default function EmailIntegration() {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [user]); // Add user dependency
 
   // Remove old useEffect for searchParams (no longer needed)
 
@@ -101,14 +104,21 @@ export default function EmailIntegration() {
       return;
     }
 
+    setLoading(true); // Reset loading state
     try {
+      console.log('[EmailIntegration] Loading accounts for user:', user.id);
       const { data, error } = await supabase
         .from('email_accounts')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[EmailIntegration] Error loading accounts:', error);
+        throw error;
+      }
+      
+      console.log('[EmailIntegration] Accounts loaded:', data);
       setAccounts((data as EmailAccount[]) || []);
     } catch (error) {
       console.error('Error loading accounts:', error);
