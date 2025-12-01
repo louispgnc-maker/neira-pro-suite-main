@@ -421,7 +421,7 @@ export default function Subscription() {
           })()}
 
           {/* Section Gérer le nombre de membres (seulement pour Professionnel et Cabinet+) */}
-          {(currentPlan === 'professionnel' || currentPlan === 'cabinet-plus') && (
+          {isManager && (currentPlan === 'professionnel' || currentPlan === 'cabinet-plus') && (
             <Card className="mb-12 border-2 border-orange-200 bg-orange-50/50">
               <CardHeader>
                 <CardTitle className="text-xl text-black flex items-center gap-2">
@@ -454,87 +454,101 @@ export default function Subscription() {
           )}
 
           {/* 3) Section "Changer d'abonnement" */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-black mb-2">
-              Changer d'abonnement
-            </h2>
-            {!isManager ? (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-                <p className="text-orange-800 font-medium">
-                  Seul le gérant du cabinet (Fondateur) peut modifier l'abonnement.
-                </p>
-                <p className="text-orange-700 text-sm mt-1">
-                  Votre rôle actuel : <span className="font-semibold">{userRole || 'Non défini'}</span>
-                </p>
-              </div>
-            ) : (
+          {isManager && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-black mb-2">
+                Changer d'abonnement
+              </h2>
               <p className="text-black mb-6">
                 En tant que gérant du cabinet, vous pouvez modifier l'abonnement ci-dessous.
               </p>
-            )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {plans.filter(p => p.id !== subscriptionData?.tier).map((plan) => {
-                const Icon = plan.icon;
-                return (
-                  <Card key={plan.id} className={`border-2 ${isManager ? 'border-primary/30 hover:border-primary transition-all hover:shadow-lg' : 'border-gray-200 opacity-60'} bg-card`}>
-                    <CardHeader className="pb-3">
-                      <div className={`w-12 h-12 rounded-lg ${plan.bgColor} bg-opacity-20 flex items-center justify-center mb-3`}>
-                        <Icon className={`h-6 w-6 ${plan.color}`} />
-                      </div>
-                      {plan.popular && (
-                        <Badge className="mb-2 w-fit bg-purple-600 text-white">Populaire</Badge>
-                      )}
-                      <CardTitle className="text-xl text-black">Neira {plan.name}</CardTitle>
-                      <CardDescription className="text-black">{plan.description}</CardDescription>
-                      <div className="mt-4">
-                        <span className="text-3xl font-bold text-black">{plan.price}</span>
-                        <span className="text-black">/mois</span>
-                      </div>
-                      {plan.limits && (
-                        <div className="mt-3 p-2 bg-muted/50 rounded-md">
-                          <p className="text-xs text-black font-medium">{plan.limits}</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {plans.filter(p => p.id !== subscriptionData?.tier).map((plan) => {
+                  const Icon = plan.icon;
+                  return (
+                    <Card key={plan.id} className="border-2 border-primary/30 hover:border-primary transition-all hover:shadow-lg bg-card">
+                      <CardHeader className="pb-3">
+                        <div className={`w-12 h-12 rounded-lg ${plan.bgColor} bg-opacity-20 flex items-center justify-center mb-3`}>
+                          <Icon className={`h-6 w-6 ${plan.color}`} />
                         </div>
-                      )}
-                    </CardHeader>
-                    <CardContent>
-                      <div className="mb-4">
-                        <h4 className="font-semibold text-black mb-3 text-sm">Inclus :</h4>
-                        <ul className="space-y-2">
-                          {plan.features.map((feature, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-sm">
-                              <Check className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
-                              <span className="text-black">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      {plan.notIncluded && plan.notIncluded.length > 0 && (
-                        <div className="mb-4 pt-4 border-t">
-                          <h4 className="font-semibold text-black mb-3 text-sm">Non inclus :</h4>
+                        {plan.popular && (
+                          <Badge className="mb-2 w-fit bg-purple-600 text-white">Populaire</Badge>
+                        )}
+                        <CardTitle className="text-xl text-black">Neira {plan.name}</CardTitle>
+                        <CardDescription className="text-black">{plan.description}</CardDescription>
+                        <div className="mt-4">
+                          <span className="text-3xl font-bold text-black">{plan.price}</span>
+                          <span className="text-black">/mois</span>
+                        </div>
+                        {plan.limits && (
+                          <div className="mt-3 p-2 bg-muted/50 rounded-md">
+                            <p className="text-xs text-black font-medium">{plan.limits}</p>
+                          </div>
+                        )}
+                      </CardHeader>
+                      <CardContent>
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-black mb-3 text-sm">Inclus :</h4>
                           <ul className="space-y-2">
-                            {plan.notIncluded.map((item, idx) => (
+                            {plan.features.map((feature, idx) => (
                               <li key={idx} className="flex items-start gap-2 text-sm">
-                                <X className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
-                                <span className="text-muted-foreground">{item}</span>
+                                <Check className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                                <span className="text-black">{feature}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
-                      )}
-                      <Button 
-                        className={`w-full ${plan.buttonClass}`}
-                        onClick={() => handleUpgrade(plan.id)}
-                        disabled={!isManager}
-                      >
-                        {isManager ? 'Passer à cette offre' : 'Réservé au gérant'}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                        {plan.notIncluded && plan.notIncluded.length > 0 && (
+                          <div className="mb-4 pt-4 border-t">
+                            <h4 className="font-semibold text-black mb-3 text-sm">Non inclus :</h4>
+                            <ul className="space-y-2">
+                              {plan.notIncluded.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2 text-sm">
+                                  <X className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                                  <span className="text-muted-foreground">{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        <Button 
+                          className={`w-full ${plan.buttonClass}`}
+                          onClick={() => handleUpgrade(plan.id)}
+                        >
+                          Passer à cette offre
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
+
+          {!isManager && (
+            <div className="mb-12">
+              <Card className="bg-orange-50 border-2 border-orange-200">
+                <CardHeader>
+                  <CardTitle className="text-xl text-orange-800 flex items-center gap-2">
+                    <Crown className="h-5 w-5" />
+                    Gestion de l'abonnement réservée au Fondateur
+                  </CardTitle>
+                  <CardDescription className="text-orange-700">
+                    Seul le fondateur du cabinet peut modifier l'abonnement et gérer le nombre de membres.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-orange-800 font-medium mb-2">
+                    Votre rôle actuel : <span className="font-bold">{userRole || 'Non défini'}</span>
+                  </p>
+                  <p className="text-orange-700 text-sm">
+                    Pour toute modification de l'abonnement, veuillez contacter le fondateur de votre cabinet.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           {/* 4) Section "Besoin d'aide ?" - Version statique en bas de page */}
           <Card className="bg-card border-2 border-primary/30">
