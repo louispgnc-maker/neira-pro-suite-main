@@ -384,11 +384,11 @@ export default function EmailInbox() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <div className="w-48 border-r bg-muted/10 p-3 space-y-1 overflow-y-auto">
+          <div className="w-16 border-r bg-muted/10 py-3 px-2 space-y-1 overflow-y-auto flex flex-col items-center">
             <Button
               variant={currentFolder === 'inbox' ? 'default' : 'ghost'}
-              size="sm"
-              className={`w-full justify-center relative ${currentFolder === 'inbox' ? mainButtonColor : ''}`}
+              size="icon"
+              className={`relative ${currentFolder === 'inbox' ? mainButtonColor : ''}`}
               onClick={() => setCurrentFolder('inbox')}
               title="Boîte de réception"
             >
@@ -400,8 +400,8 @@ export default function EmailInbox() {
             
             <Button
               variant={currentFolder === 'sent' ? 'default' : 'ghost'}
-              size="sm"
-              className={`w-full justify-center ${currentFolder === 'sent' ? mainButtonColor : ''}`}
+              size="icon"
+              className={currentFolder === 'sent' ? mainButtonColor : ''}
               onClick={() => setCurrentFolder('sent')}
               title="Envoyés"
             >
@@ -410,8 +410,8 @@ export default function EmailInbox() {
             
             <Button
               variant={currentFolder === 'archive' ? 'default' : 'ghost'}
-              size="sm"
-              className={`w-full justify-center ${currentFolder === 'archive' ? mainButtonColor : ''}`}
+              size="icon"
+              className={currentFolder === 'archive' ? mainButtonColor : ''}
               onClick={() => setCurrentFolder('archive')}
               title="Archivés"
             >
@@ -420,8 +420,8 @@ export default function EmailInbox() {
             
             <Button
               variant={currentFolder === 'trash' ? 'default' : 'ghost'}
-              size="sm"
-              className={`w-full justify-center ${currentFolder === 'trash' ? mainButtonColor : ''}`}
+              size="icon"
+              className={currentFolder === 'trash' ? mainButtonColor : ''}
               onClick={() => setCurrentFolder('trash')}
               title="Corbeille"
             >
