@@ -45,15 +45,14 @@ type Email = {
   id: string;
   account_id: string;
   subject: string;
-  from: string;
-  to: string;
-  body: string;
-  html_body?: string;
+  from_address: string;
+  to_address: string;
+  body_text: string;
+  body_html?: string;
   received_at: string;
-  read: boolean;
-  starred: boolean;
-  has_attachments: boolean;
-  folder: 'inbox' | 'sent' | 'archive' | 'trash';
+  is_read: boolean;
+  is_starred: boolean;
+  labels?: string[];
 };
 
 export default function EmailInbox() {
@@ -242,9 +241,9 @@ export default function EmailInbox() {
   };
 
   const handleReply = (email: Email) => {
-    setComposeTo(email.from);
+    setComposeTo(email.from_address);
     setComposeSubject(`Re: ${email.subject}`);
-    setComposeBody(`\n\n--- Message original ---\nDe: ${email.from}\nDate: ${new Date(email.received_at).toLocaleString('fr-FR')}\nObjet: ${email.subject}\n\n${email.body}`);
+    setComposeBody(`\n\n--- Message original ---\nDe: ${email.from_address}\nDate: ${new Date(email.received_at).toLocaleString('fr-FR')}\nObjet: ${email.subject}\n\n${email.body_text}`);
     setShowCompose(true);
   };
 
@@ -304,8 +303,8 @@ export default function EmailInbox() {
     const query = searchQuery.toLowerCase();
     return (
       email.subject.toLowerCase().includes(query) ||
-      email.from.toLowerCase().includes(query) ||
-      email.body.toLowerCase().includes(query)
+      email.from_address.toLowerCase().includes(query) ||
+      email.body_text.toLowerCase().includes(query)
     );
   });
 
@@ -445,31 +444,31 @@ export default function EmailInbox() {
                     key={email.id}
                     className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${
                       selectedEmail?.id === email.id ? 'bg-muted' : ''
-                    } ${!email.read ? 'bg-blue-50/50' : ''}`}
+                    } ${!email.is_read ? 'bg-blue-50/50' : ''}`}
                     onClick={() => {
                       setSelectedEmail(email);
-                      if (!email.read) markAsRead(email.id);
+                      if (!email.is_read) markAsRead(email.id);
                     }}
                   >
                     <div className="flex items-start gap-3">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          toggleStar(email.id, email.starred);
+                          toggleStar(email.id, email.is_starred);
                         }}
                         className="mt-1"
                       >
                         <Star
                           className={`h-4 w-4 ${
-                            email.starred ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
+                            email.is_starred ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
                           }`}
                         />
                       </button>
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-sm truncate ${!email.read ? 'font-bold' : ''}`}>
-                            {email.from}
+                          <span className={`text-sm truncate ${!email.is_read ? 'font-bold' : ''}`}>
+                            {email.from_address}
                           </span>
                           <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
                             {new Date(email.received_at).toLocaleDateString('fr-FR', {
@@ -479,12 +478,12 @@ export default function EmailInbox() {
                           </span>
                         </div>
                         
-                        <div className={`text-sm mb-1 truncate ${!email.read ? 'font-semibold' : ''}`}>
+                        <div className={`text-sm mb-1 truncate ${!email.is_read ? 'font-semibold' : ''}`}>
                           {email.subject}
                         </div>
                         
                         <div className="text-xs text-muted-foreground truncate">
-                          {email.body.substring(0, 100)}...
+                          {email.body_text.substring(0, 100)}...
                         </div>
                         
                         {email.has_attachments && (
@@ -553,13 +552,13 @@ export default function EmailInbox() {
                   <div className="flex items-center gap-3 pb-4 border-b">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                       <span className="text-sm font-medium">
-                        {selectedEmail.from[0].toUpperCase()}
+                        {selectedEmail.from_address[0].toUpperCase()}
                       </span>
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium">{selectedEmail.from}</div>
+                      <div className="font-medium">{selectedEmail.from_address}</div>
                       <div className="text-sm text-muted-foreground">
-                        À: {selectedEmail.to}
+                        À: {selectedEmail.to_address}
                       </div>
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -569,7 +568,7 @@ export default function EmailInbox() {
 
                   <div className="prose prose-sm max-w-none">
                     <pre className="whitespace-pre-wrap font-sans text-sm">
-                      {selectedEmail.body}
+                      {selectedEmail.body_text}
                     </pre>
                   </div>
 
