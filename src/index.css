@@ -126,3 +126,40 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Email body styles for proper rendering */
+.email-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  line-height: 1.6;
+  color: inherit;
+}
+
+.email-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem 0;
+}
+
+.email-body table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 100%;
+}
+
+.email-body a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.email-body p {
+  margin: 0.5rem 0;
+}
+
+.email-body blockquote {
+  border-left: 3px solid #e5e7eb;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #6b7280;
+}
+

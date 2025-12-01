@@ -567,9 +567,20 @@ export default function EmailInbox() {
                   </div>
 
                   <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap font-sans text-sm">
-                      {selectedEmail.body_text}
-                    </pre>
+                    {selectedEmail.body_html ? (
+                      <div 
+                        className="email-body"
+                        dangerouslySetInnerHTML={{ __html: selectedEmail.body_html }}
+                        style={{ 
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word'
+                        }}
+                      />
+                    ) : (
+                      <pre className="whitespace-pre-wrap font-sans text-sm">
+                        {selectedEmail.body_text}
+                      </pre>
+                    )}
                   </div>
 
                   {selectedEmail.has_attachments && (

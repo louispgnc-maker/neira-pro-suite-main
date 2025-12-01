@@ -118,15 +118,58 @@ serve(async (req) => {
         const cc = getHeader("Cc");
         const date = getHeader("Date");
 
-        // Extract body
+        // Extract body with proper decoding
         let bodyText = "";
         let bodyHtml = "";
 
+        const decodeBase64Url = (str: string): string => {
+          try {
+            // Convert base64url to base64
+            const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+            // Decode base64 to bytes
+            const binaryString = atob(base64);
+            // Convert to Uint8Array
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+            // Decode as UTF-8
+            return new TextDecoder('utf-8').decode(bytes);
+          } catch (e) {
+            console.error("Failed to decode base64url:", e);
+            return str;
+          }
+        };
+
+        const decodeQuotedPrintable = (str: string): string => {
+          // Decode quoted-printable encoding
+          return str
+            .replace(/=\r?\n/g, '') // Remove soft line breaks
+            .replace(/=([0-9A-F]{2})/gi, (_, hex) => 
+              String.fromCharCode(parseInt(hex, 16))
+            );
+        };
+
         const extractBody = (part: any) => {
-          if (part.mimeType === "text/plain" && part.body?.data) {
-            bodyText = atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
-          } else if (part.mimeType === "text/html" && part.body?.data) {
-            bodyHtml = atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
+          if (!part) return;
+
+          const mimeType = part.mimeType || '';
+          const encoding = part.headers?.find((h: any) => 
+            h.name.toLowerCase() === 'content-transfer-encoding'
+          )?.value?.toLowerCase() || '';
+
+          if ((mimeType === "text/plain" || mimeType.startsWith("text/plain")) && part.body?.data) {
+            let decoded = decodeBase64Url(part.body.data);
+            if (encoding === 'quoted-printable') {
+              decoded = decodeQuotedPrintable(decoded);
+            }
+            if (!bodyText) bodyText = decoded; // Keep first text/plain part
+          } else if ((mimeType === "text/html" || mimeType.startsWith("text/html")) && part.body?.data) {
+            let decoded = decodeBase64Url(part.body.data);
+            if (encoding === 'quoted-printable') {
+              decoded = decodeQuotedPrintable(decoded);
+            }
+            if (!bodyHtml) bodyHtml = decoded; // Keep first text/html part
           } else if (part.parts) {
             part.parts.forEach(extractBody);
           }
@@ -136,6 +179,11 @@ serve(async (req) => {
           messageData.payload.parts.forEach(extractBody);
         } else if (messageData.payload.body?.data) {
           extractBody(messageData.payload);
+        }
+
+        // If no HTML body, use text body
+        if (!bodyHtml && bodyText) {
+          bodyHtml = bodyText.replace(/\n/g, '<br>');
         }
 
         // Store in database
