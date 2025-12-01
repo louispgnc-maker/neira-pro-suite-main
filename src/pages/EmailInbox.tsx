@@ -426,64 +426,68 @@ export default function EmailInbox() {
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 flex-1">
-            <Button
-              size="icon"
-              className={`relative ${mainButtonColor}`}
-              onClick={() => setCurrentFolder('inbox')}
-              title="Boîte de réception"
-            >
-              <Inbox className="h-4 w-4" />
-              {unreadCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
-              )}
-            </Button>
-            
-            <Button
-              size="icon"
-              className={mainButtonColor}
-              onClick={() => setCurrentFolder('sent')}
-              title="Envoyés"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              size="icon"
-              className={mainButtonColor}
-              onClick={() => setCurrentFolder('archive')}
-              title="Archivés"
-            >
-              <Archive className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              size="icon"
-              className={mainButtonColor}
-              onClick={() => setCurrentFolder('trash')}
-              title="Corbeille"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center justify-center gap-6 flex-1">
+            <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                className={`relative ${mainButtonColor}`}
+                onClick={() => setCurrentFolder('inbox')}
+                title="Boîte de réception"
+              >
+                <Inbox className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
+                )}
+              </Button>
+              
+              <Button
+                size="icon"
+                className={mainButtonColor}
+                onClick={() => setCurrentFolder('sent')}
+                title="Envoyés"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                size="icon"
+                className={mainButtonColor}
+                onClick={() => setCurrentFolder('archive')}
+                title="Archivés"
+              >
+                <Archive className="h-4 w-4" />
+              </Button>
+            </div>
 
-            <Button
-              className={mainButtonColor}
-              size="icon"
-              onClick={handleSync}
-              disabled={syncing}
-              title="Synchroniser"
-            >
-              <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-            </Button>
-            
-            <Button 
-              className={mainButtonColor} 
-              size="icon" 
-              onClick={handleCompose}
-              title="Nouveau message"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                className={mainButtonColor}
+                onClick={() => setCurrentFolder('trash')}
+                title="Corbeille"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+
+              <Button
+                className={mainButtonColor}
+                size="icon"
+                onClick={handleSync}
+                disabled={syncing}
+                title="Synchroniser"
+              >
+                <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+              </Button>
+              
+              <Button 
+                className={mainButtonColor} 
+                size="icon" 
+                onClick={handleCompose}
+                title="Nouveau message"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
         </Card>
