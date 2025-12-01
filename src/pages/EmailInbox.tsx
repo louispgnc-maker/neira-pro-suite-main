@@ -337,9 +337,10 @@ export default function EmailInbox() {
 
   return (
     <AppLayout>
-      <div className="h-[calc(100vh-4rem)] flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b bg-background flex items-center justify-between gap-4">
+      <div className="p-8">
+        <Card className="h-[calc(100vh-10rem)] flex flex-col overflow-hidden shadow-lg">
+          {/* Header */}
+          <div className="p-4 border-b bg-background flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
             <Select value={selectedAccount} onValueChange={setSelectedAccount}>
               <SelectTrigger className="w-[250px]">
@@ -429,7 +430,7 @@ export default function EmailInbox() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* Email List */}
-          <div className="w-96 border-r bg-background overflow-y-auto">
+          <div className="w-96 border-r overflow-y-auto">
             {loading ? (
               <div className="p-8 text-center">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
@@ -655,6 +656,8 @@ export default function EmailInbox() {
           </div>
         </DialogContent>
       </Dialog>
+        </Card>
+      </div>
     </AppLayout>
   );
 }
