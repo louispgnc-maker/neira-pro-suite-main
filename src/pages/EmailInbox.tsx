@@ -260,18 +260,33 @@ export default function EmailInbox() {
     }
 
     try {
-      // Appeler l'edge function pour envoyer l'email via Gmail API
-      const { error } = await supabase.functions.invoke('gmail-sync', {
-        body: { 
-          action: 'send',
-          account_id: selectedAccount,
-          to: composeTo,
-          subject: composeSubject,
-          body: composeBody
+      console.log('[EmailInbox] Sending email from account:', selectedAccount);
+      
+      // Call edge function to send email via Gmail API
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-send',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            accountId: selectedAccount,
+            to: composeTo,
+            subject: composeSubject,
+            body: composeBody
+          })
         }
-      });
+      );
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[EmailInbox] Send error:', errorText);
+        throw new Error('Erreur lors de l\'envoi de l\'email');
+      }
+
+      const data = await response.json();
+      console.log('[EmailInbox] Email sent:', data);
       
       toast.success('Email envoyé avec succès');
       setShowCompose(false);
