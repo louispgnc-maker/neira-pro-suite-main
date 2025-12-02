@@ -144,21 +144,11 @@ export default function EmailInbox() {
           body: JSON.stringify({ accountId: selectedAccount })
         });
 
-        // If refresh failed with 401, the account needs re-authentication
+        // If refresh failed with 401, log but don't disconnect - retry on next sync
         if (refreshResponse.status === 401) {
           syncAttempts++;
-          if (syncAttempts >= MAX_FAILED_ATTEMPTS) {
-            console.log('[Auto-sync] Too many failed attempts - stopping auto-sync');
-            // Mark account as needing re-auth
-            await supabase
-              .from('email_accounts')
-              .update({ status: 'error' })
-              .eq('id', selectedAccount);
-            toast.error('Votre compte email nécessite une reconnexion', {
-              description: 'Veuillez vous rendre sur la page d\'intégration email pour reconnecter votre compte.',
-              duration: 10000
-            });
-          }
+          console.log('[Auto-sync] Token refresh returned 401, will retry on next cycle');
+          // Don't mark as error or show toast - just retry silently
           return;
         }
 

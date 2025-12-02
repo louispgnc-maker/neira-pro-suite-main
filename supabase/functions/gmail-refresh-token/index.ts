@@ -58,7 +58,17 @@ serve(async (req) => {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      throw new Error(`Failed to refresh token: ${errorText}`);
+      console.error('Token refresh failed:', errorText);
+      // Don't throw - return current token and let it retry later
+      return new Response(
+        JSON.stringify({ 
+          message: "Token refresh failed, using existing token", 
+          access_token: account.access_token,
+          expires_at: account.token_expires_at,
+          warning: 'refresh_failed'
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const tokens = await tokenResponse.json();
@@ -87,9 +97,13 @@ serve(async (req) => {
     );
   } catch (error: any) {
     console.error("Refresh token error:", error);
+    // Return 200 with warning instead of error to avoid disconnection
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ 
+        message: "Token refresh error, using cached token",
+        warning: error.message 
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });

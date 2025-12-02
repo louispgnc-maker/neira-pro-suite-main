@@ -119,20 +119,19 @@ serve(async (req) => {
       });
 
       if (!refreshResponse.ok) {
-        return new Response(JSON.stringify({ error: "Token refresh failed" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        console.error("Token refresh failed, using existing token");
+        // Don't fail - use existing token and let it try again later
+        accessToken = account.access_token;
+      } else {
+        const tokens = await refreshResponse.json();
+        accessToken = tokens.access_token;
+        const expiresAt = new Date(Date.now() + tokens.expires_in * 1000).toISOString();
+
+        await supabaseAdmin
+          .from("email_accounts")
+          .update({ access_token: accessToken, token_expires_at: expiresAt })
+          .eq("id", account_id);
       }
-
-      const tokens = await refreshResponse.json();
-      accessToken = tokens.access_token;
-      const expiresAt = new Date(Date.now() + tokens.expires_in * 1000).toISOString();
-
-      await supabaseAdmin
-        .from("email_accounts")
-        .update({ access_token: accessToken, token_expires_at: expiresAt })
-        .eq("id", account_id);
     }
 
     // Handle sync action
