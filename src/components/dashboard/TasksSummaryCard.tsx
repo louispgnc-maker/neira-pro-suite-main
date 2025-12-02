@@ -32,7 +32,8 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
           .select('id', { count: 'exact', head: true })
           .eq('owner_id', user.id)
           .eq('role', role)
-          .eq('done', false);
+          .eq('done', false)
+          .gte('due_at', todayISO);
 
         const overdueRes = await supabase
           .from('tasks')
