@@ -2034,24 +2034,19 @@ export default function EspaceCollaboratif() {
                           <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>
                         )}
                         <div className="flex-1" />
-                        {task.assigned_to && task.assigned_to.length > 0 && (
-                          <div className="text-xs text-muted-foreground mb-2">
-                            <div className="flex items-center gap-1 mb-1">
+                        {task.assigned_to && task.assigned_to.length > 0 && (() => {
+                          const firstMember = members.find(m => m.user_id === task.assigned_to[0]);
+                          const otherCount = task.assigned_to.length - 1;
+                          return (
+                            <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                               <User className="h-3 w-3" />
-                              <span className="font-medium">Assigné à:</span>
+                              <span>
+                                Assigné à <span className="font-medium">{firstMember?.nom || firstMember?.email || 'Membre'}</span>
+                                {otherCount > 0 && <span> et {otherCount} autre{otherCount > 1 ? 's' : ''}</span>}
+                              </span>
                             </div>
-                            <div className="flex flex-wrap gap-1">
-                              {task.assigned_to.map((userId) => {
-                                const assignedMember = members.find(m => m.user_id === userId);
-                                return assignedMember ? (
-                                  <Badge key={userId} variant="outline" className="text-xs">
-                                    {assignedMember.nom || assignedMember.email}
-                                  </Badge>
-                                ) : null;
-                              })}
-                            </div>
-                          </div>
-                        )}
+                          );
+                        })()}
                         {task.creator_profile && (
                           <div className="text-xs text-muted-foreground mb-2">
                             Créé par {task.creator_profile.first_name} {task.creator_profile.last_name}
