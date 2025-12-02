@@ -92,6 +92,14 @@ export default function EmailInbox() {
     }
   }, [selectedAccount, currentFolder]);
 
+  // Sync on page load
+  useEffect(() => {
+    if (selectedAccount) {
+      // Sync silently without showing loading state
+      handleSync();
+    }
+  }, [selectedAccount]);
+
   // Auto-sync disabled - use manual sync button instead
   // Automatic sync causes too many errors if token is invalid
   /*
@@ -293,6 +301,16 @@ export default function EmailInbox() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('[EmailInbox] Sync error:', errorText);
+        
+        // If it's a 401 error, the token has expired
+        if (response.status === 401) {
+          toast.error('Votre compte email nécessite une reconnexion', {
+            description: 'Cliquez sur "Ajouter un compte" ci-dessus pour reconnecter votre compte ' + provider.toUpperCase(),
+            duration: 8000
+          });
+          return;
+        }
+        
         throw new Error('Erreur lors de la synchronisation');
       }
 

@@ -52,6 +52,7 @@ import MentionsLegales from "./pages/MentionsLegales";
 import RGPD from "./pages/RGPD";
 import CGU from "./pages/CGU";
 import NotFound from "./pages/NotFound";
+import PublicClientForm from "./pages/PublicClientForm";
 import ScrollToTop from "./components/ScrollToTop";
 import EmailConfirmHandler from "./components/EmailConfirmHandler";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
@@ -86,6 +87,7 @@ const App = () => (
             <Route path="/cgu" element={<CGU />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/form/:token" element={<PublicClientForm />} />
             
             {/* Routes Avocat */}
             <Route path="/avocats/auth" element={<AvocatAuth />} />
