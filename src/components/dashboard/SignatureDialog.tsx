@@ -43,9 +43,13 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
   ]);
 
   // Determine role from URL path first (most reliable), then profile
-  const role = window.location.pathname.includes('/notaires/') ? 'notaire' : 
-               window.location.pathname.includes('/avocats/') ? 'avocat' :
+  const role = window.location.pathname.includes('/notaires') || window.location.pathname.includes('/notaire') ? 'notaire' : 
+               window.location.pathname.includes('/avocats') || window.location.pathname.includes('/avocat') ? 'avocat' :
                (profile?.role || 'avocat');
+
+  useEffect(() => {
+    console.log('SignatureDialog - URL:', window.location.pathname, 'Detected role:', role, 'Profile role:', profile?.role);
+  }, [role, profile]);
 
   useEffect(() => {
     if (open && user) {
