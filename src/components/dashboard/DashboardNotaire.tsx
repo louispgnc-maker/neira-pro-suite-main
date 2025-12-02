@@ -85,6 +85,9 @@ export function DashboardNotaire() {
       const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const prevYyyy = prevMonth.getFullYear();
       const prevMm = String(prevMonth.getMonth() + 1).padStart(2, "0");
+      
+      // Get last day of previous month
+      const lastDayPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
 
       // Contrats en cours - TOUS les contrats actifs
       const docsQuery = supabase
@@ -99,8 +102,8 @@ export function DashboardNotaire() {
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "notaire")
-        .gte("created_at", `${prevYyyy}-${prevMm}-01`)
-        .lte("created_at", `${prevYyyy}-${prevMm}-31`);
+        .gte("created_at", `${prevYyyy}-${prevMm}-01T00:00:00`)
+        .lt("created_at", `${yyyy}-${mm}-01T00:00:00`);
 
       // Signatures en attente - TOUTES les signatures en attente
       const sigQuery = supabase
