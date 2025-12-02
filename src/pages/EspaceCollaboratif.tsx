@@ -1848,7 +1848,7 @@ export default function EspaceCollaboratif() {
                         </div>
                       </div>
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => { setTaskMemberSearch(''); setTaskDialogOpen(false); }}>Annuler</Button>
+                        <Button variant="outline" className={`${cabinetRole === 'notaire' ? 'border-orange-300 text-orange-600 hover:bg-orange-50' : 'border-blue-300 text-blue-600 hover:bg-blue-50'}`} onClick={() => { setTaskMemberSearch(''); setTaskDialogOpen(false); }}>Annuler</Button>
                         <Button className={colorClass} disabled={taskSaving} onClick={createCollaborativeTask}>
                           {taskSaving ? 'Enregistrement…' : 'Créer'}
                         </Button>
@@ -1938,7 +1938,7 @@ export default function EspaceCollaboratif() {
                           </div>
                         </div>
                         <div className="flex justify-end gap-2">
-                          <Button variant="outline" onClick={() => { setEditTaskMemberSearch(''); setEditDialogOpen(false); }}>Annuler</Button>
+                          <Button variant="outline" className={`${cabinetRole === 'notaire' ? 'border-orange-300 text-orange-600 hover:bg-orange-50' : 'border-blue-300 text-blue-600 hover:bg-blue-50'}`} onClick={() => { setEditTaskMemberSearch(''); setEditDialogOpen(false); }}>Annuler</Button>
                           <Button className={colorClass} disabled={editTaskSaving} onClick={updateCollaborativeTask}>
                             {editTaskSaving ? 'Enregistrement…' : 'Enregistrer'}
                           </Button>
