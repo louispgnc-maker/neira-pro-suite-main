@@ -174,7 +174,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                       {documents.map((doc) => (
                         <CommandItem
                           key={doc.id}
-                          value={doc.name}
+                          value={`${doc.id}-${doc.name}`}
+                          keywords={[doc.name]}
                           onSelect={() => {
                             setSelectedDocumentId(doc.id);
                             setDocumentSearchOpen(false);
