@@ -124,7 +124,7 @@ interface CollabTask {
   description?: string | null;
   due_at?: string | null;
   done?: boolean;
-  assigned_to?: string | null;
+  assigned_to?: string[] | null;
   shared_by?: string;
   cabinet_id?: string;
   creator_profile?: {
@@ -180,7 +180,7 @@ export default function EspaceCollaboratif() {
   const [taskNotes, setTaskNotes] = useState('');
   const [taskDate, setTaskDate] = useState('');
   const [taskTime, setTaskTime] = useState('');
-  const [taskAssignedTo, setTaskAssignedTo] = useState<string>('');
+  const [taskAssignedTo, setTaskAssignedTo] = useState<string[]>([]);
   const [taskSaving, setTaskSaving] = useState(false);
   // Edit task dialog state
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -189,7 +189,7 @@ export default function EspaceCollaboratif() {
   const [editTaskNotes, setEditTaskNotes] = useState('');
   const [editTaskDate, setEditTaskDate] = useState('');
   const [editTaskTime, setEditTaskTime] = useState('');
-  const [editTaskAssignedTo, setEditTaskAssignedTo] = useState<string>('');
+  const [editTaskAssignedTo, setEditTaskAssignedTo] = useState<string[]>([]);
   const [editTaskSaving, setEditTaskSaving] = useState(false);
   const [collabTasks, setCollabTasks] = useState<CollabTask[]>([]);
   const [collabLoading, setCollabLoading] = useState(true);
@@ -448,7 +448,7 @@ export default function EspaceCollaboratif() {
         title,
         description: taskNotes || null,
         due_at,
-        assigned_to: taskAssignedTo || null
+        assigned_to: taskAssignedTo.length > 0 ? taskAssignedTo : null
       });
       if (error) throw error;
       toast({ title: 'Tâche créée', description: 'La tâche a été ajoutée.' });
@@ -456,7 +456,7 @@ export default function EspaceCollaboratif() {
       setTaskNotes('');
       setTaskDate('');
       setTaskTime('');
-      setTaskAssignedTo('');
+      setTaskAssignedTo([]);
       setTaskDialogOpen(false);
       
       // Recharger la liste des tâches
@@ -516,7 +516,7 @@ export default function EspaceCollaboratif() {
         title, 
         description: editTaskNotes || null, 
         due_at,
-        assigned_to: editTaskAssignedTo || null 
+        assigned_to: editTaskAssignedTo.length > 0 ? editTaskAssignedTo : null
       }).eq('id', editTaskId);
       if (error) throw error;
       // update local state
@@ -525,7 +525,7 @@ export default function EspaceCollaboratif() {
         title, 
         description: editTaskNotes || null, 
         due_at,
-        assigned_to: editTaskAssignedTo || null
+        assigned_to: editTaskAssignedTo.length > 0 ? editTaskAssignedTo : null
       } : t));
       toast({ title: 'Tâche modifiée', description: 'La tâche a été mise à jour.' });
       setEditDialogOpen(false);
@@ -1787,19 +1787,29 @@ export default function EspaceCollaboratif() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Assigner à (optionnel)</label>
-                        <Select value={taskAssignedTo || undefined} onValueChange={(value) => setTaskAssignedTo(value === 'none' ? '' : value)}>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Sélectionner un membre" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">Non assigné</SelectItem>
-                            {members.filter(m => m.status === 'active' && m.user_id).map((member) => (
-                              <SelectItem key={member.id} value={member.user_id!}>
-                                {member.nom || member.email}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 space-y-2">
+                          {members.filter(m => m.status === 'active' && m.user_id).length === 0 ? (
+                            <p className="text-sm text-muted-foreground">Aucun membre actif</p>
+                          ) : (
+                            members.filter(m => m.status === 'active' && m.user_id).map((member) => (
+                              <label key={member.id} className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded">
+                                <input
+                                  type="checkbox"
+                                  checked={taskAssignedTo.includes(member.user_id!)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setTaskAssignedTo([...taskAssignedTo, member.user_id!]);
+                                    } else {
+                                      setTaskAssignedTo(taskAssignedTo.filter(id => id !== member.user_id));
+                                    }
+                                  }}
+                                  className="h-4 w-4"
+                                />
+                                <span className="text-sm">{member.nom || member.email}</span>
+                              </label>
+                            ))
+                          )}
+                        </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -1846,19 +1856,29 @@ export default function EspaceCollaboratif() {
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Assigner à (optionnel)</label>
-                          <Select value={editTaskAssignedTo || undefined} onValueChange={(value) => setEditTaskAssignedTo(value === 'none' ? '' : value)}>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Sélectionner un membre" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">Non assigné</SelectItem>
-                              {members.filter(m => m.status === 'active' && m.user_id).map((member) => (
-                                <SelectItem key={member.id} value={member.user_id!}>
-                                  {member.nom || member.email}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 space-y-2">
+                            {members.filter(m => m.status === 'active' && m.user_id).length === 0 ? (
+                              <p className="text-sm text-muted-foreground">Aucun membre actif</p>
+                            ) : (
+                              members.filter(m => m.status === 'active' && m.user_id).map((member) => (
+                                <label key={member.id} className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded">
+                                  <input
+                                    type="checkbox"
+                                    checked={editTaskAssignedTo.includes(member.user_id!)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setEditTaskAssignedTo([...editTaskAssignedTo, member.user_id!]);
+                                      } else {
+                                        setEditTaskAssignedTo(editTaskAssignedTo.filter(id => id !== member.user_id));
+                                      }
+                                    }}
+                                    className="h-4 w-4"
+                                  />
+                                  <span className="text-sm">{member.nom || member.email}</span>
+                                </label>
+                              ))
+                            )}
+                          </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
@@ -1914,7 +1934,7 @@ export default function EspaceCollaboratif() {
                             setEditTaskId(task.id);
                             setEditTaskText(task.title || '');
                             setEditTaskNotes(task.description || '');
-                            setEditTaskAssignedTo(task.assigned_to || '');
+                            setEditTaskAssignedTo(task.assigned_to || []);
                             if (task.due_at) {
                               try {
                                 const d = new Date(task.due_at);
@@ -1957,13 +1977,22 @@ export default function EspaceCollaboratif() {
                           <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>
                         )}
                         <div className="flex-1" />
-                        {task.assigned_to && (
-                          <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                            <User className="h-3 w-3" />
-                            Assigné à {(() => {
-                              const assignedMember = members.find(m => m.user_id === task.assigned_to);
-                              return assignedMember ? (assignedMember.nom || assignedMember.email) : 'Inconnu';
-                            })()}
+                        {task.assigned_to && task.assigned_to.length > 0 && (
+                          <div className="text-xs text-muted-foreground mb-2">
+                            <div className="flex items-center gap-1 mb-1">
+                              <User className="h-3 w-3" />
+                              <span className="font-medium">Assigné à:</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {task.assigned_to.map((userId) => {
+                                const assignedMember = members.find(m => m.user_id === userId);
+                                return assignedMember ? (
+                                  <Badge key={userId} variant="outline" className="text-xs">
+                                    {assignedMember.nom || assignedMember.email}
+                                  </Badge>
+                                ) : null;
+                              })}
+                            </div>
                           </div>
                         )}
                         {task.creator_profile && (
