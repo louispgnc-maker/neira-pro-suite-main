@@ -13,9 +13,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 type Document = {
   id: string;
-  nom: string;
-  type: string;
-  created_at: string;
+  name: string;
+  storage_path: string | null;
+  updated_at: string;
 };
 
 type Signatory = {
@@ -52,10 +52,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
 
     const { data, error } = await supabase
       .from('documents')
-      .select('id, nom, type, created_at')
+      .select('id, name, storage_path, updated_at')
       .eq('owner_id', user.id)
-      .eq('is_signed', false)
-      .order('created_at', { ascending: false })
+      .order('updated_at', { ascending: false, nullsFirst: false })
       .limit(50);
 
     if (error) {
@@ -161,7 +160,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                   className="w-full justify-between"
                 >
                   {selectedDocumentId
-                    ? documents.find((doc) => doc.id === selectedDocumentId)?.nom
+                    ? documents.find((doc) => doc.id === selectedDocumentId)?.name
                     : "Sélectionnez un document"}
                   <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -175,14 +174,14 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                       {documents.map((doc) => (
                         <CommandItem
                           key={doc.id}
-                          value={doc.nom}
+                          value={doc.name}
                           onSelect={() => {
                             setSelectedDocumentId(doc.id);
                             setDocumentSearchOpen(false);
                           }}
                         >
                           <FileText className="mr-2 h-4 w-4" />
-                          {doc.nom}
+                          {doc.name}
                         </CommandItem>
                       ))}
                     </CommandGroup>
