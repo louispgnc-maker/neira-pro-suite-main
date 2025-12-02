@@ -165,8 +165,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                   role="combobox"
                   aria-expanded={documentSearchOpen}
                   className={`w-full justify-between ${role === 'notaire' 
-                    ? 'hover:bg-orange-600 hover:text-white hover:border-orange-600' 
-                    : 'hover:bg-blue-600 hover:text-white hover:border-blue-600'}`}
+                    ? 'hover:bg-orange-100 hover:text-black hover:border-orange-300' 
+                    : 'hover:bg-blue-100 hover:text-black hover:border-blue-300'}`}
                 >
                   {selectedDocumentId
                     ? documents.find((doc) => doc.id === selectedDocumentId)?.name
@@ -216,8 +216,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
               <SelectTrigger 
                 id="signature-level" 
                 className={`w-[200px] ${role === 'notaire' 
-                  ? 'hover:bg-orange-600 hover:text-white hover:border-orange-600' 
-                  : 'hover:bg-blue-600 hover:text-white hover:border-blue-600'}`}
+                  ? 'hover:bg-orange-100 hover:text-black hover:border-orange-300' 
+                  : 'hover:bg-blue-100 hover:text-black hover:border-blue-300'}`}
               >
                 <SelectValue />
               </SelectTrigger>
@@ -269,8 +269,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 size="sm"
                 onClick={addSignatory}
                 className={role === 'notaire' 
-                  ? 'hover:bg-orange-600 hover:text-white border-orange-300' 
-                  : 'hover:bg-blue-600 hover:text-white border-blue-300'}
+                  ? 'hover:bg-orange-100 hover:text-black border-orange-300' 
+                  : 'hover:bg-blue-100 hover:text-black border-blue-300'}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Ajouter un signataire
