@@ -1,4 +1,4 @@
-import { MoreHorizontal, Eye, Download, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Download, Trash2, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +50,7 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<DocRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerUrl, setViewerUrl] = useState("");
   const [viewerDocName, setViewerDocName] = useState("");
@@ -169,26 +171,41 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
         return;
       }
       setLoading(true);
-      const { data, error } = await supabase
-        .from("documents")
-        .select("id,name,client_name,status,updated_at,storage_path")
-        .eq("owner_id", user.id)
-        .eq("role", role)
-        .order("updated_at", { ascending: false, nullsFirst: false })
-        .limit(5);
-      if (error) {
-        console.error("Erreur chargement documents:", error);
+      try {
+        let query = supabase
+          .from("documents")
+          .select("id,name,client_name,status,updated_at,storage_path")
+          .eq("owner_id", user.id)
+          .eq("role", role);
+        
+        // Add search filter if query exists
+        if (searchQuery.trim()) {
+          query = query.or(`name.ilike.%${searchQuery}%,client_name.ilike.%${searchQuery}%`);
+        }
+        
+        const { data, error } = await query
+          .order("updated_at", { ascending: false, nullsFirst: false })
+          .limit(10);
+          
+        if (error) {
+          console.error("Error loading documents:", error);
+          toast.error("Erreur lors du chargement des documents");
+          if (isMounted) setDocuments([]);
+        } else if (isMounted) {
+          setDocuments(data as DocRow[]);
+        }
+      } catch (err) {
+        console.error("Exception loading documents:", err);
         if (isMounted) setDocuments([]);
-      } else if (isMounted) {
-        setDocuments(data as DocRow[]);
+      } finally {
+        if (isMounted) setLoading(false);
       }
-      if (isMounted) setLoading(false);
     }
     load();
     return () => {
       isMounted = false;
     };
-  }, [user, role]);
+  }, [user, role, searchQuery]);
 
   // Role-based menu styling (dropdown)
   const menuContentClass = role === 'notaire'
@@ -212,6 +229,17 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
         </Button>
       </CardHeader>
       <CardContent>
+        {/* Search Bar */}
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Rechercher un document..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        
         <Table>
           <TableHeader>
             <TableRow>
@@ -232,7 +260,7 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
               ) : documents.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    Aucuns documents.
+                    {searchQuery ? "Aucun document trouvé" : "Aucuns documents."}
                   </TableCell>
                 </TableRow>
             ) : (

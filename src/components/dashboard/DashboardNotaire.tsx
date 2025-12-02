@@ -158,8 +158,13 @@ export function DashboardNotaire() {
       if (!isMounted) return;
       
       // Log errors for debugging but don't throw
-      if (docsRes.status === "rejected") console.log('[Dashboard] Contrats query failed:', docsRes.reason);
-      if (sigRes.status === "rejected") console.log('[Dashboard] Signatures query failed:', sigRes.reason);
+      if (docsRes.status === "rejected") console.error('[Dashboard Notaire] Contrats query failed:', docsRes.reason);
+      if (docsPrevRes.status === "rejected") console.error('[Dashboard Notaire] Contrats prev query failed:', docsPrevRes.reason);
+      if (sigRes.status === "rejected") console.error('[Dashboard Notaire] Signatures query failed:', sigRes.reason);
+      if (sigPrevRes.status === "rejected") console.error('[Dashboard Notaire] Signatures prev query failed:', sigPrevRes.reason);
+      if (clientsRes.status === "rejected") console.error('[Dashboard Notaire] Clients query failed:', clientsRes.reason);
+      if (tasksRes.status === "rejected") console.error('[Dashboard Notaire] Tasks query failed:', tasksRes.reason);
+      if (dossiersRes.status === "rejected") console.error('[Dashboard Notaire] Dossiers query failed:', dossiersRes.reason);
       
       setDocCount(docsRes.status === "fulfilled" && docsRes.value.count ? docsRes.value.count : 0);
       setDocPrevCount(docsPrevRes.status === "fulfilled" && docsPrevRes.value.count ? docsPrevRes.value.count : 0);
