@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Cabinet {
@@ -181,6 +182,7 @@ export default function EspaceCollaboratif() {
   const [taskDate, setTaskDate] = useState('');
   const [taskTime, setTaskTime] = useState('');
   const [taskAssignedTo, setTaskAssignedTo] = useState<string[]>([]);
+  const [taskMemberSearch, setTaskMemberSearch] = useState('');
   const [taskSaving, setTaskSaving] = useState(false);
   // Edit task dialog state
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -190,6 +192,7 @@ export default function EspaceCollaboratif() {
   const [editTaskDate, setEditTaskDate] = useState('');
   const [editTaskTime, setEditTaskTime] = useState('');
   const [editTaskAssignedTo, setEditTaskAssignedTo] = useState<string[]>([]);
+  const [editTaskMemberSearch, setEditTaskMemberSearch] = useState('');
   const [editTaskSaving, setEditTaskSaving] = useState(false);
   const [collabTasks, setCollabTasks] = useState<CollabTask[]>([]);
   const [collabLoading, setCollabLoading] = useState(true);
@@ -457,6 +460,7 @@ export default function EspaceCollaboratif() {
       setTaskDate('');
       setTaskTime('');
       setTaskAssignedTo([]);
+      setTaskMemberSearch('');
       setTaskDialogOpen(false);
       
       // Recharger la liste des tâches
@@ -528,6 +532,7 @@ export default function EspaceCollaboratif() {
         assigned_to: editTaskAssignedTo.length > 0 ? editTaskAssignedTo : null
       } : t));
       toast({ title: 'Tâche modifiée', description: 'La tâche a été mise à jour.' });
+      setEditTaskMemberSearch('');
       setEditDialogOpen(false);
     } catch (e: unknown) {
       console.error('Erreur mise à jour tâche collaborative:', e);
@@ -1787,27 +1792,48 @@ export default function EspaceCollaboratif() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Assigner à (optionnel)</label>
-                        <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 space-y-2">
-                          {members.filter(m => m.status === 'active' && m.user_id).length === 0 ? (
-                            <p className="text-sm text-muted-foreground">Aucun membre actif</p>
+                        <Input
+                          type="text"
+                          placeholder="Rechercher un membre..."
+                          value={taskMemberSearch}
+                          onChange={(e) => setTaskMemberSearch(e.target.value)}
+                          className="mb-2"
+                        />
+                        <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 space-y-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                          {members
+                            .filter(m => m.status === 'active' && m.user_id)
+                            .filter(m => {
+                              const searchLower = taskMemberSearch.toLowerCase();
+                              return (m.nom || m.email).toLowerCase().includes(searchLower);
+                            })
+                            .length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                              {taskMemberSearch ? 'Aucun membre trouvé' : 'Aucun membre actif'}
+                            </p>
                           ) : (
-                            members.filter(m => m.status === 'active' && m.user_id).map((member) => (
-                              <label key={member.id} className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded">
-                                <input
-                                  type="checkbox"
-                                  checked={taskAssignedTo.includes(member.user_id!)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setTaskAssignedTo([...taskAssignedTo, member.user_id!]);
-                                    } else {
-                                      setTaskAssignedTo(taskAssignedTo.filter(id => id !== member.user_id));
-                                    }
-                                  }}
-                                  className="h-4 w-4"
-                                />
-                                <span className="text-sm">{member.nom || member.email}</span>
-                              </label>
-                            ))
+                            members
+                              .filter(m => m.status === 'active' && m.user_id)
+                              .filter(m => {
+                                const searchLower = taskMemberSearch.toLowerCase();
+                                return (m.nom || m.email).toLowerCase().includes(searchLower);
+                              })
+                              .map((member) => (
+                                <label key={member.id} className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded">
+                                  <input
+                                    type="checkbox"
+                                    checked={taskAssignedTo.includes(member.user_id!)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setTaskAssignedTo([...taskAssignedTo, member.user_id!]);
+                                      } else {
+                                        setTaskAssignedTo(taskAssignedTo.filter(id => id !== member.user_id));
+                                      }
+                                    }}
+                                    className="h-4 w-4"
+                                  />
+                                  <span className="text-sm">{member.nom || member.email}</span>
+                                </label>
+                              ))
                           )}
                         </div>
                       </div>
@@ -1822,7 +1848,7 @@ export default function EspaceCollaboratif() {
                         </div>
                       </div>
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setTaskDialogOpen(false)}>Annuler</Button>
+                        <Button variant="outline" onClick={() => { setTaskMemberSearch(''); setTaskDialogOpen(false); }}>Annuler</Button>
                         <Button className={colorClass} disabled={taskSaving} onClick={createCollaborativeTask}>
                           {taskSaving ? 'Enregistrement…' : 'Créer'}
                         </Button>
@@ -1856,20 +1882,51 @@ export default function EspaceCollaboratif() {
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Assigner à (optionnel)</label>
-                          <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 space-y-2">
-                            {members.filter(m => m.status === 'active' && m.user_id).length === 0 ? (
-                              <p className="text-sm text-muted-foreground">Aucun membre actif</p>
+                          <Input
+                            type="text"
+                            placeholder="Rechercher un membre..."
+                            value={editTaskMemberSearch}
+                            onChange={(e) => setEditTaskMemberSearch(e.target.value)}
+                            className="mb-2"
+                          />
+                          <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 space-y-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                            {members
+                              .filter(m => m.status === 'active' && m.user_id)
+                              .filter(m => {
+                                const searchLower = editTaskMemberSearch.toLowerCase();
+                                return (m.nom || m.email).toLowerCase().includes(searchLower);
+                              })
+                              .length === 0 ? (
+                              <p className="text-sm text-muted-foreground">
+                                {editTaskMemberSearch ? 'Aucun membre trouvé' : 'Aucun membre actif'}
+                              </p>
                             ) : (
-                              members.filter(m => m.status === 'active' && m.user_id).map((member) => (
-                                <label key={member.id} className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded">
-                                  <input
-                                    type="checkbox"
-                                    checked={editTaskAssignedTo.includes(member.user_id!)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        setEditTaskAssignedTo([...editTaskAssignedTo, member.user_id!]);
-                                      } else {
-                                        setEditTaskAssignedTo(editTaskAssignedTo.filter(id => id !== member.user_id));
+                              members
+                                .filter(m => m.status === 'active' && m.user_id)
+                                .filter(m => {
+                                  const searchLower = editTaskMemberSearch.toLowerCase();
+                                  return (m.nom || m.email).toLowerCase().includes(searchLower);
+                                })
+                                .map((member) => (
+                                  <label key={member.id} className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded">
+                                    <input
+                                      type="checkbox"
+                                      checked={editTaskAssignedTo.includes(member.user_id!)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setEditTaskAssignedTo([...editTaskAssignedTo, member.user_id!]);
+                                        } else {
+                                          setEditTaskAssignedTo(editTaskAssignedTo.filter(id => id !== member.user_id));
+                                        }
+                                      }}
+                                      className="h-4 w-4"
+                                    />
+                                    <span className="text-sm">{member.nom || member.email}</span>
+                                  </label>
+                                ))
+                            )}
+                          </div>
+                        </div>
                                       }
                                     }}
                                     className="h-4 w-4"
@@ -1891,7 +1948,7 @@ export default function EspaceCollaboratif() {
                           </div>
                         </div>
                         <div className="flex justify-end gap-2">
-                          <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Annuler</Button>
+                          <Button variant="outline" onClick={() => { setEditTaskMemberSearch(''); setEditDialogOpen(false); }}>Annuler</Button>
                           <Button className={colorClass} disabled={editTaskSaving} onClick={updateCollaborativeTask}>
                             {editTaskSaving ? 'Enregistrement…' : 'Enregistrer'}
                           </Button>
