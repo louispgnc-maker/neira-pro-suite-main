@@ -190,8 +190,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                             setDocumentSearchOpen(false);
                           }}
                           className={role === 'notaire'
-                            ? 'hover:bg-orange-500 hover:text-black data-[selected=true]:bg-orange-500 data-[selected=true]:text-black aria-selected:bg-orange-500 aria-selected:text-black cursor-pointer'
-                            : 'hover:bg-blue-500 hover:text-black data-[selected=true]:bg-blue-500 data-[selected=true]:text-black aria-selected:bg-blue-500 aria-selected:text-black cursor-pointer'}
+                            ? 'hover:bg-orange-100 hover:text-black data-[selected=true]:bg-orange-100 data-[selected=true]:text-black aria-selected:bg-orange-100 aria-selected:text-black cursor-pointer'
+                            : 'hover:bg-blue-100 hover:text-black data-[selected=true]:bg-blue-100 data-[selected=true]:text-black aria-selected:bg-blue-100 aria-selected:text-black cursor-pointer'}
                         >
                           <FileText className="mr-2 h-4 w-4" />
                           {doc.name}
@@ -225,8 +225,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 <SelectItem 
                   value="simple"
                   className={role === 'notaire'
-                    ? 'hover:bg-orange-500 hover:text-black focus:bg-orange-500 focus:text-black data-[state=checked]:bg-orange-500 data-[state=checked]:text-black'
-                    : 'hover:bg-blue-500 hover:text-black focus:bg-blue-500 focus:text-black data-[state=checked]:bg-blue-500 data-[state=checked]:text-black'}
+                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">Simple</span>
@@ -236,8 +236,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 <SelectItem 
                   value="advanced"
                   className={role === 'notaire'
-                    ? 'hover:bg-orange-500 hover:text-black focus:bg-orange-500 focus:text-black data-[state=checked]:bg-orange-500 data-[state=checked]:text-black'
-                    : 'hover:bg-blue-500 hover:text-black focus:bg-blue-500 focus:text-black data-[state=checked]:bg-blue-500 data-[state=checked]:text-black'}
+                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">Avancée</span>
@@ -247,8 +247,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 <SelectItem 
                   value="qualified"
                   className={role === 'notaire'
-                    ? 'hover:bg-orange-500 hover:text-black focus:bg-orange-500 focus:text-black data-[state=checked]:bg-orange-500 data-[state=checked]:text-black'
-                    : 'hover:bg-blue-500 hover:text-black focus:bg-blue-500 focus:text-black data-[state=checked]:bg-blue-500 data-[state=checked]:text-black'}
+                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">Qualifiée</span>
