@@ -108,17 +108,15 @@ export function DashboardNotaire() {
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "notaire")
-        .in("status", ["pending", "awaiting", "en_attente"]);
+        .eq("status", "pending");
 
-      // Signatures du mois précédent pour calculer la tendance
+      // Signatures du mois précédent pour calculer la tendance  
       const sigPrevQuery = supabase
         .from("signatures")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "notaire")
-        .in("status", ["pending", "awaiting", "en_attente"])
-        .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
-        .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
+        .eq("status", "pending");
 
       // Clients à relancer (kyc_status = 'Partiel')
       const clientsQuery = supabase
@@ -155,6 +153,11 @@ export function DashboardNotaire() {
       ]);
 
       if (!isMounted) return;
+      
+      // Log errors for debugging but don't throw
+      if (docsRes.status === "rejected") console.log('[Dashboard] Contrats query failed:', docsRes.reason);
+      if (sigRes.status === "rejected") console.log('[Dashboard] Signatures query failed:', sigRes.reason);
+      
       setDocCount(docsRes.status === "fulfilled" && docsRes.value.count ? docsRes.value.count : 0);
       setDocPrevCount(docsPrevRes.status === "fulfilled" && docsPrevRes.value.count ? docsPrevRes.value.count : 0);
       setPendingSigCount(sigRes.status === "fulfilled" && sigRes.value.count ? sigRes.value.count : 0);

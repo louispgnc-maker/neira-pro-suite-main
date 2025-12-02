@@ -75,7 +75,7 @@ export function DashboardAvocat() {
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "avocat")
-        .in("status", ["pending", "awaiting", "en_attente"]);
+        .eq("status", "pending");
 
       // Signatures du mois précédent pour calculer la tendance
       const sigPrevQuery = supabase
@@ -83,9 +83,7 @@ export function DashboardAvocat() {
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "avocat")
-        .in("status", ["pending", "awaiting", "en_attente"])
-        .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
-        .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
+        .eq("status", "pending");
 
       // Clients à relancer (kyc_status = 'Partiel')
       const clientsQuery = supabase
