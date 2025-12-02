@@ -17,8 +17,10 @@ interface SendClientFormDialogProps {
 
 export default function SendClientFormDialog({ open, onOpenChange, cabinetId, userId }: SendClientFormDialogProps) {
   const { profile } = useAuth();
-  // Determine role from profile or URL path
-  const role = profile?.role || (window.location.pathname.includes('/notaires/') ? 'notaire' : 'avocat');
+  // Determine role from URL path first (most reliable), then profile
+  const role = window.location.pathname.includes('/notaires/') ? 'notaire' : 
+               window.location.pathname.includes('/avocats/') ? 'avocat' :
+               (profile?.role || 'avocat');
   const [clientEmail, setClientEmail] = useState('');
   const [clientName, setClientName] = useState('');
   const [loading, setLoading] = useState(false);
