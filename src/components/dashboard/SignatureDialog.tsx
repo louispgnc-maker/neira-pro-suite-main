@@ -38,10 +38,12 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('');
   const [documentSearchOpen, setDocumentSearchOpen] = useState(false);
   const [signatureLevel, setSignatureLevel] = useState<'simple' | 'advanced' | 'qualified'>('simple');
-  const role = profile?.role || 'notaire';
   const [signatories, setSignatories] = useState<Signatory[]>([
     { firstName: '', lastName: '', email: '', phone: '' }
   ]);
+
+  // Determine role from profile or URL path
+  const role = profile?.role || (window.location.pathname.includes('/notaires/') ? 'notaire' : 'avocat');
 
   useEffect(() => {
     if (open && user) {
