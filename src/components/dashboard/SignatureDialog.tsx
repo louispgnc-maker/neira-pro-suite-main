@@ -37,6 +37,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
   const [documents, setDocuments] = useState<Document[]>([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('');
   const [documentSearchOpen, setDocumentSearchOpen] = useState(false);
+  const [signatureLevel, setSignatureLevel] = useState<'simple' | 'advanced' | 'qualified'>('simple');
   const [signatories, setSignatories] = useState<Signatory[]>([
     { firstName: '', lastName: '', email: '', phone: '' }
   ]);
@@ -102,7 +103,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             documentId: selectedDocumentId,
-            signatories: signatories
+            signatories: signatories,
+            signatureLevel: signatureLevel
           })
         }
       );
@@ -195,6 +197,36 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 Aucun document disponible pour signature
               </p>
             )}
+          </div>
+
+          {/* Signature Level */}
+          <div className="space-y-2">
+            <Label htmlFor="signature-level">Type de signature *</Label>
+            <Select value={signatureLevel} onValueChange={(value: any) => setSignatureLevel(value)}>
+              <SelectTrigger id="signature-level">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="simple">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Simple</span>
+                    <span className="text-xs text-muted-foreground">Signature électronique basique</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="advanced">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Avancée</span>
+                    <span className="text-xs text-muted-foreground">Signature avec authentification OTP</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="qualified">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Qualifiée</span>
+                    <span className="text-xs text-muted-foreground">Signature avec certificat qualifié (plus sécurisé)</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Signatories */}

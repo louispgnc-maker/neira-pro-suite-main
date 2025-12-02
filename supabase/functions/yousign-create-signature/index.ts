@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { documentId, signatories } = await req.json();
+    const { documentId, signatories, signatureLevel = 'simple' } = await req.json();
 
     if (!documentId || !signatories || signatories.length === 0) {
       return new Response(
@@ -20,6 +20,11 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Map signature level to YouSign format
+    const yousignSignatureLevel = signatureLevel === 'qualified' ? 'electronic_signature_with_qualified_certificate' 
+      : signatureLevel === 'advanced' ? 'electronic_signature' 
+      : 'electronic_signature';
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -77,8 +82,8 @@ serve(async (req) => {
           phone_number: signer.phone || '',
           locale: 'fr'
         },
-        signature_level: 'electronic_signature',
-        signature_authentication_mode: 'otp_email',
+        signature_level: yousignSignatureLevel,
+        signature_authentication_mode: signatureLevel === 'simple' ? 'no_otp' : 'otp_email',
         fields: [{
           document_id: 0,
           type: 'signature',
