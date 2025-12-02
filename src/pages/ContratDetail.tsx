@@ -111,7 +111,7 @@ export default function ContratDetail() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold">Contrat</h1>
+            <h1 className="text-3xl font-bold">{role === 'notaire' ? 'Acte' : 'Contrat'}</h1>
             {contrat?.name && <p className="text-muted-foreground mt-1">{contrat.name}</p>}
           </div>
         </div>

@@ -36,7 +36,9 @@ interface RecentContratsProps {
   title?: string;
 }
 
-export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }: RecentContratsProps = {}) {
+export function RecentContrats({ role = 'avocat', title }: RecentContratsProps = {}) {
+  const defaultTitle = role === 'notaire' ? 'Actes récents' : 'Contrats récents';
+  const displayTitle = title || defaultTitle;
   const { user } = useAuth();
   const navigate = useNavigate();
   const [contrats, setContrats] = useState<ContratRow[]>([]);
@@ -165,7 +167,7 @@ export function RecentContrats({ role = 'avocat', title = 'Contrats récents' }:
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-  <CardTitle className="text-lg">{title}</CardTitle>
+        <CardTitle className="text-lg">{displayTitle}</CardTitle>
         <Button
           variant="ghost"
           size="sm"

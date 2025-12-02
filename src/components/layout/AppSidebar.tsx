@@ -51,7 +51,7 @@ function getMenuItems(role: 'avocat' | 'notaire') {
     { title: "Documents", url: `${prefix}/documents`, icon: FileText },
     { title: "Messagerie", url: `${prefix}/messagerie`, icon: Mail },
     { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder },
-    { title: "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
+    { title: role === 'notaire' ? "Actes" : "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
     { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
     { title: "Clients", url: `${prefix}/clients`, icon: Users },
     { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare },

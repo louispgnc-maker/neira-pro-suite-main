@@ -210,7 +210,7 @@ export default function Contrats() {
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Contrats</h1>
+            <h1 className="text-3xl font-bold">{role === 'notaire' ? 'Actes' : 'Contrats'}</h1>
             <p className="text-foreground mt-1">
               Centralisez et créez vos modèles de contrats
             </p>
@@ -326,7 +326,7 @@ export default function Contrats() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Liste des contrats</CardTitle>
+                <CardTitle className="text-lg">{role === 'notaire' ? 'Liste des actes' : 'Liste des contrats'}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="border rounded-lg bg-white">
