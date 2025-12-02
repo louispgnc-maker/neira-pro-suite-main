@@ -165,8 +165,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                   role="combobox"
                   aria-expanded={documentSearchOpen}
                   className={`w-full justify-between ${role === 'notaire' 
-                    ? 'hover:bg-orange-50 hover:border-orange-300' 
-                    : 'hover:bg-blue-50 hover:border-blue-300'}`}
+                    ? 'hover:bg-orange-50 hover:border-orange-300 hover:text-black' 
+                    : 'hover:bg-blue-50 hover:border-blue-300 hover:text-black'}`}
                 >
                   {selectedDocumentId
                     ? documents.find((doc) => doc.id === selectedDocumentId)?.name
@@ -189,6 +189,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                             setSelectedDocumentId(doc.id);
                             setDocumentSearchOpen(false);
                           }}
+                          className={role === 'notaire'
+                            ? 'hover:bg-orange-500 hover:text-black cursor-pointer'
+                            : 'hover:bg-blue-500 hover:text-black cursor-pointer'}
                         >
                           <FileText className="mr-2 h-4 w-4" />
                           {doc.name}
