@@ -7,7 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Plus, X, Loader2, FileText } from 'lucide-react';
+import { Plus, X, Loader2, FileText, Search } from 'lucide-react';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Document = {
   id: string;
@@ -34,6 +36,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
   const [loading, setLoading] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('');
+  const [documentSearchOpen, setDocumentSearchOpen] = useState(false);
   const [signatories, setSignatories] = useState<Signatory[]>([
     { firstName: '', lastName: '', email: '', phone: '' }
   ]);
@@ -146,27 +149,52 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Document selection */}
+          {/* Document selection with search */}
           <div className="space-y-2">
             <Label htmlFor="document">Document à signer *</Label>
-            <Select value={selectedDocumentId} onValueChange={setSelectedDocumentId}>
-              <SelectTrigger id="document">
-                <SelectValue placeholder="Sélectionnez un document" />
-              </SelectTrigger>
-              <SelectContent>
-                {documents.length === 0 ? (
-                  <div className="p-2 text-sm text-muted-foreground">
-                    Aucun document disponible
-                  </div>
-                ) : (
-                  documents.map((doc) => (
-                    <SelectItem key={doc.id} value={doc.id}>
-                      {doc.nom} ({doc.type})
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+            <Popover open={documentSearchOpen} onOpenChange={setDocumentSearchOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={documentSearchOpen}
+                  className="w-full justify-between"
+                >
+                  {selectedDocumentId
+                    ? documents.find((doc) => doc.id === selectedDocumentId)?.nom
+                    : "Sélectionnez un document"}
+                  <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Rechercher un document..." />
+                  <CommandList>
+                    <CommandEmpty>Aucun document trouvé</CommandEmpty>
+                    <CommandGroup>
+                      {documents.map((doc) => (
+                        <CommandItem
+                          key={doc.id}
+                          value={doc.nom}
+                          onSelect={() => {
+                            setSelectedDocumentId(doc.id);
+                            setDocumentSearchOpen(false);
+                          }}
+                        >
+                          <FileText className="mr-2 h-4 w-4" />
+                          {doc.nom}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            {documents.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                Aucun document disponible pour signature
+              </p>
+            )}
           </div>
 
           {/* Signatories */}
