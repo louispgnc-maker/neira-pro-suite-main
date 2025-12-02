@@ -203,7 +203,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
           <div className="space-y-2">
             <Label htmlFor="signature-level">Type de signature *</Label>
             <Select value={signatureLevel} onValueChange={(value: any) => setSignatureLevel(value)}>
-              <SelectTrigger id="signature-level">
+              <SelectTrigger id="signature-level" className="w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
