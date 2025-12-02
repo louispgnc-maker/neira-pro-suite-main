@@ -2,9 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { CheckSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notaire' }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [todoCount, setTodoCount] = useState<number>(0);
   const [overdueCount, setOverdueCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -75,9 +78,13 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
   }, [user, role]);
 
   return (
-    <Card>
-      <CardHeader>
+    <Card 
+      className="cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={() => navigate(role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')}
+    >
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">Tâches du jour</CardTitle>
+        <CheckSquare className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">

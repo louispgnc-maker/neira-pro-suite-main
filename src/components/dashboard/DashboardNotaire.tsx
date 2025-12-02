@@ -222,6 +222,7 @@ export function DashboardNotaire() {
             icon={FileText}
             iconColor="text-orange-600"
             iconBgColor="bg-orange-100"
+            onClick={() => navigate('/notaires/documents')}
             trend={(() => {
               const prev = docPrevCount;
               const curr = docCount;
@@ -239,6 +240,7 @@ export function DashboardNotaire() {
             icon={PenTool}
             iconColor="text-orange-600"
             iconBgColor="bg-orange-100"
+            onClick={() => navigate('/notaires/signatures')}
             trend={(() => {
               const prev = pendingSigPrevCount;
               const curr = pendingSigCount;
@@ -256,6 +258,7 @@ export function DashboardNotaire() {
             icon={FolderPlus}
             iconColor="text-orange-600"
             iconBgColor="bg-orange-100"
+            onClick={() => navigate('/notaires/dossiers')}
           />
           <StatCard
             title="Clients à relancer"
@@ -263,6 +266,7 @@ export function DashboardNotaire() {
             icon={Users}
             iconColor="text-orange-600"
             iconBgColor="bg-orange-100"
+            onClick={() => navigate('/notaires/clients')}
           />
           <TasksSummaryCard role="notaire" />
         </div>

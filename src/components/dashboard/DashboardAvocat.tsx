@@ -166,6 +166,7 @@ export function DashboardAvocat() {
             icon={FileText}
             iconColor="text-blue-600"
             iconBgColor="bg-blue-100"
+            onClick={() => navigate('/avocats/documents')}
             trend={(() => {
               const prev = docPrevCount;
               const curr = docCount;
@@ -183,6 +184,7 @@ export function DashboardAvocat() {
             icon={PenTool}
             iconColor="text-blue-600"
             iconBgColor="bg-blue-100"
+            onClick={() => navigate('/avocats/signatures')}
             trend={(() => {
               const prev = pendingSigPrevCount;
               const curr = pendingSigCount;
@@ -200,6 +202,7 @@ export function DashboardAvocat() {
             icon={FolderPlus}
             iconColor="text-blue-600"
             iconBgColor="bg-blue-100"
+            onClick={() => navigate('/avocats/dossiers')}
           />
           <StatCard
             title="Clients à relancer"
@@ -207,6 +210,7 @@ export function DashboardAvocat() {
             icon={Users}
             iconColor="text-blue-600"
             iconBgColor="bg-blue-100"
+            onClick={() => navigate('/avocats/clients')}
           />
           <TasksSummaryCard role="avocat" />
         </div>

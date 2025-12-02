@@ -11,11 +11,15 @@ interface StatCardProps {
   };
   iconColor?: string;
   iconBgColor?: string;
+  onClick?: () => void;
 }
 
-export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-primary", iconBgColor = "bg-primary/10" }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-primary", iconBgColor = "bg-primary/10", onClick }: StatCardProps) {
   return (
-    <Card className="relative overflow-hidden border-border bg-gradient-card transition-shadow hover:shadow-md">
+    <Card 
+      className={`relative overflow-hidden border-border bg-gradient-card transition-shadow hover:shadow-md ${onClick ? 'cursor-pointer' : ''}`}
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
