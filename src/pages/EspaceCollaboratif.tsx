@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Cabinet {
   id: string;
@@ -179,6 +180,7 @@ export default function EspaceCollaboratif() {
   const [taskNotes, setTaskNotes] = useState('');
   const [taskDate, setTaskDate] = useState('');
   const [taskTime, setTaskTime] = useState('');
+  const [taskAssignedTo, setTaskAssignedTo] = useState<string>('');
   const [taskSaving, setTaskSaving] = useState(false);
   // Edit task dialog state
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -187,6 +189,7 @@ export default function EspaceCollaboratif() {
   const [editTaskNotes, setEditTaskNotes] = useState('');
   const [editTaskDate, setEditTaskDate] = useState('');
   const [editTaskTime, setEditTaskTime] = useState('');
+  const [editTaskAssignedTo, setEditTaskAssignedTo] = useState<string>('');
   const [editTaskSaving, setEditTaskSaving] = useState(false);
   const [collabTasks, setCollabTasks] = useState<CollabTask[]>([]);
   const [collabLoading, setCollabLoading] = useState(true);
@@ -444,7 +447,8 @@ export default function EspaceCollaboratif() {
         shared_by: user.id,
         title,
         description: taskNotes || null,
-        due_at
+        due_at,
+        assigned_to: taskAssignedTo || null
       });
       if (error) throw error;
       toast({ title: 'Tâche créée', description: 'La tâche a été ajoutée.' });
@@ -452,6 +456,7 @@ export default function EspaceCollaboratif() {
       setTaskNotes('');
       setTaskDate('');
       setTaskTime('');
+      setTaskAssignedTo('');
       setTaskDialogOpen(false);
       
       // Recharger la liste des tâches
@@ -507,10 +512,21 @@ export default function EspaceCollaboratif() {
       if (editTaskDate) {
         due_at = editTaskTime ? `${editTaskDate}T${editTaskTime}` : `${editTaskDate}T00:00`;
       }
-      const { error } = await supabase.from('cabinet_tasks').update({ title, description: editTaskNotes || null, due_at }).eq('id', editTaskId);
+      const { error } = await supabase.from('cabinet_tasks').update({ 
+        title, 
+        description: editTaskNotes || null, 
+        due_at,
+        assigned_to: editTaskAssignedTo || null 
+      }).eq('id', editTaskId);
       if (error) throw error;
       // update local state
-      setCollabTasks(prev => prev.map(t => t.id === editTaskId ? { ...t, title, description: editTaskNotes || null, due_at } : t));
+      setCollabTasks(prev => prev.map(t => t.id === editTaskId ? { 
+        ...t, 
+        title, 
+        description: editTaskNotes || null, 
+        due_at,
+        assigned_to: editTaskAssignedTo || null
+      } : t));
       toast({ title: 'Tâche modifiée', description: 'La tâche a été mise à jour.' });
       setEditDialogOpen(false);
     } catch (e: unknown) {
@@ -1769,6 +1785,22 @@ export default function EspaceCollaboratif() {
                           onChange={(e) => setTaskNotes(e.target.value)}
                         />
                       </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Assigner à (optionnel)</label>
+                        <Select value={taskAssignedTo} onValueChange={setTaskAssignedTo}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Sélectionner un membre" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">Non assigné</SelectItem>
+                            {members.filter(m => m.status === 'active' && m.user_id).map((member) => (
+                              <SelectItem key={member.id} value={member.user_id!}>
+                                {member.nom || member.email}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Date (optionnel)</label>
@@ -1811,6 +1843,22 @@ export default function EspaceCollaboratif() {
                             value={editTaskNotes}
                             onChange={(e) => setEditTaskNotes(e.target.value)}
                           />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Assigner à (optionnel)</label>
+                          <Select value={editTaskAssignedTo} onValueChange={setEditTaskAssignedTo}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Sélectionner un membre" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">Non assigné</SelectItem>
+                              {members.filter(m => m.status === 'active' && m.user_id).map((member) => (
+                                <SelectItem key={member.id} value={member.user_id!}>
+                                  {member.nom || member.email}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
@@ -1866,6 +1914,7 @@ export default function EspaceCollaboratif() {
                             setEditTaskId(task.id);
                             setEditTaskText(task.title || '');
                             setEditTaskNotes(task.description || '');
+                            setEditTaskAssignedTo(task.assigned_to || '');
                             if (task.due_at) {
                               try {
                                 const d = new Date(task.due_at);
@@ -1908,6 +1957,15 @@ export default function EspaceCollaboratif() {
                           <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>
                         )}
                         <div className="flex-1" />
+                        {task.assigned_to && (
+                          <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            Assigné à {(() => {
+                              const assignedMember = members.find(m => m.user_id === task.assigned_to);
+                              return assignedMember ? (assignedMember.nom || assignedMember.email) : 'Inconnu';
+                            })()}
+                          </div>
+                        )}
                         {task.creator_profile && (
                           <div className="text-xs text-muted-foreground mb-2">
                             Créé par {task.creator_profile.first_name} {task.creator_profile.last_name}
