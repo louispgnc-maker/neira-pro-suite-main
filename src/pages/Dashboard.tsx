@@ -178,7 +178,13 @@ export default function Dashboard() {
                   : 'Neira Essentiel'}
               </span>
             </button>
-            <Button>Créer un document</Button>
+            <Button 
+              className={profile?.role === 'notaire' 
+                ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'}
+            >
+              Créer un document
+            </Button>
             <Button variant="secondary">Nouveau client</Button>
           </div>
         </div>

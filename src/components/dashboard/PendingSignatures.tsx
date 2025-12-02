@@ -97,7 +97,12 @@ export function PendingSignatures({ role = 'avocat' }: PendingSignaturesProps = 
                     <Copy className="h-3 w-3 mr-1" />
                     Copier
                   </Button>
-                  <Button size="sm" variant="default">
+                  <Button 
+                    size="sm" 
+                    className={role === 'notaire' 
+                      ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'}
+                  >
                     <Send className="h-3 w-3 mr-1" />
                     Relancer
                   </Button>

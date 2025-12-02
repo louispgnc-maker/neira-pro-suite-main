@@ -32,12 +32,13 @@ type SignatureDialogProps = {
 };
 
 export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDialogProps) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('');
   const [documentSearchOpen, setDocumentSearchOpen] = useState(false);
   const [signatureLevel, setSignatureLevel] = useState<'simple' | 'advanced' | 'qualified'>('simple');
+  const role = profile?.role || 'notaire';
   const [signatories, setSignatories] = useState<Signatory[]>([
     { firstName: '', lastName: '', email: '', phone: '' }
   ]);
@@ -318,7 +319,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
             <Button
               onClick={handleSubmit}
               disabled={loading}
-              className="bg-orange-600 hover:bg-orange-700"
+              className={role === 'notaire' 
+                ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'}
             >
               {loading ? (
                 <>

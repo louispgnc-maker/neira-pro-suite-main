@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabaseClient';
 import { Loader2, Send, Copy, Check } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SendClientFormDialogProps {
   open: boolean;
@@ -15,6 +16,8 @@ interface SendClientFormDialogProps {
 }
 
 export default function SendClientFormDialog({ open, onOpenChange, cabinetId, userId }: SendClientFormDialogProps) {
+  const { profile } = useAuth();
+  const role = profile?.role || 'notaire';
   const [clientEmail, setClientEmail] = useState('');
   const [clientName, setClientName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -127,7 +130,9 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
               <Button 
                 onClick={handleSend} 
                 disabled={loading || !clientEmail}
-                className="bg-orange-600 hover:bg-orange-700"
+                className={role === 'notaire' 
+                  ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'}
               >
                 {loading ? (
                   <>
@@ -177,7 +182,12 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
             </div>
 
             <div className="flex justify-end">
-              <Button onClick={handleClose}>
+              <Button 
+                onClick={handleClose}
+                className={role === 'notaire' 
+                  ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'}
+              >
                 Fermer
               </Button>
             </div>
