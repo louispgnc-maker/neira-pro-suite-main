@@ -1927,16 +1927,6 @@ export default function EspaceCollaboratif() {
                             )}
                           </div>
                         </div>
-                                      }
-                                    }}
-                                    className="h-4 w-4"
-                                  />
-                                  <span className="text-sm">{member.nom || member.email}</span>
-                                </label>
-                              ))
-                            )}
-                          </div>
-                        </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <label className="text-sm font-medium">Date (optionnel)</label>
@@ -2034,19 +2024,22 @@ export default function EspaceCollaboratif() {
                           <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>
                         )}
                         <div className="flex-1" />
-                        {task.assigned_to && task.assigned_to.length > 0 && (() => {
-                          const firstMember = members.find(m => m.user_id === task.assigned_to[0]);
-                          const otherCount = task.assigned_to.length - 1;
-                          return (
-                            <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                              <User className="h-3 w-3" />
-                              <span>
-                                Assigné à <span className="font-medium">{firstMember?.nom || firstMember?.email || 'Membre'}</span>
-                                {otherCount > 0 && <span> et {otherCount} autre{otherCount > 1 ? 's' : ''}</span>}
+                        {task.assigned_to && task.assigned_to.length > 0 && (
+                          <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            <span>
+                              Assigné à <span className="font-medium">
+                                {(() => {
+                                  const firstMember = members.find(m => m.user_id === task.assigned_to[0]);
+                                  return firstMember?.nom || firstMember?.email || 'Membre';
+                                })()}
                               </span>
-                            </div>
-                          );
-                        })()}
+                              {task.assigned_to.length > 1 && (
+                                <span> et {task.assigned_to.length - 1} autre{task.assigned_to.length - 1 > 1 ? 's' : ''}</span>
+                              )}
+                            </span>
+                          </div>
+                        )}
                         {task.creator_profile && (
                           <div className="text-xs text-muted-foreground mb-2">
                             Créé par {task.creator_profile.first_name} {task.creator_profile.last_name}
