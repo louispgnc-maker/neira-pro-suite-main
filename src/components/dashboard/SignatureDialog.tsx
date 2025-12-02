@@ -160,7 +160,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                   variant="outline"
                   role="combobox"
                   aria-expanded={documentSearchOpen}
-                  className="w-full justify-between"
+                  className={`w-full justify-between ${role === 'notaire' 
+                    ? 'hover:bg-orange-50 hover:border-orange-300' 
+                    : 'hover:bg-blue-50 hover:border-blue-300'}`}
                 >
                   {selectedDocumentId
                     ? documents.find((doc) => doc.id === selectedDocumentId)?.name
@@ -239,6 +241,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 variant="outline"
                 size="sm"
                 onClick={addSignatory}
+                className={role === 'notaire' 
+                  ? 'hover:bg-orange-600 hover:text-white border-orange-300' 
+                  : 'hover:bg-blue-600 hover:text-white border-blue-300'}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Ajouter un signataire
@@ -255,6 +260,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                       variant="ghost"
                       size="sm"
                       onClick={() => removeSignatory(index)}
+                      className={role === 'notaire' 
+                        ? 'hover:bg-orange-100 hover:text-orange-600' 
+                        : 'hover:bg-blue-100 hover:text-blue-600'}
                     >
                       <X className="h-4 w-4" />
                     </Button>
