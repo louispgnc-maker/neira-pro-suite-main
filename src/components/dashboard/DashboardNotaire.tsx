@@ -222,7 +222,7 @@ export function DashboardNotaire() {
             icon={FileText}
             iconColor="text-orange-600"
             iconBgColor="bg-orange-100"
-            onClick={() => navigate('/notaires/documents')}
+            onClick={() => navigate('/notaires/contrats')}
             trend={(() => {
               const prev = docPrevCount;
               const curr = docCount;
