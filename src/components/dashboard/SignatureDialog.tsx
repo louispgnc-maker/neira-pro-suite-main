@@ -46,6 +46,10 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
   const role = profile?.role || (window.location.pathname.includes('/notaires/') ? 'notaire' : 'avocat');
 
   useEffect(() => {
+    console.log('SignatureDialog role:', role, 'profile:', profile?.role, 'path:', window.location.pathname);
+  }, [role, profile]);
+
+  useEffect(() => {
     if (open && user) {
       loadDocuments();
     }
