@@ -1787,12 +1787,12 @@ export default function EspaceCollaboratif() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Assigner à (optionnel)</label>
-                        <Select value={taskAssignedTo} onValueChange={setTaskAssignedTo}>
+                        <Select value={taskAssignedTo || undefined} onValueChange={(value) => setTaskAssignedTo(value === 'none' ? '' : value)}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Sélectionner un membre" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Non assigné</SelectItem>
+                            <SelectItem value="none">Non assigné</SelectItem>
                             {members.filter(m => m.status === 'active' && m.user_id).map((member) => (
                               <SelectItem key={member.id} value={member.user_id!}>
                                 {member.nom || member.email}
@@ -1846,12 +1846,12 @@ export default function EspaceCollaboratif() {
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Assigner à (optionnel)</label>
-                          <Select value={editTaskAssignedTo} onValueChange={setEditTaskAssignedTo}>
+                          <Select value={editTaskAssignedTo || undefined} onValueChange={(value) => setEditTaskAssignedTo(value === 'none' ? '' : value)}>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Sélectionner un membre" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">Non assigné</SelectItem>
+                              <SelectItem value="none">Non assigné</SelectItem>
                               {members.filter(m => m.status === 'active' && m.user_id).map((member) => (
                                 <SelectItem key={member.id} value={member.user_id!}>
                                   {member.nom || member.email}
