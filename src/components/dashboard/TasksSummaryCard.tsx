@@ -79,12 +79,14 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
 
   return (
     <Card 
-      className="cursor-pointer hover:shadow-lg transition-shadow"
+      className="cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden border-border bg-gradient-card"
       onClick={() => navigate(role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">Tâches du jour</CardTitle>
-        <CheckSquare className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
+        <div className={`p-2 rounded-lg ${role === 'notaire' ? 'bg-orange-100' : 'bg-blue-100'}`}>
+          <CheckSquare className={`h-4 w-4 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
