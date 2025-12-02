@@ -54,6 +54,7 @@ type Email = {
   is_starred: boolean;
   labels?: string[];
   has_attachments?: boolean;
+  folder?: string;
 };
 
 export default function EmailInbox() {
@@ -239,15 +240,17 @@ export default function EmailInbox() {
 
       // Filter by folder
       if (currentFolder === 'inbox') {
-        // Inbox shows all emails (starred or not)
-        // No filter needed - shows everything
+        // Inbox shows emails without a folder set or folder='inbox'
+        query = query.or('folder.is.null,folder.eq.inbox');
       } else if (currentFolder === 'sent') {
-        query = query.contains('labels', ['SENT']);
+        // Sent folder uses labels OR folder='sent'
+        query = query.or('labels.cs.{SENT},folder.eq.sent');
       } else if (currentFolder === 'archive') {
-        // Archive shows only starred emails
-        query = query.eq('is_starred', true);
+        // Archive shows emails with folder='archive'
+        query = query.eq('folder', 'archive');
       } else if (currentFolder === 'trash') {
-        query = query.contains('labels', ['TRASH']);
+        // Trash shows emails with folder='trash'
+        query = query.eq('folder', 'trash');
       }
 
       const { data, error } = await query
@@ -355,16 +358,40 @@ export default function EmailInbox() {
 
   const moveToFolder = async (emailId: string, folder: 'inbox' | 'sent' | 'archive' | 'trash') => {
     try {
-      const { error } = await supabase
-        .from('emails')
-        .update({ folder })
-        .eq('id', emailId);
+      // For archive, toggle between archive and inbox (like star)
+      if (folder === 'archive') {
+        const email = emails.find(e => e.id === emailId) || selectedEmail;
+        const newFolder = email?.folder === 'archive' ? 'inbox' : 'archive';
+        
+        const { error } = await supabase
+          .from('emails')
+          .update({ folder: newFolder })
+          .eq('id', emailId);
 
-      if (error) throw error;
-      
-      setEmails(prev => prev.filter(e => e.id !== emailId));
-      setSelectedEmail(null);
-      toast.success(folder === 'archive' ? 'Email archivé' : folder === 'trash' ? 'Email supprimé' : 'Email déplacé');
+        if (error) throw error;
+        
+        // Update local state
+        if (currentFolder === 'archive' || newFolder === 'archive') {
+          setEmails(prev => prev.filter(e => e.id !== emailId));
+          setSelectedEmail(null);
+        } else {
+          await loadEmails();
+        }
+        
+        toast.success(newFolder === 'archive' ? 'Email archivé' : 'Email désarchivé');
+      } else {
+        // For trash, just move to trash folder
+        const { error } = await supabase
+          .from('emails')
+          .update({ folder })
+          .eq('id', emailId);
+
+        if (error) throw error;
+        
+        setEmails(prev => prev.filter(e => e.id !== emailId));
+        setSelectedEmail(null);
+        toast.success(folder === 'trash' ? 'Email supprimé' : 'Email déplacé');
+      }
     } catch (error) {
       console.error('Error moving email:', error);
       toast.error('Erreur lors du déplacement');
