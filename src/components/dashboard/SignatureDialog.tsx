@@ -213,23 +213,43 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
           <div className="space-y-2">
             <Label htmlFor="signature-level">Type de signature *</Label>
             <Select value={signatureLevel} onValueChange={(value: any) => setSignatureLevel(value)}>
-              <SelectTrigger id="signature-level" className="w-[200px]">
+              <SelectTrigger 
+                id="signature-level" 
+                className={`w-[200px] ${role === 'notaire' 
+                  ? 'hover:bg-orange-600 hover:text-white hover:border-orange-600' 
+                  : 'hover:bg-blue-600 hover:text-white hover:border-blue-600'}`}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="simple">
+                <SelectItem 
+                  value="simple"
+                  className={role === 'notaire'
+                    ? 'hover:bg-orange-500 hover:text-black focus:bg-orange-500 focus:text-black data-[state=checked]:bg-orange-500 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-500 hover:text-black focus:bg-blue-500 focus:text-black data-[state=checked]:bg-blue-500 data-[state=checked]:text-black'}
+                >
                   <div className="flex flex-col">
                     <span className="font-medium">Simple</span>
                     <span className="text-xs text-muted-foreground">Signature électronique basique</span>
                   </div>
                 </SelectItem>
-                <SelectItem value="advanced">
+                <SelectItem 
+                  value="advanced"
+                  className={role === 'notaire'
+                    ? 'hover:bg-orange-500 hover:text-black focus:bg-orange-500 focus:text-black data-[state=checked]:bg-orange-500 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-500 hover:text-black focus:bg-blue-500 focus:text-black data-[state=checked]:bg-blue-500 data-[state=checked]:text-black'}
+                >
                   <div className="flex flex-col">
                     <span className="font-medium">Avancée</span>
                     <span className="text-xs text-muted-foreground">Signature avec authentification OTP</span>
                   </div>
                 </SelectItem>
-                <SelectItem value="qualified">
+                <SelectItem 
+                  value="qualified"
+                  className={role === 'notaire'
+                    ? 'hover:bg-orange-500 hover:text-black focus:bg-orange-500 focus:text-black data-[state=checked]:bg-orange-500 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-500 hover:text-black focus:bg-blue-500 focus:text-black data-[state=checked]:bg-blue-500 data-[state=checked]:text-black'}
+                >
                   <div className="flex flex-col">
                     <span className="font-medium">Qualifiée</span>
                     <span className="text-xs text-muted-foreground">Signature avec certificat qualifié (plus sécurisé)</span>
