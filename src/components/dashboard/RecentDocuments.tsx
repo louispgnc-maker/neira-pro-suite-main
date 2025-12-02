@@ -180,7 +180,8 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
         
         // Add search filter if query exists
         if (searchQuery.trim()) {
-          query = query.or(`name.ilike.%${searchQuery}%,client_name.ilike.%${searchQuery}%`);
+          // Use ilike for case-insensitive search on each column separately
+          query = query.ilike("name", `%${searchQuery}%`);
         }
         
         const { data, error } = await query
