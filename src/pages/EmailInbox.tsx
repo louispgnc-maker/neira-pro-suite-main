@@ -350,7 +350,9 @@ export default function EmailInbox() {
       if (error) throw error;
       
       setEmails(prev => prev.map(e => e.id === emailId ? { ...e, is_starred: !currentStarred } : e));
-      toast.success(currentStarred ? 'Retiré des archives' : 'Ajouté aux archives');
+      if (selectedEmail?.id === emailId) {
+        setSelectedEmail({ ...selectedEmail, is_starred: !currentStarred });
+      }
     } catch (error) {
       console.error('Error toggling star:', error);
     }
