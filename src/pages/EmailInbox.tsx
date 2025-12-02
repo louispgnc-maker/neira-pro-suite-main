@@ -53,6 +53,7 @@ type Email = {
   is_read: boolean;
   is_starred: boolean;
   labels?: string[];
+  has_attachments?: boolean;
 };
 
 export default function EmailInbox() {
@@ -384,6 +385,13 @@ export default function EmailInbox() {
     setShowCompose(true);
   };
 
+  const handleForward = (email: Email) => {
+    setComposeTo('');
+    setComposeSubject(`Fwd: ${email.subject}`);
+    setComposeBody(`\n\n--- Message transféré ---\nDe: ${email.from_address}\nDate: ${new Date(email.received_at).toLocaleString('fr-FR')}\nObjet: ${email.subject}\n\n${email.body_text}`);
+    setShowCompose(true);
+  };
+
   const sendEmail = async () => {
     if (!composeTo || !composeSubject || !composeBody) {
       toast.error('Veuillez remplir tous les champs');
@@ -680,7 +688,7 @@ export default function EmailInbox() {
                       <Reply className="h-4 w-4 mr-1" />
                       Répondre
                     </Button>
-                    <Button className={mainButtonColor} size="sm">
+                    <Button className={mainButtonColor} size="sm" onClick={() => handleForward(selectedEmail)}>
                       <Forward className="h-4 w-4 mr-1" />
                       Transférer
                     </Button>
