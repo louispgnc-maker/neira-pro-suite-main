@@ -795,25 +795,24 @@ export default function EmailInbox() {
             <div className="flex items-center gap-2">
               <Button
                 className={mainButtonColor}
-                size="icon"
                 onClick={handleSync}
                 disabled={syncing}
                 title="Synchroniser"
+                size="sm"
               >
-                <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+                Synchroniser
               </Button>
 
-              {unreadCount > 0 && (
-                <Button
-                  className={mainButtonColor}
-                  onClick={markAllAsRead}
-                  title="Marquer tout comme lu"
-                  size="sm"
-                >
-                  <Mail className="h-4 w-4 mr-2" />
-                  Tout lire
-                </Button>
-              )}
+              <Button
+                className={mainButtonColor}
+                onClick={markAllAsRead}
+                title="Marquer tout comme lu"
+                size="sm"
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                Tout lire
+              </Button>
               
               <Button 
                 className={mainButtonColor} 
@@ -822,7 +821,7 @@ export default function EmailInbox() {
                 size="sm"
               >
                 <Send className="h-4 w-4 mr-2" />
-                Composer
+                Écrire
               </Button>
             </div>
           </div>
