@@ -707,9 +707,9 @@ export default function EmailInbox() {
       <div className="p-8 space-y-4 h-screen flex flex-col">
         {/* Buttons Bar */}
         <Card className="shadow-lg">
-          <div className="p-4 flex items-center justify-between gap-3">
+          <div className="p-4 flex items-center gap-6">
             {/* Folder Navigation */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Button
                 className={`relative ${mainButtonColor}`}
                 onClick={() => setCurrentFolder('inbox')}
@@ -765,7 +765,7 @@ export default function EmailInbox() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 ml-auto">
               <Button
                 className={mainButtonColor}
                 onClick={handleSync}
