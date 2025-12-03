@@ -18,7 +18,8 @@ import {
   Forward,
   Paperclip,
   MoreVertical,
-  Settings
+  Settings,
+  FileText
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -74,7 +75,9 @@ export default function EmailInbox() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentFolder, setCurrentFolder] = useState<'inbox' | 'sent' | 'archive' | 'trash'>('inbox');
+  const [currentFolder, setCurrentFolder] = useState<'inbox' | 'sent' | 'archive' | 'trash' | 'drafts'>('inbox');
+  const [drafts, setDrafts] = useState<any[]>([]);
+  const [selectedDraft, setSelectedDraft] = useState<any | null>(null);
   const [showCompose, setShowCompose] = useState(false);
   
   // Compose form
@@ -98,7 +101,11 @@ export default function EmailInbox() {
 
   useEffect(() => {
     if (selectedAccount) {
-      loadEmails();
+      if (currentFolder === 'drafts') {
+        loadDrafts();
+      } else {
+        loadEmails();
+      }
     }
   }, [selectedAccount, currentFolder]);
 
@@ -237,6 +244,28 @@ export default function EmailInbox() {
     } catch (error) {
       console.error('Error loading emails:', error);
       toast.error('Erreur lors du chargement des emails');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadDrafts = async () => {
+    if (!selectedAccount || !user) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('email_drafts')
+        .select('*')
+        .eq('account_id', selectedAccount)
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      setDrafts(data || []);
+    } catch (error) {
+      console.error('Error loading drafts:', error);
+      toast.error('Erreur lors du chargement des brouillons');
     } finally {
       setLoading(false);
     }
@@ -442,12 +471,90 @@ export default function EmailInbox() {
       toast.success('Email envoyé avec succès');
       setShowCompose(false);
       setComposeTo('');
+      setComposeCc('');
       setComposeSubject('');
       setComposeBody('');
+      setComposeAttachments([]);
+      setSelectedDraft(null);
+      
+      // If we sent from a draft, delete it
+      if (selectedDraft) {
+        await supabase.from('email_drafts').delete().eq('id', selectedDraft.id);
+        loadDrafts();
+      }
     } catch (error: any) {
       console.error('Error sending email:', error);
       toast.error(error.message || 'Erreur lors de l\'envoi');
     }
+  };
+
+  const saveDraft = async () => {
+    if (!selectedAccount || !user) return;
+
+    try {
+      const draftData = {
+        account_id: selectedAccount,
+        user_id: user.id,
+        to_address: composeTo,
+        cc_address: composeCc,
+        subject: composeSubject,
+        body: composeBody,
+        attachments: composeAttachments.map(f => ({ name: f.name, size: f.size })),
+        updated_at: new Date().toISOString()
+      };
+
+      if (selectedDraft) {
+        // Update existing draft
+        const { error } = await supabase
+          .from('email_drafts')
+          .update(draftData)
+          .eq('id', selectedDraft.id);
+        
+        if (error) throw error;
+        toast.success('Brouillon mis à jour');
+      } else {
+        // Create new draft
+        const { error } = await supabase
+          .from('email_drafts')
+          .insert(draftData);
+        
+        if (error) throw error;
+        toast.success('Brouillon sauvegardé');
+      }
+      
+      setShowCompose(false);
+      loadDrafts();
+    } catch (error) {
+      console.error('Error saving draft:', error);
+      toast.error('Erreur lors de la sauvegarde du brouillon');
+    }
+  };
+
+  const deleteDraft = async (draftId: string) => {
+    try {
+      const { error } = await supabase
+        .from('email_drafts')
+        .delete()
+        .eq('id', draftId);
+      
+      if (error) throw error;
+      toast.success('Brouillon supprimé');
+      loadDrafts();
+      setSelectedDraft(null);
+    } catch (error) {
+      console.error('Error deleting draft:', error);
+      toast.error('Erreur lors de la suppression');
+    }
+  };
+
+  const openDraft = (draft: any) => {
+    setSelectedDraft(draft);
+    setComposeTo(draft.to_address || '');
+    setComposeCc(draft.cc_address || '');
+    setComposeSubject(draft.subject || '');
+    setComposeBody(draft.body || '');
+    setComposeAttachments([]);
+    setShowCompose(true);
   };
 
   const filteredEmails = emails.filter(email => {
@@ -561,6 +668,15 @@ export default function EmailInbox() {
               >
                 <Archive className="h-4 w-4" />
               </Button>
+              
+              <Button
+                size="icon"
+                className={mainButtonColor}
+                onClick={() => setCurrentFolder('drafts')}
+                title="Brouillons"
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
             </div>
 
             <div className="flex items-center gap-2">
@@ -606,6 +722,64 @@ export default function EmailInbox() {
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
                 <p className="mt-2 text-sm text-muted-foreground">Chargement...</p>
               </div>
+            ) : currentFolder === 'drafts' ? (
+              drafts.length === 0 ? (
+                <div className="p-8 text-center">
+                  <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-sm text-muted-foreground">Aucun brouillon</p>
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {drafts.map(draft => (
+                    <div
+                      key={draft.id}
+                      className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${
+                        selectedDraft?.id === draft.id ? 'bg-muted' : ''
+                      }`}
+                      onClick={() => openDraft(draft)}
+                    >
+                      <div className="flex items-start gap-3">
+                        <FileText className="h-4 w-4 mt-1 text-muted-foreground" />
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm truncate font-medium">
+                              {draft.to_address || '(Aucun destinataire)'}
+                            </span>
+                            <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
+                              {new Date(draft.updated_at).toLocaleDateString('fr-FR', {
+                                day: 'numeric',
+                                month: 'short',
+                              })}
+                            </span>
+                          </div>
+                          
+                          <div className="text-sm mb-1 truncate font-semibold">
+                            {draft.subject || '(Sans objet)'}
+                          </div>
+                          
+                          <div className="text-xs text-muted-foreground truncate">
+                            {draft.body ? draft.body.substring(0, 100) + '...' : '(Vide)'}
+                          </div>
+                          
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="mt-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteDraft(draft.id);
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Supprimer
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
             ) : filteredEmails.length === 0 ? (
               <div className="p-8 text-center">
                 <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -950,6 +1124,14 @@ export default function EmailInbox() {
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCompose(false)}>
                 Annuler
+              </Button>
+              <Button 
+                variant="outline" 
+                className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-50' : 'border-blue-600 text-blue-600 hover:bg-blue-50'}
+                onClick={saveDraft}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Sauvegarder en brouillon
               </Button>
               <Button className={mainButtonColor} onClick={sendEmail}>
                 <Send className="h-4 w-4 mr-2" />
