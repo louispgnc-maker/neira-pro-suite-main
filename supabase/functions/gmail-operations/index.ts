@@ -218,6 +218,55 @@ serve(async (req) => {
       });
     }
 
+    // Handle get-attachment action
+    if (action === "get-attachment") {
+      const { accountId, messageId, attachmentId } = await req.json();
+      
+      // Get email message_id from database
+      const { data: email } = await supabaseAdmin
+        .from("emails")
+        .select("message_id")
+        .eq("id", messageId)
+        .single();
+
+      if (!email) {
+        return new Response(JSON.stringify({ error: "Email not found" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Download attachment from Gmail API
+      const attachmentResponse = await fetch(
+        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${email.message_id}/attachments/${attachmentId}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (!attachmentResponse.ok) {
+        const errorText = await attachmentResponse.text();
+        throw new Error(`Attachment download failed: ${errorText}`);
+      }
+
+      const attachmentData = await attachmentResponse.json();
+      
+      // Decode base64url data
+      const base64Data = attachmentData.data.replace(/-/g, '+').replace(/_/g, '/');
+      const binaryString = atob(base64Data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      return new Response(bytes, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/octet-stream",
+        },
+      });
+    }
+
     return new Response(JSON.stringify({ error: "Invalid action" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -55,6 +55,12 @@ type Email = {
   labels?: string[];
   has_attachments?: boolean;
   folder?: string;
+  attachments?: Array<{
+    filename: string;
+    mimeType: string;
+    size: number;
+    attachmentId: string;
+  }>;
 };
 
 export default function EmailInbox() {
@@ -104,14 +110,9 @@ export default function EmailInbox() {
     }
   }, [selectedAccount]);
 
-  // Auto-sync disabled - use manual sync button instead
-  // Automatic sync causes too many errors if token is invalid
-  /*
+  // Auto-sync every 5 minutes
   useEffect(() => {
     if (!selectedAccount) return;
-
-    let syncAttempts = 0;
-    const MAX_FAILED_ATTEMPTS = 3;
 
     const autoSync = async () => {
       try {
@@ -134,74 +135,46 @@ export default function EmailInbox() {
         }
 
         const provider = accountData?.provider || 'gmail';
-        const refreshUrl = provider === 'outlook'
-          ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-refresh-token'
-          : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-refresh-token';
         const syncUrl = provider === 'outlook'
           ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-sync'
           : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync';
 
-        // First, refresh token if needed
-        const refreshResponse = await fetch(refreshUrl, {
+        console.log('[Auto-sync] Starting background sync for', provider);
+
+        // Sync silently
+        const syncResponse = await fetch(syncUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ accountId: selectedAccount })
         });
 
-        // If refresh failed with 401, log but don't disconnect - retry on next sync
-        if (refreshResponse.status === 401) {
-          syncAttempts++;
-          console.log('[Auto-sync] Token refresh returned 401, will retry on next cycle');
-          // Don't mark as error or show toast - just retry silently
-          return;
-        }
-
-        // Reset counter on success
-        if (refreshResponse.ok) {
-          syncAttempts = 0;
-        }
-
-        // Then sync emails
-        const response = await fetch(syncUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ accountId: selectedAccount })
-        });
-
-        // If sync failed with 401 or 500, handle appropriately
-        if (response.status === 401 || response.status === 500) {
-          syncAttempts++;
-          if (syncAttempts >= MAX_FAILED_ATTEMPTS) {
-            console.log('[Auto-sync] Too many failed sync attempts - stopping');
-            return;
-          }
-          return;
-        }
-
-        if (response.ok) {
-          syncAttempts = 0; // Reset on success
-          const data = await response.json();
-          if (data?.synced > 0) {
+        if (syncResponse.ok) {
+          const data = await syncResponse.json();
+          console.log('[Auto-sync] Success:', data.synced, 'new emails');
+          
+          // Reload emails if new ones were synced
+          if (data.synced > 0) {
             await loadEmails();
           }
+        } else {
+          console.log('[Auto-sync] Failed, will retry on next cycle');
         }
       } catch (error) {
-        syncAttempts++;
-        console.error('Auto-sync failed:', error);
+        console.error('[Auto-sync] Error:', error);
       }
     };
 
-    // Initial sync after a short delay
-    const initialTimeout = setTimeout(autoSync, 1000);
+    // Initial sync after 5 seconds
+    const initialTimeout = setTimeout(autoSync, 5000);
 
-    const interval = setInterval(autoSync, 5000); // Check every 5 seconds (less aggressive)
+    // Then sync every 5 minutes
+    const interval = setInterval(autoSync, 5 * 60 * 1000);
 
     return () => {
       clearTimeout(initialTimeout);
       clearInterval(interval);
     };
   }, [selectedAccount]);
-  */
 
   const loadAccounts = async () => {
     if (!user) return;
@@ -811,17 +784,64 @@ export default function EmailInbox() {
                     )}
                   </div>
 
-                  {selectedEmail.has_attachments && (
+                  {selectedEmail.attachments && selectedEmail.attachments.length > 0 && (
                     <div className="pt-4 border-t">
-                      <h3 className="text-sm font-medium mb-3">Pièces jointes</h3>
-                      <div className="flex gap-2">
-                        <Card className="p-3 flex items-center gap-3 cursor-pointer hover:bg-muted/50">
-                          <Paperclip className="h-5 w-5 text-muted-foreground" />
-                          <div>
-                            <div className="text-sm font-medium">document.pdf</div>
-                            <div className="text-xs text-muted-foreground">245 KB</div>
-                          </div>
-                        </Card>
+                      <h3 className="text-sm font-medium mb-3">Pièces jointes ({selectedEmail.attachments.length})</h3>
+                      <div className="grid gap-2">
+                        {selectedEmail.attachments.map((attachment, index) => (
+                          <Card 
+                            key={index} 
+                            className="p-3 flex items-center justify-between cursor-pointer hover:bg-muted/50"
+                            onClick={async () => {
+                              try {
+                                toast.info('Téléchargement en cours...');
+                                const response = await fetch(
+                                  'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-operations',
+                                  {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      action: 'get-attachment',
+                                      accountId: selectedAccount,
+                                      messageId: selectedEmail.id,
+                                      attachmentId: attachment.attachmentId
+                                    })
+                                  }
+                                );
+                                
+                                if (!response.ok) throw new Error('Erreur lors du téléchargement');
+                                
+                                const blob = await response.blob();
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = attachment.filename;
+                                document.body.appendChild(a);
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                document.body.removeChild(a);
+                                
+                                toast.success('Fichier téléchargé');
+                              } catch (error) {
+                                console.error('Error downloading attachment:', error);
+                                toast.error('Erreur lors du téléchargement');
+                              }
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Paperclip className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="text-sm font-medium">{attachment.filename}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {(attachment.size / 1024).toFixed(1)} KB
+                                </div>
+                              </div>
+                            </div>
+                            <Button variant="ghost" size="sm">
+                              Télécharger
+                            </Button>
+                          </Card>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -885,6 +905,7 @@ export default function EmailInbox() {
                   type="button"
                   variant="outline"
                   size="sm"
+                  className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-50' : 'border-blue-600 text-blue-600 hover:bg-blue-50'}
                   onClick={() => document.getElementById('file-upload')?.click()}
                 >
                   <Paperclip className="h-4 w-4 mr-2" />

@@ -88,6 +88,7 @@ export default function RGPD() {
               <li>Gestion des documents, dossiers et workflows</li>
               <li>Notifications liées au fonctionnement de la solution</li>
               <li>Sécurisation des accès</li>
+              <li><strong>Intégration Gmail</strong> : Accès en lecture à vos emails pour affichage dans l'interface Neira, envoi d'emails en votre nom via Gmail API. Ces données restent stockées de manière sécurisée et ne sont jamais partagées avec des tiers.</li>
             </ul>
 
             <h3 className="text-xl font-semibold mb-3 text-gray-900">3.2. Support & relation utilisateur</h3>

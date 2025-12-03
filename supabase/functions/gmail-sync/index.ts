@@ -186,6 +186,23 @@ serve(async (req) => {
           bodyHtml = bodyText.replace(/\n/g, '<br>');
         }
 
+        // Extract attachments metadata
+        const attachments: any[] = [];
+        const extractAttachments = (part: any) => {
+          if (part.filename && part.body?.attachmentId) {
+            attachments.push({
+              filename: part.filename,
+              mimeType: part.mimeType,
+              size: part.body.size || 0,
+              attachmentId: part.body.attachmentId
+            });
+          }
+          if (part.parts) {
+            part.parts.forEach(extractAttachments);
+          }
+        };
+        extractAttachments(messageData.payload);
+
         // Store in database
         const { error: insertError } = await supabase
           .from("emails")
@@ -203,6 +220,8 @@ serve(async (req) => {
             is_read: messageData.labelIds?.includes("UNREAD") ? false : true,
             is_starred: messageData.labelIds?.includes("STARRED") || false,
             labels: messageData.labelIds || [],
+            has_attachments: attachments.length > 0,
+            attachments: attachments
           });
 
         if (insertError) {
