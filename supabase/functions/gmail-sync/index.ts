@@ -30,11 +30,6 @@ serve(async (req) => {
       auth: { 
         persistSession: false,
         autoRefreshToken: false
-      },
-      global: {
-        headers: {
-          'x-my-custom-header': 'gmail-sync'
-        }
       }
     });
 
@@ -258,33 +253,30 @@ serve(async (req) => {
         };
         extractAttachments(messageData.payload);
 
-        // Store in database
-        const { data: insertData, error: insertError } = await supabase
-          .from("emails")
-          .insert({
-            account_id: accountId,
-            message_id: message.id,
-            thread_id: messageData.threadId,
-            subject: subject,
-            from_address: from,
-            to_address: to,
-            cc_address: cc,
-            body_text: bodyText,
-            body_html: bodyHtml,
-            received_at: new Date(date).toISOString(),
-            is_read: messageData.labelIds?.includes("UNREAD") ? false : true,
-            is_starred: messageData.labelIds?.includes("STARRED") || false,
-            labels: messageData.labelIds || [],
-            has_attachments: attachments.length > 0,
-            attachments: attachments
-          })
-          .select();
+        // Store in database using RPC function (bypasses RLS)
+        const { data: emailId, error: insertError } = await supabase.rpc('insert_synced_email', {
+          p_account_id: accountId,
+          p_message_id: message.id,
+          p_thread_id: messageData.threadId,
+          p_subject: subject,
+          p_from_address: from,
+          p_to_address: to,
+          p_cc_address: cc,
+          p_body_text: bodyText,
+          p_body_html: bodyHtml,
+          p_received_at: new Date(date).toISOString(),
+          p_is_read: !messageData.labelIds?.includes("UNREAD"),
+          p_is_starred: messageData.labelIds?.includes("STARRED") || false,
+          p_labels: messageData.labelIds || [],
+          p_has_attachments: attachments.length > 0,
+          p_attachments: attachments
+        });
 
         if (insertError) {
           console.error("Insert error for message", message.id, ":", JSON.stringify(insertError));
           console.error("Account ID:", accountId, "Message ID:", message.id);
         } else {
-          console.log("Successfully inserted message:", message.id);
+          console.log("Successfully inserted message:", message.id, "with ID:", emailId);
           syncedCount++;
         }
       } catch (error) {
