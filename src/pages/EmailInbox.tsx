@@ -143,6 +143,10 @@ export default function EmailInbox() {
 
         const provider = accountData?.provider || 'gmail';
         
+        // Get Supabase session token for authorization
+        const { data: { session } } = await supabase.auth.getSession();
+        const authToken = session?.access_token;
+        
         // Check if token needs refresh (expired or about to expire in next 5 minutes)
         const expiresAt = accountData?.token_expires_at ? new Date(accountData.token_expires_at) : null;
         const needsRefresh = !expiresAt || expiresAt <= new Date(Date.now() + 5 * 60 * 1000);
@@ -156,7 +160,10 @@ export default function EmailInbox() {
           
           const refreshResponse = await fetch(refreshUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
             body: JSON.stringify({ accountId: selectedAccount })
           });
           
@@ -177,7 +184,10 @@ export default function EmailInbox() {
         // Sync silently
         const syncResponse = await fetch(syncUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
           body: JSON.stringify({ accountId: selectedAccount })
         });
 
@@ -315,6 +325,10 @@ export default function EmailInbox() {
       const expiresAt = accountData?.token_expires_at ? new Date(accountData.token_expires_at) : null;
       const needsRefresh = !expiresAt || expiresAt <= new Date(Date.now() + 5 * 60 * 1000);
       
+      // Get Supabase session token for authorization
+      const { data: { session } } = await supabase.auth.getSession();
+      const authToken = session?.access_token;
+      
       // Refresh token if needed
       if (needsRefresh) {
         console.log('[EmailInbox] Token expired or about to expire, refreshing...');
@@ -324,7 +338,10 @@ export default function EmailInbox() {
         
         const refreshResponse = await fetch(refreshUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
           body: JSON.stringify({ accountId: selectedAccount })
         });
         
@@ -344,7 +361,10 @@ export default function EmailInbox() {
       
       const response = await fetch(syncUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
         body: JSON.stringify({ accountId: selectedAccount })
       });
 
