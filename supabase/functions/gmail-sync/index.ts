@@ -53,76 +53,95 @@ serve(async (req) => {
 
     let accessToken = account.access_token;
 
-    // Fetch messages from Gmail API (last 50 messages)
-    let messagesResponse = await fetch(
-      "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50",
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    );
+    // Fetch ALL messages from Gmail API using pagination
+    let allMessages: any[] = [];
+    let pageToken: string | null = null;
+    let pageCount = 0;
 
-    console.log("Gmail API response status:", messagesResponse.status);
+    console.log("Starting pagination to fetch all emails...");
 
-    // If token expired (401), try to refresh it
-    if (messagesResponse.status === 401) {
-      console.log("Token expired, refreshing...");
+    do {
+      pageCount++;
+      const url = `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=500${pageToken ? `&pageToken=${pageToken}` : ''}`;
       
-      const refreshResponse = await fetch("https://oauth2.googleapis.com/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          client_id: Deno.env.get("GOOGLE_CLIENT_ID")!,
-          client_secret: Deno.env.get("GOOGLE_CLIENT_SECRET")!,
-          refresh_token: account.refresh_token,
-          grant_type: "refresh_token",
-        }),
+      let messagesResponse = await fetch(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
-      if (refreshResponse.ok) {
-        const tokens = await refreshResponse.json();
-        const newExpiresAt = new Date(Date.now() + (tokens.expires_in * 1000));
-        accessToken = tokens.access_token;
+      console.log(`Page ${pageCount} - Gmail API response status:`, messagesResponse.status);
 
-        // Update the account with new token
-        await supabase
-          .from("email_accounts")
-          .update({
-            access_token: tokens.access_token,
-            token_expires_at: newExpiresAt.toISOString(),
-          })
-          .eq("id", accountId);
+      // If token expired (401), try to refresh it
+      if (messagesResponse.status === 401) {
+        console.log("Token expired, refreshing...");
+        
+        const refreshResponse = await fetch("https://oauth2.googleapis.com/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            client_id: Deno.env.get("GOOGLE_CLIENT_ID")!,
+            client_secret: Deno.env.get("GOOGLE_CLIENT_SECRET")!,
+            refresh_token: account.refresh_token,
+            grant_type: "refresh_token",
+          }),
+        });
 
-        console.log("Token refreshed successfully, retrying fetch...");
+        if (refreshResponse.ok) {
+          const tokens = await refreshResponse.json();
+          const newExpiresAt = new Date(Date.now() + (tokens.expires_in * 1000));
+          accessToken = tokens.access_token;
 
-        // Retry the API call with new token
-        messagesResponse = await fetch(
-          "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50",
-          {
+          // Update the account with new token
+          await supabase
+            .from("email_accounts")
+            .update({
+              access_token: tokens.access_token,
+              token_expires_at: newExpiresAt.toISOString(),
+            })
+            .eq("id", accountId);
+
+          console.log("Token refreshed successfully, retrying fetch...");
+
+          // Retry the API call with new token
+          messagesResponse = await fetch(url, {
             headers: { Authorization: `Bearer ${accessToken}` },
-          }
-        );
+          });
 
-        console.log("Retry Gmail API response status:", messagesResponse.status);
-      } else {
-        console.error("Token refresh failed");
+          console.log("Retry Gmail API response status:", messagesResponse.status);
+        } else {
+          console.error("Token refresh failed");
+          return new Response(
+            JSON.stringify({ error: "Failed to refresh token" }),
+            { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
       }
-    }
 
-    if (!messagesResponse.ok) {
-      const errorText = await messagesResponse.text();
-      console.error("Failed to fetch messages:", errorText);
-      console.error("Response status:", messagesResponse.status);
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch messages from Gmail", details: errorText }),
-        { status: messagesResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+      if (!messagesResponse.ok) {
+        const errorText = await messagesResponse.text();
+        console.error("Failed to fetch messages:", errorText);
+        console.error("Response status:", messagesResponse.status);
+        return new Response(
+          JSON.stringify({ error: "Failed to fetch messages from Gmail", details: errorText }),
+          { status: messagesResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
-    const messagesData = await messagesResponse.json();
-    const messages = messagesData.messages || [];
+      const messagesData = await messagesResponse.json();
+      const messages = messagesData.messages || [];
+      
+      console.log(`Page ${pageCount} - Found ${messages.length} messages`);
+      allMessages = allMessages.concat(messages);
+      
+      pageToken = messagesData.nextPageToken || null;
+      
+      if (pageToken) {
+        console.log(`Page ${pageCount} - Has nextPageToken, continuing pagination...`);
+      }
+    } while (pageToken);
 
-    console.log(`Gmail returned ${messages.length} messages`);
-    console.log("Messages data:", JSON.stringify(messagesData).substring(0, 200));
+    console.log(`Total messages found across ${pageCount} page(s):`, allMessages.length);
+
+    const messages = allMessages;
 
     console.log(`Found ${messages.length} messages`);
 
