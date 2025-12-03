@@ -126,7 +126,7 @@ export default function EmailInbox() {
         // Get account to check provider and token
         const { data: accountData, error: accountError } = await supabase
           .from('email_accounts')
-          .select('provider, access_token, status')
+          .select('provider, access_token, status, token_expires_at')
           .eq('id', selectedAccount)
           .single();
 
@@ -142,6 +142,32 @@ export default function EmailInbox() {
         }
 
         const provider = accountData?.provider || 'gmail';
+        
+        // Check if token needs refresh (expired or about to expire in next 5 minutes)
+        const expiresAt = accountData?.token_expires_at ? new Date(accountData.token_expires_at) : null;
+        const needsRefresh = !expiresAt || expiresAt <= new Date(Date.now() + 5 * 60 * 1000);
+        
+        // Refresh token if needed
+        if (needsRefresh) {
+          console.log('[Auto-sync] Token expired or about to expire, refreshing...');
+          const refreshUrl = provider === 'outlook'
+            ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-refresh-token'
+            : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-refresh-token';
+          
+          const refreshResponse = await fetch(refreshUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accountId: selectedAccount })
+          });
+          
+          if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json();
+            console.log('[Auto-sync] Token refreshed:', refreshData.message);
+          } else {
+            console.log('[Auto-sync] Token refresh failed, will try sync anyway');
+          }
+        }
+
         const syncUrl = provider === 'outlook'
           ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-sync'
           : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync';
@@ -276,14 +302,40 @@ export default function EmailInbox() {
     
     setSyncing(true);
     try {
-      // Get account to check provider
+      // Get account to check provider and token
       const { data: accountData } = await supabase
         .from('email_accounts')
-        .select('provider')
+        .select('provider, token_expires_at')
         .eq('id', selectedAccount)
         .single();
 
       const provider = accountData?.provider || 'gmail';
+      
+      // Check if token needs refresh (expired or about to expire in next 5 minutes)
+      const expiresAt = accountData?.token_expires_at ? new Date(accountData.token_expires_at) : null;
+      const needsRefresh = !expiresAt || expiresAt <= new Date(Date.now() + 5 * 60 * 1000);
+      
+      // Refresh token if needed
+      if (needsRefresh) {
+        console.log('[EmailInbox] Token expired or about to expire, refreshing...');
+        const refreshUrl = provider === 'outlook'
+          ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-refresh-token'
+          : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-refresh-token';
+        
+        const refreshResponse = await fetch(refreshUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accountId: selectedAccount })
+        });
+        
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          console.log('[EmailInbox] Token refreshed:', refreshData.message);
+        } else {
+          console.log('[EmailInbox] Token refresh failed, will try sync anyway');
+        }
+      }
+
       const syncUrl = provider === 'outlook' 
         ? 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-sync'
         : 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-sync';
