@@ -707,96 +707,91 @@ export default function EmailInbox() {
       <div className="p-8 space-y-4 h-screen flex flex-col">
         {/* Buttons Bar */}
         <Card className="shadow-lg">
-          <div className="p-4 flex items-center gap-6">
+          <div className="p-4 flex items-center justify-center gap-3">
             {/* Folder Navigation */}
-            <div className="flex items-center gap-3">
-              <Button
-                className={`relative ${mainButtonColor}`}
-                onClick={() => setCurrentFolder('inbox')}
-                title="Boîte de réception"
-                size="sm"
-              >
-                <Inbox className="h-4 w-4 mr-2" />
-                Réception
-                {unreadCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
-                )}
-              </Button>
-              
-              <Button
-                className={mainButtonColor}
-                onClick={() => setCurrentFolder('sent')}
-                title="Envoyés"
-                size="sm"
-              >
-                <Send className="h-4 w-4 mr-2" />
-                Envoyés
-              </Button>
-              
-              <Button
-                className={mainButtonColor}
-                onClick={() => setCurrentFolder('archive')}
-                title="Archivés"
-                size="sm"
-              >
-                <Archive className="h-4 w-4 mr-2" />
-                Archivés
-              </Button>
-              
-              <Button
-                className={mainButtonColor}
-                onClick={() => setCurrentFolder('drafts')}
-                title="Brouillons"
-                size="sm"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Brouillons
-              </Button>
-              
-              <Button
-                className={mainButtonColor}
-                onClick={() => setCurrentFolder('trash')}
-                title="Corbeille"
-                size="sm"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Corbeille
-              </Button>
-            </div>
+            <Button
+              className={`relative ${mainButtonColor}`}
+              onClick={() => setCurrentFolder('inbox')}
+              title="Boîte de réception"
+              size="sm"
+            >
+              <Inbox className="h-4 w-4 mr-2" />
+              Réception
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
+              )}
+            </Button>
+            
+            <Button
+              className={mainButtonColor}
+              onClick={() => setCurrentFolder('sent')}
+              title="Envoyés"
+              size="sm"
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Envoyés
+            </Button>
+            
+            <Button
+              className={mainButtonColor}
+              onClick={() => setCurrentFolder('archive')}
+              title="Archivés"
+              size="sm"
+            >
+              <Archive className="h-4 w-4 mr-2" />
+              Archivés
+            </Button>
+            
+            <Button
+              className={mainButtonColor}
+              onClick={() => setCurrentFolder('drafts')}
+              title="Brouillons"
+              size="sm"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Brouillons
+            </Button>
+            
+            <Button
+              className={mainButtonColor}
+              onClick={() => setCurrentFolder('trash')}
+              title="Corbeille"
+              size="sm"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Corbeille
+            </Button>
 
-            {/* Actions */}
-            <div className="flex items-center gap-3 ml-auto">
-              <Button
-                className={mainButtonColor}
-                onClick={handleSync}
-                disabled={syncing}
-                title="Synchroniser"
-                size="sm"
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
-                Synchroniser
-              </Button>
+            <Button
+              className={mainButtonColor}
+              onClick={handleSync}
+              disabled={syncing}
+              title="Synchroniser"
+              size="sm"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+              Synchroniser
+            </Button>
 
-              <Button
-                className={mainButtonColor}
-                onClick={markAllAsRead}
-                title="Marquer tout comme lu"
-                size="sm"
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                Tout lire
-              </Button>
-              
-              <Button 
-                className={mainButtonColor} 
-                onClick={handleCompose}
-                title="Nouveau message"
-                size="sm"
-              >
-                <Send className="h-4 w-4 mr-2" />
-                Écrire
-              </Button>
-            </div>
+            <Button
+              className={mainButtonColor}
+              onClick={markAllAsRead}
+              title="Marquer tout comme lu"
+              size="sm"
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              Tout lire
+            </Button>
+            
+            <Button 
+              className={mainButtonColor} 
+              onClick={handleCompose}
+              title="Nouveau message"
+              size="sm"
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Écrire
+            </Button>
           </div>
         </Card>
 
