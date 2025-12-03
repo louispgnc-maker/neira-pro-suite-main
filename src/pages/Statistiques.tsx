@@ -87,13 +87,6 @@ export default function Statistiques() {
       
       // Attendre que les limites soient chargées
       if (limits.loading) return;
-      
-      // Vérifier si l'utilisateur a accès (cabinet-plus uniquement)
-      const hasAccess = limits.subscription_plan === 'cabinet-plus';
-      if (!hasAccess) {
-        setLoading(false);
-        return;
-      }
 
       setStatsLoading(true);
       try {
@@ -265,42 +258,6 @@ export default function Statistiques() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
               <p className="mt-4 text-muted-foreground">Chargement des statistiques...</p>
             </div>
-          </div>
-        </div>
-      </AppLayout>
-    );
-  }
-
-  // Vérifier l'accès seulement après le chargement complet
-  if (limits.subscription_plan !== 'cabinet-plus') {
-    return (
-      <AppLayout>
-        <div className="p-6">
-          <div className="max-w-2xl mx-auto">
-            <Card className="border-2 border-dashed">
-              <CardContent className="pt-6">
-                <div className="text-center space-y-4">
-                  <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-                    <Lock className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold mb-2">Fonctionnalité réservée</h2>
-                    <p className="text-muted-foreground mb-6">
-                      Les statistiques avancées sont disponibles uniquement avec l'offre <strong>Neira Cabinet+</strong>.
-                    </p>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      Votre plan actuel : <span className="font-semibold capitalize">{limits.subscription_plan}</span>
-                    </p>
-                  </div>
-                  <Button 
-                    onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
-                    className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
-                  >
-                    Passer à Cabinet+
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </AppLayout>
