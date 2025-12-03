@@ -804,22 +804,6 @@ export default function EmailInbox() {
             </div>
           </div>
         </div>
-              title="Marquer tout comme lu"
-            >
-              <Mail className="h-4 w-4 text-gray-600" />
-            </Button>
-            
-            {/* Primary CTA */}
-            <Button 
-              className={`h-10 rounded-xl text-sm ${mainButtonColor} shadow-md hover:shadow-lg transition-shadow`}
-              onClick={handleCompose}
-              title="Nouveau message"
-            >
-              <Send className="h-4 w-4 mr-2" />
-              Écrire
-            </Button>
-          </div>
-        </div>
 
         {/* Search Bar & Account Selector */}
         <Card className="shadow-lg">
