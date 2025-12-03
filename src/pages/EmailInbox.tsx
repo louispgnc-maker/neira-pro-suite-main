@@ -706,94 +706,94 @@ export default function EmailInbox() {
     <AppLayout>
       <div className="p-8 space-y-4 h-screen flex flex-col">
         {/* Buttons Bar */}
-        <Card className="shadow-lg">
-          <div className="p-4 flex items-center justify-center gap-3">
-            {/* Folder Navigation */}
+        <div className="bg-white/40 backdrop-blur-md rounded-xl p-4 shadow-lg">
+          <div className="flex items-center justify-center gap-3">
+            {/* Primary Actions */}
             <Button
-              className={`relative ${mainButtonColor}`}
+              className={`relative h-10 rounded-xl text-sm bg-white border-2 ${
+                currentFolder === 'inbox' 
+                  ? role === 'notaire' ? 'border-orange-500 text-orange-600' : 'border-blue-500 text-blue-600'
+                  : 'border-gray-300 text-gray-700 hover:border-orange-400'
+              }`}
               onClick={() => setCurrentFolder('inbox')}
               title="Boîte de réception"
-              size="sm"
             >
-              <Inbox className="h-4 w-4 mr-2" />
+              <Inbox className={`h-4 w-4 mr-2 ${currentFolder === 'inbox' ? (role === 'notaire' ? 'text-orange-600' : 'text-blue-600') : 'text-gray-600'}`} />
               Réception
               {unreadCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-orange-500" variant="secondary">{unreadCount}</Badge>
               )}
             </Button>
             
             <Button
-              className={mainButtonColor}
+              className={`h-10 rounded-xl text-sm bg-white border-2 ${
+                currentFolder === 'sent'
+                  ? role === 'notaire' ? 'border-orange-500 text-orange-600' : 'border-blue-500 text-blue-600'
+                  : 'border-gray-300 text-gray-700 hover:border-orange-400'
+              }`}
               onClick={() => setCurrentFolder('sent')}
               title="Envoyés"
-              size="sm"
             >
-              <Send className="h-4 w-4 mr-2" />
+              <Send className={`h-4 w-4 mr-2 ${currentFolder === 'sent' ? (role === 'notaire' ? 'text-orange-600' : 'text-blue-600') : 'text-gray-600'}`} />
               Envoyés
             </Button>
-            
-            <Button
-              className={mainButtonColor}
-              onClick={() => setCurrentFolder('archive')}
-              title="Archivés"
-              size="sm"
-            >
-              <Archive className="h-4 w-4 mr-2" />
-              Archivés
-            </Button>
-            
-            <Button
-              className={mainButtonColor}
-              onClick={() => setCurrentFolder('drafts')}
-              title="Brouillons"
-              size="sm"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Brouillons
-            </Button>
-            
-            <Button
-              className={mainButtonColor}
-              onClick={() => setCurrentFolder('trash')}
-              title="Corbeille"
-              size="sm"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Corbeille
-            </Button>
 
+            {/* More Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="h-10 rounded-xl text-sm bg-white border-2 border-gray-300 text-gray-700 hover:border-orange-400"
+                  title="Plus d'options"
+                >
+                  <MoreVertical className="h-4 w-4 mr-2 text-gray-600" />
+                  Plus
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={() => setCurrentFolder('archive')}>
+                  <Archive className="h-4 w-4 mr-2" />
+                  Archivés
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCurrentFolder('drafts')}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Brouillons
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCurrentFolder('trash')}>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Corbeille
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Quick Actions - Icon Only */}
             <Button
-              className={mainButtonColor}
+              className="h-10 w-10 rounded-xl bg-white border-2 border-gray-300 hover:border-orange-400 p-0"
               onClick={handleSync}
               disabled={syncing}
               title="Synchroniser"
-              size="sm"
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
-              Synchroniser
+              <RefreshCw className={`h-4 w-4 text-gray-600 ${syncing ? 'animate-spin' : ''}`} />
             </Button>
 
             <Button
-              className={mainButtonColor}
+              className="h-10 w-10 rounded-xl bg-white border-2 border-gray-300 hover:border-orange-400 p-0"
               onClick={markAllAsRead}
               title="Marquer tout comme lu"
-              size="sm"
             >
-              <Mail className="h-4 w-4 mr-2" />
-              Tout lire
+              <Mail className="h-4 w-4 text-gray-600" />
             </Button>
             
+            {/* Primary CTA */}
             <Button 
-              className={mainButtonColor} 
+              className={`h-10 rounded-xl text-sm ${mainButtonColor} shadow-md hover:shadow-lg transition-shadow`}
               onClick={handleCompose}
               title="Nouveau message"
-              size="sm"
             >
               <Send className="h-4 w-4 mr-2" />
               Écrire
             </Button>
           </div>
-        </Card>
+        </div>
 
         {/* Search Bar & Account Selector */}
         <Card className="shadow-lg">
