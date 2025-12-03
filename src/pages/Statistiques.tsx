@@ -268,16 +268,21 @@ export default function Statistiques() {
     ? ((clientStats.nouveauxCeMois - clientStats.nouveauxMoisPrecedent) / clientStats.nouveauxMoisPrecedent * 100).toFixed(1)
     : clientStats.nouveauxCeMois > 0 ? '+100' : '0';
 
+  // Vérifier si l'utilisateur a accès Cabinet+
+  const hasAccess = limits.subscription_plan === 'cabinet-plus';
+
   // Page accessible avec Cabinet+
   return (
     <AppLayout>
-      <div className="p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">Statistiques</h1>
-          <p className="text-foreground mt-1">Analyse avancée de votre activité</p>
-        </div>
+      <div className="p-6 relative">
+        {/* Contenu flouté si pas d'accès */}
+        <div className={hasAccess ? '' : 'filter blur-sm pointer-events-none select-none'}>
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold">Statistiques</h1>
+            <p className="text-foreground mt-1">Analyse avancée de votre activité</p>
+          </div>
 
-        {/* 1️⃣ Activité et Performance du Cabinet */}
+          {/* 1️⃣ Activité et Performance du Cabinet */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
@@ -492,6 +497,35 @@ export default function Statistiques() {
             </Card>
           </div>
         </div>
+        </div>
+
+        {/* Overlay avec cadenas si pas d'accès */}
+        {!hasAccess && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Card className="max-w-md mx-auto border-2 shadow-2xl bg-background/95 backdrop-blur">
+              <CardContent className="pt-6 text-center space-y-4">
+                <div className="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center">
+                  <Lock className="h-10 w-10 text-orange-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Fonctionnalité réservée</h2>
+                  <p className="text-muted-foreground mb-4">
+                    Les statistiques avancées sont disponibles uniquement avec l'offre <strong className="text-orange-600">Neira Cabinet+</strong>.
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Votre plan actuel : <span className="font-semibold capitalize">{limits.subscription_plan || 'Gratuit'}</span>
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
+                >
+                  Passer à Cabinet+
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </AppLayout>
   );
