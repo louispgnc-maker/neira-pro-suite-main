@@ -43,6 +43,7 @@ export default function Statistiques() {
   const location = useLocation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(false);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -85,11 +86,17 @@ export default function Statistiques() {
 
   useEffect(() => {
     async function loadStats() {
-      if (!user || !hasAccess) {
+      if (!user) return;
+      
+      // Attendre que les limites soient chargées
+      if (limits.loading) return;
+      
+      if (!hasAccess) {
         setLoading(false);
         return;
       }
 
+      setStatsLoading(true);
       try {
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -242,17 +249,15 @@ export default function Statistiques() {
         console.error('Error loading statistics:', error);
       } finally {
         setLoading(false);
+        setStatsLoading(false);
       }
     }
 
     loadStats();
-  }, [user, role, hasAccess]);
+  }, [user, role, hasAccess, limits.loading]);
 
-  useEffect(() => {
-    setLoading(limits.loading);
-  }, [limits.loading]);
-
-  if (loading) {
+  // Afficher le loading pendant le chargement des limites OU des stats
+  if (loading || limits.loading || statsLoading) {
     return (
       <AppLayout>
         <div className="p-6">
