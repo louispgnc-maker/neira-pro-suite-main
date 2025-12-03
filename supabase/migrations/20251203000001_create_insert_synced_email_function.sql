@@ -16,7 +16,6 @@ CREATE OR REPLACE FUNCTION insert_synced_email(
   p_is_read BOOLEAN,
   p_is_starred BOOLEAN,
   p_labels TEXT[],
-  p_has_attachments BOOLEAN,
   p_attachments JSONB
 )
 RETURNS UUID
@@ -40,7 +39,6 @@ BEGIN
     is_read,
     is_starred,
     labels,
-    has_attachments,
     attachments
   ) VALUES (
     p_account_id,
@@ -56,7 +54,6 @@ BEGIN
     p_is_read,
     p_is_starred,
     p_labels,
-    p_has_attachments,
     p_attachments
   )
   RETURNING id INTO v_email_id;
@@ -64,3 +61,7 @@ BEGIN
   RETURN v_email_id;
 END;
 $$;
+
+-- Grant permissions to necessary roles
+GRANT EXECUTE ON FUNCTION insert_synced_email(UUID, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, BOOLEAN, BOOLEAN, TEXT[], JSONB) 
+TO authenticated, anon, service_role;

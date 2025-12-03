@@ -268,7 +268,6 @@ serve(async (req) => {
           p_is_read: !messageData.labelIds?.includes("UNREAD"),
           p_is_starred: messageData.labelIds?.includes("STARRED") || false,
           p_labels: messageData.labelIds || [],
-          p_has_attachments: attachments.length > 0,
           p_attachments: attachments
         });
 
