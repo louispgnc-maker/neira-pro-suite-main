@@ -48,15 +48,62 @@ serve(async (req) => {
     console.log("Syncing emails for account:", account.email);
     console.log("Using access token:", account.access_token?.substring(0, 20) + "...");
 
+    let accessToken = account.access_token;
+
     // Fetch messages from Gmail API (last 50 messages)
-    const messagesResponse = await fetch(
+    let messagesResponse = await fetch(
       "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50",
       {
-        headers: { Authorization: `Bearer ${account.access_token}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
 
     console.log("Gmail API response status:", messagesResponse.status);
+
+    // If token expired (401), try to refresh it
+    if (messagesResponse.status === 401) {
+      console.log("Token expired, refreshing...");
+      
+      const refreshResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: Deno.env.get("GOOGLE_CLIENT_ID")!,
+          client_secret: Deno.env.get("GOOGLE_CLIENT_SECRET")!,
+          refresh_token: account.refresh_token,
+          grant_type: "refresh_token",
+        }),
+      });
+
+      if (refreshResponse.ok) {
+        const tokens = await refreshResponse.json();
+        const newExpiresAt = new Date(Date.now() + (tokens.expires_in * 1000));
+        accessToken = tokens.access_token;
+
+        // Update the account with new token
+        await supabase
+          .from("email_accounts")
+          .update({
+            access_token: tokens.access_token,
+            token_expires_at: newExpiresAt.toISOString(),
+          })
+          .eq("id", accountId);
+
+        console.log("Token refreshed successfully, retrying fetch...");
+
+        // Retry the API call with new token
+        messagesResponse = await fetch(
+          "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50",
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        );
+
+        console.log("Retry Gmail API response status:", messagesResponse.status);
+      } else {
+        console.error("Token refresh failed");
+      }
+    }
 
     if (!messagesResponse.ok) {
       const errorText = await messagesResponse.text();
@@ -99,7 +146,7 @@ serve(async (req) => {
         const messageResponse = await fetch(
           `https://gmail.googleapis.com/gmail/v1/users/me/messages/${message.id}`,
           {
-            headers: { Authorization: `Bearer ${account.access_token}` },
+            headers: { Authorization: `Bearer ${accessToken}` },
           }
         );
 

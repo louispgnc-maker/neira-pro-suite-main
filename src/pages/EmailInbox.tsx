@@ -300,21 +300,27 @@ export default function EmailInbox() {
         const errorText = await response.text();
         console.error('[EmailInbox] Sync error:', errorText);
         
-        // Don't show error for 401 - just log and continue
+        // Don't show error for 401 - just log and continue to reload emails
         if (response.status === 401) {
-          console.log('[EmailInbox] Token needs refresh, will retry on next sync');
-          return;
+          console.log('[EmailInbox] Token needs refresh, but reloading emails anyway');
+          // Don't return - continue to reload emails below
+        } else {
+          throw new Error('Erreur lors de la synchronisation');
         }
-        
-        throw new Error('Erreur lors de la synchronisation');
       }
 
-      const data = await response.json();
+      const data = response.ok ? await response.json() : null;
       console.log('[EmailInbox] Sync result:', data);
       
       const syncedCount = data?.synced || 0;
-      toast.success(`${syncedCount} nouveau(x) email(s) synchronisé(s)`);
-      await loadEmails();
+      if (response.ok) {
+        toast.success(`${syncedCount} nouveau(x) email(s) synchronisé(s)`);
+      }
+      
+      // Always reload emails to show what we have
+      if (currentFolder !== 'drafts') {
+        await loadEmails();
+      }
     } catch (error: any) {
       console.error('Error syncing:', error);
       toast.error(error.message || 'Erreur lors de la synchronisation');
