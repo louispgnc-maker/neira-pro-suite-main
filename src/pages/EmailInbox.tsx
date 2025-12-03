@@ -740,51 +740,56 @@ export default function EmailInbox() {
             {/* Middle: Folder Navigation */}
             <div className="flex items-center gap-2 flex-1 justify-center">
               <Button
-                size="icon"
                 className={`relative ${mainButtonColor}`}
                 onClick={() => setCurrentFolder('inbox')}
                 title="Boîte de réception"
+                size="sm"
               >
-                <Inbox className="h-4 w-4" />
+                <Inbox className="h-4 w-4 mr-2" />
+                Réception
                 {unreadCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs" variant="secondary">{unreadCount}</Badge>
                 )}
               </Button>
               
               <Button
-                size="icon"
                 className={mainButtonColor}
                 onClick={() => setCurrentFolder('sent')}
                 title="Envoyés"
+                size="sm"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-4 w-4 mr-2" />
+                Envoyés
               </Button>
               
               <Button
-                size="icon"
                 className={mainButtonColor}
                 onClick={() => setCurrentFolder('archive')}
                 title="Archivés"
+                size="sm"
               >
-                <Archive className="h-4 w-4" />
+                <Archive className="h-4 w-4 mr-2" />
+                Archivés
               </Button>
               
               <Button
-                size="icon"
                 className={mainButtonColor}
                 onClick={() => setCurrentFolder('drafts')}
                 title="Brouillons"
+                size="sm"
               >
-                <FileText className="h-4 w-4" />
+                <FileText className="h-4 w-4 mr-2" />
+                Brouillons
               </Button>
               
               <Button
-                size="icon"
                 className={mainButtonColor}
                 onClick={() => setCurrentFolder('trash')}
                 title="Corbeille"
+                size="sm"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 mr-2" />
+                Corbeille
               </Button>
             </div>
 
