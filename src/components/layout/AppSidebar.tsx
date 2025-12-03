@@ -56,6 +56,7 @@ function getMenuItems(role: 'avocat' | 'notaire') {
     { title: "Clients", url: `${prefix}/clients`, icon: Users },
     { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare },
     { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users },
+    { title: "Statistiques", url: `${prefix}/statistiques`, icon: BarChart3 },
   ];
 }
 
@@ -69,9 +70,6 @@ export function AppSidebar() {
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
-  
-  const limits = useSubscriptionLimits(role);
-  const hasStatisticsAccess = limits.subscription_plan === 'cabinet-plus';
   
   const menuItems = getMenuItems(role);
   const primaryItems = menuItems.filter((m) => ["Tableau de bord", "Mon cabinet"].includes(m.title));
@@ -255,33 +253,6 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              
-              {/* Statistiques - Cabinet+ uniquement */}
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild={hasStatisticsAccess} 
-                  isActive={isActive(`${role === 'notaire' ? '/notaires' : '/avocats'}/statistiques`)}
-                  disabled={!hasStatisticsAccess}
-                  className={!hasStatisticsAccess ? 'opacity-50 cursor-not-allowed' : ''}
-                >
-                  {hasStatisticsAccess ? (
-                    <NavLink to={`${role === 'notaire' ? '/notaires' : '/avocats'}/statistiques`} className="flex items-center gap-3">
-                      <BarChart3 className="h-4 w-4" />
-                      {!isCollapsed && <span>Statistiques</span>}
-                    </NavLink>
-                  ) : (
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                      <BarChart3 className="h-4 w-4" />
-                      {!isCollapsed && (
-                        <>
-                          <span>Statistiques</span>
-                          <Lock className="h-3 w-3 ml-auto" />
-                        </>
-                      )}
-                    </div>
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
