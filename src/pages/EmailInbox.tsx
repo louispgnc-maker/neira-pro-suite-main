@@ -711,9 +711,10 @@ export default function EmailInbox() {
             {/* Left: Navigation */}
             <div className="flex items-center gap-3">
               <Button
+                variant="ghost"
                 className={`relative h-10 rounded-full text-sm transition-all ${
                   currentFolder === 'inbox' 
-                    ? 'bg-orange-500 text-white border-2 border-orange-500 shadow-md' 
+                    ? 'bg-orange-500 text-white border-2 border-orange-500 shadow-md hover:bg-orange-600' 
                     : 'bg-white text-gray-700 border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300'
                 }`}
                 onClick={() => setCurrentFolder('inbox')}
@@ -727,9 +728,10 @@ export default function EmailInbox() {
               </Button>
               
               <Button
+                variant="ghost"
                 className={`h-10 rounded-full text-sm transition-all ${
                   currentFolder === 'sent'
-                    ? 'bg-orange-500 text-white border-2 border-orange-500 shadow-md'
+                    ? 'bg-orange-500 text-white border-2 border-orange-500 shadow-md hover:bg-orange-600'
                     : 'bg-white text-gray-700 border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300'
                 }`}
                 onClick={() => setCurrentFolder('sent')}
@@ -743,6 +745,7 @@ export default function EmailInbox() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
+                    variant="ghost"
                     className="h-10 rounded-full text-sm bg-white text-gray-700 border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300 transition-all"
                     title="Plus d'options"
                   >
@@ -771,6 +774,7 @@ export default function EmailInbox() {
             <div className="flex items-center gap-3">
               {/* Quick Actions - Icon Only */}
               <Button
+                variant="ghost"
                 className="h-10 w-10 rounded-full bg-white border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300 transition-all p-0"
                 onClick={handleSync}
                 disabled={syncing}
@@ -780,6 +784,7 @@ export default function EmailInbox() {
               </Button>
 
               <Button
+                variant="ghost"
                 className="h-10 w-10 rounded-full bg-white border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300 transition-all p-0"
                 onClick={markAllAsRead}
                 title="Marquer tout comme lu"
@@ -789,6 +794,7 @@ export default function EmailInbox() {
               
               {/* Primary CTA */}
               <Button 
+                variant="ghost"
                 className="h-10 rounded-full text-sm bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md hover:shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all border-0"
                 onClick={handleCompose}
                 title="Nouveau message"
