@@ -705,40 +705,11 @@ export default function EmailInbox() {
   return (
     <AppLayout>
       <div className="p-8 space-y-4 h-screen flex flex-col">
-        {/* Account Selector & Buttons Bar */}
+        {/* Buttons Bar */}
         <Card className="shadow-lg">
-          <div className="p-4 flex items-center gap-4">
-            {/* Left: Account Selector */}
-            <Select value={selectedAccount} onValueChange={(value) => {
-              if (value === 'add-account') {
-                navigate(`/${role}s/email-integration`);
-              } else {
-                setSelectedAccount(value);
-              }
-            }}>
-              <SelectTrigger className="w-[250px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {accounts.map(acc => (
-                  <SelectItem key={acc.id} value={acc.id}>
-                    {acc.email}
-                  </SelectItem>
-                ))}
-                <SelectItem value="add-account" className="text-orange-600 font-medium">
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-4 w-4" />
-                    Ajouter un compte
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            
-            {/* Separator */}
-            <div className="h-8 w-px bg-border" />
-            
-            {/* Middle: Folder Navigation */}
-            <div className="flex items-center gap-2 flex-1 justify-center">
+          <div className="p-4 flex items-center justify-between gap-3">
+            {/* Folder Navigation */}
+            <div className="flex items-center gap-2">
               <Button
                 className={`relative ${mainButtonColor}`}
                 onClick={() => setCurrentFolder('inbox')}
@@ -793,10 +764,7 @@ export default function EmailInbox() {
               </Button>
             </div>
 
-            {/* Separator */}
-            <div className="h-8 w-px bg-border" />
-
-            {/* Right: Actions */}
+            {/* Actions */}
             <div className="flex items-center gap-2">
               <Button
                 className={mainButtonColor}
@@ -832,10 +800,35 @@ export default function EmailInbox() {
           </div>
         </Card>
 
-        {/* Search Bar */}
+        {/* Search Bar & Account Selector */}
         <Card className="shadow-lg">
-          <div className="p-4">
-            <div className="relative">
+          <div className="p-4 flex items-center gap-4">
+            <Select value={selectedAccount} onValueChange={(value) => {
+              if (value === 'add-account') {
+                navigate(`/${role}s/email-integration`);
+              } else {
+                setSelectedAccount(value);
+              }
+            }}>
+              <SelectTrigger className="w-[250px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts.map(acc => (
+                  <SelectItem key={acc.id} value={acc.id}>
+                    {acc.email}
+                  </SelectItem>
+                ))}
+                <SelectItem value="add-account" className="text-orange-600 font-medium">
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Ajouter un compte
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Rechercher dans les emails..."
