@@ -147,6 +147,8 @@ serve(async (req) => {
 
     let syncedCount = 0;
     let skippedCount = 0;
+    let consecutiveSkips = 0;
+    const MAX_CONSECUTIVE_SKIPS = 10; // Stop after 10 consecutive existing emails
 
     // Fetch details for each message
     for (const message of messages) {
@@ -161,8 +163,18 @@ serve(async (req) => {
 
         if (existingEmail) {
           skippedCount++;
+          consecutiveSkips++;
+          
+          // If we've skipped many consecutive emails, they're probably all synced
+          if (consecutiveSkips >= MAX_CONSECUTIVE_SKIPS) {
+            console.log(`Stopping sync: found ${MAX_CONSECUTIVE_SKIPS} consecutive existing emails. Remaining unprocessed: ${messages.length - (syncedCount + skippedCount)}`);
+            break;
+          }
           continue;
         }
+        
+        // Reset consecutive skips when we find a new email
+        consecutiveSkips = 0;
 
         // Fetch full message details
         const messageResponse = await fetch(
