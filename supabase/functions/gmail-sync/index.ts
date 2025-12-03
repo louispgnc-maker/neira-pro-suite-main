@@ -27,7 +27,15 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       db: { schema: 'public' },
-      auth: { persistSession: false }
+      auth: { 
+        persistSession: false,
+        autoRefreshToken: false
+      },
+      global: {
+        headers: {
+          'x-my-custom-header': 'gmail-sync'
+        }
+      }
     });
 
     // Get account details with tokens
@@ -251,7 +259,7 @@ serve(async (req) => {
         extractAttachments(messageData.payload);
 
         // Store in database
-        const { error: insertError } = await supabase
+        const { data: insertData, error: insertError } = await supabase
           .from("emails")
           .insert({
             account_id: accountId,
@@ -269,11 +277,14 @@ serve(async (req) => {
             labels: messageData.labelIds || [],
             has_attachments: attachments.length > 0,
             attachments: attachments
-          });
+          })
+          .select();
 
         if (insertError) {
-          console.error("Insert error:", insertError);
+          console.error("Insert error for message", message.id, ":", JSON.stringify(insertError));
+          console.error("Account ID:", accountId, "Message ID:", message.id);
         } else {
+          console.log("Successfully inserted message:", message.id);
           syncedCount++;
         }
       } catch (error) {
