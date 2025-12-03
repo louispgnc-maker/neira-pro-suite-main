@@ -707,7 +707,8 @@ export default function EmailInbox() {
       <div className="p-8 space-y-4 h-screen flex flex-col">
         {/* Account Selector & Buttons Bar */}
         <Card className="shadow-lg">
-          <div className="p-4 flex items-center justify-between gap-4">
+          <div className="p-4 flex items-center gap-4">
+            {/* Left: Account Selector */}
             <Select value={selectedAccount} onValueChange={(value) => {
               if (value === 'add-account') {
                 navigate(`/${role}s/email-integration`);
@@ -733,7 +734,11 @@ export default function EmailInbox() {
               </SelectContent>
             </Select>
             
-            <div className="flex items-center gap-2">
+            {/* Separator */}
+            <div className="h-8 w-px bg-border" />
+            
+            {/* Middle: Folder Navigation */}
+            <div className="flex items-center gap-2 flex-1 justify-center">
               <Button
                 size="icon"
                 className={`relative ${mainButtonColor}`}
@@ -781,7 +786,13 @@ export default function EmailInbox() {
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
+            </div>
 
+            {/* Separator */}
+            <div className="h-8 w-px bg-border" />
+
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2">
               <Button
                 className={mainButtonColor}
                 size="icon"
@@ -806,11 +817,12 @@ export default function EmailInbox() {
               
               <Button 
                 className={mainButtonColor} 
-                size="icon" 
                 onClick={handleCompose}
                 title="Nouveau message"
+                size="sm"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-4 w-4 mr-2" />
+                Composer
               </Button>
             </div>
           </div>
