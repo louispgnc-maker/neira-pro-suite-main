@@ -705,10 +705,9 @@ export default function EmailInbox() {
   return (
     <AppLayout>
       <div className="p-8 space-y-4 h-screen flex flex-col">
-        {/* Header Card */}
+        {/* Account Selector & Buttons Bar */}
         <Card className="shadow-lg">
           <div className="p-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 flex-1">
             <Select value={selectedAccount} onValueChange={(value) => {
               if (value === 'add-account') {
                 navigate(`/${role}s/email-integration`);
@@ -734,18 +733,6 @@ export default function EmailInbox() {
               </SelectContent>
             </Select>
             
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Rechercher dans les emails..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-6 flex-1">
             <div className="flex items-center gap-2">
               <Button
                 size="icon"
@@ -785,9 +772,7 @@ export default function EmailInbox() {
               >
                 <FileText className="h-4 w-4" />
               </Button>
-            </div>
-
-            <div className="flex items-center gap-2">
+              
               <Button
                 size="icon"
                 className={mainButtonColor}
@@ -829,7 +814,21 @@ export default function EmailInbox() {
               </Button>
             </div>
           </div>
-        </div>
+        </Card>
+
+        {/* Search Bar */}
+        <Card className="shadow-lg">
+          <div className="p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Rechercher dans les emails..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
         </Card>
 
         {/* Email Content Card */}
