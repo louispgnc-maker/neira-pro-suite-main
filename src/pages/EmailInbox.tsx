@@ -1019,6 +1019,10 @@ export default function EmailInbox() {
                                 }
                                 a {
                                   color: #2563eb;
+                                  text-decoration: underline;
+                                }
+                                a:hover {
+                                  color: #1d4ed8;
                                 }
                               </style>
                             </head>
@@ -1027,7 +1031,7 @@ export default function EmailInbox() {
                         `}
                         className="w-full border-0"
                         style={{ minHeight: '400px' }}
-                        sandbox="allow-same-origin"
+                        sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
                       />
                     ) : (
                       <pre className="whitespace-pre-wrap font-sans text-sm">
@@ -1047,11 +1051,19 @@ export default function EmailInbox() {
                             onClick={async () => {
                               try {
                                 toast.info('Téléchargement en cours...');
+                                
+                                // Get auth token
+                                const { data: { session } } = await supabase.auth.getSession();
+                                const authToken = session?.access_token;
+                                
                                 const response = await fetch(
                                   'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-operations',
                                   {
                                     method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
+                                    headers: { 
+                                      'Content-Type': 'application/json',
+                                      'Authorization': `Bearer ${authToken}`
+                                    },
                                     body: JSON.stringify({
                                       action: 'get-attachment',
                                       accountId: selectedAccount,
@@ -1061,7 +1073,10 @@ export default function EmailInbox() {
                                   }
                                 );
                                 
-                                if (!response.ok) throw new Error('Erreur lors du téléchargement');
+                                if (!response.ok) {
+                                  const errorData = await response.json().catch(() => ({}));
+                                  throw new Error(errorData.error || 'Erreur lors du téléchargement');
+                                }
                                 
                                 const blob = await response.blob();
                                 const url = window.URL.createObjectURL(blob);
@@ -1076,7 +1091,7 @@ export default function EmailInbox() {
                                 toast.success('Fichier téléchargé');
                               } catch (error) {
                                 console.error('Error downloading attachment:', error);
-                                toast.error('Erreur lors du téléchargement');
+                                toast.error(error instanceof Error ? error.message : 'Erreur lors du téléchargement');
                               }
                             }}
                           >
