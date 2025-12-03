@@ -35,12 +35,20 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
 
     setLoading(true);
     try {
+      // Get the current session token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Session expirée. Veuillez vous reconnecter.');
+      }
+
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-client-form',
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             clientEmail,
