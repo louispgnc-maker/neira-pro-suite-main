@@ -1001,6 +1001,7 @@ export default function EmailInbox() {
                           <html>
                             <head>
                               <meta charset="UTF-8">
+                              <base target="_blank">
                               <style>
                                 body {
                                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -1020,9 +1021,13 @@ export default function EmailInbox() {
                                 a {
                                   color: #2563eb;
                                   text-decoration: underline;
+                                  cursor: pointer;
                                 }
                                 a:hover {
                                   color: #1d4ed8;
+                                }
+                                button {
+                                  cursor: pointer;
                                 }
                               </style>
                             </head>
@@ -1031,7 +1036,7 @@ export default function EmailInbox() {
                         `}
                         className="w-full border-0"
                         style={{ minHeight: '400px' }}
-                        sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+                        sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
                       />
                     ) : (
                       <pre className="whitespace-pre-wrap font-sans text-sm">
