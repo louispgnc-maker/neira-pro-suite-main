@@ -419,6 +419,36 @@ export default function EmailInbox() {
     }
   };
 
+  const markAllAsRead = async () => {
+    try {
+      if (!selectedAccount) return;
+      
+      const unreadEmails = filteredEmails.filter(e => !e.is_read);
+      if (unreadEmails.length === 0) {
+        toast.info('Aucun email non lu');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('emails')
+        .update({ is_read: true })
+        .eq('account_id', selectedAccount)
+        .eq('is_read', false);
+
+      if (error) throw error;
+      
+      setEmails(prev => prev.map(e => ({ ...e, is_read: true })));
+      if (selectedEmail && !selectedEmail.is_read) {
+        setSelectedEmail({ ...selectedEmail, is_read: true });
+      }
+      
+      toast.success(`${unreadEmails.length} email(s) marqué(s) comme lu(s)`);
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      toast.error('Erreur lors du marquage des emails');
+    }
+  };
+
   const toggleStar = async (emailId: string, currentStarred: boolean) => {
     try {
       const { error } = await supabase
@@ -776,6 +806,18 @@ export default function EmailInbox() {
               >
                 <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
               </Button>
+
+              {unreadCount > 0 && (
+                <Button
+                  className={mainButtonColor}
+                  onClick={markAllAsRead}
+                  title="Marquer tout comme lu"
+                  size="sm"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  Tout lire
+                </Button>
+              )}
               
               <Button 
                 className={mainButtonColor} 
