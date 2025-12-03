@@ -81,9 +81,6 @@ export default function Statistiques() {
   const [ca, setCa] = useState(0); // Chiffre d'affaires (placeholder)
   const [caEvolution, setCaEvolution] = useState(0); // % évolution
 
-  // Vérifier si l'utilisateur a accès (cabinet-plus uniquement)
-  const hasAccess = limits.subscription_plan === 'cabinet-plus';
-
   useEffect(() => {
     async function loadStats() {
       if (!user) return;
@@ -91,6 +88,8 @@ export default function Statistiques() {
       // Attendre que les limites soient chargées
       if (limits.loading) return;
       
+      // Vérifier si l'utilisateur a accès (cabinet-plus uniquement)
+      const hasAccess = limits.subscription_plan === 'cabinet-plus';
       if (!hasAccess) {
         setLoading(false);
         return;
@@ -254,7 +253,7 @@ export default function Statistiques() {
     }
 
     loadStats();
-  }, [user, role, hasAccess, limits.loading]);
+  }, [user, role, limits.loading, limits.subscription_plan]);
 
   // Afficher le loading pendant le chargement des limites OU des stats
   if (loading || limits.loading || statsLoading) {
@@ -272,7 +271,8 @@ export default function Statistiques() {
     );
   }
 
-  if (!hasAccess) {
+  // Vérifier l'accès seulement après le chargement complet
+  if (limits.subscription_plan !== 'cabinet-plus') {
     return (
       <AppLayout>
         <div className="p-6">
