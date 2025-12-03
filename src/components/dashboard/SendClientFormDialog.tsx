@@ -59,9 +59,15 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
       
       if (data.formUrl) {
         setFormUrl(data.formUrl);
-        toast.success('Formulaire envoyé avec succès !', {
-          description: `Un email a été envoyé à ${clientEmail}`
-        });
+        if (data.emailSent === false) {
+          toast.warning('Formulaire créé avec succès', {
+            description: `L'email n'a pas pu être envoyé. Copiez le lien pour le partager manuellement.`
+          });
+        } else {
+          toast.success('Formulaire envoyé avec succès !', {
+            description: `Un email a été envoyé à ${clientEmail}`
+          });
+        }
       } else {
         throw new Error('URL du formulaire non disponible');
       }

@@ -63,14 +63,27 @@ serve(async (req) => {
     const emailJsTemplateId = Deno.env.get('EMAILJS_CLIENT_FORM_TEMPLATE_ID') || Deno.env.get('EMAILJS_TEMPLATE_ID')
     const emailJsUserId = Deno.env.get('EMAILJS_USER_ID')
 
+    console.log('EmailJS config check:', {
+      hasServiceId: !!emailJsServiceId,
+      hasTemplateId: !!emailJsTemplateId,
+      hasUserId: !!emailJsUserId
+    })
+
     if (!emailJsServiceId || !emailJsTemplateId || !emailJsUserId) {
-      console.error('EmailJS configuration missing')
+      console.error('EmailJS configuration missing', {
+        serviceId: !!emailJsServiceId,
+        templateId: !!emailJsTemplateId,
+        userId: !!emailJsUserId
+      })
+      // Return success with form URL even if email fails
       return new Response(
         JSON.stringify({ 
-          error: 'Email service not configured',
-          form: form // Still return the form so it can be accessed manually
+          success: true,
+          formUrl: formUrl,
+          emailSent: false,
+          message: 'Formulaire créé mais email non envoyé (configuration manquante)'
         }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
@@ -100,14 +113,24 @@ serve(async (req) => {
     if (!emailResponse.ok) {
       const errorText = await emailResponse.text()
       console.error('EmailJS error:', errorText)
-      throw new Error(`Email sending failed: ${errorText}`)
+      // Return success avec le form URL même si l'email échoue
+      return new Response(
+        JSON.stringify({ 
+          success: true,
+          formUrl: formUrl,
+          emailSent: false,
+          message: 'Formulaire créé mais email non envoyé (erreur EmailJS)'
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         form: form,
-        formUrl: formUrl
+        formUrl: formUrl,
+        emailSent: true
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
