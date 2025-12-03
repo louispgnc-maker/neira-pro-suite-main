@@ -73,8 +73,10 @@ export default function EmailInbox() {
   
   // Compose form
   const [composeTo, setComposeTo] = useState('');
+  const [composeCc, setComposeCc] = useState('');
   const [composeSubject, setComposeSubject] = useState('');
   const [composeBody, setComposeBody] = useState('');
+  const [composeAttachments, setComposeAttachments] = useState<File[]>([]);
 
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
@@ -296,12 +298,9 @@ export default function EmailInbox() {
         const errorText = await response.text();
         console.error('[EmailInbox] Sync error:', errorText);
         
-        // If it's a 401 error, the token has expired
+        // Don't show error for 401 - just log and continue
         if (response.status === 401) {
-          toast.error('Votre compte email nécessite une reconnexion', {
-            description: 'Cliquez sur "Ajouter un compte" ci-dessus pour reconnecter votre compte ' + provider.toUpperCase(),
-            duration: 8000
-          });
+          console.log('[EmailInbox] Token needs refresh, will retry on next sync');
           return;
         }
         
@@ -402,22 +401,28 @@ export default function EmailInbox() {
 
   const handleCompose = () => {
     setComposeTo('');
+    setComposeCc('');
     setComposeSubject('');
     setComposeBody('');
+    setComposeAttachments([]);
     setShowCompose(true);
   };
 
   const handleReply = (email: Email) => {
     setComposeTo(email.from_address);
+    setComposeCc('');
     setComposeSubject(`Re: ${email.subject}`);
     setComposeBody(`\n\n--- Message original ---\nDe: ${email.from_address}\nDate: ${new Date(email.received_at).toLocaleString('fr-FR')}\nObjet: ${email.subject}\n\n${email.body_text}`);
+    setComposeAttachments([]);
     setShowCompose(true);
   };
 
   const handleForward = (email: Email) => {
     setComposeTo('');
+    setComposeCc('');
     setComposeSubject(`Fwd: ${email.subject}`);
     setComposeBody(`\n\n--- Message transféré ---\nDe: ${email.from_address}\nDate: ${new Date(email.received_at).toLocaleString('fr-FR')}\nObjet: ${email.subject}\n\n${email.body_text}`);
+    setComposeAttachments([]);
     setShowCompose(true);
   };
 
@@ -845,9 +850,16 @@ export default function EmailInbox() {
           <div className="space-y-4">
             <div>
               <Input
-                placeholder="Destinataire"
+                placeholder="Destinataires (séparer par des virgules)"
                 value={composeTo}
                 onChange={(e) => setComposeTo(e.target.value)}
+              />
+            </div>
+            <div>
+              <Input
+                placeholder="Cc (optionnel, séparer par des virgules)"
+                value={composeCc}
+                onChange={(e) => setComposeCc(e.target.value)}
               />
             </div>
             <div>
@@ -862,9 +874,58 @@ export default function EmailInbox() {
                 placeholder="Votre message..."
                 value={composeBody}
                 onChange={(e) => setComposeBody(e.target.value)}
-                rows={12}
+                rows={10}
               />
             </div>
+            
+            {/* Attachments */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById('file-upload')?.click()}
+                >
+                  <Paperclip className="h-4 w-4 mr-2" />
+                  Joindre des fichiers
+                </Button>
+                <input
+                  id="file-upload"
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setComposeAttachments(prev => [...prev, ...Array.from(e.target.files!)]);
+                    }
+                  }}
+                />
+              </div>
+              
+              {composeAttachments.length > 0 && (
+                <div className="space-y-1">
+                  {composeAttachments.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
+                      <div className="flex items-center gap-2">
+                        <Paperclip className="h-3 w-3" />
+                        <span>{file.name}</span>
+                        <span className="text-muted-foreground">({(file.size / 1024).toFixed(1)} KB)</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setComposeAttachments(prev => prev.filter((_, i) => i !== index))}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCompose(false)}>
                 Annuler
