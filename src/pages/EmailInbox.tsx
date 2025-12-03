@@ -707,77 +707,98 @@ export default function EmailInbox() {
       <div className="p-8 space-y-4 h-screen flex flex-col">
         {/* Buttons Bar */}
         <div className="bg-white/40 backdrop-blur-md rounded-xl p-4 shadow-lg">
-          <div className="flex items-center justify-center gap-3">
-            {/* Primary Actions */}
-            <Button
-              className={`relative h-10 rounded-xl text-sm bg-white border-2 ${
-                currentFolder === 'inbox' 
-                  ? role === 'notaire' ? 'border-orange-500 text-orange-600' : 'border-blue-500 text-blue-600'
-                  : 'border-gray-300 text-gray-700 hover:border-orange-400'
-              }`}
-              onClick={() => setCurrentFolder('inbox')}
-              title="Boîte de réception"
-            >
-              <Inbox className={`h-4 w-4 mr-2 ${currentFolder === 'inbox' ? (role === 'notaire' ? 'text-orange-600' : 'text-blue-600') : 'text-gray-600'}`} />
-              Réception
-              {unreadCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-orange-500" variant="secondary">{unreadCount}</Badge>
-              )}
-            </Button>
-            
-            <Button
-              className={`h-10 rounded-xl text-sm bg-white border-2 ${
-                currentFolder === 'sent'
-                  ? role === 'notaire' ? 'border-orange-500 text-orange-600' : 'border-blue-500 text-blue-600'
-                  : 'border-gray-300 text-gray-700 hover:border-orange-400'
-              }`}
-              onClick={() => setCurrentFolder('sent')}
-              title="Envoyés"
-            >
-              <Send className={`h-4 w-4 mr-2 ${currentFolder === 'sent' ? (role === 'notaire' ? 'text-orange-600' : 'text-blue-600') : 'text-gray-600'}`} />
-              Envoyés
-            </Button>
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Navigation */}
+            <div className="flex items-center gap-3">
+              <Button
+                className={`relative h-10 rounded-full text-sm transition-all ${
+                  currentFolder === 'inbox' 
+                    ? 'bg-orange-500 text-white border-2 border-orange-500 shadow-md' 
+                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300'
+                }`}
+                onClick={() => setCurrentFolder('inbox')}
+                title="Boîte de réception"
+              >
+                <Inbox className="h-4 w-4 mr-2" />
+                Réception
+                {unreadCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-red-500" variant="secondary">{unreadCount}</Badge>
+                )}
+              </Button>
+              
+              <Button
+                className={`h-10 rounded-full text-sm transition-all ${
+                  currentFolder === 'sent'
+                    ? 'bg-orange-500 text-white border-2 border-orange-500 shadow-md'
+                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300'
+                }`}
+                onClick={() => setCurrentFolder('sent')}
+                title="Envoyés"
+              >
+                <Send className="h-4 w-4 mr-2" />
+                Envoyés
+              </Button>
 
-            {/* More Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  className="h-10 rounded-xl text-sm bg-white border-2 border-gray-300 text-gray-700 hover:border-orange-400"
-                  title="Plus d'options"
-                >
-                  <MoreVertical className="h-4 w-4 mr-2 text-gray-600" />
-                  Plus
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={() => setCurrentFolder('archive')}>
-                  <Archive className="h-4 w-4 mr-2" />
-                  Archivés
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCurrentFolder('drafts')}>
-                  <FileText className="h-4 w-4 mr-2" />
-                  Brouillons
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCurrentFolder('trash')}>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Corbeille
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              {/* More Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="h-10 rounded-full text-sm bg-white text-gray-700 border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300 transition-all"
+                    title="Plus d'options"
+                  >
+                    <MoreVertical className="h-4 w-4 mr-2" />
+                    Plus
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => setCurrentFolder('archive')}>
+                    <Archive className="h-4 w-4 mr-2" />
+                    Archivés
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCurrentFolder('drafts')}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Brouillons
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCurrentFolder('trash')}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Corbeille
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
-            {/* Quick Actions - Icon Only */}
-            <Button
-              className="h-10 w-10 rounded-xl bg-white border-2 border-gray-300 hover:border-orange-400 p-0"
-              onClick={handleSync}
-              disabled={syncing}
-              title="Synchroniser"
-            >
-              <RefreshCw className={`h-4 w-4 text-gray-600 ${syncing ? 'animate-spin' : ''}`} />
-            </Button>
+            {/* Right: Actions */}
+            <div className="flex items-center gap-3">
+              {/* Quick Actions - Icon Only */}
+              <Button
+                className="h-10 w-10 rounded-full bg-white border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300 transition-all p-0"
+                onClick={handleSync}
+                disabled={syncing}
+                title="Synchroniser"
+              >
+                <RefreshCw className={`h-4 w-4 text-gray-600 ${syncing ? 'animate-spin' : ''}`} />
+              </Button>
 
-            <Button
-              className="h-10 w-10 rounded-xl bg-white border-2 border-gray-300 hover:border-orange-400 p-0"
-              onClick={markAllAsRead}
+              <Button
+                className="h-10 w-10 rounded-full bg-white border-2 border-gray-200 hover:bg-orange-50/50 hover:border-orange-300 transition-all p-0"
+                onClick={markAllAsRead}
+                title="Marquer tout comme lu"
+              >
+                <Mail className="h-4 w-4 text-gray-600" />
+              </Button>
+              
+              {/* Primary CTA */}
+              <Button 
+                className="h-10 rounded-full text-sm bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md hover:shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all border-0"
+                onClick={handleCompose}
+                title="Nouveau message"
+              >
+                <Send className="h-4 w-4 mr-2" />
+                Écrire
+              </Button>
+            </div>
+          </div>
+        </div>
               title="Marquer tout comme lu"
             >
               <Mail className="h-4 w-4 text-gray-600" />
