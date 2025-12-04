@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Mail, ArrowRight } from "lucide-react";
-import emailjs from '@emailjs/browser';
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function Contact() {
@@ -21,41 +20,32 @@ export default function Contact() {
     message: "",
   });
 
-  // Initialize EmailJS
-  useEffect(() => {
-    emailjs.init('5W-s-TGNKX6CkmGu3');
-  }, []);
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Send confirmation email to client
-      await emailjs.send(
-        'service_pplgv88',
-        'template_ss4jq2s',
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
         {
-          from_name: `${formData.firstName} ${formData.lastName}`,
-          from_email: formData.email,
-          company: formData.company,
-          subject: formData.subject,
-          message: formData.message,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            company: formData.company,
+            subject: formData.subject,
+            message: formData.message,
+          })
         }
       );
 
-      // Send notification email to you
-      await emailjs.send(
-        'service_pplgv88',
-        'template_u6upq8f',
-        {
-          from_name: `${formData.firstName} ${formData.lastName}`,
-          from_email: formData.email,
-          company: formData.company,
-          subject: formData.subject,
-          message: formData.message,
-        }
-      );
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'envoi du message');
+      }
 
       toast.success("Message envoyé avec succès !", {
         description: "Nous vous répondrons dans les plus brefs délais.",
@@ -71,9 +61,9 @@ export default function Contact() {
         message: "",
       });
     } catch (error) {
-      console.error('EmailJS Error:', error);
+      console.error('Contact form error:', error);
       toast.error("Erreur lors de l'envoi", {
-        description: "Veuillez réessayer plus tard.",
+        description: "Veuillez réessayer plus tard ou nous contacter directement à contact@neira.fr",
       });
     } finally {
       setIsSubmitting(false);
