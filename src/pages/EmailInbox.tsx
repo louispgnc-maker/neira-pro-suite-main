@@ -557,26 +557,24 @@ export default function EmailInbox() {
       return;
     }
 
+    if (!selectedAccount) {
+      toast.error('Aucun compte sélectionné');
+      return;
+    }
+
     try {
-      console.log('[EmailInbox] Sending email via Resend');
+      console.log('[EmailInbox] Sending email from account:', selectedAccount);
       
-      // Get the current session token
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('Session expirée. Veuillez vous reconnecter.');
-      }
-      
-      // Call edge function to send email via Resend
+      // Call edge function to send email via Gmail API
       const response = await fetch(
-        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-email-resend',
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-send',
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ 
+            accountId: selectedAccount,
             to: composeTo,
             subject: composeSubject,
             body: composeBody
@@ -585,9 +583,9 @@ export default function EmailInbox() {
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('[EmailInbox] Send error:', errorData);
-        throw new Error(errorData.error || 'Erreur lors de l\'envoi de l\'email');
+        const errorText = await response.text();
+        console.error('[EmailInbox] Send error:', errorText);
+        throw new Error('Erreur lors de l\'envoi de l\'email');
       }
 
       const data = await response.json();
