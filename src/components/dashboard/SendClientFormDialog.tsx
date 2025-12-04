@@ -67,15 +67,9 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
       
       if (data.formUrl) {
         setFormUrl(data.formUrl);
-        if (data.emailSent === false) {
-          toast.warning('Formulaire créé avec succès', {
-            description: `L'email n'a pas pu être envoyé. Copiez le lien pour le partager manuellement.`
-          });
-        } else {
-          toast.success('Formulaire envoyé avec succès !', {
-            description: `Un email a été envoyé à ${clientEmail}`
-          });
-        }
+        toast.success('Lien du formulaire généré !', {
+          description: `Copiez le lien pour l'envoyer à ${clientEmail}`
+        });
       } else {
         throw new Error('URL du formulaire non disponible');
       }
@@ -108,9 +102,9 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Envoyer un formulaire au client</DialogTitle>
+          <DialogTitle>Créer un lien de formulaire client</DialogTitle>
           <DialogDescription>
-            Le client recevra un email avec un lien pour compléter ses informations.
+            Générez un lien sécurisé que vous pourrez envoyer au client pour qu'il complète ses informations.
           </DialogDescription>
         </DialogHeader>
 
@@ -159,7 +153,7 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
                 ) : (
                   <>
                     <Send className="mr-2 h-4 w-4" />
-                    Envoyer
+                    Générer le lien
                   </>
                 )}
               </Button>
@@ -167,24 +161,29 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="rounded-lg bg-green-50 p-4">
-              <p className="text-sm text-green-800">
-                ✓ Formulaire envoyé avec succès à <strong>{clientEmail}</strong>
+            <div className="rounded-lg bg-orange-50 border border-orange-200 p-4">
+              <p className="text-sm text-orange-800 font-medium mb-2">
+                ⚠️ Lien du formulaire généré
+              </p>
+              <p className="text-sm text-orange-700">
+                Copiez ce lien et envoyez-le à <strong>{clientEmail}</strong> par votre moyen de communication habituel (email, SMS, WhatsApp, etc.)
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Lien du formulaire</Label>
+              <Label>Lien du formulaire à partager</Label>
               <div className="flex gap-2">
                 <Input
                   value={formUrl}
                   readOnly
-                  className="font-mono text-xs"
+                  className="font-mono text-xs bg-gray-50"
+                  onClick={(e) => e.currentTarget.select()}
                 />
                 <Button
                   size="icon"
                   variant="outline"
                   onClick={handleCopyLink}
+                  className="shrink-0"
                 >
                   {copied ? (
                     <Check className="h-4 w-4 text-green-600" />
@@ -194,7 +193,7 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Vous pouvez également partager ce lien directement avec votre client
+                Cliquez sur le champ pour sélectionner tout le lien, ou utilisez le bouton copier
               </p>
             </div>
 

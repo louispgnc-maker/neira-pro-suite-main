@@ -103,65 +103,17 @@ export default function PublicClientForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!form) return;
+    if (!form || !token) return;
     
     setSubmitting(true);
     try {
-      // 1. Sauvegarder la réponse du formulaire
-      const { data: responseData, error: responseError } = await supabase
-        .from('client_form_responses')
-        .insert({
-          form_id: form.id,
-          response_data: formData
-        })
-        .select()
-        .single();
+      // Use the RPC function to submit the form
+      const { data, error } = await supabase.rpc('submit_client_form', {
+        form_token: token,
+        form_response: formData
+      });
 
-      if (responseError) throw responseError;
-
-      // 2. Créer automatiquement la fiche client
-      const { data: clientData, error: clientError } = await supabase
-        .from('clients')
-        .insert({
-          cabinet_id: form.cabinet_id,
-          nom: formData.nom,
-          prenom: formData.prenom,
-          email: formData.email,
-          telephone: formData.telephone,
-          adresse: formData.adresse,
-          code_postal: formData.code_postal,
-          ville: formData.ville,
-          date_naissance: formData.date_naissance || null,
-          lieu_naissance: formData.lieu_naissance || null,
-          nationalite: formData.nationalite || null,
-          profession: formData.profession || null,
-          situation_familiale: formData.situation_familiale || null,
-          regime_matrimonial: formData.regime_matrimonial || null,
-          nombre_enfants: formData.nombre_enfants ? parseInt(formData.nombre_enfants) : null,
-          notes: formData.notes || null
-        })
-        .select()
-        .single();
-
-      if (clientError) throw clientError;
-
-      // 3. Mettre à jour le formulaire avec le client_id et le statut
-      const { error: updateFormError } = await supabase
-        .from('client_form_responses')
-        .update({ client_id: clientData.id })
-        .eq('id', responseData.id);
-
-      if (updateFormError) console.error('Error updating response with client_id:', updateFormError);
-
-      const { error: formUpdateError } = await supabase
-        .from('client_forms')
-        .update({ 
-          status: 'completed',
-          completed_at: new Date().toISOString()
-        })
-        .eq('id', form.id);
-
-      if (formUpdateError) throw formUpdateError;
+      if (error) throw error;
 
       setSubmitted(true);
       toast.success('Formulaire soumis avec succès !');
