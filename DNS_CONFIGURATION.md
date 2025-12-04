@@ -60,6 +60,49 @@ Priority: 4
 
 ## 🔧 Configuration par hébergeur
 
+### Hostinger
+
+1. Connectez-vous sur https://hpanel.hostinger.com/
+2. Allez dans **"Domaines"** → Sélectionnez votre domaine
+3. Cliquez sur **"DNS / Serveurs de noms"**
+4. Section **"Gérer les enregistrements DNS"**
+5. Pour chaque enregistrement :
+
+   **DKIM** :
+   - Cliquez sur **"Ajouter un enregistrement"**
+   - Type : **TXT**
+   - Nom : `resend._domainkey`
+   - Contenu : `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCy8hATzt1NdOxmAk+31wTh7pM07afO9JofULg60p4U15pJ07GFmAjyTyzR26hVtx1PSbEecylilZQXKBHvDkRn5vKKRVeAlBVGXt0fKmL8LcbKZJi0RuGZCjc5cFOaVkOIZRkC/Z9CeGNU8gcQLivJ0ht/CdK8nzUEerJtpbo+VwIDAQAB`
+   - TTL : **3600** (ou laisser par défaut)
+   - Cliquez sur **"Ajouter"**
+
+   **SPF - Enregistrement MX** :
+   - Cliquez sur **"Ajouter un enregistrement"**
+   - Type : **MX**
+   - Nom : `send` (ou `send.votre-domaine.com` selon l'interface)
+   - Pointe vers : `feedback-smtp.eu-west-1.amazonses.com`
+   - Priorité : **10**
+   - TTL : **3600**
+   - Cliquez sur **"Ajouter"**
+
+   **SPF - Enregistrement TXT** :
+   - Cliquez sur **"Ajouter un enregistrement"**
+   - Type : **TXT**
+   - Nom : `send`
+   - Contenu : `v=spf1 include:amazonses.com ~all`
+   - TTL : **3600**
+   - Cliquez sur **"Ajouter"**
+
+   **MX Réception (optionnel)** :
+   - ⚠️ **Attention** : Seulement si vous n'utilisez pas déjà les emails Hostinger
+   - Type : **MX**
+   - Nom : `@` (ou laisser vide)
+   - Pointe vers : `inbound-smtp.eu-west-1.amazonaws.com`
+   - Priorité : **4**
+   - TTL : **3600**
+
+💡 **Astuce Hostinger** : La propagation DNS chez Hostinger est très rapide (5-15 minutes).
+
 ### OVH
 
 1. Allez sur https://www.ovh.com/manager/
@@ -135,6 +178,7 @@ dig MX send.votre-domaine.fr
 
 | Hébergeur | Temps moyen |
 |-----------|-------------|
+| **Hostinger** | **5-15 minutes** ⚡ |
 | Cloudflare | 2-5 minutes |
 | OVH | 15-30 minutes |
 | Google Domains | 5-10 minutes |
