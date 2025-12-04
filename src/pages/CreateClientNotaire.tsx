@@ -39,13 +39,20 @@ export default function CreateClientNotaire() {
   // 1. Informations personnelles
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
+  const [nomNaissance, setNomNaissance] = useState("");
   const [dateNaissance, setDateNaissance] = useState("");
   const [lieuNaissance, setLieuNaissance] = useState("");
   const [adresse, setAdresse] = useState("");
+  const [codePostal, setCodePostal] = useState("");
+  const [ville, setVille] = useState("");
+  const [pays, setPays] = useState("France");
   const [telephone, setTelephone] = useState("");
   const [email, setEmail] = useState("");
   const [nationalite, setNationalite] = useState("");
+  const [sexe, setSexe] = useState("");
   const [etatCivil, setEtatCivil] = useState("");
+  const [regimeMatrimonial, setRegimeMatrimonial] = useState("");
+  const [aEnfants, setAEnfants] = useState("non");
 
   // 2. Identification officielle
   const [typeIdentite, setTypeIdentite] = useState("");
@@ -60,24 +67,54 @@ export default function CreateClientNotaire() {
 
   // 4. Situation professionnelle et financière
   const [profession, setProfession] = useState("");
+  const [statutPro, setStatutPro] = useState("");
   const [employeur, setEmployeur] = useState("");
+  const [telephonePro, setTelephonePro] = useState("");
   const [adressePro, setAdressePro] = useState("");
+  const [emailPro, setEmailPro] = useState("");
   const [revenus, setRevenus] = useState("");
   const [situationFiscale, setSituationFiscale] = useState("");
+  const [patrimoineImmobilier, setPatrimoineImmobilier] = useState("non");
   const [justificatifsFinanciers, setJustificatifsFinanciers] = useState("");
   const [comptesBancairesRaw, setComptesBancairesRaw] = useState(""); // multiline -> split lines
+  const [creditsEnCours, setCreditsEnCours] = useState("");
 
-  // 5. Documents liés à l'objet du dossier / Situation juridique
+  // 5. Facturation
+  const [adresseFacturationIdentique, setAdresseFacturationIdentique] = useState(true);
+  const [adresseFacturation, setAdresseFacturation] = useState("");
+  const [numeroTVA, setNumeroTVA] = useState("");
+  const [siret, setSiret] = useState("");
+
+  // 6. Mandat/Représentation
+  const [agitNomPropre, setAgitNomPropre] = useState(true);
+  const [representant, setRepresentant] = useState("");
+
+  // 7. Documents liés à l'objet du dossier / Situation juridique
   const [typeDossier, setTypeDossier] = useState("");
+  const [objetPrecis, setObjetPrecis] = useState("");
+  const [descriptionBesoin, setDescriptionBesoin] = useState("");
+  const [niveauUrgence, setNiveauUrgence] = useState("normal");
+  const [dateLimite, setDateLimite] = useState("");
   const [contratSouhaite, setContratSouhaite] = useState("");
   const [documentsObjetRaw, setDocumentsObjetRaw] = useState(""); // multiline -> JSON array
+  const [justificatifDomicile, setJustificatifDomicile] = useState<File | null>(null);
+  const [autresDocuments, setAutresDocuments] = useState<File[]>([]);
+
+  // 9. Préférences de communication
+  const [modeContact, setModeContact] = useState("email");
+
+  // 10. Informations complémentaires
+  const [notes, setNotes] = useState("");
 
   // Multi-contrat association
   const [contrats, setContrats] = useState<ContratOption[]>([]);
   const [selectedContrats, setSelectedContrats] = useState<string[]>([]);
 
-  // 6. Consentements
+  // 11. Consentements
   const [consentementRGPD, setConsentementRGPD] = useState(false);
+  const [acceptationCGU, setAcceptationCGU] = useState(false);
+  const [acceptationConservation, setAcceptationConservation] = useState(false);
+  const [autorisationContact, setAutorisationContact] = useState(false);
   const [signatureMandat, setSignatureMandat] = useState(false);
 
   useEffect(() => {
@@ -236,6 +273,10 @@ export default function CreateClientNotaire() {
                   <Input id="prenom" value={prenom} onChange={e => setPrenom(e.target.value)} required />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="nomNaissance">Nom de naissance</Label>
+                <Input id="nomNaissance" value={nomNaissance} onChange={e => setNomNaissance(e.target.value)} />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dateNaissance">Date de naissance</Label>
@@ -247,37 +288,89 @@ export default function CreateClientNotaire() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="adresse">Adresse postale complète</Label>
-                <Textarea id="adresse" rows={2} value={adresse} onChange={e => setAdresse(e.target.value)} />
+                <Label htmlFor="adresse">Adresse complète (n°, rue) *</Label>
+                <Textarea id="adresse" rows={2} value={adresse} onChange={e => setAdresse(e.target.value)} placeholder="Numéro et nom de rue" required />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="codePostal">Code postal *</Label>
+                  <Input id="codePostal" value={codePostal} onChange={e => setCodePostal(e.target.value)} placeholder="75001" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ville">Ville *</Label>
+                  <Input id="ville" value={ville} onChange={e => setVille(e.target.value)} placeholder="Paris" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pays">Pays *</Label>
+                  <Input id="pays" value={pays} onChange={e => setPays(e.target.value)} placeholder="France" required />
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="telephone">Téléphone</Label>
-                  <Input id="telephone" type="tel" value={telephone} onChange={e => setTelephone(e.target.value)} />
+                  <Label htmlFor="telephone">Téléphone portable *</Label>
+                  <Input id="telephone" type="tel" value={telephone} onChange={e => setTelephone(e.target.value)} placeholder="+33 6 12 34 56 78" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+                  <Label htmlFor="email">Adresse e-mail *</Label>
+                  <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@exemple.fr" required />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nationalite">Nationalité</Label>
-                  <Input id="nationalite" value={nationalite} onChange={e => setNationalite(e.target.value)} />
+                  <Label htmlFor="nationalite">Nationalité *</Label>
+                  <Input id="nationalite" value={nationalite} onChange={e => setNationalite(e.target.value)} placeholder="Française" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="etatCivil">État civil</Label>
+                  <Label htmlFor="sexe">Sexe</Label>
+                  <Select value={sexe} onValueChange={setSexe}>
+                    <SelectTrigger id="sexe"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                    <SelectContent className="bg-orange-50 border-orange-200">
+                      <SelectItem className={itemHover} value="Homme">Homme</SelectItem>
+                      <SelectItem className={itemHover} value="Femme">Femme</SelectItem>
+                      <SelectItem className={itemHover} value="Autre">Autre</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="etatCivil">Situation familiale *</Label>
                   <Select value={etatCivil} onValueChange={setEtatCivil}>
                     <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                     <SelectContent className="bg-orange-50 border-orange-200">
                       <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
-                      <SelectItem className={itemHover} value="Marié">Marié</SelectItem>
-                      <SelectItem className={itemHover} value="Pacsé">Pacsé</SelectItem>
-                      <SelectItem className={itemHover} value="Divorcé">Divorcé</SelectItem>
-                      <SelectItem className={itemHover} value="Veuf">Veuf</SelectItem>
-                      <SelectItem className={itemHover} value="Séparé">Séparé</SelectItem>
+                      <SelectItem className={itemHover} value="Marié(e)">Marié(e)</SelectItem>
+                      <SelectItem className={itemHover} value="Pacsé(e)">Pacsé(e)</SelectItem>
+                      <SelectItem className={itemHover} value="Divorcé(e)">Divorcé(e)</SelectItem>
+                      <SelectItem className={itemHover} value="Veuf(ve)">Veuf(ve)</SelectItem>
+                      <SelectItem className={itemHover} value="Concubinage">Concubinage</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+              {(etatCivil === "Marié(e)" || etatCivil === "Pacsé(e)") && (
+                <div className="space-y-2">
+                  <Label htmlFor="regimeMatrimonial">Régime matrimonial</Label>
+                  <Select value={regimeMatrimonial} onValueChange={setRegimeMatrimonial}>
+                    <SelectTrigger id="regimeMatrimonial"><SelectValue placeholder="Si marié(e)..." /></SelectTrigger>
+                    <SelectContent className="bg-orange-50 border-orange-200">
+                      <SelectItem className={itemHover} value="Communauté réduite aux acquêts">Communauté réduite aux acquêts</SelectItem>
+                      <SelectItem className={itemHover} value="Séparation de biens">Séparation de biens</SelectItem>
+                      <SelectItem className={itemHover} value="Communauté universelle">Communauté universelle</SelectItem>
+                      <SelectItem className={itemHover} value="Participation aux acquêts">Participation aux acquêts</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label>Avez-vous des enfants ? *</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="aEnfants" checked={aEnfants === "oui"} onChange={() => setAEnfants("oui")} />
+                    <span>Oui</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="aEnfants" checked={aEnfants === "non"} onChange={() => setAEnfants("non")} />
+                    <span>Non</span>
+                  </label>
                 </div>
               </div>
             </CardContent>
