@@ -60,13 +60,14 @@ serve(async (req) => {
 
     // Send email using EmailJS-compatible API
     const emailJsServiceId = Deno.env.get('EMAILJS_SERVICE_ID')
-    const emailJsTemplateId = Deno.env.get('EMAILJS_CLIENT_FORM_TEMPLATE_ID') || Deno.env.get('EMAILJS_TEMPLATE_ID')
+    const emailJsTemplateId = Deno.env.get('EMAILJS_CLIENT_FORM_TEMPLATE_ID')
     const emailJsUserId = Deno.env.get('EMAILJS_USER_ID')
 
     console.log('EmailJS config check:', {
       hasServiceId: !!emailJsServiceId,
       hasTemplateId: !!emailJsTemplateId,
-      hasUserId: !!emailJsUserId
+      hasUserId: !!emailJsUserId,
+      formUrl: formUrl
     })
 
     if (!emailJsServiceId || !emailJsTemplateId || !emailJsUserId) {
@@ -75,13 +76,17 @@ serve(async (req) => {
         templateId: !!emailJsTemplateId,
         userId: !!emailJsUserId
       })
+      console.error('Please configure these environment variables in Supabase:')
+      console.error('- EMAILJS_SERVICE_ID')
+      console.error('- EMAILJS_CLIENT_FORM_TEMPLATE_ID')
+      console.error('- EMAILJS_USER_ID')
       // Return success with form URL even if email fails
       return new Response(
         JSON.stringify({ 
           success: true,
           formUrl: formUrl,
           emailSent: false,
-          message: 'Formulaire créé mais email non envoyé (configuration manquante)'
+          message: 'Formulaire créé mais email non envoyé (configuration EmailJS manquante)'
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )

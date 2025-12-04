@@ -25,6 +25,7 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
   const [clientName, setClientName] = useState('');
   const [loading, setLoading] = useState(false);
   const [formUrl, setFormUrl] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleSend = async () => {
@@ -67,9 +68,17 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
       
       if (data.formUrl) {
         setFormUrl(data.formUrl);
-        toast.success('Lien du formulaire généré !', {
-          description: `Copiez le lien pour l'envoyer à ${clientEmail}`
-        });
+        setEmailSent(data.emailSent || false);
+        
+        if (data.emailSent) {
+          toast.success('Email envoyé avec succès !', {
+            description: `Le formulaire a été envoyé à ${clientEmail}`
+          });
+        } else {
+          toast.success('Lien du formulaire généré', {
+            description: `Copiez le lien pour l'envoyer à ${clientEmail}`
+          });
+        }
       } else {
         throw new Error('URL du formulaire non disponible');
       }
@@ -94,6 +103,7 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
     setClientEmail('');
     setClientName('');
     setFormUrl('');
+    setEmailSent(false);
     setCopied(false);
     onOpenChange(false);
   };
@@ -161,14 +171,27 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="rounded-lg bg-orange-50 border border-orange-200 p-4">
-              <p className="text-sm text-orange-800 font-medium mb-2">
-                ⚠️ Lien du formulaire généré
-              </p>
-              <p className="text-sm text-orange-700">
-                Copiez ce lien et envoyez-le à <strong>{clientEmail}</strong> par votre moyen de communication habituel (email, SMS, WhatsApp, etc.)
-              </p>
-            </div>
+            {emailSent ? (
+              // Email envoyé avec succès
+              <div className="rounded-lg bg-green-50 border border-green-200 p-4">
+                <p className="text-sm text-green-800 font-medium mb-2">
+                  ✅ Email envoyé avec succès !
+                </p>
+                <p className="text-sm text-green-700">
+                  Le formulaire a été envoyé à <strong>{clientEmail}</strong>. Le client recevra un email avec un lien sécurisé pour compléter ses informations.
+                </p>
+              </div>
+            ) : (
+              // Email non envoyé (configuration manquante)
+              <div className="rounded-lg bg-orange-50 border border-orange-200 p-4">
+                <p className="text-sm text-orange-800 font-medium mb-2">
+                  ⚠️ Lien du formulaire généré
+                </p>
+                <p className="text-sm text-orange-700">
+                  Copiez ce lien et envoyez-le à <strong>{clientEmail}</strong> par votre moyen de communication habituel (email, SMS, WhatsApp, etc.)
+                </p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label>Lien du formulaire à partager</Label>

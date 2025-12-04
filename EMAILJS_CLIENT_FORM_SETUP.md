@@ -1,8 +1,8 @@
-# Template EmailJS pour le formulaire client
+# 📧 Configuration EmailJS pour l'envoi automatique des formulaires clients
 
-## Créer le template dans EmailJS
+## 📋 Étape 1 : Créer le template EmailJS
 
-1. Allez dans **Email Templates** sur https://dashboard.emailjs.com/
+1. Allez sur https://dashboard.emailjs.com/admin/templates
 2. Cliquez sur **Create New Template**
 3. Nommez-le "Client Form - Fiche à compléter"
 4. Copiez-collez ce template :
@@ -75,34 +75,133 @@
 </html>
 ```
 
-## Configuration Supabase
+---
 
-Ajoutez cette variable d'environnement dans votre projet Supabase :
+## 🔑 Étape 2 : Configurer les secrets Supabase
+
+1. **Allez sur votre dashboard Supabase** : https://supabase.com/dashboard/project/elysrdqujzlbvnjfilvh/settings/functions
+
+2. Dans la section **Edge Functions Secrets**, ajoutez ou vérifiez ces 3 variables :
+
+| Variable Name | Où la trouver | Description |
+|---------------|---------------|-------------|
+| `EMAILJS_SERVICE_ID` | https://dashboard.emailjs.com/admin → Services → Copier l'ID | Votre Service ID EmailJS |
+| `EMAILJS_CLIENT_FORM_TEMPLATE_ID` | https://dashboard.emailjs.com/admin/templates → Copier l'ID du template créé | Le Template ID créé à l'étape 1 |
+| `EMAILJS_USER_ID` | https://dashboard.emailjs.com/admin/account → API Keys → Public Key | Votre Public Key EmailJS |
+
+3. Cliquez sur **Save** après avoir ajouté chaque secret
+
+---
+
+## 🔄 Étape 3 : Redéployer la fonction Edge (si nécessaire)
+
+Si vous venez d'ajouter les secrets, redéployez la fonction :
 
 ```bash
-EMAILJS_CLIENT_FORM_TEMPLATE_ID=votre_template_id
+cd /Users/louispgnc/Desktop/neira-pro-suite-main
+supabase functions deploy send-client-form
 ```
 
-### Aller dans Supabase Dashboard :
-1. Project Settings > Edge Functions > Secrets
-2. Ajoutez : `EMAILJS_CLIENT_FORM_TEMPLATE_ID` avec l'ID du template créé ci-dessus
-3. Vérifiez que `EMAILJS_SERVICE_ID` et `EMAILJS_USER_ID` sont déjà configurés
+---
 
-## Variables du template
+## 📝 Variables du template EmailJS
 
-Le template utilise ces variables :
-- `{{to_email}}` : Email du client
+Le template utilise ces variables (à configurer dans EmailJS) :
+- `{{to_email}}` : Email du client (dans le champ "To Email")
 - `{{to_name}}` : Nom du client
 - `{{cabinet_name}}` : Nom du cabinet
-- `{{form_url}}` : Lien vers le formulaire
-- `{{expiration_date}}` : Date d'expiration du formulaire (7 jours)
+- `{{form_url}}` : Lien vers le formulaire sécurisé
+- `{{expiration_date}}` : Date d'expiration du formulaire (30 jours)
 
-## Test
+---
 
-Pour tester l'envoi :
-1. Allez sur le Dashboard
-2. Cliquez sur "Fiche client" > "Fiche à compléter par le client"
-3. Entrez un email et un nom
-4. Vérifiez la réception de l'email
-5. Cliquez sur le lien et complétez le formulaire
-6. Vérifiez qu'une fiche client a été créée automatiquement dans "Clients"
+## ✅ Étape 4 : Tester l'envoi automatique
+
+### Test complet :
+
+1. Dans l'application, allez dans la section **Clients**
+2. Cliquez sur **Créer un lien de formulaire client**
+3. Entrez l'email et le nom du client
+4. Cliquez sur **Générer le lien**
+
+**Résultat attendu :**
+- ✅ Le formulaire est créé dans la base de données
+- ✅ Un email est automatiquement envoyé au client
+- ✅ Le client reçoit un lien sécurisé valable 30 jours
+- ✅ Quand le client remplit le formulaire, sa fiche est créée automatiquement
+
+---
+
+## 🔍 Vérifier que ça fonctionne
+
+### Méthode 1 : Vérifier dans l'application
+Après avoir généré un formulaire, vous devriez voir une notification indiquant que l'email a été envoyé.
+
+### Méthode 2 : Vérifier les logs Supabase
+```bash
+supabase functions logs send-client-form
+```
+
+**Logs attendus en cas de succès :**
+```
+✅ EmailJS config check: { hasServiceId: true, hasTemplateId: true, hasUserId: true, formUrl: '...' }
+✅ Email sent successfully to client@example.com
+```
+
+**Logs en cas de problème :**
+```
+❌ EmailJS configuration missing
+Please configure these environment variables in Supabase:
+- EMAILJS_SERVICE_ID
+- EMAILJS_CLIENT_FORM_TEMPLATE_ID
+- EMAILJS_USER_ID
+```
+
+---
+
+## 📊 Quota EmailJS
+
+Le plan gratuit EmailJS offre :
+- ✅ **200 emails/mois**
+- ✅ 2 services email
+- ✅ Templates illimités
+
+Si vous dépassez ce quota, vous devrez upgrader votre plan EmailJS : https://www.emailjs.com/pricing/
+
+---
+
+## 🆘 Problèmes courants
+
+### ❌ "Email non envoyé (configuration EmailJS manquante)"
+**Solution :** Les secrets Supabase ne sont pas définis. Allez à l'étape 2 et ajoutez les 3 variables.
+
+### ❌ "EmailJS API returned error 403 Forbidden"
+**Solution :** Votre User ID (Public Key) EmailJS est incorrect. Vérifiez-le sur https://dashboard.emailjs.com/admin/account
+
+### ❌ "Service not found"
+**Solution :** Votre Service ID EmailJS est incorrect. Vérifiez-le sur https://dashboard.emailjs.com/admin
+
+### ❌ "Template not found"
+**Solution :** Votre Template ID est incorrect. Vérifiez-le sur https://dashboard.emailjs.com/admin/templates
+
+### ❌ Le client ne reçoit pas l'email
+**Solutions possibles :**
+1. Vérifiez les spam/courrier indésirable du client
+2. Vérifiez que l'email du client est correct
+3. Vérifiez les logs EmailJS : https://dashboard.emailjs.com/admin/history
+4. Vérifiez que votre quota EmailJS n'est pas dépassé
+
+### ❌ Le formulaire n'est pas créé en base de données
+**Solution :** Vérifiez les logs de la fonction Edge :
+```bash
+supabase functions logs send-client-form
+```
+
+---
+
+## 📚 Ressources supplémentaires
+
+- Documentation EmailJS : https://www.emailjs.com/docs/
+- Dashboard EmailJS : https://dashboard.emailjs.com/
+- Support EmailJS : https://www.emailjs.com/contact/
+- Documentation Supabase Edge Functions : https://supabase.com/docs/guides/functions
