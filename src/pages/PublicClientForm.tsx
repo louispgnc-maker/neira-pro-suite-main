@@ -27,6 +27,12 @@ export default function PublicClientForm() {
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState<ClientForm | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  
+  // Upload files
+  const [pieceIdentiteFiles, setPieceIdentiteFiles] = useState<FileList | null>(null);
+  const [justificatifDomicileFile, setJustificatifDomicileFile] = useState<File | null>(null);
+  const [mandatFile, setMandatFile] = useState<File | null>(null);
+  const [autresDocuments, setAutresDocuments] = useState<FileList | null>(null);
 
   const [formData, setFormData] = useState({
     // 1) Informations personnelles
@@ -414,10 +420,18 @@ export default function PublicClientForm() {
                 </div>
               </div>
 
-              <div className="p-4 bg-blue-50 rounded border border-blue-200">
-                <p className="text-sm text-blue-800">
-                  📄 <strong>Upload de pièce d'identité :</strong> Vous pourrez télécharger vos documents (recto/verso) directement dans votre espace client après validation de ce formulaire.
-                </p>
+              <div className="space-y-2">
+                <Label htmlFor="piece_identite_upload">Pièce d'identité (recto/verso) *</Label>
+                <Input 
+                  id="piece_identite_upload" 
+                  type="file" 
+                  accept="image/*,.pdf"
+                  multiple
+                  required
+                  onChange={(e) => setPieceIdentiteFiles(e.target.files)}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">Formats acceptés : JPG, PNG, PDF (2 fichiers max : recto + verso)</p>
               </div>
             </div>
 
@@ -625,10 +639,17 @@ export default function PublicClientForm() {
                       value={formData.lien_representation}
                       onChange={(e) => setFormData(prev => ({ ...prev, lien_representation: e.target.value }))} />
                   </div>
-                  <div className="p-4 bg-blue-50 rounded border border-blue-200">
-                    <p className="text-sm text-blue-800">
-                      📄 <strong>Justificatif de représentation :</strong> Vous devrez fournir un mandat, jugement ou procuration dans votre espace client.
-                    </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="mandat_upload">Justificatif de représentation (mandat, jugement, procuration) *</Label>
+                    <Input 
+                      id="mandat_upload" 
+                      type="file" 
+                      accept="image/*,.pdf"
+                      required
+                      onChange={(e) => setMandatFile(e.target.files?.[0] || null)}
+                      className="cursor-pointer"
+                    />
+                    <p className="text-xs text-muted-foreground">Formats acceptés : JPG, PNG, PDF</p>
                   </div>
                 </>
               )}
@@ -728,18 +749,37 @@ export default function PublicClientForm() {
             {/* 8) DOCUMENTS À FOURNIR */}
             <div className="space-y-4 p-6 bg-white rounded-lg border">
               <h3 className="text-xl font-bold text-orange-600 mb-4">8. Documents à fournir</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="justificatif_domicile">Justificatif de domicile (- 3 mois) *</Label>
+                <Input 
+                  id="justificatif_domicile" 
+                  type="file" 
+                  accept="image/*,.pdf"
+                  required
+                  onChange={(e) => setJustificatifDomicileFile(e.target.files?.[0] || null)}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">Facture électricité, eau, gaz, internet, avis d'imposition...</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="autres_documents">Autres documents (RIB, livret de famille, etc.)</Label>
+                <Input 
+                  id="autres_documents" 
+                  type="file" 
+                  accept="image/*,.pdf"
+                  multiple
+                  onChange={(e) => setAutresDocuments(e.target.files)}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">Vous pouvez uploader plusieurs fichiers (RIB, livret de famille, contrats...)</p>
+              </div>
+
               <div className="p-4 bg-blue-50 rounded border border-blue-200">
-                <p className="text-sm text-blue-800 mb-3">
-                  📄 <strong>Upload de documents :</strong> Vous pourrez télécharger tous les documents nécessaires directement dans votre espace client après validation de ce formulaire.
+                <p className="text-sm text-blue-800">
+                  💡 <strong>Conseil :</strong> Préparez tous vos documents au format numérique avant de commencer. Formats acceptés : JPG, PNG, PDF.
                 </p>
-                <p className="text-sm text-blue-700 font-medium">Documents généralement requis :</p>
-                <ul className="text-sm text-blue-700 list-disc list-inside mt-2 space-y-1">
-                  <li>Pièce d'identité (recto/verso)</li>
-                  <li>Justificatif de domicile (moins de 3 mois)</li>
-                  <li>RIB</li>
-                  <li>Livret de famille (si concerné)</li>
-                  <li>Documents spécifiques selon votre dossier</li>
-                </ul>
               </div>
             </div>
 
@@ -755,7 +795,6 @@ export default function PublicClientForm() {
                   <SelectContent>
                     <SelectItem value="email">E-mail</SelectItem>
                     <SelectItem value="sms">SMS</SelectItem>
-                    <SelectItem value="app">Application Neira</SelectItem>
                     <SelectItem value="telephone">Téléphone</SelectItem>
                   </SelectContent>
                 </Select>
