@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { Upload, ArrowLeft, Save } from "lucide-react";
+import { Upload, ArrowLeft, Save, Plus, X } from "lucide-react";
 import { AVOCAT_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorAvocat";
 import { FAMILY_OPTIONS } from "@/lib/familyOptions";
 
@@ -65,7 +65,7 @@ export default function EditClient() {
 
   // Notaire-specific family fields
   // Situation matrimoniale supprimée
-  const [enfants, setEnfants] = useState<{ nom: string; date_naissance: string }[]>([]);
+  const [enfants, setEnfants] = useState<{ nom: string; prenom: string; sexe: string; date_naissance: string }[]>([]);
   const [situationFamiliale, setSituationFamiliale] = useState<string[]>([]);
   const [familySearch, setFamilySearch] = useState("");
   // const familleAmberItem = "cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white"; // plus utilisé
@@ -124,7 +124,12 @@ export default function EditClient() {
   // situation_matrimoniale supprimée
   setEnfants(Array.isArray(c.enfants) ? (c.enfants as unknown[]).map((e: unknown) => {
           const ee = e as Record<string, unknown>;
-          return { nom: String(ee.nom ?? ''), date_naissance: String(ee.date_naissance ?? '') };
+          return { 
+            nom: String(ee.nom ?? ''), 
+            prenom: String(ee.prenom ?? ''),
+            sexe: String(ee.sexe ?? ''),
+            date_naissance: String(ee.date_naissance ?? '') 
+          };
         }) : []);
   setSituationFamiliale(Array.isArray(c.situation_familiale) ? c.situation_familiale : []);
         setTypeDossier(c.type_dossier || '');
@@ -212,8 +217,10 @@ export default function EditClient() {
         contrat_souhaite: contratSouhaite || null,
         historique_litiges: historiqueLitiges || null,
   // situation_matrimoniale supprimée
-  enfants: enfants.filter(e => e.nom || e.date_naissance),
-  situation_familiale: situationFamiliale.length ? situationFamiliale : null,
+  enfants: enfants.filter(e => e.nom && e.prenom && e.date_naissance).length > 0 
+    ? enfants.filter(e => e.nom && e.prenom && e.date_naissance) 
+    : null,
+  situation_familiale: situationFamiliale.length > 0 ? situationFamiliale : null,
         consentement_rgpd: consentementRGPD,
         signature_mandat: signatureMandat,
       };
@@ -439,9 +446,107 @@ export default function EditClient() {
                   )}
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Enfants (lecture seule)</Label>
-                <Textarea rows={3} value={enfants.map(e => `${e.nom}${e.date_naissance ? ` — ${e.date_naissance}` : ''}`).join('\n')} disabled />
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-base font-semibold">Identité des enfants</Label>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setEnfants([...enfants, { nom: '', prenom: '', sexe: '', date_naissance: '' }])}
+                    className={mainButtonColor}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Ajouter un enfant
+                  </Button>
+                </div>
+
+                {enfants.length > 0 ? (
+                  <div className="space-y-3">
+                    {enfants.map((enfant, index) => (
+                      <div key={index} className={`p-4 rounded-lg border space-y-3 ${role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`font-medium text-sm ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
+                            Enfant {index + 1}
+                          </span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEnfants(enfants.filter((_, i) => i !== index))}
+                            className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-nom-${index}`}>Nom *</Label>
+                            <Input
+                              id={`enfant-nom-${index}`}
+                              value={enfant.nom}
+                              onChange={(e) => {
+                                const newList = [...enfants];
+                                newList[index].nom = e.target.value;
+                                setEnfants(newList);
+                              }}
+                              placeholder="Nom de l'enfant"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-prenom-${index}`}>Prénom *</Label>
+                            <Input
+                              id={`enfant-prenom-${index}`}
+                              value={enfant.prenom}
+                              onChange={(e) => {
+                                const newList = [...enfants];
+                                newList[index].prenom = e.target.value;
+                                setEnfants(newList);
+                              }}
+                              placeholder="Prénom de l'enfant"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-sexe-${index}`}>Sexe *</Label>
+                            <Select
+                              value={enfant.sexe}
+                              onValueChange={(value) => {
+                                const newList = [...enfants];
+                                newList[index].sexe = value;
+                                setEnfants(newList);
+                              }}
+                            >
+                              <SelectTrigger id={`enfant-sexe-${index}`}>
+                                <SelectValue placeholder="Sélectionnez..." />
+                              </SelectTrigger>
+                              <SelectContent className={selectContentClass}>
+                                <SelectItem value="M" className={selectItemClass}>Masculin</SelectItem>
+                                <SelectItem value="F" className={selectItemClass}>Féminin</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-date-${index}`}>Date de naissance *</Label>
+                            <Input
+                              id={`enfant-date-${index}`}
+                              type="date"
+                              value={enfant.date_naissance}
+                              onChange={(e) => {
+                                const newList = [...enfants];
+                                newList[index].date_naissance = e.target.value;
+                                setEnfants(newList);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4 border rounded-lg">
+                    Cliquez sur "Ajouter un enfant" pour renseigner les informations des enfants
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
