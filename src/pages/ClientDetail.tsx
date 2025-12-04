@@ -47,9 +47,13 @@ interface Client {
   type_dossier: string | null;
   contrat_souhaite: string | null;
   historique_litiges: string | null;
-  // situation_matrimoniale supprimée
   enfants: { nom: string; date_naissance: string | null }[] | null;
   documents_objet: string[] | null;
+  situation_matrimoniale: string | null;
+  // Additional fields from form
+  consentement_rgpd: boolean | null;
+  signature_mandat: boolean | null;
+  source: string | null;
 }
 
 interface LinkedContrat { id: string; name: string; category: string; type: string }
@@ -94,10 +98,11 @@ export default function ClientDetail() {
       // Try loading with owner_id first
       const { data: c, error } = await supabase
         .from('clients')
-        .select(`id,name,role,created_at,kyc_status,missing_info,
-          nom,prenom,date_naissance,lieu_naissance,adresse,telephone,email,nationalite,sexe,etat_civil,situation_familiale,
+        .select(`id,name,role,created_at,kyc_status,missing_info,source,
+          nom,prenom,date_naissance,lieu_naissance,adresse,telephone,email,nationalite,sexe,etat_civil,situation_familiale,situation_matrimoniale,
           type_identite,numero_identite,date_expiration_identite,id_doc_path,
           profession,employeur,adresse_professionnelle,siret,situation_fiscale,revenus,justificatifs_financiers,comptes_bancaires,
+          consentement_rgpd,signature_mandat,
           type_dossier,contrat_souhaite,historique_litiges,enfants,documents_objet
         `)
         .eq('id', id)
@@ -328,19 +333,31 @@ export default function ClientDetail() {
                 <CardDescription>Mariage / PACS / Enfants</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {/* Champ Situation matrimoniale supprimé */}
-                <div>
-                  <div className="text-sm text-muted-foreground">Options</div>
-                  {client.situation_familiale && client.situation_familiale.length > 0 ? (
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {client.situation_familiale.map((o, idx) => (
-                        <Badge key={idx} variant="secondary">{o}</Badge>
-                      ))}
+                {typeof client.situation_familiale === 'object' && client.situation_familiale !== null ? (
+                  <>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Situation familiale</div>
+                      <div className="font-medium">{(client.situation_familiale as any)?.situation_familiale || '-'}</div>
                     </div>
-                  ) : (
-                    <div className="text-sm">—</div>
-                  )}
-                </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Régime matrimonial</div>
+                      <div className="font-medium">{(client.situation_familiale as any)?.regime_matrimonial || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Nombre d'enfants</div>
+                      <div className="font-medium">{(client.situation_familiale as any)?.nombre_enfants || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Personne à charge</div>
+                      <div className="font-medium">{(client.situation_familiale as any)?.personne_a_charge || '-'}</div>
+                    </div>
+                  </>
+                ) : client.situation_matrimoniale ? (
+                  <div>
+                    <div className="text-sm text-muted-foreground">Situation matrimoniale</div>
+                    <div className="font-medium">{client.situation_matrimoniale}</div>
+                  </div>
+                ) : null}
                 <div>
                   <div className="text-sm text-muted-foreground">Enfants</div>
                   {client.enfants && client.enfants.length > 0 ? (
@@ -444,6 +461,45 @@ export default function ClientDetail() {
                       ))}
                     </div>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Consentements & Source */}
+            <Card>
+              <CardHeader>
+                <CardTitle>6. Consentements et informations complémentaires</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-muted-foreground">Source du client</div>
+                  <Badge variant={client.source === 'formulaire_web' ? 'default' : 'secondary'}>
+                    {client.source === 'formulaire_web' ? '📋 Formulaire web' : client.source === 'manual' ? '✍️ Création manuelle' : client.source || 'Non spécifié'}
+                  </Badge>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Consentement RGPD</div>
+                  <Badge variant={client.consentement_rgpd ? 'default' : 'secondary'}>
+                    {client.consentement_rgpd ? '✓ Accepté' : '✗ Non renseigné'}
+                  </Badge>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Signature mandat</div>
+                  <Badge variant={client.signature_mandat ? 'default' : 'secondary'}>
+                    {client.signature_mandat ? '✓ Signée' : '✗ Non signée'}
+                  </Badge>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Date de création</div>
+                  <div className="font-medium">
+                    {client.created_at ? new Date(client.created_at).toLocaleDateString('fr-FR', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }) : '-'}
+                  </div>
                 </div>
               </CardContent>
             </Card>
