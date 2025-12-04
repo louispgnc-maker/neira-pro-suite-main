@@ -432,6 +432,30 @@ export default function PublicClientForm() {
                   className="cursor-pointer"
                 />
                 <p className="text-xs text-muted-foreground">Formats acceptés : JPG, PNG, PDF (2 fichiers max : recto + verso)</p>
+                {pieceIdentiteFiles && pieceIdentiteFiles.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    {Array.from(pieceIdentiteFiles).map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span className="text-sm text-gray-700">{file.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const dt = new DataTransfer();
+                            Array.from(pieceIdentiteFiles)
+                              .filter((_, i) => i !== index)
+                              .forEach(f => dt.items.add(f));
+                            setPieceIdentiteFiles(dt.files.length > 0 ? dt.files : null);
+                          }}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -650,6 +674,20 @@ export default function PublicClientForm() {
                       className="cursor-pointer"
                     />
                     <p className="text-xs text-muted-foreground">Formats acceptés : JPG, PNG, PDF</p>
+                    {mandatFile && (
+                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span className="text-sm text-gray-700">{mandatFile.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setMandatFile(null)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
@@ -761,6 +799,20 @@ export default function PublicClientForm() {
                   className="cursor-pointer"
                 />
                 <p className="text-xs text-muted-foreground">Facture électricité, eau, gaz, internet, avis d'imposition...</p>
+                {justificatifDomicileFile && (
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span className="text-sm text-gray-700">{justificatifDomicileFile.name}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setJustificatifDomicileFile(null)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -774,6 +826,30 @@ export default function PublicClientForm() {
                   className="cursor-pointer"
                 />
                 <p className="text-xs text-muted-foreground">Vous pouvez uploader plusieurs fichiers (RIB, livret de famille, contrats...)</p>
+                {autresDocuments && autresDocuments.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    {Array.from(autresDocuments).map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span className="text-sm text-gray-700">{file.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const dt = new DataTransfer();
+                            Array.from(autresDocuments)
+                              .filter((_, i) => i !== index)
+                              .forEach(f => dt.items.add(f));
+                            setAutresDocuments(dt.files.length > 0 ? dt.files : null);
+                          }}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="p-4 bg-blue-50 rounded border border-blue-200">
