@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-interface ChildEntry { nom: string; date_naissance: string; }
+interface ChildEntry { nom: string; prenom: string; sexe: string; date_naissance: string; }
 interface ContratOption { id: string; name: string; type: string; category: string; }
 
 export default function CreateClientNotaire() {
@@ -64,6 +64,9 @@ export default function CreateClientNotaire() {
   const [selectedFamily, setSelectedFamily] = useState<string[]>([]);
   const [familySearch, setFamilySearch] = useState("");
   const [enfants, setEnfants] = useState<ChildEntry[]>([]);
+  const [situationFamilialeStatus, setSituationFamilialeStatus] = useState("");
+  const [nombreEnfants, setNombreEnfants] = useState("0");
+  const [personneACharge, setPersonneACharge] = useState("");
 
   // 4. Situation professionnelle et financière
   const [profession, setProfession] = useState("");
@@ -72,6 +75,8 @@ export default function CreateClientNotaire() {
   const [telephonePro, setTelephonePro] = useState("");
   const [adressePro, setAdressePro] = useState("");
   const [emailPro, setEmailPro] = useState("");
+  const [codePostalPro, setCodePostalPro] = useState("");
+  const [villePro, setVillePro] = useState("");
   const [revenus, setRevenus] = useState("");
   const [situationFiscale, setSituationFiscale] = useState("");
   const [patrimoineImmobilier, setPatrimoineImmobilier] = useState("non");
@@ -140,7 +145,7 @@ export default function CreateClientNotaire() {
     return () => { mounted = false; };
   }, [user, role]);
 
-  const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', date_naissance: '' }]);
+  const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', prenom: '', sexe: '', date_naissance: '' }]);
   const handleChildChange = (index: number, field: keyof ChildEntry, value: string) => {
     setEnfants(prev => prev.map((c,i) => i === index ? { ...c, [field]: value } : c));
   };
@@ -184,10 +189,12 @@ export default function CreateClientNotaire() {
       const documentsObjet = documentsObjetRaw.trim() ? documentsObjetRaw.split(/\n+/).map(l => l.trim()).filter(Boolean) : [];
       const enfantsClean = enfants.filter(c => c.nom || c.date_naissance);
 
-      // Préparer la situation familiale complète
+      // Préparer la situation familiale complète avec la nouvelle structure
       const situationFamilialeData = {
-        statut: etatCivil || null,
+        situation_familiale: etatCivil || null,
         regime_matrimonial: regimeMatrimonial || null,
+        nombre_enfants: nombreEnfants || '0',
+        personne_a_charge: personneACharge || null,
         autres_details: selectedFamily.length > 0 ? selectedFamily : null
       };
 
@@ -488,6 +495,30 @@ export default function CreateClientNotaire() {
                 </DropdownMenu>
                 <p className="text-xs text-muted-foreground">Barre de recherche incluse. Cochez plusieurs options si nécessaire.</p>
               </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nombreEnfants">Nombre d'enfants</Label>
+                  <Input 
+                    id="nombreEnfants" 
+                    type="number" 
+                    min="0"
+                    value={nombreEnfants} 
+                    onChange={(e) => setNombreEnfants(e.target.value)} 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="personneACharge">Personnes à charge</Label>
+                  <Textarea 
+                    id="personneACharge" 
+                    rows={2}
+                    value={personneACharge}
+                    onChange={(e) => setPersonneACharge(e.target.value)}
+                    placeholder="Indiquez les personnes à charge..."
+                  />
+                </div>
+              </div>
+              
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Enfants</Label>
@@ -499,15 +530,31 @@ export default function CreateClientNotaire() {
                 <div className="space-y-3">
                   {enfants.map((child, idx) => (
                     <div key={idx} className="grid grid-cols-12 gap-2 items-end">
-                      <div className="col-span-6 space-y-1">
+                      <div className="col-span-3 space-y-1">
                         <Label className="text-xs">Nom</Label>
-                        <Input value={child.nom} onChange={e => handleChildChange(idx,'nom',e.target.value)} />
+                        <Input value={child.nom} onChange={e => handleChildChange(idx,'nom',e.target.value)} className="border-orange-200" />
                       </div>
-                      <div className="col-span-4 space-y-1">
+                      <div className="col-span-3 space-y-1">
+                        <Label className="text-xs">Prénom</Label>
+                        <Input value={child.prenom} onChange={e => handleChildChange(idx,'prenom',e.target.value)} className="border-orange-200" />
+                      </div>
+                      <div className="col-span-2 space-y-1">
+                        <Label className="text-xs">Sexe</Label>
+                        <Select value={child.sexe} onValueChange={v => handleChildChange(idx,'sexe',v)}>
+                          <SelectTrigger className="border-orange-200">
+                            <SelectValue placeholder="Sexe" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-orange-50 border-orange-200">
+                            <SelectItem value="M" className="hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white">M</SelectItem>
+                            <SelectItem value="F" className="hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white">F</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-3 space-y-1">
                         <Label className="text-xs">Date de naissance</Label>
-                        <Input type="date" value={child.date_naissance} onChange={e => handleChildChange(idx,'date_naissance',e.target.value)} />
+                        <Input type="date" value={child.date_naissance} onChange={e => handleChildChange(idx,'date_naissance',e.target.value)} className="border-orange-200" />
                       </div>
-                      <div className="col-span-2 flex justify-end">
+                      <div className="col-span-1 flex justify-end">
                         <Button 
                           type="button" 
                           size="sm" 

@@ -41,6 +41,7 @@ export default function EditClient() {
   // States same as create
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
+  const [nomNaissance, setNomNaissance] = useState("");
   const [dateNaissance, setDateNaissance] = useState("");
   const [lieuNaissance, setLieuNaissance] = useState("");
   const [adresse, setAdresse] = useState("");
@@ -106,6 +107,7 @@ export default function EditClient() {
       if (c && mounted) {
         setNom(c.nom || '');
         setPrenom(c.prenom || '');
+        setNomNaissance(c.nom_naissance || '');
         setDateNaissance(c.date_naissance || '');
         setLieuNaissance(c.lieu_naissance || '');
         setAdresse(c.adresse || '');
@@ -208,6 +210,7 @@ export default function EditClient() {
         role,
         name: `${prenom} ${nom}`,
         nom, prenom,
+        nom_naissance: nomNaissance || null,
         date_naissance: dateNaissance || null,
         lieu_naissance: lieuNaissance || null,
         adresse: adresse || null,
@@ -319,6 +322,10 @@ export default function EditClient() {
                   <Label htmlFor="prenom">Prénom</Label>
                   <Input id="prenom" value={prenom} onChange={(e) => setPrenom(e.target.value)} />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="nomNaissance">Nom de naissance</Label>
+                <Input id="nomNaissance" value={nomNaissance} onChange={(e) => setNomNaissance(e.target.value)} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">

@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-interface ChildEntry { nom: string; date_naissance: string; }
+interface ChildEntry { nom: string; prenom: string; sexe: string; date_naissance: string; }
 interface ContratOption { id: string; name: string; type: string; category: string; }
 
 export default function CreateClientAvocat() {
@@ -63,6 +63,9 @@ export default function CreateClientAvocat() {
   const [selectedFamily, setSelectedFamily] = useState<string[]>([]);
   const [familySearch, setFamilySearch] = useState("");
   const [enfants, setEnfants] = useState<ChildEntry[]>([]);
+  const [situationFamilialeStatus, setSituationFamilialeStatus] = useState("");
+  const [nombreEnfants, setNombreEnfants] = useState("0");
+  const [personneACharge, setPersonneACharge] = useState("");
 
   // 4. Situation professionnelle et financière
   const [profession, setProfession] = useState("");
@@ -139,7 +142,7 @@ export default function CreateClientAvocat() {
     return () => { mounted = false; };
   }, [user, role]);
 
-  const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', date_naissance: '' }]);
+  const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', prenom: '', sexe: '', date_naissance: '' }]);
   const handleChildChange = (index: number, field: keyof ChildEntry, value: string) => {
     setEnfants(prev => prev.map((c,i) => i === index ? { ...c, [field]: value } : c));
   };
@@ -184,8 +187,10 @@ export default function CreateClientAvocat() {
       const enfantsClean = enfants.filter(c => c.nom || c.date_naissance);
 
       const situationFamilialeData = {
-        statut: etatCivil || null,
+        situation_familiale: etatCivil || null,
         regime_matrimonial: regimeMatrimonial || null,
+        nombre_enfants: nombreEnfants || '0',
+        personne_a_charge: personneACharge || null,
         autres_details: selectedFamily.length > 0 ? selectedFamily : null
       };
 
@@ -486,6 +491,30 @@ export default function CreateClientAvocat() {
                 </DropdownMenu>
                 <p className="text-xs text-muted-foreground">Barre de recherche incluse. Cochez plusieurs options si nécessaire.</p>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="nombreEnfants">Nombre d'enfants</Label>
+                <Input
+                  id="nombreEnfants"
+                  type="number"
+                  min="0"
+                  value={nombreEnfants}
+                  onChange={(e) => setNombreEnfants(e.target.value)}
+                  className="border-blue-200 focus:border-blue-400"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="personneACharge">Personne à charge</Label>
+                <Textarea
+                  id="personneACharge"
+                  value={personneACharge}
+                  onChange={(e) => setPersonneACharge(e.target.value)}
+                  placeholder="Décrivez les personnes à charge..."
+                  className="border-blue-200 focus:border-blue-400"
+                />
+              </div>
+
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Enfants</Label>
@@ -497,15 +526,31 @@ export default function CreateClientAvocat() {
                 <div className="space-y-3">
                   {enfants.map((child, idx) => (
                     <div key={idx} className="grid grid-cols-12 gap-2 items-end">
-                      <div className="col-span-6 space-y-1">
+                      <div className="col-span-3 space-y-1">
                         <Label className="text-xs">Nom</Label>
-                        <Input value={child.nom} onChange={e => handleChildChange(idx,'nom',e.target.value)} />
+                        <Input value={child.nom} onChange={e => handleChildChange(idx,'nom',e.target.value)} className="border-blue-200" />
                       </div>
-                      <div className="col-span-4 space-y-1">
+                      <div className="col-span-3 space-y-1">
+                        <Label className="text-xs">Prénom</Label>
+                        <Input value={child.prenom} onChange={e => handleChildChange(idx,'prenom',e.target.value)} className="border-blue-200" />
+                      </div>
+                      <div className="col-span-2 space-y-1">
+                        <Label className="text-xs">Sexe</Label>
+                        <Select value={child.sexe} onValueChange={v => handleChildChange(idx,'sexe',v)}>
+                          <SelectTrigger className="border-blue-200">
+                            <SelectValue placeholder="Sexe" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-blue-50 border-blue-200">
+                            <SelectItem value="M" className="hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white">M</SelectItem>
+                            <SelectItem value="F" className="hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white">F</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-3 space-y-1">
                         <Label className="text-xs">Date de naissance</Label>
-                        <Input type="date" value={child.date_naissance} onChange={e => handleChildChange(idx,'date_naissance',e.target.value)} />
+                        <Input type="date" value={child.date_naissance} onChange={e => handleChildChange(idx,'date_naissance',e.target.value)} className="border-blue-200" />
                       </div>
-                      <div className="col-span-2 flex justify-end">
+                      <div className="col-span-1 flex justify-end">
                         <Button 
                           type="button" 
                           size="sm" 
