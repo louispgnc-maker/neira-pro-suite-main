@@ -119,35 +119,11 @@ export default function PublicClientForm() {
 
   // Auto-save form data to localStorage
   useEffect(() => {
-    if (token && !submitted) {
+    if (token && !submitted && form) {
       const storageKey = `client-form-${token}`;
       localStorage.setItem(storageKey, JSON.stringify(formData));
     }
-  }, [formData, token, submitted]);
-
-  // Restore form data from localStorage on mount
-  useEffect(() => {
-    if (token && !loading && form && !submitted) {
-      const storageKey = `client-form-${token}`;
-      const savedData = localStorage.getItem(storageKey);
-      if (savedData) {
-        try {
-          const parsed = JSON.parse(savedData);
-          // Merge saved data with current formData (keep email/nom/prenom from form if set)
-          setFormData(prev => ({
-            ...parsed,
-            // Keep pre-filled values if they exist
-            email: prev.email || parsed.email,
-            nom: prev.nom || parsed.nom,
-            prenom: prev.prenom || parsed.prenom
-          }));
-          toast.success('Données précédentes restaurées', { duration: 2000 });
-        } catch (e) {
-          console.error('Error parsing saved form data:', e);
-        }
-      }
-    }
-  }, [token, loading, form, submitted]);
+  }, [formData, token, submitted, form]);
 
   const loadForm = async () => {
     try {
@@ -182,11 +158,32 @@ export default function PublicClientForm() {
 
       setForm(data);
       
-      // Pré-remplir l'email si disponible (seulement si pas de données sauvegardées)
+      // Try to restore from localStorage first
       const storageKey = `client-form-${token}`;
       const savedData = localStorage.getItem(storageKey);
       
-      if (!savedData) {
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          setFormData(parsed);
+          toast.success('Données précédentes restaurées', { duration: 2000 });
+        } catch (e) {
+          console.error('Error parsing saved form data:', e);
+          // If restore fails, use pre-filled data from form
+          if (data.client_email) {
+            setFormData(prev => ({ ...prev, email: data.client_email }));
+          }
+          if (data.client_name) {
+            const [prenom, ...nomParts] = data.client_name.split(' ');
+            setFormData(prev => ({ 
+              ...prev, 
+              prenom: prenom || '',
+              nom: nomParts.join(' ') || ''
+            }));
+          }
+        }
+      } else {
+        // No saved data, use pre-filled data from form
         if (data.client_email) {
           setFormData(prev => ({ ...prev, email: data.client_email }));
         }
