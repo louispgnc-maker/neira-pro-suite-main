@@ -54,6 +54,7 @@ export default function PublicClientForm() {
     situation_familiale: '',
     enfants: 'non',
     enfants_details: '',
+    personne_a_charge: '',
     
     // 2) Identité
     type_piece_identite: '',
@@ -580,6 +581,14 @@ export default function PublicClientForm() {
                       onChange={(e) => setFormData(prev => ({ ...prev, enfants_details: e.target.value }))} />
                   </div>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="personne_a_charge">Personnes à charge</Label>
+                <Textarea id="personne_a_charge" rows={2}
+                  placeholder="Indiquez si vous avez des personnes à charge (enfants, parents, etc.) et leur situation..."
+                  value={formData.personne_a_charge}
+                  onChange={(e) => setFormData(prev => ({ ...prev, personne_a_charge: e.target.value }))} />
               </div>
             </div>
 
