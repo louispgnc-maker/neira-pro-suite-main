@@ -238,6 +238,46 @@ export default function ClientDetail() {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
+  const handleDeleteClient = async () => {
+    if (!client) return;
+    
+    const confirmMessage = `⚠️ ATTENTION : Vous êtes sur le point de supprimer définitivement la fiche client de "${client.name}".\n\nCette action supprimera :\n- Toutes les informations du client\n- Tous les documents associés\n- Tous les liens avec les dossiers et contrats\n\nCette action est IRRÉVERSIBLE.\n\nÊtes-vous absolument certain de vouloir continuer ?`;
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      // Delete all documents from storage first
+      if (documents.length > 0) {
+        const filePaths = documents.map(doc => doc.file_path);
+        const { error: storageError } = await supabase.storage
+          .from('documents')
+          .remove(filePaths);
+        
+        if (storageError) {
+          console.error('Error deleting documents from storage:', storageError);
+          // Continue anyway as we want to delete the client
+        }
+      }
+
+      // Delete client from database (cascade will handle related records)
+      const { error: deleteError } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', client.id);
+      
+      if (deleteError) throw deleteError;
+
+      alert('Fiche client supprimée avec succès');
+      // Navigate back to clients list
+      navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients');
+    } catch (error) {
+      console.error('Error deleting client:', error);
+      alert('Erreur lors de la suppression de la fiche client');
+    }
+  };
+
   const goBack = () => {
     // Determine if we should return to the collaborative clients tab. Prefer location.state
     // but fall back to URL query params so the value survives a page refresh.
@@ -276,6 +316,13 @@ export default function ClientDetail() {
               <Pencil className="h-4 w-4 mr-2" /> Modifier
             </Button>
             <ShareToCollaborativeButton clientId={id as string} clientName={client?.name || ''} role={role} disabled={sharing} onStart={() => setSharing(true)} onDone={() => setSharing(false)} />
+            <Button 
+              variant="outline" 
+              onClick={handleDeleteClient}
+              className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+            >
+              <Trash2 className="h-4 w-4 mr-2" /> Supprimer le client
+            </Button>
           </div>
         </div>
 
