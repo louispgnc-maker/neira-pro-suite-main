@@ -560,6 +560,13 @@ export default function EmailInbox() {
     try {
       console.log('[EmailInbox] Sending email via Resend');
       
+      // Get the current session token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Session expirée. Veuillez vous reconnecter.');
+      }
+      
       // Call edge function to send email via Resend
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-email-resend',
@@ -567,6 +574,7 @@ export default function EmailInbox() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ 
             to: composeTo,
