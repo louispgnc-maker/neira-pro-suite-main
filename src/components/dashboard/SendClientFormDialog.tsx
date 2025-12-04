@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabaseClient';
 import { Loader2, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface SendClientFormDialogProps {
   open: boolean;
@@ -17,6 +18,7 @@ interface SendClientFormDialogProps {
 
 export default function SendClientFormDialog({ open, onOpenChange, cabinetId, userId }: SendClientFormDialogProps) {
   const { profile } = useAuth();
+  const navigate = useNavigate();
   // Determine role from URL path first (most reliable), then profile
   const role = window.location.pathname.includes('/notaires/') ? 'notaire' : 
                window.location.pathname.includes('/avocats/') ? 'avocat' :
@@ -96,18 +98,21 @@ Si vous rencontrez un problème avec ce formulaire, vous pouvez nous contacter d
 Cordialement,
 ${cabinetName}`;
 
-        // Open default email client with pre-filled draft
-        const mailtoLink = `mailto:${encodeURIComponent(clientEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.location.href = mailtoLink;
-
-        toast.success('Brouillon d\'email ouvert !', {
-          description: `Le formulaire a été créé pour ${clientEmail}`
+        // Navigate to messagerie with pre-filled compose data
+        navigate(`/${role}s/messagerie`, {
+          state: {
+            composeTo: clientEmail,
+            composeSubject: subject,
+            composeBody: body,
+            openCompose: true
+          }
         });
 
-        // Close dialog after a short delay
-        setTimeout(() => {
-          handleClose();
-        }, 1000);
+        handleClose();
+
+        toast.success('Redirection vers la messagerie !', {
+          description: `Le formulaire a été créé pour ${clientEmail}`
+        });
       } else {
         throw new Error('URL du formulaire non disponible');
       }
@@ -131,7 +136,7 @@ ${cabinetName}`;
         <DialogHeader>
           <DialogTitle>Envoyer un formulaire client</DialogTitle>
           <DialogDescription>
-            Un brouillon d'email s'ouvrira dans votre messagerie avec le lien du formulaire pré-rempli.
+            Vous serez redirigé vers votre messagerie avec un email pré-rempli contenant le lien du formulaire.
           </DialogDescription>
         </DialogHeader>
 

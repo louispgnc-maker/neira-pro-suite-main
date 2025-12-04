@@ -99,6 +99,21 @@ export default function EmailInbox() {
     loadAccounts();
   }, [user]);
 
+  // Handle pre-filled compose from navigation state
+  useEffect(() => {
+    if (location.state?.openCompose) {
+      setComposeTo(location.state.composeTo || '');
+      setComposeCc('');
+      setComposeSubject(location.state.composeSubject || '');
+      setComposeBody(location.state.composeBody || '');
+      setComposeAttachments([]);
+      setShowCompose(true);
+      
+      // Clear the state so it doesn't reopen on refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]);
+
   useEffect(() => {
     if (selectedAccount) {
       if (currentFolder === 'drafts') {
