@@ -448,7 +448,7 @@ export default function PublicClientForm() {
                               .forEach(f => dt.items.add(f));
                             setPieceIdentiteFiles(dt.files.length > 0 ? dt.files : null);
                           }}
-                          className="text-red-600 hover:text-red-800"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           ✕
                         </Button>
@@ -682,7 +682,7 @@ export default function PublicClientForm() {
                           variant="ghost"
                           size="sm"
                           onClick={() => setMandatFile(null)}
-                          className="text-red-600 hover:text-red-800"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           ✕
                         </Button>
@@ -807,7 +807,7 @@ export default function PublicClientForm() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setJustificatifDomicileFile(null)}
-                      className="text-red-600 hover:text-red-800"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       ✕
                     </Button>
@@ -842,7 +842,7 @@ export default function PublicClientForm() {
                               .forEach(f => dt.items.add(f));
                             setAutresDocuments(dt.files.length > 0 ? dt.files : null);
                           }}
-                          className="text-red-600 hover:text-red-800"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           ✕
                         </Button>
