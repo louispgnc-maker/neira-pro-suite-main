@@ -44,19 +44,32 @@ serve(async (req) => {
 
     console.log("Sending email from:", account.email);
 
-    // Create the email in RFC 2822 format
+    // Create the email in RFC 2822 format with UTF-8 encoding
     const emailLines = [
       `To: ${to}`,
       `From: ${account.email}`,
       `Subject: ${subject}`,
       'Content-Type: text/plain; charset=utf-8',
+      'MIME-Version: 1.0',
       '',
       body
     ];
     const email = emailLines.join('\r\n');
 
-    // Encode to base64url
-    const encodedEmail = btoa(email)
+    // Convert to UTF-8 bytes then encode to base64url
+    const encoder = new TextEncoder();
+    const emailBytes = encoder.encode(email);
+    
+    // Convert bytes to base64
+    let binary = '';
+    const len = emailBytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(emailBytes[i]);
+    }
+    const base64 = btoa(binary);
+    
+    // Convert to base64url
+    const encodedEmail = base64
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '');
