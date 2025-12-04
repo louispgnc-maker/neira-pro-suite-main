@@ -6,7 +6,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, FileText, Download, Eye } from "lucide-react";
 import { Share2 } from 'lucide-react';
 import ShareToCollaborativeButton from '@/components/cabinet/ShareToCollaborativeButton';
 
@@ -54,6 +54,17 @@ interface Client {
 
 interface LinkedContrat { id: string; name: string; category: string; type: string }
 
+interface ClientDocument {
+  id: string;
+  document_type: string;
+  file_name: string;
+  file_path: string;
+  file_size: number;
+  mime_type: string;
+  uploaded_at: string;
+  notes: string | null;
+}
+
 export default function ClientDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -66,6 +77,7 @@ export default function ClientDetail() {
 
   const [client, setClient] = useState<Client | null>(null);
   const [contrats, setContrats] = useState<LinkedContrat[]>([]);
+  const [documents, setDocuments] = useState<ClientDocument[]>([]);
   const [loading, setLoading] = useState(true);
 
   const mainButtonColor = role === 'notaire'
@@ -116,11 +128,80 @@ export default function ClientDetail() {
         setContrats([]);
       }
 
+      // Load client documents
+      const { data: docs, error: docsErr } = await supabase
+        .from('client_documents')
+        .select('*')
+        .eq('client_id', id)
+        .order('uploaded_at', { ascending: false });
+      
+      if (!docsErr && docs && mounted) {
+        setDocuments(docs as ClientDocument[]);
+      } else if (mounted) {
+        setDocuments([]);
+      }
+
+
       if (mounted) setLoading(false);
     }
     load();
     return () => { mounted = false; };
   }, [user, id, location.state, role]);
+
+  const handleDownloadDocument = async (doc: ClientDocument) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('documents')
+        .download(doc.file_path);
+      
+      if (error) throw error;
+      
+      // Create download link
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = doc.file_name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      alert('Erreur lors du téléchargement du document');
+    }
+  };
+
+  const handleViewDocument = async (doc: ClientDocument) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('documents')
+        .createSignedUrl(doc.file_path, 3600); // 1 hour
+      
+      if (error) throw error;
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Error viewing document:', error);
+      alert('Erreur lors de l\'ouverture du document');
+    }
+  };
+
+  const getDocumentTypeLabel = (type: string): string => {
+    const labels: Record<string, string> = {
+      'piece_identite': 'Pièce d\'identité',
+      'justificatif_domicile': 'Justificatif de domicile',
+      'mandat': 'Mandat/Procuration',
+      'autre': 'Autre document'
+    };
+    return labels[type] || type;
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
 
   const goBack = () => {
     // Determine if we should return to the collaborative clients tab. Prefer location.state
@@ -366,6 +447,69 @@ export default function ClientDetail() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Documents uploadés */}
+            {documents.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Documents uploadés
+                  </CardTitle>
+                  <CardDescription>
+                    Documents fournis par le client lors du formulaire
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {documents.map((doc) => (
+                      <div 
+                        key={doc.id}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {getDocumentTypeLabel(doc.document_type)}
+                            </Badge>
+                            <span className="font-medium">{doc.file_name}</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {formatFileSize(doc.file_size)} • {new Date(doc.uploaded_at).toLocaleDateString('fr-FR', { 
+                              day: 'numeric', 
+                              month: 'long', 
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleViewDocument(doc)}
+                            className="flex items-center gap-1"
+                          >
+                            <Eye className="h-4 w-4" />
+                            Voir
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDownloadDocument(doc)}
+                            className="flex items-center gap-1"
+                          >
+                            <Download className="h-4 w-4" />
+                            Télécharger
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
       </div>

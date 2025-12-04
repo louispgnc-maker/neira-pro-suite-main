@@ -170,6 +170,31 @@ export default function PublicClientForm() {
     }
   };
 
+  const uploadFile = async (file: File, folder: string, documentType: string): Promise<{ path: string; size: number } | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `client-forms/${folder}/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('documents')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        console.error(`Error uploading ${documentType}:`, error);
+        throw error;
+      }
+
+      return { path: data.path, size: file.size };
+    } catch (error) {
+      console.error('Upload error:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -184,12 +209,109 @@ export default function PublicClientForm() {
     
     setSubmitting(true);
     try {
+      toast.info('Upload des documents en cours...');
+      
+      // Upload tous les fichiers
+      const uploadedDocuments: Array<{
+        type: string;
+        fileName: string;
+        filePath: string;
+        fileSize: number;
+        mimeType: string;
+      }> = [];
+
+      // Upload pièces d'identité
+      if (pieceIdentiteFiles && pieceIdentiteFiles.length > 0) {
+        for (let i = 0; i < pieceIdentiteFiles.length; i++) {
+          const file = pieceIdentiteFiles[i];
+          const result = await uploadFile(file, 'identite', 'piece_identite');
+          if (result) {
+            uploadedDocuments.push({
+              type: 'piece_identite',
+              fileName: file.name,
+              filePath: result.path,
+              fileSize: result.size,
+              mimeType: file.type
+            });
+          }
+        }
+      }
+
+      // Upload justificatif de domicile
+      if (justificatifDomicileFile) {
+        const result = await uploadFile(justificatifDomicileFile, 'justificatifs', 'justificatif_domicile');
+        if (result) {
+          uploadedDocuments.push({
+            type: 'justificatif_domicile',
+            fileName: justificatifDomicileFile.name,
+            filePath: result.path,
+            fileSize: result.size,
+            mimeType: justificatifDomicileFile.type
+          });
+        }
+      }
+
+      // Upload mandat si nécessaire
+      if (!formData.agit_nom_propre && mandatFile) {
+        const result = await uploadFile(mandatFile, 'mandats', 'mandat');
+        if (result) {
+          uploadedDocuments.push({
+            type: 'mandat',
+            fileName: mandatFile.name,
+            filePath: result.path,
+            fileSize: result.size,
+            mimeType: mandatFile.type
+          });
+        }
+      }
+
+      // Upload autres documents
+      if (autresDocuments && autresDocuments.length > 0) {
+        for (let i = 0; i < autresDocuments.length; i++) {
+          const file = autresDocuments[i];
+          const result = await uploadFile(file, 'autres', 'autre');
+          if (result) {
+            uploadedDocuments.push({
+              type: 'autre',
+              fileName: file.name,
+              filePath: result.path,
+              fileSize: result.size,
+              mimeType: file.type
+            });
+          }
+        }
+      }
+
+      toast.info('Création de la fiche client...');
+
+      // Submit form avec les documents uploadés
       const { data, error } = await supabase.rpc('submit_client_form', {
         form_token: token,
-        form_response: formData
+        form_response: {
+          ...formData,
+          uploaded_documents: uploadedDocuments
+        }
       });
 
       if (error) throw error;
+
+      // Créer les enregistrements de documents si on a un client_id
+      if (data && data.length > 0 && data[0].client_id && uploadedDocuments.length > 0) {
+        const clientId = data[0].client_id;
+        const formId = form.id;
+
+        for (const doc of uploadedDocuments) {
+          await supabase.from('client_documents').insert({
+            client_id: clientId,
+            form_id: formId,
+            document_type: doc.type,
+            file_name: doc.fileName,
+            file_path: doc.filePath,
+            file_size: doc.fileSize,
+            mime_type: doc.mimeType
+          });
+        }
+      }
 
       setSubmitted(true);
       toast.success('Formulaire soumis avec succès !');
