@@ -69,7 +69,7 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
       const data = await response.json();
       
       if (data.formUrl) {
-        // Get cabinet name for email
+        // Get cabinet name and user info for email
         const { data: cabinetData } = await supabase
           .from('cabinets')
           .select('nom')
@@ -77,27 +77,25 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
           .single();
 
         const cabinetName = cabinetData?.nom || 'Notre cabinet';
+        const userName = profile?.first_name && profile?.last_name 
+          ? `${profile.first_name} ${profile.last_name}`
+          : profile?.email?.split('@')[0] || 'Votre conseiller';
         
         // Prepare email content
         const subject = `${cabinetName} - Formulaire à compléter`;
-        const body = `Bonjour ${clientName || 'Client'},
+        const body = `Bonjour ${clientName || ''},
 
-${cabinetName} vous invite à compléter vos informations personnelles via notre formulaire sécurisé.
+Je vous invite à compléter vos informations personnelles via notre formulaire sécurisé.
 
-📋 Pourquoi ce formulaire ?
-Ce formulaire nous permettra de créer votre dossier client et de vous accompagner au mieux dans vos démarches.
+Ce formulaire nous permettra de créer votre dossier client et de vous accompagner au mieux dans vos démarches. Cela prendra environ 5-10 minutes, et toutes vos données sont chiffrées et confidentielles.
 
 🔗 Lien du formulaire :
 ${data.formUrl}
 
-⏱️ Temps estimé : 5-10 minutes
-🔒 Toutes vos données sont chiffrées et confidentielles
-📅 Validité : Ce lien expire dans 30 jours
-
 Si vous rencontrez un problème avec ce formulaire, vous pouvez nous contacter directement.
 
 Cordialement,
-${cabinetName}`;
+${userName}, ${cabinetName}`;
 
         // Navigate to messagerie with pre-filled compose data
         navigate(`/${role}s/messagerie`, {
