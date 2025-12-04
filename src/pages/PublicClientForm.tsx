@@ -57,12 +57,16 @@ export default function PublicClientForm() {
         .from('client_forms')
         .select('*')
         .eq('token', token)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading form:', error);
+        throw error;
+      }
 
       if (!data) {
         toast.error('Formulaire introuvable');
+        setLoading(false);
         return;
       }
 
