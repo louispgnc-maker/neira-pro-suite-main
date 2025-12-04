@@ -481,7 +481,7 @@ export default function ClientDetail() {
                 </div>
                 <div className="md:col-span-2">
                   <div className="text-sm text-muted-foreground">Comptes bancaires</div>
-                  {client.comptes_bancaires && client.comptes_bancaires.length > 0 ? (
+                  {client.comptes_bancaires && Array.isArray(client.comptes_bancaires) && client.comptes_bancaires.length > 0 ? (
                     <div className="space-y-1">
                       {client.comptes_bancaires.map((c, idx) => (
                         <div key={idx} className="text-sm">{c}</div>
