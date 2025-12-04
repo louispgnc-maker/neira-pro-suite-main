@@ -167,7 +167,13 @@ ${cabinetName}`;
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={handleClose} disabled={loading}>
+            <Button 
+              onClick={handleClose} 
+              disabled={loading}
+              className={role === 'notaire' 
+                ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'}
+            >
               Annuler
             </Button>
             <Button 
