@@ -626,7 +626,7 @@ export default function ClientDetail() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleViewDocument(doc)}
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300"
                           >
                             <Eye className="h-4 w-4" />
                             Voir
@@ -635,7 +635,7 @@ export default function ClientDetail() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleDownloadDocument(doc)}
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300"
                           >
                             <Download className="h-4 w-4" />
                             Télécharger
