@@ -969,7 +969,7 @@ export default function CreateClientAvocat() {
           </Card>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={() => navigate('/avocats/clients')} disabled={loading}>Annuler</Button>
+            <Button type="button" className={mainButtonColor} onClick={() => navigate('/avocats/clients')} disabled={loading}>Annuler</Button>
             <Button type="submit" className={mainButtonColor} disabled={loading}>{loading ? 'Création...' : 'Créer la fiche client'}</Button>
           </div>
         </form>
