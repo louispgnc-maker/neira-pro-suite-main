@@ -67,6 +67,10 @@ export default function EditClient() {
   // Situation matrimoniale supprimée
   const [enfants, setEnfants] = useState<{ nom: string; prenom: string; sexe: string; date_naissance: string }[]>([]);
   const [situationFamiliale, setSituationFamiliale] = useState<string[]>([]);
+  const [situationFamilialeStatus, setSituationFamilialeStatus] = useState("");
+  const [regimeMatrimonial, setRegimeMatrimonial] = useState("");
+  const [nombreEnfants, setNombreEnfants] = useState("0");
+  const [personneACharge, setPersonneACharge] = useState("");
   const [familySearch, setFamilySearch] = useState("");
   // const familleAmberItem = "cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white"; // plus utilisé
   
@@ -131,6 +135,16 @@ export default function EditClient() {
             date_naissance: String(ee.date_naissance ?? '') 
           };
         }) : []);
+  
+  // Charger situation_familiale depuis le JSONB
+  if (c.situation_familiale && typeof c.situation_familiale === 'object') {
+    const sf = c.situation_familiale as any;
+    setSituationFamilialeStatus(sf.situation_familiale || '');
+    setRegimeMatrimonial(sf.regime_matrimonial || '');
+    setNombreEnfants(sf.nombre_enfants || '0');
+    setPersonneACharge(sf.personne_a_charge || '');
+  }
+  
   setSituationFamiliale(Array.isArray(c.situation_familiale) ? c.situation_familiale : []);
         setTypeDossier(c.type_dossier || '');
         setContratSouhaite(c.contrat_souhaite || '');
@@ -220,7 +234,12 @@ export default function EditClient() {
   enfants: enfants.filter(e => e.nom && e.prenom && e.date_naissance).length > 0 
     ? enfants.filter(e => e.nom && e.prenom && e.date_naissance) 
     : null,
-  situation_familiale: situationFamiliale.length > 0 ? situationFamiliale : null,
+  situation_familiale: {
+    situation_familiale: situationFamilialeStatus || null,
+    regime_matrimonial: regimeMatrimonial || null,
+    nombre_enfants: nombreEnfants || '0',
+    personne_a_charge: personneACharge || null
+  },
         consentement_rgpd: consentementRGPD,
         signature_mandat: signatureMandat,
       };
@@ -409,6 +428,61 @@ export default function EditClient() {
               <CardTitle>3. Situation familiale (Notaire)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="situationFamilialeStatus">Situation familiale</Label>
+                  <Select value={situationFamilialeStatus} onValueChange={setSituationFamilialeStatus}>
+                    <SelectTrigger id="situationFamilialeStatus">
+                      <SelectValue placeholder="Sélectionnez..." />
+                    </SelectTrigger>
+                    <SelectContent className={selectContentClass}>
+                      <SelectItem value="celibataire" className={selectItemClass}>Célibataire</SelectItem>
+                      <SelectItem value="marie" className={selectItemClass}>Marié(e)</SelectItem>
+                      <SelectItem value="pacse" className={selectItemClass}>Pacsé(e)</SelectItem>
+                      <SelectItem value="divorce" className={selectItemClass}>Divorcé(e)</SelectItem>
+                      <SelectItem value="veuf" className={selectItemClass}>Veuf/Veuve</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="regimeMatrimonial">Régime matrimonial</Label>
+                  <Select value={regimeMatrimonial} onValueChange={setRegimeMatrimonial}>
+                    <SelectTrigger id="regimeMatrimonial">
+                      <SelectValue placeholder="Si marié(e)..." />
+                    </SelectTrigger>
+                    <SelectContent className={selectContentClass}>
+                      <SelectItem value="communaute_legale" className={selectItemClass}>Communauté légale</SelectItem>
+                      <SelectItem value="communaute_universelle" className={selectItemClass}>Communauté universelle</SelectItem>
+                      <SelectItem value="separation_biens" className={selectItemClass}>Séparation de biens</SelectItem>
+                      <SelectItem value="participation_acquets" className={selectItemClass}>Participation aux acquêts</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nombreEnfants">Nombre d'enfants</Label>
+                  <Input 
+                    id="nombreEnfants" 
+                    type="number" 
+                    min="0"
+                    value={nombreEnfants} 
+                    onChange={(e) => setNombreEnfants(e.target.value)} 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="personneACharge">Personnes à charge</Label>
+                  <Textarea 
+                    id="personneACharge" 
+                    rows={2}
+                    value={personneACharge}
+                    onChange={(e) => setPersonneACharge(e.target.value)}
+                    placeholder="Indiquez les personnes à charge..."
+                  />
+                </div>
+              </div>
+
               {/* Champ Situation matrimoniale supprimé */}
               <div className="space-y-2">
                 <Label>Options familiales (multi)</Label>

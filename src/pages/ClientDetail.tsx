@@ -47,7 +47,7 @@ interface Client {
   type_dossier: string | null;
   contrat_souhaite: string | null;
   historique_litiges: string | null;
-  enfants: { nom: string; date_naissance: string | null }[] | null;
+  enfants: { nom: string; prenom?: string; sexe?: string; date_naissance: string | null }[] | null;
   documents_objet: string[] | null;
   situation_matrimoniale: string | null;
   // Additional fields from form
@@ -410,7 +410,7 @@ export default function ClientDetail() {
                 <CardDescription>Mariage / PACS / Enfants</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {typeof client.situation_familiale === 'object' && client.situation_familiale !== null ? (
+                {typeof client.situation_familiale === 'object' && client.situation_familiale !== null && Object.keys(client.situation_familiale).length > 0 ? (
                   <>
                     <div>
                       <div className="text-sm text-muted-foreground">Situation familiale</div>
@@ -437,10 +437,14 @@ export default function ClientDetail() {
                 ) : null}
                 <div>
                   <div className="text-sm text-muted-foreground">Enfants</div>
-                  {client.enfants && client.enfants.length > 0 ? (
+                  {client.enfants && Array.isArray(client.enfants) && client.enfants.length > 0 ? (
                     <div className="space-y-1">
                       {client.enfants.map((e, idx) => (
-                        <div key={idx} className="text-sm">{e.nom}{e.date_naissance ? ` — ${e.date_naissance}` : ''}</div>
+                        <div key={idx} className="text-sm">
+                          {e.prenom && e.nom ? `${e.prenom} ${e.nom}` : e.nom || '-'}
+                          {e.sexe && ` (${e.sexe})`}
+                          {e.date_naissance && ` — ${e.date_naissance}`}
+                        </div>
                       ))}
                     </div>
                   ) : (
