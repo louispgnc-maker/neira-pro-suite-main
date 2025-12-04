@@ -345,7 +345,7 @@ export default function CreateClientAvocat() {
                   <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@exemple.fr" required />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="nationalite">Nationalité *</Label>
                   <Input id="nationalite" value={nationalite} onChange={e => setNationalite(e.target.value)} placeholder="Française" required />
@@ -360,47 +360,6 @@ export default function CreateClientAvocat() {
                       <SelectItem className={itemHover} value="Autre">Autre</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="etatCivil">Situation familiale *</Label>
-                  <Select value={etatCivil} onValueChange={setEtatCivil}>
-                    <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent className="bg-blue-50 border-blue-200">
-                      <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
-                      <SelectItem className={itemHover} value="Marié(e)">Marié(e)</SelectItem>
-                      <SelectItem className={itemHover} value="Pacsé(e)">Pacsé(e)</SelectItem>
-                      <SelectItem className={itemHover} value="Divorcé(e)">Divorcé(e)</SelectItem>
-                      <SelectItem className={itemHover} value="Veuf(ve)">Veuf(ve)</SelectItem>
-                      <SelectItem className={itemHover} value="Concubinage">Concubinage</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              {(etatCivil === "Marié(e)" || etatCivil === "Pacsé(e)") && (
-                <div className="space-y-2">
-                  <Label htmlFor="regimeMatrimonial">Régime matrimonial</Label>
-                  <Select value={regimeMatrimonial} onValueChange={setRegimeMatrimonial}>
-                    <SelectTrigger id="regimeMatrimonial"><SelectValue placeholder="Si marié(e)..." /></SelectTrigger>
-                    <SelectContent className="bg-blue-50 border-blue-200">
-                      <SelectItem className={itemHover} value="Communauté réduite aux acquêts">Communauté réduite aux acquêts</SelectItem>
-                      <SelectItem className={itemHover} value="Séparation de biens">Séparation de biens</SelectItem>
-                      <SelectItem className={itemHover} value="Communauté universelle">Communauté universelle</SelectItem>
-                      <SelectItem className={itemHover} value="Participation aux acquêts">Participation aux acquêts</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-              <div className="space-y-2">
-                <Label>Avez-vous des enfants ? *</Label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2">
-                    <input type="radio" name="aEnfants" checked={aEnfants === "oui"} onChange={() => setAEnfants("oui")} />
-                    <span>Oui</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="radio" name="aEnfants" checked={aEnfants === "non"} onChange={() => setAEnfants("non")} />
-                    <span>Non</span>
-                  </label>
                 </div>
               </div>
             </CardContent>
@@ -437,7 +396,7 @@ export default function CreateClientAvocat() {
               <div className="space-y-2">
                 <Label>Scan ou photo</Label>
                 <input ref={fileInputRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFileChange} />
-                <Button type="button" variant="outline" onClick={handleFileSelect} className="w-full">
+                <Button type="button" variant="outline" onClick={handleFileSelect} className="w-full bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200">
                   <Upload className="mr-2 h-4 w-4" />
                   {idDocFile ? idDocFile.name : 'Choisir un fichier'}
                 </Button>
@@ -453,6 +412,36 @@ export default function CreateClientAvocat() {
               <CardDescription>Mariage / PACS / Enfants</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="etatCivil">Situation familiale *</Label>
+                  <Select value={etatCivil} onValueChange={setEtatCivil}>
+                    <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                    <SelectContent className="bg-blue-50 border-blue-200">
+                      <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
+                      <SelectItem className={itemHover} value="Marié(e)">Marié(e)</SelectItem>
+                      <SelectItem className={itemHover} value="Pacsé(e)">Pacsé(e)</SelectItem>
+                      <SelectItem className={itemHover} value="Divorcé(e)">Divorcé(e)</SelectItem>
+                      <SelectItem className={itemHover} value="Veuf(ve)">Veuf(ve)</SelectItem>
+                      <SelectItem className={itemHover} value="Concubinage">Concubinage</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {(etatCivil === "Marié(e)" || etatCivil === "Pacsé(e)") && (
+                  <div className="space-y-2">
+                    <Label htmlFor="regimeMatrimonial">Régime matrimonial</Label>
+                    <Select value={regimeMatrimonial} onValueChange={setRegimeMatrimonial}>
+                      <SelectTrigger id="regimeMatrimonial"><SelectValue placeholder="Si marié(e)..." /></SelectTrigger>
+                      <SelectContent className="bg-blue-50 border-blue-200">
+                        <SelectItem className={itemHover} value="Communauté réduite aux acquêts">Communauté réduite aux acquêts</SelectItem>
+                        <SelectItem className={itemHover} value="Séparation de biens">Séparation de biens</SelectItem>
+                        <SelectItem className={itemHover} value="Communauté universelle">Communauté universelle</SelectItem>
+                        <SelectItem className={itemHover} value="Participation aux acquêts">Participation aux acquêts</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
               <div className="space-y-2">
                 <Label>Options (multi-sélection)</Label>
                 <DropdownMenu>
@@ -498,7 +487,7 @@ export default function CreateClientAvocat() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Enfants</Label>
-                  <Button type="button" size="sm" variant="outline" onClick={handleAddChild}>
+                  <Button type="button" size="sm" variant="outline" onClick={handleAddChild} className="bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200">
                     <Plus className="h-4 w-4 mr-1" /> Ajouter
                   </Button>
                 </div>
@@ -807,9 +796,55 @@ export default function CreateClientAvocat() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="documentsObjetRaw">Documents liés (un par ligne)</Label>
+                <Label htmlFor="documentsObjetRaw">Documents liés (description)</Label>
                 <Textarea id="documentsObjetRaw" rows={3} value={documentsObjetRaw} onChange={e => setDocumentsObjetRaw(e.target.value)} placeholder="Ex: Assignation en justice\nContrats commerciaux\nCorrespondances" />
+                <p className="text-xs text-muted-foreground">Décrivez les documents nécessaires ou déjà en votre possession.</p>
               </div>
+
+              <div className="space-y-2">
+                <Label>Ajouter des fichiers</Label>
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  className="hidden"
+                  id="autresDocsInputAvocat"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    setAutresDocuments(prev => [...prev, ...files]);
+                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('autresDocsInputAvocat')?.click()}
+                  className="w-full bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200"
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Choisir des fichiers
+                </Button>
+                {autresDocuments.length > 0 && (
+                  <div className="border rounded-md p-2 space-y-1">
+                    {autresDocuments.map((file, idx) => (
+                      <div key={idx} className="flex items-center justify-between text-sm">
+                        <span className="truncate">{file.name}</span>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setAutresDocuments(prev => prev.filter((_, i) => i !== idx))}
+                          className="hover:bg-blue-100 hover:text-blue-600"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">PDF, Word, Images acceptés. Plusieurs fichiers possibles.</p>
+              </div>
+
               <div className="space-y-2">
                 <Label>Contrat(s) déjà enregistrés et associés</Label>
                 <div className="border rounded-md p-2 max-h-56 overflow-y-auto">
