@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Plus, X } from 'lucide-react';
 
 interface ClientForm {
   id: string;
@@ -21,12 +21,20 @@ interface ClientForm {
   cabinet_id: string;
 }
 
+interface Enfant {
+  nom: string;
+  prenom: string;
+  sexe: string;
+  date_naissance: string;
+}
+
 export default function PublicClientForm() {
   const { token } = useParams<{ token: string }>();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState<ClientForm | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [enfantsList, setEnfantsList] = useState<Enfant[]>([]);
   
   // Upload files
   const [pieceIdentiteFiles, setPieceIdentiteFiles] = useState<FileList | null>(null);
@@ -322,11 +330,12 @@ export default function PublicClientForm() {
 
       toast.info('Création de la fiche client...');
 
-      // Submit form avec les documents uploadés
+      // Submit form avec les documents uploadés et la liste des enfants
       const { data, error } = await supabase.rpc('submit_client_form', {
         form_token: token,
         form_response: {
           ...formData,
+          enfants_list: enfantsList.length > 0 ? enfantsList : null,
           uploaded_documents: uploadedDocuments
         }
       });
@@ -561,11 +570,16 @@ export default function PublicClientForm() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="enfants">Avez-vous des enfants ? *</Label>
                   <Select value={formData.enfants} required
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, enfants: value }))}>
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, enfants: value }));
+                      if (value === 'non') {
+                        setEnfantsList([]);
+                      }
+                    }}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="oui">Oui</SelectItem>
@@ -573,12 +587,105 @@ export default function PublicClientForm() {
                     </SelectContent>
                   </Select>
                 </div>
+
                 {formData.enfants === 'oui' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="enfants_details">Nombre et dates de naissance</Label>
-                    <Textarea id="enfants_details" placeholder="Ex: 2 enfants - Jean (15/03/2010), Marie (22/08/2015)" 
-                      value={formData.enfants_details}
-                      onChange={(e) => setFormData(prev => ({ ...prev, enfants_details: e.target.value }))} />
+                  <div className="space-y-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-semibold">Identité des enfants</Label>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => setEnfantsList([...enfantsList, { nom: '', prenom: '', sexe: '', date_naissance: '' }])}
+                        className="bg-orange-600 hover:bg-orange-700 text-white"
+                      >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Ajouter un enfant
+                      </Button>
+                    </div>
+
+                    {enfantsList.map((enfant, index) => (
+                      <div key={index} className="p-4 bg-white rounded-lg border space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-sm text-orange-600">Enfant {index + 1}</span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEnfantsList(enfantsList.filter((_, i) => i !== index))}
+                            className="hover:bg-orange-100 hover:text-orange-600"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-nom-${index}`}>Nom *</Label>
+                            <Input
+                              id={`enfant-nom-${index}`}
+                              value={enfant.nom}
+                              onChange={(e) => {
+                                const newList = [...enfantsList];
+                                newList[index].nom = e.target.value;
+                                setEnfantsList(newList);
+                              }}
+                              placeholder="Nom de l'enfant"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-prenom-${index}`}>Prénom *</Label>
+                            <Input
+                              id={`enfant-prenom-${index}`}
+                              value={enfant.prenom}
+                              onChange={(e) => {
+                                const newList = [...enfantsList];
+                                newList[index].prenom = e.target.value;
+                                setEnfantsList(newList);
+                              }}
+                              placeholder="Prénom de l'enfant"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-sexe-${index}`}>Sexe *</Label>
+                            <Select
+                              value={enfant.sexe}
+                              onValueChange={(value) => {
+                                const newList = [...enfantsList];
+                                newList[index].sexe = value;
+                                setEnfantsList(newList);
+                              }}
+                            >
+                              <SelectTrigger id={`enfant-sexe-${index}`}>
+                                <SelectValue placeholder="Sélectionnez..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="M">Masculin</SelectItem>
+                                <SelectItem value="F">Féminin</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-date-${index}`}>Date de naissance *</Label>
+                            <Input
+                              id={`enfant-date-${index}`}
+                              type="date"
+                              value={enfant.date_naissance}
+                              onChange={(e) => {
+                                const newList = [...enfantsList];
+                                newList[index].date_naissance = e.target.value;
+                                setEnfantsList(newList);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {enfantsList.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        Cliquez sur "Ajouter un enfant" pour renseigner les informations de vos enfants
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
