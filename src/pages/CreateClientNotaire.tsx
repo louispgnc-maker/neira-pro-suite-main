@@ -93,6 +93,7 @@ export default function CreateClientNotaire() {
   const [typeDossier, setTypeDossier] = useState("");
   const [objetPrecis, setObjetPrecis] = useState("");
   const [descriptionBesoin, setDescriptionBesoin] = useState("");
+  const [historiqueLitiges, setHistoriqueLitiges] = useState("");
   const [niveauUrgence, setNiveauUrgence] = useState("normal");
   const [dateLimite, setDateLimite] = useState("");
   const [contratSouhaite, setContratSouhaite] = useState("");
@@ -235,6 +236,7 @@ export default function CreateClientNotaire() {
         type_dossier: typeDossier || null,
         objet_dossier: objetPrecis || null,
         description_besoin: descriptionBesoin || null,
+        historique_litiges: historiqueLitiges || null,
         urgence: niveauUrgence || 'normal',
         date_limite: dateLimite || null,
         contrat_souhaite: contratSouhaite || null,
@@ -765,6 +767,17 @@ export default function CreateClientNotaire() {
                   value={descriptionBesoin} 
                   onChange={e => setDescriptionBesoin(e.target.value)} 
                   placeholder="Décrivez votre situation et vos besoins..."
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="historiqueLitiges">Historique de litiges ou contentieux antérieurs</Label>
+                <Textarea 
+                  id="historiqueLitiges" 
+                  rows={3} 
+                  value={historiqueLitiges} 
+                  onChange={e => setHistoriqueLitiges(e.target.value)} 
+                  placeholder="Indiquez si le client a déjà été impliqué dans des litiges, contentieux ou procédures juridiques similaires..."
                 />
               </div>
               
