@@ -229,9 +229,8 @@ export default function NotaireAuth() {
             </div>
             <div className="flex gap-2">
               <Button
-                variant="outline"
                 onClick={() => setResetPasswordOpen(false)}
-                className="flex-1"
+                className="flex-1 bg-orange-200 hover:bg-orange-300 text-orange-900"
               >
                 Annuler
               </Button>

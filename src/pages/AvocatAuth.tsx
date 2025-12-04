@@ -229,9 +229,8 @@ export default function AvocatAuth() {
             </div>
             <div className="flex gap-2">
               <Button
-                variant="outline"
                 onClick={() => setResetPasswordOpen(false)}
-                className="flex-1"
+                className="flex-1 bg-blue-200 hover:bg-blue-300 text-blue-900"
               >
                 Annuler
               </Button>
