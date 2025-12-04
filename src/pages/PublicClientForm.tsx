@@ -42,6 +42,8 @@ export default function PublicClientForm() {
     date_naissance: '',
     lieu_naissance: '',
     nationalite: '',
+    sexe: '',
+    etat_civil: '',
     adresse: '',
     numero_rue: '',
     code_postal: '',
@@ -93,6 +95,7 @@ export default function PublicClientForm() {
     type_dossier: '',
     objet_dossier: '',
     description_besoin: '',
+    historique_litiges: '',
     urgence: 'normal',
     date_limite: '',
     type_acte_notaire: '',
@@ -461,6 +464,32 @@ export default function PublicClientForm() {
                   <Label htmlFor="nationalite">Nationalité *</Label>
                   <Input id="nationalite" required value={formData.nationalite}
                     onChange={(e) => setFormData(prev => ({ ...prev, nationalite: e.target.value }))} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="sexe">Sexe *</Label>
+                  <Select value={formData.sexe} required
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, sexe: value }))}>
+                    <SelectTrigger><SelectValue placeholder="Sélectionnez..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="M">Masculin</SelectItem>
+                      <SelectItem value="F">Féminin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="etat_civil">État civil *</Label>
+                  <Select value={formData.etat_civil} required
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, etat_civil: value }))}>
+                    <SelectTrigger><SelectValue placeholder="Sélectionnez..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Monsieur">Monsieur</SelectItem>
+                      <SelectItem value="Madame">Madame</SelectItem>
+                      <SelectItem value="Mademoiselle">Mademoiselle</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -894,6 +923,14 @@ export default function PublicClientForm() {
                   placeholder="Décrivez en détail votre situation et vos besoins..."
                   value={formData.description_besoin}
                   onChange={(e) => setFormData(prev => ({ ...prev, description_besoin: e.target.value }))} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="historique_litiges">Historique de litiges ou contentieux antérieurs</Label>
+                <Textarea id="historique_litiges" rows={4}
+                  placeholder="Indiquez si vous avez déjà été impliqué dans des litiges, contentieux ou procédures juridiques similaires..."
+                  value={formData.historique_litiges}
+                  onChange={(e) => setFormData(prev => ({ ...prev, historique_litiges: e.target.value }))} />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
