@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface FormElements extends HTMLFormElement {
   email: HTMLInputElement;
@@ -28,6 +29,9 @@ export default function NotaireAuth() {
   const [overlayAnimate, setOverlayAnimate] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const [progress, setProgress] = useState<number>(0);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
 
   const withTimeout = async <T,>(promise: Promise<T>, ms = 7000): Promise<T> => {
     return await new Promise<T>((resolve, reject) => {
@@ -104,6 +108,30 @@ export default function NotaireAuth() {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!resetEmail) {
+      toast.error("Veuillez entrer votre email");
+      return;
+    }
+    setResetLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/notaires/dashboard`,
+      });
+      if (error) throw error;
+      toast.success("Email de réinitialisation envoyé !", {
+        description: "Vérifiez votre boîte mail pour réinitialiser votre mot de passe."
+      });
+      setResetPasswordOpen(false);
+      setResetEmail("");
+    } catch (error: any) {
+      console.error('Reset password error:', error);
+      toast.error(error.message || "Erreur lors de l'envoi de l'email");
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   if (verificationEmail) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white p-6 flex items-center justify-center">
@@ -151,7 +179,14 @@ export default function NotaireAuth() {
               <Label>Mot de passe</Label>
               <Input name="password" type="password" required />
             </div>
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setResetPasswordOpen(true)}
+                className="text-sm text-orange-600 hover:text-orange-700 hover:underline"
+              >
+                Mot de passe oublié ?
+              </button>
               <Button type="submit" disabled={loading} className="bg-orange-600 hover:bg-orange-700">Se connecter</Button>
             </div>
           </form>
@@ -171,6 +206,46 @@ export default function NotaireAuth() {
         </CardContent>
       </Card>
       </div>
+
+      <Dialog open={resetPasswordOpen} onOpenChange={setResetPasswordOpen}>
+        <DialogContent className="bg-orange-50">
+          <DialogHeader>
+            <DialogTitle>Réinitialiser le mot de passe</DialogTitle>
+            <DialogDescription>
+              Entrez votre email pour recevoir un lien de réinitialisation
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="reset-email">Email</Label>
+              <Input
+                id="reset-email"
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="votre@email.com"
+                className="border-orange-200 focus:border-orange-400"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setResetPasswordOpen(false)}
+                className="flex-1"
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleResetPassword}
+                disabled={resetLoading}
+                className="flex-1 bg-orange-600 hover:bg-orange-700"
+              >
+                {resetLoading ? "Envoi..." : "Envoyer"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
