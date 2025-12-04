@@ -47,18 +47,47 @@ Resend est bien meilleur qu'EmailJS : plus simple, plus fiable, meilleur deliver
 
 **Pourquoi ?** Pour envoyer depuis `noreply@votre-cabinet.fr` au lieu de `noreply@neira.fr`
 
+⚠️ **Note** : Cette étape est optionnelle. Vous pouvez utiliser `onboarding@resend.dev` pour tester immédiatement.
+
 ### 3.1 Ajouter votre domaine
 1. Allez sur https://resend.com/domains
 2. Cliquez sur **"Add Domain"**
 3. Entrez votre domaine : `votre-cabinet.fr`
 
 ### 3.2 Configurer les DNS
-Resend vous donnera 3 enregistrements DNS à ajouter :
-- **SPF** (TXT)
-- **DKIM** (TXT)
-- **DMARC** (TXT)
 
-Ajoutez-les chez votre hébergeur DNS (OVH, Cloudflare, etc.)
+📖 **Consultez le guide complet** : [DNS_CONFIGURATION.md](./DNS_CONFIGURATION.md)
+
+Résumé rapide des enregistrements à ajouter :
+
+#### DKIM (Obligatoire)
+```
+Type: TXT
+Name: resend._domainkey
+Content: p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCy8hATzt1NdOxmAk+31wTh7pM07afO9JofULg60p4U15pJ07GFmAjyTyzR26hVtx1PSbEecylilZQXKBHvDkRn5vKKRVeAlBVGXt0fKmL8LcbKZJi0RuGZCjc5cFOaVkOIZRkC/Z9CeGNU8gcQLivJ0ht/CdK8nzUEerJtpbo+VwIDAQAB
+```
+
+#### SPF (Obligatoire)
+```
+Type: MX
+Name: send
+Content: feedback-smtp.eu-west-1.amazonses.com
+Priority: 10
+
+Type: TXT
+Name: send
+Content: v=spf1 include:amazonses.com ~all
+```
+
+#### MX Réception (Optionnel)
+```
+Type: MX
+Name: @
+Content: inbound-smtp.eu-west-1.amazonaws.com
+Priority: 4
+```
+
+⚠️ **Attention** : Si vous utilisez déjà des emails sur ce domaine, ne modifiez pas l'enregistrement MX root (@).
 
 ### 3.3 Vérifier
 - Attendez 5-10 minutes
