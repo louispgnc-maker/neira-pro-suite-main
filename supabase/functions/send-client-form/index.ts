@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { clientEmail, clientName, cabinetId, userId } = await req.json()
+    const { clientEmail, clientName, cabinetId, userId, skipEmail = false } = await req.json()
 
     if (!clientEmail || !cabinetId || !userId) {
       return new Response(
@@ -57,6 +57,20 @@ serve(async (req) => {
 
     // Construct the form URL
     const formUrl = `${Deno.env.get('SITE_URL') || 'https://neira.fr'}/form/${form.token}`
+
+    // If skipEmail is true, return immediately without sending email
+    if (skipEmail) {
+      console.log('Skipping email as requested, returning form URL only')
+      return new Response(
+        JSON.stringify({ 
+          success: true,
+          formUrl: formUrl,
+          emailSent: false,
+          message: 'Formulaire créé (email non envoyé comme demandé)'
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     // Format expiration date
     const expirationDate = new Date(form.expires_at).toLocaleDateString('fr-FR', {

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabaseClient';
-import { Loader2, Send, Copy, Check } from 'lucide-react';
+import { Loader2, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SendClientFormDialogProps {
@@ -24,11 +24,8 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
   const [clientEmail, setClientEmail] = useState('');
   const [clientName, setClientName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [formUrl, setFormUrl] = useState('');
-  const [emailSent, setEmailSent] = useState(false);
-  const [copied, setCopied] = useState(false);
 
-  const handleSend = async () => {
+  const handleSendEmail = async () => {
     if (!clientEmail) {
       toast.error('Veuillez saisir l\'email du client');
       return;
@@ -43,6 +40,7 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
         throw new Error('Session expirée. Veuillez vous reconnecter.');
       }
 
+      // Create the form first
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-client-form',
         {
@@ -55,56 +53,75 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
             clientEmail,
             clientName,
             cabinetId,
-            userId
+            userId,
+            skipEmail: true // Don't send email, we'll open mailto instead
           })
         }
       );
 
       if (!response.ok) {
-        throw new Error('Erreur lors de l\'envoi du formulaire');
+        throw new Error('Erreur lors de la création du formulaire');
       }
 
       const data = await response.json();
       
       if (data.formUrl) {
-        setFormUrl(data.formUrl);
-        setEmailSent(data.emailSent || false);
+        // Get cabinet name for email
+        const { data: cabinetData } = await supabase
+          .from('cabinets')
+          .select('nom')
+          .eq('id', cabinetId)
+          .single();
+
+        const cabinetName = cabinetData?.nom || 'Notre cabinet';
         
-        if (data.emailSent) {
-          toast.success('Email envoyé avec succès !', {
-            description: `Le formulaire a été envoyé à ${clientEmail}`
-          });
-        } else {
-          toast.success('Lien du formulaire généré', {
-            description: `Copiez le lien pour l'envoyer à ${clientEmail}`
-          });
-        }
+        // Prepare email content
+        const subject = `${cabinetName} - Formulaire à compléter`;
+        const body = `Bonjour ${clientName || 'Client'},
+
+${cabinetName} vous invite à compléter vos informations personnelles via notre formulaire sécurisé.
+
+📋 Pourquoi ce formulaire ?
+Ce formulaire nous permettra de créer votre dossier client et de vous accompagner au mieux dans vos démarches.
+
+🔗 Lien du formulaire :
+${data.formUrl}
+
+⏱️ Temps estimé : 5-10 minutes
+🔒 Toutes vos données sont chiffrées et confidentielles
+📅 Validité : Ce lien expire dans 30 jours
+
+Si vous rencontrez un problème avec ce formulaire, vous pouvez nous contacter directement.
+
+Cordialement,
+${cabinetName}`;
+
+        // Open default email client with pre-filled draft
+        const mailtoLink = `mailto:${encodeURIComponent(clientEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoLink;
+
+        toast.success('Brouillon d\'email ouvert !', {
+          description: `Le formulaire a été créé pour ${clientEmail}`
+        });
+
+        // Close dialog after a short delay
+        setTimeout(() => {
+          handleClose();
+        }, 1000);
       } else {
         throw new Error('URL du formulaire non disponible');
       }
     } catch (error: any) {
-      console.error('Error sending form:', error);
-      toast.error(error.message || 'Erreur lors de l\'envoi du formulaire');
+      console.error('Error creating form:', error);
+      toast.error(error.message || 'Erreur lors de la création du formulaire');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleCopyLink = () => {
-    if (formUrl) {
-      navigator.clipboard.writeText(formUrl);
-      setCopied(true);
-      toast.success('Lien copié dans le presse-papier');
-      setTimeout(() => setCopied(false), 2000);
     }
   };
 
   const handleClose = () => {
     setClientEmail('');
     setClientName('');
-    setFormUrl('');
-    setEmailSent(false);
-    setCopied(false);
     onOpenChange(false);
   };
 
@@ -112,126 +129,62 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Créer un lien de formulaire client</DialogTitle>
+          <DialogTitle>Envoyer un formulaire client</DialogTitle>
           <DialogDescription>
-            Générez un lien sécurisé que vous pourrez envoyer au client pour qu'il complète ses informations.
+            Un brouillon d'email s'ouvrira dans votre messagerie avec le lien du formulaire pré-rempli.
           </DialogDescription>
         </DialogHeader>
 
-        {!formUrl ? (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="client-name">Nom du client (optionnel)</Label>
-              <Input
-                id="client-name"
-                placeholder="Jean Dupont"
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                disabled={loading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="client-email">Email du client *</Label>
-              <Input
-                id="client-email"
-                type="email"
-                placeholder="client@email.com"
-                value={clientEmail}
-                onChange={(e) => setClientEmail(e.target.value)}
-                disabled={loading}
-                required
-              />
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={handleClose} disabled={loading}>
-                Annuler
-              </Button>
-              <Button 
-                onClick={handleSend} 
-                disabled={loading || !clientEmail}
-                className={role === 'notaire' 
-                  ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Envoi...
-                  </>
-                ) : (
-                  <>
-                    <Send className="mr-2 h-4 w-4" />
-                    Générer le lien
-                  </>
-                )}
-              </Button>
-            </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="client-name">Nom du client (optionnel)</Label>
+            <Input
+              id="client-name"
+              placeholder="Jean Dupont"
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
+              disabled={loading}
+            />
           </div>
-        ) : (
-          <div className="space-y-4">
-            {emailSent ? (
-              // Email envoyé avec succès
-              <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-                <p className="text-sm text-green-800 font-medium mb-2">
-                  ✅ Email envoyé avec succès !
-                </p>
-                <p className="text-sm text-green-700">
-                  Le formulaire a été envoyé à <strong>{clientEmail}</strong>. Le client recevra un email avec un lien sécurisé pour compléter ses informations.
-                </p>
-              </div>
-            ) : (
-              // Email non envoyé (configuration manquante)
-              <div className="rounded-lg bg-orange-50 border border-orange-200 p-4">
-                <p className="text-sm text-orange-800 font-medium mb-2">
-                  ⚠️ Lien du formulaire généré
-                </p>
-                <p className="text-sm text-orange-700">
-                  Copiez ce lien et envoyez-le à <strong>{clientEmail}</strong> par votre moyen de communication habituel (email, SMS, WhatsApp, etc.)
-                </p>
-              </div>
-            )}
 
-            <div className="space-y-2">
-              <Label>Lien du formulaire à partager</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={formUrl}
-                  readOnly
-                  className="font-mono text-xs bg-gray-50"
-                  onClick={(e) => e.currentTarget.select()}
-                />
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={handleCopyLink}
-                  className="shrink-0"
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Cliquez sur le champ pour sélectionner tout le lien, ou utilisez le bouton copier
-              </p>
-            </div>
-
-            <div className="flex justify-end">
-              <Button 
-                onClick={handleClose}
-                className={role === 'notaire' 
-                  ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'}
-              >
-                Fermer
-              </Button>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="client-email">Email du client *</Label>
+            <Input
+              id="client-email"
+              type="email"
+              placeholder="client@email.com"
+              value={clientEmail}
+              onChange={(e) => setClientEmail(e.target.value)}
+              disabled={loading}
+              required
+            />
           </div>
-        )}
+
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={handleClose} disabled={loading}>
+              Annuler
+            </Button>
+            <Button 
+              onClick={handleSendEmail} 
+              disabled={loading || !clientEmail}
+              className={role === 'notaire' 
+                ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Création...
+                </>
+              ) : (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Envoyer email
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
