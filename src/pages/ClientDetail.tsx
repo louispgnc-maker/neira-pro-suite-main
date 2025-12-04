@@ -6,7 +6,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Pencil, FileText, Download, Eye } from "lucide-react";
+import { ArrowLeft, Pencil, FileText, Download, Eye, Trash2 } from "lucide-react";
 import { Share2 } from 'lucide-react';
 import ShareToCollaborativeButton from '@/components/cabinet/ShareToCollaborativeButton';
 
@@ -189,6 +189,36 @@ export default function ClientDetail() {
     } catch (error) {
       console.error('Error viewing document:', error);
       alert('Erreur lors de l\'ouverture du document');
+    }
+  };
+
+  const handleDeleteDocument = async (doc: ClientDocument) => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer le document "${doc.file_name}" ?\n\nCette action est irréversible.`)) {
+      return;
+    }
+
+    try {
+      // Delete from storage
+      const { error: storageError } = await supabase.storage
+        .from('documents')
+        .remove([doc.file_path]);
+      
+      if (storageError) throw storageError;
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('client_documents')
+        .delete()
+        .eq('id', doc.id);
+      
+      if (dbError) throw dbError;
+
+      // Update UI
+      setDocuments(documents.filter(d => d.id !== doc.id));
+      alert('Document supprimé avec succès');
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      alert('Erreur lors de la suppression du document');
     }
   };
 
@@ -558,6 +588,15 @@ export default function ClientDetail() {
                           >
                             <Download className="h-4 w-4" />
                             Télécharger
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDeleteDocument(doc)}
+                            className="flex items-center gap-1 hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Supprimer
                           </Button>
                         </div>
                       </div>
