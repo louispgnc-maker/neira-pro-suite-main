@@ -101,7 +101,7 @@ export default function EmailInbox() {
 
   // Handle pre-filled compose from navigation state
   useEffect(() => {
-    if (location.state?.openCompose) {
+    if (location.state?.openCompose && selectedAccount) {
       setComposeTo(location.state.composeTo || '');
       setComposeCc('');
       setComposeSubject(location.state.composeSubject || '');
@@ -112,7 +112,7 @@ export default function EmailInbox() {
       // Clear the state so it doesn't reopen on refresh
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state]);
+  }, [location.state, selectedAccount]);
 
   useEffect(() => {
     if (selectedAccount) {
