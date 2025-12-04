@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { clientEmail, clientName, cabinetId, userId, skipEmail = false } = await req.json()
+    const { clientEmail, clientName, cabinetId, userId, role, skipEmail = false } = await req.json()
 
     if (!clientEmail || !cabinetId || !userId) {
       return new Response(
@@ -32,6 +32,7 @@ serve(async (req) => {
       .insert({
         cabinet_id: cabinetId,
         created_by: userId,
+        creator_role: role || 'notaire',
         client_email: clientEmail,
         client_name: clientName || null,
         status: 'pending',

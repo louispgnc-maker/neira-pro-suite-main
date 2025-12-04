@@ -56,6 +56,7 @@ export default function SendClientFormDialog({ open, onOpenChange, cabinetId, us
             clientName,
             cabinetId,
             userId,
+            role, // Pass the role
             skipEmail: true // Don't send email, we'll open mailto instead
           })
         }
