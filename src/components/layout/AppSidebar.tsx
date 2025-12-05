@@ -28,6 +28,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -79,6 +80,9 @@ export function AppSidebar() {
   const { user, profile } = useAuth();
   const profileEmail = user?.email || '—';
   const displayName = profile?.first_name || profile?.email?.split('@')[0] || 'Compte';
+  const fullName = profile?.first_name && profile?.last_name 
+    ? `${profile.first_name} ${profile.last_name}`
+    : displayName;
   const [currentCabinetId, setCurrentCabinetId] = useState<string | null>(null);
   const unreadEmailCount = useUnreadEmailCount();
 
@@ -279,9 +283,17 @@ export function AppSidebar() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className={`h-8 w-8 p-0 flex items-center justify-center rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                className="h-10 px-2 flex items-center gap-2 hover:bg-accent rounded-md"
               >
-                <UserCircle2 className="h-4 w-4 text-white" />
+                <Avatar className="h-8 w-8">
+                  {profile?.photo_url && (
+                    <AvatarImage src={profile.photo_url} alt="Photo de profil" />
+                  )}
+                  <AvatarFallback className={`text-xs ${role === 'notaire' ? 'bg-orange-600 text-white' : 'bg-blue-600 text-white'}`}>
+                    {displayName[0]?.toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium text-left truncate max-w-[120px]">{fullName}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="top" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
