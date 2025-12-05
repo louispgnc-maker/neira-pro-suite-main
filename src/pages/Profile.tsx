@@ -21,6 +21,7 @@ export default function Profile() {
   if (location.pathname.includes('/avocats')) role = 'avocat';
 
   const [cabinetName, setCabinetName] = useState<string | null>(null);
+  const [cabinetFonction, setCabinetFonction] = useState<string | null>(null);
   const [loadingCabinet, setLoadingCabinet] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -41,19 +42,35 @@ export default function Profile() {
     if (!user) return;
     setLoadingCabinet(true);
     try {
-      const { data: cabinetsData, error } = await supabase.rpc('get_user_cabinets');
-      if (error) throw error;
-      const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
-      const filtered = cabinets.filter((c) => ((c as Record<string, unknown>)['role'] === role));
-      if (filtered && filtered.length > 0) {
-        const nom = (filtered[0] as Record<string, unknown>)['nom'];
-        setCabinetName(typeof nom === 'string' && nom.trim() ? nom : null);
-      } else {
+      // Récupérer le cabinet et la fonction (role_cabinet) de l'utilisateur
+      const { data, error } = await supabase
+        .from('cabinet_members')
+        .select('cabinets(nom, role), role_cabinet')
+        .eq('user_id', user.id)
+        .eq('status', 'accepted')
+        .limit(1)
+        .single();
+      
+      if (error || !data) {
         setCabinetName(null);
+        setCabinetFonction(null);
+      } else {
+        const cabinetData = data.cabinets as any;
+        const cabinetRole = cabinetData?.role;
+        
+        // Vérifier si le rôle correspond à l'espace actuel
+        if (cabinetRole === role) {
+          setCabinetName(cabinetData?.nom || null);
+          setCabinetFonction(data.role_cabinet || null);
+        } else {
+          setCabinetName(null);
+          setCabinetFonction(null);
+        }
       }
     } catch (error) {
       console.error('Erreur chargement cabinet:', error);
       setCabinetName(null);
+      setCabinetFonction(null);
     } finally {
       setLoadingCabinet(false);
     }
@@ -68,7 +85,7 @@ export default function Profile() {
     if (profile) {
       setNom(profile.last_name || "");
       setPrenom(profile.first_name || "");
-      setFonction(profile.fonction || "");
+      // Ne pas charger fonction depuis profile, on l'affiche depuis le cabinet
       setTelephonePro(profile.telephone_pro || "");
       setEmailPro(profile.email_pro || user?.email || "");
       setAdressePro(profile.adresse_pro || "");
@@ -96,6 +113,13 @@ export default function Profile() {
         .getPublicUrl(fileName);
 
       setPhotoUrl(publicUrl);
+      
+      // Sauvegarder immédiatement dans la base
+      await supabase
+        .from('profiles')
+        .update({ photo_url: publicUrl })
+        .eq('id', user.id);
+      
       toast.success("Photo téléchargée");
     } catch (error: any) {
       console.error('Error uploading photo:', error);
@@ -122,10 +146,35 @@ export default function Profile() {
         .getPublicUrl(fileName);
 
       setSignatureUrl(publicUrl);
+      
+      // Sauvegarder immédiatement dans la base
+      await supabase
+        .from('profiles')
+        .update({ signature_url: publicUrl })
+        .eq('id', user.id);
+      
       toast.success("Signature téléchargée");
     } catch (error: any) {
       console.error('Error uploading signature:', error);
       toast.error(error.message || "Erreur lors du téléchargement");
+    };
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!user || !photoUrl) return;
+    
+    try {
+      setPhotoUrl("");
+      
+      await supabase
+        .from('profiles')
+        .update({ photo_url: null })
+        .eq('id', user.id);
+      
+      toast.success("Photo supprimée");
+    } catch (error: any) {
+      console.error('Error deleting photo:', error);
+      toast.error(error.message || "Erreur lors de la suppression");
     }
   };
 
@@ -139,7 +188,6 @@ export default function Profile() {
         .update({
           last_name: nom,
           first_name: prenom,
-          fonction,
           telephone_pro: telephonePro,
           email_pro: emailPro,
           adresse_pro: adressePro,
@@ -207,9 +255,21 @@ export default function Profile() {
                 onChange={handlePhotoUpload}
               />
             </div>
-            <div className="text-sm text-muted-foreground">
-              <p>Format recommandé : JPG ou PNG</p>
-              <p>Taille max : 5 MB</p>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">
+                <p>Format recommandé : JPG ou PNG</p>
+                <p>Taille max : 5 MB</p>
+              </div>
+              {photoUrl && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDeletePhoto}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  Supprimer la photo
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -242,24 +302,6 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="fonction">Fonction</Label>
-              <Select value={fonction} onValueChange={setFonction}>
-                <SelectTrigger id="fonction">
-                  <SelectValue placeholder="Sélectionnez votre fonction" />
-                </SelectTrigger>
-                <SelectContent className={role === 'notaire' ? 'bg-orange-50' : 'bg-blue-50'}>
-                  <SelectItem value="Avocat">Avocat</SelectItem>
-                  <SelectItem value="Notaire">Notaire</SelectItem>
-                  <SelectItem value="Juriste">Juriste</SelectItem>
-                  <SelectItem value="Stagiaire">Stagiaire</SelectItem>
-                  <SelectItem value="Clerc">Clerc</SelectItem>
-                  <SelectItem value="Collaborateur">Collaborateur</SelectItem>
-                  <SelectItem value="Associé">Associé</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             <div>
               <div className="text-sm font-medium mb-2">Email principal</div>
               <Badge variant="outline" className="text-sm">
@@ -274,20 +316,25 @@ export default function Profile() {
               </Badge>
             </div>
 
-            <div>
-              <div className="text-sm font-medium mb-2">Cabinet</div>
-              {loadingCabinet ? (
-                <div className="text-sm text-muted-foreground">Chargement...</div>
-              ) : cabinetName ? (
-                <Badge variant="outline" className="text-sm bg-green-50 text-green-700 border-green-200">
-                  {cabinetName}
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-sm">
-                  Aucun cabinet
-                </Badge>
-              )}
-            </div>
+            {cabinetName && (
+              <div>
+                <div className="text-sm font-medium mb-2">Cabinet et fonction</div>
+                {loadingCabinet ? (
+                  <div className="text-sm text-muted-foreground">Chargement...</div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-sm bg-green-50 text-green-700 border-green-200">
+                      {cabinetName}
+                    </Badge>
+                    {cabinetFonction && (
+                      <Badge variant="outline" className={`text-sm ${role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                        {cabinetFonction}
+                      </Badge>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 

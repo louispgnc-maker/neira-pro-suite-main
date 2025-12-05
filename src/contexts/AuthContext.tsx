@@ -12,6 +12,11 @@ interface UserProfile {
   cabinet_id?: string | null;
   created_at?: string;
   subscription_plan?: string; // 'Neira Essentiel' | 'Neira Professionnel' | 'Neira Cabinet+'
+  telephone_pro?: string;
+  email_pro?: string;
+  adresse_pro?: string;
+  photo_url?: string;
+  signature_url?: string;
 }
 
 interface AuthContextType {
