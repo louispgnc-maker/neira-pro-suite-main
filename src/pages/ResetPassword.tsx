@@ -18,19 +18,43 @@ export default function ResetPassword() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Vérifier si on a un token de récupération
+    // Vérifier si on a un token de récupération dans le hash
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          setIsValidToken(true);
+        // Vérifier si on a un hash avec access_token
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const type = hashParams.get('type');
+
+        if (accessToken && type === 'recovery') {
+          // On a un token de récupération valide, définir la session
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || ''
+          });
+
+          if (error) {
+            console.error("Error setting session:", error);
+            toast.error("Lien invalide ou expiré");
+            setTimeout(() => navigate("/"), 3000);
+          } else if (data.session) {
+            setIsValidToken(true);
+          }
         } else {
-          toast.error("Lien invalide ou expiré");
-          setTimeout(() => navigate("/"), 3000);
+          // Vérifier si on a déjà une session
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            setIsValidToken(true);
+          } else {
+            toast.error("Lien invalide ou expiré");
+            setTimeout(() => navigate("/"), 3000);
+          }
         }
       } catch (error) {
         console.error("Error checking session:", error);
         toast.error("Erreur lors de la vérification");
+        setTimeout(() => navigate("/"), 3000);
       } finally {
         setChecking(false);
       }
