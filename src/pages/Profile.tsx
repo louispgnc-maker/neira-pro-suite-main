@@ -157,7 +157,7 @@ export default function Profile() {
     } catch (error: any) {
       console.error('Error uploading signature:', error);
       toast.error(error.message || "Erreur lors du téléchargement");
-    };
+    }
   };
 
   const handleDeletePhoto = async () => {
@@ -192,8 +192,7 @@ export default function Profile() {
           email_pro: emailPro,
           adresse_pro: adressePro,
           photo_url: photoUrl,
-          signature_url: signatureUrl,
-          updated_at: new Date().toISOString()
+          signature_url: signatureUrl
         })
         .eq('id', user.id);
 
