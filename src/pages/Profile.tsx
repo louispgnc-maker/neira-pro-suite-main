@@ -50,9 +50,13 @@ export default function Profile() {
         .eq('user_id', user.id)
         .eq('status', 'accepted')
         .limit(1)
-        .single();
+        .maybeSingle();
       
-      if (error || !data) {
+      if (error) {
+        console.error('Error loading cabinet:', error);
+        setCabinetName(null);
+        setCabinetFonction(null);
+      } else if (!data) {
         setCabinetName(null);
         setCabinetFonction(null);
       } else {
