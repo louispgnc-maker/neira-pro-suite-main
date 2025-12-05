@@ -105,21 +105,21 @@ export function DashboardNotaire() {
         .gte("created_at", `${prevYyyy}-${prevMm}-01T00:00:00`)
         .lt("created_at", `${yyyy}-${mm}-01T00:00:00`);
 
-      // Signatures en attente - TOUTES les signatures en attente
+      // Signatures en attente - Dossiers avec statut "En attente de signature"
       const sigQuery = supabase
-        .from("signatures")
+        .from("dossiers")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "notaire")
-        .eq("status", "pending");
+        .eq("status", "En attente de signature");
 
       // Signatures du mois précédent pour calculer la tendance  
       const sigPrevQuery = supabase
-        .from("signatures")
+        .from("dossiers")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "notaire")
-        .eq("status", "pending");
+        .eq("status", "En attente de signature");
 
       // Clients à relancer (kyc_status = 'Partiel')
       const clientsQuery = supabase
