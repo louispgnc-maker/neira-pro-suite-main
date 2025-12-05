@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ import { Camera, Save } from "lucide-react";
 export default function Profile() {
   const { user, profile } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
@@ -199,6 +200,9 @@ export default function Profile() {
       if (error) throw error;
 
       toast.success("Profil mis à jour");
+      
+      // Rediriger vers la page de profil en lecture seule
+      navigate(role === 'notaire' ? '/notaires/profile' : '/avocats/profile');
     } catch (error: any) {
       console.error('Error saving profile:', error);
       toast.error(error.message || "Erreur lors de la sauvegarde");
