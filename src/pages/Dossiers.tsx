@@ -257,6 +257,9 @@ export default function Dossiers() {
       if (error) throw error;
       setDossiers((prev) => prev.filter((x) => x.id !== dossier.id));
       toast.success('Dossier supprimé');
+      
+      // Rediriger vers la liste des dossiers
+      navigate(role === 'notaire' ? '/notaires/dossiers' : '/avocats/dossiers');
       } catch (err: unknown) {
       console.error('Erreur suppression dossier:', err);
       const message = err instanceof Error ? err.message : String(err);
