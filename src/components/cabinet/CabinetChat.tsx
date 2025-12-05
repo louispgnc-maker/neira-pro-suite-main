@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,7 @@ interface Conversation {
   member_profiles?: Array<{
     first_name?: string;
     last_name?: string;
+    photo_url?: string;
   }>;
   last_message_at?: string;
   unread_count?: number;
@@ -49,6 +50,7 @@ interface Message {
   sender_profile?: {
     first_name?: string;
     last_name?: string;
+    photo_url?: string;
   };
 }
 
@@ -58,7 +60,7 @@ interface CabinetChatProps {
 }
 
 export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
   
   const [members, setMembers] = useState<CabinetMember[]>([]);
@@ -198,7 +200,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       const userIds = membersData.map(m => m.user_id).filter(Boolean);
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name')
+        .select('id, first_name, last_name, photo_url')
         .in('id', userIds);
 
       if (profilesError) {
@@ -287,7 +289,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           // Load profiles for members
           const { data: profilesData } = await supabase
             .from('profiles')
-            .select('id, first_name, last_name')
+            .select('id, first_name, last_name, photo_url')
             .in('id', memberIds);
 
           // Get last message time
@@ -383,7 +385,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       const senderIds = [...new Set(data?.map(m => m.sender_id) || [])];
       const { data: profilesData } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name')
+        .select('id, first_name, last_name, photo_url')
         .in('id', senderIds);
 
       const profilesMap = new Map(
@@ -433,7 +435,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           if (shouldAdd) {
             const { data: profileData } = await supabase
               .from('profiles')
-              .select('id, first_name, last_name')
+              .select('id, first_name, last_name, photo_url')
               .eq('id', newMsg.sender_id)
               .single();
 
@@ -521,7 +523,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       // Get sender profile
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name')
+        .select('id, first_name, last_name, photo_url')
         .eq('id', user.id)
         .single();
 
@@ -615,7 +617,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         // Reload conversations
         const { data: profilesData } = await supabase
           .from('profiles')
-          .select('id, first_name, last_name')
+          .select('id, first_name, last_name, photo_url')
           .in('id', membersToAdd);
 
         setConversations(prev => [
@@ -997,6 +999,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                       onClick={() => setSelectedConversation(conv.id)}
                     >
                       <Avatar className="h-6 w-6 mr-2">
+                        {conv.member_profiles?.[0]?.photo_url && (
+                          <AvatarImage src={conv.member_profiles[0].photo_url} alt="Photo de profil" />
+                        )}
                         <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
                           {getInitials(conv.member_profiles?.[0])}
                         </AvatarFallback>
@@ -1039,6 +1044,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             ) : (
               <>
                 <Avatar className="h-6 w-6">
+                  {currentConversation?.member_profiles?.[0]?.photo_url && (
+                    <AvatarImage src={currentConversation.member_profiles[0].photo_url} alt="Photo" />
+                  )}
                   <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
                     {getInitials(currentConversation?.member_profiles?.[0])}
                   </AvatarFallback>
@@ -1076,6 +1084,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     className={`flex gap-3 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}
                   >
                     <Avatar className="h-8 w-8">
+                      {msg.sender_profile?.photo_url && (
+                        <AvatarImage src={msg.sender_profile.photo_url} alt="Photo de profil" />
+                      )}
                       <AvatarFallback className={`text-xs ${
                         isOwnMessage 
                           ? getRoleBadgeColor(role)
