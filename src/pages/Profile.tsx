@@ -99,27 +99,57 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    // Vérifier la taille du fichier (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("La photo ne doit pas dépasser 5 MB");
+      return;
+    }
+
+    // Vérifier le type de fichier
+    if (!file.type.startsWith('image/')) {
+      toast.error("Le fichier doit être une image");
+      return;
+    }
+
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}-photo-${Date.now()}.${fileExt}`;
       
-      const { error: uploadError } = await supabase.storage
+      console.log('Uploading file:', fileName, 'Size:', file.size, 'Type:', file.type);
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('profiles')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, file, { 
+          cacheControl: '3600',
+          upsert: true,
+          contentType: file.type
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('Upload successful:', uploadData);
 
       const { data: { publicUrl } } = supabase.storage
         .from('profiles')
         .getPublicUrl(fileName);
 
+      console.log('Public URL:', publicUrl);
+
       setPhotoUrl(publicUrl);
       
       // Sauvegarder immédiatement dans la base
-      await supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({ photo_url: publicUrl })
         .eq('id', user.id);
+
+      if (updateError) {
+        console.error('Update error:', updateError);
+        throw updateError;
+      }
       
       toast.success("Photo téléchargée");
     } catch (error: any) {
