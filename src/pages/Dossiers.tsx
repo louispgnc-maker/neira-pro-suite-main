@@ -389,10 +389,12 @@ export default function Dossiers() {
                     <Select value={status} onValueChange={setStatus}>
                       <SelectTrigger><SelectValue placeholder="Statut" /></SelectTrigger>
                       <SelectContent className={selectContentClass}>
-                        <SelectItem className={selectItemClass} value="Ouvert">Ouvert</SelectItem>
+                        <SelectItem className={selectItemClass} value="Prospect">Prospect</SelectItem>
+                        <SelectItem className={selectItemClass} value="Nouveau">Nouveau</SelectItem>
                         <SelectItem className={selectItemClass} value="En cours">En cours</SelectItem>
-                        <SelectItem className={selectItemClass} value="En attente">En attente</SelectItem>
-                        <SelectItem className={selectItemClass} value="Clos">Clos</SelectItem>
+                        <SelectItem className={selectItemClass} value="En attente de signature">En attente de signature</SelectItem>
+                        <SelectItem className={selectItemClass} value="À traiter">À traiter</SelectItem>
+                        <SelectItem className={selectItemClass} value="Terminé">Terminé</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -537,7 +539,7 @@ export default function Dossiers() {
                               value={d.status}
                               onValueChange={(newStatus) => handleStatusChange(d.id, newStatus)}
                             >
-                              <SelectTrigger className={`w-[180px] ${
+                              <SelectTrigger className={`h-7 text-xs w-[160px] ${
                                 d.status === 'Prospect' ? 'bg-gray-100 text-gray-700 border-gray-300' :
                                 d.status === 'Nouveau' ? 'bg-blue-100 text-blue-700 border-blue-300' :
                                 d.status === 'En cours' ? 'bg-orange-100 text-orange-700 border-orange-300' :
