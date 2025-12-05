@@ -100,6 +100,27 @@ export default function Dossiers() {
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
   const [selectedContrats, setSelectedContrats] = useState<string[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+
+  const handleStatusChange = async (dossierId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('dossiers')
+        .update({ status: newStatus })
+        .eq('id', dossierId);
+
+      if (error) throw error;
+
+      // Mettre à jour l'état local
+      setDossiers(prev => prev.map(d => 
+        d.id === dossierId ? { ...d, status: newStatus } : d
+      ));
+
+      toast.success('Statut mis à jour');
+    } catch (err: any) {
+      console.error('Error updating status:', err);
+      toast.error(err.message || 'Erreur lors de la mise à jour du statut');
+    }
+  };
   const navigate = useNavigate();
   const mainHover = role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white';
   const selectContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200';
@@ -511,7 +532,32 @@ export default function Dossiers() {
                           className="cursor-pointer"
                         >
                           <TableCell className="font-medium">{d.title}</TableCell>
-                          <TableCell className="text-sm text-foreground">{d.status}</TableCell>
+                          <TableCell onClick={(e) => e.stopPropagation()}>
+                            <Select
+                              value={d.status}
+                              onValueChange={(newStatus) => handleStatusChange(d.id, newStatus)}
+                            >
+                              <SelectTrigger className={`w-[180px] ${
+                                d.status === 'Prospect' ? 'bg-gray-100 text-gray-700 border-gray-300' :
+                                d.status === 'Nouveau' ? 'bg-blue-100 text-blue-700 border-blue-300' :
+                                d.status === 'En cours' ? 'bg-orange-100 text-orange-700 border-orange-300' :
+                                d.status === 'En attente de signature' ? 'bg-purple-100 text-purple-700 border-purple-300' :
+                                d.status === 'À traiter' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' :
+                                d.status === 'Terminé' ? 'bg-green-100 text-green-700 border-green-300' :
+                                'bg-gray-100 text-gray-700 border-gray-300'
+                              }`}>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Prospect">Prospect</SelectItem>
+                                <SelectItem value="Nouveau">Nouveau</SelectItem>
+                                <SelectItem value="En cours">En cours</SelectItem>
+                                <SelectItem value="En attente de signature">En attente de signature</SelectItem>
+                                <SelectItem value="À traiter">À traiter</SelectItem>
+                                <SelectItem value="Terminé">Terminé</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
                           <TableCell>{d.client_count ?? '—'}</TableCell>
                           <TableCell>{d.contrat_count ?? '—'}</TableCell>
                           <TableCell>{d.document_count ?? '—'}</TableCell>
