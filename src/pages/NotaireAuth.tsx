@@ -116,7 +116,7 @@ export default function NotaireAuth() {
     setResetLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/notaires/dashboard`,
+        redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;
       toast.success("Email de réinitialisation envoyé !", {

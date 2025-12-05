@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Auth from "./pages/Auth";
 import AvocatAuth from "./pages/AvocatAuth";
 import NotaireAuth from "./pages/NotaireAuth";
+import ResetPassword from "./pages/ResetPassword";
 import Contact from "./pages/Contact";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -81,6 +82,7 @@ const App = () => (
             <Route path="/test-subscription/login" element={<TestLogin />} />
             <Route path="/test-subscription/create-cabinet" element={<TestCreateCabinet />} />
             <Route path="/confirm-email" element={<ConfirmEmail />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/oauth-callback" element={<OAuthCallback />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             <Route path="/rgpd" element={<RGPD />} />

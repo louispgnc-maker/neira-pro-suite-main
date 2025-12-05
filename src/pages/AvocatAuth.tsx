@@ -116,7 +116,7 @@ export default function AvocatAuth() {
     setResetLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/avocats/dashboard`,
+        redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;
       toast.success("Email de réinitialisation envoyé !", {
