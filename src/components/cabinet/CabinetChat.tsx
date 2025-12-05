@@ -1098,7 +1098,10 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     <div className={`flex-1 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
                       <div className="flex items-baseline gap-2 mb-1">
                         <span className={`text-sm font-medium ${isOwnMessage ? 'order-2' : 'order-1'}`}>
-                          {isOwnMessage ? 'Vous' : getDisplayName(msg.sender_profile)}
+                          {isOwnMessage 
+                            ? 'Vous' 
+                            : `${msg.sender_profile?.first_name || ''} ${msg.sender_profile?.last_name || ''}`.trim() || 'Utilisateur'
+                          }
                         </span>
                         <span className={`text-xs text-muted-foreground ${isOwnMessage ? 'order-1' : 'order-2'}`}>
                           {new Date(msg.created_at).toLocaleTimeString('fr-FR', { 
