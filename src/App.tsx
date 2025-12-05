@@ -27,7 +27,8 @@ import Contrats from "./pages/Contrats";
 import ContratDetail from "./pages/ContratDetail";
 import Dossiers from "./pages/Dossiers";
 import DossierDetail from "./pages/DossierDetail";
-import Profile from "./pages/Profile";
+import ProfileView from "./pages/ProfileView";
+import ProfileEdit from "./pages/Profile";
 import Cabinet from "./pages/Cabinet";
 import EspaceCollaboratif from "./pages/EspaceCollaboratif";
 import Subscription from "./pages/Subscription";
@@ -106,7 +107,8 @@ const App = () => (
             <Route path="/avocats/contrats/:id" element={<RoleProtectedRoute requiredRole="avocat"><ContratDetail /></RoleProtectedRoute>} />
             <Route path="/avocats/dossiers" element={<RoleProtectedRoute requiredRole="avocat"><Dossiers /></RoleProtectedRoute>} />
             <Route path="/avocats/dossiers/:id" element={<RoleProtectedRoute requiredRole="avocat"><DossierDetail /></RoleProtectedRoute>} />
-            <Route path="/avocats/profile" element={<RoleProtectedRoute requiredRole="avocat"><Profile /></RoleProtectedRoute>} />
+            <Route path="/avocats/profile" element={<RoleProtectedRoute requiredRole="avocat"><ProfileView /></RoleProtectedRoute>} />
+            <Route path="/avocats/profile/edit" element={<RoleProtectedRoute requiredRole="avocat"><ProfileEdit /></RoleProtectedRoute>} />
             <Route path="/avocats/cabinet" element={<RoleProtectedRoute requiredRole="avocat"><Cabinet /></RoleProtectedRoute>} />
             <Route path="/avocats/espace-collaboratif" element={<RoleProtectedRoute requiredRole="avocat"><EspaceCollaboratif /></RoleProtectedRoute>} />
             <Route path="/avocats/email-integration" element={<RoleProtectedRoute requiredRole="avocat"><EmailIntegration /></RoleProtectedRoute>} />
@@ -132,7 +134,8 @@ const App = () => (
             <Route path="/notaires/contrats/:id" element={<RoleProtectedRoute requiredRole="notaire"><ContratDetail /></RoleProtectedRoute>} />
             <Route path="/notaires/dossiers" element={<RoleProtectedRoute requiredRole="notaire"><Dossiers /></RoleProtectedRoute>} />
             <Route path="/notaires/dossiers/:id" element={<RoleProtectedRoute requiredRole="notaire"><DossierDetail /></RoleProtectedRoute>} />
-            <Route path="/notaires/profile" element={<RoleProtectedRoute requiredRole="notaire"><Profile /></RoleProtectedRoute>} />
+            <Route path="/notaires/profile" element={<RoleProtectedRoute requiredRole="notaire"><ProfileView /></RoleProtectedRoute>} />
+            <Route path="/notaires/profile/edit" element={<RoleProtectedRoute requiredRole="notaire"><ProfileEdit /></RoleProtectedRoute>} />
             <Route path="/notaires/cabinet" element={<RoleProtectedRoute requiredRole="notaire"><Cabinet /></RoleProtectedRoute>} />
             <Route path="/notaires/espace-collaboratif" element={<RoleProtectedRoute requiredRole="notaire"><EspaceCollaboratif /></RoleProtectedRoute>} />
             <Route path="/notaires/email-integration" element={<RoleProtectedRoute requiredRole="notaire"><EmailIntegration /></RoleProtectedRoute>} />
@@ -154,7 +157,7 @@ const App = () => (
             <Route path="/contrats/:id" element={<ContratDetail />} />
             <Route path="/dossiers" element={<Dossiers />} />
             <Route path="/dossiers/:id" element={<DossierDetail />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<ProfileView />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
