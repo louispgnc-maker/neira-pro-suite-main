@@ -17,6 +17,13 @@ export default function ConfirmEmail() {
     const hash = window.location.hash;
     
     if (hash && hash.includes('access_token')) {
+      // Vérifier si c'est une réinitialisation de mot de passe
+      if (hash.includes('type=recovery') || hash.includes('type=password_recovery')) {
+        // C'est une réinitialisation de mot de passe, rediriger vers /reset-password
+        navigate('/reset-password' + hash);
+        return;
+      }
+      
       // L'utilisateur vient de confirmer son email via le lien
       // Attendre un peu que Supabase traite les tokens
       setTimeout(() => {
