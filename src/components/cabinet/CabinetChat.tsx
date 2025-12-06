@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Send, Users, MessageSquare, Plus, UserPlus, Bell, Settings, Trash2, UserMinus, Upload } from 'lucide-react';
+import { Send, Users, MessageSquare, Plus, UserPlus, Bell, Settings, Trash2, UserMinus, Upload, FileText, Eye, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -55,6 +55,22 @@ interface Message {
     last_name?: string;
     photo_url?: string;
   };
+}
+
+interface CabinetDocument {
+  id: string;
+  title: string;
+  file_url: string | null;
+  file_name: string | null;
+  shared_at: string;
+  shared_by: string;
+}
+
+interface PersonalDocument {
+  id: string;
+  name: string;
+  storage_path: string;
+  created_at: string;
 }
 
 interface CabinetChatProps {
@@ -110,6 +126,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [shareType, setShareType] = useState<'document' | 'dossier' | 'client' | 'task' | null>(null);
   const [shareSource, setShareSource] = useState<'collaboratif' | 'perso' | 'ordinateur' | null>(null);
+  
+  // Documents selection state
+  const [showDocumentsDialog, setShowDocumentsDialog] = useState(false);
+  const [availableDocuments, setAvailableDocuments] = useState<CabinetDocument[] | PersonalDocument[]>([]);
+  const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Save selected conversation to localStorage whenever it changes
   useEffect(() => {
@@ -682,6 +705,226 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       toast({
         title: 'Erreur',
         description: 'Impossible de créer la conversation',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Load documents from collaborative space
+  const loadCollaborativeDocuments = async () => {
+    if (!cabinetId) return;
+    setLoadingDocuments(true);
+    try {
+      const { data, error } = await supabase
+        .from('cabinet_documents')
+        .select('id, title, file_url, file_name, shared_at, shared_by')
+        .eq('cabinet_id', cabinetId)
+        .order('shared_at', { ascending: false });
+      
+      if (error) throw error;
+      setAvailableDocuments(data || []);
+      setShowDocumentsDialog(true);
+    } catch (error) {
+      console.error('Error loading collaborative documents:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger les documents',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoadingDocuments(false);
+    }
+  };
+
+  // Load documents from personal space
+  const loadPersonalDocuments = async () => {
+    if (!user) return;
+    setLoadingDocuments(true);
+    try {
+      const { data, error } = await supabase
+        .from('documents')
+        .select('id, name, storage_path, created_at')
+        .eq('owner_id', user.id)
+        .eq('role', role)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setAvailableDocuments(data || []);
+      setShowDocumentsDialog(true);
+    } catch (error) {
+      console.error('Error loading personal documents:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger les documents',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoadingDocuments(false);
+    }
+  };
+
+  // Handle document selection
+  const handleSelectDocument = async (doc: CabinetDocument | PersonalDocument) => {
+    if (!selectedConversation || !user) return;
+    
+    try {
+      let fileUrl: string | null = null;
+      let fileName: string = '';
+      
+      if ('file_url' in doc) {
+        // Cabinet document
+        fileUrl = doc.file_url;
+        fileName = doc.file_name || doc.title;
+      } else {
+        // Personal document - get public URL
+        const storagePath = doc.storage_path;
+        const { data: publicData } = supabase.storage
+          .from('documents')
+          .getPublicUrl(storagePath);
+        fileUrl = publicData?.publicUrl || null;
+        fileName = doc.name;
+      }
+      
+      if (!fileUrl) {
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de récupérer l\'URL du document',
+          variant: 'destructive'
+        });
+        return;
+      }
+      
+      // Send message with document link
+      const message = `📄 ${fileName}\n${fileUrl}`;
+      
+      const isDirectConv = selectedConversation.startsWith('direct-');
+      const recipient_id = isDirectConv ? selectedConversation.replace('direct-', '') : null;
+      const conversation_id = isDirectConv ? null : selectedConversation;
+      
+      const { error } = await supabase.from('cabinet_messages').insert({
+        cabinet_id: cabinetId,
+        sender_id: user.id,
+        recipient_id,
+        conversation_id,
+        message
+      });
+      
+      if (error) throw error;
+      
+      setShowDocumentsDialog(false);
+      setShowShareDialog(false);
+      toast({
+        title: 'Succès',
+        description: 'Document partagé dans la conversation'
+      });
+    } catch (error) {
+      console.error('Error sharing document:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de partager le document',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Handle file upload from computer
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !user || !selectedConversation) return;
+    
+    setUploadingFile(true);
+    try {
+      for (const file of Array.from(files)) {
+        if (file.type !== 'application/pdf') {
+          toast({
+            title: 'Format non supporté',
+            description: `${file.name} n'est pas un PDF`,
+            variant: 'destructive'
+          });
+          continue;
+        }
+        
+        // Upload to storage
+        const path = `${user.id}/${Date.now()}-${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(path, file, {
+            cacheControl: '3600',
+            upsert: false,
+            contentType: 'application/pdf'
+          });
+        
+        if (uploadError) throw uploadError;
+        
+        // Get public URL
+        const { data: publicData } = supabase.storage
+          .from('documents')
+          .getPublicUrl(path);
+        
+        if (!publicData?.publicUrl) {
+          throw new Error('Impossible de générer l\'URL publique');
+        }
+        
+        // Send message with document link
+        const message = `📄 ${file.name}\n${publicData.publicUrl}`;
+        
+        const isDirectConv = selectedConversation.startsWith('direct-');
+        const recipient_id = isDirectConv ? selectedConversation.replace('direct-', '') : null;
+        const conversation_id = isDirectConv ? null : selectedConversation;
+        
+        const { error: messageError } = await supabase.from('cabinet_messages').insert({
+          cabinet_id: cabinetId,
+          sender_id: user.id,
+          recipient_id,
+          conversation_id,
+          message
+        });
+        
+        if (messageError) throw messageError;
+        
+        toast({
+          title: 'Succès',
+          description: `${file.name} partagé dans la conversation`
+        });
+      }
+      
+      setShowShareDialog(false);
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'uploader le fichier',
+        variant: 'destructive'
+      });
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
+  // View document function
+  const handleViewDocument = async (doc: CabinetDocument | PersonalDocument) => {
+    let fileUrl: string | null = null;
+    
+    if ('file_url' in doc) {
+      fileUrl = doc.file_url;
+    } else {
+      const { data: publicData } = supabase.storage
+        .from('documents')
+        .getPublicUrl(doc.storage_path);
+      fileUrl = publicData?.publicUrl || null;
+    }
+    
+    if (fileUrl) {
+      window.open(fileUrl, '_blank');
+    } else {
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'ouvrir le document',
         variant: 'destructive'
       });
     }
@@ -1718,11 +1961,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               className={`w-full justify-start h-auto py-4 ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
               onClick={() => {
                 setShareSource('collaboratif');
-                // TODO: Open selection from collaborative space
-                toast({
-                  title: 'Sélection depuis l\'espace collaboratif',
-                  description: 'Fonctionnalité en cours d\'implémentation'
-                });
+                setShowShareDialog(false);
+                loadCollaborativeDocuments();
               }}
             >
               <div className="flex flex-col items-start gap-1">
@@ -1737,11 +1977,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               className={`w-full justify-start h-auto py-4 ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
               onClick={() => {
                 setShareSource('perso');
-                // TODO: Open selection from personal space
-                toast({
-                  title: 'Sélection depuis l\'espace personnel',
-                  description: 'Fonctionnalité en cours d\'implémentation'
-                });
+                setShowShareDialog(false);
+                loadPersonalDocuments();
               }}
             >
               <div className="flex flex-col items-start gap-1">
@@ -1756,11 +1993,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               className={`w-full justify-start h-auto py-4 ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
               onClick={() => {
                 setShareSource('ordinateur');
-                // TODO: Open file upload
-                toast({
-                  title: 'Import depuis l\'ordinateur',
-                  description: 'Fonctionnalité en cours d\'implémentation'
-                });
+                setShowShareDialog(false);
+                fileInputRef.current?.click();
               }}
             >
               <div className="flex flex-col items-start gap-1">
@@ -1773,6 +2007,81 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Documents Selection Dialog */}
+      <Dialog open={showDocumentsDialog} onOpenChange={setShowDocumentsDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>
+              {shareSource === 'collaboratif' ? 'Documents de l\'espace collaboratif' : 'Mes documents personnels'}
+            </DialogTitle>
+            <DialogDescription>
+              Sélectionnez un document à partager dans la conversation
+            </DialogDescription>
+          </DialogHeader>
+
+          {loadingDocuments ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-muted-foreground">Chargement...</div>
+            </div>
+          ) : availableDocuments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+              <FileText className="h-12 w-12 mb-2 opacity-50" />
+              <p>Aucun document disponible</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {availableDocuments.map((doc) => {
+                const title = 'title' in doc ? doc.title : doc.name;
+                const date = 'shared_at' in doc ? new Date(doc.shared_at).toLocaleDateString() : new Date(doc.created_at).toLocaleDateString();
+                
+                return (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                      <div className="flex-1">
+                        <p className="font-medium">{title}</p>
+                        <p className="text-xs text-muted-foreground">{date}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleViewDocument(doc)}
+                        className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleSelectDocument(doc)}
+                        className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                      >
+                        Partager
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Hidden file input for upload from computer */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/pdf"
+        multiple
+        className="hidden"
+        onChange={handleFileUpload}
+        disabled={uploadingFile}
+      />
     </div>
   );
 }
