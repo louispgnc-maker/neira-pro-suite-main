@@ -11,8 +11,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Send, Users, MessageSquare, Plus, UserPlus, Bell } from 'lucide-react';
+import { Send, Users, MessageSquare, Plus, UserPlus, Bell, Settings, Trash2, UserMinus, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface CabinetMember {
   id: string;
@@ -98,6 +99,12 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [filteredMembers, setFilteredMembers] = useState<CabinetMember[]>([]);
   const [mentionStartPos, setMentionStartPos] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Group settings state
+  const [showGroupSettings, setShowGroupSettings] = useState(false);
+  const [editGroupName, setEditGroupName] = useState('');
+  const [groupMemberSearch, setGroupMemberSearch] = useState('');
+  const [groupFiles, setGroupFiles] = useState<Array<{ name: string; url: string }>>([]);
 
   // Save selected conversation to localStorage whenever it changes
   useEffect(() => {
@@ -1094,38 +1101,55 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       {/* Main chat area */}
       <Card className="md:col-span-3 flex flex-col h-full">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            {selectedConversation === 'general' ? (
-              <>
-                <MessageSquare className="h-5 w-5" />
-                {conversationTitle}
-              </>
-            ) : currentConversation?.is_group ? (
-              <>
-                <Users className="h-5 w-5" />
-                {conversationTitle}
-              </>
-            ) : (
-              <>
-                <Avatar className="h-6 w-6">
-                  {currentConversation?.member_profiles?.[0]?.photo_url && (
-                    <AvatarImage src={currentConversation.member_profiles[0].photo_url} alt="Photo" />
-                  )}
-                  <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
-                    {getInitials(currentConversation?.member_profiles?.[0])}
-                  </AvatarFallback>
-                </Avatar>
-                {conversationTitle}
-              </>
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <CardTitle className="text-lg flex items-center gap-2">
+                {selectedConversation === 'general' ? (
+                  <>
+                    <MessageSquare className="h-5 w-5" />
+                    {conversationTitle}
+                  </>
+                ) : currentConversation?.is_group ? (
+                  <>
+                    <Users className="h-5 w-5" />
+                    {conversationTitle}
+                  </>
+                ) : (
+                  <>
+                    <Avatar className="h-6 w-6">
+                      {currentConversation?.member_profiles?.[0]?.photo_url && (
+                        <AvatarImage src={currentConversation.member_profiles[0].photo_url} alt="Photo" />
+                      )}
+                      <AvatarFallback className="text-xs bg-gray-100 text-gray-600">
+                        {getInitials(currentConversation?.member_profiles?.[0])}
+                      </AvatarFallback>
+                    </Avatar>
+                    {conversationTitle}
+                  </>
+                )}
+              </CardTitle>
+              <CardDescription>
+                {selectedConversation === 'general' 
+                  ? 'Discutez avec tous les membres du cabinet'
+                  : currentConversation?.is_group
+                  ? `${currentConversation.member_ids.length} membres`
+                  : 'Conversation privée'}
+              </CardDescription>
+            </div>
+            {currentConversation?.is_group && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setEditGroupName(currentConversation.name);
+                  setShowGroupSettings(true);
+                }}
+                className="shrink-0"
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
             )}
-          </CardTitle>
-          <CardDescription>
-            {selectedConversation === 'general' 
-              ? 'Discutez avec tous les membres du cabinet'
-              : currentConversation?.is_group
-              ? `${currentConversation.member_ids.length} membres`
-              : 'Conversation privée'}
-          </CardDescription>
+          </div>
         </CardHeader>
         
         <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -1175,11 +1199,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                         </span>
                       </div>
                       <div className={`inline-block px-3 py-2 rounded-lg ${
-                        isOwnMessage
-                          ? role === 'notaire' 
-                            ? 'bg-orange-500 text-white' 
-                            : 'bg-blue-500 text-white'
-                          : 'bg-muted'
+                        isOwnMessage ? 'bg-muted' : 'bg-muted'
                       }`}>
                         <p className="text-sm whitespace-pre-wrap">{renderMessageWithMentions(msg.message)}</p>
                       </div>
@@ -1292,6 +1312,277 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Group Settings Dialog */}
+      <Dialog open={showGroupSettings} onOpenChange={setShowGroupSettings}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Paramètres du groupe</DialogTitle>
+            <DialogDescription>
+              Modifier le nom, gérer les membres et les fichiers
+            </DialogDescription>
+          </DialogHeader>
+
+          <Tabs defaultValue="general" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="general">Général</TabsTrigger>
+              <TabsTrigger value="members">Membres</TabsTrigger>
+              <TabsTrigger value="files">Fichiers</TabsTrigger>
+            </TabsList>
+
+            {/* General Tab */}
+            <TabsContent value="general" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="group-name">Nom du groupe</Label>
+                <Input
+                  id="group-name"
+                  value={editGroupName}
+                  onChange={(e) => setEditGroupName(e.target.value)}
+                  placeholder="Nom du groupe"
+                />
+              </div>
+              <Button
+                onClick={async () => {
+                  if (!editGroupName.trim() || !currentConversation?.id) return;
+                  try {
+                    const { error } = await supabase
+                      .from('cabinet_conversations')
+                      .update({ name: editGroupName.trim() })
+                      .eq('id', currentConversation.id);
+                    
+                    if (error) throw error;
+                    
+                    setConversations(prev => prev.map(c => 
+                      c.id === currentConversation.id ? { ...c, name: editGroupName.trim() } : c
+                    ));
+                    
+                    toast({
+                      title: 'Succès',
+                      description: 'Nom du groupe modifié'
+                    });
+                  } catch (error) {
+                    console.error('Error updating group name:', error);
+                    toast({
+                      title: 'Erreur',
+                      description: 'Impossible de modifier le nom',
+                      variant: 'destructive'
+                    });
+                  }
+                }}
+                className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-500 hover:bg-blue-600'}
+              >
+                Enregistrer
+              </Button>
+
+              <div className="pt-4 border-t">
+                <Button
+                  variant="destructive"
+                  onClick={async () => {
+                    if (!currentConversation?.id || !window.confirm('Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action est irréversible.')) return;
+                    
+                    try {
+                      // Delete conversation members
+                      await supabase
+                        .from('cabinet_conversation_members')
+                        .delete()
+                        .eq('conversation_id', currentConversation.id);
+                      
+                      // Delete messages
+                      await supabase
+                        .from('cabinet_messages')
+                        .delete()
+                        .eq('conversation_id', currentConversation.id);
+                      
+                      // Delete conversation
+                      const { error } = await supabase
+                        .from('cabinet_conversations')
+                        .delete()
+                        .eq('id', currentConversation.id);
+                      
+                      if (error) throw error;
+                      
+                      setConversations(prev => prev.filter(c => c.id !== currentConversation.id));
+                      setSelectedConversation(null);
+                      setShowGroupSettings(false);
+                      
+                      toast({
+                        title: 'Succès',
+                        description: 'Conversation supprimée'
+                      });
+                    } catch (error) {
+                      console.error('Error deleting conversation:', error);
+                      toast({
+                        title: 'Erreur',
+                        description: 'Impossible de supprimer la conversation',
+                        variant: 'destructive'
+                      });
+                    }
+                  }}
+                  className="w-full"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Supprimer la conversation
+                </Button>
+              </div>
+            </TabsContent>
+
+            {/* Members Tab */}
+            <TabsContent value="members" className="space-y-4">
+              <div className="space-y-2">
+                <Label>Membres actuels ({currentConversation?.member_ids.length || 0})</Label>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {members
+                    .filter(m => currentConversation?.member_ids.includes(m.user_id))
+                    .map(member => (
+                      <div key={member.id} className="flex items-center justify-between p-2 border rounded">
+                        <div className="flex items-center gap-2">
+                          {member.profile?.photo_url ? (
+                            <img src={member.profile.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                              <span className="text-xs">{member.profile?.first_name?.[0]}{member.profile?.last_name?.[0]}</span>
+                            </div>
+                          )}
+                          <span className="text-sm font-medium">
+                            {member.profile?.first_name} {member.profile?.last_name}
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={async () => {
+                            if (!currentConversation?.id) return;
+                            try {
+                              await supabase
+                                .from('cabinet_conversation_members')
+                                .delete()
+                                .eq('conversation_id', currentConversation.id)
+                                .eq('user_id', member.user_id);
+                              
+                              setConversations(prev => prev.map(c => 
+                                c.id === currentConversation.id 
+                                  ? { ...c, member_ids: c.member_ids.filter(id => id !== member.user_id) }
+                                  : c
+                              ));
+                              
+                              toast({
+                                title: 'Succès',
+                                description: 'Membre retiré'
+                              });
+                            } catch (error) {
+                              console.error('Error removing member:', error);
+                              toast({
+                                title: 'Erreur',
+                                description: 'Impossible de retirer le membre',
+                                variant: 'destructive'
+                              });
+                            }
+                          }}
+                        >
+                          <UserMinus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-4 border-t">
+                <Label>Ajouter des membres</Label>
+                <Input
+                  placeholder="Rechercher un membre..."
+                  value={groupMemberSearch}
+                  onChange={(e) => setGroupMemberSearch(e.target.value)}
+                />
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {members
+                    .filter(m => 
+                      !currentConversation?.member_ids.includes(m.user_id) &&
+                      m.user_id !== user?.id &&
+                      (m.profile?.first_name?.toLowerCase().includes(groupMemberSearch.toLowerCase()) ||
+                       m.profile?.last_name?.toLowerCase().includes(groupMemberSearch.toLowerCase()))
+                    )
+                    .map(member => (
+                      <div key={member.id} className="flex items-center justify-between p-2 border rounded">
+                        <div className="flex items-center gap-2">
+                          {member.profile?.photo_url ? (
+                            <img src={member.profile.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                              <span className="text-xs">{member.profile?.first_name?.[0]}{member.profile?.last_name?.[0]}</span>
+                            </div>
+                          )}
+                          <span className="text-sm">
+                            {member.profile?.first_name} {member.profile?.last_name}
+                          </span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={async () => {
+                            if (!currentConversation?.id) return;
+                            try {
+                              await supabase
+                                .from('cabinet_conversation_members')
+                                .insert({
+                                  conversation_id: currentConversation.id,
+                                  user_id: member.user_id
+                                });
+                              
+                              setConversations(prev => prev.map(c => 
+                                c.id === currentConversation.id 
+                                  ? { ...c, member_ids: [...c.member_ids, member.user_id] }
+                                  : c
+                              ));
+                              
+                              toast({
+                                title: 'Succès',
+                                description: 'Membre ajouté'
+                              });
+                            } catch (error) {
+                              console.error('Error adding member:', error);
+                              toast({
+                                title: 'Erreur',
+                                description: 'Impossible d\'ajouter le membre',
+                                variant: 'destructive'
+                              });
+                            }
+                          }}
+                        >
+                          <UserPlus className="h-4 w-4 mr-1" />
+                          Ajouter
+                        </Button>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Files Tab */}
+            <TabsContent value="files" className="space-y-4">
+              <div className="space-y-2">
+                <Label>Fichiers partagés</Label>
+                {groupFiles.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Aucun fichier partagé</p>
+                ) : (
+                  <div className="space-y-2">
+                    {groupFiles.map((file, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 border rounded">
+                        <span className="text-sm">{file.name}</span>
+                        <Button variant="ghost" size="sm">Télécharger</Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <Button variant="outline" className="w-full">
+                <Upload className="h-4 w-4 mr-2" />
+                Ajouter un fichier
+              </Button>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
