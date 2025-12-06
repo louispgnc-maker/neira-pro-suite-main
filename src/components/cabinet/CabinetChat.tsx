@@ -561,47 +561,6 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
       setNewMessage('');
       
-      // Extract mentions and create notifications
-      const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
-      const mentions: string[] = [];
-      let match;
-      while ((match = mentionRegex.exec(messageData.message)) !== null) {
-        mentions.push(match[2]); // user_id
-      }
-      
-      // Create notifications for mentioned users
-      if (mentions.length > 0) {
-        const notificationPromises = mentions.map(async (mentionedUserId) => {
-          // Don't notify yourself
-          if (mentionedUserId === user.id) return;
-          
-          // Get conversation name for context
-          let contextText = 'dans le canal général';
-          if (selectedConversation.startsWith('direct-')) {
-            contextText = 'dans une conversation privée';
-          } else if (selectedConversation !== 'general') {
-            const conv = conversations.find(c => c.id === selectedConversation);
-            contextText = `dans ${conv?.name || 'une conversation'}`;
-          }
-          
-          await supabase.from('notifications').insert({
-            recipient_id: mentionedUserId,
-            actor_id: user.id,
-            cabinet_id: cabinetId,
-            title: 'Vous avez été mentionné',
-            body: `${profileData?.first_name || 'Un membre'} vous a mentionné ${contextText}`,
-            read: false,
-            metadata: {
-              type: 'mention',
-              conversation_id: selectedConversation,
-              message_id: insertedMessage.id
-            }
-          });
-        });
-        
-        await Promise.all(notificationPromises);
-      }
-      
       // Update conversation timestamp and move to top
       setConversations(prev => {
         const updated = prev.map(c => 

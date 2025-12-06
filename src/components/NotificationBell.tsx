@@ -44,7 +44,12 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
 
       const { data: list, error: listErr } = await supabase.rpc('get_notifications', { p_limit: 20, p_offset: 0, p_cabinet_id: cabinetId ?? null });
       if (!listErr && Array.isArray(list)) {
-        setNotifications(list as NotificationRow[]);
+        // Filter out mention notifications (chat messages)
+        const filteredList = (list as NotificationRow[]).filter(notif => {
+          const metadata = notif.metadata as { type?: string } | null;
+          return metadata?.type !== 'mention';
+        });
+        setNotifications(filteredList);
       }
     } catch (e) {
       console.error('[NotificationBell] load error', e);
@@ -78,6 +83,11 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
         try {
           const row = payload.new as NotificationRow;
           if (!row) return;
+          
+          // Filter out mention notifications (chat messages)
+          const metadata = row.metadata as { type?: string } | null;
+          if (metadata?.type === 'mention') return;
+          
           setNotifications((cur) => (cur.some(n => n.id === row.id) ? cur : [row, ...cur]));
           setUnreadCount((c) => c + 1);
         } catch (e) { console.error('realtime insert notification', e); }
@@ -87,6 +97,11 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
           const row = payload.new as NotificationRow;
           const old = payload.old as NotificationRow;
           if (!row) return;
+          
+          // Filter out mention notifications (chat messages)
+          const metadata = row.metadata as { type?: string } | null;
+          if (metadata?.type === 'mention') return;
+          
           setNotifications((cur) => cur.map(n => n.id === row.id ? row : n));
           // If update marks as read, decrement unread
           if (old && old.read === false && row.read === true) {
