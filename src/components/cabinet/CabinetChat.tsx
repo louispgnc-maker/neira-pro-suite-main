@@ -1324,10 +1324,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           </DialogHeader>
 
           <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="general">Général</TabsTrigger>
               <TabsTrigger value="members">Membres</TabsTrigger>
-              <TabsTrigger value="files">Fichiers</TabsTrigger>
+              <TabsTrigger value="documents">Documents</TabsTrigger>
+              <TabsTrigger value="dossiers">Dossiers</TabsTrigger>
+              <TabsTrigger value="clients">Clients</TabsTrigger>
+              <TabsTrigger value="tasks">Tâches</TabsTrigger>
             </TabsList>
 
             {/* General Tab */}
@@ -1478,6 +1481,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                               });
                             }
                           }}
+                          className={role === 'notaire' ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50' : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'}
                         >
                           <UserMinus className="h-4 w-4" />
                         </Button>
@@ -1516,7 +1520,6 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                           </span>
                         </div>
                         <Button
-                          variant="outline"
                           size="sm"
                           onClick={async () => {
                             if (!currentConversation?.id) return;
@@ -1547,6 +1550,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                               });
                             }
                           }}
+                          className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
                         >
                           <UserPlus className="h-4 w-4 mr-1" />
                           Ajouter
@@ -1557,7 +1561,75 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               </div>
             </TabsContent>
 
-            {/* Files Tab */}
+            {/* Documents Tab */}
+            <TabsContent value="documents" className="space-y-4">
+              <div className="space-y-2">
+                <Label>Documents partagés dans ce groupe</Label>
+                <p className="text-sm text-muted-foreground">
+                  Partagez des documents avec les membres de ce groupe uniquement
+                </p>
+                <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Partager un document
+                </Button>
+                <div className="text-sm text-muted-foreground mt-4">
+                  Aucun document partagé pour le moment
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Dossiers Tab */}
+            <TabsContent value="dossiers" className="space-y-4">
+              <div className="space-y-2">
+                <Label>Dossiers partagés dans ce groupe</Label>
+                <p className="text-sm text-muted-foreground">
+                  Partagez des dossiers avec les membres de ce groupe uniquement
+                </p>
+                <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Partager un dossier
+                </Button>
+                <div className="text-sm text-muted-foreground mt-4">
+                  Aucun dossier partagé pour le moment
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Clients Tab */}
+            <TabsContent value="clients" className="space-y-4">
+              <div className="space-y-2">
+                <Label>Clients partagés dans ce groupe</Label>
+                <p className="text-sm text-muted-foreground">
+                  Partagez des fiches clients avec les membres de ce groupe uniquement
+                </p>
+                <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Partager un client
+                </Button>
+                <div className="text-sm text-muted-foreground mt-4">
+                  Aucun client partagé pour le moment
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Tasks Tab */}
+            <TabsContent value="tasks" className="space-y-4">
+              <div className="space-y-2">
+                <Label>Tâches partagées dans ce groupe</Label>
+                <p className="text-sm text-muted-foreground">
+                  Créez et assignez des tâches aux membres de ce groupe
+                </p>
+                <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Créer une tâche
+                </Button>
+                <div className="text-sm text-muted-foreground mt-4">
+                  Aucune tâche partagée pour le moment
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Files Tab - Removed, replaced by Documents */}
             <TabsContent value="files" className="space-y-4">
               <div className="space-y-2">
                 <Label>Fichiers partagés</Label>
@@ -1575,7 +1647,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 )}
               </div>
               
-              <Button variant="outline" className="w-full">
+              <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
                 <Upload className="h-4 w-4 mr-2" />
                 Ajouter un fichier
               </Button>
