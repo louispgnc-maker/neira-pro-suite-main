@@ -815,77 +815,77 @@ export default function EspaceCollaboratif() {
   });
 
   // Load total unread message count for all conversations
-  useEffect(() => {
+  const loadUnreadCount = useCallback(async () => {
     if (!user || !cabinet) return;
+    
+    try {
+      // Get all messages in the cabinet where user is not the sender
+      const { data: allMessages, error } = await supabase
+        .from('cabinet_messages')
+        .select('id, conversation_id, recipient_id, sender_id, created_at')
+        .eq('cabinet_id', cabinet.id)
+        .neq('sender_id', user.id);
 
-    const loadUnreadCount = async () => {
-      try {
-        // Get all messages in the cabinet where user is not the sender
-        const { data: allMessages, error } = await supabase
-          .from('cabinet_messages')
-          .select('id, conversation_id, recipient_id, sender_id, created_at')
-          .eq('cabinet_id', cabinet.id)
-          .neq('sender_id', user.id);
-
-        if (error) {
-          console.error('Error loading messages:', error);
-          return;
-        }
-
-        if (!allMessages || allMessages.length === 0) {
-          setTotalUnreadCount(0);
-          return;
-        }
-
-        let totalUnread = 0;
-        const conversationIds = new Set<string>();
-        
-        // Identify all conversations
-        allMessages.forEach(msg => {
-          if (!msg.conversation_id && !msg.recipient_id) {
-            conversationIds.add('general');
-          } else if (msg.conversation_id) {
-            conversationIds.add(msg.conversation_id);
-          } else if (msg.recipient_id === user.id) {
-            // For direct messages to me, use sender_id to identify the conversation
-            conversationIds.add(`direct-${msg.sender_id}`);
-          }
-        });
-
-        // Count unread for each conversation
-        for (const convId of conversationIds) {
-          const lastViewedKey = `chat-last-viewed-${cabinet.id}-${convId}`;
-          const lastViewed = sessionStorage.getItem(lastViewedKey);
-          
-          let convMessages = [];
-          if (convId === 'general') {
-            convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
-          } else if (convId.startsWith('direct-')) {
-            const senderId = convId.replace('direct-', '');
-            // For direct messages: messages from the specific sender to me
-            convMessages = allMessages.filter(m => 
-              m.sender_id === senderId && 
-              m.recipient_id === user.id && 
-              !m.conversation_id
-            );
-          } else {
-            convMessages = allMessages.filter(m => m.conversation_id === convId);
-          }
-
-          if (lastViewed) {
-            const unreadInConv = convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed)).length;
-            totalUnread += unreadInConv;
-          } else {
-            totalUnread += convMessages.length;
-          }
-        }
-
-        setTotalUnreadCount(totalUnread);
-      } catch (error) {
-        console.error('Error loading unread count:', error);
+      if (error) {
+        console.error('Error loading messages:', error);
+        return;
       }
-    };
 
+      if (!allMessages || allMessages.length === 0) {
+        setTotalUnreadCount(0);
+        return;
+      }
+
+      let totalUnread = 0;
+      const conversationIds = new Set<string>();
+      
+      // Identify all conversations
+      allMessages.forEach(msg => {
+        if (!msg.conversation_id && !msg.recipient_id) {
+          conversationIds.add('general');
+        } else if (msg.conversation_id) {
+          conversationIds.add(msg.conversation_id);
+        } else if (msg.recipient_id === user.id) {
+          // For direct messages to me, use sender_id to identify the conversation
+          conversationIds.add(`direct-${msg.sender_id}`);
+        }
+      });
+
+      // Count unread for each conversation
+      for (const convId of conversationIds) {
+        const lastViewedKey = `chat-last-viewed-${cabinet.id}-${convId}`;
+        const lastViewed = localStorage.getItem(lastViewedKey);
+        
+        let convMessages = [];
+        if (convId === 'general') {
+          convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
+        } else if (convId.startsWith('direct-')) {
+          const senderId = convId.replace('direct-', '');
+          // For direct messages: messages from the specific sender to me
+          convMessages = allMessages.filter(m => 
+            m.sender_id === senderId && 
+            m.recipient_id === user.id && 
+            !m.conversation_id
+          );
+        } else {
+          convMessages = allMessages.filter(m => m.conversation_id === convId);
+        }
+
+        if (lastViewed) {
+          const unreadInConv = convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed)).length;
+          totalUnread += unreadInConv;
+        } else {
+          totalUnread += convMessages.length;
+        }
+      }
+
+      setTotalUnreadCount(totalUnread);
+    } catch (error) {
+      console.error('Error loading unread count:', error);
+    }
+  }, [user, cabinet]);
+
+  useEffect(() => {
     loadUnreadCount();
 
     // Subscribe to new messages to update counter in real-time
@@ -919,7 +919,7 @@ export default function EspaceCollaboratif() {
       supabase.removeChannel(channel);
       window.removeEventListener('cabinet-conversation-read', handleConversationRead);
     };
-  }, [user, cabinet]);
+  }, [user, cabinet, loadUnreadCount]);
 
   // Reset unread count when discussion tab is opened
   useEffect(() => {
@@ -2065,6 +2065,58 @@ export default function EspaceCollaboratif() {
 
         {/* Discussion */}
         <TabsContent value="discussion" className="space-y-4">
+          <div className="mb-4 flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                // Mark all conversations as read by setting current timestamp for all
+                try {
+                  const { data: allMessages } = await supabase
+                    .from('cabinet_messages')
+                    .select('id, conversation_id, recipient_id, sender_id')
+                    .eq('cabinet_id', cabinet.id)
+                    .neq('sender_id', user.id);
+
+                  if (allMessages && allMessages.length > 0) {
+                    const conversationIds = new Set<string>();
+                    
+                    allMessages.forEach(msg => {
+                      if (!msg.conversation_id && !msg.recipient_id) {
+                        conversationIds.add('general');
+                      } else if (msg.conversation_id) {
+                        conversationIds.add(msg.conversation_id);
+                      } else if (msg.recipient_id === user.id) {
+                        conversationIds.add(`direct-${msg.sender_id}`);
+                      }
+                    });
+
+                    const now = new Date().toISOString();
+                    conversationIds.forEach(convId => {
+                      const lastViewedKey = `chat-last-viewed-${cabinet.id}-${convId}`;
+                      localStorage.setItem(lastViewedKey, now);
+                    });
+
+                    setTotalUnreadCount(0);
+                    toast({
+                      title: "Messages marqués comme lus",
+                      description: "Tous les messages ont été marqués comme lus",
+                    });
+                  }
+                } catch (error) {
+                  console.error('Error marking all as read:', error);
+                  toast({
+                    title: "Erreur",
+                    description: "Impossible de marquer les messages comme lus",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              className={cabinetRole === 'notaire' ? 'text-orange-600 hover:text-orange-700' : 'text-blue-600 hover:text-blue-700'}
+            >
+              Marquer tout comme lu
+            </Button>
+          </div>
           <CabinetChat cabinetId={cabinet.id} role={cabinetRole} />
         </TabsContent>
       </Tabs>

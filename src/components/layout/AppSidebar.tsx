@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/NotificationBell";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { useUnreadEmailCount } from '@/hooks/useUnreadEmailCount';
@@ -110,66 +110,66 @@ export function AppSidebar() {
   // Load unread message count
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
-  useEffect(() => {
+  const loadUnreadCount = useCallback(async () => {
     if (!user || !currentCabinetId) return;
+    
+    try {
+      const { data: allMessages, error } = await supabase
+        .from('cabinet_messages')
+        .select('id, conversation_id, recipient_id, sender_id, created_at')
+        .eq('cabinet_id', currentCabinetId)
+        .neq('sender_id', user.id);
 
-    const loadUnreadCount = async () => {
-      try {
-        const { data: allMessages, error } = await supabase
-          .from('cabinet_messages')
-          .select('id, conversation_id, recipient_id, sender_id, created_at')
-          .eq('cabinet_id', currentCabinetId)
-          .neq('sender_id', user.id);
-
-        if (error || !allMessages || allMessages.length === 0) {
-          setTotalUnreadCount(0);
-          return;
-        }
-
-        let totalUnread = 0;
-        const conversationIds = new Set<string>();
-        
-        allMessages.forEach(msg => {
-          if (!msg.conversation_id && !msg.recipient_id) {
-            conversationIds.add('general');
-          } else if (msg.conversation_id) {
-            conversationIds.add(msg.conversation_id);
-          } else if (msg.recipient_id === user.id) {
-            conversationIds.add(`direct-${msg.sender_id}`);
-          }
-        });
-
-        for (const convId of conversationIds) {
-          const lastViewedKey = `chat-last-viewed-${currentCabinetId}-${convId}`;
-          const lastViewed = sessionStorage.getItem(lastViewedKey);
-          
-          let convMessages = [];
-          if (convId === 'general') {
-            convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
-          } else if (convId.startsWith('direct-')) {
-            const senderId = convId.replace('direct-', '');
-            convMessages = allMessages.filter(m => 
-              m.sender_id === senderId && 
-              m.recipient_id === user.id && 
-              !m.conversation_id
-            );
-          } else {
-            convMessages = allMessages.filter(m => m.conversation_id === convId);
-          }
-
-          if (lastViewed) {
-            totalUnread += convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed)).length;
-          } else {
-            totalUnread += convMessages.length;
-          }
-        }
-
-        setTotalUnreadCount(totalUnread);
-      } catch (error) {
-        console.error('Error loading unread count:', error);
+      if (error || !allMessages || allMessages.length === 0) {
+        setTotalUnreadCount(0);
+        return;
       }
-    };
 
+      let totalUnread = 0;
+      const conversationIds = new Set<string>();
+      
+      allMessages.forEach(msg => {
+        if (!msg.conversation_id && !msg.recipient_id) {
+          conversationIds.add('general');
+        } else if (msg.conversation_id) {
+          conversationIds.add(msg.conversation_id);
+        } else if (msg.recipient_id === user.id) {
+          conversationIds.add(`direct-${msg.sender_id}`);
+        }
+      });
+
+      for (const convId of conversationIds) {
+        const lastViewedKey = `chat-last-viewed-${currentCabinetId}-${convId}`;
+        const lastViewed = localStorage.getItem(lastViewedKey);
+        
+        let convMessages = [];
+        if (convId === 'general') {
+          convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
+        } else if (convId.startsWith('direct-')) {
+          const senderId = convId.replace('direct-', '');
+          convMessages = allMessages.filter(m => 
+            m.sender_id === senderId && 
+            m.recipient_id === user.id && 
+            !m.conversation_id
+          );
+        } else {
+          convMessages = allMessages.filter(m => m.conversation_id === convId);
+        }
+
+        if (lastViewed) {
+          totalUnread += convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed)).length;
+        } else {
+          totalUnread += convMessages.length;
+        }
+      }
+
+      setTotalUnreadCount(totalUnread);
+    } catch (error) {
+      console.error('Error loading unread count:', error);
+    }
+  }, [user, currentCabinetId]);
+
+  useEffect(() => {
     loadUnreadCount();
 
     const channel = supabase
@@ -201,7 +201,7 @@ export function AppSidebar() {
       supabase.removeChannel(channel);
       window.removeEventListener('cabinet-conversation-read', handleConversationRead);
     };
-  }, [user, currentCabinetId]);
+  }, [user, currentCabinetId, loadUnreadCount]);
 
   // Couleurs espace selon rôle
   const spaceBtnClass = role === 'notaire'

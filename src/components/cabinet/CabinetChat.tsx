@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,6 +63,7 @@ interface CabinetChatProps {
 export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const { user, profile } = useAuth();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [membersLoading, setMembersLoading] = useState(true);
@@ -70,7 +72,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [selectedConversation, setSelectedConversation] = useState<string | null>(() => {
-    // Restore last selected conversation from localStorage
+    // First check URL params
+    const convFromUrl = searchParams.get('conv');
+    if (convFromUrl) return convFromUrl;
+    
+    // Otherwise restore last selected conversation from localStorage
     const saved = localStorage.getItem(`chat-selected-conversation-${cabinetId}`);
     return saved || null;
   });
@@ -89,8 +95,14 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   useEffect(() => {
     if (selectedConversation) {
       localStorage.setItem(`chat-selected-conversation-${cabinetId}`, selectedConversation);
+      
+      // Remove conv param from URL after setting the conversation
+      if (searchParams.has('conv')) {
+        searchParams.delete('conv');
+        setSearchParams(searchParams, { replace: true });
+      }
     }
-  }, [selectedConversation, cabinetId]);
+  }, [selectedConversation, cabinetId, searchParams, setSearchParams]);
 
   // Scroll to bottom when messages change
   const scrollToBottom = () => {
@@ -314,7 +326,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
       // Add direct conversations (existing private messages)
       const otherMembers = members.filter(m => m.user_id !== user.id);
-      for (const member of otherMembers) {
+      
+      // Deduplicate members by user_id to avoid showing duplicate conversations
+      const uniqueMembers = Array.from(
+        new Map(otherMembers.map(m => [m.user_id, m])).values()
+      );
+      
+      for (const member of uniqueMembers) {
         // Get last message time for this direct conversation
         const { data: directLastMsg } = await supabase
           .from('cabinet_messages')
