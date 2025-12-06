@@ -33,6 +33,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
       setLoading(false);
       return;
     }
+    
     setLoading(true);
     try {
       // Get all messages in the cabinet where user is not the sender
@@ -211,6 +212,11 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
   }, [user, cabinetId]);
 
   const unread = unreadCount;
+
+  // Ne rien afficher si pas de user ou cabinetId
+  if (!user || !cabinetId) {
+    return null;
+  }
 
   const baseColor = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
   const accentBg = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
