@@ -27,136 +27,35 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
   const { toast } = useToast();
 
   const loadNotifications = async () => {
-    if (!user || !cabinetId) {
+    if (!user) {
       setNotifications([]);
       setUnreadCount(0);
       setLoading(false);
       return;
     }
-    
     setLoading(true);
     try {
-      // Get all messages in the cabinet where user is not the sender
-      const { data: allMessages, error } = await supabase
-        .from('cabinet_messages')
-        .select('id, conversation_id, recipient_id, sender_id, created_at, content, sender:profiles!cabinet_messages_sender_id_fkey(first_name, last_name)')
-        .eq('cabinet_id', cabinetId)
-        .neq('sender_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error loading messages:', error);
-        setNotifications([]);
-        setUnreadCount(0);
-        setLoading(false);
-        return;
+      // Use RPCs added in the DB to get unread count and notifications
+      const { data: unreadData, error: unreadErr } = await supabase.rpc('get_unread_notifications_count', { p_cabinet_id: cabinetId ?? null });
+      if (!unreadErr) {
+        const cnt = typeof unreadData === 'number' ? unreadData : (Array.isArray(unreadData) ? Number(unreadData[0]) : 0);
+        setUnreadCount(cnt ?? 0);
       }
 
-      if (!allMessages || allMessages.length === 0) {
-        setNotifications([]);
-        setUnreadCount(0);
-        setLoading(false);
-        return;
+      const { data: list, error: listErr } = await supabase.rpc('get_notifications', { p_limit: 20, p_offset: 0, p_cabinet_id: cabinetId ?? null });
+      if (!listErr && Array.isArray(list)) {
+        setNotifications(list as NotificationRow[]);
       }
-
-      let totalUnread = 0;
-      const conversationIds = new Set<string>();
-      const unreadByConversation = new Map<string, { count: number; lastMessage: any }>();
-      
-      // Identify all conversations and count unread
-      allMessages.forEach(msg => {
-        let convId = '';
-        if (!msg.conversation_id && !msg.recipient_id) {
-          convId = 'general';
-        } else if (msg.conversation_id) {
-          convId = msg.conversation_id;
-        } else if (msg.recipient_id === user.id) {
-          convId = `direct-${msg.sender_id}`;
-        }
-        
-        if (convId) {
-          conversationIds.add(convId);
-        }
-      });
-
-      // Count unread for each conversation
-      for (const convId of conversationIds) {
-        const lastViewedKey = `chat-last-viewed-${cabinetId}-${convId}`;
-        const lastViewed = localStorage.getItem(lastViewedKey);
-        
-        let convMessages = [];
-        if (convId === 'general') {
-          convMessages = allMessages.filter(m => !m.conversation_id && !m.recipient_id);
-        } else if (convId.startsWith('direct-')) {
-          const senderId = convId.replace('direct-', '');
-          convMessages = allMessages.filter(m => 
-            m.sender_id === senderId && 
-            m.recipient_id === user.id && 
-            !m.conversation_id
-          );
-        } else {
-          convMessages = allMessages.filter(m => m.conversation_id === convId);
-        }
-
-        if (lastViewed) {
-          const unreadInConv = convMessages.filter(m => new Date(m.created_at) > new Date(lastViewed));
-          const count = unreadInConv.length;
-          totalUnread += count;
-          
-          if (count > 0 && unreadInConv[0]) {
-            unreadByConversation.set(convId, { count, lastMessage: unreadInConv[0] });
-          }
-        } else {
-          totalUnread += convMessages.length;
-          if (convMessages.length > 0) {
-            unreadByConversation.set(convId, { count: convMessages.length, lastMessage: convMessages[0] });
-          }
-        }
-      }
-
-      // Convert to notification format for display
-      const notificationsList: NotificationRow[] = Array.from(unreadByConversation.entries())
-        .filter(([_, data]) => data && data.lastMessage)
-        .map(([convId, data]) => {
-          const sender = data.lastMessage?.sender;
-          const senderName = sender ? `${sender.first_name || ''} ${sender.last_name || ''}`.trim() : 'Quelqu\'un';
-          
-          let title = '';
-          if (convId === 'general') {
-            title = 'Canal Général';
-          } else if (convId.startsWith('direct-')) {
-            title = `Message de ${senderName}`;
-          } else {
-            title = `Discussion`;
-          }
-
-          return {
-            id: convId,
-            title,
-            body: `${data.count} message${data.count > 1 ? 's' : ''} non lu${data.count > 1 ? 's' : ''}`,
-            read: false,
-            created_at: data.lastMessage?.created_at || new Date().toISOString(),
-            metadata: { conversationId: convId }
-          };
-        })
-        .filter(n => n && n.id && n.title) // Double filtrage pour être sûr
-        .sort((a, b) => new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime());
-
-      setNotifications(notificationsList);
-      setUnreadCount(totalUnread);
     } catch (e) {
       console.error('[NotificationBell] load error', e);
       setNotifications([]);
-      setUnreadCount(0);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user && cabinetId) {
-      loadNotifications();
-    }
+    loadNotifications();
   }, [user, role, cabinetId]);
 
   // Recharger quand la modal se ferme pour s'assurer d'avoir le bon compteur
@@ -170,46 +69,35 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
     }
   }, [open, user]);
 
-  // Realtime subscription to the cabinet_messages table for new messages
+  // Realtime subscription to the notifications table for this user
   useEffect(() => {
-    if (!user || !cabinetId) return;
+    if (!user) return;
     const channel = supabase
-      .channel(`chat-messages-${cabinetId}`)
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'cabinet_messages', 
-        filter: `cabinet_id=eq.${cabinetId}` 
-      }, (payload) => {
+      .channel(`notifications-user-${user.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `recipient_id=eq.${user.id}` }, (payload) => {
         try {
-          const row = payload.new as any;
-          if (!row || row.sender_id === user.id) return;
-          
-          // Increment unread count
+          const row = payload.new as NotificationRow;
+          if (!row) return;
+          setNotifications((cur) => (cur.some(n => n.id === row.id) ? cur : [row, ...cur]));
           setUnreadCount((c) => c + 1);
-          
-          // Reload to update the list
-          loadNotifications();
-        } catch (e) { 
-          console.error('realtime insert message', e); 
-        }
+        } catch (e) { console.error('realtime insert notification', e); }
       })
-      .subscribe();
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'notifications', filter: `recipient_id=eq.${user.id}` }, (payload) => {
+        try {
+          const row = payload.new as NotificationRow;
+          const old = payload.old as NotificationRow;
+          if (!row) return;
+          setNotifications((cur) => cur.map(n => n.id === row.id ? row : n));
+          // If update marks as read, decrement unread
+          if (old && old.read === false && row.read === true) {
+            setUnreadCount((c) => Math.max(0, c - 1));
+          }
+        } catch (e) { console.error('realtime update notification', e); }
+      });
 
-    // Listen for conversation read events to update counter
-    const handleConversationRead = () => {
-      loadNotifications();
-    };
-
-    window.addEventListener('cabinet-conversation-read', handleConversationRead);
-
-    return () => { 
-      try { 
-        channel.unsubscribe(); 
-        window.removeEventListener('cabinet-conversation-read', handleConversationRead);
-      } catch (e) { /* ignore */ } 
-    };
-  }, [user, cabinetId]);
+    channel.subscribe();
+    return () => { try { channel.unsubscribe(); } catch (e) { /* ignore */ } };
+  }, [user]);
 
   const unread = unreadCount;
 
@@ -238,46 +126,25 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
       <DialogContent className="w-[360px]">
         <DialogHeader>
           <div className="flex items-center gap-2 justify-between w-full">
-            <DialogTitle>Messages non lus</DialogTitle>
+            <DialogTitle>Notifications récentes</DialogTitle>
               <div className="ml-2">
+                {/* subtle small button to mark all read */}
                 <Button variant="ghost" size="sm" className={`text-[0.78rem] ${accentSubtle} px-2 py-1`} onClick={async () => {
                   try {
-                    if (!cabinetId) return;
-                    
-                    // Mark all conversations as read
-                    const { data: allMessages } = await supabase
-                      .from('cabinet_messages')
-                      .select('id, conversation_id, recipient_id, sender_id')
-                      .eq('cabinet_id', cabinetId)
-                      .neq('sender_id', user.id);
-
-                    if (allMessages && allMessages.length > 0) {
-                      const conversationIds = new Set<string>();
-                      
-                      allMessages.forEach(msg => {
-                        if (!msg.conversation_id && !msg.recipient_id) {
-                          conversationIds.add('general');
-                        } else if (msg.conversation_id) {
-                          conversationIds.add(msg.conversation_id);
-                        } else if (msg.recipient_id === user.id) {
-                          conversationIds.add(`direct-${msg.sender_id}`);
-                        }
-                      });
-
-                      const now = new Date().toISOString();
-                      conversationIds.forEach(convId => {
-                        const lastViewedKey = `chat-last-viewed-${cabinetId}-${convId}`;
-                        localStorage.setItem(lastViewedKey, now);
-                      });
-
-                      setNotifications([]);
-                      setUnreadCount(0);
-                      toast({ title: 'Messages marqués comme lus', description: 'Tous les messages ont été marqués comme lus' });
+                    const { data, error } = await supabase.rpc('mark_all_notifications_read');
+                    if (error) {
+                      console.error('mark_all_notifications_read error', error);
+                      const msg = (error && typeof error === 'object' && 'message' in error) ? String((error as { message?: unknown }).message) : String(error);
+                      toast({ title: 'Erreur', description: msg, variant: 'destructive' });
+                      return;
                     }
-                  } catch (e: unknown) { 
-                    console.error('mark all read', e); 
-                    toast({ title: 'Erreur', description: String(e), variant: 'destructive' }); 
-                  }
+
+                    // data should be the number of notifications marked
+                    const marked = typeof data === 'number' ? data : (Array.isArray(data) && data.length ? Number(data[0]) : null);
+                    setNotifications((cur) => cur.map(n => ({ ...n, read: true })));
+                    setUnreadCount(0);
+                    toast({ title: 'Notifications', description: marked ? `${marked} notification(s) marquée(s) comme lues` : 'Toutes les notifications ont été marquées comme lues' });
+                  } catch (e: unknown) { console.error('mark all read', e); toast({ title: 'Erreur', description: String(e), variant: 'destructive' }); }
                 }}>Tout marquer comme lu</Button>
               </div>
           </div>
@@ -291,7 +158,6 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                 // limit visible area to exactly ~3 items and allow scrolling for older notifications
                 <div className="space-y-2 max-h-[216px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300" style={{ scrollbarWidth: 'thin' }}>
                   {notifications.map(n => {
-                    if (!n || !n.id) return null;
                     const when = n.created_at ? new Date(n.created_at) : null;
                     const timeAgo = (d: Date | null) => {
                       if (!d) return '';
@@ -314,18 +180,49 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                     };
 
                     const onNavigate = async (meta?: unknown) => {
-                      // Navigate to discussion tab with the conversation
                       try {
-                        const metadata = meta as { conversationId?: string } | undefined;
-                        if (metadata?.conversationId) {
-                          navigate(`/${role}s/espace-collaboratif?tab=discussion&conv=${metadata.conversationId}`);
-                        } else {
-                          navigate(`/${role}s/espace-collaboratif?tab=discussion`);
+                        if (!n.read) {
+                          const { error } = await supabase.rpc('mark_notification_read', { p_id: n.id });
+                          if (error) {
+                            console.error('mark_notification_read error', error);
+                          } else {
+                            // Mise à jour réussie, mettre à jour l'état local
+                            setNotifications((cur) => cur.map(x => x.id === n.id ? { ...x, read: true } : x));
+                            setUnreadCount((c) => Math.max(0, c - 1));
+                          }
                         }
-                        setOpen(false);
+                      } catch (e) { 
+                        console.error('mark_notification_read error', e); 
+                      }
+
+                      try {
+                        let metadataToUse: unknown = meta;
+                        // If metadata not present in the row, try to fetch it from the DB as a fallback
+                        if ((!metadataToUse || typeof metadataToUse !== 'object') && n.id) {
+                          try {
+                            const { data: fetched, error: fetchErr } = await supabase
+                              .from('notifications')
+                              .select('metadata')
+                              .eq('id', n.id)
+                              .limit(1)
+                              .single();
+                            if (!fetchErr && fetched && (fetched as { metadata?: unknown }).metadata) metadataToUse = (fetched as { metadata?: unknown }).metadata;
+                          } catch (fe) {
+                            console.error('fetch notification metadata fallback error', fe);
+                          }
+                        }
+
+                        if (metadataToUse && typeof metadataToUse === 'object') {
+                          navigate(`/${role}s/espace-collaboratif`, { state: { notificationOpen: metadataToUse } });
+                          setOpen(false);
+                        } else {
+                          // fallback: just open the collaborative space
+                          navigate(`/${role}s/espace-collaboratif`);
+                          setOpen(false);
+                        }
                       } catch (e) {
                         console.error('navigation error', e);
-                        try { navigate(`/${role}s/espace-collaboratif?tab=discussion`); } catch (_) { /* ignore */ }
+                        try { navigate(`/${role}s/espace-collaboratif`); } catch (_) { /* ignore */ }
                         setOpen(false);
                       }
                     };
