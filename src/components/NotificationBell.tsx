@@ -115,8 +115,9 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
 
       // Convert to notification format for display
       const notificationsList: NotificationRow[] = Array.from(unreadByConversation.entries())
+        .filter(([_, data]) => data && data.lastMessage)
         .map(([convId, data]) => {
-          const sender = data.lastMessage.sender;
+          const sender = data.lastMessage?.sender;
           const senderName = sender ? `${sender.first_name || ''} ${sender.last_name || ''}`.trim() : 'Quelqu\'un';
           
           let title = '';
@@ -133,7 +134,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
             title,
             body: `${data.count} message${data.count > 1 ? 's' : ''} non lu${data.count > 1 ? 's' : ''}`,
             read: false,
-            created_at: data.lastMessage.created_at,
+            created_at: data.lastMessage?.created_at || new Date().toISOString(),
             metadata: { conversationId: convId }
           };
         })
@@ -151,7 +152,9 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
   };
 
   useEffect(() => {
-    loadNotifications();
+    if (user && cabinetId) {
+      loadNotifications();
+    }
   }, [user, role, cabinetId]);
 
   // Recharger quand la modal se ferme pour s'assurer d'avoir le bon compteur
@@ -285,7 +288,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
               ) : (
                 // limit visible area to exactly ~3 items and allow scrolling for older notifications
                 <div className="space-y-2 max-h-[216px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300" style={{ scrollbarWidth: 'thin' }}>
-                  {notifications.map(n => {
+                  {notifications.filter(n => n && n.id).map(n => {
                     const when = n.created_at ? new Date(n.created_at) : null;
                     const timeAgo = (d: Date | null) => {
                       if (!d) return '';
