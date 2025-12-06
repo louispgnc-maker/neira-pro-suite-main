@@ -205,6 +205,8 @@ export function AppSidebar() {
   }, [user, currentCabinetId]);
 
   useEffect(() => {
+    if (!user || !currentCabinetId) return;
+    
     loadUnreadCount();
 
     const channel = supabase

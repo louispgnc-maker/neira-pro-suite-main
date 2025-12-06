@@ -886,6 +886,8 @@ export default function EspaceCollaboratif() {
   }, [user, cabinet]);
 
   useEffect(() => {
+    if (!user || !cabinet || !cabinet.id) return;
+    
     loadUnreadCount();
 
     // Subscribe to new messages to update counter in real-time
