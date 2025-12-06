@@ -73,6 +73,53 @@ interface PersonalDocument {
   created_at: string;
 }
 
+interface CabinetDossier {
+  id: string;
+  title: string;
+  description?: string;
+  shared_at: string;
+  shared_by: string;
+  dossier_id?: string;
+}
+
+interface PersonalDossier {
+  id: string;
+  title: string;
+  description?: string;
+  created_at: string;
+}
+
+interface CabinetClient {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email?: string;
+  phone?: string;
+  shared_at: string;
+  shared_by: string;
+  client_id?: string;
+}
+
+interface PersonalClient {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email?: string;
+  phone?: string;
+  created_at: string;
+}
+
+interface ConversationTask {
+  id: string;
+  title: string;
+  description?: string;
+  due_date?: string;
+  assigned_to?: string[];
+  status: string;
+  created_at: string;
+  created_by: string;
+}
+
 interface CabinetChatProps {
   cabinetId: string;
   role: string;
@@ -127,12 +174,22 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [shareType, setShareType] = useState<'document' | 'dossier' | 'client' | 'task' | null>(null);
   const [shareSource, setShareSource] = useState<'collaboratif' | 'perso' | 'ordinateur' | null>(null);
   
-  // Documents selection state
+  // Items selection state
   const [showDocumentsDialog, setShowDocumentsDialog] = useState(false);
   const [availableDocuments, setAvailableDocuments] = useState<CabinetDocument[] | PersonalDocument[]>([]);
-  const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const [availableDossiers, setAvailableDossiers] = useState<CabinetDossier[] | PersonalDossier[]>([]);
+  const [availableClients, setAvailableClients] = useState<CabinetClient[] | PersonalClient[]>([]);
+  const [loadingItems, setLoadingItems] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Group resources tabs
+  const [activeTab, setActiveTab] = useState<'messages' | 'documents' | 'dossiers' | 'clients' | 'tasks'>('messages');
+  const [conversationDocuments, setConversationDocuments] = useState<any[]>([]);
+  const [conversationDossiers, setConversationDossiers] = useState<any[]>([]);
+  const [conversationClients, setConversationClients] = useState<any[]>([]);
+  const [conversationTasks, setConversationTasks] = useState<ConversationTask[]>([]);
+  const [loadingResources, setLoadingResources] = useState(false);
 
   // Save selected conversation to localStorage whenever it changes
   useEffect(() => {
@@ -216,6 +273,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       window.dispatchEvent(new CustomEvent('cabinet-conversation-read', { 
         detail: { cabinetId, conversationId: selectedConversation } 
       }));
+      
+      // Load conversation resources for group conversations
+      if (!selectedConversation.startsWith('direct-') && selectedConversation !== 'general') {
+        loadConversationResources();
+      }
     }
   }, [selectedConversation, cabinetId]);
 
@@ -713,7 +775,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   // Load documents from collaborative space
   const loadCollaborativeDocuments = async () => {
     if (!cabinetId) return;
-    setLoadingDocuments(true);
+    setLoadingItems(true);
     try {
       const { data, error } = await supabase
         .from('cabinet_documents')
@@ -732,14 +794,14 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         variant: 'destructive'
       });
     } finally {
-      setLoadingDocuments(false);
+      setLoadingItems(false);
     }
   };
 
   // Load documents from personal space
   const loadPersonalDocuments = async () => {
     if (!user) return;
-    setLoadingDocuments(true);
+    setLoadingItems(true);
     try {
       const { data, error } = await supabase
         .from('documents')
@@ -759,22 +821,128 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         variant: 'destructive'
       });
     } finally {
-      setLoadingDocuments(false);
+      setLoadingItems(false);
     }
   };
 
-  // Handle document selection
+  // Load dossiers from collaborative space
+  const loadCollaborativeDossiers = async () => {
+    if (!cabinetId) return;
+    setLoadingItems(true);
+    try {
+      const { data, error } = await supabase
+        .from('cabinet_dossiers')
+        .select('id, title, description, shared_at, shared_by, dossier_id')
+        .eq('cabinet_id', cabinetId)
+        .order('shared_at', { ascending: false });
+      
+      if (error) throw error;
+      setAvailableDossiers(data || []);
+      setShowDocumentsDialog(true);
+    } catch (error) {
+      console.error('Error loading collaborative dossiers:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger les dossiers',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoadingItems(false);
+    }
+  };
+
+  // Load dossiers from personal space
+  const loadPersonalDossiers = async () => {
+    if (!user) return;
+    setLoadingItems(true);
+    try {
+      const { data, error } = await supabase
+        .from('dossiers')
+        .select('id, title, description, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setAvailableDossiers(data || []);
+      setShowDocumentsDialog(true);
+    } catch (error) {
+      console.error('Error loading personal dossiers:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger les dossiers',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoadingItems(false);
+    }
+  };
+
+  // Load clients from collaborative space
+  const loadCollaborativeClients = async () => {
+    if (!cabinetId) return;
+    setLoadingItems(true);
+    try {
+      const { data, error } = await supabase
+        .from('cabinet_clients')
+        .select('id, first_name, last_name, email, phone, shared_at, shared_by, client_id')
+        .eq('cabinet_id', cabinetId)
+        .order('shared_at', { ascending: false });
+      
+      if (error) throw error;
+      setAvailableClients(data || []);
+      setShowDocumentsDialog(true);
+    } catch (error) {
+      console.error('Error loading collaborative clients:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger les clients',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoadingItems(false);
+    }
+  };
+
+  // Load clients from personal space
+  const loadPersonalClients = async () => {
+    if (!user) return;
+    setLoadingItems(true);
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, first_name, last_name, email, phone, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setAvailableClients(data || []);
+      setShowDocumentsDialog(true);
+    } catch (error) {
+      console.error('Error loading personal clients:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger les clients',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoadingItems(false);
+    }
+  };
+
+  // Handle document selection - add to conversation
   const handleSelectDocument = async (doc: CabinetDocument | PersonalDocument) => {
-    if (!selectedConversation || !user) return;
+    if (!selectedConversation || !user || selectedConversation.startsWith('direct-')) return;
     
     try {
       let fileUrl: string | null = null;
       let fileName: string = '';
+      let title: string = '';
       
       if ('file_url' in doc) {
         // Cabinet document
         fileUrl = doc.file_url;
         fileName = doc.file_name || doc.title;
+        title = doc.title;
       } else {
         // Personal document - get public URL
         const storagePath = doc.storage_path;
@@ -783,6 +951,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           .getPublicUrl(storagePath);
         fileUrl = publicData?.publicUrl || null;
         fileName = doc.name;
+        title = doc.name;
       }
       
       if (!fileUrl) {
@@ -794,19 +963,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         return;
       }
       
-      // Send message with document link
-      const message = `📄 ${fileName}\n${fileUrl}`;
-      
-      const isDirectConv = selectedConversation.startsWith('direct-');
-      const recipient_id = isDirectConv ? selectedConversation.replace('direct-', '') : null;
-      const conversation_id = isDirectConv ? null : selectedConversation;
-      
-      const { error } = await supabase.from('cabinet_messages').insert({
-        cabinet_id: cabinetId,
-        sender_id: user.id,
-        recipient_id,
-        conversation_id,
-        message
+      // Add document to conversation_documents table
+      const { error } = await supabase.from('conversation_documents').insert({
+        conversation_id: selectedConversation,
+        title,
+        file_url: fileUrl,
+        file_name: fileName,
+        added_by: user.id
       });
       
       if (error) throw error;
@@ -815,22 +978,145 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       setShowShareDialog(false);
       toast({
         title: 'Succès',
-        description: 'Document partagé dans la conversation'
+        description: 'Document ajouté au groupe'
       });
+      
+      // Reload conversation documents
+      loadConversationResources();
     } catch (error) {
       console.error('Error sharing document:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible de partager le document',
+        description: 'Impossible d\'ajouter le document',
         variant: 'destructive'
       });
+    }
+  };
+
+  // Handle dossier selection
+  const handleSelectDossier = async (dossier: CabinetDossier | PersonalDossier) => {
+    if (!selectedConversation || !user || selectedConversation.startsWith('direct-')) return;
+    
+    try {
+      const title = dossier.title;
+      const description = dossier.description || null;
+      const dossierId = 'dossier_id' in dossier ? dossier.dossier_id : dossier.id;
+      
+      // Add dossier to conversation_dossiers table
+      const { error } = await supabase.from('conversation_dossiers').insert({
+        conversation_id: selectedConversation,
+        dossier_id: dossierId,
+        title,
+        description,
+        added_by: user.id
+      });
+      
+      if (error) throw error;
+      
+      setShowDocumentsDialog(false);
+      setShowShareDialog(false);
+      toast({
+        title: 'Succès',
+        description: 'Dossier ajouté au groupe'
+      });
+      
+      loadConversationResources();
+    } catch (error) {
+      console.error('Error sharing dossier:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'ajouter le dossier',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Handle client selection
+  const handleSelectClient = async (client: CabinetClient | PersonalClient) => {
+    if (!selectedConversation || !user || selectedConversation.startsWith('direct-')) return;
+    
+    try {
+      const clientId = 'client_id' in client ? client.client_id : client.id;
+      
+      // Add client to conversation_clients table
+      const { error } = await supabase.from('conversation_clients').insert({
+        conversation_id: selectedConversation,
+        client_id: clientId,
+        first_name: client.first_name,
+        last_name: client.last_name,
+        email: client.email || null,
+        phone: client.phone || null,
+        added_by: user.id
+      });
+      
+      if (error) throw error;
+      
+      setShowDocumentsDialog(false);
+      setShowShareDialog(false);
+      toast({
+        title: 'Succès',
+        description: 'Client ajouté au groupe'
+      });
+      
+      loadConversationResources();
+    } catch (error) {
+      console.error('Error sharing client:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'ajouter le client',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Load conversation resources (documents, dossiers, clients, tasks)
+  const loadConversationResources = async () => {
+    if (!selectedConversation || selectedConversation.startsWith('direct-')) return;
+    
+    setLoadingResources(true);
+    try {
+      // Load documents
+      const { data: docs } = await supabase
+        .from('conversation_documents')
+        .select('*')
+        .eq('conversation_id', selectedConversation)
+        .order('created_at', { ascending: false });
+      setConversationDocuments(docs || []);
+      
+      // Load dossiers
+      const { data: doss } = await supabase
+        .from('conversation_dossiers')
+        .select('*')
+        .eq('conversation_id', selectedConversation)
+        .order('created_at', { ascending: false });
+      setConversationDossiers(doss || []);
+      
+      // Load clients
+      const { data: clients } = await supabase
+        .from('conversation_clients')
+        .select('*')
+        .eq('conversation_id', selectedConversation)
+        .order('created_at', { ascending: false });
+      setConversationClients(clients || []);
+      
+      // Load tasks
+      const { data: tasks } = await supabase
+        .from('conversation_tasks')
+        .select('*')
+        .eq('conversation_id', selectedConversation)
+        .order('created_at', { ascending: false });
+      setConversationTasks(tasks || []);
+    } catch (error) {
+      console.error('Error loading conversation resources:', error);
+    } finally {
+      setLoadingResources(false);
     }
   };
 
   // Handle file upload from computer
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0 || !user || !selectedConversation) return;
+    if (!files || files.length === 0 || !user || !selectedConversation || selectedConversation.startsWith('direct-')) return;
     
     setUploadingFile(true);
     try {
@@ -865,30 +1151,25 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           throw new Error('Impossible de générer l\'URL publique');
         }
         
-        // Send message with document link
-        const message = `📄 ${file.name}\n${publicData.publicUrl}`;
-        
-        const isDirectConv = selectedConversation.startsWith('direct-');
-        const recipient_id = isDirectConv ? selectedConversation.replace('direct-', '') : null;
-        const conversation_id = isDirectConv ? null : selectedConversation;
-        
-        const { error: messageError } = await supabase.from('cabinet_messages').insert({
-          cabinet_id: cabinetId,
-          sender_id: user.id,
-          recipient_id,
-          conversation_id,
-          message
+        // Add document to conversation_documents table
+        const { error: docError } = await supabase.from('conversation_documents').insert({
+          conversation_id: selectedConversation,
+          title: file.name,
+          file_url: publicData.publicUrl,
+          file_name: file.name,
+          added_by: user.id
         });
         
-        if (messageError) throw messageError;
+        if (docError) throw docError;
         
         toast({
           title: 'Succès',
-          description: `${file.name} partagé dans la conversation`
+          description: `${file.name} ajouté au groupe`
         });
       }
       
       setShowShareDialog(false);
+      loadConversationResources();
       
       // Reset file input
       if (fileInputRef.current) {
@@ -935,6 +1216,52 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  // Handle message change - detect @ mentions
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setNewMessage(value);
+    
+    // Detect @ symbol for mentions
+    const cursorPosition = e.target.selectionStart || 0;
+    const textBeforeCursor = value.slice(0, cursorPosition);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+    
+    if (lastAtIndex !== -1) {
+      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
+      // Only show dropdown if @ is followed by valid characters (no spaces)
+      if (!textAfterAt.includes(' ') && !textAfterAt.includes('\n')) {
+        setMentionSearch(textAfterAt.toLowerCase());
+        setMentionStartPos(lastAtIndex);
+        const filtered = members.filter(m => 
+          m.user_id !== user?.id && // Don't mention yourself
+          (m.profile?.first_name?.toLowerCase().includes(textAfterAt.toLowerCase()) ||
+           m.profile?.last_name?.toLowerCase().includes(textAfterAt.toLowerCase()))
+        );
+        setFilteredMembers(filtered);
+        setShowMentionDropdown(filtered.length > 0);
+      } else {
+        setShowMentionDropdown(false);
+      }
+    } else {
+      setShowMentionDropdown(false);
+    }
+  };
+
+  // Insert mention into message
+  const insertMention = (member: CabinetMember) => {
+    const beforeMention = newMessage.slice(0, mentionStartPos);
+    const afterMention = newMessage.slice(textareaRef.current?.selectionStart || newMessage.length);
+    const firstName = member.profile?.first_name || '';
+    const lastName = member.profile?.last_name || '';
+    const mentionText = `@[${firstName} ${lastName}](${member.user_id})`;
+    const newText = beforeMention + mentionText + ' ' + afterMention;
+    setNewMessage(newText);
+    setShowMentionDropdown(false);
+    
+    // Restore focus
+    setTimeout(() => textareaRef.current?.focus(), 0);
   };
   
   // Render message text with mentions highlighted
@@ -1403,8 +1730,320 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         </CardHeader>
         
         <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          {/* Messages area with fixed height and scroll */}
-          <div className="overflow-y-auto mb-4 space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 450px)' }} ref={scrollAreaRef}>
+          {currentConversation?.is_group && !selectedConversation.startsWith('direct-') && selectedConversation !== 'general' ? (
+            <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="flex-1 flex flex-col min-h-0">
+              <TabsList className="grid w-full grid-cols-5 mb-4">
+                <TabsTrigger value="messages">Messages</TabsTrigger>
+                <TabsTrigger value="documents">Documents</TabsTrigger>
+                <TabsTrigger value="dossiers">Dossiers</TabsTrigger>
+                <TabsTrigger value="clients">Clients</TabsTrigger>
+                <TabsTrigger value="tasks">Tâches</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="messages" className="flex-1 flex flex-col min-h-0 mt-0">
+                {/* Messages area with fixed height and scroll */}
+                <div className="overflow-y-auto mb-4 space-y-3 pr-2 flex-1" ref={scrollAreaRef}>
+                  {messages.length === 0 ? (
+                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                      <p>Aucun message pour le moment</p>
+                    </div>
+                  ) : (
+                    messages.map(msg => {
+                      const isOwnMessage = msg.sender_id === user?.id;
+                      return (
+                        <div
+                          key={msg.id}
+                          className={`flex gap-3 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}
+                        >
+                          <Avatar className="h-8 w-8">
+                            {msg.sender_profile?.photo_url && (
+                              <AvatarImage src={msg.sender_profile.photo_url} alt="Photo de profil" />
+                            )}
+                            <AvatarFallback className={`text-xs ${
+                              isOwnMessage 
+                                ? getRoleBadgeColor(role)
+                                : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {getInitials(msg.sender_profile)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className={`flex-1 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <span className={`text-sm font-medium ${isOwnMessage ? 'order-2' : 'order-1'}`}>
+                                {isOwnMessage 
+                                  ? 'Vous' 
+                                  : `${msg.sender_profile?.first_name || ''} ${msg.sender_profile?.last_name || ''}`.trim() || 'Utilisateur'
+                                }
+                              </span>
+                              <span className={`text-xs text-muted-foreground ${isOwnMessage ? 'order-1' : 'order-2'}`}>
+                                {new Date(msg.created_at).toLocaleTimeString('fr-FR', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
+                              </span>
+                            </div>
+                            <div className={`inline-block px-3 py-2 rounded-lg ${
+                              isOwnMessage ? 'bg-muted' : 'bg-muted'
+                            }`}>
+                              <p className="text-sm whitespace-pre-wrap">{renderMessageWithMentions(msg.message)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* Message input */}
+                <div className="relative">
+                  <Textarea
+                    ref={textareaRef}
+                    value={newMessage}
+                    onChange={handleMessageChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Tapez votre message... (@ pour mentionner)"
+                    className="min-h-[80px] pr-12 resize-none"
+                    disabled={sending}
+                  />
+                  
+                  {/* Mention dropdown */}
+                  {showMentionDropdown && (
+                    <div className="absolute bottom-full mb-2 left-0 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto z-50 w-64">
+                      {filteredMembers.length === 0 ? (
+                        <div className="p-3 text-sm text-muted-foreground">Aucun membre trouvé</div>
+                      ) : (
+                        filteredMembers.map(member => (
+                          <button
+                            key={member.id}
+                            onClick={() => insertMention(member)}
+                            className="w-full flex items-center gap-2 p-2 hover:bg-gray-100 text-left"
+                          >
+                            <Avatar className="h-6 w-6">
+                              {member.profile?.photo_url && (
+                                <AvatarImage src={member.profile.photo_url} alt="Photo" />
+                              )}
+                              <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
+                                {getInitials(member.profile)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm">{getDisplayName(member.profile)}</span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                  
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={!newMessage.trim() || sending}
+                    size="icon"
+                    className={`absolute bottom-3 right-3 ${
+                      role === 'notaire' 
+                        ? 'bg-orange-500 hover:bg-orange-600' 
+                        : 'bg-blue-500 hover:bg-blue-600'
+                    } text-white`}
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="documents" className="flex-1 overflow-y-auto mt-0">
+                <div className="space-y-4">
+                  <Button 
+                    onClick={() => {
+                      setShareType('document');
+                      setShowShareDialog(true);
+                    }}
+                    className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Ajouter un document
+                  </Button>
+                  
+                  {loadingResources ? (
+                    <div className="text-sm text-muted-foreground text-center">Chargement...</div>
+                  ) : conversationDocuments.length === 0 ? (
+                    <div className="text-sm text-muted-foreground text-center py-8">
+                      Aucun document partagé pour le moment
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {conversationDocuments.map((doc) => (
+                        <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                          <div className="flex items-center gap-3 flex-1">
+                            <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                            <div className="flex-1">
+                              <p className="font-medium">{doc.title}</p>
+                              <p className="text-xs text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => window.open(doc.file_url, '_blank')}
+                              className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={async () => {
+                                const a = document.createElement('a');
+                                a.href = doc.file_url;
+                                a.download = doc.file_name || doc.title;
+                                a.click();
+                              }}
+                              className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="dossiers" className="flex-1 overflow-y-auto mt-0">
+                <div className="space-y-4">
+                  <Button 
+                    onClick={() => {
+                      setShareType('dossier');
+                      setShowShareDialog(true);
+                    }}
+                    className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Ajouter un dossier
+                  </Button>
+                  
+                  {loadingResources ? (
+                    <div className="text-sm text-muted-foreground text-center">Chargement...</div>
+                  ) : conversationDossiers.length === 0 ? (
+                    <div className="text-sm text-muted-foreground text-center py-8">
+                      Aucun dossier partagé pour le moment
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {conversationDossiers.map((dossier) => (
+                        <div key={dossier.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                          <div className="flex items-center gap-3 flex-1">
+                            <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                            <div className="flex-1">
+                              <p className="font-medium">{dossier.title}</p>
+                              {dossier.description && (
+                                <p className="text-xs text-muted-foreground">{dossier.description}</p>
+                              )}
+                              <p className="text-xs text-muted-foreground">{new Date(dossier.created_at).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="clients" className="flex-1 overflow-y-auto mt-0">
+                <div className="space-y-4">
+                  <Button 
+                    onClick={() => {
+                      setShareType('client');
+                      setShowShareDialog(true);
+                    }}
+                    className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                  >
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Ajouter un client
+                  </Button>
+                  
+                  {loadingResources ? (
+                    <div className="text-sm text-muted-foreground text-center">Chargement...</div>
+                  ) : conversationClients.length === 0 ? (
+                    <div className="text-sm text-muted-foreground text-center py-8">
+                      Aucun client partagé pour le moment
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {conversationClients.map((client) => (
+                        <div key={client.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                          <div className="flex items-center gap-3 flex-1">
+                            <Users className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                            <div className="flex-1">
+                              <p className="font-medium">{client.first_name} {client.last_name}</p>
+                              {client.email && (
+                                <p className="text-xs text-muted-foreground">{client.email}</p>
+                              )}
+                              {client.phone && (
+                                <p className="text-xs text-muted-foreground">{client.phone}</p>
+                              )}
+                              <p className="text-xs text-muted-foreground">{new Date(client.created_at).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="tasks" className="flex-1 overflow-y-auto mt-0">
+                <div className="space-y-4">
+                  <Button 
+                    onClick={() => {
+                      setShareType('task');
+                      setShowShareDialog(true);
+                    }}
+                    className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Créer une tâche
+                  </Button>
+                  
+                  {loadingResources ? (
+                    <div className="text-sm text-muted-foreground text-center">Chargement...</div>
+                  ) : conversationTasks.length === 0 ? (
+                    <div className="text-sm text-muted-foreground text-center py-8">
+                      Aucune tâche pour le moment
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {conversationTasks.map((task) => (
+                        <div key={task.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="flex-1">
+                              <p className="font-medium">{task.title}</p>
+                              {task.description && (
+                                <p className="text-xs text-muted-foreground">{task.description}</p>
+                              )}
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant={task.status === 'completed' ? 'default' : 'secondary'}>
+                                  {task.status}
+                                </Badge>
+                                {task.due_date && (
+                                  <span className="text-xs text-muted-foreground">
+                                    Échéance: {new Date(task.due_date).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <>
+              {/* Messages area with fixed height and scroll */}
+              <div className="overflow-y-auto mb-4 space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 450px)' }} ref={scrollAreaRef}>
             {!selectedConversation ? (
               <div className="flex items-center justify-center h-full text-muted-foreground">
                 <p>Sélectionnez une conversation pour commencer</p>
@@ -1559,6 +2198,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 <Send className="h-4 w-4" />
               </Button>
             </div>
+          )}
+            </>
           )}
         </CardContent>
       </Card>
@@ -1839,9 +2480,51 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                   <Upload className="h-4 w-4 mr-2" />
                   Partager un document
                 </Button>
-                <div className="text-sm text-muted-foreground mt-4">
-                  Aucun document partagé pour le moment
-                </div>
+                
+                {loadingResources ? (
+                  <div className="text-sm text-muted-foreground mt-4 text-center">Chargement...</div>
+                ) : conversationDocuments.length === 0 ? (
+                  <div className="text-sm text-muted-foreground mt-4">
+                    Aucun document partagé pour le moment
+                  </div>
+                ) : (
+                  <div className="space-y-2 mt-4">
+                    {conversationDocuments.map((doc) => (
+                      <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <div className="flex items-center gap-3 flex-1">
+                          <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          <div className="flex-1">
+                            <p className="font-medium">{doc.title}</p>
+                            <p className="text-xs text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => window.open(doc.file_url, '_blank')}
+                            className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={async () => {
+                              const a = document.createElement('a');
+                              a.href = doc.file_url;
+                              a.download = doc.file_name || doc.title;
+                              a.click();
+                            }}
+                            className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </TabsContent>
 
@@ -1862,9 +2545,31 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                   <Plus className="h-4 w-4 mr-2" />
                   Partager un dossier
                 </Button>
-                <div className="text-sm text-muted-foreground mt-4">
-                  Aucun dossier partagé pour le moment
-                </div>
+                
+                {loadingResources ? (
+                  <div className="text-sm text-muted-foreground mt-4 text-center">Chargement...</div>
+                ) : conversationDossiers.length === 0 ? (
+                  <div className="text-sm text-muted-foreground mt-4">
+                    Aucun dossier partagé pour le moment
+                  </div>
+                ) : (
+                  <div className="space-y-2 mt-4">
+                    {conversationDossiers.map((dossier) => (
+                      <div key={dossier.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <div className="flex items-center gap-3 flex-1">
+                          <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          <div className="flex-1">
+                            <p className="font-medium">{dossier.title}</p>
+                            {dossier.description && (
+                              <p className="text-xs text-muted-foreground">{dossier.description}</p>
+                            )}
+                            <p className="text-xs text-muted-foreground">{new Date(dossier.created_at).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </TabsContent>
 
@@ -1885,9 +2590,34 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                   <UserPlus className="h-4 w-4 mr-2" />
                   Partager un client
                 </Button>
-                <div className="text-sm text-muted-foreground mt-4">
-                  Aucun client partagé pour le moment
-                </div>
+                
+                {loadingResources ? (
+                  <div className="text-sm text-muted-foreground mt-4 text-center">Chargement...</div>
+                ) : conversationClients.length === 0 ? (
+                  <div className="text-sm text-muted-foreground mt-4">
+                    Aucun client partagé pour le moment
+                  </div>
+                ) : (
+                  <div className="space-y-2 mt-4">
+                    {conversationClients.map((client) => (
+                      <div key={client.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                        <div className="flex items-center gap-3 flex-1">
+                          <Users className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          <div className="flex-1">
+                            <p className="font-medium">{client.first_name} {client.last_name}</p>
+                            {client.email && (
+                              <p className="text-xs text-muted-foreground">{client.email}</p>
+                            )}
+                            {client.phone && (
+                              <p className="text-xs text-muted-foreground">{client.phone}</p>
+                            )}
+                            <p className="text-xs text-muted-foreground">{new Date(client.created_at).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </TabsContent>
 
@@ -1962,7 +2692,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               onClick={() => {
                 setShareSource('collaboratif');
                 setShowShareDialog(false);
-                loadCollaborativeDocuments();
+                if (shareType === 'document') loadCollaborativeDocuments();
+                else if (shareType === 'dossier') loadCollaborativeDossiers();
+                else if (shareType === 'client') loadCollaborativeClients();
               }}
             >
               <div className="flex flex-col items-start gap-1">
@@ -1978,7 +2710,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               onClick={() => {
                 setShareSource('perso');
                 setShowShareDialog(false);
-                loadPersonalDocuments();
+                if (shareType === 'document') loadPersonalDocuments();
+                else if (shareType === 'dossier') loadPersonalDossiers();
+                else if (shareType === 'client') loadPersonalClients();
               }}
             >
               <div className="flex flex-col items-start gap-1">
@@ -1989,85 +2723,175 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               </div>
             </Button>
 
-            <Button
-              className={`w-full justify-start h-auto py-4 ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
-              onClick={() => {
-                setShareSource('ordinateur');
-                setShowShareDialog(false);
-                fileInputRef.current?.click();
-              }}
-            >
-              <div className="flex flex-col items-start gap-1">
-                <span className="font-semibold">Depuis mon ordinateur</span>
-                <span className="text-xs text-white/80">
-                  Importer un fichier depuis votre ordinateur
-                </span>
-              </div>
-            </Button>
+            {shareType === 'document' && (
+              <Button
+                className={`w-full justify-start h-auto py-4 ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                onClick={() => {
+                  setShareSource('ordinateur');
+                  setShowShareDialog(false);
+                  fileInputRef.current?.click();
+                }}
+              >
+                <div className="flex flex-col items-start gap-1">
+                  <span className="font-semibold">Depuis mon ordinateur</span>
+                  <span className="text-xs text-white/80">
+                    Importer un fichier depuis votre ordinateur
+                  </span>
+                </div>
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Documents Selection Dialog */}
+      {/* Items Selection Dialog */}
       <Dialog open={showDocumentsDialog} onOpenChange={setShowDocumentsDialog}>
         <DialogContent className="max-w-2xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>
-              {shareSource === 'collaboratif' ? 'Documents de l\'espace collaboratif' : 'Mes documents personnels'}
+              {shareType === 'document' && (shareSource === 'collaboratif' ? 'Documents de l\'espace collaboratif' : 'Mes documents personnels')}
+              {shareType === 'dossier' && (shareSource === 'collaboratif' ? 'Dossiers de l\'espace collaboratif' : 'Mes dossiers personnels')}
+              {shareType === 'client' && (shareSource === 'collaboratif' ? 'Clients de l\'espace collaboratif' : 'Mes clients personnels')}
             </DialogTitle>
             <DialogDescription>
-              Sélectionnez un document à partager dans la conversation
+              Sélectionnez {shareType === 'document' ? 'un document' : shareType === 'dossier' ? 'un dossier' : 'un client'} à ajouter au groupe
             </DialogDescription>
           </DialogHeader>
 
-          {loadingDocuments ? (
+          {loadingItems ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-muted-foreground">Chargement...</div>
             </div>
-          ) : availableDocuments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-              <FileText className="h-12 w-12 mb-2 opacity-50" />
-              <p>Aucun document disponible</p>
-            </div>
           ) : (
-            <div className="space-y-2 max-h-[400px] overflow-y-auto">
-              {availableDocuments.map((doc) => {
-                const title = 'title' in doc ? doc.title : doc.name;
-                const date = 'shared_at' in doc ? new Date(doc.shared_at).toLocaleDateString() : new Date(doc.created_at).toLocaleDateString();
-                
-                return (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 flex-1">
-                      <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
-                      <div className="flex-1">
-                        <p className="font-medium">{title}</p>
-                        <p className="text-xs text-muted-foreground">{date}</p>
+            <>
+              {/* Documents list */}
+              {shareType === 'document' && availableDocuments.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <FileText className="h-12 w-12 mb-2 opacity-50" />
+                  <p>Aucun document disponible</p>
+                </div>
+              )}
+              {shareType === 'document' && availableDocuments.length > 0 && (
+                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                  {availableDocuments.map((doc) => {
+                    const title = 'title' in doc ? doc.title : doc.name;
+                    const date = 'shared_at' in doc ? new Date(doc.shared_at).toLocaleDateString() : new Date(doc.created_at).toLocaleDateString();
+                    
+                    return (
+                      <div
+                        key={doc.id}
+                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-center gap-3 flex-1">
+                          <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          <div className="flex-1">
+                            <p className="font-medium">{title}</p>
+                            <p className="text-xs text-muted-foreground">{date}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleViewDocument(doc)}
+                            className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleSelectDocument(doc)}
+                            className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                          >
+                            Ajouter
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleViewDocument(doc)}
-                        className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Dossiers list */}
+              {shareType === 'dossier' && availableDossiers.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <FileText className="h-12 w-12 mb-2 opacity-50" />
+                  <p>Aucun dossier disponible</p>
+                </div>
+              )}
+              {shareType === 'dossier' && availableDossiers.length > 0 && (
+                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                  {availableDossiers.map((dossier) => {
+                    const date = 'shared_at' in dossier ? new Date(dossier.shared_at).toLocaleDateString() : new Date(dossier.created_at).toLocaleDateString();
+                    
+                    return (
+                      <div
+                        key={dossier.id}
+                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
                       >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleSelectDocument(doc)}
-                        className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                        <div className="flex items-center gap-3 flex-1">
+                          <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          <div className="flex-1">
+                            <p className="font-medium">{dossier.title}</p>
+                            {dossier.description && (
+                              <p className="text-xs text-muted-foreground">{dossier.description}</p>
+                            )}
+                            <p className="text-xs text-muted-foreground">{date}</p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => handleSelectDossier(dossier)}
+                          className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                        >
+                          Ajouter
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Clients list */}
+              {shareType === 'client' && availableClients.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <Users className="h-12 w-12 mb-2 opacity-50" />
+                  <p>Aucun client disponible</p>
+                </div>
+              )}
+              {shareType === 'client' && availableClients.length > 0 && (
+                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                  {availableClients.map((client) => {
+                    const date = 'shared_at' in client ? new Date(client.shared_at).toLocaleDateString() : new Date(client.created_at).toLocaleDateString();
+                    
+                    return (
+                      <div
+                        key={client.id}
+                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
                       >
-                        Partager
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                        <div className="flex items-center gap-3 flex-1">
+                          <Users className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          <div className="flex-1">
+                            <p className="font-medium">{client.first_name} {client.last_name}</p>
+                            {client.email && (
+                              <p className="text-xs text-muted-foreground">{client.email}</p>
+                            )}
+                            <p className="text-xs text-muted-foreground">{date}</p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => handleSelectClient(client)}
+                          className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
+                        >
+                          Ajouter
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </DialogContent>
       </Dialog>
