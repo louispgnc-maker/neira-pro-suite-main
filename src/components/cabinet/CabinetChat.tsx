@@ -1360,26 +1360,25 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     
                     if (error) throw error;
                     
-                    // Force reload all conversations from database
-                    const { data: allGroupConvs } = await supabase
-                      .from('cabinet_conversations')
-                      .select('id, name')
-                      .eq('cabinet_id', cabinetId);
+                    // Update local state immediately
+                    const newName = editGroupName.trim();
+                    setConversations(prev => prev.map(c => 
+                      c.id === currentConversation.id ? { ...c, name: newName } : c
+                    ));
                     
-                    // Update conversations with fresh data from database
-                    if (allGroupConvs) {
-                      setConversations(prev => prev.map(c => {
-                        const updated = allGroupConvs.find(gc => gc.id === c.id);
-                        return updated ? { ...c, name: updated.name } : c;
-                      }));
-                    }
+                    // Force re-select the conversation to trigger re-render
+                    const convId = currentConversation.id;
+                    setSelectedConversation(null);
+                    setTimeout(() => {
+                      setSelectedConversation(convId);
+                    }, 0);
                     
                     // Close dialog to show the updated name
                     setShowGroupSettings(false);
                     
                     toast({
                       title: 'Succès',
-                      description: `Nom du groupe changé en "${editGroupName.trim()}"`
+                      description: `Nom du groupe changé en "${newName}"`
                     });
                   } catch (error) {
                     console.error('Error updating group name:', error);
