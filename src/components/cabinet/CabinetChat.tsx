@@ -283,6 +283,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         console.error('Error loading conversations:', groupError);
         return;
       }
+      
+      console.log('Loaded group conversations from DB:', groupConvs);
 
       // Load members for each conversation
       const conversationsWithMembers: Conversation[] = [];
@@ -1355,10 +1357,15 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                   try {
                     const newName = editGroupName.trim();
                     
-                    const { error } = await supabase
+                    console.log('Updating group name from', currentConversation.name, 'to', newName, 'for conversation', currentConversation.id);
+                    
+                    const { error, data } = await supabase
                       .from('cabinet_conversations')
                       .update({ name: newName })
-                      .eq('id', currentConversation.id);
+                      .eq('id', currentConversation.id)
+                      .select();
+                    
+                    console.log('Update result:', { error, data });
                     
                     if (error) throw error;
                     
