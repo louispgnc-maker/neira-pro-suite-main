@@ -138,6 +138,7 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
             metadata: { conversationId: convId }
           };
         })
+        .filter(n => n && n.id && n.title) // Double filtrage pour être sûr
         .sort((a, b) => new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime());
 
       setNotifications(notificationsList);
@@ -288,7 +289,8 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
               ) : (
                 // limit visible area to exactly ~3 items and allow scrolling for older notifications
                 <div className="space-y-2 max-h-[216px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300" style={{ scrollbarWidth: 'thin' }}>
-                  {notifications.filter(n => n && n.id).map(n => {
+                  {notifications.map(n => {
+                    if (!n || !n.id) return null;
                     const when = n.created_at ? new Date(n.created_at) : null;
                     const timeAgo = (d: Date | null) => {
                       if (!d) return '';
