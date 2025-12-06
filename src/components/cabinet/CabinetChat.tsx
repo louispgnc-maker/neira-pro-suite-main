@@ -1353,25 +1353,19 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 onClick={async () => {
                   if (!editGroupName.trim() || !currentConversation?.id) return;
                   try {
+                    const newName = editGroupName.trim();
+                    
                     const { error } = await supabase
                       .from('cabinet_conversations')
-                      .update({ name: editGroupName.trim() })
+                      .update({ name: newName })
                       .eq('id', currentConversation.id);
                     
                     if (error) throw error;
                     
                     // Update local state immediately
-                    const newName = editGroupName.trim();
                     setConversations(prev => prev.map(c => 
                       c.id === currentConversation.id ? { ...c, name: newName } : c
                     ));
-                    
-                    // Force re-select the conversation to trigger re-render
-                    const convId = currentConversation.id;
-                    setSelectedConversation(null);
-                    setTimeout(() => {
-                      setSelectedConversation(convId);
-                    }, 0);
                     
                     // Close dialog to show the updated name
                     setShowGroupSettings(false);
