@@ -1374,9 +1374,12 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                       }));
                     }
                     
+                    // Close dialog to show the updated name
+                    setShowGroupSettings(false);
+                    
                     toast({
                       title: 'Succès',
-                      description: 'Nom du groupe modifié'
+                      description: `Nom du groupe changé en "${editGroupName.trim()}"`
                     });
                   } catch (error) {
                     console.error('Error updating group name:', error);
