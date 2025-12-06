@@ -85,24 +85,59 @@ export function AppSidebar() {
   useEffect(() => {
     let mounted = true;
     const loadCabinetForRole = async () => {
-      if (!user) return setCurrentCabinetId(null);
+      if (!user) {
+        setCurrentCabinetId(null);
+        return;
+      }
+      
       try {
-        const { data } = await supabase.rpc('get_user_cabinets');
-        const cabinets = Array.isArray(data) ? (data as unknown[]) : [];
-        const found = cabinets.find((c) => {
-          const cc = c as Record<string, unknown>;
-          return cc.role === role;
-        });
-        let foundId: string | null = null;
-        if (found) {
-          const cc = found as Record<string, unknown>;
-          if (typeof cc.id === 'string') foundId = cc.id;
+        // Essayer d'abord avec get_user_cabinets
+        const { data, error } = await supabase.rpc('get_user_cabinets');
+        
+        if (!error && data) {
+          const cabinets = Array.isArray(data) ? (data as unknown[]) : [];
+          const found = cabinets.find((c) => {
+            const cc = c as Record<string, unknown>;
+            return cc.role === role;
+          });
+          
+          if (found) {
+            const cc = found as Record<string, unknown>;
+            const foundId = typeof cc.id === 'string' ? cc.id : null;
+            if (foundId && mounted) {
+              setCurrentCabinetId(foundId);
+              return;
+            }
+          }
         }
-        if (mounted) setCurrentCabinetId(foundId ?? (typeof profile?.cabinet_id === 'string' ? profile!.cabinet_id : null));
-      } catch (e: unknown) {
-        if (mounted) setCurrentCabinetId(typeof profile?.cabinet_id === 'string' ? profile!.cabinet_id : null);
+        
+        // Fallback: chercher directement dans cabinet_members
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id, cabinets!inner(role)')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .limit(1)
+          .single();
+        
+        if (memberData && mounted) {
+          setCurrentCabinetId(memberData.cabinet_id);
+          return;
+        }
+        
+        // Dernier fallback: cabinet_id du profile
+        if (profile?.cabinet_id && mounted) {
+          setCurrentCabinetId(profile.cabinet_id);
+        }
+        
+      } catch (e) {
+        console.error('Error loading cabinet:', e);
+        if (profile?.cabinet_id && mounted) {
+          setCurrentCabinetId(profile.cabinet_id);
+        }
       }
     };
+    
     loadCabinetForRole();
     return () => { mounted = false; };
   }, [user, role, profile]);
