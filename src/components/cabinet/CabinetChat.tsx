@@ -105,6 +105,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [editGroupName, setEditGroupName] = useState('');
   const [groupMemberSearch, setGroupMemberSearch] = useState('');
   const [groupFiles, setGroupFiles] = useState<Array<{ name: string; url: string }>>([]);
+  
+  // Share dialogs state
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareType, setShareType] = useState<'document' | 'dossier' | 'client' | 'task' | null>(null);
+  const [shareSource, setShareSource] = useState<'collaboratif' | 'perso' | 'ordinateur' | null>(null);
 
   // Save selected conversation to localStorage whenever it changes
   useEffect(() => {
@@ -1144,7 +1149,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                   setEditGroupName(currentConversation.name);
                   setShowGroupSettings(true);
                 }}
-                className="shrink-0"
+                className={`shrink-0 ${role === 'notaire' ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50' : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'}`}
               >
                 <Settings className="h-5 w-5" />
               </Button>
@@ -1355,9 +1360,23 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     
                     if (error) throw error;
                     
+                    // Update local state
                     setConversations(prev => prev.map(c => 
                       c.id === currentConversation.id ? { ...c, name: editGroupName.trim() } : c
                     ));
+                    
+                    // Reload conversations from database to ensure persistence
+                    const { data: updatedConv } = await supabase
+                      .from('cabinet_conversations')
+                      .select('id, name')
+                      .eq('id', currentConversation.id)
+                      .single();
+                    
+                    if (updatedConv) {
+                      setConversations(prev => prev.map(c => 
+                        c.id === updatedConv.id ? { ...c, name: updatedConv.name } : c
+                      ));
+                    }
                     
                     toast({
                       title: 'Succès',
@@ -1568,7 +1587,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 <p className="text-sm text-muted-foreground">
                   Partagez des documents avec les membres de ce groupe uniquement
                 </p>
-                <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
+                <Button 
+                  onClick={() => {
+                    setShareType('document');
+                    setShowShareDialog(true);
+                  }}
+                  className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                >
                   <Upload className="h-4 w-4 mr-2" />
                   Partager un document
                 </Button>
@@ -1585,7 +1610,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 <p className="text-sm text-muted-foreground">
                   Partagez des dossiers avec les membres de ce groupe uniquement
                 </p>
-                <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
+                <Button 
+                  onClick={() => {
+                    setShareType('dossier');
+                    setShowShareDialog(true);
+                  }}
+                  className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Partager un dossier
                 </Button>
@@ -1602,7 +1633,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 <p className="text-sm text-muted-foreground">
                   Partagez des fiches clients avec les membres de ce groupe uniquement
                 </p>
-                <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
+                <Button 
+                  onClick={() => {
+                    setShareType('client');
+                    setShowShareDialog(true);
+                  }}
+                  className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                >
                   <UserPlus className="h-4 w-4 mr-2" />
                   Partager un client
                 </Button>
@@ -1619,7 +1656,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 <p className="text-sm text-muted-foreground">
                   Créez et assignez des tâches aux membres de ce groupe
                 </p>
-                <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
+                <Button 
+                  onClick={() => {
+                    setShareType('task');
+                    setShowShareDialog(true);
+                  }}
+                  className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Créer une tâche
                 </Button>
@@ -1653,6 +1696,85 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               </Button>
             </TabsContent>
           </Tabs>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Source Selection Dialog */}
+      <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {shareType === 'document' && 'Partager un document'}
+              {shareType === 'dossier' && 'Partager un dossier'}
+              {shareType === 'client' && 'Partager un client'}
+              {shareType === 'task' && 'Créer une tâche'}
+            </DialogTitle>
+            <DialogDescription>
+              Choisissez la source du contenu à partager
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <Button
+              variant="outline"
+              className="w-full justify-start h-auto py-4"
+              onClick={() => {
+                setShareSource('collaboratif');
+                // TODO: Open selection from collaborative space
+                toast({
+                  title: 'Sélection depuis l\'espace collaboratif',
+                  description: 'Fonctionnalité en cours d\'implémentation'
+                });
+              }}
+            >
+              <div className="flex flex-col items-start gap-1">
+                <span className="font-semibold">Depuis l'espace collaboratif</span>
+                <span className="text-xs text-muted-foreground">
+                  Partager un élément déjà dans l'espace collaboratif
+                </span>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full justify-start h-auto py-4"
+              onClick={() => {
+                setShareSource('perso');
+                // TODO: Open selection from personal space
+                toast({
+                  title: 'Sélection depuis l\'espace personnel',
+                  description: 'Fonctionnalité en cours d\'implémentation'
+                });
+              }}
+            >
+              <div className="flex flex-col items-start gap-1">
+                <span className="font-semibold">Depuis mon espace personnel</span>
+                <span className="text-xs text-muted-foreground">
+                  Partager un élément de votre espace personnel
+                </span>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full justify-start h-auto py-4"
+              onClick={() => {
+                setShareSource('ordinateur');
+                // TODO: Open file upload
+                toast({
+                  title: 'Import depuis l\'ordinateur',
+                  description: 'Fonctionnalité en cours d\'implémentation'
+                });
+              }}
+            >
+              <div className="flex flex-col items-start gap-1">
+                <span className="font-semibold">Depuis mon ordinateur</span>
+                <span className="text-xs text-muted-foreground">
+                  Importer un fichier depuis votre ordinateur
+                </span>
+              </div>
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
