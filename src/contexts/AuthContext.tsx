@@ -205,11 +205,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(resetKey, 'done');
         console.log('✅ Compteurs réinitialisés');
         
-        // Forcer le rechargement de la page pour que tous les compteurs se mettent à jour
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
-        
       } catch (error) {
         console.error('❌ Erreur lors de la réinitialisation des compteurs:', error);
       }
