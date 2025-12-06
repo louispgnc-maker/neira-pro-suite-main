@@ -23,6 +23,7 @@ interface CabinetMember {
     first_name?: string;
     last_name?: string;
     email?: string;
+    photo_url?: string;
   };
 }
 
@@ -90,6 +91,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [memberSearchGroup, setMemberSearchGroup] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  
+  // Mention system state
+  const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+  const [mentionSearch, setMentionSearch] = useState('');
+  const [filteredMembers, setFilteredMembers] = useState<CabinetMember[]>([]);
+  const [mentionStartPos, setMentionStartPos] = useState<number>(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Save selected conversation to localStorage whenever it changes
   useEffect(() => {
@@ -553,6 +561,47 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
       setNewMessage('');
       
+      // Extract mentions and create notifications
+      const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
+      const mentions: string[] = [];
+      let match;
+      while ((match = mentionRegex.exec(messageData.message)) !== null) {
+        mentions.push(match[2]); // user_id
+      }
+      
+      // Create notifications for mentioned users
+      if (mentions.length > 0) {
+        const notificationPromises = mentions.map(async (mentionedUserId) => {
+          // Don't notify yourself
+          if (mentionedUserId === user.id) return;
+          
+          // Get conversation name for context
+          let contextText = 'dans le canal général';
+          if (selectedConversation.startsWith('direct-')) {
+            contextText = 'dans une conversation privée';
+          } else if (selectedConversation !== 'general') {
+            const conv = conversations.find(c => c.id === selectedConversation);
+            contextText = `dans ${conv?.name || 'une conversation'}`;
+          }
+          
+          await supabase.from('notifications').insert({
+            recipient_id: mentionedUserId,
+            actor_id: user.id,
+            cabinet_id: cabinetId,
+            title: 'Vous avez été mentionné',
+            body: `${profileData?.first_name || 'Un membre'} vous a mentionné ${contextText}`,
+            read: false,
+            metadata: {
+              type: 'mention',
+              conversation_id: selectedConversation,
+              message_id: insertedMessage.id
+            }
+          });
+        });
+        
+        await Promise.all(notificationPromises);
+      }
+      
       // Update conversation timestamp and move to top
       setConversations(prev => {
         const updated = prev.map(c => 
@@ -670,6 +719,44 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+  
+  // Render message text with mentions highlighted
+  const renderMessageWithMentions = (text: string) => {
+    // Parse @[Name](user_id) format
+    const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = mentionRegex.exec(text)) !== null) {
+      // Add text before mention
+      if (match.index > lastIndex) {
+        parts.push(text.slice(lastIndex, match.index));
+      }
+      
+      // Add mention with styling
+      const mentionName = match[1];
+      const mentionUserId = match[2];
+      parts.push(
+        <span
+          key={`mention-${match.index}`}
+          className="inline-block px-1.5 py-0.5 mx-0.5 rounded bg-blue-100 text-blue-700 font-semibold cursor-pointer hover:bg-blue-200"
+          title={`Mentionné: ${mentionName}`}
+        >
+          @{mentionName}
+        </span>
+      );
+      
+      lastIndex = match.index + match[0].length;
+    }
+    
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+    
+    return parts.length > 0 ? parts : text;
   };
 
   const getDisplayName = (profile?: { first_name?: string; last_name?: string }) => {
@@ -1135,7 +1222,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                             : 'bg-blue-500 text-white'
                           : 'bg-muted'
                       }`}>
-                        <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                        <p className="text-sm whitespace-pre-wrap">{renderMessageWithMentions(msg.message)}</p>
                       </div>
                     </div>
                   </div>
@@ -1148,14 +1235,93 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           {/* Message input - fixed at bottom */}
           {selectedConversation && (
             <div className="flex gap-2 flex-shrink-0">
-              <Textarea
-                placeholder="Écrivez votre message..."
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="flex-1 min-h-[60px] max-h-[120px] resize-none"
-                disabled={sending}
-              />
+              <div className="relative flex-1">
+                <Textarea
+                  ref={textareaRef}
+                  placeholder="Écrivez votre message... (utilisez @ pour mentionner)"
+                  value={newMessage}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewMessage(value);
+                    
+                    // Detect @ mentions
+                    const cursorPos = e.target.selectionStart || 0;
+                    const textBeforeCursor = value.slice(0, cursorPos);
+                    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+                    
+                    if (lastAtIndex !== -1) {
+                      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
+                      // Only show dropdown if @ is followed by valid characters (no spaces)
+                      if (!textAfterAt.includes(' ') && !textAfterAt.includes('\n')) {
+                        setMentionSearch(textAfterAt.toLowerCase());
+                        setMentionStartPos(lastAtIndex);
+                        const filtered = members.filter(m => 
+                          m.user_id !== user?.id && // Don't mention yourself
+                          (m.profile?.first_name?.toLowerCase().includes(textAfterAt.toLowerCase()) ||
+                           m.profile?.last_name?.toLowerCase().includes(textAfterAt.toLowerCase()))
+                        );
+                        setFilteredMembers(filtered);
+                        setShowMentionDropdown(filtered.length > 0);
+                      } else {
+                        setShowMentionDropdown(false);
+                      }
+                    } else {
+                      setShowMentionDropdown(false);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (showMentionDropdown) {
+                      // Handle mention dropdown navigation - will implement later
+                      // For now, Escape closes dropdown
+                      if (e.key === 'Escape') {
+                        setShowMentionDropdown(false);
+                        return;
+                      }
+                    }
+                    handleKeyDown(e);
+                  }}
+                  className="flex-1 min-h-[60px] max-h-[120px] resize-none"
+                  disabled={sending}
+                />
+                
+                {/* Mention dropdown */}
+                {showMentionDropdown && filteredMembers.length > 0 && (
+                  <div className="absolute bottom-full left-0 mb-2 w-64 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
+                    {filteredMembers.map((member) => (
+                      <button
+                        key={member.id}
+                        type="button"
+                        onClick={() => {
+                          // Insert mention
+                          const beforeMention = newMessage.slice(0, mentionStartPos);
+                          const afterMention = newMessage.slice(textareaRef.current?.selectionStart || newMessage.length);
+                          const mentionText = `@[${member.profile?.first_name || ''} ${member.profile?.last_name || ''}](${member.user_id})`;
+                          const newText = beforeMention + mentionText + ' ' + afterMention;
+                          setNewMessage(newText);
+                          setShowMentionDropdown(false);
+                          
+                          // Restore focus
+                          setTimeout(() => textareaRef.current?.focus(), 0);
+                        }}
+                        className="w-full flex items-center gap-2 p-2 hover:bg-gray-100 text-left"
+                      >
+                        {member.profile?.photo_url ? (
+                          <img src={member.profile.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                            <span className="text-xs font-medium text-gray-600">
+                              {member.profile?.first_name?.[0]}{member.profile?.last_name?.[0]}
+                            </span>
+                          </div>
+                        )}
+                        <span className="text-sm font-medium">
+                          {member.profile?.first_name} {member.profile?.last_name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <Button
                 onClick={handleSendMessage}
                 disabled={!newMessage.trim() || sending}
