@@ -735,13 +735,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         parts.push(text.slice(lastIndex, match.index));
       }
       
-      // Add mention with styling
+      // Add mention with styling - just @Name in bold
       const mentionName = match[1];
       const mentionUserId = match[2];
       parts.push(
         <span
           key={`mention-${match.index}`}
-          className="inline-block px-1.5 py-0.5 mx-0.5 rounded bg-blue-100 text-blue-700 font-semibold cursor-pointer hover:bg-blue-200"
+          className="font-bold"
           title={`Mentionné: ${mentionName}`}
         >
           @{mentionName}
