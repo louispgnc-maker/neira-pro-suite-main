@@ -1360,22 +1360,18 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     
                     if (error) throw error;
                     
-                    // Update local state
-                    setConversations(prev => prev.map(c => 
-                      c.id === currentConversation.id ? { ...c, name: editGroupName.trim() } : c
-                    ));
-                    
-                    // Reload conversations from database to ensure persistence
-                    const { data: updatedConv } = await supabase
+                    // Force reload all conversations from database
+                    const { data: allGroupConvs } = await supabase
                       .from('cabinet_conversations')
                       .select('id, name')
-                      .eq('id', currentConversation.id)
-                      .single();
+                      .eq('cabinet_id', cabinetId);
                     
-                    if (updatedConv) {
-                      setConversations(prev => prev.map(c => 
-                        c.id === updatedConv.id ? { ...c, name: updatedConv.name } : c
-                      ));
+                    // Update conversations with fresh data from database
+                    if (allGroupConvs) {
+                      setConversations(prev => prev.map(c => {
+                        const updated = allGroupConvs.find(gc => gc.id === c.id);
+                        return updated ? { ...c, name: updated.name } : c;
+                      }));
                     }
                     
                     toast({
@@ -1716,8 +1712,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
           <div className="space-y-3">
             <Button
-              variant="outline"
-              className="w-full justify-start h-auto py-4"
+              className={`w-full justify-start h-auto py-4 ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
               onClick={() => {
                 setShareSource('collaboratif');
                 // TODO: Open selection from collaborative space
@@ -1729,15 +1724,14 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             >
               <div className="flex flex-col items-start gap-1">
                 <span className="font-semibold">Depuis l'espace collaboratif</span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-white/80">
                   Partager un élément déjà dans l'espace collaboratif
                 </span>
               </div>
             </Button>
 
             <Button
-              variant="outline"
-              className="w-full justify-start h-auto py-4"
+              className={`w-full justify-start h-auto py-4 ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
               onClick={() => {
                 setShareSource('perso');
                 // TODO: Open selection from personal space
@@ -1749,15 +1743,14 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             >
               <div className="flex flex-col items-start gap-1">
                 <span className="font-semibold">Depuis mon espace personnel</span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-white/80">
                   Partager un élément de votre espace personnel
                 </span>
               </div>
             </Button>
 
             <Button
-              variant="outline"
-              className="w-full justify-start h-auto py-4"
+              className={`w-full justify-start h-auto py-4 ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
               onClick={() => {
                 setShareSource('ordinateur');
                 // TODO: Open file upload
@@ -1769,7 +1762,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             >
               <div className="flex flex-col items-start gap-1">
                 <span className="font-semibold">Depuis mon ordinateur</span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-white/80">
                   Importer un fichier depuis votre ordinateur
                 </span>
               </div>
