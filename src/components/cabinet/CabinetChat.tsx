@@ -190,6 +190,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [conversationClients, setConversationClients] = useState<any[]>([]);
   const [conversationTasks, setConversationTasks] = useState<ConversationTask[]>([]);
   const [loadingResources, setLoadingResources] = useState(false);
+  
+  // Document viewer
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState('');
+  const [viewerTitle, setViewerTitle] = useState('');
 
   // Save selected conversation to localStorage whenever it changes
   useEffect(() => {
@@ -1324,9 +1329,26 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const conversationTitle = currentConversation?.name || 'Sélectionnez une conversation';
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[calc(100vh-300px)]">
-      {/* Sidebar: Conversations list */}
-      <Card className="md:col-span-1">
+    <>
+      {/* Document Viewer Dialog */}
+      <Dialog open={viewerOpen} onOpenChange={setViewerOpen}>
+        <DialogContent className="max-w-6xl h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>{viewerTitle}</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-hidden">
+            <iframe 
+              src={viewerUrl} 
+              className="w-full h-full border-0" 
+              title={viewerTitle}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[calc(100vh-300px)]">
+        {/* Sidebar: Conversations list */}
+        <Card className="md:col-span-1">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -1883,7 +1905,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => window.open(doc.file_url, '_blank')}
+                              onClick={() => {
+                                setViewerUrl(doc.file_url);
+                                setViewerTitle(doc.title);
+                                setViewerOpen(true);
+                              }}
                               className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
                             >
                               <Eye className="h-4 w-4" />
@@ -2210,22 +2236,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           <DialogHeader>
             <DialogTitle>Paramètres du groupe</DialogTitle>
             <DialogDescription>
-              Modifier le nom, gérer les membres et les fichiers
+              Modifier le nom et gérer les membres
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="general">Général</TabsTrigger>
-              <TabsTrigger value="members">Membres</TabsTrigger>
-              <TabsTrigger value="documents">Documents</TabsTrigger>
-              <TabsTrigger value="dossiers">Dossiers</TabsTrigger>
-              <TabsTrigger value="clients">Clients</TabsTrigger>
-              <TabsTrigger value="tasks">Tâches</TabsTrigger>
-            </TabsList>
-
-            {/* General Tab */}
-            <TabsContent value="general" className="space-y-4">
+          <div className="space-y-6">
+            {/* General Settings */}
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="group-name">Nom du groupe</Label>
                 <Input
@@ -2329,29 +2346,32 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                   Supprimer la conversation
                 </Button>
               </div>
-            </TabsContent>
+            </div>
 
-            {/* Members Tab */}
-            <TabsContent value="members" className="space-y-4">
-              <div className="space-y-2">
-                <Label>Membres actuels ({currentConversation?.member_ids.length || 0})</Label>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {members
-                    .filter(m => currentConversation?.member_ids.includes(m.user_id))
-                    .map(member => (
-                      <div key={member.id} className="flex items-center justify-between p-2 border rounded">
-                        <div className="flex items-center gap-2">
-                          {member.profile?.photo_url ? (
-                            <img src={member.profile.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
-                          ) : (
-                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-                              <span className="text-xs">{member.profile?.first_name?.[0]}{member.profile?.last_name?.[0]}</span>
-                            </div>
+            {/* Members Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Membres du groupe ({currentConversation?.member_ids.length || 0})</Label>
+              </div>
+              
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {members
+                  .filter(m => currentConversation?.member_ids.includes(m.user_id))
+                  .map(member => (
+                    <div key={member.id} className="flex items-center justify-between p-2 border rounded">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-8 w-8">
+                          {member.profile?.photo_url && (
+                            <AvatarImage src={member.profile.photo_url} alt="Photo" />
                           )}
-                          <span className="text-sm font-medium">
-                            {member.profile?.first_name} {member.profile?.last_name}
-                          </span>
-                        </div>
+                          <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
+                            {getInitials(member.profile)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm font-medium">
+                          {getDisplayName(member.profile)}
+                        </span>
+                      </div>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -2389,7 +2409,6 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                         </Button>
                       </div>
                     ))}
-                </div>
               </div>
 
               <div className="space-y-2 pt-4 border-t">
@@ -2410,15 +2429,16 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     .map(member => (
                       <div key={member.id} className="flex items-center justify-between p-2 border rounded">
                         <div className="flex items-center gap-2">
-                          {member.profile?.photo_url ? (
-                            <img src={member.profile.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
-                          ) : (
-                            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-                              <span className="text-xs">{member.profile?.first_name?.[0]}{member.profile?.last_name?.[0]}</span>
-                            </div>
-                          )}
+                          <Avatar className="h-8 w-8">
+                            {member.profile?.photo_url && (
+                              <AvatarImage src={member.profile.photo_url} alt="Photo" />
+                            )}
+                            <AvatarFallback className={`text-xs ${getRoleBadgeColor(member.role_cabinet)}`}>
+                              {getInitials(member.profile)}
+                            </AvatarFallback>
+                          </Avatar>
                           <span className="text-sm">
-                            {member.profile?.first_name} {member.profile?.last_name}
+                            {getDisplayName(member.profile)}
                           </span>
                         </div>
                         <Button
@@ -2461,213 +2481,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                     ))}
                 </div>
               </div>
-            </TabsContent>
-
-            {/* Documents Tab */}
-            <TabsContent value="documents" className="space-y-4">
-              <div className="space-y-2">
-                <Label>Documents partagés dans ce groupe</Label>
-                <p className="text-sm text-muted-foreground">
-                  Partagez des documents avec les membres de ce groupe uniquement
-                </p>
-                <Button 
-                  onClick={() => {
-                    setShareType('document');
-                    setShowShareDialog(true);
-                  }}
-                  className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Partager un document
-                </Button>
-                
-                {loadingResources ? (
-                  <div className="text-sm text-muted-foreground mt-4 text-center">Chargement...</div>
-                ) : conversationDocuments.length === 0 ? (
-                  <div className="text-sm text-muted-foreground mt-4">
-                    Aucun document partagé pour le moment
-                  </div>
-                ) : (
-                  <div className="space-y-2 mt-4">
-                    {conversationDocuments.map((doc) => (
-                      <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                        <div className="flex items-center gap-3 flex-1">
-                          <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
-                          <div className="flex-1">
-                            <p className="font-medium">{doc.title}</p>
-                            <p className="text-xs text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => window.open(doc.file_url, '_blank')}
-                            className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={async () => {
-                              const a = document.createElement('a');
-                              a.href = doc.file_url;
-                              a.download = doc.file_name || doc.title;
-                              a.click();
-                            }}
-                            className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
-                          >
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            {/* Dossiers Tab */}
-            <TabsContent value="dossiers" className="space-y-4">
-              <div className="space-y-2">
-                <Label>Dossiers partagés dans ce groupe</Label>
-                <p className="text-sm text-muted-foreground">
-                  Partagez des dossiers avec les membres de ce groupe uniquement
-                </p>
-                <Button 
-                  onClick={() => {
-                    setShareType('dossier');
-                    setShowShareDialog(true);
-                  }}
-                  className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Partager un dossier
-                </Button>
-                
-                {loadingResources ? (
-                  <div className="text-sm text-muted-foreground mt-4 text-center">Chargement...</div>
-                ) : conversationDossiers.length === 0 ? (
-                  <div className="text-sm text-muted-foreground mt-4">
-                    Aucun dossier partagé pour le moment
-                  </div>
-                ) : (
-                  <div className="space-y-2 mt-4">
-                    {conversationDossiers.map((dossier) => (
-                      <div key={dossier.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                        <div className="flex items-center gap-3 flex-1">
-                          <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
-                          <div className="flex-1">
-                            <p className="font-medium">{dossier.title}</p>
-                            {dossier.description && (
-                              <p className="text-xs text-muted-foreground">{dossier.description}</p>
-                            )}
-                            <p className="text-xs text-muted-foreground">{new Date(dossier.created_at).toLocaleDateString()}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            {/* Clients Tab */}
-            <TabsContent value="clients" className="space-y-4">
-              <div className="space-y-2">
-                <Label>Clients partagés dans ce groupe</Label>
-                <p className="text-sm text-muted-foreground">
-                  Partagez des fiches clients avec les membres de ce groupe uniquement
-                </p>
-                <Button 
-                  onClick={() => {
-                    setShareType('client');
-                    setShowShareDialog(true);
-                  }}
-                  className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
-                >
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Partager un client
-                </Button>
-                
-                {loadingResources ? (
-                  <div className="text-sm text-muted-foreground mt-4 text-center">Chargement...</div>
-                ) : conversationClients.length === 0 ? (
-                  <div className="text-sm text-muted-foreground mt-4">
-                    Aucun client partagé pour le moment
-                  </div>
-                ) : (
-                  <div className="space-y-2 mt-4">
-                    {conversationClients.map((client) => (
-                      <div key={client.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                        <div className="flex items-center gap-3 flex-1">
-                          <Users className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
-                          <div className="flex-1">
-                            <p className="font-medium">{client.first_name} {client.last_name}</p>
-                            {client.email && (
-                              <p className="text-xs text-muted-foreground">{client.email}</p>
-                            )}
-                            {client.phone && (
-                              <p className="text-xs text-muted-foreground">{client.phone}</p>
-                            )}
-                            <p className="text-xs text-muted-foreground">{new Date(client.created_at).toLocaleDateString()}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            {/* Tasks Tab */}
-            <TabsContent value="tasks" className="space-y-4">
-              <div className="space-y-2">
-                <Label>Tâches partagées dans ce groupe</Label>
-                <p className="text-sm text-muted-foreground">
-                  Créez et assignez des tâches aux membres de ce groupe
-                </p>
-                <Button 
-                  onClick={() => {
-                    setShareType('task');
-                    setShowShareDialog(true);
-                  }}
-                  className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Créer une tâche
-                </Button>
-                <div className="text-sm text-muted-foreground mt-4">
-                  Aucune tâche partagée pour le moment
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Files Tab - Removed, replaced by Documents */}
-            <TabsContent value="files" className="space-y-4">
-              <div className="space-y-2">
-                <Label>Fichiers partagés</Label>
-                {groupFiles.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Aucun fichier partagé</p>
-                ) : (
-                  <div className="space-y-2">
-                    {groupFiles.map((file, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 border rounded">
-                        <span className="text-sm">{file.name}</span>
-                        <Button variant="ghost" size="sm">Télécharger</Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              
-              <Button className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>
-                <Upload className="h-4 w-4 mr-2" />
-                Ajouter un fichier
-              </Button>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -2907,5 +2722,6 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         disabled={uploadingFile}
       />
     </div>
+    </>
   );
 }
