@@ -70,8 +70,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [selectedConversation, setSelectedConversation] = useState<string | null>(() => {
-    // Restore last selected conversation from sessionStorage
-    const saved = sessionStorage.getItem(`chat-selected-conversation-${cabinetId}`);
+    // Restore last selected conversation from localStorage
+    const saved = localStorage.getItem(`chat-selected-conversation-${cabinetId}`);
     return saved || null;
   });
   const [sending, setSending] = useState(false);
@@ -85,10 +85,10 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Save selected conversation to sessionStorage whenever it changes
+  // Save selected conversation to localStorage whenever it changes
   useEffect(() => {
     if (selectedConversation) {
-      sessionStorage.setItem(`chat-selected-conversation-${cabinetId}`, selectedConversation);
+      localStorage.setItem(`chat-selected-conversation-${cabinetId}`, selectedConversation);
     }
   }, [selectedConversation, cabinetId]);
 
@@ -131,7 +131,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
       // Only count messages created after the user last viewed
       const lastViewedKey = `chat-last-viewed-${cabinetId}-${conv.id}`;
-      const lastViewed = sessionStorage.getItem(lastViewedKey);
+      const lastViewed = localStorage.getItem(lastViewedKey);
       if (lastViewed) {
         query = query.gt('created_at', lastViewed);
       }
@@ -155,7 +155,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       
       // Save last viewed time
       const lastViewedKey = `chat-last-viewed-${cabinetId}-${selectedConversation}`;
-      sessionStorage.setItem(lastViewedKey, new Date().toISOString());
+      localStorage.setItem(lastViewedKey, new Date().toISOString());
 
       // Notify parent component to update global unread count
       window.dispatchEvent(new CustomEvent('cabinet-conversation-read', { 
