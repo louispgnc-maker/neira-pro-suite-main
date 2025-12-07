@@ -154,7 +154,7 @@ export default function Contrats() {
       if (!user) return;
       const { data, error } = await supabase
         .from('clients')
-        .select('id, nom, prenom, adresse')
+        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession')
         .eq('owner_id', user.id)
         .eq('role', role)
         .order('nom', { ascending: true });
@@ -168,6 +168,17 @@ export default function Contrats() {
     loadClients();
     return () => { isMounted = false; };
   }, [user, role]);
+
+  // Pré-remplir les informations du client sélectionné
+  useEffect(() => {
+    if (questionnaireData.clientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === questionnaireData.clientId);
+      if (selectedClient) {
+        // Les informations du client sont déjà affichées via la sélection
+        // Pas besoin de modifier questionnaireData ici car les infos sont récupérées dans handleQuestionnaireSubmit
+      }
+    }
+  }, [questionnaireData.clientId, clients]);
 
   useEffect(() => {
     let isMounted = true;
@@ -711,6 +722,29 @@ INFORMATIONS COMPLÉMENTAIRES:
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Afficher les informations du client sélectionné */}
+                {questionnaireData.clientId && clients.find(c => c.id === questionnaireData.clientId) && (
+                  <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                    <p><strong>Nom complet:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.nom} {clients.find(c => c.id === questionnaireData.clientId)?.prenom}</p>
+                    {clients.find(c => c.id === questionnaireData.clientId)?.adresse && (
+                      <p><strong>Adresse:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.adresse}</p>
+                    )}
+                    {clients.find(c => c.id === questionnaireData.clientId)?.telephone && (
+                      <p><strong>Téléphone:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.telephone}</p>
+                    )}
+                    {clients.find(c => c.id === questionnaireData.clientId)?.email && (
+                      <p><strong>Email:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.email}</p>
+                    )}
+                    {clients.find(c => c.id === questionnaireData.clientId)?.date_naissance && (
+                      <p><strong>Date de naissance:</strong> {new Date(clients.find(c => c.id === questionnaireData.clientId)?.date_naissance).toLocaleDateString('fr-FR')}</p>
+                    )}
+                    {clients.find(c => c.id === questionnaireData.clientId)?.nationalite && (
+                      <p><strong>Nationalité:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.nationalite}</p>
+                    )}
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label>Rôle du client *</Label>
                   <RadioGroup 
