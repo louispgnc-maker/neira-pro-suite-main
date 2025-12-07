@@ -120,8 +120,8 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
   const accentBg = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
   // subtle mark-all button: on hover the text/background becomes slightly darker (not lighter)
   const accentSubtle = role === 'notaire'
-    ? 'text-orange-600 hover:text-orange-800 hover:bg-orange-100'
-    : 'text-blue-600 hover:text-blue-800 hover:bg-blue-100';
+    ? 'text-orange-600 hover:text-orange-700 bg-orange-50/50 hover:bg-orange-100/70 backdrop-blur-sm'
+    : 'text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-100/70 backdrop-blur-sm';
   const btnSizeClass = compact ? 'h-8 w-8 p-0 flex items-center justify-center rounded-md' : 'p-2 rounded-md';
 
   return (

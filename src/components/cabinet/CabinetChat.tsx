@@ -233,7 +233,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
       let query = supabase
         .from('cabinet_messages')
-        .select('id', { count: 'exact', head: true })
+        .select('*', { count: 'exact', head: true })
         .eq('cabinet_id', cabinetId)
         .neq('sender_id', user.id);
 
@@ -388,7 +388,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         .is('conversation_id', null)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       
       // Add general channel
       conversationsWithMembers.push({
@@ -423,7 +423,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             .eq('conversation_id', conv.id)
             .order('created_at', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
           conversationsWithMembers.push({
             id: conv.id,
@@ -453,7 +453,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           .or(`and(sender_id.eq.${user.id},recipient_id.eq.${member.user_id}),and(sender_id.eq.${member.user_id},recipient_id.eq.${user.id})`)
           .order('created_at', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
 
         conversationsWithMembers.push({
           id: `direct-${member.user_id}`,
@@ -567,7 +567,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               .from('profiles')
               .select('id, first_name, last_name, photo_url')
               .eq('id', newMsg.sender_id)
-              .single();
+              .maybeSingle();
 
             setMessages(prev => [...prev, {
               ...newMsg,
@@ -655,7 +655,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         .from('profiles')
         .select('id, first_name, last_name, photo_url')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       // Add message to UI immediately
       setMessages(prev => [...prev, {
@@ -1346,34 +1346,34 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[calc(100vh-300px)]">
-        {/* Sidebar: Conversations list */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[calc(100vh-300px)] mb-6">
+        {/* Sidebar: Conversations list */
         <Card className="md:col-span-1">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Conversations
-            </CardTitle>
-            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-              <DialogTrigger asChild>
-                <Button 
-                  size="sm" 
-                  variant="ghost"
-                  className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Nouvelle conversation</DialogTitle>
-                  <DialogDescription>
-                    Choisissez le type de conversation à créer
-                  </DialogDescription>
-                </DialogHeader>
-                
-                {!createMode ? (
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                Conversations
+              </CardTitle>
+              <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+                <DialogTrigger asChild>
+                  <Button 
+                    size="sm" 
+                    variant="ghost"
+                    className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Nouvelle conversation</DialogTitle>
+                    <DialogDescription>
+                      Choisissez le type de conversation à créer
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  {!createMode ? (
                   <div className="space-y-3">
                     <Button
                       variant="outline"
@@ -1696,7 +1696,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           })()}
         </CardContent>
       </Card>
-
+      }
       {/* Main chat area */}
       <Card className="md:col-span-3 flex flex-col h-full">
         <CardHeader>
@@ -1754,7 +1754,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {currentConversation?.is_group && !selectedConversation.startsWith('direct-') && selectedConversation !== 'general' ? (
             <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="flex-1 flex flex-col min-h-0">
-              <TabsList className="grid w-full grid-cols-5 mb-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="messages">Messages</TabsTrigger>
                 <TabsTrigger value="documents">Documents</TabsTrigger>
                 <TabsTrigger value="dossiers">Dossiers</TabsTrigger>
@@ -1764,7 +1764,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
               <TabsContent value="messages" className="flex-1 flex flex-col min-h-0 mt-0">
                 {/* Messages area with fixed height and scroll */}
-                <div className="overflow-y-auto mb-4 space-y-3 pr-2 flex-1" ref={scrollAreaRef}>
+                <div className="overflow-y-auto mb-4 space-y-3 pr-2" style={{ height: '500px' }} ref={scrollAreaRef}>
                   {messages.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-muted-foreground">
                       <p>Aucun message pour le moment</p>
@@ -1871,19 +1871,25 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 </div>
               </TabsContent>
 
-              <TabsContent value="documents" className="flex-1 overflow-y-auto mt-0">
-                <div className="space-y-4">
+              <TabsContent value="documents" className="flex-1 flex flex-col min-h-0 mt-0">
+                <div className="flex gap-2 mb-3">
                   <Button 
                     onClick={() => {
                       setShareType('document');
                       setShowShareDialog(true);
                     }}
-                    className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                    className={`${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
                   >
                     <Upload className="h-4 w-4 mr-2" />
-                    Ajouter un document
+                    Ajouter
                   </Button>
-                  
+                  <input
+                    type="text"
+                    placeholder="Rechercher un document..."
+                    className="flex-1 px-3 py-2 border rounded-md text-sm"
+                  />
+                </div>
+                <div className="flex-1 overflow-y-scroll">
                   {loadingResources ? (
                     <div className="text-sm text-muted-foreground text-center">Chargement...</div>
                   ) : conversationDocuments.length === 0 ? (
@@ -1935,19 +1941,25 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 </div>
               </TabsContent>
 
-              <TabsContent value="dossiers" className="flex-1 overflow-y-auto mt-0">
-                <div className="space-y-4">
+              <TabsContent value="dossiers" className="flex-1 flex flex-col min-h-0 mt-0">
+                <div className="flex gap-2 mb-3">
                   <Button 
                     onClick={() => {
                       setShareType('dossier');
                       setShowShareDialog(true);
                     }}
-                    className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                    className={`${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Ajouter un dossier
+                    Ajouter
                   </Button>
-                  
+                  <input
+                    type="text"
+                    placeholder="Rechercher un dossier..."
+                    className="flex-1 px-3 py-2 border rounded-md text-sm"
+                  />
+                </div>
+                <div className="flex-1 overflow-y-scroll space-y-2">
                   {loadingResources ? (
                     <div className="text-sm text-muted-foreground text-center">Chargement...</div>
                   ) : conversationDossiers.length === 0 ? (
@@ -1975,19 +1987,25 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 </div>
               </TabsContent>
 
-              <TabsContent value="clients" className="flex-1 overflow-y-auto mt-0">
-                <div className="space-y-4">
+              <TabsContent value="clients" className="flex-1 flex flex-col min-h-0 mt-0">
+                <div className="flex gap-2 mb-3">
                   <Button 
                     onClick={() => {
                       setShareType('client');
                       setShowShareDialog(true);
                     }}
-                    className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                    className={`${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
                   >
                     <UserPlus className="h-4 w-4 mr-2" />
-                    Ajouter un client
+                    Ajouter
                   </Button>
-                  
+                  <input
+                    type="text"
+                    placeholder="Rechercher un client..."
+                    className="flex-1 px-3 py-2 border rounded-md text-sm"
+                  />
+                </div>
+                <div className="flex-1 overflow-y-scroll space-y-2">
                   {loadingResources ? (
                     <div className="text-sm text-muted-foreground text-center">Chargement...</div>
                   ) : conversationClients.length === 0 ? (
@@ -2018,19 +2036,25 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                 </div>
               </TabsContent>
 
-              <TabsContent value="tasks" className="flex-1 overflow-y-auto mt-0">
-                <div className="space-y-4">
+              <TabsContent value="tasks" className="flex-1 flex flex-col min-h-0 mt-0">
+                <div className="flex gap-2 mb-3">
                   <Button 
                     onClick={() => {
                       setShareType('task');
                       setShowShareDialog(true);
                     }}
-                    className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                    className={`${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Créer une tâche
+                    Créer
                   </Button>
-                  
+                  <input
+                    type="text"
+                    placeholder="Rechercher une tâche..."
+                    className="flex-1 px-3 py-2 border rounded-md text-sm"
+                  />
+                </div>
+                <div className="flex-1 overflow-y-scroll space-y-2">
                   {loadingResources ? (
                     <div className="text-sm text-muted-foreground text-center">Chargement...</div>
                   ) : conversationTasks.length === 0 ? (
@@ -2069,7 +2093,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           ) : (
             <>
               {/* Messages area with fixed height and scroll */}
-              <div className="overflow-y-auto mb-4 space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 450px)' }} ref={scrollAreaRef}>
+              <div className="overflow-y-scroll mb-4 space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 450px)' }} ref={scrollAreaRef}>
             {!selectedConversation ? (
               <div className="flex items-center justify-center h-full text-muted-foreground">
                 <p>Sélectionnez une conversation pour commencer</p>
