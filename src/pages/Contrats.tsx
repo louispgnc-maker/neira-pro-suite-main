@@ -34,6 +34,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
 
@@ -72,6 +81,47 @@ export default function Contrats() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Tous");
   const [debounced, setDebounced] = useState("");
+
+  // Dialog questionnaire pour compromis de vente
+  const [showQuestionDialog, setShowQuestionDialog] = useState(false);
+  const [pendingContractType, setPendingContractType] = useState<string>("");
+  const [pendingCategory, setPendingCategory] = useState<string>("");
+  const [questionnaireData, setQuestionnaireData] = useState({
+    // Informations sur le bien
+    adresseBien: "",
+    typeBien: "",
+    surfaceHabitable: "",
+    nombrePieces: "",
+    
+    // Informations vendeur
+    nomVendeur: "",
+    prenomVendeur: "",
+    adresseVendeur: "",
+    
+    // Informations acquéreur
+    nomAcquereur: "",
+    prenomAcquereur: "",
+    adresseAcquereur: "",
+    
+    // Conditions financières
+    prixVente: "",
+    depotGarantie: "",
+    modalitesPaiement: "",
+    
+    // Conditions suspensives
+    conditionPret: "",
+    conditionDiagnostics: "",
+    autresConditions: "",
+    
+    // Délais
+    dateSignatureActeDefinitif: "",
+    delaiReflexion: "",
+    
+    // Informations complémentaires
+    chargesCopr opriete: "",
+    travauxAPrevenir: "",
+    autresInformations: "",
+  });
 
   const navigate = useNavigate();
 
@@ -135,6 +185,16 @@ export default function Contrats() {
       toast.error("Connexion requise");
       return;
     }
+    
+    // Si c'est un compromis de vente immobilier, ouvrir le questionnaire
+    if (contractType === "Compromis de vente / Promesse unilatérale de vente" && categoryKey === "Immobilier") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Sinon, créer directement le contrat
     try {
       const { data, error } = await supabase
         .from('contrats')
@@ -150,6 +210,101 @@ export default function Contrats() {
 
       if (error) throw error;
       toast.success('Contrat créé', { description: contractType });
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création contrat:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  const handleQuestionnaireSubmit = async () => {
+    if (!user) return;
+    
+    try {
+      // Créer le contrat avec les données du questionnaire en description
+      const descriptionData = `
+INFORMATIONS SUR LE BIEN:
+- Adresse: ${questionnaireData.adresseBien}
+- Type de bien: ${questionnaireData.typeBien}
+- Surface habitable: ${questionnaireData.surfaceHabitable}
+- Nombre de pièces: ${questionnaireData.nombrePieces}
+
+VENDEUR:
+- Nom: ${questionnaireData.nomVendeur}
+- Prénom: ${questionnaireData.prenomVendeur}
+- Adresse: ${questionnaireData.adresseVendeur}
+
+ACQUÉREUR:
+- Nom: ${questionnaireData.nomAcquereur}
+- Prénom: ${questionnaireData.prenomAcquereur}
+- Adresse: ${questionnaireData.adresseAcquereur}
+
+CONDITIONS FINANCIÈRES:
+- Prix de vente: ${questionnaireData.prixVente}
+- Dépôt de garantie: ${questionnaireData.depotGarantie}
+- Modalités de paiement: ${questionnaireData.modalitesPaiement}
+
+CONDITIONS SUSPENSIVES:
+- Condition de prêt: ${questionnaireData.conditionPret}
+- Diagnostics: ${questionnaireData.conditionDiagnostics}
+- Autres conditions: ${questionnaireData.autresConditions}
+
+DÉLAIS:
+- Date signature acte définitif: ${questionnaireData.dateSignatureActeDefinitif}
+- Délai de réflexion: ${questionnaireData.delaiReflexion}
+
+INFORMATIONS COMPLÉMENTAIRES:
+- Charges de copropriété: ${questionnaireData.chargesCopropriete}
+- Travaux à prévoir: ${questionnaireData.travauxAPrevenir}
+- Autres informations: ${questionnaireData.autresInformations}
+      `.trim();
+
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: descriptionData,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success('Contrat créé avec succès', { 
+        description: 'Les informations ont été enregistrées et pourront être utilisées pour générer le document'
+      });
+      
+      setShowQuestionDialog(false);
+      // Réinitialiser le questionnaire
+      setQuestionnaireData({
+        adresseBien: "",
+        typeBien: "",
+        surfaceHabitable: "",
+        nombrePieces: "",
+        nomVendeur: "",
+        prenomVendeur: "",
+        adresseVendeur: "",
+        nomAcquereur: "",
+        prenomAcquereur: "",
+        adresseAcquereur: "",
+        prixVente: "",
+        depotGarantie: "",
+        modalitesPaiement: "",
+        conditionPret: "",
+        conditionDiagnostics: "",
+        autresConditions: "",
+        dateSignatureActeDefinitif: "",
+        delaiReflexion: "",
+        chargesCopropriete: "",
+        travauxAPrevenir: "",
+        autresInformations: "",
+      });
+      
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création contrat:', err);
@@ -415,6 +570,286 @@ export default function Contrats() {
           </>
         )}
       </div>
+
+      {/* Dialog questionnaire pour compromis de vente */}
+      <Dialog open={showQuestionDialog} onOpenChange={setShowQuestionDialog}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Informations pour le compromis de vente</DialogTitle>
+            <DialogDescription>
+              Remplissez les informations suivantes pour préparer le document. Ces informations aideront l'IA à rédiger un contrat personnalisé.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 mt-4">
+            {/* Informations sur le bien */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Informations sur le bien</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="adresseBien">Adresse complète du bien *</Label>
+                  <Input 
+                    id="adresseBien"
+                    value={questionnaireData.adresseBien}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseBien: e.target.value})}
+                    placeholder="Ex: 12 rue de la Paix, 75002 Paris"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="typeBien">Type de bien *</Label>
+                  <Select value={questionnaireData.typeBien} onValueChange={(value) => setQuestionnaireData({...questionnaireData, typeBien: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="appartement">Appartement</SelectItem>
+                      <SelectItem value="maison">Maison</SelectItem>
+                      <SelectItem value="terrain">Terrain</SelectItem>
+                      <SelectItem value="immeuble">Immeuble</SelectItem>
+                      <SelectItem value="local_commercial">Local commercial</SelectItem>
+                      <SelectItem value="parking">Parking/Garage</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="surfaceHabitable">Surface habitable (m²) *</Label>
+                  <Input 
+                    id="surfaceHabitable"
+                    type="number"
+                    value={questionnaireData.surfaceHabitable}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, surfaceHabitable: e.target.value})}
+                    placeholder="Ex: 75"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nombrePieces">Nombre de pièces</Label>
+                  <Input 
+                    id="nombrePieces"
+                    type="number"
+                    value={questionnaireData.nombrePieces}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, nombrePieces: e.target.value})}
+                    placeholder="Ex: 3"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Informations vendeur */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Vendeur</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nomVendeur">Nom *</Label>
+                  <Input 
+                    id="nomVendeur"
+                    value={questionnaireData.nomVendeur}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, nomVendeur: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prenomVendeur">Prénom *</Label>
+                  <Input 
+                    id="prenomVendeur"
+                    value={questionnaireData.prenomVendeur}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, prenomVendeur: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="adresseVendeur">Adresse complète *</Label>
+                  <Input 
+                    id="adresseVendeur"
+                    value={questionnaireData.adresseVendeur}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseVendeur: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Informations acquéreur */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Acquéreur</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nomAcquereur">Nom *</Label>
+                  <Input 
+                    id="nomAcquereur"
+                    value={questionnaireData.nomAcquereur}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, nomAcquereur: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prenomAcquereur">Prénom *</Label>
+                  <Input 
+                    id="prenomAcquereur"
+                    value={questionnaireData.prenomAcquereur}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, prenomAcquereur: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="adresseAcquereur">Adresse complète *</Label>
+                  <Input 
+                    id="adresseAcquereur"
+                    value={questionnaireData.adresseAcquereur}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseAcquereur: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Conditions financières */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Conditions financières</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prixVente">Prix de vente (€) *</Label>
+                  <Input 
+                    id="prixVente"
+                    type="number"
+                    value={questionnaireData.prixVente}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, prixVente: e.target.value})}
+                    placeholder="Ex: 350000"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="depotGarantie">Dépôt de garantie (€)</Label>
+                  <Input 
+                    id="depotGarantie"
+                    type="number"
+                    value={questionnaireData.depotGarantie}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, depotGarantie: e.target.value})}
+                    placeholder="Ex: 35000"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="modalitesPaiement">Modalités de paiement</Label>
+                  <Textarea 
+                    id="modalitesPaiement"
+                    rows={2}
+                    value={questionnaireData.modalitesPaiement}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, modalitesPaiement: e.target.value})}
+                    placeholder="Décrivez les modalités de paiement (comptant, crédit, etc.)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Conditions suspensives */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Conditions suspensives</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="conditionPret">Condition d'obtention de prêt</Label>
+                  <Textarea 
+                    id="conditionPret"
+                    rows={2}
+                    value={questionnaireData.conditionPret}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, conditionPret: e.target.value})}
+                    placeholder="Ex: Obtention d'un prêt de 280 000 € dans un délai de 45 jours"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="conditionDiagnostics">Diagnostics et contrôles techniques</Label>
+                  <Textarea 
+                    id="conditionDiagnostics"
+                    rows={2}
+                    value={questionnaireData.conditionDiagnostics}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, conditionDiagnostics: e.target.value})}
+                    placeholder="Ex: DPE, diagnostic amiante, plomb, termites..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="autresConditions">Autres conditions suspensives</Label>
+                  <Textarea 
+                    id="autresConditions"
+                    rows={2}
+                    value={questionnaireData.autresConditions}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, autresConditions: e.target.value})}
+                    placeholder="Autres conditions éventuelles"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Délais */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Délais</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="dateSignatureActeDefinitif">Date prévue signature acte définitif</Label>
+                  <Input 
+                    id="dateSignatureActeDefinitif"
+                    type="date"
+                    value={questionnaireData.dateSignatureActeDefinitif}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, dateSignatureActeDefinitif: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="delaiReflexion">Délai de rétractation (jours)</Label>
+                  <Input 
+                    id="delaiReflexion"
+                    type="number"
+                    value={questionnaireData.delaiReflexion}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, delaiReflexion: e.target.value})}
+                    placeholder="Ex: 10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Informations complémentaires */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Informations complémentaires</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="chargesCopropriete">Charges de copropriété (si applicable)</Label>
+                  <Textarea 
+                    id="chargesCopropriete"
+                    rows={2}
+                    value={questionnaireData.chargesCopropriete}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, chargesCopropriete: e.target.value})}
+                    placeholder="Montant annuel, répartition, détails..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="travauxAPrevenir">Travaux à prévoir</Label>
+                  <Textarea 
+                    id="travauxAPrevenir"
+                    rows={2}
+                    value={questionnaireData.travauxAPrevenir}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, travauxAPrevenir: e.target.value})}
+                    placeholder="Description des travaux prévus ou nécessaires"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="autresInformations">Autres informations utiles</Label>
+                  <Textarea 
+                    id="autresInformations"
+                    rows={3}
+                    value={questionnaireData.autresInformations}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, autresInformations: e.target.value})}
+                    placeholder="Toute information complémentaire pertinente pour le contrat"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowQuestionDialog(false)}
+            >
+              Annuler
+            </Button>
+            <Button 
+              className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
+              onClick={handleQuestionnaireSubmit}
+            >
+              Créer le contrat
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
