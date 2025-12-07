@@ -1346,7 +1346,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[calc(100vh-300px)] mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[calc(100vh-350px)] mb-4">
         {/* Sidebar: Conversations list */
         <Card className="md:col-span-1">
           <CardHeader className="pb-3">
