@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { ShareToCollaborativeDialog } from "@/components/cabinet/ShareToCollaborativeDialog";
 
@@ -86,6 +87,7 @@ export default function Contrats() {
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [pendingContractType, setPendingContractType] = useState<string>("");
   const [pendingCategory, setPendingCategory] = useState<string>("");
+  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string}>>([]);
   const [questionnaireData, setQuestionnaireData] = useState({
     // Informations sur le bien
     adresseBien: "",
@@ -93,15 +95,14 @@ export default function Contrats() {
     surfaceHabitable: "",
     nombrePieces: "",
     
-    // Informations vendeur
-    nomVendeur: "",
-    prenomVendeur: "",
-    adresseVendeur: "",
+    // Client et son rôle
+    clientId: "",
+    clientRole: "", // "acheteur" ou "vendeur"
     
-    // Informations acquéreur
-    nomAcquereur: "",
-    prenomAcquereur: "",
-    adresseAcquereur: "",
+    // Informations autre partie (saisie manuelle)
+    nomAutrePartie: "",
+    prenomAutrePartie: "",
+    adresseAutrePartie: "",
     
     // Conditions financières
     prixVente: "",
@@ -145,6 +146,28 @@ export default function Contrats() {
   const menuItemClass = role === 'notaire' ? 'focus:bg-orange-600 focus:text-white hover:bg-orange-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white';
   const selectContentClass = role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200';
   const selectItemClass = role === 'notaire' ? 'cursor-pointer hover:bg-orange-600 hover:text-white' : 'cursor-pointer hover:bg-blue-600 hover:text-white';
+
+  // Charger les clients
+  useEffect(() => {
+    let isMounted = true;
+    async function loadClients() {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, nom, prenom, adresse')
+        .eq('owner_id', user.id)
+        .eq('role', role)
+        .order('nom', { ascending: true });
+      
+      if (error) {
+        console.error('Erreur chargement clients:', error);
+      } else if (isMounted && data) {
+        setClients(data);
+      }
+    }
+    loadClients();
+    return () => { isMounted = false; };
+  }, [user, role]);
 
   useEffect(() => {
     let isMounted = true;
@@ -222,6 +245,39 @@ export default function Contrats() {
     if (!user) return;
     
     try {
+      // Récupérer les infos du client sélectionné
+      const selectedClient = clients.find(c => c.id === questionnaireData.clientId);
+      if (!selectedClient) {
+        toast.error('Veuillez sélectionner un client');
+        return;
+      }
+
+      // Déterminer qui est le vendeur et qui est l'acquéreur
+      const isClientAcheteur = questionnaireData.clientRole === "acheteur";
+      const vendeurInfo = isClientAcheteur 
+        ? {
+            nom: questionnaireData.nomAutrePartie,
+            prenom: questionnaireData.prenomAutrePartie,
+            adresse: questionnaireData.adresseAutrePartie
+          }
+        : {
+            nom: selectedClient.nom,
+            prenom: selectedClient.prenom,
+            adresse: selectedClient.adresse
+          };
+      
+      const acquereurInfo = isClientAcheteur
+        ? {
+            nom: selectedClient.nom,
+            prenom: selectedClient.prenom,
+            adresse: selectedClient.adresse
+          }
+        : {
+            nom: questionnaireData.nomAutrePartie,
+            prenom: questionnaireData.prenomAutrePartie,
+            adresse: questionnaireData.adresseAutrePartie
+          };
+
       // Créer le contrat avec les données du questionnaire en description
       const descriptionData = `
 INFORMATIONS SUR LE BIEN:
@@ -231,14 +287,14 @@ INFORMATIONS SUR LE BIEN:
 - Nombre de pièces: ${questionnaireData.nombrePieces}
 
 VENDEUR:
-- Nom: ${questionnaireData.nomVendeur}
-- Prénom: ${questionnaireData.prenomVendeur}
-- Adresse: ${questionnaireData.adresseVendeur}
+- Nom: ${vendeurInfo.nom}
+- Prénom: ${vendeurInfo.prenom}
+- Adresse: ${vendeurInfo.adresse}
 
 ACQUÉREUR:
-- Nom: ${questionnaireData.nomAcquereur}
-- Prénom: ${questionnaireData.prenomAcquereur}
-- Adresse: ${questionnaireData.adresseAcquereur}
+- Nom: ${acquereurInfo.nom}
+- Prénom: ${acquereurInfo.prenom}
+- Adresse: ${acquereurInfo.adresse}
 
 CONDITIONS FINANCIÈRES:
 - Prix de vente: ${questionnaireData.prixVente}
@@ -286,12 +342,11 @@ INFORMATIONS COMPLÉMENTAIRES:
         typeBien: "",
         surfaceHabitable: "",
         nombrePieces: "",
-        nomVendeur: "",
-        prenomVendeur: "",
-        adresseVendeur: "",
-        nomAcquereur: "",
-        prenomAcquereur: "",
-        adresseAcquereur: "",
+        clientId: "",
+        clientRole: "",
+        nomAutrePartie: "",
+        prenomAutrePartie: "",
+        adresseAutrePartie: "",
         prixVente: "",
         depotGarantie: "",
         modalitesPaiement: "",
@@ -634,63 +689,75 @@ INFORMATIONS COMPLÉMENTAIRES:
               </div>
             </div>
 
-            {/* Informations vendeur */}
+            {/* Informations client */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Vendeur</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Client</h3>
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nomVendeur">Nom *</Label>
-                  <Input 
-                    id="nomVendeur"
-                    value={questionnaireData.nomVendeur}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, nomVendeur: e.target.value})}
-                  />
+                  <Label htmlFor="clientId">Sélectionner un client *</Label>
+                  <Select 
+                    value={questionnaireData.clientId}
+                    onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientId: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir un client" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clients.map((client) => (
+                        <SelectItem key={client.id} value={client.id}>
+                          {client.nom} {client.prenom}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="prenomVendeur">Prénom *</Label>
-                  <Input 
-                    id="prenomVendeur"
-                    value={questionnaireData.prenomVendeur}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, prenomVendeur: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="adresseVendeur">Adresse complète *</Label>
-                  <Input 
-                    id="adresseVendeur"
-                    value={questionnaireData.adresseVendeur}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseVendeur: e.target.value})}
-                  />
+                  <Label>Rôle du client *</Label>
+                  <RadioGroup 
+                    value={questionnaireData.clientRole}
+                    onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientRole: value})}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="acheteur" id="acheteur" />
+                      <Label htmlFor="acheteur" className="cursor-pointer">Acheteur</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="vendeur" id="vendeur" />
+                      <Label htmlFor="vendeur" className="cursor-pointer">Vendeur</Label>
+                    </div>
+                  </RadioGroup>
                 </div>
               </div>
             </div>
 
-            {/* Informations acquéreur */}
+            {/* Informations autre partie */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Acquéreur</h3>
+              <h3 className="font-semibold text-lg border-b pb-2">
+                {questionnaireData.clientRole === "acheteur" ? "Vendeur" : "Acquéreur"}
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nomAcquereur">Nom *</Label>
+                  <Label htmlFor="nomAutrePartie">Nom *</Label>
                   <Input 
-                    id="nomAcquereur"
-                    value={questionnaireData.nomAcquereur}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, nomAcquereur: e.target.value})}
+                    id="nomAutrePartie"
+                    value={questionnaireData.nomAutrePartie}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, nomAutrePartie: e.target.value})}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="prenomAcquereur">Prénom *</Label>
+                  <Label htmlFor="prenomAutrePartie">Prénom *</Label>
                   <Input 
-                    id="prenomAcquereur"
-                    value={questionnaireData.prenomAcquereur}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, prenomAcquereur: e.target.value})}
+                    id="prenomAutrePartie"
+                    value={questionnaireData.prenomAutrePartie}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, prenomAutrePartie: e.target.value})}
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="adresseAcquereur">Adresse complète *</Label>
+                  <Label htmlFor="adresseAutrePartie">Adresse complète *</Label>
                   <Input 
-                    id="adresseAcquereur"
-                    value={questionnaireData.adresseAcquereur}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseAcquereur: e.target.value})}
+                    id="adresseAutrePartie"
+                    value={questionnaireData.adresseAutrePartie}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseAutrePartie: e.target.value})}
                   />
                 </div>
               </div>
