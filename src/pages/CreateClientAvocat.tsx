@@ -247,7 +247,6 @@ export default function CreateClientAvocat() {
         preference_communication: modeContact || 'email',
         notes: notes || null,
         consentement_rgpd: consentementRGPD,
-        acceptation_cgu: acceptationCGU,
         acceptation_conservation: acceptationConservation,
         autorisation_contact: autorisationContact,
         signature_mandat: signatureMandat,
