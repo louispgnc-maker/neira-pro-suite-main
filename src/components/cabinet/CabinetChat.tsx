@@ -1348,7 +1348,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[calc(100vh-350px)] mb-4">
         {/* Sidebar: Conversations list */
-        <Card className="md:col-span-1">
+        <Card className="md:col-span-1 h-full flex flex-col">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm flex items-center gap-2">
