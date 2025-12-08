@@ -88,6 +88,15 @@ export default function Contrats() {
   const [pendingContractType, setPendingContractType] = useState<string>("");
   const [pendingCategory, setPendingCategory] = useState<string>("");
   const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string}>>([]);
+
+  // States pour les fichiers uploadés
+  const [compromisIdentiteFiles, setCompromisIdentiteFiles] = useState<File[]>([]);
+  const [compromisDiagnosticsFiles, setCompromisDiagnosticsFiles] = useState<File[]>([]);
+  const [acteIdentiteFiles, setActeIdentiteFiles] = useState<File[]>([]);
+  const [acteDiagnosticsFiles, setActeDiagnosticsFiles] = useState<File[]>([]);
+  const [locataireDocsFiles, setLocataireDocsFiles] = useState<File[]>([]);
+  const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
+  const [bailDiagnosticsFiles, setBailDiagnosticsFiles] = useState<File[]>([]);
   
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
@@ -1965,8 +1974,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
                       if (files.length > 0) {
-                        toast.success(`${files.length} pièce(s) d'identité ajoutée(s)`);
+                        setCompromisIdentiteFiles(prev => [...prev, ...files]);
+                        toast.success(`${files.length} fichier(s) ajouté(s)`);
                       }
+                      e.target.value = '';
                     }}
                   />
                   <label htmlFor="compromis-identite-upload" className="cursor-pointer flex items-center gap-3">
@@ -1981,6 +1992,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     </div>
                   </label>
                 </div>
+                {compromisIdentiteFiles.length > 0 && (
+                  <div className="space-y-2 mt-2">
+                    {compromisIdentiteFiles.map((file, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                        <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="text-sm flex-1 truncate">{file.name}</span>
+                        <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => setCompromisIdentiteFiles(prev => prev.filter((_, i) => i !== index))}
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -2258,8 +2293,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       onChange={(e) => {
                         const files = Array.from(e.target.files || []);
                         if (files.length > 0) {
-                          toast.success(`${files.length} diagnostic(s) joint(s)`);
+                          setCompromisDiagnosticsFiles(prev => [...prev, ...files]);
+                          toast.success(`${files.length} fichier(s) ajouté(s)`);
                         }
+                        e.target.value = '';
                       }}
                     />
                     <label htmlFor="compromis-diagnostics-upload" className="cursor-pointer flex items-center gap-3">
@@ -2274,6 +2311,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       </div>
                     </label>
                   </div>
+                  {compromisDiagnosticsFiles.length > 0 && (
+                    <div className="space-y-2 mt-2">
+                      {compromisDiagnosticsFiles.map((file, index) => (
+                        <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                          <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="text-sm flex-1 truncate">{file.name}</span>
+                          <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                            onClick={() => setCompromisDiagnosticsFiles(prev => prev.filter((_, i) => i !== index))}
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="autresConditions">Autres conditions suspensives</Label>
@@ -2706,8 +2767,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         onChange={(e) => {
                           const files = Array.from(e.target.files || []);
                           if (files.length > 0) {
-                            toast.success(`${files.length} pièce(s) d'identité ajoutée(s)`);
+                            setActeIdentiteFiles(prev => [...prev, ...files]);
+                            toast.success(`${files.length} fichier(s) ajouté(s)`);
                           }
+                          e.target.value = '';
                         }}
                       />
                       <label htmlFor="acte-identite-upload" className="cursor-pointer flex items-center gap-3">
@@ -2722,6 +2785,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         </div>
                       </label>
                     </div>
+                    {acteIdentiteFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {acteIdentiteFiles.map((file, index) => (
+                          <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                            <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span className="text-sm flex-1 truncate">{file.name}</span>
+                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={() => setActeIdentiteFiles(prev => prev.filter((_, i) => i !== index))}
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -2975,8 +3062,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         onChange={(e) => {
                           const files = Array.from(e.target.files || []);
                           if (files.length > 0) {
-                            toast.success(`${files.length} document(s) sélectionné(s): ${files.map(f => f.name).join(', ')}`);
+                            setActeDiagnosticsFiles(prev => [...prev, ...files]);
+                            toast.success(`${files.length} fichier(s) ajouté(s)`);
                           }
+                          e.target.value = '';
                         }}
                       />
                       <label htmlFor="acte-diagnostics-upload" className="cursor-pointer flex flex-col items-center gap-2">
@@ -2991,6 +3080,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         </div>
                       </label>
                     </div>
+                    {acteDiagnosticsFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {acteDiagnosticsFiles.map((file, index) => (
+                          <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                            <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span className="text-sm flex-1 truncate">{file.name}</span>
+                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={() => setActeDiagnosticsFiles(prev => prev.filter((_, i) => i !== index))}
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -3246,8 +3359,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         onChange={(e) => {
                           const files = Array.from(e.target.files || []);
                           if (files.length > 0) {
-                            toast.success(`${files.length} document(s) sélectionné(s)`);
+                            setLocataireDocsFiles(prev => [...prev, ...files]);
+                            toast.success(`${files.length} fichier(s) ajouté(s)`);
                           }
+                          e.target.value = '';
                         }}
                       />
                       <label htmlFor="locataire-docs-upload" className="cursor-pointer flex items-center gap-3">
@@ -3262,6 +3377,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         </div>
                       </label>
                     </div>
+                    {locataireDocsFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {locataireDocsFiles.map((file, index) => (
+                          <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                            <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span className="text-sm flex-1 truncate">{file.name}</span>
+                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={() => setLocataireDocsFiles(prev => prev.filter((_, i) => i !== index))}
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -3420,8 +3559,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                             onChange={(e) => {
                               const files = Array.from(e.target.files || []);
                               if (files.length > 0) {
-                                toast.success(`${files.length} document(s) du garant sélectionné(s)`);
+                                setGarantDocsFiles(prev => [...prev, ...files]);
+                                toast.success(`${files.length} fichier(s) ajouté(s)`);
                               }
+                              e.target.value = '';
                             }}
                           />
                           <label htmlFor="garant-docs-upload" className="cursor-pointer flex items-center gap-3">
@@ -3436,6 +3577,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                             </div>
                           </label>
                         </div>
+                        {garantDocsFiles.length > 0 && (
+                          <div className="space-y-2 mt-2">
+                            {garantDocsFiles.map((file, index) => (
+                              <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span className="text-sm flex-1 truncate">{file.name}</span>
+                                <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0"
+                                  onClick={() => setGarantDocsFiles(prev => prev.filter((_, i) => i !== index))}
+                                >
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -3588,8 +3753,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         onChange={(e) => {
                           const files = Array.from(e.target.files || []);
                           if (files.length > 0) {
-                            toast.success(`${files.length} fichier(s) sélectionné(s): ${files.map(f => f.name).join(', ')}`);
+                            setBailDiagnosticsFiles(prev => [...prev, ...files]);
+                            toast.success(`${files.length} fichier(s) ajouté(s)`);
                           }
+                          e.target.value = '';
                         }}
                       />
                       <label htmlFor="diagnostics-upload" className="cursor-pointer flex flex-col items-center gap-2">
@@ -3604,6 +3771,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         </div>
                       </label>
                     </div>
+                    {bailDiagnosticsFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {bailDiagnosticsFiles.map((file, index) => (
+                          <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                            <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span className="text-sm flex-1 truncate">{file.name}</span>
+                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={() => setBailDiagnosticsFiles(prev => prev.filter((_, i) => i !== index))}
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
