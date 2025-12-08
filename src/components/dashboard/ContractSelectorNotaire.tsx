@@ -112,6 +112,13 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
       return;
     }
 
+    // Si c'est un "Acte de vente immobilière", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Acte de vente immobilière") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('contrats')

@@ -281,6 +281,14 @@ export default function Contrats() {
       return;
     }
     
+    // Si c'est un acte de vente immobilière, ouvrir le questionnaire spécifique
+    if (contractType === "Acte de vente immobilière" && categoryKey === "Immobilier") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
     // Sinon, créer directement le contrat
     try {
       const { data, error } = await supabase
@@ -744,17 +752,24 @@ INFORMATIONS COMPLÉMENTAIRES:
         )}
       </div>
 
-      {/* Dialog questionnaire pour compromis de vente */}
+      {/* Dialog questionnaire pour compromis de vente / acte de vente */}
       <Dialog open={showQuestionDialog} onOpenChange={setShowQuestionDialog}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Informations pour le compromis de vente</DialogTitle>
+            <DialogTitle>
+              {pendingContractType === "Acte de vente immobilière" 
+                ? "Informations pour l'acte de vente immobilière" 
+                : "Informations pour le compromis de vente"}
+            </DialogTitle>
             <DialogDescription>
               Remplissez les informations suivantes pour préparer le document. Ces informations aideront l'IA à rédiger un contrat personnalisé.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 mt-4">
+            {/* Formulaire spécifique pour Compromis de vente */}
+            {pendingContractType === "Compromis de vente / Promesse unilatérale de vente" && (
+              <>
             {/* Choix du type de contrat */}
             <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
               <h3 className="font-semibold text-lg">Type de contrat *</h3>
@@ -1369,6 +1384,23 @@ INFORMATIONS COMPLÉMENTAIRES:
                 </div>
               </div>
             </div>
+          </>
+            )}
+
+            {/* Formulaire spécifique pour Acte de vente immobilière */}
+            {pendingContractType === "Acte de vente immobilière" && (
+              <>
+                {/* TODO: Ajouter le formulaire complet pour l'acte de vente */}
+                <div className="space-y-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
+                  <p className="text-sm text-amber-800">
+                    Le formulaire détaillé pour l'acte de vente immobilière est en cours de développement.
+                    Il comportera toutes les sections nécessaires : informations détaillées sur le bien, 
+                    références cadastrales, diagnostics, urbanisme, etc.
+                  </p>
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
