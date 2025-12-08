@@ -3852,7 +3852,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
             <Button 
               variant="outline"
-              className="hover:bg-transparent"
+              className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-50' : 'border-blue-600 text-blue-600 hover:bg-blue-50'}
               onClick={() => setShowQuestionDialog(false)}
             >
               Annuler
