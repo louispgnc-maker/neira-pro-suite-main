@@ -2128,20 +2128,12 @@ INFORMATIONS COMPLÉMENTAIRES
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="acte_vendeurStatut">Statut matrimonial *</Label>
-                      <Select 
+                      <Input 
+                        id="acte_vendeurStatut"
                         value={acteVenteData.vendeurStatutMatrimonial} 
-                        onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurStatutMatrimonial: value})}
-                        
-                      >
-                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="celibataire">Célibataire</SelectItem>
-                          <SelectItem value="marie">Marié</SelectItem>
-                          <SelectItem value="pacse">Pacsé</SelectItem>
-                          <SelectItem value="divorce">Divorcé</SelectItem>
-                          <SelectItem value="veuf">Veuf</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurStatutMatrimonial: e.target.value})}
+                        placeholder="Ex: Célibataire, Marié, Pacsé, Divorcé, Veuf"
+                      />
                     </div>
                     {(acteVenteData.vendeurStatutMatrimonial === "marie" || acteVenteData.vendeurStatutMatrimonial === "pacse") && (
                       <div className="space-y-2">
@@ -2250,20 +2242,12 @@ INFORMATIONS COMPLÉMENTAIRES
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="acte_acheteurStatut">Statut matrimonial *</Label>
-                      <Select 
+                      <Input 
+                        id="acte_acheteurStatut"
                         value={acteVenteData.acheteurStatutMatrimonial} 
-                        onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurStatutMatrimonial: value})}
-                        
-                      >
-                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="celibataire">Célibataire</SelectItem>
-                          <SelectItem value="marie">Marié</SelectItem>
-                          <SelectItem value="pacse">Pacsé</SelectItem>
-                          <SelectItem value="divorce">Divorcé</SelectItem>
-                          <SelectItem value="veuf">Veuf</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        onChange={(e) => setActeVenteData({...acteVenteData, acheteurStatutMatrimonial: e.target.value})}
+                        placeholder="Ex: Célibataire, Marié, Pacsé, Divorcé, Veuf"
+                      />
                     </div>
                     {(acteVenteData.acheteurStatutMatrimonial === "marie" || acteVenteData.acheteurStatutMatrimonial === "pacse") && (
                       <div className="space-y-2">
