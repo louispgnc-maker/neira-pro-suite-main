@@ -494,18 +494,20 @@ export default function Contrats() {
             .from('client_documents')
             .select('file_path, file_name, document_type')
             .eq('client_id', selectedClient.id)
-            .eq('document_type', 'piece_identite')
-            .order('created_at', { ascending: false })
-            .limit(1)
+            .order('uploaded_at', { ascending: false })
+            .limit(5) // Prendre les 5 plus récents
             .then(({ data: docs, error: docsError }) => {
               if (docsError) {
                 console.error('❌ Erreur recherche documents:', docsError);
                 setCompromisClientIdentiteUrl(null);
               } else if (docs && docs.length > 0) {
-                console.log('📄 Document trouvé dans client_documents:', docs[0].file_name);
+                console.log(`📄 ${docs.length} document(s) trouvé(s) pour ce client`);
+                // Chercher d'abord piece_identite, sinon prendre le premier
+                const idDoc = docs.find(d => d.document_type === 'piece_identite') || docs[0];
+                console.log('📄 Document sélectionné:', idDoc.file_name, '(type:', idDoc.document_type, ')');
                 supabase.storage
                   .from('documents')
-                  .createSignedUrl(docs[0].file_path, 3600)
+                  .createSignedUrl(idDoc.file_path, 3600)
                   .then(({ data, error }) => {
                     if (error) {
                       console.error('❌ Erreur chargement document:', error);
@@ -602,18 +604,20 @@ export default function Contrats() {
             .from('client_documents')
             .select('file_path, file_name, document_type')
             .eq('client_id', selectedClient.id)
-            .eq('document_type', 'piece_identite')
-            .order('created_at', { ascending: false })
-            .limit(1)
+            .order('uploaded_at', { ascending: false })
+            .limit(5) // Prendre les 5 plus récents
             .then(({ data: docs, error: docsError }) => {
               if (docsError) {
                 console.error('❌ Erreur recherche documents (acte):', docsError);
                 setActeClientIdentiteUrl(null);
               } else if (docs && docs.length > 0) {
-                console.log('📄 Document acte trouvé dans client_documents:', docs[0].file_name);
+                console.log(`📄 ${docs.length} document(s) acte trouvé(s) pour ce client`);
+                // Chercher d'abord piece_identite, sinon prendre le premier
+                const idDoc = docs.find(d => d.document_type === 'piece_identite') || docs[0];
+                console.log('📄 Document acte sélectionné:', idDoc.file_name, '(type:', idDoc.document_type, ')');
                 supabase.storage
                   .from('documents')
-                  .createSignedUrl(docs[0].file_path, 3600)
+                  .createSignedUrl(idDoc.file_path, 3600)
                   .then(({ data, error }) => {
                     if (error) {
                       console.error('❌ Erreur chargement document acte:', error);
