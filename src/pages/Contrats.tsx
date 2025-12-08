@@ -313,7 +313,7 @@ export default function Contrats() {
     return () => { isMounted = false; };
   }, [user, role]);
 
-  // Pré-remplir les informations du client sélectionné
+  // Pré-remplir les informations du client sélectionné (Compromis de vente)
   useEffect(() => {
     if (questionnaireData.clientId && clients.length > 0) {
       const selectedClient = clients.find(c => c.id === questionnaireData.clientId);
@@ -323,6 +323,38 @@ export default function Contrats() {
       }
     }
   }, [questionnaireData.clientId, clients]);
+
+  // Pré-remplir les informations du vendeur (Acte de vente)
+  useEffect(() => {
+    if (acteVenteData.vendeurClientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === acteVenteData.vendeurClientId);
+      if (selectedClient) {
+        setActeVenteData(prev => ({
+          ...prev,
+          vendeurDateNaissance: selectedClient.date_naissance || prev.vendeurDateNaissance,
+          vendeurLieuNaissance: selectedClient.lieu_naissance || prev.vendeurLieuNaissance,
+          vendeurNationalite: selectedClient.nationalite || prev.vendeurNationalite,
+          vendeurProfession: selectedClient.profession || prev.vendeurProfession,
+        }));
+      }
+    }
+  }, [acteVenteData.vendeurClientId, clients]);
+
+  // Pré-remplir les informations de l'acheteur (Acte de vente)
+  useEffect(() => {
+    if (acteVenteData.acheteurClientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === acteVenteData.acheteurClientId);
+      if (selectedClient) {
+        setActeVenteData(prev => ({
+          ...prev,
+          acheteurDateNaissance: selectedClient.date_naissance || prev.acheteurDateNaissance,
+          acheteurLieuNaissance: selectedClient.lieu_naissance || prev.acheteurLieuNaissance,
+          acheteurNationalite: selectedClient.nationalite || prev.acheteurNationalite,
+          acheteurProfession: selectedClient.profession || prev.acheteurProfession,
+        }));
+      }
+    }
+  }, [acteVenteData.acheteurClientId, clients]);
 
   // Détecter les paramètres URL pour ouvrir le questionnaire automatiquement
   useEffect(() => {
