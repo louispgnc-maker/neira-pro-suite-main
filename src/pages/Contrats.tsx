@@ -1213,156 +1213,6 @@ INFORMATIONS COMPLÉMENTAIRES
               </RadioGroup>
             </div>
 
-            {/* Informations sur le bien */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Informations sur le bien</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="adresseBien">Adresse complète du bien *</Label>
-                  <Input 
-                    id="adresseBien"
-                    value={questionnaireData.adresseBien}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseBien: e.target.value})}
-                    placeholder="Ex: 12 rue de la Paix, 75002 Paris"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="typeBien">Type de bien *</Label>
-                  <Select value={questionnaireData.typeBien} onValueChange={(value) => setQuestionnaireData({...questionnaireData, typeBien: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="appartement">Appartement</SelectItem>
-                      <SelectItem value="maison">Maison</SelectItem>
-                      <SelectItem value="terrain">Terrain</SelectItem>
-                      <SelectItem value="immeuble">Immeuble</SelectItem>
-                      <SelectItem value="local_commercial">Local commercial</SelectItem>
-                      <SelectItem value="parking">Parking/Garage</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="surfaceHabitable">Surface habitable (m²) *</Label>
-                  <Input 
-                    id="surfaceHabitable"
-                    type="number"
-                    value={questionnaireData.surfaceHabitable}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, surfaceHabitable: e.target.value})}
-                    placeholder="Ex: 75"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nombrePieces">Nombre de pièces</Label>
-                  <Input 
-                    id="nombrePieces"
-                    type="number"
-                    value={questionnaireData.nombrePieces}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, nombrePieces: e.target.value})}
-                    placeholder="Ex: 3"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="naturePropriete">Nature de la propriété *</Label>
-                  <Select value={questionnaireData.naturePropriete} onValueChange={(value) => setQuestionnaireData({...questionnaireData, naturePropriete: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pleine_propriete">Pleine propriété</SelectItem>
-                      <SelectItem value="usufruit">Usufruit</SelectItem>
-                      <SelectItem value="nue_propriete">Nue-propriété</SelectItem>
-                      <SelectItem value="indivision">Indivision</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="bienCopropriete">Bien en copropriété ? *</Label>
-                  <Select value={questionnaireData.bienCopropriete} onValueChange={(value) => setQuestionnaireData({...questionnaireData, bienCopropriete: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="oui">Oui</SelectItem>
-                      <SelectItem value="non">Non</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {questionnaireData.bienCopropriete === "oui" && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="numeroLot">Numéro de lot</Label>
-                      <Input 
-                        id="numeroLot"
-                        value={questionnaireData.numeroLot}
-                        onChange={(e) => setQuestionnaireData({...questionnaireData, numeroLot: e.target.value})}
-                        placeholder="Ex: 123"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="tantièmes">Tantièmes / Quote-part des parties communes</Label>
-                      <Input 
-                        id="tantièmes"
-                        value={questionnaireData.tantièmes}
-                        onChange={(e) => setQuestionnaireData({...questionnaireData, tantièmes: e.target.value})}
-                        placeholder="Ex: 150/10000"
-                      />
-                    </div>
-                  </>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="occupationBien">Occupation du bien *</Label>
-                  <Select value={questionnaireData.occupationBien} onValueChange={(value) => setQuestionnaireData({...questionnaireData, occupationBien: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="libre">Libre</SelectItem>
-                      <SelectItem value="occupe_vendeur">Occupé par le vendeur</SelectItem>
-                      <SelectItem value="occupe_locataire">Occupé par un locataire</SelectItem>
-                      <SelectItem value="bail_en_cours">Bail en cours</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="servitudesConnues">Servitudes connues ? *</Label>
-                  <Select value={questionnaireData.servitudesConnues} onValueChange={(value) => setQuestionnaireData({...questionnaireData, servitudesConnues: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="oui">Oui</SelectItem>
-                      <SelectItem value="non">Non</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {questionnaireData.servitudesConnues === "oui" && (
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="descriptionServitudes">Description des servitudes</Label>
-                    <Textarea 
-                      id="descriptionServitudes"
-                      value={questionnaireData.descriptionServitudes}
-                      onChange={(e) => setQuestionnaireData({...questionnaireData, descriptionServitudes: e.target.value})}
-                      placeholder="Décrivez les servitudes..."
-                      rows={3}
-                    />
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="bienLibre">Bien vendu libre de toute occupation à la signature ? *</Label>
-                  <Select value={questionnaireData.bienLibre} onValueChange={(value) => setQuestionnaireData({...questionnaireData, bienLibre: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="oui">Oui</SelectItem>
-                      <SelectItem value="non">Non</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
             {/* Sélection du rôle du client */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg border-b pb-2">Rôle du client</h3>
@@ -1729,6 +1579,156 @@ INFORMATIONS COMPLÉMENTAIRES
                     </div>
                   </>
                 )}
+              </div>
+            </div>
+
+            {/* Informations sur le bien */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">🏠 Informations sur le bien</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="adresseBien">Adresse complète du bien *</Label>
+                  <Input 
+                    id="adresseBien"
+                    value={questionnaireData.adresseBien}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseBien: e.target.value})}
+                    placeholder="Ex: 12 rue de la Paix, 75002 Paris"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="typeBien">Type de bien *</Label>
+                  <Select value={questionnaireData.typeBien} onValueChange={(value) => setQuestionnaireData({...questionnaireData, typeBien: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="appartement">Appartement</SelectItem>
+                      <SelectItem value="maison">Maison</SelectItem>
+                      <SelectItem value="terrain">Terrain</SelectItem>
+                      <SelectItem value="immeuble">Immeuble</SelectItem>
+                      <SelectItem value="local_commercial">Local commercial</SelectItem>
+                      <SelectItem value="parking">Parking/Garage</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="surfaceHabitable">Surface habitable (m²) *</Label>
+                  <Input 
+                    id="surfaceHabitable"
+                    type="number"
+                    value={questionnaireData.surfaceHabitable}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, surfaceHabitable: e.target.value})}
+                    placeholder="Ex: 75"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nombrePieces">Nombre de pièces</Label>
+                  <Input 
+                    id="nombrePieces"
+                    type="number"
+                    value={questionnaireData.nombrePieces}
+                    onChange={(e) => setQuestionnaireData({...questionnaireData, nombrePieces: e.target.value})}
+                    placeholder="Ex: 3"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="naturePropriete">Nature de la propriété *</Label>
+                  <Select value={questionnaireData.naturePropriete} onValueChange={(value) => setQuestionnaireData({...questionnaireData, naturePropriete: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pleine_propriete">Pleine propriété</SelectItem>
+                      <SelectItem value="usufruit">Usufruit</SelectItem>
+                      <SelectItem value="nue_propriete">Nue-propriété</SelectItem>
+                      <SelectItem value="indivision">Indivision</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bienCopropriete">Bien en copropriété ? *</Label>
+                  <Select value={questionnaireData.bienCopropriete} onValueChange={(value) => setQuestionnaireData({...questionnaireData, bienCopropriete: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {questionnaireData.bienCopropriete === "oui" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="numeroLot">Numéro de lot</Label>
+                      <Input 
+                        id="numeroLot"
+                        value={questionnaireData.numeroLot}
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, numeroLot: e.target.value})}
+                        placeholder="Ex: 123"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tantièmes">Tantièmes / Quote-part des parties communes</Label>
+                      <Input 
+                        id="tantièmes"
+                        value={questionnaireData.tantièmes}
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, tantièmes: e.target.value})}
+                        placeholder="Ex: 150/10000"
+                      />
+                    </div>
+                  </>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="occupationBien">Occupation du bien *</Label>
+                  <Select value={questionnaireData.occupationBien} onValueChange={(value) => setQuestionnaireData({...questionnaireData, occupationBien: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="libre">Libre</SelectItem>
+                      <SelectItem value="occupe_vendeur">Occupé par le vendeur</SelectItem>
+                      <SelectItem value="occupe_locataire">Occupé par un locataire</SelectItem>
+                      <SelectItem value="bail_en_cours">Bail en cours</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="servitudesConnues">Servitudes connues ? *</Label>
+                  <Select value={questionnaireData.servitudesConnues} onValueChange={(value) => setQuestionnaireData({...questionnaireData, servitudesConnues: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {questionnaireData.servitudesConnues === "oui" && (
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="descriptionServitudes">Description des servitudes</Label>
+                    <Textarea 
+                      id="descriptionServitudes"
+                      value={questionnaireData.descriptionServitudes}
+                      onChange={(e) => setQuestionnaireData({...questionnaireData, descriptionServitudes: e.target.value})}
+                      placeholder="Décrivez les servitudes..."
+                      rows={3}
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="bienLibre">Bien vendu libre de toute occupation à la signature ? *</Label>
+                  <Select value={questionnaireData.bienLibre} onValueChange={(value) => setQuestionnaireData({...questionnaireData, bienLibre: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
