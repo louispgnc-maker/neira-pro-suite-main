@@ -1297,18 +1297,12 @@ INFORMATIONS COMPLÉMENTAIRES
                     {/* Statut matrimonial du client vendeur */}
                     <div className="space-y-2">
                       <Label htmlFor="statutMatrimonialClient">Statut matrimonial *</Label>
-                      <Select value={questionnaireData.statutMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialClient: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="celibataire">Célibataire</SelectItem>
-                          <SelectItem value="marie">Marié</SelectItem>
-                          <SelectItem value="pacse">Pacsé</SelectItem>
-                          <SelectItem value="divorce">Divorcé</SelectItem>
-                          <SelectItem value="veuf">Veuf</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Input 
+                        id="statutMatrimonialClient"
+                        value={questionnaireData.statutMatrimonialClient} 
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, statutMatrimonialClient: e.target.value})}
+                        placeholder="Ex: Célibataire, Marié, Pacsé, Divorcé, Veuf"
+                      />
                     </div>
 
                     {(questionnaireData.statutMatrimonialClient === "marie" || questionnaireData.statutMatrimonialClient === "pacse") && (
@@ -1471,18 +1465,12 @@ INFORMATIONS COMPLÉMENTAIRES
                     {/* Statut matrimonial du client acheteur */}
                     <div className="space-y-2">
                       <Label htmlFor="statutMatrimonialClient">Statut matrimonial *</Label>
-                      <Select value={questionnaireData.statutMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialClient: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="celibataire">Célibataire</SelectItem>
-                          <SelectItem value="marie">Marié</SelectItem>
-                          <SelectItem value="pacse">Pacsé</SelectItem>
-                          <SelectItem value="divorce">Divorcé</SelectItem>
-                          <SelectItem value="veuf">Veuf</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Input 
+                        id="statutMatrimonialClient"
+                        value={questionnaireData.statutMatrimonialClient} 
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, statutMatrimonialClient: e.target.value})}
+                        placeholder="Ex: Célibataire, Marié, Pacsé, Divorcé, Veuf"
+                      />
                     </div>
 
                     {(questionnaireData.statutMatrimonialClient === "marie" || questionnaireData.statutMatrimonialClient === "pacse") && (
