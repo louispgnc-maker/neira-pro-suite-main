@@ -52,7 +52,8 @@ export const AVOCAT_CONTRACT_CATEGORIES = [
     label: "🏠 Droit immobilier (version avocat)",
     key: "Droit immobilier",
     contracts: [
-      "Bail d’habitation (vide, meublé)",
+      "Bail d'habitation vide",
+      "Bail d'habitation meublé",
       "Bail commercial",
       "État des lieux (annexe)",
       "Mise en demeure de payer le loyer / autres obligations",
@@ -113,6 +114,13 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
   const handleContractSelect = async (contractType: string, categoryKey: string) => {
     if (!user) {
       toast.error("Connexion requise");
+      return;
+    }
+
+    // Si c'est un "Bail d'habitation", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Bail d'habitation vide" || contractType === "Bail d'habitation meublé") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
       return;
     }
 

@@ -26,7 +26,8 @@ export const NOTAIRE_CONTRACT_CATEGORIES = [
     contracts: [
       "Compromis de vente / Promesse unilatérale de vente",
       "Acte de vente immobilière",
-      "Bail d'habitation (vide, meublé)",
+      "Bail d'habitation vide",
+      "Bail d'habitation meublé",
       "Bail commercial / professionnel",
       "Convention d'indivision",
       "Acte de mainlevée d'hypothèque",
@@ -114,6 +115,13 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
 
     // Si c'est un "Acte de vente immobilière", rediriger vers la page Contrats avec paramètres
     if (contractType === "Acte de vente immobilière") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
+    // Si c'est un "Bail d'habitation", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Bail d'habitation vide" || contractType === "Bail d'habitation meublé") {
       const basePath = role === 'notaire' ? '/notaires' : '/avocats';
       navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
       return;
