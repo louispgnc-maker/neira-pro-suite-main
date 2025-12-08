@@ -1953,6 +1953,35 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                   </>
                 )}
               </div>
+              <div className="space-y-2">
+                <Label>📎 Pièces d'identité des parties</Label>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                  <input
+                    type="file"
+                    accept="application/pdf,image/*"
+                    multiple
+                    className="hidden"
+                    id="compromis-identite-upload"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      if (files.length > 0) {
+                        toast.success(`${files.length} pièce(s) d'identité ajoutée(s)`);
+                      }
+                    }}
+                  />
+                  <label htmlFor="compromis-identite-upload" className="cursor-pointer flex items-center gap-3">
+                    <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Joindre les pièces d'identité</p>
+                      <p className="text-xs text-muted-foreground">Vendeur et acquéreur - PDF, images</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
             </div>
 
             {/* Informations sur le bien */}
@@ -2216,6 +2245,35 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     onChange={(e) => setQuestionnaireData({...questionnaireData, conditionDiagnostics: e.target.value})}
                     placeholder="Ex: DPE, diagnostic amiante, plomb, termites..."
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label>📎 Joindre les diagnostics</Label>
+                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      multiple
+                      className="hidden"
+                      id="compromis-diagnostics-upload"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        if (files.length > 0) {
+                          toast.success(`${files.length} diagnostic(s) joint(s)`);
+                        }
+                      }}
+                    />
+                    <label htmlFor="compromis-diagnostics-upload" className="cursor-pointer flex items-center gap-3">
+                      <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Ajouter des documents</p>
+                        <p className="text-xs text-muted-foreground">DPE, diagnostics, plans...</p>
+                      </div>
+                    </label>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="autresConditions">Autres conditions suspensives</Label>
@@ -2636,6 +2694,35 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       </div>
                     )}
                   </div>
+                  <div className="space-y-2">
+                    <Label>📎 Pièces d'identité vendeur et acquéreur</Label>
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                      <input
+                        type="file"
+                        accept="application/pdf,image/*"
+                        multiple
+                        className="hidden"
+                        id="acte-identite-upload"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 0) {
+                            toast.success(`${files.length} pièce(s) d'identité ajoutée(s)`);
+                          }
+                        }}
+                      />
+                      <label htmlFor="acte-identite-upload" className="cursor-pointer flex items-center gap-3">
+                        <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Joindre les pièces d'identité</p>
+                          <p className="text-xs text-muted-foreground">CNI, passeport, livret de famille - PDF, images</p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Informations sur le bien */}
@@ -2875,6 +2962,35 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                   <div className="space-y-2">
                     <Label htmlFor="acte_diagnostics">Diagnostics fournis</Label>
                     <Textarea id="acte_diagnostics" value={acteVenteData.diagnosticsFournis} onChange={(e) => setActeVenteData({...acteVenteData, diagnosticsFournis: e.target.value})} rows={4} placeholder="DPE, Amiante, Plomb, Termites, Électricité, Gaz, Assainissement, Loi Carrez, ERP, Audit énergétique..." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>📎 Joindre les diagnostics et documents obligatoires</Label>
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 hover:border-muted-foreground/50 transition-colors">
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        multiple
+                        className="hidden"
+                        id="acte-diagnostics-upload"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 0) {
+                            toast.success(`${files.length} document(s) sélectionné(s): ${files.map(f => f.name).join(', ')}`);
+                          }
+                        }}
+                      />
+                      <label htmlFor="acte-diagnostics-upload" className="cursor-pointer flex flex-col items-center gap-2">
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                          <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium">Cliquez pour parcourir</p>
+                          <p className="text-xs text-muted-foreground">DPE, diagnostics, titre de propriété, plans...</p>
+                        </div>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
@@ -3118,6 +3234,35 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Input type="number" value={bailHabitationData.nombreOccupants} onChange={(e) => setBailHabitationData({...bailHabitationData, nombreOccupants: e.target.value})} />
                     </div>
                   </div>
+                  <div className="space-y-2">
+                    <Label>📎 Documents du locataire (pièce d'identité, justificatifs de revenus)</Label>
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                      <input
+                        type="file"
+                        accept="application/pdf,image/*"
+                        multiple
+                        className="hidden"
+                        id="locataire-docs-upload"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 0) {
+                            toast.success(`${files.length} document(s) sélectionné(s)`);
+                          }
+                        }}
+                      />
+                      <label htmlFor="locataire-docs-upload" className="cursor-pointer flex items-center gap-3">
+                        <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Joindre les documents</p>
+                          <p className="text-xs text-muted-foreground">PDF, images acceptés</p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Logement */}
@@ -3263,6 +3408,35 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           </SelectContent>
                         </Select>
                       </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>📎 Documents du garant (pièce d'identité, justificatifs de revenus)</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                          <input
+                            type="file"
+                            accept="application/pdf,image/*"
+                            multiple
+                            className="hidden"
+                            id="garant-docs-upload"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              if (files.length > 0) {
+                                toast.success(`${files.length} document(s) du garant sélectionné(s)`);
+                              }
+                            }}
+                          />
+                          <label htmlFor="garant-docs-upload" className="cursor-pointer flex items-center gap-3">
+                            <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">Joindre les documents du garant</p>
+                              <p className="text-xs text-muted-foreground">PDF, images acceptés</p>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -3401,6 +3575,35 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <li>CREP - Plomb (si immeuble avant 1949)</li>
                       <li>Amiante (information obligatoire)</li>
                     </ul>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>📎 Joindre les diagnostics (PDF)</Label>
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 hover:border-muted-foreground/50 transition-colors">
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        multiple
+                        className="hidden"
+                        id="diagnostics-upload"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 0) {
+                            toast.success(`${files.length} fichier(s) sélectionné(s): ${files.map(f => f.name).join(', ')}`);
+                          }
+                        }}
+                      />
+                      <label htmlFor="diagnostics-upload" className="cursor-pointer flex flex-col items-center gap-2">
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                          <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium">Cliquez pour parcourir</p>
+                          <p className="text-xs text-muted-foreground">Depuis votre ordinateur ou espace Documents</p>
+                        </div>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
