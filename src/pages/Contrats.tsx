@@ -180,6 +180,23 @@ export default function Contrats() {
     }
   }, [questionnaireData.clientId, clients]);
 
+  // Détecter les paramètres URL pour ouvrir le questionnaire automatiquement
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const shouldCreate = params.get('create') === 'true';
+    const type = params.get('type');
+    const category = params.get('category');
+    
+    if (shouldCreate && type && category) {
+      setPendingContractType(type);
+      setPendingCategory(category);
+      setShowQuestionDialog(true);
+      
+      // Nettoyer l'URL
+      window.history.replaceState({}, '', location.pathname);
+    }
+  }, [location]);
+
   useEffect(() => {
     let isMounted = true;
     async function load() {

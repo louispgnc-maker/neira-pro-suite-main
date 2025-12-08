@@ -17,7 +17,7 @@ import { Search } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const NOTAIRE_CONTRACT_CATEGORIES = [
   {
@@ -78,6 +78,7 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
   const [search, setSearch] = useState("");
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -101,6 +102,13 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
   const handleContractSelect = async (contractType: string, categoryKey: string) => {
     if (!user) {
       toast.error("Connexion requise");
+      return;
+    }
+
+    // Si c'est un "Compromis de vente", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Compromis de vente / Promesse unilatérale de vente") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
       return;
     }
 
