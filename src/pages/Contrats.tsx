@@ -318,8 +318,10 @@ export default function Contrats() {
     if (questionnaireData.clientId && clients.length > 0) {
       const selectedClient = clients.find(c => c.id === questionnaireData.clientId);
       if (selectedClient) {
-        // Les informations du client sont déjà affichées via la sélection
-        // Pas besoin de modifier questionnaireData ici car les infos sont récupérées dans handleQuestionnaireSubmit
+        setQuestionnaireData(prev => ({
+          ...prev,
+          statutMatrimonialClient: selectedClient.situation_matrimoniale || prev.statutMatrimonialClient,
+        }));
       }
     }
   }, [questionnaireData.clientId, clients]);
