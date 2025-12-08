@@ -473,7 +473,7 @@ export default function Contrats() {
 
         // Charger le document d'identité du client si disponible
         if (selectedClient.id_doc_path) {
-          console.log('✅ Chargement du document depuis:', selectedClient.id_doc_path);
+          console.log('✅ Chargement du document depuis id_doc_path:', selectedClient.id_doc_path);
           // Générer l'URL signée pour accéder au document
           supabase.storage
             .from('documents')
@@ -488,8 +488,38 @@ export default function Contrats() {
               }
             });
         } else {
-          console.log('⚠️ Aucun id_doc_path pour ce client');
-          setCompromisClientIdentiteUrl(null);
+          // Chercher dans client_documents si pas de id_doc_path
+          console.log('🔍 Recherche dans client_documents pour client:', selectedClient.id);
+          supabase
+            .from('client_documents')
+            .select('file_path, file_name, document_type')
+            .eq('client_id', selectedClient.id)
+            .eq('document_type', 'piece_identite')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .then(({ data: docs, error: docsError }) => {
+              if (docsError) {
+                console.error('❌ Erreur recherche documents:', docsError);
+                setCompromisClientIdentiteUrl(null);
+              } else if (docs && docs.length > 0) {
+                console.log('📄 Document trouvé dans client_documents:', docs[0].file_name);
+                supabase.storage
+                  .from('documents')
+                  .createSignedUrl(docs[0].file_path, 3600)
+                  .then(({ data, error }) => {
+                    if (error) {
+                      console.error('❌ Erreur chargement document:', error);
+                      setCompromisClientIdentiteUrl(null);
+                    } else if (data?.signedUrl) {
+                      console.log('✅ Document client_documents chargé avec succès');
+                      setCompromisClientIdentiteUrl(data.signedUrl);
+                    }
+                  });
+              } else {
+                console.log('⚠️ Aucun document trouvé dans client_documents');
+                setCompromisClientIdentiteUrl(null);
+              }
+            });
         }
       }
     } else {
@@ -551,7 +581,7 @@ export default function Contrats() {
       console.log('📄 id_doc_path acte:', selectedClient?.id_doc_path);
       
       if (selectedClient?.id_doc_path) {
-        console.log('✅ Chargement document acte depuis:', selectedClient.id_doc_path);
+        console.log('✅ Chargement document acte depuis id_doc_path:', selectedClient.id_doc_path);
         supabase.storage
           .from('documents')
           .createSignedUrl(selectedClient.id_doc_path, 3600)
@@ -565,8 +595,42 @@ export default function Contrats() {
             }
           });
       } else {
-        console.log('⚠️ Aucun id_doc_path pour ce client (acte)');
-        setActeClientIdentiteUrl(null);
+        // Chercher dans client_documents si pas de id_doc_path
+        console.log('🔍 Recherche dans client_documents pour client (acte):', selectedClient?.id);
+        if (selectedClient?.id) {
+          supabase
+            .from('client_documents')
+            .select('file_path, file_name, document_type')
+            .eq('client_id', selectedClient.id)
+            .eq('document_type', 'piece_identite')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .then(({ data: docs, error: docsError }) => {
+              if (docsError) {
+                console.error('❌ Erreur recherche documents (acte):', docsError);
+                setActeClientIdentiteUrl(null);
+              } else if (docs && docs.length > 0) {
+                console.log('📄 Document acte trouvé dans client_documents:', docs[0].file_name);
+                supabase.storage
+                  .from('documents')
+                  .createSignedUrl(docs[0].file_path, 3600)
+                  .then(({ data, error }) => {
+                    if (error) {
+                      console.error('❌ Erreur chargement document acte:', error);
+                      setActeClientIdentiteUrl(null);
+                    } else if (data?.signedUrl) {
+                      console.log('✅ Document acte client_documents chargé avec succès');
+                      setActeClientIdentiteUrl(data.signedUrl);
+                    }
+                  });
+              } else {
+                console.log('⚠️ Aucun document trouvé dans client_documents (acte)');
+                setActeClientIdentiteUrl(null);
+              }
+            });
+        } else {
+          setActeClientIdentiteUrl(null);
+        }
       }
     } else {
       setActeClientIdentiteUrl(null);
