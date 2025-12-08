@@ -89,6 +89,9 @@ export default function Contrats() {
   const [pendingCategory, setPendingCategory] = useState<string>("");
   const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string}>>([]);
   const [questionnaireData, setQuestionnaireData] = useState({
+    // Type de contrat
+    typeContrat: "", // "compromis" ou "promesse_unilaterale"
+    
     // Informations sur le bien
     adresseBien: "",
     typeBien: "",
@@ -341,6 +344,8 @@ export default function Contrats() {
 
       // Créer le contrat avec les données du questionnaire en description
       const descriptionData = `
+TYPE DE CONTRAT: ${questionnaireData.typeContrat === "compromis" ? "Compromis de vente" : "Promesse unilatérale de vente"}
+
 INFORMATIONS SUR LE BIEN:
 - Adresse: ${questionnaireData.adresseBien}
 - Type de bien: ${questionnaireData.typeBien}
@@ -373,6 +378,7 @@ CONDITIONS FINANCIÈRES:
 - Dépôt de garantie: ${questionnaireData.depotGarantie} €
 - Modalités de paiement: ${questionnaireData.modalitesPaiement}
 
+${questionnaireData.typeContrat === "compromis" ? `
 CONDITIONS SUSPENSIVES:
 - Condition de prêt: ${questionnaireData.conditionPret}
 ${questionnaireData.conditionPret === "oui" ? `
@@ -382,13 +388,13 @@ DÉTAILS DU PRÊT IMMOBILIER:
 - Taux d'intérêt maximal: ${questionnaireData.tauxInteretMax} %
 - Délai pour accord de prêt: ${questionnaireData.delaiAccordPret}` : ''}
 - Diagnostics: ${questionnaireData.conditionDiagnostics}
-- Autres conditions: ${questionnaireData.autresConditions}
+- Autres conditions: ${questionnaireData.autresConditions}` : ''}
 
 DROIT DE PRÉEMPTION:
 - Droit de préemption urbain: ${questionnaireData.droitPreemptionUrbain}
 - Locataire avec droit de préemption: ${questionnaireData.locatairePreemption}
 
-${pendingContractType.includes("Promesse unilatérale") ? `
+${questionnaireData.typeContrat === "promesse_unilaterale" ? `
 PROMESSE UNILATÉRALE:
 - Durée de l'option: ${questionnaireData.dureeOption} jours
 - Date limite de levée d'option: ${questionnaireData.dateLimiteOption}
@@ -426,6 +432,7 @@ INFORMATIONS COMPLÉMENTAIRES:
       setShowQuestionDialog(false);
       // Réinitialiser le questionnaire
       setQuestionnaireData({
+        typeContrat: "",
         adresseBien: "",
         typeBien: "",
         surfaceHabitable: "",
@@ -748,6 +755,24 @@ INFORMATIONS COMPLÉMENTAIRES:
           </DialogHeader>
 
           <div className="space-y-6 mt-4">
+            {/* Choix du type de contrat */}
+            <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
+              <h3 className="font-semibold text-lg">Type de contrat *</h3>
+              <RadioGroup 
+                value={questionnaireData.typeContrat}
+                onValueChange={(value) => setQuestionnaireData({...questionnaireData, typeContrat: value})}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="compromis" id="compromis" />
+                  <Label htmlFor="compromis" className="cursor-pointer">Compromis de vente</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="promesse_unilaterale" id="promesse_unilaterale" />
+                  <Label htmlFor="promesse_unilaterale" className="cursor-pointer">Promesse unilatérale de vente</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
             {/* Informations sur le bien */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg border-b pb-2">Informations sur le bien</h3>
@@ -1124,24 +1149,25 @@ INFORMATIONS COMPLÉMENTAIRES:
               </div>
             </div>
 
-            {/* Conditions suspensives */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Conditions suspensives</h3>
+            {/* Conditions suspensives - Uniquement pour Compromis */}
+            {questionnaireData.typeContrat === "compromis" && (
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="conditionPret">Condition d'obtention de prêt ? *</Label>
-                  <Select value={questionnaireData.conditionPret} onValueChange={(value) => setQuestionnaireData({...questionnaireData, conditionPret: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="oui">Oui</SelectItem>
-                      <SelectItem value="non">Non</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <h3 className="font-semibold text-lg border-b pb-2">Conditions suspensives</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="conditionPret">Condition d'obtention de prêt ? *</Label>
+                    <Select value={questionnaireData.conditionPret} onValueChange={(value) => setQuestionnaireData({...questionnaireData, conditionPret: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {questionnaireData.conditionPret === "oui" && (
+                  {questionnaireData.conditionPret === "oui" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
                     <div className="md:col-span-2">
                       <h4 className="font-medium text-sm mb-4">Détails du prêt immobilier</h4>
@@ -1210,6 +1236,7 @@ INFORMATIONS COMPLÉMENTAIRES:
                 </div>
               </div>
             </div>
+            )}
 
             {/* Droit de préemption */}
             <div className="space-y-4">
@@ -1244,7 +1271,7 @@ INFORMATIONS COMPLÉMENTAIRES:
             </div>
 
             {/* Promesse unilatérale spécifique */}
-            {pendingContractType.includes("Promesse unilatérale") && (
+            {questionnaireData.typeContrat === "promesse_unilaterale" && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg border-b pb-2">Spécifique à la promesse unilatérale de vente</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
