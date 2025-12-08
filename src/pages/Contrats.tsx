@@ -95,6 +95,8 @@ export default function Contrats() {
   const [compromisDiagnosticsFiles, setCompromisDiagnosticsFiles] = useState<File[]>([]);
   const [acteClientIdentiteUrl, setActeClientIdentiteUrl] = useState<string | null>(null); // URL du document du client acte
   const [acteAutrePartieFiles, setActeAutrePartieFiles] = useState<File[]>([]); // Fichiers de l'autre partie acte
+  const [acteVendeurFiles, setActeVendeurFiles] = useState<File[]>([]); // Fichiers supplémentaires vendeur
+  const [acteAcheteurFiles, setActeAcheteurFiles] = useState<File[]>([]); // Fichiers supplémentaires acheteur
   const [acteDiagnosticsFiles, setActeDiagnosticsFiles] = useState<File[]>([]);
   const [locataireDocsFiles, setLocataireDocsFiles] = useState<File[]>([]);
   const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
@@ -2718,6 +2720,63 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       />
                     </div>
                   </div>
+                  
+                  {/* Upload de pièces d'identité vendeur */}
+                  <div className="space-y-2">
+                    <Label>📎 Pièces d'identité du vendeur</Label>
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                      <input
+                        type="file"
+                        accept="application/pdf,image/*"
+                        multiple
+                        className="hidden"
+                        id="acte-vendeur-upload"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 0) {
+                            setActeVendeurFiles(prev => [...prev, ...files]);
+                            toast.success(`${files.length} fichier(s) ajouté(s)`);
+                          }
+                          e.target.value = '';
+                        }}
+                      />
+                      <label htmlFor="acte-vendeur-upload" className="cursor-pointer flex items-center gap-3">
+                        <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Joindre des pièces d'identité</p>
+                          <p className="text-xs text-muted-foreground">CNI, passeport, livret de famille - PDF ou images</p>
+                        </div>
+                      </label>
+                    </div>
+                    {acteVendeurFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {acteVendeurFiles.map((file, index) => (
+                          <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                            <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span className="text-sm flex-1 truncate">{file.name}</span>
+                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 hover:bg-transparent"
+                              onClick={() => setActeVendeurFiles(prev => prev.filter((_, i) => i !== index))}
+                            >
+                              <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Acheteur - avec auto-fill si client sélectionné comme acheteur, sinon manuel */}
@@ -2827,6 +2886,63 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <div className="space-y-2">
                         <Label htmlFor="acte_quotePart">Quote-part d'acquisition (%)</Label>
                         <Input id="acte_quotePart" type="number" value={acteVenteData.acheteurQuotePart} onChange={(e) => setActeVenteData({...acteVenteData, acheteurQuotePart: e.target.value})} placeholder="Ex: 50" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Upload de pièces d'identité acheteur */}
+                  <div className="space-y-2">
+                    <Label>📎 Pièces d'identité de l'acheteur</Label>
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                      <input
+                        type="file"
+                        accept="application/pdf,image/*"
+                        multiple
+                        className="hidden"
+                        id="acte-acheteur-upload"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 0) {
+                            setActeAcheteurFiles(prev => [...prev, ...files]);
+                            toast.success(`${files.length} fichier(s) ajouté(s)`);
+                          }
+                          e.target.value = '';
+                        }}
+                      />
+                      <label htmlFor="acte-acheteur-upload" className="cursor-pointer flex items-center gap-3">
+                        <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Joindre des pièces d'identité</p>
+                          <p className="text-xs text-muted-foreground">CNI, passeport, livret de famille - PDF ou images</p>
+                        </div>
+                      </label>
+                    </div>
+                    {acteAcheteurFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {acteAcheteurFiles.map((file, index) => (
+                          <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                            <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span className="text-sm flex-1 truncate">{file.name}</span>
+                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 hover:bg-transparent"
+                              onClick={() => setActeAcheteurFiles(prev => prev.filter((_, i) => i !== index))}
+                            >
+                              <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </Button>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
