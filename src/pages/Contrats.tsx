@@ -94,29 +94,62 @@ export default function Contrats() {
     typeBien: "",
     surfaceHabitable: "",
     nombrePieces: "",
+    naturePropriete: "", // Pleine propriété / Usufruit / Nue-propriété / Indivision
+    bienCopropriete: "", // Oui / Non
+    numeroLot: "",
+    tantièmes: "",
+    occupationBien: "", // Libre / Occupé par le vendeur / Occupé par un locataire / Bail en cours
+    servitudesConnues: "", // Oui / Non
+    descriptionServitudes: "",
+    bienLibre: "", // Oui / Non
     
     // Client et son rôle
     clientId: "",
     clientRole: "", // "acheteur" ou "vendeur"
+    
+    // Statut matrimonial client
+    statutMatrimonialClient: "", // Célibataire / Marié / Pacsé / Divorcé / Veuf
+    regimeMatrimonialClient: "", // Communauté légale / Séparation de biens / Autre
+    precisionRegimeClient: "",
     
     // Informations autre partie (saisie manuelle)
     nomAutrePartie: "",
     prenomAutrePartie: "",
     adresseAutrePartie: "",
     
+    // Statut matrimonial autre partie
+    statutMatrimonialAutrePartie: "",
+    regimeMatrimonialAutrePartie: "",
+    precisionRegimeAutrePartie: "",
+    
     // Conditions financières
     prixVente: "",
     depotGarantie: "",
     modalitesPaiement: "",
     
-    // Conditions suspensives
-    conditionPret: "",
+    // Conditions suspensives - Prêt immobilier
+    conditionPret: "", // Oui / Non
+    montantPret: "",
+    dureePret: "",
+    tauxInteretMax: "",
+    delaiAccordPret: "",
+    
+    // Conditions suspensives - Autres
     conditionDiagnostics: "",
     autresConditions: "",
+    
+    // Droit de préemption
+    droitPreemptionUrbain: "", // Oui / Non / Inconnu
+    locatairePreemption: "", // Oui / Non
     
     // Délais
     dateSignatureActeDefinitif: "",
     delaiReflexion: "",
+    
+    // Promesse unilatérale spécifique
+    dureeOption: "",
+    dateLimiteOption: "",
+    indemniteImmobilisation: "",
     
     // Informations complémentaires
     chargesCopropriete: "",
@@ -311,32 +344,59 @@ export default function Contrats() {
 INFORMATIONS SUR LE BIEN:
 - Adresse: ${questionnaireData.adresseBien}
 - Type de bien: ${questionnaireData.typeBien}
-- Surface habitable: ${questionnaireData.surfaceHabitable}
+- Surface habitable: ${questionnaireData.surfaceHabitable} m²
 - Nombre de pièces: ${questionnaireData.nombrePieces}
+- Nature de la propriété: ${questionnaireData.naturePropriete}
+- Bien en copropriété: ${questionnaireData.bienCopropriete}
+${questionnaireData.bienCopropriete === "oui" ? `- Numéro de lot: ${questionnaireData.numeroLot}\n- Tantièmes: ${questionnaireData.tantièmes}` : ''}
+- Occupation du bien: ${questionnaireData.occupationBien}
+- Servitudes connues: ${questionnaireData.servitudesConnues}
+${questionnaireData.servitudesConnues === "oui" ? `- Description des servitudes: ${questionnaireData.descriptionServitudes}` : ''}
+- Bien vendu libre de toute occupation: ${questionnaireData.bienLibre}
 
 VENDEUR:
 - Nom: ${vendeurInfo.nom}
 - Prénom: ${vendeurInfo.prenom}
 - Adresse: ${vendeurInfo.adresse}
+- Statut matrimonial: ${isClientAcheteur ? questionnaireData.statutMatrimonialAutrePartie : questionnaireData.statutMatrimonialClient}
+${(isClientAcheteur ? questionnaireData.statutMatrimonialAutrePartie : questionnaireData.statutMatrimonialClient) === "marie" || (isClientAcheteur ? questionnaireData.statutMatrimonialAutrePartie : questionnaireData.statutMatrimonialClient) === "pacse" ? `- Régime matrimonial: ${isClientAcheteur ? questionnaireData.regimeMatrimonialAutrePartie : questionnaireData.regimeMatrimonialClient}` : ''}
 
 ACQUÉREUR:
 - Nom: ${acquereurInfo.nom}
 - Prénom: ${acquereurInfo.prenom}
 - Adresse: ${acquereurInfo.adresse}
+- Statut matrimonial: ${isClientAcheteur ? questionnaireData.statutMatrimonialClient : questionnaireData.statutMatrimonialAutrePartie}
+${(isClientAcheteur ? questionnaireData.statutMatrimonialClient : questionnaireData.statutMatrimonialAutrePartie) === "marie" || (isClientAcheteur ? questionnaireData.statutMatrimonialClient : questionnaireData.statutMatrimonialAutrePartie) === "pacse" ? `- Régime matrimonial: ${isClientAcheteur ? questionnaireData.regimeMatrimonialClient : questionnaireData.regimeMatrimonialAutrePartie}` : ''}
 
 CONDITIONS FINANCIÈRES:
-- Prix de vente: ${questionnaireData.prixVente}
-- Dépôt de garantie: ${questionnaireData.depotGarantie}
+- Prix de vente: ${questionnaireData.prixVente} €
+- Dépôt de garantie: ${questionnaireData.depotGarantie} €
 - Modalités de paiement: ${questionnaireData.modalitesPaiement}
 
 CONDITIONS SUSPENSIVES:
 - Condition de prêt: ${questionnaireData.conditionPret}
+${questionnaireData.conditionPret === "oui" ? `
+DÉTAILS DU PRÊT IMMOBILIER:
+- Montant du prêt: ${questionnaireData.montantPret} €
+- Durée du prêt: ${questionnaireData.dureePret} années
+- Taux d'intérêt maximal: ${questionnaireData.tauxInteretMax} %
+- Délai pour accord de prêt: ${questionnaireData.delaiAccordPret}` : ''}
 - Diagnostics: ${questionnaireData.conditionDiagnostics}
 - Autres conditions: ${questionnaireData.autresConditions}
 
+DROIT DE PRÉEMPTION:
+- Droit de préemption urbain: ${questionnaireData.droitPreemptionUrbain}
+- Locataire avec droit de préemption: ${questionnaireData.locatairePreemption}
+
+${pendingContractType.includes("Promesse unilatérale") ? `
+PROMESSE UNILATÉRALE:
+- Durée de l'option: ${questionnaireData.dureeOption} jours
+- Date limite de levée d'option: ${questionnaireData.dateLimiteOption}
+- Indemnité d'immobilisation: ${questionnaireData.indemniteImmobilisation}` : ''}
+
 DÉLAIS:
 - Date signature acte définitif: ${questionnaireData.dateSignatureActeDefinitif}
-- Délai de réflexion: ${questionnaireData.delaiReflexion}
+- Délai de réflexion: ${questionnaireData.delaiReflexion} jours
 
 INFORMATIONS COMPLÉMENTAIRES:
 - Charges de copropriété: ${questionnaireData.chargesCopropriete}
@@ -370,19 +430,42 @@ INFORMATIONS COMPLÉMENTAIRES:
         typeBien: "",
         surfaceHabitable: "",
         nombrePieces: "",
+        naturePropriete: "",
+        bienCopropriete: "",
+        numeroLot: "",
+        tantièmes: "",
+        occupationBien: "",
+        servitudesConnues: "",
+        descriptionServitudes: "",
+        bienLibre: "",
         clientId: "",
         clientRole: "",
+        statutMatrimonialClient: "",
+        regimeMatrimonialClient: "",
+        precisionRegimeClient: "",
         nomAutrePartie: "",
         prenomAutrePartie: "",
         adresseAutrePartie: "",
+        statutMatrimonialAutrePartie: "",
+        regimeMatrimonialAutrePartie: "",
+        precisionRegimeAutrePartie: "",
         prixVente: "",
         depotGarantie: "",
         modalitesPaiement: "",
         conditionPret: "",
+        montantPret: "",
+        dureePret: "",
+        tauxInteretMax: "",
+        delaiAccordPret: "",
         conditionDiagnostics: "",
         autresConditions: "",
+        droitPreemptionUrbain: "",
+        locatairePreemption: "",
         dateSignatureActeDefinitif: "",
         delaiReflexion: "",
+        dureeOption: "",
+        dateLimiteOption: "",
+        indemniteImmobilisation: "",
         chargesCopropriete: "",
         travauxAPrevenir: "",
         autresInformations: "",
@@ -714,6 +797,104 @@ INFORMATIONS COMPLÉMENTAIRES:
                     placeholder="Ex: 3"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="naturePropriete">Nature de la propriété *</Label>
+                  <Select value={questionnaireData.naturePropriete} onValueChange={(value) => setQuestionnaireData({...questionnaireData, naturePropriete: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pleine_propriete">Pleine propriété</SelectItem>
+                      <SelectItem value="usufruit">Usufruit</SelectItem>
+                      <SelectItem value="nue_propriete">Nue-propriété</SelectItem>
+                      <SelectItem value="indivision">Indivision</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bienCopropriete">Bien en copropriété ? *</Label>
+                  <Select value={questionnaireData.bienCopropriete} onValueChange={(value) => setQuestionnaireData({...questionnaireData, bienCopropriete: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {questionnaireData.bienCopropriete === "oui" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="numeroLot">Numéro de lot</Label>
+                      <Input 
+                        id="numeroLot"
+                        value={questionnaireData.numeroLot}
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, numeroLot: e.target.value})}
+                        placeholder="Ex: 123"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tantièmes">Tantièmes / Quote-part des parties communes</Label>
+                      <Input 
+                        id="tantièmes"
+                        value={questionnaireData.tantièmes}
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, tantièmes: e.target.value})}
+                        placeholder="Ex: 150/10000"
+                      />
+                    </div>
+                  </>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="occupationBien">Occupation du bien *</Label>
+                  <Select value={questionnaireData.occupationBien} onValueChange={(value) => setQuestionnaireData({...questionnaireData, occupationBien: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="libre">Libre</SelectItem>
+                      <SelectItem value="occupe_vendeur">Occupé par le vendeur</SelectItem>
+                      <SelectItem value="occupe_locataire">Occupé par un locataire</SelectItem>
+                      <SelectItem value="bail_en_cours">Bail en cours</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="servitudesConnues">Servitudes connues ? *</Label>
+                  <Select value={questionnaireData.servitudesConnues} onValueChange={(value) => setQuestionnaireData({...questionnaireData, servitudesConnues: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {questionnaireData.servitudesConnues === "oui" && (
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="descriptionServitudes">Description des servitudes</Label>
+                    <Textarea 
+                      id="descriptionServitudes"
+                      value={questionnaireData.descriptionServitudes}
+                      onChange={(e) => setQuestionnaireData({...questionnaireData, descriptionServitudes: e.target.value})}
+                      placeholder="Décrivez les servitudes..."
+                      rows={3}
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="bienLibre">Bien vendu libre de toute occupation à la signature ? *</Label>
+                  <Select value={questionnaireData.bienLibre} onValueChange={(value) => setQuestionnaireData({...questionnaireData, bienLibre: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
@@ -778,6 +959,52 @@ INFORMATIONS COMPLÉMENTAIRES:
                     </div>
                   </RadioGroup>
                 </div>
+
+                {/* Statut matrimonial du client */}
+                <div className="space-y-2">
+                  <Label htmlFor="statutMatrimonialClient">Statut matrimonial *</Label>
+                  <Select value={questionnaireData.statutMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialClient: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="celibataire">Célibataire</SelectItem>
+                      <SelectItem value="marie">Marié</SelectItem>
+                      <SelectItem value="pacse">Pacsé</SelectItem>
+                      <SelectItem value="divorce">Divorcé</SelectItem>
+                      <SelectItem value="veuf">Veuf</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {(questionnaireData.statutMatrimonialClient === "marie" || questionnaireData.statutMatrimonialClient === "pacse") && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="regimeMatrimonialClient">Régime matrimonial *</Label>
+                      <Select value={questionnaireData.regimeMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, regimeMatrimonialClient: value})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                          <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                          <SelectItem value="autre">Autre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {questionnaireData.regimeMatrimonialClient === "autre" && (
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="precisionRegimeClient">Préciser le régime</Label>
+                        <Input 
+                          id="precisionRegimeClient"
+                          value={questionnaireData.precisionRegimeClient}
+                          onChange={(e) => setQuestionnaireData({...questionnaireData, precisionRegimeClient: e.target.value})}
+                          placeholder="Précisez le régime matrimonial..."
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 
@@ -811,6 +1038,52 @@ INFORMATIONS COMPLÉMENTAIRES:
                     onChange={(e) => setQuestionnaireData({...questionnaireData, adresseAutrePartie: e.target.value})}
                   />
                 </div>
+
+                {/* Statut matrimonial autre partie */}
+                <div className="space-y-2">
+                  <Label htmlFor="statutMatrimonialAutrePartie">Statut matrimonial *</Label>
+                  <Select value={questionnaireData.statutMatrimonialAutrePartie} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialAutrePartie: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="celibataire">Célibataire</SelectItem>
+                      <SelectItem value="marie">Marié</SelectItem>
+                      <SelectItem value="pacse">Pacsé</SelectItem>
+                      <SelectItem value="divorce">Divorcé</SelectItem>
+                      <SelectItem value="veuf">Veuf</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {(questionnaireData.statutMatrimonialAutrePartie === "marie" || questionnaireData.statutMatrimonialAutrePartie === "pacse") && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="regimeMatrimonialAutrePartie">Régime matrimonial *</Label>
+                      <Select value={questionnaireData.regimeMatrimonialAutrePartie} onValueChange={(value) => setQuestionnaireData({...questionnaireData, regimeMatrimonialAutrePartie: value})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                          <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                          <SelectItem value="autre">Autre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {questionnaireData.regimeMatrimonialAutrePartie === "autre" && (
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="precisionRegimeAutrePartie">Préciser le régime</Label>
+                        <Input 
+                          id="precisionRegimeAutrePartie"
+                          value={questionnaireData.precisionRegimeAutrePartie}
+                          onChange={(e) => setQuestionnaireData({...questionnaireData, precisionRegimeAutrePartie: e.target.value})}
+                          placeholder="Précisez le régime matrimonial..."
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 
@@ -856,15 +1129,65 @@ INFORMATIONS COMPLÉMENTAIRES:
               <h3 className="font-semibold text-lg border-b pb-2">Conditions suspensives</h3>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="conditionPret">Condition d'obtention de prêt</Label>
-                  <Textarea 
-                    id="conditionPret"
-                    rows={2}
-                    value={questionnaireData.conditionPret}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, conditionPret: e.target.value})}
-                    placeholder="Ex: Obtention d'un prêt de 280 000 € dans un délai de 45 jours"
-                  />
+                  <Label htmlFor="conditionPret">Condition d'obtention de prêt ? *</Label>
+                  <Select value={questionnaireData.conditionPret} onValueChange={(value) => setQuestionnaireData({...questionnaireData, conditionPret: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {questionnaireData.conditionPret === "oui" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
+                    <div className="md:col-span-2">
+                      <h4 className="font-medium text-sm mb-4">Détails du prêt immobilier</h4>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="montantPret">Montant du prêt envisagé (€) *</Label>
+                      <Input 
+                        id="montantPret"
+                        type="number"
+                        value={questionnaireData.montantPret}
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, montantPret: e.target.value})}
+                        placeholder="Ex: 280000"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="dureePret">Durée maximale du prêt (années) *</Label>
+                      <Input 
+                        id="dureePret"
+                        type="number"
+                        value={questionnaireData.dureePret}
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, dureePret: e.target.value})}
+                        placeholder="Ex: 25"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tauxInteretMax">Taux d'intérêt maximal accepté (%) *</Label>
+                      <Input 
+                        id="tauxInteretMax"
+                        type="number"
+                        step="0.01"
+                        value={questionnaireData.tauxInteretMax}
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, tauxInteretMax: e.target.value})}
+                        placeholder="Ex: 3.5"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="delaiAccordPret">Délai pour obtenir l'accord de prêt *</Label>
+                      <Input 
+                        id="delaiAccordPret"
+                        value={questionnaireData.delaiAccordPret}
+                        onChange={(e) => setQuestionnaireData({...questionnaireData, delaiAccordPret: e.target.value})}
+                        placeholder="Ex: 45 jours ou date limite"
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="conditionDiagnostics">Diagnostics et contrôles techniques</Label>
                   <Textarea 
@@ -887,6 +1210,75 @@ INFORMATIONS COMPLÉMENTAIRES:
                 </div>
               </div>
             </div>
+
+            {/* Droit de préemption */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">Droit de préemption</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="droitPreemptionUrbain">Bien soumis au droit de préemption urbain ? *</Label>
+                  <Select value={questionnaireData.droitPreemptionUrbain} onValueChange={(value) => setQuestionnaireData({...questionnaireData, droitPreemptionUrbain: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                      <SelectItem value="inconnu">Inconnu</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="locatairePreemption">Présence d'un locataire avec droit de préemption ? *</Label>
+                  <Select value={questionnaireData.locatairePreemption} onValueChange={(value) => setQuestionnaireData({...questionnaireData, locatairePreemption: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Promesse unilatérale spécifique */}
+            {pendingContractType.includes("Promesse unilatérale") && (
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg border-b pb-2">Spécifique à la promesse unilatérale de vente</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="dureeOption">Durée de l'option (en jours) *</Label>
+                    <Input 
+                      id="dureeOption"
+                      type="number"
+                      value={questionnaireData.dureeOption}
+                      onChange={(e) => setQuestionnaireData({...questionnaireData, dureeOption: e.target.value})}
+                      placeholder="Ex: 60"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dateLimiteOption">Date limite de levée d'option *</Label>
+                    <Input 
+                      id="dateLimiteOption"
+                      type="date"
+                      value={questionnaireData.dateLimiteOption}
+                      onChange={(e) => setQuestionnaireData({...questionnaireData, dateLimiteOption: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="indemniteImmobilisation">Indemnité d'immobilisation (€ ou %) *</Label>
+                    <Input 
+                      id="indemniteImmobilisation"
+                      value={questionnaireData.indemniteImmobilisation}
+                      onChange={(e) => setQuestionnaireData({...questionnaireData, indemniteImmobilisation: e.target.value})}
+                      placeholder="Ex: 5000 € ou 5% du prix de vente"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Délais */}
             <div className="space-y-4">
