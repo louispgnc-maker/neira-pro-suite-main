@@ -298,7 +298,7 @@ export default function Contrats() {
       if (!user) return;
       const { data, error } = await supabase
         .from('clients')
-        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession')
+        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession, situation_matrimoniale, type_identite, numero_identite')
         .eq('owner_id', user.id)
         .eq('role', role)
         .order('nom', { ascending: true });
@@ -335,6 +335,9 @@ export default function Contrats() {
           vendeurLieuNaissance: selectedClient.lieu_naissance || prev.vendeurLieuNaissance,
           vendeurNationalite: selectedClient.nationalite || prev.vendeurNationalite,
           vendeurProfession: selectedClient.profession || prev.vendeurProfession,
+          vendeurStatutMatrimonial: selectedClient.situation_matrimoniale || prev.vendeurStatutMatrimonial,
+          vendeurPieceIdentite: selectedClient.type_identite || prev.vendeurPieceIdentite,
+          vendeurNumeroIdentite: selectedClient.numero_identite || prev.vendeurNumeroIdentite,
         }));
       }
     }
@@ -351,6 +354,7 @@ export default function Contrats() {
           acheteurLieuNaissance: selectedClient.lieu_naissance || prev.acheteurLieuNaissance,
           acheteurNationalite: selectedClient.nationalite || prev.acheteurNationalite,
           acheteurProfession: selectedClient.profession || prev.acheteurProfession,
+          acheteurStatutMatrimonial: selectedClient.situation_matrimoniale || prev.acheteurStatutMatrimonial,
         }));
       }
     }
