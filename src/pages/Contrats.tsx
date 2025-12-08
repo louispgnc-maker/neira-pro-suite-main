@@ -91,6 +91,10 @@ export default function Contrats() {
   
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
+    // Sélection du client et son rôle
+    clientId: "",
+    clientRole: "", // "vendeur" ou "acheteur"
+    
     // Informations détaillées sur le bien
     adresseBien: "",
     typeBien: "",
@@ -116,8 +120,10 @@ export default function Contrats() {
     bienLibreOuOccupe: "",
     informationsBail: "",
     
-    // Parties - Vendeur (client sélectionné)
-    vendeurClientId: "",
+    // Vendeur (soit client sélectionné avec auto-fill, soit manuel)
+    vendeurNom: "",
+    vendeurPrenom: "",
+    vendeurAdresse: "",
     vendeurDateNaissance: "",
     vendeurLieuNaissance: "",
     vendeurNationalite: "",
@@ -127,8 +133,10 @@ export default function Contrats() {
     vendeurPieceIdentite: "",
     vendeurNumeroIdentite: "",
     
-    // Parties - Acheteur (client sélectionné)
-    acheteurClientId: "",
+    // Acheteur (soit client sélectionné avec auto-fill, soit manuel)
+    acheteurNom: "",
+    acheteurPrenom: "",
+    acheteurAdresse: "",
     acheteurDateNaissance: "",
     acheteurLieuNaissance: "",
     acheteurNationalite: "",
@@ -326,41 +334,41 @@ export default function Contrats() {
     }
   }, [questionnaireData.clientId, clients]);
 
-  // Pré-remplir les informations du vendeur (Acte de vente)
+  // Auto-fill depuis le client sélectionné selon son rôle (Acte de vente)
   useEffect(() => {
-    if (acteVenteData.vendeurClientId && clients.length > 0) {
-      const selectedClient = clients.find(c => c.id === acteVenteData.vendeurClientId);
+    if (acteVenteData.clientId && acteVenteData.clientRole && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === acteVenteData.clientId) as any;
       if (selectedClient) {
-        setActeVenteData(prev => ({
-          ...prev,
-          vendeurDateNaissance: selectedClient.date_naissance || prev.vendeurDateNaissance,
-          vendeurLieuNaissance: selectedClient.lieu_naissance || prev.vendeurLieuNaissance,
-          vendeurNationalite: selectedClient.nationalite || prev.vendeurNationalite,
-          vendeurProfession: selectedClient.profession || prev.vendeurProfession,
-          vendeurStatutMatrimonial: selectedClient.situation_matrimoniale || prev.vendeurStatutMatrimonial,
-          vendeurPieceIdentite: selectedClient.type_identite || prev.vendeurPieceIdentite,
-          vendeurNumeroIdentite: selectedClient.numero_identite || prev.vendeurNumeroIdentite,
-        }));
+        if (acteVenteData.clientRole === "vendeur") {
+          setActeVenteData(prev => ({
+            ...prev,
+            vendeurNom: selectedClient.nom || "",
+            vendeurPrenom: selectedClient.prenom || "",
+            vendeurAdresse: selectedClient.adresse || "",
+            vendeurDateNaissance: selectedClient.date_naissance || "",
+            vendeurLieuNaissance: selectedClient.lieu_naissance || "",
+            vendeurNationalite: selectedClient.nationalite || "",
+            vendeurProfession: selectedClient.profession || "",
+            vendeurStatutMatrimonial: selectedClient.situation_matrimoniale || "",
+            vendeurPieceIdentite: selectedClient.type_identite || "",
+            vendeurNumeroIdentite: selectedClient.numero_identite || "",
+          }));
+        } else if (acteVenteData.clientRole === "acheteur") {
+          setActeVenteData(prev => ({
+            ...prev,
+            acheteurNom: selectedClient.nom || "",
+            acheteurPrenom: selectedClient.prenom || "",
+            acheteurAdresse: selectedClient.adresse || "",
+            acheteurDateNaissance: selectedClient.date_naissance || "",
+            acheteurLieuNaissance: selectedClient.lieu_naissance || "",
+            acheteurNationalite: selectedClient.nationalite || "",
+            acheteurProfession: selectedClient.profession || "",
+            acheteurStatutMatrimonial: selectedClient.situation_matrimoniale || "",
+          }));
+        }
       }
     }
-  }, [acteVenteData.vendeurClientId, clients]);
-
-  // Pré-remplir les informations de l'acheteur (Acte de vente)
-  useEffect(() => {
-    if (acteVenteData.acheteurClientId && clients.length > 0) {
-      const selectedClient = clients.find(c => c.id === acteVenteData.acheteurClientId);
-      if (selectedClient) {
-        setActeVenteData(prev => ({
-          ...prev,
-          acheteurDateNaissance: selectedClient.date_naissance || prev.acheteurDateNaissance,
-          acheteurLieuNaissance: selectedClient.lieu_naissance || prev.acheteurLieuNaissance,
-          acheteurNationalite: selectedClient.nationalite || prev.acheteurNationalite,
-          acheteurProfession: selectedClient.profession || prev.acheteurProfession,
-          acheteurStatutMatrimonial: selectedClient.situation_matrimoniale || prev.acheteurStatutMatrimonial,
-        }));
-      }
-    }
-  }, [acteVenteData.acheteurClientId, clients]);
+  }, [acteVenteData.clientId, acteVenteData.clientRole, clients]);
 
   // Détecter les paramètres URL pour ouvrir le questionnaire automatiquement
   useEffect(() => {
@@ -649,22 +657,18 @@ INFORMATIONS COMPLÉMENTAIRES:
       }
 
       // Validation des champs requis
-      if (!acteVenteData.vendeurClientId || !acteVenteData.acheteurClientId) {
-        toast.error('Veuillez sélectionner les clients vendeur et acheteur');
+      if (!acteVenteData.clientId || !acteVenteData.clientRole) {
+        toast.error('Veuillez sélectionner un client et son rôle');
+        return;
+      }
+
+      if (!acteVenteData.vendeurNom || !acteVenteData.acheteurNom) {
+        toast.error('Veuillez remplir les informations du vendeur et de l\'acheteur');
         return;
       }
 
       if (!acteVenteData.adresseBien || !acteVenteData.typeBien || !acteVenteData.prixVente) {
         toast.error('Veuillez remplir les champs obligatoires (adresse, type de bien, prix)');
-        return;
-      }
-
-      // Récupérer les infos clients
-      const vendeurClient = clients.find(c => c.id === acteVenteData.vendeurClientId);
-      const acheteurClient = clients.find(c => c.id === acteVenteData.acheteurClientId);
-
-      if (!vendeurClient || !acheteurClient) {
-        toast.error('Erreur lors de la récupération des informations clients');
         return;
       }
 
@@ -710,8 +714,8 @@ ${acteVenteData.bienLibreOuOccupe === "occupe" ? `- Informations bail: ${acteVen
 ═══════════════════════════════════════════════════════════════
 VENDEUR
 ═══════════════════════════════════════════════════════════════
-- Nom complet: ${vendeurClient.nom} ${vendeurClient.prenom}
-- Adresse: ${vendeurClient.adresse}
+- Nom complet: ${acteVenteData.vendeurNom} ${acteVenteData.vendeurPrenom}
+- Adresse: ${acteVenteData.vendeurAdresse}
 - Date de naissance: ${acteVenteData.vendeurDateNaissance}
 - Lieu de naissance: ${acteVenteData.vendeurLieuNaissance}
 - Nationalité: ${acteVenteData.vendeurNationalite}
@@ -723,8 +727,8 @@ ${(acteVenteData.vendeurStatutMatrimonial === "marie" || acteVenteData.vendeurSt
 ═══════════════════════════════════════════════════════════════
 ACHETEUR
 ═══════════════════════════════════════════════════════════════
-- Nom complet: ${acheteurClient.nom} ${acheteurClient.prenom}
-- Adresse: ${acheteurClient.adresse}
+- Nom complet: ${acteVenteData.acheteurNom} ${acteVenteData.acheteurPrenom}
+- Adresse: ${acteVenteData.acheteurAdresse}
 - Date de naissance: ${acteVenteData.acheteurDateNaissance}
 - Lieu de naissance: ${acteVenteData.acheteurLieuNaissance}
 - Nationalité: ${acteVenteData.acheteurNationalite}
@@ -829,6 +833,8 @@ INFORMATIONS COMPLÉMENTAIRES
       
       // Réinitialiser le formulaire acte de vente
       setActeVenteData({
+        clientId: "",
+        clientRole: "",
         adresseBien: "",
         typeBien: "",
         naturePropriete: "",
@@ -849,7 +855,9 @@ INFORMATIONS COMPLÉMENTAIRES
         destinationBien: "",
         bienLibreOuOccupe: "",
         informationsBail: "",
-        vendeurClientId: "",
+        vendeurNom: "",
+        vendeurPrenom: "",
+        vendeurAdresse: "",
         vendeurDateNaissance: "",
         vendeurLieuNaissance: "",
         vendeurNationalite: "",
@@ -858,7 +866,9 @@ INFORMATIONS COMPLÉMENTAIRES
         vendeurRegimeMatrimonial: "",
         vendeurPieceIdentite: "",
         vendeurNumeroIdentite: "",
-        acheteurClientId: "",
+        acheteurNom: "",
+        acheteurPrenom: "",
+        acheteurAdresse: "",
         acheteurDateNaissance: "",
         acheteurLieuNaissance: "",
         acheteurNationalite: "",
@@ -1995,9 +2005,295 @@ INFORMATIONS COMPLÉMENTAIRES
             {/* Formulaire spécifique pour Acte de vente immobilière */}
             {pendingContractType === "Acte de vente immobilière" && (
               <>
-                {/* 1. Informations détaillées sur le bien */}
+                {/* Sélection du client */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">🧱 Informations sur le bien</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">👤 Sélection du client</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_client">Sélectionner votre client *</Label>
+                      <Select value={acteVenteData.clientId} onValueChange={(value) => setActeVenteData({...acteVenteData, clientId: value})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {acteVenteData.clientId && clients.find(c => c.id === acteVenteData.clientId) && (
+                      <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                        <p><strong>Client:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.nom} {clients.find(c => c.id === acteVenteData.clientId)?.prenom}</p>
+                        {clients.find(c => c.id === acteVenteData.clientId)?.adresse && (
+                          <p><strong>Adresse:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.adresse}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Sélection du rôle du client */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🎭 Rôle du client</h3>
+                  <div className="space-y-2">
+                    <Label>Le client est * :</Label>
+                    <RadioGroup value={acteVenteData.clientRole} onValueChange={(value) => setActeVenteData({...acteVenteData, clientRole: value})}>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="vendeur" id="role-vendeur" />
+                        <Label htmlFor="role-vendeur" className="cursor-pointer">Vendeur</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="acheteur" id="role-acheteur" />
+                        <Label htmlFor="role-acheteur" className="cursor-pointer">Acheteur</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
+
+                {/* Vendeur - avec auto-fill si client sélectionné comme vendeur, sinon manuel */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">👤 Vendeur</h3>
+                  {acteVenteData.clientRole === "vendeur" && acteVenteData.clientId ? (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
+                      <p className="font-medium mb-2">✓ Informations automatiquement remplies depuis la fiche client</p>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground mb-2">
+                      Saisir manuellement les informations du vendeur
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurNom">Nom *</Label>
+                      <Input 
+                        id="acte_vendeurNom" 
+                        value={acteVenteData.vendeurNom} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurNom: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurPrenom">Prénom *</Label>
+                      <Input 
+                        id="acte_vendeurPrenom" 
+                        value={acteVenteData.vendeurPrenom} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurPrenom: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_vendeurAdresse">Adresse *</Label>
+                      <Input 
+                        id="acte_vendeurAdresse" 
+                        value={acteVenteData.vendeurAdresse} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurAdresse: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurDateNaissance">Date de naissance *</Label>
+                      <Input 
+                        id="acte_vendeurDateNaissance" 
+                        type="date" 
+                        value={acteVenteData.vendeurDateNaissance} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurDateNaissance: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurLieuNaissance">Lieu de naissance *</Label>
+                      <Input 
+                        id="acte_vendeurLieuNaissance" 
+                        value={acteVenteData.vendeurLieuNaissance} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurLieuNaissance: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurNationalite">Nationalité *</Label>
+                      <Input 
+                        id="acte_vendeurNationalite" 
+                        value={acteVenteData.vendeurNationalite} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurNationalite: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurProfession">Profession *</Label>
+                      <Input 
+                        id="acte_vendeurProfession" 
+                        value={acteVenteData.vendeurProfession} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurProfession: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurStatut">Statut matrimonial *</Label>
+                      <Select 
+                        value={acteVenteData.vendeurStatutMatrimonial} 
+                        onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurStatutMatrimonial: value})}
+                        
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="celibataire">Célibataire</SelectItem>
+                          <SelectItem value="marie">Marié</SelectItem>
+                          <SelectItem value="pacse">Pacsé</SelectItem>
+                          <SelectItem value="divorce">Divorcé</SelectItem>
+                          <SelectItem value="veuf">Veuf</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {(acteVenteData.vendeurStatutMatrimonial === "marie" || acteVenteData.vendeurStatutMatrimonial === "pacse") && (
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_vendeurRegime">Régime matrimonial *</Label>
+                        <Input id="acte_vendeurRegime" value={acteVenteData.vendeurRegimeMatrimonial} onChange={(e) => setActeVenteData({...acteVenteData, vendeurRegimeMatrimonial: e.target.value})} />
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurPiece">Type de pièce d'identité *</Label>
+                      <Input 
+                        id="acte_vendeurPiece" 
+                        value={acteVenteData.vendeurPieceIdentite} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurPieceIdentite: e.target.value})} 
+                        placeholder="Ex: CNI, Passeport" 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurNumero">Numéro de pièce d'identité *</Label>
+                      <Input 
+                        id="acte_vendeurNumero" 
+                        value={acteVenteData.vendeurNumeroIdentite} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, vendeurNumeroIdentite: e.target.value})} 
+                        
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Acheteur - avec auto-fill si client sélectionné comme acheteur, sinon manuel */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">👥 Acheteur</h3>
+                  {acteVenteData.clientRole === "acheteur" && acteVenteData.clientId ? (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
+                      <p className="font-medium mb-2">✓ Informations automatiquement remplies depuis la fiche client</p>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground mb-2">
+                      Saisir manuellement les informations de l'acheteur
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_acheteurNom">Nom *</Label>
+                      <Input 
+                        id="acte_acheteurNom" 
+                        value={acteVenteData.acheteurNom} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, acheteurNom: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_acheteurPrenom">Prénom *</Label>
+                      <Input 
+                        id="acte_acheteurPrenom" 
+                        value={acteVenteData.acheteurPrenom} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, acheteurPrenom: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_acheteurAdresse">Adresse *</Label>
+                      <Input 
+                        id="acte_acheteurAdresse" 
+                        value={acteVenteData.acheteurAdresse} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, acheteurAdresse: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_acheteurDateNaissance">Date de naissance *</Label>
+                      <Input 
+                        id="acte_acheteurDateNaissance" 
+                        type="date" 
+                        value={acteVenteData.acheteurDateNaissance} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, acheteurDateNaissance: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_acheteurLieuNaissance">Lieu de naissance *</Label>
+                      <Input 
+                        id="acte_acheteurLieuNaissance" 
+                        value={acteVenteData.acheteurLieuNaissance} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, acheteurLieuNaissance: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_acheteurNationalite">Nationalité *</Label>
+                      <Input 
+                        id="acte_acheteurNationalite" 
+                        value={acteVenteData.acheteurNationalite} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, acheteurNationalite: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_acheteurProfession">Profession *</Label>
+                      <Input 
+                        id="acte_acheteurProfession" 
+                        value={acteVenteData.acheteurProfession} 
+                        onChange={(e) => setActeVenteData({...acteVenteData, acheteurProfession: e.target.value})} 
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_acheteurStatut">Statut matrimonial *</Label>
+                      <Select 
+                        value={acteVenteData.acheteurStatutMatrimonial} 
+                        onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurStatutMatrimonial: value})}
+                        
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="celibataire">Célibataire</SelectItem>
+                          <SelectItem value="marie">Marié</SelectItem>
+                          <SelectItem value="pacse">Pacsé</SelectItem>
+                          <SelectItem value="divorce">Divorcé</SelectItem>
+                          <SelectItem value="veuf">Veuf</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {(acteVenteData.acheteurStatutMatrimonial === "marie" || acteVenteData.acheteurStatutMatrimonial === "pacse") && (
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_acheteurRegime">Régime matrimonial *</Label>
+                        <Input id="acte_acheteurRegime" value={acteVenteData.acheteurRegimeMatrimonial} onChange={(e) => setActeVenteData({...acteVenteData, acheteurRegimeMatrimonial: e.target.value})} />
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_modeAcquisition">Mode d'acquisition *</Label>
+                      <Select value={acteVenteData.acheteurModeAcquisition} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurModeAcquisition: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="seul">Achat seul</SelectItem>
+                          <SelectItem value="couple">En couple</SelectItem>
+                          <SelectItem value="indivision">En indivision</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {acteVenteData.acheteurModeAcquisition === "indivision" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_quotePart">Quote-part d'acquisition (%)</Label>
+                        <Input id="acte_quotePart" type="number" value={acteVenteData.acheteurQuotePart} onChange={(e) => setActeVenteData({...acteVenteData, acheteurQuotePart: e.target.value})} placeholder="Ex: 50" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Informations sur le bien */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🏠 Informations sur le bien</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="acte_adresse">Adresse complète du bien *</Label>
@@ -2072,7 +2368,7 @@ INFORMATIONS COMPLÉMENTAIRES
 
                 {/* Copropriété */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">Copropriété</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">🏢 Copropriété</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="acte_bienCopropriete">Bien en copropriété ? *</Label>
@@ -2115,7 +2411,7 @@ INFORMATIONS COMPLÉMENTAIRES
 
                 {/* État juridique */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">État juridique du bien</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">⚖️ État juridique du bien</h3>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="acte_servitudes">Servitudes existantes</Label>
@@ -2140,157 +2436,6 @@ INFORMATIONS COMPLÉMENTAIRES
                         <div className="space-y-2">
                           <Label htmlFor="acte_infoBail">Informations sur le bail</Label>
                           <Input id="acte_infoBail" value={acteVenteData.informationsBail} onChange={(e) => setActeVenteData({...acteVenteData, informationsBail: e.target.value})} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Vendeur */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">👤 Vendeur</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="acte_vendeurClient">Sélectionner le client vendeur *</Label>
-                      <Select value={acteVenteData.vendeurClientId} onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurClientId: value})}>
-                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {acteVenteData.vendeurClientId && clients.find(c => c.id === acteVenteData.vendeurClientId) && (
-                      <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
-                        <p><strong>Nom complet:</strong> {clients.find(c => c.id === acteVenteData.vendeurClientId)?.nom} {clients.find(c => c.id === acteVenteData.vendeurClientId)?.prenom}</p>
-                        {clients.find(c => c.id === acteVenteData.vendeurClientId)?.adresse && (
-                          <p><strong>Adresse:</strong> {clients.find(c => c.id === acteVenteData.vendeurClientId)?.adresse}</p>
-                        )}
-                      </div>
-                    )}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_vendeurDateNaissance">Date de naissance *</Label>
-                        <Input id="acte_vendeurDateNaissance" type="date" value={acteVenteData.vendeurDateNaissance} onChange={(e) => setActeVenteData({...acteVenteData, vendeurDateNaissance: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_vendeurLieuNaissance">Lieu de naissance *</Label>
-                        <Input id="acte_vendeurLieuNaissance" value={acteVenteData.vendeurLieuNaissance} onChange={(e) => setActeVenteData({...acteVenteData, vendeurLieuNaissance: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_vendeurNationalite">Nationalité *</Label>
-                        <Input id="acte_vendeurNationalite" value={acteVenteData.vendeurNationalite} onChange={(e) => setActeVenteData({...acteVenteData, vendeurNationalite: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_vendeurProfession">Profession *</Label>
-                        <Input id="acte_vendeurProfession" value={acteVenteData.vendeurProfession} onChange={(e) => setActeVenteData({...acteVenteData, vendeurProfession: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_vendeurStatut">Statut matrimonial *</Label>
-                        <Select value={acteVenteData.vendeurStatutMatrimonial} onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurStatutMatrimonial: value})}>
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="celibataire">Célibataire</SelectItem>
-                            <SelectItem value="marie">Marié</SelectItem>
-                            <SelectItem value="pacse">Pacsé</SelectItem>
-                            <SelectItem value="divorce">Divorcé</SelectItem>
-                            <SelectItem value="veuf">Veuf</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {(acteVenteData.vendeurStatutMatrimonial === "marie" || acteVenteData.vendeurStatutMatrimonial === "pacse") && (
-                        <div className="space-y-2">
-                          <Label htmlFor="acte_vendeurRegime">Régime matrimonial *</Label>
-                          <Input id="acte_vendeurRegime" value={acteVenteData.vendeurRegimeMatrimonial} onChange={(e) => setActeVenteData({...acteVenteData, vendeurRegimeMatrimonial: e.target.value})} />
-                        </div>
-                      )}
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_vendeurPiece">Type de pièce d'identité *</Label>
-                        <Input id="acte_vendeurPiece" value={acteVenteData.vendeurPieceIdentite} onChange={(e) => setActeVenteData({...acteVenteData, vendeurPieceIdentite: e.target.value})} placeholder="Ex: CNI, Passeport" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_vendeurNumero">Numéro de pièce d'identité *</Label>
-                        <Input id="acte_vendeurNumero" value={acteVenteData.vendeurNumeroIdentite} onChange={(e) => setActeVenteData({...acteVenteData, vendeurNumeroIdentite: e.target.value})} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Acheteur */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">👥 Acheteur</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="acte_acheteurClient">Sélectionner le client acheteur *</Label>
-                      <Select value={acteVenteData.acheteurClientId} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurClientId: value})}>
-                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {acteVenteData.acheteurClientId && clients.find(c => c.id === acteVenteData.acheteurClientId) && (
-                      <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
-                        <p><strong>Nom complet:</strong> {clients.find(c => c.id === acteVenteData.acheteurClientId)?.nom} {clients.find(c => c.id === acteVenteData.acheteurClientId)?.prenom}</p>
-                        {clients.find(c => c.id === acteVenteData.acheteurClientId)?.adresse && (
-                          <p><strong>Adresse:</strong> {clients.find(c => c.id === acteVenteData.acheteurClientId)?.adresse}</p>
-                        )}
-                      </div>
-                    )}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_acheteurDateNaissance">Date de naissance *</Label>
-                        <Input id="acte_acheteurDateNaissance" type="date" value={acteVenteData.acheteurDateNaissance} onChange={(e) => setActeVenteData({...acteVenteData, acheteurDateNaissance: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_acheteurLieuNaissance">Lieu de naissance *</Label>
-                        <Input id="acte_acheteurLieuNaissance" value={acteVenteData.acheteurLieuNaissance} onChange={(e) => setActeVenteData({...acteVenteData, acheteurLieuNaissance: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_acheteurNationalite">Nationalité *</Label>
-                        <Input id="acte_acheteurNationalite" value={acteVenteData.acheteurNationalite} onChange={(e) => setActeVenteData({...acteVenteData, acheteurNationalite: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_acheteurProfession">Profession *</Label>
-                        <Input id="acte_acheteurProfession" value={acteVenteData.acheteurProfession} onChange={(e) => setActeVenteData({...acteVenteData, acheteurProfession: e.target.value})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_acheteurStatut">Statut matrimonial *</Label>
-                        <Select value={acteVenteData.acheteurStatutMatrimonial} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurStatutMatrimonial: value})}>
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="celibataire">Célibataire</SelectItem>
-                            <SelectItem value="marie">Marié</SelectItem>
-                            <SelectItem value="pacse">Pacsé</SelectItem>
-                            <SelectItem value="divorce">Divorcé</SelectItem>
-                            <SelectItem value="veuf">Veuf</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {(acteVenteData.acheteurStatutMatrimonial === "marie" || acteVenteData.acheteurStatutMatrimonial === "pacse") && (
-                        <div className="space-y-2">
-                          <Label htmlFor="acte_acheteurRegime">Régime matrimonial *</Label>
-                          <Input id="acte_acheteurRegime" value={acteVenteData.acheteurRegimeMatrimonial} onChange={(e) => setActeVenteData({...acteVenteData, acheteurRegimeMatrimonial: e.target.value})} />
-                        </div>
-                      )}
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_modeAcquisition">Mode d'acquisition *</Label>
-                        <Select value={acteVenteData.acheteurModeAcquisition} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurModeAcquisition: value})}>
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="seul">Achat seul</SelectItem>
-                            <SelectItem value="couple">En couple</SelectItem>
-                            <SelectItem value="indivision">En indivision</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {acteVenteData.acheteurModeAcquisition === "indivision" && (
-                        <div className="space-y-2">
-                          <Label htmlFor="acte_quotePart">Quote-part d'acquisition (%)</Label>
-                          <Input id="acte_quotePart" type="number" value={acteVenteData.acheteurQuotePart} onChange={(e) => setActeVenteData({...acteVenteData, acheteurQuotePart: e.target.value})} placeholder="Ex: 50" />
                         </div>
                       )}
                     </div>
