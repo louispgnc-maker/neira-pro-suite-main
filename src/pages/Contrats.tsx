@@ -88,6 +88,114 @@ export default function Contrats() {
   const [pendingContractType, setPendingContractType] = useState<string>("");
   const [pendingCategory, setPendingCategory] = useState<string>("");
   const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string}>>([]);
+  
+  // State pour l'acte de vente
+  const [acteVenteData, setActeVenteData] = useState({
+    // Informations détaillées sur le bien
+    adresseBien: "",
+    typeBien: "",
+    naturePropriete: "",
+    referencesCadastrales: "",
+    sectionCadastrale: "",
+    numeroCadastral: "",
+    contenanceCadastrale: "",
+    surfaceHabitable: "",
+    surfaceTerrain: "",
+    nombrePieces: "",
+    equipements: [] as string[],
+    // Copropriété
+    bienCopropriete: "",
+    numerosLots: "",
+    tantièmes: "",
+    reglementCopro: "",
+    chargesAnnuelles: "",
+    // État juridique
+    servitudesExistantes: "",
+    hypotheques: "",
+    destinationBien: "",
+    bienLibreOuOccupe: "",
+    informationsBail: "",
+    
+    // Parties - Vendeur (client sélectionné)
+    vendeurClientId: "",
+    vendeurDateNaissance: "",
+    vendeurLieuNaissance: "",
+    vendeurNationalite: "",
+    vendeurProfession: "",
+    vendeurStatutMatrimonial: "",
+    vendeurRegimeMatrimonial: "",
+    vendeurPieceIdentite: "",
+    vendeurNumeroIdentite: "",
+    
+    // Parties - Acheteur (client sélectionné)
+    acheteurClientId: "",
+    acheteurDateNaissance: "",
+    acheteurLieuNaissance: "",
+    acheteurNationalite: "",
+    acheteurProfession: "",
+    acheteurStatutMatrimonial: "",
+    acheteurRegimeMatrimonial: "",
+    acheteurModeAcquisition: "",
+    acheteurQuotePart: "",
+    
+    // Conditions financières
+    prixVente: "",
+    origineFonds: "",
+    depotGarantie: "",
+    fraisNotaire: "",
+    repartitionProrata: "",
+    modalitesPaiement: "",
+    
+    // Prêt immobilier
+    pretImmobilier: "",
+    montantPret: "",
+    banquePreteur: "",
+    tauxPret: "",
+    dureePret: "",
+    typePret: "",
+    dateAccordPret: "",
+    conditionsPret: "",
+    
+    // Documents et diagnostics
+    diagnosticsFournis: "",
+    
+    // Origine de propriété
+    origineProprieteDateAcquisition: "",
+    origineReferenceActe: "",
+    travauxDerniers10ans: "",
+    conformiteUrbanisme: "",
+    assuranceDommageOuvrage: "",
+    taxesFoncieres: "",
+    sinistreRecent: "",
+    
+    // Urbanisme
+    zonePLU: "",
+    droitPreemption: "",
+    declarationsUrbanisme: "",
+    documentsUrbanisme: "",
+    
+    // Délais et signature
+    dateSignatureActe: "",
+    lieuSignature: "",
+    remiseCles: "",
+    procuration: "",
+    identiteMandataire: "",
+    
+    // Annexes
+    titrePropriete: "",
+    diagnostics: "",
+    planBien: "",
+    reglementCopropriete: "",
+    etatDate: "",
+    attestationAssurance: "",
+    releveSyndic: "",
+    
+    // Informations complémentaires
+    travauxPrevusCopro: "",
+    proceduresEnCours: "",
+    differendsVoisins: "",
+    particularitesBien: "",
+  });
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
     typeContrat: "", // "compromis" ou "promesse_unilaterale"
@@ -489,6 +597,285 @@ INFORMATIONS COMPLÉMENTAIRES:
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création contrat:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour la soumission du questionnaire Acte de vente immobilière
+  const handleActeVenteSubmit = async () => {
+    try {
+      if (!user) {
+        toast.error('Utilisateur non connecté');
+        return;
+      }
+
+      // Validation des champs requis
+      if (!acteVenteData.vendeurClientId || !acteVenteData.acheteurClientId) {
+        toast.error('Veuillez sélectionner les clients vendeur et acheteur');
+        return;
+      }
+
+      if (!acteVenteData.adresseBien || !acteVenteData.typeBien || !acteVenteData.prixVente) {
+        toast.error('Veuillez remplir les champs obligatoires (adresse, type de bien, prix)');
+        return;
+      }
+
+      // Récupérer les infos clients
+      const vendeurClient = clients.find(c => c.id === acteVenteData.vendeurClientId);
+      const acheteurClient = clients.find(c => c.id === acteVenteData.acheteurClientId);
+
+      if (!vendeurClient || !acheteurClient) {
+        toast.error('Erreur lors de la récupération des informations clients');
+        return;
+      }
+
+      // Créer le contrat avec les données complètes en description
+      const descriptionData = `
+TYPE DE CONTRAT: Acte de vente immobilière
+
+═══════════════════════════════════════════════════════════════
+INFORMATIONS SUR LE BIEN
+═══════════════════════════════════════════════════════════════
+- Adresse complète: ${acteVenteData.adresseBien}
+- Type de bien: ${acteVenteData.typeBien}
+- Nature de propriété: ${acteVenteData.naturePropriete}
+- Destination: ${acteVenteData.destinationBien}
+
+RÉFÉRENCES CADASTRALES:
+- Section cadastrale: ${acteVenteData.sectionCadastrale}
+- Numéro cadastral: ${acteVenteData.numeroCadastral}
+- Contenance cadastrale: ${acteVenteData.contenanceCadastrale}
+
+SURFACES:
+- Surface habitable: ${acteVenteData.surfaceHabitable} m²
+- Surface terrain: ${acteVenteData.surfaceTerrain} m²
+- Nombre de pièces: ${acteVenteData.nombrePieces}
+
+${acteVenteData.bienCopropriete === "oui" ? `
+COPROPRIÉTÉ:
+- Bien en copropriété: Oui
+- Numéros de lot(s): ${acteVenteData.numerosLots}
+- Tantièmes / Quote-parts: ${acteVenteData.tantièmes}
+- Règlement disponible: ${acteVenteData.reglementCopro}
+- Charges annuelles: ${acteVenteData.chargesAnnuelles} €` : `
+COPROPRIÉTÉ: Non`}
+
+═══════════════════════════════════════════════════════════════
+ÉTAT JURIDIQUE DU BIEN
+═══════════════════════════════════════════════════════════════
+- Servitudes existantes: ${acteVenteData.servitudesExistantes || 'Aucune'}
+- Hypothèques / Inscriptions: ${acteVenteData.hypotheques || 'Aucune'}
+- Bien libre ou occupé: ${acteVenteData.bienLibreOuOccupe}
+${acteVenteData.bienLibreOuOccupe === "occupe" ? `- Informations bail: ${acteVenteData.informationsBail}` : ''}
+
+═══════════════════════════════════════════════════════════════
+VENDEUR
+═══════════════════════════════════════════════════════════════
+- Nom complet: ${vendeurClient.nom} ${vendeurClient.prenom}
+- Adresse: ${vendeurClient.adresse}
+- Date de naissance: ${acteVenteData.vendeurDateNaissance}
+- Lieu de naissance: ${acteVenteData.vendeurLieuNaissance}
+- Nationalité: ${acteVenteData.vendeurNationalite}
+- Profession: ${acteVenteData.vendeurProfession}
+- Statut matrimonial: ${acteVenteData.vendeurStatutMatrimonial}
+${(acteVenteData.vendeurStatutMatrimonial === "marie" || acteVenteData.vendeurStatutMatrimonial === "pacse") ? `- Régime matrimonial: ${acteVenteData.vendeurRegimeMatrimonial}` : ''}
+- Pièce d'identité: ${acteVenteData.vendeurPieceIdentite} n° ${acteVenteData.vendeurNumeroIdentite}
+
+═══════════════════════════════════════════════════════════════
+ACHETEUR
+═══════════════════════════════════════════════════════════════
+- Nom complet: ${acheteurClient.nom} ${acheteurClient.prenom}
+- Adresse: ${acheteurClient.adresse}
+- Date de naissance: ${acteVenteData.acheteurDateNaissance}
+- Lieu de naissance: ${acteVenteData.acheteurLieuNaissance}
+- Nationalité: ${acteVenteData.acheteurNationalite}
+- Profession: ${acteVenteData.acheteurProfession}
+- Statut matrimonial: ${acteVenteData.acheteurStatutMatrimonial}
+${(acteVenteData.acheteurStatutMatrimonial === "marie" || acteVenteData.acheteurStatutMatrimonial === "pacse") ? `- Régime matrimonial: ${acteVenteData.acheteurRegimeMatrimonial}` : ''}
+- Mode d'acquisition: ${acteVenteData.acheteurModeAcquisition}
+${acteVenteData.acheteurModeAcquisition === "indivision" ? `- Quote-part: ${acteVenteData.acheteurQuotePart}%` : ''}
+
+═══════════════════════════════════════════════════════════════
+CONDITIONS FINANCIÈRES
+═══════════════════════════════════════════════════════════════
+- Prix de vente: ${acteVenteData.prixVente} €
+- Origine des fonds: ${acteVenteData.origineFonds}
+- Dépôt de garantie: ${acteVenteData.depotGarantie} €
+- Frais de notaire: ${acteVenteData.fraisNotaire} €
+- Répartition prorata: ${acteVenteData.repartitionProrata}
+- Modalités de paiement: ${acteVenteData.modalitesPaiement}
+
+${acteVenteData.pretImmobilier === "oui" ? `
+PRÊT IMMOBILIER:
+- Montant du prêt: ${acteVenteData.montantPret} €
+- Banque prêteuse: ${acteVenteData.banquePreteur}
+- Taux réel: ${acteVenteData.tauxPret} %
+- Durée: ${acteVenteData.dureePret} années
+- Type de prêt: ${acteVenteData.typePret}
+- Date accord: ${acteVenteData.dateAccordPret}
+- Conditions: ${acteVenteData.conditionsPret}` : ''}
+
+═══════════════════════════════════════════════════════════════
+DOCUMENTS & DIAGNOSTICS
+═══════════════════════════════════════════════════════════════
+${acteVenteData.diagnosticsFournis}
+
+═══════════════════════════════════════════════════════════════
+ORIGINE DE PROPRIÉTÉ & DÉCLARATIONS
+═══════════════════════════════════════════════════════════════
+- Date d'acquisition précédente: ${acteVenteData.origineProprieteDateAcquisition}
+- Référence acte: ${acteVenteData.origineReferenceActe}
+- Travaux (10 ans): ${acteVenteData.travauxDerniers10ans || 'Aucun'}
+- Conformité urbanisme: ${acteVenteData.conformiteUrbanisme}
+- Assurance dommage-ouvrage: ${acteVenteData.assuranceDommageOuvrage}
+- Taxes foncières N-1: ${acteVenteData.taxesFoncieres} €
+- Sinistre récent: ${acteVenteData.sinistreRecent}
+
+═══════════════════════════════════════════════════════════════
+URBANISME
+═══════════════════════════════════════════════════════════════
+- Zone PLU/POS: ${acteVenteData.zonePLU}
+- Droit de préemption: ${acteVenteData.droitPreemption}
+- Déclarations d'urbanisme: ${acteVenteData.declarationsUrbanisme}
+- Documents fournis: ${acteVenteData.documentsUrbanisme}
+
+═══════════════════════════════════════════════════════════════
+DÉLAIS & SIGNATURE
+═══════════════════════════════════════════════════════════════
+- Date de signature: ${acteVenteData.dateSignatureActe}
+- Lieu de signature: ${acteVenteData.lieuSignature}
+- Remise des clés: ${acteVenteData.remiseCles}
+${acteVenteData.procuration === "oui" ? `- Procuration: Oui\n- Mandataire: ${acteVenteData.identiteMandataire}` : '- Procuration: Non'}
+
+═══════════════════════════════════════════════════════════════
+ANNEXES
+═══════════════════════════════════════════════════════════════
+- Titre de propriété: ${acteVenteData.titrePropriete}
+- Diagnostics: ${acteVenteData.diagnostics}
+- Plan du bien: ${acteVenteData.planBien}
+- Règlement copropriété: ${acteVenteData.reglementCopropriete}
+- État daté: ${acteVenteData.etatDate}
+- Attestation assurance: ${acteVenteData.attestationAssurance}
+- Relevé syndic: ${acteVenteData.releveSyndic}
+
+═══════════════════════════════════════════════════════════════
+INFORMATIONS COMPLÉMENTAIRES
+═══════════════════════════════════════════════════════════════
+- Travaux prévus copropriété: ${acteVenteData.travauxPrevusCopro || 'Aucun'}
+- Procédures en cours: ${acteVenteData.proceduresEnCours || 'Aucune'}
+- Différends voisins: ${acteVenteData.differendsVoisins || 'Aucun'}
+- Particularités: ${acteVenteData.particularitesBien || 'Aucune'}
+      `.trim();
+
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: descriptionData,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success('Acte de vente créé avec succès', { 
+        description: 'Toutes les informations ont été enregistrées et pourront être utilisées pour générer le document'
+      });
+      
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire acte de vente
+      setActeVenteData({
+        adresseBien: "",
+        typeBien: "",
+        naturePropriete: "",
+        sectionCadastrale: "",
+        numeroCadastral: "",
+        contenanceCadastrale: "",
+        surfaceHabitable: "",
+        surfaceTerrain: "",
+        nombrePieces: "",
+        equipements: [],
+        bienCopropriete: "",
+        numerosLots: "",
+        tantièmes: "",
+        reglementCopro: "",
+        chargesAnnuelles: "",
+        servitudesExistantes: "",
+        hypotheques: "",
+        destinationBien: "",
+        bienLibreOuOccupe: "",
+        informationsBail: "",
+        vendeurClientId: "",
+        vendeurDateNaissance: "",
+        vendeurLieuNaissance: "",
+        vendeurNationalite: "",
+        vendeurProfession: "",
+        vendeurStatutMatrimonial: "",
+        vendeurRegimeMatrimonial: "",
+        vendeurPieceIdentite: "",
+        vendeurNumeroIdentite: "",
+        acheteurClientId: "",
+        acheteurDateNaissance: "",
+        acheteurLieuNaissance: "",
+        acheteurNationalite: "",
+        acheteurProfession: "",
+        acheteurStatutMatrimonial: "",
+        acheteurRegimeMatrimonial: "",
+        acheteurModeAcquisition: "",
+        acheteurQuotePart: "",
+        prixVente: "",
+        origineFonds: "",
+        depotGarantie: "",
+        fraisNotaire: "",
+        repartitionProrata: "",
+        modalitesPaiement: "",
+        pretImmobilier: "",
+        montantPret: "",
+        banquePreteur: "",
+        tauxPret: "",
+        dureePret: "",
+        typePret: "",
+        dateAccordPret: "",
+        conditionsPret: "",
+        diagnosticsFournis: "",
+        origineProprieteDateAcquisition: "",
+        origineReferenceActe: "",
+        travauxDerniers10ans: "",
+        conformiteUrbanisme: "",
+        assuranceDommageOuvrage: "",
+        taxesFoncieres: "",
+        sinistreRecent: "",
+        zonePLU: "",
+        droitPreemption: "",
+        declarationsUrbanisme: "",
+        documentsUrbanisme: "",
+        dateSignatureActe: "",
+        lieuSignature: "",
+        remiseCles: "",
+        procuration: "",
+        identiteMandataire: "",
+        titrePropriete: "",
+        diagnostics: "",
+        planBien: "",
+        reglementCopropriete: "",
+        etatDate: "",
+        attestationAssurance: "",
+        releveSyndic: "",
+        travauxPrevusCopro: "",
+        proceduresEnCours: "",
+        differendsVoisins: "",
+        particularitesBien: "",
+      });
+      
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création acte de vente:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -1390,13 +1777,558 @@ INFORMATIONS COMPLÉMENTAIRES:
             {/* Formulaire spécifique pour Acte de vente immobilière */}
             {pendingContractType === "Acte de vente immobilière" && (
               <>
-                {/* TODO: Ajouter le formulaire complet pour l'acte de vente */}
-                <div className="space-y-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
-                  <p className="text-sm text-amber-800">
-                    Le formulaire détaillé pour l'acte de vente immobilière est en cours de développement.
-                    Il comportera toutes les sections nécessaires : informations détaillées sur le bien, 
-                    références cadastrales, diagnostics, urbanisme, etc.
-                  </p>
+                {/* 1. Informations détaillées sur le bien */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🧱 Informations sur le bien</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_adresse">Adresse complète du bien *</Label>
+                      <Input 
+                        id="acte_adresse"
+                        value={acteVenteData.adresseBien}
+                        onChange={(e) => setActeVenteData({...acteVenteData, adresseBien: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_typeBien">Type de bien *</Label>
+                      <Select value={acteVenteData.typeBien} onValueChange={(value) => setActeVenteData({...acteVenteData, typeBien: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="appartement">Appartement</SelectItem>
+                          <SelectItem value="maison">Maison</SelectItem>
+                          <SelectItem value="terrain">Terrain</SelectItem>
+                          <SelectItem value="immeuble">Immeuble</SelectItem>
+                          <SelectItem value="local_commercial">Local commercial</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_naturePropriete">Nature de propriété *</Label>
+                      <Select value={acteVenteData.naturePropriete} onValueChange={(value) => setActeVenteData({...acteVenteData, naturePropriete: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pleine_propriete">Pleine propriété</SelectItem>
+                          <SelectItem value="usufruit">Usufruit</SelectItem>
+                          <SelectItem value="nue_propriete">Nue-propriété</SelectItem>
+                          <SelectItem value="indivision">Indivision</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_sectionCadastrale">Section cadastrale *</Label>
+                      <Input id="acte_sectionCadastrale" value={acteVenteData.sectionCadastrale} onChange={(e) => setActeVenteData({...acteVenteData, sectionCadastrale: e.target.value})} placeholder="Ex: AB" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_numeroCadastral">Numéro cadastral *</Label>
+                      <Input id="acte_numeroCadastral" value={acteVenteData.numeroCadastral} onChange={(e) => setActeVenteData({...acteVenteData, numeroCadastral: e.target.value})} placeholder="Ex: 123" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_contenanceCadastrale">Contenance cadastrale *</Label>
+                      <Input id="acte_contenanceCadastrale" value={acteVenteData.contenanceCadastrale} onChange={(e) => setActeVenteData({...acteVenteData, contenanceCadastrale: e.target.value})} placeholder="Ex: 500 m²" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_surfaceHabitable">Surface habitable (m²) *</Label>
+                      <Input id="acte_surfaceHabitable" type="number" value={acteVenteData.surfaceHabitable} onChange={(e) => setActeVenteData({...acteVenteData, surfaceHabitable: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_surfaceTerrain">Surface du terrain (m²)</Label>
+                      <Input id="acte_surfaceTerrain" type="number" value={acteVenteData.surfaceTerrain} onChange={(e) => setActeVenteData({...acteVenteData, surfaceTerrain: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_nombrePieces">Nombre de pièces</Label>
+                      <Input id="acte_nombrePieces" type="number" value={acteVenteData.nombrePieces} onChange={(e) => setActeVenteData({...acteVenteData, nombrePieces: e.target.value})} />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_destinationBien">Destination du bien *</Label>
+                      <Select value={acteVenteData.destinationBien} onValueChange={(value) => setActeVenteData({...acteVenteData, destinationBien: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="habitation">Habitation</SelectItem>
+                          <SelectItem value="commerciale">Commerciale</SelectItem>
+                          <SelectItem value="mixte">Mixte</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Copropriété */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">Copropriété</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_bienCopropriete">Bien en copropriété ? *</Label>
+                      <Select value={acteVenteData.bienCopropriete} onValueChange={(value) => setActeVenteData({...acteVenteData, bienCopropriete: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {acteVenteData.bienCopropriete === "oui" && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_numerosLots">Numéros de lot(s)</Label>
+                          <Input id="acte_numerosLots" value={acteVenteData.numerosLots} onChange={(e) => setActeVenteData({...acteVenteData, numerosLots: e.target.value})} placeholder="Ex: 12, 13, 14" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_tantiemes">Tantièmes / Quote-parts</Label>
+                          <Input id="acte_tantiemes" value={acteVenteData.tantièmes} onChange={(e) => setActeVenteData({...acteVenteData, tantièmes: e.target.value})} placeholder="Ex: 150/10000" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_reglementCopro">Règlement de copropriété disponible ?</Label>
+                          <Select value={acteVenteData.reglementCopro} onValueChange={(value) => setActeVenteData({...acteVenteData, reglementCopro: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_chargesAnnuelles">Charges annuelles (€)</Label>
+                          <Input id="acte_chargesAnnuelles" type="number" value={acteVenteData.chargesAnnuelles} onChange={(e) => setActeVenteData({...acteVenteData, chargesAnnuelles: e.target.value})} />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* État juridique */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">État juridique du bien</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_servitudes">Servitudes existantes</Label>
+                      <Textarea id="acte_servitudes" value={acteVenteData.servitudesExistantes} onChange={(e) => setActeVenteData({...acteVenteData, servitudesExistantes: e.target.value})} rows={2} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_hypotheques">Hypothèques / Inscriptions existantes</Label>
+                      <Textarea id="acte_hypotheques" value={acteVenteData.hypotheques} onChange={(e) => setActeVenteData({...acteVenteData, hypotheques: e.target.value})} rows={2} />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_bienLibre">Bien libre ou occupé à l'acte ?</Label>
+                        <Select value={acteVenteData.bienLibreOuOccupe} onValueChange={(value) => setActeVenteData({...acteVenteData, bienLibreOuOccupe: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="libre">Libre</SelectItem>
+                            <SelectItem value="occupe">Occupé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {acteVenteData.bienLibreOuOccupe === "occupe" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_infoBail">Informations sur le bail</Label>
+                          <Input id="acte_infoBail" value={acteVenteData.informationsBail} onChange={(e) => setActeVenteData({...acteVenteData, informationsBail: e.target.value})} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Vendeur */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">👤 Vendeur</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_vendeurClient">Sélectionner le client vendeur *</Label>
+                      <Select value={acteVenteData.vendeurClientId} onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurClientId: value})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {acteVenteData.vendeurClientId && clients.find(c => c.id === acteVenteData.vendeurClientId) && (
+                      <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                        <p><strong>Nom complet:</strong> {clients.find(c => c.id === acteVenteData.vendeurClientId)?.nom} {clients.find(c => c.id === acteVenteData.vendeurClientId)?.prenom}</p>
+                        {clients.find(c => c.id === acteVenteData.vendeurClientId)?.adresse && (
+                          <p><strong>Adresse:</strong> {clients.find(c => c.id === acteVenteData.vendeurClientId)?.adresse}</p>
+                        )}
+                      </div>
+                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_vendeurDateNaissance">Date de naissance *</Label>
+                        <Input id="acte_vendeurDateNaissance" type="date" value={acteVenteData.vendeurDateNaissance} onChange={(e) => setActeVenteData({...acteVenteData, vendeurDateNaissance: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_vendeurLieuNaissance">Lieu de naissance *</Label>
+                        <Input id="acte_vendeurLieuNaissance" value={acteVenteData.vendeurLieuNaissance} onChange={(e) => setActeVenteData({...acteVenteData, vendeurLieuNaissance: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_vendeurNationalite">Nationalité *</Label>
+                        <Input id="acte_vendeurNationalite" value={acteVenteData.vendeurNationalite} onChange={(e) => setActeVenteData({...acteVenteData, vendeurNationalite: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_vendeurProfession">Profession *</Label>
+                        <Input id="acte_vendeurProfession" value={acteVenteData.vendeurProfession} onChange={(e) => setActeVenteData({...acteVenteData, vendeurProfession: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_vendeurStatut">Statut matrimonial *</Label>
+                        <Select value={acteVenteData.vendeurStatutMatrimonial} onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurStatutMatrimonial: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="celibataire">Célibataire</SelectItem>
+                            <SelectItem value="marie">Marié</SelectItem>
+                            <SelectItem value="pacse">Pacsé</SelectItem>
+                            <SelectItem value="divorce">Divorcé</SelectItem>
+                            <SelectItem value="veuf">Veuf</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {(acteVenteData.vendeurStatutMatrimonial === "marie" || acteVenteData.vendeurStatutMatrimonial === "pacse") && (
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_vendeurRegime">Régime matrimonial *</Label>
+                          <Input id="acte_vendeurRegime" value={acteVenteData.vendeurRegimeMatrimonial} onChange={(e) => setActeVenteData({...acteVenteData, vendeurRegimeMatrimonial: e.target.value})} />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_vendeurPiece">Type de pièce d'identité *</Label>
+                        <Input id="acte_vendeurPiece" value={acteVenteData.vendeurPieceIdentite} onChange={(e) => setActeVenteData({...acteVenteData, vendeurPieceIdentite: e.target.value})} placeholder="Ex: CNI, Passeport" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_vendeurNumero">Numéro de pièce d'identité *</Label>
+                        <Input id="acte_vendeurNumero" value={acteVenteData.vendeurNumeroIdentite} onChange={(e) => setActeVenteData({...acteVenteData, vendeurNumeroIdentite: e.target.value})} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Acheteur */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">👥 Acheteur</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_acheteurClient">Sélectionner le client acheteur *</Label>
+                      <Select value={acteVenteData.acheteurClientId} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurClientId: value})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {acteVenteData.acheteurClientId && clients.find(c => c.id === acteVenteData.acheteurClientId) && (
+                      <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                        <p><strong>Nom complet:</strong> {clients.find(c => c.id === acteVenteData.acheteurClientId)?.nom} {clients.find(c => c.id === acteVenteData.acheteurClientId)?.prenom}</p>
+                        {clients.find(c => c.id === acteVenteData.acheteurClientId)?.adresse && (
+                          <p><strong>Adresse:</strong> {clients.find(c => c.id === acteVenteData.acheteurClientId)?.adresse}</p>
+                        )}
+                      </div>
+                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_acheteurDateNaissance">Date de naissance *</Label>
+                        <Input id="acte_acheteurDateNaissance" type="date" value={acteVenteData.acheteurDateNaissance} onChange={(e) => setActeVenteData({...acteVenteData, acheteurDateNaissance: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_acheteurLieuNaissance">Lieu de naissance *</Label>
+                        <Input id="acte_acheteurLieuNaissance" value={acteVenteData.acheteurLieuNaissance} onChange={(e) => setActeVenteData({...acteVenteData, acheteurLieuNaissance: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_acheteurNationalite">Nationalité *</Label>
+                        <Input id="acte_acheteurNationalite" value={acteVenteData.acheteurNationalite} onChange={(e) => setActeVenteData({...acteVenteData, acheteurNationalite: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_acheteurProfession">Profession *</Label>
+                        <Input id="acte_acheteurProfession" value={acteVenteData.acheteurProfession} onChange={(e) => setActeVenteData({...acteVenteData, acheteurProfession: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_acheteurStatut">Statut matrimonial *</Label>
+                        <Select value={acteVenteData.acheteurStatutMatrimonial} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurStatutMatrimonial: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="celibataire">Célibataire</SelectItem>
+                            <SelectItem value="marie">Marié</SelectItem>
+                            <SelectItem value="pacse">Pacsé</SelectItem>
+                            <SelectItem value="divorce">Divorcé</SelectItem>
+                            <SelectItem value="veuf">Veuf</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {(acteVenteData.acheteurStatutMatrimonial === "marie" || acteVenteData.acheteurStatutMatrimonial === "pacse") && (
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_acheteurRegime">Régime matrimonial *</Label>
+                          <Input id="acte_acheteurRegime" value={acteVenteData.acheteurRegimeMatrimonial} onChange={(e) => setActeVenteData({...acteVenteData, acheteurRegimeMatrimonial: e.target.value})} />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_modeAcquisition">Mode d'acquisition *</Label>
+                        <Select value={acteVenteData.acheteurModeAcquisition} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurModeAcquisition: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="seul">Achat seul</SelectItem>
+                            <SelectItem value="couple">En couple</SelectItem>
+                            <SelectItem value="indivision">En indivision</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {acteVenteData.acheteurModeAcquisition === "indivision" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_quotePart">Quote-part d'acquisition (%)</Label>
+                          <Input id="acte_quotePart" type="number" value={acteVenteData.acheteurQuotePart} onChange={(e) => setActeVenteData({...acteVenteData, acheteurQuotePart: e.target.value})} placeholder="Ex: 50" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Conditions financières */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">💶 Conditions financières</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_prixVente">Prix de vente (€) *</Label>
+                      <Input id="acte_prixVente" type="number" value={acteVenteData.prixVente} onChange={(e) => setActeVenteData({...acteVenteData, prixVente: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_origineFonds">Origine des fonds</Label>
+                      <Input id="acte_origineFonds" value={acteVenteData.origineFonds} onChange={(e) => setActeVenteData({...acteVenteData, origineFonds: e.target.value})} placeholder="Épargne / Revente / Prêt" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_depotGarantie">Dépôt de garantie versé (€)</Label>
+                      <Input id="acte_depotGarantie" type="number" value={acteVenteData.depotGarantie} onChange={(e) => setActeVenteData({...acteVenteData, depotGarantie: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_fraisNotaire">Frais de notaire estimés (€)</Label>
+                      <Input id="acte_fraisNotaire" type="number" value={acteVenteData.fraisNotaire} onChange={(e) => setActeVenteData({...acteVenteData, fraisNotaire: e.target.value})} />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_repartition">Répartition prorata temporis</Label>
+                      <Textarea id="acte_repartition" value={acteVenteData.repartitionProrata} onChange={(e) => setActeVenteData({...acteVenteData, repartitionProrata: e.target.value})} rows={2} placeholder="Taxe foncière, charges, loyers..." />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_modalitesPaiement">Modalités de paiement</Label>
+                      <Textarea id="acte_modalitesPaiement" value={acteVenteData.modalitesPaiement} onChange={(e) => setActeVenteData({...acteVenteData, modalitesPaiement: e.target.value})} rows={2} placeholder="Virement notarial / Prêts bancaires" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Prêt immobilier */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🏦 Prêt immobilier</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_pretImmobilier">Achat financé par prêt ?</Label>
+                      <Select value={acteVenteData.pretImmobilier} onValueChange={(value) => setActeVenteData({...acteVenteData, pretImmobilier: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {acteVenteData.pretImmobilier === "oui" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_montantPret">Montant du prêt (€) *</Label>
+                          <Input id="acte_montantPret" type="number" value={acteVenteData.montantPret} onChange={(e) => setActeVenteData({...acteVenteData, montantPret: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_banque">Banque prêteuse *</Label>
+                          <Input id="acte_banque" value={acteVenteData.banquePreteur} onChange={(e) => setActeVenteData({...acteVenteData, banquePreteur: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_tauxPret">Taux réel obtenu (%) *</Label>
+                          <Input id="acte_tauxPret" type="number" step="0.01" value={acteVenteData.tauxPret} onChange={(e) => setActeVenteData({...acteVenteData, tauxPret: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_dureePret">Durée du prêt (années) *</Label>
+                          <Input id="acte_dureePret" type="number" value={acteVenteData.dureePret} onChange={(e) => setActeVenteData({...acteVenteData, dureePret: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_typePret">Type de prêt *</Label>
+                          <Input id="acte_typePret" value={acteVenteData.typePret} onChange={(e) => setActeVenteData({...acteVenteData, typePret: e.target.value})} placeholder="Amortissable / Relais / PTZ" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_dateAccordPret">Date accord de prêt *</Label>
+                          <Input id="acte_dateAccordPret" type="date" value={acteVenteData.dateAccordPret} onChange={(e) => setActeVenteData({...acteVenteData, dateAccordPret: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label htmlFor="acte_conditionsPret">Conditions particulières du prêt</Label>
+                          <Textarea id="acte_conditionsPret" value={acteVenteData.conditionsPret} onChange={(e) => setActeVenteData({...acteVenteData, conditionsPret: e.target.value})} rows={2} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Documents et diagnostics */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">📜 Documents & diagnostics obligatoires</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="acte_diagnostics">Diagnostics fournis</Label>
+                    <Textarea id="acte_diagnostics" value={acteVenteData.diagnosticsFournis} onChange={(e) => setActeVenteData({...acteVenteData, diagnosticsFournis: e.target.value})} rows={4} placeholder="DPE, Amiante, Plomb, Termites, Électricité, Gaz, Assainissement, Loi Carrez, ERP, Audit énergétique..." />
+                  </div>
+                </div>
+
+                {/* Déclarations vendeur */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">Déclarations & attestations du vendeur</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_origineDate">Date d'acquisition précédente *</Label>
+                      <Input id="acte_origineDate" type="date" value={acteVenteData.origineProprieteDateAcquisition} onChange={(e) => setActeVenteData({...acteVenteData, origineProprieteDateAcquisition: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_origineRef">Référence acte d'acquisition *</Label>
+                      <Input id="acte_origineRef" value={acteVenteData.origineReferenceActe} onChange={(e) => setActeVenteData({...acteVenteData, origineReferenceActe: e.target.value})} />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_travaux">Travaux réalisés (10 dernières années)</Label>
+                      <Textarea id="acte_travaux" value={acteVenteData.travauxDerniers10ans} onChange={(e) => setActeVenteData({...acteVenteData, travauxDerniers10ans: e.target.value})} rows={2} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_conformiteUrbanisme">Conformité urbanisme</Label>
+                      <Input id="acte_conformiteUrbanisme" value={acteVenteData.conformiteUrbanisme} onChange={(e) => setActeVenteData({...acteVenteData, conformiteUrbanisme: e.target.value})} placeholder="Permis, déclarations..." />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_assuranceDO">Assurance dommage-ouvrage</Label>
+                      <Input id="acte_assuranceDO" value={acteVenteData.assuranceDommageOuvrage} onChange={(e) => setActeVenteData({...acteVenteData, assuranceDommageOuvrage: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_taxesFoncieres">Taxes foncières N-1 (€)</Label>
+                      <Input id="acte_taxesFoncieres" type="number" value={acteVenteData.taxesFoncieres} onChange={(e) => setActeVenteData({...acteVenteData, taxesFoncieres: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_sinistre">Sinistre récent ?</Label>
+                      <Select value={acteVenteData.sinistreRecent} onValueChange={(value) => setActeVenteData({...acteVenteData, sinistreRecent: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Urbanisme */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🏛️ Urbanisme</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_zonePLU">Zone PLU / POS</Label>
+                      <Input id="acte_zonePLU" value={acteVenteData.zonePLU} onChange={(e) => setActeVenteData({...acteVenteData, zonePLU: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_droitPreemption">Droit de préemption</Label>
+                      <Input id="acte_droitPreemption" value={acteVenteData.droitPreemption} onChange={(e) => setActeVenteData({...acteVenteData, droitPreemption: e.target.value})} placeholder="Exercé / Levé + date" />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_declarationsUrbanisme">Déclarations d'urbanisme passées</Label>
+                      <Textarea id="acte_declarationsUrbanisme" value={acteVenteData.declarationsUrbanisme} onChange={(e) => setActeVenteData({...acteVenteData, declarationsUrbanisme: e.target.value})} rows={2} placeholder="DP, permis de construire, etc." />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_documentsUrbanisme">Documents d'urbanisme fournis</Label>
+                      <Input id="acte_documentsUrbanisme" value={acteVenteData.documentsUrbanisme} onChange={(e) => setActeVenteData({...acteVenteData, documentsUrbanisme: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Délais et signature */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">📅 Délais & modalités de signature</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_dateSignature">Date de signature de l'acte *</Label>
+                      <Input id="acte_dateSignature" type="date" value={acteVenteData.dateSignatureActe} onChange={(e) => setActeVenteData({...acteVenteData, dateSignatureActe: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_lieuSignature">Lieu de signature *</Label>
+                      <Input id="acte_lieuSignature" value={acteVenteData.lieuSignature} onChange={(e) => setActeVenteData({...acteVenteData, lieuSignature: e.target.value})} placeholder="Étude notariale" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_remiseCles">Remise des clés</Label>
+                      <Select value={acteVenteData.remiseCles} onValueChange={(value) => setActeVenteData({...acteVenteData, remiseCles: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="signature">À la signature</SelectItem>
+                          <SelectItem value="differee">Différée</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_procuration">Procuration ?</Label>
+                      <Select value={acteVenteData.procuration} onValueChange={(value) => setActeVenteData({...acteVenteData, procuration: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {acteVenteData.procuration === "oui" && (
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="acte_mandataire">Identité du mandataire</Label>
+                        <Input id="acte_mandataire" value={acteVenteData.identiteMandataire} onChange={(e) => setActeVenteData({...acteVenteData, identiteMandataire: e.target.value})} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Annexes */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🧩 Annexes à joindre</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_titrePropriete">Titre de propriété précédent</Label>
+                      <Input id="acte_titrePropriete" value={acteVenteData.titrePropriete} onChange={(e) => setActeVenteData({...acteVenteData, titrePropriete: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_diagnosticsAnnexes">Diagnostics (fichiers)</Label>
+                      <Input id="acte_diagnosticsAnnexes" value={acteVenteData.diagnostics} onChange={(e) => setActeVenteData({...acteVenteData, diagnostics: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_plan">Plan du bien</Label>
+                      <Input id="acte_plan" value={acteVenteData.planBien} onChange={(e) => setActeVenteData({...acteVenteData, planBien: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_reglementCoproAnnexe">Copie règlement de copropriété</Label>
+                      <Input id="acte_reglementCoproAnnexe" value={acteVenteData.reglementCopropriete} onChange={(e) => setActeVenteData({...acteVenteData, reglementCopropriete: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_etatDate">État daté</Label>
+                      <Input id="acte_etatDate" value={acteVenteData.etatDate} onChange={(e) => setActeVenteData({...acteVenteData, etatDate: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_attestationAssurance">Attestation d'assurance (PNO)</Label>
+                      <Input id="acte_attestationAssurance" value={acteVenteData.attestationAssurance} onChange={(e) => setActeVenteData({...acteVenteData, attestationAssurance: e.target.value})} />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="acte_releveSyndic">Relevé du syndic</Label>
+                      <Input id="acte_releveSyndic" value={acteVenteData.releveSyndic} onChange={(e) => setActeVenteData({...acteVenteData, releveSyndic: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Informations complémentaires */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🎯 Informations complémentaires</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_travauxPrevus">Travaux prévus par la copropriété</Label>
+                      <Textarea id="acte_travauxPrevus" value={acteVenteData.travauxPrevusCopro} onChange={(e) => setActeVenteData({...acteVenteData, travauxPrevusCopro: e.target.value})} rows={2} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_procedures">Procédures en cours</Label>
+                      <Textarea id="acte_procedures" value={acteVenteData.proceduresEnCours} onChange={(e) => setActeVenteData({...acteVenteData, proceduresEnCours: e.target.value})} rows={2} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_differends">Différends connus avec un voisin</Label>
+                      <Textarea id="acte_differends" value={acteVenteData.differendsVoisins} onChange={(e) => setActeVenteData({...acteVenteData, differendsVoisins: e.target.value})} rows={2} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_particularites">Particularités du bien</Label>
+                      <Textarea id="acte_particularites" value={acteVenteData.particularitesBien} onChange={(e) => setActeVenteData({...acteVenteData, particularitesBien: e.target.value})} rows={3} />
+                    </div>
+                  </div>
                 </div>
               </>
             )}
@@ -1412,7 +2344,7 @@ INFORMATIONS COMPLÉMENTAIRES:
             </Button>
             <Button 
               className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
-              onClick={handleQuestionnaireSubmit}
+              onClick={pendingContractType === "Acte de vente immobilière" ? handleActeVenteSubmit : handleQuestionnaireSubmit}
             >
               Créer le contrat
             </Button>
