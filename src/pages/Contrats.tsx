@@ -455,6 +455,9 @@ export default function Contrats() {
     if (questionnaireData.clientId && clients.length > 0) {
       const selectedClient = clients.find(c => c.id === questionnaireData.clientId) as any;
       if (selectedClient) {
+        console.log('📋 Client sélectionné:', selectedClient.nom, selectedClient.prenom);
+        console.log('📄 id_doc_path:', selectedClient.id_doc_path);
+        
         // Extraire la situation familiale de l'objet JSON
         let situationFamiliale = "";
         if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
@@ -470,19 +473,27 @@ export default function Contrats() {
 
         // Charger le document d'identité du client si disponible
         if (selectedClient.id_doc_path) {
+          console.log('✅ Chargement du document depuis:', selectedClient.id_doc_path);
           // Générer l'URL signée pour accéder au document
           supabase.storage
             .from('documents')
             .createSignedUrl(selectedClient.id_doc_path, 3600)
             .then(({ data, error }) => {
-              if (!error && data?.signedUrl) {
+              if (error) {
+                console.error('❌ Erreur chargement document:', error);
+                setCompromisClientIdentiteUrl(null);
+              } else if (data?.signedUrl) {
+                console.log('✅ Document chargé avec succès');
                 setCompromisClientIdentiteUrl(data.signedUrl);
               }
             });
         } else {
+          console.log('⚠️ Aucun id_doc_path pour ce client');
           setCompromisClientIdentiteUrl(null);
         }
       }
+    } else {
+      setCompromisClientIdentiteUrl(null);
     }
   }, [questionnaireData.clientId, clients]);
 
@@ -536,18 +547,29 @@ export default function Contrats() {
   useEffect(() => {
     if (acteVenteData.clientId && clients.length > 0) {
       const selectedClient = clients.find(c => c.id === acteVenteData.clientId) as any;
+      console.log('📋 Client acte sélectionné:', selectedClient?.nom, selectedClient?.prenom);
+      console.log('📄 id_doc_path acte:', selectedClient?.id_doc_path);
+      
       if (selectedClient?.id_doc_path) {
+        console.log('✅ Chargement document acte depuis:', selectedClient.id_doc_path);
         supabase.storage
           .from('documents')
           .createSignedUrl(selectedClient.id_doc_path, 3600)
           .then(({ data, error }) => {
-            if (!error && data?.signedUrl) {
+            if (error) {
+              console.error('❌ Erreur chargement document acte:', error);
+              setActeClientIdentiteUrl(null);
+            } else if (data?.signedUrl) {
+              console.log('✅ Document acte chargé avec succès');
               setActeClientIdentiteUrl(data.signedUrl);
             }
           });
       } else {
+        console.log('⚠️ Aucun id_doc_path pour ce client (acte)');
         setActeClientIdentiteUrl(null);
       }
+    } else {
+      setActeClientIdentiteUrl(null);
     }
   }, [acteVenteData.clientId, clients]);
 
