@@ -204,6 +204,115 @@ export default function Contrats() {
     differendsVoisins: "",
     particularitesBien: "",
   });
+
+  // State pour le bail d'habitation
+  const [bailHabitationData, setBailHabitationData] = useState({
+    // Sélection du bailleur (client)
+    bailleurClientId: "",
+    bailleurNom: "",
+    bailleurPrenom: "",
+    bailleurAdresse: "",
+    bailleurDateNaissance: "",
+    bailleurLieuNaissance: "",
+    bailleurNationalite: "",
+    bailleurProfession: "",
+    bailleurStatutMatrimonial: "",
+    bailleurPieceIdentite: "",
+    bailleurNumeroIdentite: "",
+    
+    // Locataire(s) - saisie manuelle
+    locataireNom: "",
+    locatairePrenom: "",
+    locataireAdresse: "",
+    locataireDateNaissance: "",
+    locataireLieuNaissance: "",
+    locataireNationalite: "",
+    locataireProfession: "",
+    locataireStatutMatrimonial: "",
+    locatairePieceIdentite: "",
+    locataireNumeroIdentite: "",
+    nombreOccupants: "",
+    
+    // Garant
+    aGarant: "",
+    garantNom: "",
+    garantPrenom: "",
+    garantAdresse: "",
+    garantDateNaissance: "",
+    garantLieuNaissance: "",
+    garantStatutMatrimonial: "",
+    garantProfession: "",
+    garantPieceIdentite: "",
+    garantNumeroIdentite: "",
+    typeCaution: "",
+    
+    // Logement
+    adresseLogement: "",
+    typeLogement: "",
+    etageNumeroLot: "",
+    surfaceHabitable: "",
+    surfaceAnnexes: "",
+    anneeConstruction: "",
+    etatUsage: "",
+    dependances: "",
+    logementCopropriete: "",
+    
+    // Si meublé
+    typeBail: "", // "vide" ou "meuble"
+    mobilierListeComplete: [] as string[],
+    inventaireFourni: "",
+    
+    // Usage
+    destinationBien: "",
+    souslocationAutorisee: "",
+    colocationPossible: "",
+    
+    // Conditions financières
+    loyerMensuel: "",
+    chargesMensuelles: "",
+    typologieCharges: "",
+    depotGarantie: "",
+    premierLoyerDate: "",
+    modePaiement: "",
+    revisionLoyer: "",
+    indiceIRL: "",
+    trimestreReference: "",
+    
+    // Dates
+    typeBailDuree: "", // "3ans" "6ans" "1an" "9mois"
+    dateDebutBail: "",
+    dureeBail: "",
+    
+    // Diagnostics
+    diagnosticDPE: "",
+    diagnosticElectricite: "",
+    diagnosticGaz: "",
+    diagnosticERP: "",
+    diagnosticPlomb: "",
+    diagnosticAmiante: "",
+    
+    // État logement
+    etatLieuxFourni: "",
+    inventaireMobilierFourni: "",
+    travauxRecents: "",
+    
+    // Obligations techniques
+    typeChauffage: "",
+    compteursIndividuels: "",
+    releveCompteurs: "",
+    
+    // Assurance
+    attestationAssurance: "",
+    
+    // Particularités juridiques
+    servitudes: "",
+    logementZoneERP: "",
+    usageProfessionnel: "",
+    
+    // Informations complémentaires
+    informationsComplementaires: "",
+  });
+  
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
     typeContrat: "", // "compromis" ou "promesse_unilaterale"
@@ -387,6 +496,36 @@ export default function Contrats() {
       }
     }
   }, [acteVenteData.clientId, acteVenteData.clientRole, clients]);
+
+  // Auto-fill depuis le client sélectionné comme bailleur (Bail d'habitation)
+  useEffect(() => {
+    if (bailHabitationData.bailleurClientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === bailHabitationData.bailleurClientId) as any;
+      if (selectedClient) {
+        // Extraire la situation familiale de l'objet JSON
+        let situationFamiliale = "";
+        if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+          situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+        } else if (typeof selectedClient.situation_familiale === 'string') {
+          situationFamiliale = selectedClient.situation_familiale;
+        }
+
+        setBailHabitationData(prev => ({
+          ...prev,
+          bailleurNom: selectedClient.nom || "",
+          bailleurPrenom: selectedClient.prenom || "",
+          bailleurAdresse: selectedClient.adresse || "",
+          bailleurDateNaissance: selectedClient.date_naissance || "",
+          bailleurLieuNaissance: selectedClient.lieu_naissance || "",
+          bailleurNationalite: selectedClient.nationalite || "",
+          bailleurProfession: selectedClient.profession || "",
+          bailleurStatutMatrimonial: situationFamiliale || selectedClient.situation_matrimoniale || "",
+          bailleurPieceIdentite: selectedClient.type_identite || "",
+          bailleurNumeroIdentite: selectedClient.numero_identite || "",
+        }));
+      }
+    }
+  }, [bailHabitationData.bailleurClientId, clients]);
 
   // Détecter les paramètres URL pour ouvrir le questionnaire automatiquement
   useEffect(() => {
@@ -965,6 +1104,200 @@ INFORMATIONS COMPLÉMENTAIRES
       });
   };
 
+  // Handler pour la soumission du bail d'habitation
+  const handleBailHabitationSubmit = async () => {
+    try {
+      if (!user) {
+        toast.error('Utilisateur non connecté');
+        return;
+      }
+
+      if (!bailHabitationData.bailleurClientId) {
+        toast.error('Veuillez sélectionner un client bailleur');
+        return;
+      }
+
+      if (!bailHabitationData.locataireNom || !bailHabitationData.adresseLogement || !bailHabitationData.loyerMensuel) {
+        toast.error('Veuillez remplir les champs obligatoires (locataire, adresse logement, loyer)');
+        return;
+      }
+
+      const descriptionData = `
+TYPE DE CONTRAT: Bail d'habitation ${bailHabitationData.typeBail === "meuble" ? "meublé" : "vide"}
+
+═══════════════════════════════════════════════════════════════
+BAILLEUR
+═══════════════════════════════════════════════════════════════
+- Nom complet: ${bailHabitationData.bailleurNom} ${bailHabitationData.bailleurPrenom}
+- Adresse: ${bailHabitationData.bailleurAdresse}
+- Date de naissance: ${bailHabitationData.bailleurDateNaissance}
+- Lieu de naissance: ${bailHabitationData.bailleurLieuNaissance}
+- Nationalité: ${bailHabitationData.bailleurNationalite}
+- Profession: ${bailHabitationData.bailleurProfession}
+- Statut matrimonial: ${bailHabitationData.bailleurStatutMatrimonial}
+- Pièce d'identité: ${bailHabitationData.bailleurPieceIdentite} n° ${bailHabitationData.bailleurNumeroIdentite}
+
+═══════════════════════════════════════════════════════════════
+LOCATAIRE
+═══════════════════════════════════════════════════════════════
+- Nom complet: ${bailHabitationData.locataireNom} ${bailHabitationData.locatairePrenom}
+- Adresse: ${bailHabitationData.locataireAdresse}
+- Date de naissance: ${bailHabitationData.locataireDateNaissance}
+- Lieu de naissance: ${bailHabitationData.locataireLieuNaissance}
+- Nationalité: ${bailHabitationData.locataireNationalite}
+- Profession: ${bailHabitationData.locataireProfession}
+- Statut matrimonial: ${bailHabitationData.locataireStatutMatrimonial}
+- Pièce d'identité: ${bailHabitationData.locatairePieceIdentite} n° ${bailHabitationData.locataireNumeroIdentite}
+- Nombre d'occupants: ${bailHabitationData.nombreOccupants}
+
+${bailHabitationData.aGarant === "oui" ? `═══════════════════════════════════════════════════════════════
+GARANT
+═══════════════════════════════════════════════════════════════
+- Nom complet: ${bailHabitationData.garantNom} ${bailHabitationData.garantPrenom}
+- Adresse: ${bailHabitationData.garantAdresse}
+- Profession: ${bailHabitationData.garantProfession}
+- Type de caution: ${bailHabitationData.typeCaution}
+` : ''}
+
+═══════════════════════════════════════════════════════════════
+LOGEMENT
+═══════════════════════════════════════════════════════════════
+- Adresse complète: ${bailHabitationData.adresseLogement}
+- Type de logement: ${bailHabitationData.typeLogement}
+- Surface habitable: ${bailHabitationData.surfaceHabitable} m²
+- Année construction: ${bailHabitationData.anneeConstruction || 'Non renseignée'}
+- État d'usage: ${bailHabitationData.etatUsage}
+- Copropriété: ${bailHabitationData.logementCopropriete}
+
+═══════════════════════════════════════════════════════════════
+CONDITIONS FINANCIÈRES
+═══════════════════════════════════════════════════════════════
+- Loyer mensuel: ${bailHabitationData.loyerMensuel} €
+- Charges mensuelles: ${bailHabitationData.chargesMensuelles} €
+- Type de charges: ${bailHabitationData.typologieCharges}
+- Dépôt de garantie: ${bailHabitationData.depotGarantie} €
+- Premier loyer payable le: ${bailHabitationData.premierLoyerDate}
+- Mode de paiement: ${bailHabitationData.modePaiement}
+
+═══════════════════════════════════════════════════════════════
+DATES DU BAIL
+═══════════════════════════════════════════════════════════════
+- Type: ${bailHabitationData.typeBail === "meuble" ? "Location meublée" : "Location vide"}
+- Durée: ${bailHabitationData.typeBailDuree}
+- Date de début: ${bailHabitationData.dateDebutBail}
+
+═══════════════════════════════════════════════════════════════
+INFORMATIONS COMPLÉMENTAIRES
+═══════════════════════════════════════════════════════════════
+${bailHabitationData.informationsComplementaires || 'Aucune'}
+      `.trim();
+
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Bail d'habitation - ${bailHabitationData.locataireNom} ${bailHabitationData.locatairePrenom}`,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: descriptionData,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success("Bail d'habitation créé avec succès");
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire
+      setBailHabitationData({
+        bailleurClientId: "",
+        bailleurNom: "",
+        bailleurPrenom: "",
+        bailleurAdresse: "",
+        bailleurDateNaissance: "",
+        bailleurLieuNaissance: "",
+        bailleurNationalite: "",
+        bailleurProfession: "",
+        bailleurStatutMatrimonial: "",
+        bailleurPieceIdentite: "",
+        bailleurNumeroIdentite: "",
+        locataireNom: "",
+        locatairePrenom: "",
+        locataireAdresse: "",
+        locataireDateNaissance: "",
+        locataireLieuNaissance: "",
+        locataireNationalite: "",
+        locataireProfession: "",
+        locataireStatutMatrimonial: "",
+        locatairePieceIdentite: "",
+        locataireNumeroIdentite: "",
+        nombreOccupants: "",
+        aGarant: "",
+        garantNom: "",
+        garantPrenom: "",
+        garantAdresse: "",
+        garantDateNaissance: "",
+        garantLieuNaissance: "",
+        garantStatutMatrimonial: "",
+        garantProfession: "",
+        garantPieceIdentite: "",
+        garantNumeroIdentite: "",
+        typeCaution: "",
+        adresseLogement: "",
+        typeLogement: "",
+        etageNumeroLot: "",
+        surfaceHabitable: "",
+        surfaceAnnexes: "",
+        anneeConstruction: "",
+        etatUsage: "",
+        dependances: "",
+        logementCopropriete: "",
+        typeBail: "",
+        mobilierListeComplete: [],
+        inventaireFourni: "",
+        destinationBien: "",
+        souslocationAutorisee: "",
+        colocationPossible: "",
+        loyerMensuel: "",
+        chargesMensuelles: "",
+        typologieCharges: "",
+        depotGarantie: "",
+        premierLoyerDate: "",
+        modePaiement: "",
+        revisionLoyer: "",
+        indiceIRL: "",
+        trimestreReference: "",
+        typeBailDuree: "",
+        dateDebutBail: "",
+        dureeBail: "",
+        diagnosticDPE: "",
+        diagnosticElectricite: "",
+        diagnosticGaz: "",
+        diagnosticERP: "",
+        diagnosticPlomb: "",
+        diagnosticAmiante: "",
+        etatLieuxFourni: "",
+        inventaireMobilierFourni: "",
+        travauxRecents: "",
+        typeChauffage: "",
+        compteursIndividuels: "",
+        releveCompteurs: "",
+        attestationAssurance: "",
+        servitudes: "",
+        logementZoneERP: "",
+        usageProfessionnel: "",
+        informationsComplementaires: "",
+      });
+
+      loadContrats();
+    } catch (err) {
+      console.error('Erreur création bail:', err);
+      toast.error('Erreur lors de la création du bail');
+    }
+  };
+
   const handleDelete = async (contrat: ContratRow) => {
     if (!user) return;
     if (!confirm(`Supprimer "${contrat.name}" ?`)) return;
@@ -1212,6 +1545,8 @@ INFORMATIONS COMPLÉMENTAIRES
             <DialogTitle>
               {pendingContractType === "Acte de vente immobilière" 
                 ? "Informations pour l'acte de vente immobilière" 
+                : (pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé")
+                ? "Informations pour le bail d'habitation"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
@@ -2688,6 +3023,170 @@ INFORMATIONS COMPLÉMENTAIRES
               </>
             )}
 
+            {/* Formulaire spécifique pour Bail d'habitation */}
+            {(pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") && (
+              <>
+                {/* Sélection du bailleur */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">👤 Bailleur (client)</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="bail_bailleur">Sélectionner le client bailleur *</Label>
+                    <Select value={bailHabitationData.bailleurClientId} onValueChange={(value) => setBailHabitationData({...bailHabitationData, bailleurClientId: value})}>
+                      <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                      <SelectContent>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {bailHabitationData.bailleurClientId && (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
+                      <p className="font-medium">✓ Informations automatiquement remplies depuis la fiche client</p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nom *</Label>
+                      <Input value={bailHabitationData.bailleurNom} onChange={(e) => setBailHabitationData({...bailHabitationData, bailleurNom: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Prénom *</Label>
+                      <Input value={bailHabitationData.bailleurPrenom} onChange={(e) => setBailHabitationData({...bailHabitationData, bailleurPrenom: e.target.value})} />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Adresse *</Label>
+                      <Input value={bailHabitationData.bailleurAdresse} onChange={(e) => setBailHabitationData({...bailHabitationData, bailleurAdresse: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Locataire */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">👥 Locataire</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nom *</Label>
+                      <Input value={bailHabitationData.locataireNom} onChange={(e) => setBailHabitationData({...bailHabitationData, locataireNom: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Prénom *</Label>
+                      <Input value={bailHabitationData.locatairePrenom} onChange={(e) => setBailHabitationData({...bailHabitationData, locatairePrenom: e.target.value})} />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Adresse actuelle *</Label>
+                      <Input value={bailHabitationData.locataireAdresse} onChange={(e) => setBailHabitationData({...bailHabitationData, locataireAdresse: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Date de naissance *</Label>
+                      <Input type="date" value={bailHabitationData.locataireDateNaissance} onChange={(e) => setBailHabitationData({...bailHabitationData, locataireDateNaissance: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Lieu de naissance *</Label>
+                      <Input value={bailHabitationData.locataireLieuNaissance} onChange={(e) => setBailHabitationData({...bailHabitationData, locataireLieuNaissance: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Profession *</Label>
+                      <Input value={bailHabitationData.locataireProfession} onChange={(e) => setBailHabitationData({...bailHabitationData, locataireProfession: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Statut matrimonial *</Label>
+                      <Input value={bailHabitationData.locataireStatutMatrimonial} onChange={(e) => setBailHabitationData({...bailHabitationData, locataireStatutMatrimonial: e.target.value})} placeholder="Ex: Célibataire, Marié..." />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Nombre d'occupants *</Label>
+                      <Input type="number" value={bailHabitationData.nombreOccupants} onChange={(e) => setBailHabitationData({...bailHabitationData, nombreOccupants: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Logement */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🏠 Logement</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Adresse complète du logement *</Label>
+                      <Input value={bailHabitationData.adresseLogement} onChange={(e) => setBailHabitationData({...bailHabitationData, adresseLogement: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Type de logement *</Label>
+                      <Input value={bailHabitationData.typeLogement} onChange={(e) => setBailHabitationData({...bailHabitationData, typeLogement: e.target.value})} placeholder="Ex: T2, Studio, Maison..." />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Surface habitable (m²) *</Label>
+                      <Input type="number" value={bailHabitationData.surfaceHabitable} onChange={(e) => setBailHabitationData({...bailHabitationData, surfaceHabitable: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Conditions financières */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">💶 Conditions financières</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Loyer mensuel (€) *</Label>
+                      <Input type="number" value={bailHabitationData.loyerMensuel} onChange={(e) => setBailHabitationData({...bailHabitationData, loyerMensuel: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Charges mensuelles (€)</Label>
+                      <Input type="number" value={bailHabitationData.chargesMensuelles} onChange={(e) => setBailHabitationData({...bailHabitationData, chargesMensuelles: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Dépôt de garantie (€) *</Label>
+                      <Input type="number" value={bailHabitationData.depotGarantie} onChange={(e) => setBailHabitationData({...bailHabitationData, depotGarantie: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Type de bail</Label>
+                      <Select value={bailHabitationData.typeBail} onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeBail: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vide">Location vide</SelectItem>
+                          <SelectItem value="meuble">Location meublée</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dates */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">📅 Dates du bail</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Date de début du bail *</Label>
+                      <Input type="date" value={bailHabitationData.dateDebutBail} onChange={(e) => setBailHabitationData({...bailHabitationData, dateDebutBail: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Durée du bail</Label>
+                      <Select value={bailHabitationData.typeBailDuree} onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeBailDuree: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3ans">3 ans (vide)</SelectItem>
+                          <SelectItem value="6ans">6 ans (vide - personne morale)</SelectItem>
+                          <SelectItem value="1an">1 an (meublé)</SelectItem>
+                          <SelectItem value="9mois">9 mois (étudiant)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Informations complémentaires */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🎯 Informations complémentaires</h3>
+                  <div className="space-y-2">
+                    <Label>Précisions, particularités...</Label>
+                    <Textarea 
+                      value={bailHabitationData.informationsComplementaires} 
+                      onChange={(e) => setBailHabitationData({...bailHabitationData, informationsComplementaires: e.target.value})} 
+                      rows={4}
+                      placeholder="Garant, travaux récents, diagnostics fournis, assurance, etc."
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -2699,7 +3198,15 @@ INFORMATIONS COMPLÉMENTAIRES
             </Button>
             <Button 
               className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
-              onClick={pendingContractType === "Acte de vente immobilière" ? handleActeVenteSubmit : handleQuestionnaireSubmit}
+              onClick={() => {
+                if (pendingContractType === "Acte de vente immobilière") {
+                  handleActeVenteSubmit();
+                } else if (pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") {
+                  handleBailHabitationSubmit();
+                } else {
+                  handleQuestionnaireSubmit();
+                }
+              }}
             >
               Créer le contrat
             </Button>
