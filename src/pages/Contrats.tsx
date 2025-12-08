@@ -2109,6 +2109,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           type="button"
                           variant="ghost"
                           size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white"
                           onClick={() => window.open(compromisClientIdentiteUrl, '_blank')}
                         >
                           <Eye className="w-4 h-4" />
@@ -3055,6 +3056,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                               type="button"
                               variant="ghost"
                               size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white"
                               onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
                             >
                               <Eye className="w-4 h-4" />
