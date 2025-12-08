@@ -254,15 +254,20 @@ export default function Contrats() {
     surfaceAnnexes: "",
     anneeConstruction: "",
     etatUsage: "",
-    dependances: "",
+    dependances: [] as string[], // cave, parking, grenier, jardin
     logementCopropriete: "",
+    reglementCoproFourni: "",
     
     // Si meublé
     typeBail: "", // "vide" ou "meuble"
     mobilierListeComplete: [] as string[],
     inventaireFourni: "",
     
+    // Nature du bailleur
+    natureBailleur: "", // "physique" ou "morale"
+    
     // Usage
+    residencePrincipale: "", // Oui/Non - obligatoire pour bail vide
     destinationBien: "",
     souslocationAutorisee: "",
     colocationPossible: "",
@@ -270,11 +275,12 @@ export default function Contrats() {
     // Conditions financières
     loyerMensuel: "",
     chargesMensuelles: "",
+    typeCharges: "", // "provision" ou "forfait"
     typologieCharges: "",
     depotGarantie: "",
     premierLoyerDate: "",
     modePaiement: "",
-    revisionLoyer: "",
+    revisionLoyerPrevue: "", // Oui/Non
     indiceIRL: "",
     trimestreReference: "",
     
@@ -283,7 +289,8 @@ export default function Contrats() {
     dateDebutBail: "",
     dureeBail: "",
     
-    // Diagnostics
+    // Diagnostics obligatoires
+    diagnosticsFournis: "", // Oui/Non
     diagnosticDPE: "",
     diagnosticElectricite: "",
     diagnosticGaz: "",
@@ -1260,26 +1267,31 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         surfaceAnnexes: "",
         anneeConstruction: "",
         etatUsage: "",
-        dependances: "",
+        dependances: [],
         logementCopropriete: "",
+        reglementCoproFourni: "",
         typeBail: "",
         mobilierListeComplete: [],
         inventaireFourni: "",
+        natureBailleur: "",
+        residencePrincipale: "",
         destinationBien: "",
         souslocationAutorisee: "",
         colocationPossible: "",
         loyerMensuel: "",
         chargesMensuelles: "",
+        typeCharges: "",
         typologieCharges: "",
         depotGarantie: "",
         premierLoyerDate: "",
         modePaiement: "",
-        revisionLoyer: "",
+        revisionLoyerPrevue: "",
         indiceIRL: "",
         trimestreReference: "",
         typeBailDuree: "",
         dateDebutBail: "",
         dureeBail: "",
+        diagnosticsFournis: "",
         diagnosticDPE: "",
         diagnosticElectricite: "",
         diagnosticGaz: "",
@@ -3121,10 +3133,138 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Input value={bailHabitationData.typeLogement} onChange={(e) => setBailHabitationData({...bailHabitationData, typeLogement: e.target.value})} placeholder="Ex: T2, Studio, Maison..." />
                     </div>
                     <div className="space-y-2">
+                      <Label>Étage / N° appartement</Label>
+                      <Input value={bailHabitationData.etageNumeroLot} onChange={(e) => setBailHabitationData({...bailHabitationData, etageNumeroLot: e.target.value})} placeholder="Ex: 3ème étage, Appt 12..." />
+                    </div>
+                    <div className="space-y-2">
                       <Label>Surface habitable (m²) *</Label>
                       <Input type="number" value={bailHabitationData.surfaceHabitable} onChange={(e) => setBailHabitationData({...bailHabitationData, surfaceHabitable: e.target.value})} />
                     </div>
+                    <div className="space-y-2">
+                      <Label>Logement en copropriété ? *</Label>
+                      <Select value={bailHabitationData.logementCopropriete} onValueChange={(value) => setBailHabitationData({...bailHabitationData, logementCopropriete: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {bailHabitationData.logementCopropriete === "oui" && (
+                      <div className="space-y-2">
+                        <Label>Règlement de copropriété fourni ?</Label>
+                        <Select value={bailHabitationData.reglementCoproFourni} onValueChange={(value) => setBailHabitationData({...bailHabitationData, reglementCoproFourni: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Dépendances incluses *</Label>
+                      <div className="flex flex-wrap gap-3">
+                        {["Cave", "Parking", "Grenier", "Jardin"].map((dep) => (
+                          <label key={dep} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={bailHabitationData.dependances.includes(dep)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setBailHabitationData({...bailHabitationData, dependances: [...bailHabitationData.dependances, dep]});
+                                } else {
+                                  setBailHabitationData({...bailHabitationData, dependances: bailHabitationData.dependances.filter(d => d !== dep)});
+                                }
+                              }}
+                              className="rounded border-gray-300"
+                            />
+                            <span className="text-sm">{dep}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   </div>
+                </div>
+
+                {/* Nature du bailleur et durée */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">⚖️ Nature du bailleur et durée du bail</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nature du bailleur *</Label>
+                      <Select value={bailHabitationData.natureBailleur} onValueChange={(value) => setBailHabitationData({...bailHabitationData, natureBailleur: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="physique">Personne physique (3 ans pour bail vide)</SelectItem>
+                          <SelectItem value="morale">Personne morale (6 ans pour bail vide)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Résidence principale du locataire ? *</Label>
+                      <Select value={bailHabitationData.residencePrincipale} onValueChange={(value) => setBailHabitationData({...bailHabitationData, residencePrincipale: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Garant */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">👥 Garant (si applicable)</h3>
+                  <div className="space-y-2">
+                    <Label>A-t-il un garant ?</Label>
+                    <Select value={bailHabitationData.aGarant} onValueChange={(value) => setBailHabitationData({...bailHabitationData, aGarant: value})}>
+                      <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {bailHabitationData.aGarant === "oui" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
+                      <div className="space-y-2">
+                        <Label>Nom du garant *</Label>
+                        <Input value={bailHabitationData.garantNom} onChange={(e) => setBailHabitationData({...bailHabitationData, garantNom: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Prénom *</Label>
+                        <Input value={bailHabitationData.garantPrenom} onChange={(e) => setBailHabitationData({...bailHabitationData, garantPrenom: e.target.value})} />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse *</Label>
+                        <Input value={bailHabitationData.garantAdresse} onChange={(e) => setBailHabitationData({...bailHabitationData, garantAdresse: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de naissance *</Label>
+                        <Input type="date" value={bailHabitationData.garantDateNaissance} onChange={(e) => setBailHabitationData({...bailHabitationData, garantDateNaissance: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance *</Label>
+                        <Input value={bailHabitationData.garantLieuNaissance} onChange={(e) => setBailHabitationData({...bailHabitationData, garantLieuNaissance: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Profession *</Label>
+                        <Input value={bailHabitationData.garantProfession} onChange={(e) => setBailHabitationData({...bailHabitationData, garantProfession: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Type de caution *</Label>
+                        <Select value={bailHabitationData.typeCaution} onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeCaution: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="simple">Caution simple</SelectItem>
+                            <SelectItem value="solidaire">Caution solidaire</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Conditions financières */}
@@ -3140,9 +3280,35 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Input type="number" value={bailHabitationData.chargesMensuelles} onChange={(e) => setBailHabitationData({...bailHabitationData, chargesMensuelles: e.target.value})} />
                     </div>
                     <div className="space-y-2">
+                      <Label>Type de charges *</Label>
+                      <Select value={bailHabitationData.typeCharges} onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeCharges: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="provision">Provision + régularisation annuelle</SelectItem>
+                          <SelectItem value="forfait">Forfait</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
                       <Label>Dépôt de garantie (€) *</Label>
                       <Input type="number" value={bailHabitationData.depotGarantie} onChange={(e) => setBailHabitationData({...bailHabitationData, depotGarantie: e.target.value})} />
                     </div>
+                    <div className="space-y-2">
+                      <Label>Révision du loyer prévue ? *</Label>
+                      <Select value={bailHabitationData.revisionLoyerPrevue} onValueChange={(value) => setBailHabitationData({...bailHabitationData, revisionLoyerPrevue: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {bailHabitationData.revisionLoyerPrevue === "oui" && (
+                      <div className="space-y-2">
+                        <Label>Trimestre de référence IRL *</Label>
+                        <Input value={bailHabitationData.trimestreReference} onChange={(e) => setBailHabitationData({...bailHabitationData, trimestreReference: e.target.value})} placeholder="Ex: 2e trimestre 2025" />
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <Label>Type de bail</Label>
                       <Select value={bailHabitationData.typeBail} onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeBail: value})}>
@@ -3177,6 +3343,98 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       </Select>
                     </div>
                   </div>
+                </div>
+
+                {/* Caractéristiques techniques ALUR */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🔌 Caractéristiques techniques (obligatoires ALUR)</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Type de chauffage *</Label>
+                      <Select value={bailHabitationData.typeChauffage} onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeChauffage: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="electrique">Électrique</SelectItem>
+                          <SelectItem value="gaz">Gaz</SelectItem>
+                          <SelectItem value="fioul">Fioul</SelectItem>
+                          <SelectItem value="collectif">Collectif</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Compteurs individuels ? *</Label>
+                      <Select value={bailHabitationData.compteursIndividuels} onValueChange={(value) => setBailHabitationData({...bailHabitationData, compteursIndividuels: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Relevé des compteurs à l'entrée</Label>
+                      <Input value={bailHabitationData.releveCompteurs} onChange={(e) => setBailHabitationData({...bailHabitationData, releveCompteurs: e.target.value})} placeholder="Électricité: XX kWh, Eau: XX m3..." />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Diagnostics obligatoires */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">📁 Diagnostics obligatoires</h3>
+                  <div className="space-y-2">
+                    <Label>Diagnostics fournis ? *</Label>
+                    <Select value={bailHabitationData.diagnosticsFournis} onValueChange={(value) => setBailHabitationData({...bailHabitationData, diagnosticsFournis: value})}>
+                      <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui - Tous les diagnostics obligatoires sont fournis</SelectItem>
+                        <SelectItem value="non">Non - Diagnostics manquants</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg">
+                    <p className="font-medium mb-2">Diagnostics obligatoires pour un bail vide :</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>DPE (Diagnostic de Performance Énergétique)</li>
+                      <li>État de l'installation électrique (si + de 15 ans)</li>
+                      <li>État de l'installation gaz (si + de 15 ans)</li>
+                      <li>ERP (État des Risques et Pollutions)</li>
+                      <li>CREP - Plomb (si immeuble avant 1949)</li>
+                      <li>Amiante (information obligatoire)</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* État des lieux */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🛠️ État des lieux</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>État des lieux d'entrée fourni ? *</Label>
+                      <Select value={bailHabitationData.etatLieuxFourni} onValueChange={(value) => setBailHabitationData({...bailHabitationData, etatLieuxFourni: value})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non - À établir lors de la remise des clés</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Assurance */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🛡️ Assurance habitation</h3>
+                  <div className="space-y-2">
+                    <Label>Attestation d'assurance fournie par le locataire ? *</Label>
+                    <Select value={bailHabitationData.attestationAssurance} onValueChange={(value) => setBailHabitationData({...bailHabitationData, attestationAssurance: value})}>
+                      <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui - Attestation fournie</SelectItem>
+                        <SelectItem value="non">Non - À fournir avant la remise des clés</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <p className="text-sm text-muted-foreground">L'assurance habitation est obligatoire pour le locataire avant l'entrée dans les lieux.</p>
                 </div>
 
                 {/* Informations complémentaires */}
