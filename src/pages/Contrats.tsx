@@ -1363,190 +1363,370 @@ INFORMATIONS COMPLÉMENTAIRES
               </div>
             </div>
 
-            {/* Informations client */}
+            {/* Sélection du rôle du client */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Client</h3>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="clientId">Sélectionner un client *</Label>
-                  <Select 
-                    value={questionnaireData.clientId}
-                    onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientId: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choisir un client" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {clients.map((client) => (
-                        <SelectItem key={client.id} value={client.id}>
-                          {client.nom} {client.prenom}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Afficher les informations du client sélectionné */}
-                {questionnaireData.clientId && clients.find(c => c.id === questionnaireData.clientId) && (
-                  <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
-                    <p><strong>Nom complet:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.nom} {clients.find(c => c.id === questionnaireData.clientId)?.prenom}</p>
-                    {clients.find(c => c.id === questionnaireData.clientId)?.adresse && (
-                      <p><strong>Adresse:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.adresse}</p>
-                    )}
-                    {clients.find(c => c.id === questionnaireData.clientId)?.telephone && (
-                      <p><strong>Téléphone:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.telephone}</p>
-                    )}
-                    {clients.find(c => c.id === questionnaireData.clientId)?.email && (
-                      <p><strong>Email:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.email}</p>
-                    )}
-                    {clients.find(c => c.id === questionnaireData.clientId)?.date_naissance && (
-                      <p><strong>Date de naissance:</strong> {new Date(clients.find(c => c.id === questionnaireData.clientId)?.date_naissance).toLocaleDateString('fr-FR')}</p>
-                    )}
-                    {clients.find(c => c.id === questionnaireData.clientId)?.nationalite && (
-                      <p><strong>Nationalité:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.nationalite}</p>
-                    )}
+              <h3 className="font-semibold text-lg border-b pb-2">Rôle du client</h3>
+              <div className="space-y-2">
+                <Label>Votre client est : *</Label>
+                <RadioGroup 
+                  value={questionnaireData.clientRole}
+                  onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientRole: value})}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="acheteur" id="acheteur" />
+                    <Label htmlFor="acheteur" className="cursor-pointer">Acheteur</Label>
                   </div>
-                )}
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="vendeur" id="vendeur" />
+                    <Label htmlFor="vendeur" className="cursor-pointer">Vendeur</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
 
-                <div className="space-y-2">
-                  <Label>Rôle du client *</Label>
-                  <RadioGroup 
-                    value={questionnaireData.clientRole}
-                    onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientRole: value})}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="acheteur" id="acheteur" />
-                      <Label htmlFor="acheteur" className="cursor-pointer">Acheteur</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="vendeur" id="vendeur" />
-                      <Label htmlFor="vendeur" className="cursor-pointer">Vendeur</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                {/* Statut matrimonial du client */}
-                <div className="space-y-2">
-                  <Label htmlFor="statutMatrimonialClient">Statut matrimonial *</Label>
-                  <Select value={questionnaireData.statutMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialClient: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="celibataire">Célibataire</SelectItem>
-                      <SelectItem value="marie">Marié</SelectItem>
-                      <SelectItem value="pacse">Pacsé</SelectItem>
-                      <SelectItem value="divorce">Divorcé</SelectItem>
-                      <SelectItem value="veuf">Veuf</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {(questionnaireData.statutMatrimonialClient === "marie" || questionnaireData.statutMatrimonialClient === "pacse") && (
+            {/* Section Vendeur */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg border-b pb-2">👤 Vendeur</h3>
+              <div className="space-y-4">
+                {questionnaireData.clientRole === "vendeur" ? (
                   <>
+                    {/* Le client est le vendeur */}
                     <div className="space-y-2">
-                      <Label htmlFor="regimeMatrimonialClient">Régime matrimonial *</Label>
-                      <Select value={questionnaireData.regimeMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, regimeMatrimonialClient: value})}>
+                      <Label htmlFor="clientId">Sélectionner votre client *</Label>
+                      <Select 
+                        value={questionnaireData.clientId}
+                        onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientId: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choisir un client" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.nom} {client.prenom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Afficher les informations du client sélectionné */}
+                    {questionnaireData.clientId && clients.find(c => c.id === questionnaireData.clientId) && (
+                      <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                        <p><strong>Nom complet:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.nom} {clients.find(c => c.id === questionnaireData.clientId)?.prenom}</p>
+                        {clients.find(c => c.id === questionnaireData.clientId)?.adresse && (
+                          <p><strong>Adresse:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.adresse}</p>
+                        )}
+                        {clients.find(c => c.id === questionnaireData.clientId)?.telephone && (
+                          <p><strong>Téléphone:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.telephone}</p>
+                        )}
+                        {clients.find(c => c.id === questionnaireData.clientId)?.email && (
+                          <p><strong>Email:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.email}</p>
+                        )}
+                        {clients.find(c => c.id === questionnaireData.clientId)?.date_naissance && (
+                          <p><strong>Date de naissance:</strong> {new Date(clients.find(c => c.id === questionnaireData.clientId)?.date_naissance).toLocaleDateString('fr-FR')}</p>
+                        )}
+                        {clients.find(c => c.id === questionnaireData.clientId)?.nationalite && (
+                          <p><strong>Nationalité:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.nationalite}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Statut matrimonial du client vendeur */}
+                    <div className="space-y-2">
+                      <Label htmlFor="statutMatrimonialClient">Statut matrimonial *</Label>
+                      <Select value={questionnaireData.statutMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialClient: value})}>
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionner..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="communaute_legale">Communauté légale</SelectItem>
-                          <SelectItem value="separation_biens">Séparation de biens</SelectItem>
-                          <SelectItem value="autre">Autre</SelectItem>
+                          <SelectItem value="celibataire">Célibataire</SelectItem>
+                          <SelectItem value="marie">Marié</SelectItem>
+                          <SelectItem value="pacse">Pacsé</SelectItem>
+                          <SelectItem value="divorce">Divorcé</SelectItem>
+                          <SelectItem value="veuf">Veuf</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    {questionnaireData.regimeMatrimonialClient === "autre" && (
-                      <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="precisionRegimeClient">Préciser le régime</Label>
+
+                    {(questionnaireData.statutMatrimonialClient === "marie" || questionnaireData.statutMatrimonialClient === "pacse") && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="regimeMatrimonialClient">Régime matrimonial *</Label>
+                          <Select value={questionnaireData.regimeMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, regimeMatrimonialClient: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                              <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                              <SelectItem value="autre">Autre</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {questionnaireData.regimeMatrimonialClient === "autre" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="precisionRegimeClient">Préciser le régime</Label>
+                            <Input 
+                              id="precisionRegimeClient"
+                              value={questionnaireData.precisionRegimeClient}
+                              onChange={(e) => setQuestionnaireData({...questionnaireData, precisionRegimeClient: e.target.value})}
+                              placeholder="Précisez le régime matrimonial..."
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {/* Saisie manuelle vendeur (le client est acheteur) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="nomAutrePartie">Nom *</Label>
                         <Input 
-                          id="precisionRegimeClient"
-                          value={questionnaireData.precisionRegimeClient}
-                          onChange={(e) => setQuestionnaireData({...questionnaireData, precisionRegimeClient: e.target.value})}
-                          placeholder="Précisez le régime matrimonial..."
+                          id="nomAutrePartie"
+                          value={questionnaireData.nomAutrePartie}
+                          onChange={(e) => setQuestionnaireData({...questionnaireData, nomAutrePartie: e.target.value})}
                         />
                       </div>
-                    )}
+                      <div className="space-y-2">
+                        <Label htmlFor="prenomAutrePartie">Prénom *</Label>
+                        <Input 
+                          id="prenomAutrePartie"
+                          value={questionnaireData.prenomAutrePartie}
+                          onChange={(e) => setQuestionnaireData({...questionnaireData, prenomAutrePartie: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="adresseAutrePartie">Adresse complète *</Label>
+                        <Input 
+                          id="adresseAutrePartie"
+                          value={questionnaireData.adresseAutrePartie}
+                          onChange={(e) => setQuestionnaireData({...questionnaireData, adresseAutrePartie: e.target.value})}
+                        />
+                      </div>
+
+                      {/* Statut matrimonial autre partie */}
+                      <div className="space-y-2">
+                        <Label htmlFor="statutMatrimonialAutrePartie">Statut matrimonial *</Label>
+                        <Select value={questionnaireData.statutMatrimonialAutrePartie} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialAutrePartie: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="celibataire">Célibataire</SelectItem>
+                            <SelectItem value="marie">Marié</SelectItem>
+                            <SelectItem value="pacse">Pacsé</SelectItem>
+                            <SelectItem value="divorce">Divorcé</SelectItem>
+                            <SelectItem value="veuf">Veuf</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {(questionnaireData.statutMatrimonialAutrePartie === "marie" || questionnaireData.statutMatrimonialAutrePartie === "pacse") && (
+                        <>
+                          <div className="space-y-2">
+                            <Label htmlFor="regimeMatrimonialAutrePartie">Régime matrimonial *</Label>
+                            <Select value={questionnaireData.regimeMatrimonialAutrePartie} onValueChange={(value) => setQuestionnaireData({...questionnaireData, regimeMatrimonialAutrePartie: value})}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                                <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {questionnaireData.regimeMatrimonialAutrePartie === "autre" && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label htmlFor="precisionRegimeAutrePartie">Préciser le régime</Label>
+                              <Input 
+                                id="precisionRegimeAutrePartie"
+                                value={questionnaireData.precisionRegimeAutrePartie}
+                                onChange={(e) => setQuestionnaireData({...questionnaireData, precisionRegimeAutrePartie: e.target.value})}
+                                placeholder="Précisez le régime matrimonial..."
+                              />
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Informations autre partie */}
+            {/* Section Acquéreur */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">
-                {questionnaireData.clientRole === "acheteur" ? "Vendeur" : "Acquéreur"}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nomAutrePartie">Nom *</Label>
-                  <Input 
-                    id="nomAutrePartie"
-                    value={questionnaireData.nomAutrePartie}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, nomAutrePartie: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="prenomAutrePartie">Prénom *</Label>
-                  <Input 
-                    id="prenomAutrePartie"
-                    value={questionnaireData.prenomAutrePartie}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, prenomAutrePartie: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="adresseAutrePartie">Adresse complète *</Label>
-                  <Input 
-                    id="adresseAutrePartie"
-                    value={questionnaireData.adresseAutrePartie}
-                    onChange={(e) => setQuestionnaireData({...questionnaireData, adresseAutrePartie: e.target.value})}
-                  />
-                </div>
-
-                {/* Statut matrimonial autre partie */}
-                <div className="space-y-2">
-                  <Label htmlFor="statutMatrimonialAutrePartie">Statut matrimonial *</Label>
-                  <Select value={questionnaireData.statutMatrimonialAutrePartie} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialAutrePartie: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="celibataire">Célibataire</SelectItem>
-                      <SelectItem value="marie">Marié</SelectItem>
-                      <SelectItem value="pacse">Pacsé</SelectItem>
-                      <SelectItem value="divorce">Divorcé</SelectItem>
-                      <SelectItem value="veuf">Veuf</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {(questionnaireData.statutMatrimonialAutrePartie === "marie" || questionnaireData.statutMatrimonialAutrePartie === "pacse") && (
+              <h3 className="font-semibold text-lg border-b pb-2">👥 Acquéreur</h3>
+              <div className="space-y-4">
+                {questionnaireData.clientRole === "acheteur" ? (
                   <>
+                    {/* Le client est l'acheteur */}
                     <div className="space-y-2">
-                      <Label htmlFor="regimeMatrimonialAutrePartie">Régime matrimonial *</Label>
-                      <Select value={questionnaireData.regimeMatrimonialAutrePartie} onValueChange={(value) => setQuestionnaireData({...questionnaireData, regimeMatrimonialAutrePartie: value})}>
+                      <Label htmlFor="clientId">Sélectionner votre client *</Label>
+                      <Select 
+                        value={questionnaireData.clientId}
+                        onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientId: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choisir un client" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.nom} {client.prenom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Afficher les informations du client sélectionné */}
+                    {questionnaireData.clientId && clients.find(c => c.id === questionnaireData.clientId) && (
+                      <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                        <p><strong>Nom complet:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.nom} {clients.find(c => c.id === questionnaireData.clientId)?.prenom}</p>
+                        {clients.find(c => c.id === questionnaireData.clientId)?.adresse && (
+                          <p><strong>Adresse:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.adresse}</p>
+                        )}
+                        {clients.find(c => c.id === questionnaireData.clientId)?.telephone && (
+                          <p><strong>Téléphone:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.telephone}</p>
+                        )}
+                        {clients.find(c => c.id === questionnaireData.clientId)?.email && (
+                          <p><strong>Email:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.email}</p>
+                        )}
+                        {clients.find(c => c.id === questionnaireData.clientId)?.date_naissance && (
+                          <p><strong>Date de naissance:</strong> {new Date(clients.find(c => c.id === questionnaireData.clientId)?.date_naissance).toLocaleDateString('fr-FR')}</p>
+                        )}
+                        {clients.find(c => c.id === questionnaireData.clientId)?.nationalite && (
+                          <p><strong>Nationalité:</strong> {clients.find(c => c.id === questionnaireData.clientId)?.nationalite}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Statut matrimonial du client acheteur */}
+                    <div className="space-y-2">
+                      <Label htmlFor="statutMatrimonialClient">Statut matrimonial *</Label>
+                      <Select value={questionnaireData.statutMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialClient: value})}>
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionner..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="communaute_legale">Communauté légale</SelectItem>
-                          <SelectItem value="separation_biens">Séparation de biens</SelectItem>
-                          <SelectItem value="autre">Autre</SelectItem>
+                          <SelectItem value="celibataire">Célibataire</SelectItem>
+                          <SelectItem value="marie">Marié</SelectItem>
+                          <SelectItem value="pacse">Pacsé</SelectItem>
+                          <SelectItem value="divorce">Divorcé</SelectItem>
+                          <SelectItem value="veuf">Veuf</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    {questionnaireData.regimeMatrimonialAutrePartie === "autre" && (
-                      <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="precisionRegimeAutrePartie">Préciser le régime</Label>
+
+                    {(questionnaireData.statutMatrimonialClient === "marie" || questionnaireData.statutMatrimonialClient === "pacse") && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="regimeMatrimonialClient">Régime matrimonial *</Label>
+                          <Select value={questionnaireData.regimeMatrimonialClient} onValueChange={(value) => setQuestionnaireData({...questionnaireData, regimeMatrimonialClient: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                              <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                              <SelectItem value="autre">Autre</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {questionnaireData.regimeMatrimonialClient === "autre" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="precisionRegimeClient">Préciser le régime</Label>
+                            <Input 
+                              id="precisionRegimeClient"
+                              value={questionnaireData.precisionRegimeClient}
+                              onChange={(e) => setQuestionnaireData({...questionnaireData, precisionRegimeClient: e.target.value})}
+                              placeholder="Précisez le régime matrimonial..."
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {/* Saisie manuelle acquéreur (le client est vendeur) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="nomAutrePartie">Nom *</Label>
                         <Input 
-                          id="precisionRegimeAutrePartie"
-                          value={questionnaireData.precisionRegimeAutrePartie}
-                          onChange={(e) => setQuestionnaireData({...questionnaireData, precisionRegimeAutrePartie: e.target.value})}
-                          placeholder="Précisez le régime matrimonial..."
+                          id="nomAutrePartie"
+                          value={questionnaireData.nomAutrePartie}
+                          onChange={(e) => setQuestionnaireData({...questionnaireData, nomAutrePartie: e.target.value})}
                         />
                       </div>
-                    )}
+                      <div className="space-y-2">
+                        <Label htmlFor="prenomAutrePartie">Prénom *</Label>
+                        <Input 
+                          id="prenomAutrePartie"
+                          value={questionnaireData.prenomAutrePartie}
+                          onChange={(e) => setQuestionnaireData({...questionnaireData, prenomAutrePartie: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="adresseAutrePartie">Adresse complète *</Label>
+                        <Input 
+                          id="adresseAutrePartie"
+                          value={questionnaireData.adresseAutrePartie}
+                          onChange={(e) => setQuestionnaireData({...questionnaireData, adresseAutrePartie: e.target.value})}
+                        />
+                      </div>
+
+                      {/* Statut matrimonial autre partie */}
+                      <div className="space-y-2">
+                        <Label htmlFor="statutMatrimonialAutrePartie">Statut matrimonial *</Label>
+                        <Select value={questionnaireData.statutMatrimonialAutrePartie} onValueChange={(value) => setQuestionnaireData({...questionnaireData, statutMatrimonialAutrePartie: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="celibataire">Célibataire</SelectItem>
+                            <SelectItem value="marie">Marié</SelectItem>
+                            <SelectItem value="pacse">Pacsé</SelectItem>
+                            <SelectItem value="divorce">Divorcé</SelectItem>
+                            <SelectItem value="veuf">Veuf</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {(questionnaireData.statutMatrimonialAutrePartie === "marie" || questionnaireData.statutMatrimonialAutrePartie === "pacse") && (
+                        <>
+                          <div className="space-y-2">
+                            <Label htmlFor="regimeMatrimonialAutrePartie">Régime matrimonial *</Label>
+                            <Select value={questionnaireData.regimeMatrimonialAutrePartie} onValueChange={(value) => setQuestionnaireData({...questionnaireData, regimeMatrimonialAutrePartie: value})}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                                <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {questionnaireData.regimeMatrimonialAutrePartie === "autre" && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label htmlFor="precisionRegimeAutrePartie">Préciser le régime</Label>
+                              <Input 
+                                id="precisionRegimeAutrePartie"
+                                value={questionnaireData.precisionRegimeAutrePartie}
+                                onChange={(e) => setQuestionnaireData({...questionnaireData, precisionRegimeAutrePartie: e.target.value})}
+                                placeholder="Précisez le régime matrimonial..."
+                              />
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </>
                 )}
               </div>
