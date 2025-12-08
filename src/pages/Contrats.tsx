@@ -1194,6 +1194,8 @@ INFORMATIONS COMPLÉMENTAIRES
             <DialogTitle>
               {pendingContractType === "Acte de vente immobilière" 
                 ? "Informations pour l'acte de vente immobilière" 
+                : questionnaireData.typeContrat === "promesse_unilaterale"
+                ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
             </DialogTitle>
             <DialogDescription>
