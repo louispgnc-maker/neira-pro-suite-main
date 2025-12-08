@@ -306,7 +306,7 @@ export default function Contrats() {
       if (!user) return;
       const { data, error } = await supabase
         .from('clients')
-        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession, situation_matrimoniale, type_identite, numero_identite')
+        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession, situation_matrimoniale, situation_familiale, type_identite, numero_identite')
         .eq('owner_id', user.id)
         .eq('role', role)
         .order('nom', { ascending: true });
@@ -324,11 +324,11 @@ export default function Contrats() {
   // Pré-remplir les informations du client sélectionné (Compromis de vente)
   useEffect(() => {
     if (questionnaireData.clientId && clients.length > 0) {
-      const selectedClient = clients.find(c => c.id === questionnaireData.clientId);
+      const selectedClient = clients.find(c => c.id === questionnaireData.clientId) as any;
       if (selectedClient) {
         setQuestionnaireData(prev => ({
           ...prev,
-          statutMatrimonialClient: selectedClient.situation_matrimoniale || prev.statutMatrimonialClient,
+          statutMatrimonialClient: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
         }));
       }
     }
@@ -349,7 +349,7 @@ export default function Contrats() {
             vendeurLieuNaissance: selectedClient.lieu_naissance || "",
             vendeurNationalite: selectedClient.nationalite || "",
             vendeurProfession: selectedClient.profession || "",
-            vendeurStatutMatrimonial: selectedClient.situation_matrimoniale || "",
+            vendeurStatutMatrimonial: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
             vendeurPieceIdentite: selectedClient.type_identite || "",
             vendeurNumeroIdentite: selectedClient.numero_identite || "",
           }));
@@ -363,7 +363,7 @@ export default function Contrats() {
             acheteurLieuNaissance: selectedClient.lieu_naissance || "",
             acheteurNationalite: selectedClient.nationalite || "",
             acheteurProfession: selectedClient.profession || "",
-            acheteurStatutMatrimonial: selectedClient.situation_matrimoniale || "",
+            acheteurStatutMatrimonial: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
           }));
         }
       }
