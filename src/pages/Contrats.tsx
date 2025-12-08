@@ -326,9 +326,15 @@ export default function Contrats() {
     if (questionnaireData.clientId && clients.length > 0) {
       const selectedClient = clients.find(c => c.id === questionnaireData.clientId) as any;
       if (selectedClient) {
+        // Gérer le cas où situation_familiale est un objet JSON
+        let situationFamiliale = selectedClient.situation_familiale;
+        if (typeof situationFamiliale === 'object' && situationFamiliale !== null) {
+          situationFamiliale = situationFamiliale.value || situationFamiliale.label || situationFamiliale.situation || "";
+        }
+        
         setQuestionnaireData(prev => ({
           ...prev,
-          statutMatrimonialClient: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
+          statutMatrimonialClient: situationFamiliale || selectedClient.situation_matrimoniale || "",
         }));
       }
     }
@@ -339,6 +345,13 @@ export default function Contrats() {
     if (acteVenteData.clientId && acteVenteData.clientRole && clients.length > 0) {
       const selectedClient = clients.find(c => c.id === acteVenteData.clientId) as any;
       if (selectedClient) {
+        // Gérer le cas où situation_familiale est un objet JSON
+        let situationFamiliale = selectedClient.situation_familiale;
+        if (typeof situationFamiliale === 'object' && situationFamiliale !== null) {
+          situationFamiliale = situationFamiliale.value || situationFamiliale.label || situationFamiliale.situation || "";
+        }
+        const statutMatrimonial = situationFamiliale || selectedClient.situation_matrimoniale || "";
+
         if (acteVenteData.clientRole === "vendeur") {
           setActeVenteData(prev => ({
             ...prev,
@@ -349,7 +362,7 @@ export default function Contrats() {
             vendeurLieuNaissance: selectedClient.lieu_naissance || "",
             vendeurNationalite: selectedClient.nationalite || "",
             vendeurProfession: selectedClient.profession || "",
-            vendeurStatutMatrimonial: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
+            vendeurStatutMatrimonial: statutMatrimonial,
             vendeurPieceIdentite: selectedClient.type_identite || "",
             vendeurNumeroIdentite: selectedClient.numero_identite || "",
           }));
@@ -363,7 +376,7 @@ export default function Contrats() {
             acheteurLieuNaissance: selectedClient.lieu_naissance || "",
             acheteurNationalite: selectedClient.nationalite || "",
             acheteurProfession: selectedClient.profession || "",
-            acheteurStatutMatrimonial: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
+            acheteurStatutMatrimonial: statutMatrimonial,
           }));
         }
       }
