@@ -2005,10 +2005,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="h-6 w-6 p-0"
+                          className="h-6 w-6 p-0 hover:bg-transparent"
                           onClick={() => setCompromisIdentiteFiles(prev => prev.filter((_, i) => i !== index))}
                         >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </Button>
@@ -2324,10 +2324,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="h-6 w-6 p-0"
+                            className="h-6 w-6 p-0 hover:bg-transparent"
                             onClick={() => setCompromisDiagnosticsFiles(prev => prev.filter((_, i) => i !== index))}
                           >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </Button>
@@ -2798,10 +2798,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-6 w-6 p-0 hover:bg-transparent"
                               onClick={() => setActeIdentiteFiles(prev => prev.filter((_, i) => i !== index))}
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </Button>
@@ -3093,10 +3093,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-6 w-6 p-0 hover:bg-transparent"
                               onClick={() => setActeDiagnosticsFiles(prev => prev.filter((_, i) => i !== index))}
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </Button>
@@ -3390,10 +3390,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-6 w-6 p-0 hover:bg-transparent"
                               onClick={() => setLocataireDocsFiles(prev => prev.filter((_, i) => i !== index))}
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </Button>
@@ -3590,10 +3590,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                                   type="button"
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6 p-0"
+                                  className="h-6 w-6 p-0 hover:bg-transparent"
                                   onClick={() => setGarantDocsFiles(prev => prev.filter((_, i) => i !== index))}
                                 >
-                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                   </svg>
                                 </Button>
@@ -3784,10 +3784,10 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-6 w-6 p-0 hover:bg-transparent"
                               onClick={() => setBailDiagnosticsFiles(prev => prev.filter((_, i) => i !== index))}
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </Button>
@@ -3851,7 +3851,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
             <Button 
-              variant="outline" 
+              variant="outline"
+              className="hover:bg-transparent"
               onClick={() => setShowQuestionDialog(false)}
             >
               Annuler
