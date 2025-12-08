@@ -326,10 +326,12 @@ export default function Contrats() {
     if (questionnaireData.clientId && clients.length > 0) {
       const selectedClient = clients.find(c => c.id === questionnaireData.clientId) as any;
       if (selectedClient) {
-        // Gérer le cas où situation_familiale est un objet JSON
-        let situationFamiliale = selectedClient.situation_familiale;
-        if (typeof situationFamiliale === 'object' && situationFamiliale !== null) {
-          situationFamiliale = situationFamiliale.value || situationFamiliale.label || situationFamiliale.situation || "";
+        // Extraire la situation familiale de l'objet JSON
+        let situationFamiliale = "";
+        if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+          situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+        } else if (typeof selectedClient.situation_familiale === 'string') {
+          situationFamiliale = selectedClient.situation_familiale;
         }
         
         setQuestionnaireData(prev => ({
@@ -345,11 +347,14 @@ export default function Contrats() {
     if (acteVenteData.clientId && acteVenteData.clientRole && clients.length > 0) {
       const selectedClient = clients.find(c => c.id === acteVenteData.clientId) as any;
       if (selectedClient) {
-        // Gérer le cas où situation_familiale est un objet JSON
-        let situationFamiliale = selectedClient.situation_familiale;
-        if (typeof situationFamiliale === 'object' && situationFamiliale !== null) {
-          situationFamiliale = situationFamiliale.value || situationFamiliale.label || situationFamiliale.situation || "";
+        // Extraire la situation familiale de l'objet JSON
+        let situationFamiliale = "";
+        if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+          situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+        } else if (typeof selectedClient.situation_familiale === 'string') {
+          situationFamiliale = selectedClient.situation_familiale;
         }
+        
         const statutMatrimonial = situationFamiliale || selectedClient.situation_matrimoniale || "";
 
         if (acteVenteData.clientRole === "vendeur") {
