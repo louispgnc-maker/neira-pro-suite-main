@@ -100,6 +100,8 @@ export default function Contrats() {
   const [acteAcheteurFiles, setActeAcheteurFiles] = useState<File[]>([]); // Fichiers supplémentaires acheteur
   const [acteDiagnosticsFiles, setActeDiagnosticsFiles] = useState<File[]>([]);
   const [locataireDocsFiles, setLocataireDocsFiles] = useState<File[]>([]);
+  const [bailleurIdFiles, setBailleurIdFiles] = useState<File[]>([]); // Pièce d'identité bailleur
+  const [locataireIdFiles, setLocataireIdFiles] = useState<File[]>([]); // Documents locataire
   const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
   const [bailDiagnosticsFiles, setBailDiagnosticsFiles] = useState<File[]>([]);
   
@@ -4727,6 +4729,14 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           accept="application/pdf,image/*"
                           className="hidden"
                           id="bailleur-id-upload"
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length > 0) {
+                              setBailleurIdFiles(prev => [...prev, ...files]);
+                              toast.success(`${files.length} fichier(s) ajouté(s)`);
+                            }
+                            e.target.value = '';
+                          }}
                         />
                         <label htmlFor="bailleur-id-upload" className="cursor-pointer flex items-center gap-3">
                           <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -4740,6 +4750,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           </div>
                         </label>
                       </div>
+                      {bailleurIdFiles.length > 0 && (
+                        <div className="space-y-2 mt-2">
+                          {bailleurIdFiles.map((file, index) => (
+                            <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                              <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <span className="text-sm flex-1 truncate">{file.name}</span>
+                              <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 hover:bg-transparent"
+                                onClick={() => setBailleurIdFiles(prev => prev.filter((_, i) => i !== index))}
+                              >
+                                <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -4864,6 +4898,14 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           multiple
                           className="hidden"
                           id="locataire-id-upload-alt"
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length > 0) {
+                              setLocataireIdFiles(prev => [...prev, ...files]);
+                              toast.success(`${files.length} fichier(s) ajouté(s)`);
+                            }
+                            e.target.value = '';
+                          }}
                         />
                         <label htmlFor="locataire-id-upload-alt" className="cursor-pointer flex items-center gap-3">
                           <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -4877,6 +4919,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           </div>
                         </label>
                       </div>
+                      {locataireIdFiles.length > 0 && (
+                        <div className="space-y-2 mt-2">
+                          {locataireIdFiles.map((file, index) => (
+                            <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                              <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <span className="text-sm flex-1 truncate">{file.name}</span>
+                              <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 hover:bg-transparent"
+                                onClick={() => setLocataireIdFiles(prev => prev.filter((_, i) => i !== index))}
+                              >
+                                <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 
