@@ -2853,6 +2853,140 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     )}
                   </div>
                   
+                  {/* Type de partie - Vendeur */}
+                  <div className="space-y-4">
+                    <Label>Type de partie *</Label>
+                    <RadioGroup 
+                      value={acteVenteData.vendeurTypePartie}
+                      onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurTypePartie: value})}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="personne_physique" id="vendeur_pp" />
+                        <Label htmlFor="vendeur_pp" className="cursor-pointer">Personne physique</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="personne_morale" id="vendeur_pm" />
+                        <Label htmlFor="vendeur_pm" className="cursor-pointer">Personne morale (société)</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Si personne morale */}
+                  {acteVenteData.vendeurTypePartie === "personne_morale" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="vendeur_denomination">Dénomination sociale *</Label>
+                        <Input 
+                          id="vendeur_denomination"
+                          value={acteVenteData.vendeurDenominationSociale}
+                          onChange={(e) => setActeVenteData({...acteVenteData, vendeurDenominationSociale: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="vendeur_forme">Forme juridique *</Label>
+                        <Input 
+                          id="vendeur_forme"
+                          value={acteVenteData.vendeurFormeJuridique}
+                          onChange={(e) => setActeVenteData({...acteVenteData, vendeurFormeJuridique: e.target.value})}
+                          placeholder="SARL, SAS, SCI..."
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="vendeur_siren">SIREN *</Label>
+                        <Input 
+                          id="vendeur_siren"
+                          value={acteVenteData.vendeurSiren}
+                          onChange={(e) => setActeVenteData({...acteVenteData, vendeurSiren: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="vendeur_siege">Adresse du siège social *</Label>
+                        <Input 
+                          id="vendeur_siege"
+                          value={acteVenteData.vendeurSiegeSocial}
+                          onChange={(e) => setActeVenteData({...acteVenteData, vendeurSiegeSocial: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="vendeur_representant">Nom du représentant légal *</Label>
+                        <Input 
+                          id="vendeur_representant"
+                          value={acteVenteData.vendeurRepresentantNom}
+                          onChange={(e) => setActeVenteData({...acteVenteData, vendeurRepresentantNom: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="vendeur_qualite">Qualité *</Label>
+                        <Input 
+                          id="vendeur_qualite"
+                          value={acteVenteData.vendeurRepresentantQualite}
+                          onChange={(e) => setActeVenteData({...acteVenteData, vendeurRepresentantQualite: e.target.value})}
+                          placeholder="Gérant, Président..."
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>📎 Extrait Kbis</Label>
+                        <Input type="file" accept=".pdf" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Représentation - Vendeur */}
+                  <div className="space-y-4">
+                    <Label>La partie est-elle représentée ?</Label>
+                    <RadioGroup 
+                      value={acteVenteData.vendeurRepresente}
+                      onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurRepresente: value})}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="non" id="vendeur_rep_non" />
+                        <Label htmlFor="vendeur_rep_non" className="cursor-pointer">Non</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="oui" id="vendeur_rep_oui" />
+                        <Label htmlFor="vendeur_rep_oui" className="cursor-pointer">Oui</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Si représenté */}
+                  {acteVenteData.vendeurRepresente === "oui" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg">
+                      <div className="space-y-2">
+                        <Label htmlFor="vendeur_mand_nom">Nom du mandataire *</Label>
+                        <Input 
+                          id="vendeur_mand_nom"
+                          value={acteVenteData.vendeurMandataireNom}
+                          onChange={(e) => setActeVenteData({...acteVenteData, vendeurMandataireNom: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="vendeur_mand_prenom">Prénom du mandataire *</Label>
+                        <Input 
+                          id="vendeur_mand_prenom"
+                          value={acteVenteData.vendeurMandatairePrenom}
+                          onChange={(e) => setActeVenteData({...acteVenteData, vendeurMandatairePrenom: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="vendeur_type_pouvoir">Type de pouvoir *</Label>
+                        <Select value={acteVenteData.vendeurTypePouvoir} onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurTypePouvoir: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="mandat_authentique">Mandat authentique</SelectItem>
+                            <SelectItem value="mandat_ssp">Mandat sous seing privé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>📎 Joindre le mandat (PDF)</Label>
+                        <Input type="file" accept=".pdf" />
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Champs communs pour le vendeur */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -3246,6 +3380,140 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     )}
                   </div>
                   
+                  {/* Type de partie - Acquéreur */}
+                  <div className="space-y-4">
+                    <Label>Type de partie *</Label>
+                    <RadioGroup 
+                      value={acteVenteData.acheteurTypePartie}
+                      onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurTypePartie: value})}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="personne_physique" id="acheteur_pp" />
+                        <Label htmlFor="acheteur_pp" className="cursor-pointer">Personne physique</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="personne_morale" id="acheteur_pm" />
+                        <Label htmlFor="acheteur_pm" className="cursor-pointer">Personne morale (société)</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Si personne morale - Acquéreur */}
+                  {acteVenteData.acheteurTypePartie === "personne_morale" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="acheteur_denomination">Dénomination sociale *</Label>
+                        <Input 
+                          id="acheteur_denomination"
+                          value={acteVenteData.acheteurDenominationSociale}
+                          onChange={(e) => setActeVenteData({...acteVenteData, acheteurDenominationSociale: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acheteur_forme">Forme juridique *</Label>
+                        <Input 
+                          id="acheteur_forme"
+                          value={acteVenteData.acheteurFormeJuridique}
+                          onChange={(e) => setActeVenteData({...acteVenteData, acheteurFormeJuridique: e.target.value})}
+                          placeholder="SARL, SAS, SCI..."
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acheteur_siren">SIREN *</Label>
+                        <Input 
+                          id="acheteur_siren"
+                          value={acteVenteData.acheteurSiren}
+                          onChange={(e) => setActeVenteData({...acteVenteData, acheteurSiren: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="acheteur_siege">Adresse du siège social *</Label>
+                        <Input 
+                          id="acheteur_siege"
+                          value={acteVenteData.acheteurSiegeSocial}
+                          onChange={(e) => setActeVenteData({...acteVenteData, acheteurSiegeSocial: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acheteur_representant">Nom du représentant légal *</Label>
+                        <Input 
+                          id="acheteur_representant"
+                          value={acteVenteData.acheteurRepresentantNom}
+                          onChange={(e) => setActeVenteData({...acteVenteData, acheteurRepresentantNom: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acheteur_qualite">Qualité *</Label>
+                        <Input 
+                          id="acheteur_qualite"
+                          value={acteVenteData.acheteurRepresentantQualite}
+                          onChange={(e) => setActeVenteData({...acteVenteData, acheteurRepresentantQualite: e.target.value})}
+                          placeholder="Gérant, Président..."
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>📎 Extrait Kbis</Label>
+                        <Input type="file" accept=".pdf" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Représentation - Acquéreur */}
+                  <div className="space-y-4">
+                    <Label>La partie est-elle représentée ?</Label>
+                    <RadioGroup 
+                      value={acteVenteData.acheteurRepresente}
+                      onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurRepresente: value})}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="non" id="acheteur_rep_non" />
+                        <Label htmlFor="acheteur_rep_non" className="cursor-pointer">Non</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="oui" id="acheteur_rep_oui" />
+                        <Label htmlFor="acheteur_rep_oui" className="cursor-pointer">Oui</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Si représenté - Acquéreur */}
+                  {acteVenteData.acheteurRepresente === "oui" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg">
+                      <div className="space-y-2">
+                        <Label htmlFor="acheteur_mand_nom">Nom du mandataire *</Label>
+                        <Input 
+                          id="acheteur_mand_nom"
+                          value={acteVenteData.acheteurMandataireNom}
+                          onChange={(e) => setActeVenteData({...acteVenteData, acheteurMandataireNom: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acheteur_mand_prenom">Prénom du mandataire *</Label>
+                        <Input 
+                          id="acheteur_mand_prenom"
+                          value={acteVenteData.acheteurMandatairePrenom}
+                          onChange={(e) => setActeVenteData({...acteVenteData, acheteurMandatairePrenom: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="acheteur_type_pouvoir">Type de pouvoir *</Label>
+                        <Select value={acteVenteData.acheteurTypePouvoir} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurTypePouvoir: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="mandat_authentique">Mandat authentique</SelectItem>
+                            <SelectItem value="mandat_ssp">Mandat sous seing privé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>📎 Joindre le mandat (PDF)</Label>
+                        <Input type="file" accept=".pdf" />
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Pièce d'identité de l'acquéreur - chargée depuis client ou upload */}
                   {acteVenteData.clientRole === "acheteur" && acteVenteData.clientId ? (
                     <div className="space-y-2">
@@ -3396,6 +3664,137 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Label htmlFor="acte_nombrePieces">Nombre de pièces</Label>
                       <Input id="acte_nombrePieces" type="number" value={acteVenteData.nombrePieces} onChange={(e) => setActeVenteData({...acteVenteData, nombrePieces: e.target.value})} />
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_anneeConstruction">Année de construction</Label>
+                      <Input id="acte_anneeConstruction" type="number" value={acteVenteData.anneeConstruction} onChange={(e) => setActeVenteData({...acteVenteData, anneeConstruction: e.target.value})} placeholder="Ex: 1990" />
+                    </div>
+                  </div>
+
+                  {/* Annexes et dépendances */}
+                  <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                    <h4 className="font-medium">Annexes et dépendances</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_garage">Garage</Label>
+                        <Select value={acteVenteData.bienGarage} onValueChange={(value) => setActeVenteData({...acteVenteData, bienGarage: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_parking">Parking</Label>
+                        <Select value={acteVenteData.bienParking} onValueChange={(value) => setActeVenteData({...acteVenteData, bienParking: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_cave">Cave</Label>
+                        <Select value={acteVenteData.bienCave} onValueChange={(value) => setActeVenteData({...acteVenteData, bienCave: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_grenier">Grenier</Label>
+                        <Select value={acteVenteData.bienGrenier} onValueChange={(value) => setActeVenteData({...acteVenteData, bienGrenier: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_jardin">Jardin</Label>
+                        <Select value={acteVenteData.bienJardin} onValueChange={(value) => setActeVenteData({...acteVenteData, bienJardin: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_autresDep">Autres dépendances</Label>
+                        <Input 
+                          id="acte_autresDep"
+                          value={acteVenteData.autresDependances}
+                          onChange={(e) => setActeVenteData({...acteVenteData, autresDependances: e.target.value})}
+                          placeholder="Ex: buanderie, atelier..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Équipements inclus dans la vente */}
+                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <h4 className="font-medium">Équipements inclus dans la vente</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_cuisine">Cuisine équipée</Label>
+                        <Select value={acteVenteData.cuisineEquipee} onValueChange={(value) => setActeVenteData({...acteVenteData, cuisineEquipee: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_electromenagers">Électroménagers inclus</Label>
+                        <Select value={acteVenteData.electromenagersInclus} onValueChange={(value) => setActeVenteData({...acteVenteData, electromenagersInclus: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {acteVenteData.electromenagersInclus === "oui" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label htmlFor="acte_electroListe">Liste des électroménagers</Label>
+                          <Textarea 
+                            id="acte_electroListe"
+                            value={acteVenteData.electromenagersListe}
+                            onChange={(e) => setActeVenteData({...acteVenteData, electromenagersListe: e.target.value})}
+                            placeholder="Ex: réfrigérateur, four, lave-vaisselle..."
+                            rows={2}
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_mobilier">Mobilier laissé</Label>
+                        <Select value={acteVenteData.mobilierLaisse} onValueChange={(value) => setActeVenteData({...acteVenteData, mobilierLaisse: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_autresEquip">Autres équipements</Label>
+                        <Input 
+                          id="acte_autresEquip"
+                          value={acteVenteData.autresEquipements}
+                          onChange={(e) => setActeVenteData({...acteVenteData, autresEquipements: e.target.value})}
+                          placeholder="Ex: climatisation, alarme..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="acte_destinationBien">Destination du bien *</Label>
                       <Select value={acteVenteData.destinationBien} onValueChange={(value) => setActeVenteData({...acteVenteData, destinationBien: value})}>
@@ -3483,6 +3882,69 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         </div>
                       )}
                     </div>
+
+                    {/* Détails d'occupation si occupé */}
+                    {acteVenteData.bienLibreOuOccupe === "occupe" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label htmlFor="acte_locataireNom">Nom du locataire</Label>
+                          <Input 
+                            id="acte_locataireNom"
+                            value={acteVenteData.locataireNom}
+                            onChange={(e) => setActeVenteData({...acteVenteData, locataireNom: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_dateBail">Date du bail</Label>
+                          <Input 
+                            id="acte_dateBail"
+                            type="date"
+                            value={acteVenteData.dateBail}
+                            onChange={(e) => setActeVenteData({...acteVenteData, dateBail: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_dureeBail">Durée du bail</Label>
+                          <Input 
+                            id="acte_dureeBail"
+                            value={acteVenteData.dureeBail}
+                            onChange={(e) => setActeVenteData({...acteVenteData, dureeBail: e.target.value})}
+                            placeholder="Ex: 3 ans"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_montantLoyer">Montant du loyer mensuel (€)</Label>
+                          <Input 
+                            id="acte_montantLoyer"
+                            type="number"
+                            value={acteVenteData.montantLoyer}
+                            onChange={(e) => setActeVenteData({...acteVenteData, montantLoyer: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_depotGarantieLocataire">Dépôt de garantie (€)</Label>
+                          <Input 
+                            id="acte_depotGarantieLocataire"
+                            type="number"
+                            value={acteVenteData.depotGarantieLocataire}
+                            onChange={(e) => setActeVenteData({...acteVenteData, depotGarantieLocataire: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_dateLiberation">Date prévue de libération</Label>
+                          <Input 
+                            id="acte_dateLiberation"
+                            type="date"
+                            value={acteVenteData.dateLiberation}
+                            onChange={(e) => setActeVenteData({...acteVenteData, dateLiberation: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>📎 Bail locatif (PDF)</Label>
+                          <Input type="file" accept=".pdf" />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -3557,6 +4019,30 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           <Label htmlFor="acte_dateAccordPret">Date accord de prêt *</Label>
                           <Input id="acte_dateAccordPret" type="date" value={acteVenteData.dateAccordPret} onChange={(e) => setActeVenteData({...acteVenteData, dateAccordPret: e.target.value})} />
                         </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_tauxMaximal">Taux maximal accepté (%)</Label>
+                          <Input 
+                            id="acte_tauxMaximal"
+                            type="number"
+                            step="0.01"
+                            value={acteVenteData.tauxMaximal}
+                            onChange={(e) => setActeVenteData({...acteVenteData, tauxMaximal: e.target.value})}
+                            placeholder="Ex: 4.5"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_conditionSuspensivePret">Condition suspensive de prêt</Label>
+                          <Select 
+                            value={acteVenteData.conditionSuspensivePret} 
+                            onValueChange={(value) => setActeVenteData({...acteVenteData, conditionSuspensivePret: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <div className="space-y-2 md:col-span-2">
                           <Label htmlFor="acte_conditionsPret">Conditions particulières du prêt</Label>
                           <Textarea id="acte_conditionsPret" value={acteVenteData.conditionsPret} onChange={(e) => setActeVenteData({...acteVenteData, conditionsPret: e.target.value})} rows={2} />
@@ -3569,9 +4055,97 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                 {/* Documents et diagnostics */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-lg border-b pb-2">📜 Documents & diagnostics obligatoires</h3>
+                  
+                  {/* Diagnostics - données essentielles */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_dateDPE">Date du DPE</Label>
+                      <Input 
+                        id="acte_dateDPE"
+                        type="date"
+                        value={acteVenteData.dateDPE}
+                        onChange={(e) => setActeVenteData({...acteVenteData, dateDPE: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_classeEnergetique">Classe énergétique</Label>
+                      <Select 
+                        value={acteVenteData.classeEnergetique} 
+                        onValueChange={(value) => setActeVenteData({...acteVenteData, classeEnergetique: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="A">A</SelectItem>
+                          <SelectItem value="B">B</SelectItem>
+                          <SelectItem value="C">C</SelectItem>
+                          <SelectItem value="D">D</SelectItem>
+                          <SelectItem value="E">E</SelectItem>
+                          <SelectItem value="F">F</SelectItem>
+                          <SelectItem value="G">G</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_presenceAmiante">Présence d'amiante</Label>
+                      <Select 
+                        value={acteVenteData.presenceAmiante} 
+                        onValueChange={(value) => setActeVenteData({...acteVenteData, presenceAmiante: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non_applicable">Non applicable</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_presencePlomb">Présence de plomb</Label>
+                      <Select 
+                        value={acteVenteData.presencePlomb} 
+                        onValueChange={(value) => setActeVenteData({...acteVenteData, presencePlomb: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non_applicable">Non applicable</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_presenceTermites">Présence de termites</Label>
+                      <Select 
+                        value={acteVenteData.presenceTermites} 
+                        onValueChange={(value) => setActeVenteData({...acteVenteData, presenceTermites: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non_applicable">Non applicable</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_assainissementConforme">Assainissement conforme</Label>
+                      <Select 
+                        value={acteVenteData.assainissementConforme} 
+                        onValueChange={(value) => setActeVenteData({...acteVenteData, assainissementConforme: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="non_applicable">Non applicable</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="acte_diagnostics">Diagnostics fournis</Label>
-                    <Textarea id="acte_diagnostics" value={acteVenteData.diagnosticsFournis} onChange={(e) => setActeVenteData({...acteVenteData, diagnosticsFournis: e.target.value})} rows={4} placeholder="DPE, Amiante, Plomb, Termites, Électricité, Gaz, Assainissement, Loi Carrez, ERP, Audit énergétique..." />
+                    <Label htmlFor="acte_diagnostics">Autres diagnostics fournis</Label>
+                    <Textarea id="acte_diagnostics" value={acteVenteData.diagnosticsFournis} onChange={(e) => setActeVenteData({...acteVenteData, diagnosticsFournis: e.target.value})} rows={3} placeholder="Électricité, Gaz, Loi Carrez, ERP, Audit énergétique..." />
                   </div>
                   <div className="space-y-2">
                     <Label>📎 Joindre les diagnostics et documents obligatoires</Label>
@@ -3692,6 +4266,33 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Input id="acte_documentsUrbanisme" value={acteVenteData.documentsUrbanisme} onChange={(e) => setActeVenteData({...acteVenteData, documentsUrbanisme: e.target.value})} />
                     </div>
                   </div>
+
+                  {/* DIA - Déclaration d'Intention d'Aliéner */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_dateEnvoiDIA">Date d'envoi de la DIA</Label>
+                      <Input 
+                        id="acte_dateEnvoiDIA"
+                        type="date"
+                        value={acteVenteData.dateEnvoiDIA}
+                        onChange={(e) => setActeVenteData({...acteVenteData, dateEnvoiDIA: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="acte_reponseMairieDIA">Réponse de la mairie</Label>
+                      <Select 
+                        value={acteVenteData.reponseMairieDIA} 
+                        onValueChange={(value) => setActeVenteData({...acteVenteData, reponseMairieDIA: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non_preemption">Non préemption</SelectItem>
+                          <SelectItem value="preemption">Préemption</SelectItem>
+                          <SelectItem value="en_attente">En attente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Délais et signature */}
@@ -3732,6 +4333,63 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         <Input id="acte_mandataire" value={acteVenteData.identiteMandataire} onChange={(e) => setActeVenteData({...acteVenteData, identiteMandataire: e.target.value})} />
                       </div>
                     )}
+                  </div>
+
+                  {/* Remise des clés anticipée */}
+                  <div className="space-y-4 p-4 bg-teal-50 dark:bg-teal-950 rounded-lg">
+                    <h4 className="font-medium">Remise des clés anticipée</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="acte_remiseClesAnticipee">Remise anticipée des clés</Label>
+                        <Select 
+                          value={acteVenteData.remiseClesAnticipee} 
+                          onValueChange={(value) => setActeVenteData({...acteVenteData, remiseClesAnticipee: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {acteVenteData.remiseClesAnticipee === "oui" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label htmlFor="acte_dateRemiseAnticipee">Date de remise anticipée</Label>
+                            <Input 
+                              id="acte_dateRemiseAnticipee"
+                              type="date"
+                              value={acteVenteData.dateRemiseAnticipee}
+                              onChange={(e) => setActeVenteData({...acteVenteData, dateRemiseAnticipee: e.target.value})}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="acte_indemnitéOccupation">Indemnité d'occupation</Label>
+                            <Select 
+                              value={acteVenteData.indemnitéOccupation} 
+                              onValueChange={(value) => setActeVenteData({...acteVenteData, indemnitéOccupation: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="non">Non</SelectItem>
+                                <SelectItem value="oui">Oui</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {acteVenteData.indemnitéOccupation === "oui" && (
+                            <div className="space-y-2">
+                              <Label htmlFor="acte_montantIndemnite">Montant de l'indemnité (€/jour)</Label>
+                              <Input 
+                                id="acte_montantIndemnite"
+                                type="number"
+                                value={acteVenteData.montantIndemnite}
+                                onChange={(e) => setActeVenteData({...acteVenteData, montantIndemnite: e.target.value})}
+                              />
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
 
