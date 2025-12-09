@@ -5268,44 +5268,27 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                   )}
                 </div>
 
-                {/* Logement meublé et animaux */}
+                {/* Spécificités du bail meublé */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">🛋️ Meublé & Animaux</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">🛋️ Spécificités du bail meublé</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Type et durée du bail meublé */}
                     <div className="space-y-2">
-                      <Label>Contrat meublé ?</Label>
+                      <Label>Type de durée du bail meublé</Label>
                       <Select 
-                        value={bailHabitationData.contratMeuble} 
-                        onValueChange={(value) => setBailHabitationData({...bailHabitationData, contratMeuble: value})}
+                        value={bailHabitationData.typeDureeMeuble} 
+                        onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeDureeMeuble: value})}
                       >
                         <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Non">Non (bail vide)</SelectItem>
-                          <SelectItem value="Oui">Oui (bail meublé)</SelectItem>
+                          <SelectItem value="1an">1 an renouvelable (cas général)</SelectItem>
+                          <SelectItem value="9mois">9 mois étudiant (non renouvelable)</SelectItem>
+                          <SelectItem value="mobilite">Bail mobilité (1 à 10 mois)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
-                    {/* Sections spécifiques au bail meublé */}
-                    {bailHabitationData.contratMeuble === "Oui" && (
-                      <>
-                        {/* Type et durée du bail meublé */}
-                        <div className="space-y-2">
-                          <Label>Type de durée du bail meublé</Label>
-                          <Select 
-                            value={bailHabitationData.typeDureeMeuble} 
-                            onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeDureeMeuble: value})}
-                          >
-                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="1an">1 an renouvelable (cas général)</SelectItem>
-                              <SelectItem value="9mois">9 mois étudiant (non renouvelable)</SelectItem>
-                              <SelectItem value="mobilite">Bail mobilité (1 à 10 mois)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {bailHabitationData.typeDureeMeuble === "mobilite" && (
+                    {bailHabitationData.typeDureeMeuble === "mobilite" && (
                           <div className="space-y-2">
                             <Label>Motif du bail mobilité</Label>
                             <Input 
@@ -5443,10 +5426,13 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                             </SelectContent>
                           </Select>
                         </div>
-                      </>
-                    )}
+                  </div>
+                </div>
 
-                    {/* Animaux */}
+                {/* Animaux */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🐾 Animaux domestiques</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Animaux domestiques autorisés ?</Label>
                       <Select 
