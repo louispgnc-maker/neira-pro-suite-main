@@ -364,6 +364,28 @@ export default function Contrats() {
     contratMeuble: "",
     mobilierListeComplete: [] as string[],
     inventaireFourni: "",
+    inventaireMobilierTexte: "",
+    etatMobilierEntree: "",
+    entretienMobilier: "", // "locataire" ou "bailleur"
+    
+    // Liste légale mobilier minimal (décret 2015-981)
+    mobilierLiterie: false,
+    mobilierOccultation: false,
+    mobilierPlaquesCuisson: false,
+    mobilierFourMicroondes: false,
+    mobilierRefrigo: false,
+    mobilierCongelateur: false,
+    mobilierVaisselle: false,
+    mobilierUstensiles: false,
+    mobilierTable: false,
+    mobilierSieges: false,
+    mobilierEtageres: false,
+    mobilierLampes: false,
+    mobilierMaterielEntretien: false,
+    
+    // Type et durée bail meublé
+    typeDureeMeuble: "", // "1an" "9mois" "mobilite"
+    motifBailMobilite: "", // si bail mobilité
     
     // Nature du bailleur
     natureBailleur: "", // "physique" ou "morale"
@@ -430,6 +452,7 @@ export default function Contrats() {
     // Remise des clés
     nombreJeuxCles: "",
     typesCles: [] as string[], // portes, boites_aux_lettres, garage, badges
+    codesFournis: "", // WIFI, interphone, digicode...
   });
   
   const [questionnaireData, setQuestionnaireData] = useState({
@@ -1614,6 +1637,24 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         contratMeuble: "",
         mobilierListeComplete: [],
         inventaireFourni: "",
+        inventaireMobilierTexte: "",
+        etatMobilierEntree: "",
+        entretienMobilier: "",
+        mobilierLiterie: false,
+        mobilierOccultation: false,
+        mobilierPlaquesCuisson: false,
+        mobilierFourMicroondes: false,
+        mobilierRefrigo: false,
+        mobilierCongelateur: false,
+        mobilierVaisselle: false,
+        mobilierUstensiles: false,
+        mobilierTable: false,
+        mobilierSieges: false,
+        mobilierEtageres: false,
+        mobilierLampes: false,
+        mobilierMaterielEntretien: false,
+        typeDureeMeuble: "",
+        motifBailMobilite: "",
         natureBailleur: "",
         residencePrincipale: "",
         destinationBien: "",
@@ -1658,6 +1699,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         informationsComplementaires: "",
         nombreJeuxCles: "",
         typesCles: [],
+        codesFournis: "",
       });
 
       loadContrats();
@@ -5242,17 +5284,110 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         </SelectContent>
                       </Select>
                     </div>
+
+                    {/* Sections spécifiques au bail meublé */}
                     {bailHabitationData.contratMeuble === "Oui" && (
-                      <div className="space-y-2 md:col-span-2">
-                        <Label>Inventaire du mobilier fourni</Label>
-                        <Textarea 
-                          value={bailHabitationData.inventaireFourni} 
-                          onChange={(e) => setBailHabitationData({...bailHabitationData, inventaireFourni: e.target.value})} 
-                          placeholder="Liste des meubles et équipements..."
-                          rows={3}
-                        />
-                      </div>
+                      <>
+                        {/* Type et durée du bail meublé */}
+                        <div className="space-y-2">
+                          <Label>Type de durée du bail meublé</Label>
+                          <Select 
+                            value={bailHabitationData.typeDureeMeuble} 
+                            onValueChange={(value) => setBailHabitationData({...bailHabitationData, typeDureeMeuble: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="1an">1 an renouvelable (cas général)</SelectItem>
+                              <SelectItem value="9mois">9 mois étudiant (non renouvelable)</SelectItem>
+                              <SelectItem value="mobilite">Bail mobilité (1 à 10 mois)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {bailHabitationData.typeDureeMeuble === "mobilite" && (
+                          <div className="space-y-2">
+                            <Label>Motif du bail mobilité</Label>
+                            <Input 
+                              value={bailHabitationData.motifBailMobilite} 
+                              onChange={(e) => setBailHabitationData({...bailHabitationData, motifBailMobilite: e.target.value})} 
+                              placeholder="Ex: Stage, études, mission professionnelle..."
+                            />
+                          </div>
+                        )}
+
+                        {/* Inventaire du mobilier */}
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>📋 Inventaire du mobilier (description complète)</Label>
+                          <Textarea 
+                            value={bailHabitationData.inventaireMobilierTexte} 
+                            onChange={(e) => setBailHabitationData({...bailHabitationData, inventaireMobilierTexte: e.target.value})} 
+                            placeholder="Liste détaillée du mobilier fourni par pièce..."
+                            rows={4}
+                          />
+                        </div>
+
+                        {/* Liste légale du mobilier minimal (décret 2015-981) */}
+                        <div className="md:col-span-2 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg space-y-3">
+                          <h4 className="font-medium">✅ Mobilier minimal obligatoire (décret n°2015-981)</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {[
+                              { key: 'mobilierLiterie', label: 'Literie + couette ou couverture' },
+                              { key: 'mobilierOccultation', label: 'Dispositif d\'occultation des fenêtres' },
+                              { key: 'mobilierPlaquesCuisson', label: 'Plaques de cuisson' },
+                              { key: 'mobilierFourMicroondes', label: 'Four ou micro-ondes' },
+                              { key: 'mobilierRefrigo', label: 'Réfrigérateur' },
+                              { key: 'mobilierCongelateur', label: 'Congélateur ou compartiment freezer' },
+                              { key: 'mobilierVaisselle', label: 'Vaisselle en quantité suffisante' },
+                              { key: 'mobilierUstensiles', label: 'Ustensiles de cuisine' },
+                              { key: 'mobilierTable', label: 'Table' },
+                              { key: 'mobilierSieges', label: 'Sièges' },
+                              { key: 'mobilierEtageres', label: 'Étagères de rangement' },
+                              { key: 'mobilierLampes', label: 'Lampes' },
+                              { key: 'mobilierMaterielEntretien', label: 'Matériel d\'entretien' },
+                            ].map((item) => (
+                              <div key={item.key} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={item.key}
+                                  checked={bailHabitationData[item.key as keyof typeof bailHabitationData] as boolean}
+                                  onChange={(e) => setBailHabitationData({...bailHabitationData, [item.key]: e.target.checked})}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor={item.key} className="cursor-pointer text-sm">{item.label}</Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* État du mobilier */}
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>État du mobilier lors de l'entrée</Label>
+                          <Textarea 
+                            value={bailHabitationData.etatMobilierEntree} 
+                            onChange={(e) => setBailHabitationData({...bailHabitationData, etatMobilierEntree: e.target.value})} 
+                            placeholder="Description de l'état du mobilier pièce par pièce..."
+                            rows={3}
+                          />
+                        </div>
+
+                        {/* Entretien du mobilier */}
+                        <div className="space-y-2">
+                          <Label>Entretien du mobilier à la charge de</Label>
+                          <Select 
+                            value={bailHabitationData.entretienMobilier} 
+                            onValueChange={(value) => setBailHabitationData({...bailHabitationData, entretienMobilier: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Locataire">Locataire</SelectItem>
+                              <SelectItem value="Bailleur">Bailleur</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </>
                     )}
+
+                    {/* Animaux */}
                     <div className="space-y-2">
                       <Label>Animaux domestiques autorisés ?</Label>
                       <Select 
@@ -5720,7 +5855,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
 
                 {/* Remise des clés */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">🔑 Remise des clés</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">🔑 Remise des clés et accès</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Nombre de jeux de clés remis</Label>
@@ -5738,7 +5873,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           { value: "portes", label: "Portes" },
                           { value: "boites_aux_lettres", label: "Boîtes aux lettres" },
                           { value: "garage", label: "Garage" },
-                          { value: "badges", label: "Badges" }
+                          { value: "badges", label: "Badges" },
+                          { value: "telecommande", label: "Télécommande portail" }
                         ].map((type) => (
                           <label key={type.value} className="flex items-center gap-2">
                             <input
@@ -5763,6 +5899,15 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           </label>
                         ))}
                       </div>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Codes fournis (optionnel)</Label>
+                      <Textarea 
+                        value={bailHabitationData.codesFournis} 
+                        onChange={(e) => setBailHabitationData({...bailHabitationData, codesFournis: e.target.value})} 
+                        rows={2}
+                        placeholder="Ex: WIFI, interphone, digicode d'entrée..."
+                      />
                     </div>
                   </div>
                 </div>
