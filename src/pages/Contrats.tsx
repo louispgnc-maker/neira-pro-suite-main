@@ -310,6 +310,19 @@ export default function Contrats() {
     locataireNumeroIdentite: "",
     nombreOccupants: "",
     
+    // Situation financière du locataire
+    locataireRevenusMensuelsNets: "",
+    locataireTypeContrat: "",
+    locataireEmployeur: "",
+    locataireEmployeurAdresse: "",
+    locataireAncienneteEmployeur: "",
+    
+    // Colocation
+    colocation: "",
+    solidariteColocataires: "",
+    nombreColocataires: "",
+    colocatairesNoms: "",
+    
     // Garant
     aGarant: "",
     garantNom: "",
@@ -332,11 +345,15 @@ export default function Contrats() {
     anneeConstruction: "",
     etatUsage: "",
     dependances: [] as string[], // cave, parking, grenier, jardin
+    placeParking: "",
+    numeroPlaceParking: "",
+    entretienJardin: "",
     logementCopropriete: "",
     reglementCoproFourni: "",
     
     // Si meublé
     typeBail: "", // "vide" ou "meuble"
+    contratMeuble: "",
     mobilierListeComplete: [] as string[],
     inventaireFourni: "",
     
@@ -348,6 +365,8 @@ export default function Contrats() {
     destinationBien: "",
     souslocationAutorisee: "",
     colocationPossible: "",
+    animauxAutorises: "",
+    precisionAnimaux: "",
     
     // Conditions financières
     loyerMensuel: "",
@@ -357,6 +376,8 @@ export default function Contrats() {
     depotGarantie: "",
     premierLoyerDate: "",
     modePaiement: "",
+    ibanBailleur: "",
+    periodiciteRegularisationCharges: "",
     revisionLoyerPrevue: "", // Oui/Non
     indiceIRL: "",
     trimestreReference: "",
@@ -379,6 +400,8 @@ export default function Contrats() {
     etatLieuxFourni: "",
     inventaireMobilierFourni: "",
     travauxRecents: "",
+    travauxDerniers6Mois: "",
+    descriptionTravaux: "",
     
     // Obligations techniques
     typeChauffage: "",
@@ -395,6 +418,10 @@ export default function Contrats() {
     
     // Informations complémentaires
     informationsComplementaires: "",
+    
+    // Remise des clés
+    nombreJeuxCles: "",
+    typesCles: [] as string[], // portes, boites_aux_lettres, garage, badges
   });
   
   const [questionnaireData, setQuestionnaireData] = useState({
@@ -1474,6 +1501,15 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         locatairePieceIdentite: "",
         locataireNumeroIdentite: "",
         nombreOccupants: "",
+        locataireRevenusMensuelsNets: "",
+        locataireTypeContrat: "",
+        locataireEmployeur: "",
+        locataireEmployeurAdresse: "",
+        locataireAncienneteEmployeur: "",
+        colocation: "",
+        solidariteColocataires: "",
+        nombreColocataires: "",
+        colocatairesNoms: "",
         aGarant: "",
         garantNom: "",
         garantPrenom: "",
@@ -1493,9 +1529,13 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         anneeConstruction: "",
         etatUsage: "",
         dependances: [],
+        placeParking: "",
+        numeroPlaceParking: "",
+        entretienJardin: "",
         logementCopropriete: "",
         reglementCoproFourni: "",
         typeBail: "",
+        contratMeuble: "",
         mobilierListeComplete: [],
         inventaireFourni: "",
         natureBailleur: "",
@@ -1503,6 +1543,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         destinationBien: "",
         souslocationAutorisee: "",
         colocationPossible: "",
+        animauxAutorises: "",
+        precisionAnimaux: "",
         loyerMensuel: "",
         chargesMensuelles: "",
         typeCharges: "",
@@ -1510,6 +1552,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         depotGarantie: "",
         premierLoyerDate: "",
         modePaiement: "",
+        ibanBailleur: "",
+        periodiciteRegularisationCharges: "",
         revisionLoyerPrevue: "",
         indiceIRL: "",
         trimestreReference: "",
@@ -1526,6 +1570,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         etatLieuxFourni: "",
         inventaireMobilierFourni: "",
         travauxRecents: "",
+        travauxDerniers6Mois: "",
+        descriptionTravaux: "",
         typeChauffage: "",
         compteursIndividuels: "",
         releveCompteurs: "",
@@ -1534,6 +1580,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         logementZoneERP: "",
         usageProfessionnel: "",
         informationsComplementaires: "",
+        nombreJeuxCles: "",
+        typesCles: [],
       });
 
       loadContrats();
@@ -4528,6 +4576,115 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Input type="number" value={bailHabitationData.nombreOccupants} onChange={(e) => setBailHabitationData({...bailHabitationData, nombreOccupants: e.target.value})} />
                     </div>
                   </div>
+
+                  {/* Situation financière du locataire */}
+                  <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg space-y-4">
+                    <h4 className="font-medium">Situation financière du locataire</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Revenus mensuels nets (€)</Label>
+                        <Input 
+                          type="number"
+                          value={bailHabitationData.locataireRevenusMensuelsNets} 
+                          onChange={(e) => setBailHabitationData({...bailHabitationData, locataireRevenusMensuelsNets: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Type de contrat de travail</Label>
+                        <Select 
+                          value={bailHabitationData.locataireTypeContrat} 
+                          onValueChange={(value) => setBailHabitationData({...bailHabitationData, locataireTypeContrat: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CDI">CDI</SelectItem>
+                            <SelectItem value="CDD">CDD</SelectItem>
+                            <SelectItem value="Intérim">Intérim</SelectItem>
+                            <SelectItem value="Étudiant">Étudiant</SelectItem>
+                            <SelectItem value="Indépendant">Indépendant</SelectItem>
+                            <SelectItem value="Autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Employeur actuel</Label>
+                        <Input 
+                          value={bailHabitationData.locataireEmployeur} 
+                          onChange={(e) => setBailHabitationData({...bailHabitationData, locataireEmployeur: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Adresse de l'employeur</Label>
+                        <Input 
+                          value={bailHabitationData.locataireEmployeurAdresse} 
+                          onChange={(e) => setBailHabitationData({...bailHabitationData, locataireEmployeurAdresse: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Ancienneté dans l'emploi</Label>
+                        <Input 
+                          value={bailHabitationData.locataireAncienneteEmployeur} 
+                          onChange={(e) => setBailHabitationData({...bailHabitationData, locataireAncienneteEmployeur: e.target.value})} 
+                          placeholder="Ex: 2 ans"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Colocation */}
+                  <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                    <h4 className="font-medium">Colocation</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>S'agit-il d'une colocation ?</Label>
+                        <Select 
+                          value={bailHabitationData.colocation} 
+                          onValueChange={(value) => setBailHabitationData({...bailHabitationData, colocation: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Non">Non</SelectItem>
+                            <SelectItem value="Oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {bailHabitationData.colocation === "Oui" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Solidarité entre colocataires ?</Label>
+                            <Select 
+                              value={bailHabitationData.solidariteColocataires} 
+                              onValueChange={(value) => setBailHabitationData({...bailHabitationData, solidariteColocataires: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Oui">Oui (solidaires)</SelectItem>
+                                <SelectItem value="Non">Non (séparés)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Nombre de colocataires</Label>
+                            <Input 
+                              type="number"
+                              value={bailHabitationData.nombreColocataires} 
+                              onChange={(e) => setBailHabitationData({...bailHabitationData, nombreColocataires: e.target.value})} 
+                            />
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Noms et prénoms des colocataires</Label>
+                            <Textarea 
+                              value={bailHabitationData.colocatairesNoms} 
+                              onChange={(e) => setBailHabitationData({...bailHabitationData, colocatairesNoms: e.target.value})} 
+                              placeholder="Ex: Jean Dupont, Marie Martin..."
+                              rows={2}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label>📎 Documents du locataire (pièce d'identité, justificatifs de revenus)</Label>
                     <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
@@ -4649,6 +4806,107 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         ))}
                       </div>
                     </div>
+                  </div>
+
+                  {/* Détails parking */}
+                  {bailHabitationData.dependances.includes("Parking") && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                      <div className="space-y-2">
+                        <Label>Place de parking numérotée ?</Label>
+                        <Select 
+                          value={bailHabitationData.placeParking} 
+                          onValueChange={(value) => setBailHabitationData({...bailHabitationData, placeParking: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Oui">Oui</SelectItem>
+                            <SelectItem value="Non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {bailHabitationData.placeParking === "Oui" && (
+                        <div className="space-y-2">
+                          <Label>Numéro de la place</Label>
+                          <Input 
+                            value={bailHabitationData.numeroPlaceParking} 
+                            onChange={(e) => setBailHabitationData({...bailHabitationData, numeroPlaceParking: e.target.value})} 
+                            placeholder="Ex: P12"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Entretien jardin */}
+                  {bailHabitationData.dependances.includes("Jardin") && (
+                    <div className="space-y-2 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                      <Label>Entretien du jardin à la charge de</Label>
+                      <Select 
+                        value={bailHabitationData.entretienJardin} 
+                        onValueChange={(value) => setBailHabitationData({...bailHabitationData, entretienJardin: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Locataire">Locataire</SelectItem>
+                          <SelectItem value="Bailleur">Bailleur</SelectItem>
+                          <SelectItem value="Partagé">Partagé</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
+
+                {/* Logement meublé et animaux */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🛋️ Meublé & Animaux</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Contrat meublé ?</Label>
+                      <Select 
+                        value={bailHabitationData.contratMeuble} 
+                        onValueChange={(value) => setBailHabitationData({...bailHabitationData, contratMeuble: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Non">Non (bail vide)</SelectItem>
+                          <SelectItem value="Oui">Oui (bail meublé)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {bailHabitationData.contratMeuble === "Oui" && (
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Inventaire du mobilier fourni</Label>
+                        <Textarea 
+                          value={bailHabitationData.inventaireFourni} 
+                          onChange={(e) => setBailHabitationData({...bailHabitationData, inventaireFourni: e.target.value})} 
+                          placeholder="Liste des meubles et équipements..."
+                          rows={3}
+                        />
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <Label>Animaux domestiques autorisés ?</Label>
+                      <Select 
+                        value={bailHabitationData.animauxAutorises} 
+                        onValueChange={(value) => setBailHabitationData({...bailHabitationData, animauxAutorises: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Oui">Oui</SelectItem>
+                          <SelectItem value="Non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {bailHabitationData.animauxAutorises === "Oui" && (
+                      <div className="space-y-2">
+                        <Label>Précisions</Label>
+                        <Input 
+                          value={bailHabitationData.precisionAnimaux} 
+                          onChange={(e) => setBailHabitationData({...bailHabitationData, precisionAnimaux: e.target.value})} 
+                          placeholder="Ex: petits chiens, chats..."
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -4840,6 +5098,54 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       </Select>
                     </div>
                   </div>
+
+                  {/* Mode de paiement */}
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-950 rounded-lg space-y-4">
+                    <h4 className="font-medium">Mode de paiement du loyer</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Mode de paiement choisi</Label>
+                        <Select 
+                          value={bailHabitationData.modePaiement} 
+                          onValueChange={(value) => setBailHabitationData({...bailHabitationData, modePaiement: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Virement">Virement</SelectItem>
+                            <SelectItem value="Prélèvement automatique">Prélèvement automatique</SelectItem>
+                            <SelectItem value="Chèque">Chèque</SelectItem>
+                            <SelectItem value="Autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>IBAN du bailleur</Label>
+                        <Input 
+                          value={bailHabitationData.ibanBailleur} 
+                          onChange={(e) => setBailHabitationData({...bailHabitationData, ibanBailleur: e.target.value})} 
+                          placeholder="FR76..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Régularisation des charges */}
+                  {bailHabitationData.typeCharges === "provision" && (
+                    <div className="space-y-2 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg">
+                      <Label>Périodicité de régularisation des charges</Label>
+                      <Select 
+                        value={bailHabitationData.periodiciteRegularisationCharges} 
+                        onValueChange={(value) => setBailHabitationData({...bailHabitationData, periodiciteRegularisationCharges: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Annuelle">Annuelle</SelectItem>
+                          <SelectItem value="Semestrielle">Semestrielle</SelectItem>
+                          <SelectItem value="Autre">Autre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
 
                 {/* Dates */}
@@ -4895,6 +5201,37 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Label>Relevé des compteurs à l'entrée</Label>
                       <Input value={bailHabitationData.releveCompteurs} onChange={(e) => setBailHabitationData({...bailHabitationData, releveCompteurs: e.target.value})} placeholder="Électricité: XX kWh, Eau: XX m3..." />
                     </div>
+                  </div>
+                </div>
+
+                {/* Travaux récents */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🔨 Travaux effectués</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Travaux réalisés dans les 6 derniers mois ?</Label>
+                      <Select 
+                        value={bailHabitationData.travauxDerniers6Mois} 
+                        onValueChange={(value) => setBailHabitationData({...bailHabitationData, travauxDerniers6Mois: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Non">Non</SelectItem>
+                          <SelectItem value="Oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {bailHabitationData.travauxDerniers6Mois === "Oui" && (
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Description des travaux</Label>
+                        <Textarea 
+                          value={bailHabitationData.descriptionTravaux} 
+                          onChange={(e) => setBailHabitationData({...bailHabitationData, descriptionTravaux: e.target.value})} 
+                          placeholder="Ex: Peinture, rénovation salle de bain, électricité..."
+                          rows={3}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -5010,6 +5347,55 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     </Select>
                   </div>
                   <p className="text-sm text-muted-foreground">L'assurance habitation est obligatoire pour le locataire avant l'entrée dans les lieux.</p>
+                </div>
+
+                {/* Remise des clés */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">🔑 Remise des clés</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nombre de jeux de clés remis</Label>
+                      <Input 
+                        type="number"
+                        value={bailHabitationData.nombreJeuxCles} 
+                        onChange={(e) => setBailHabitationData({...bailHabitationData, nombreJeuxCles: e.target.value})} 
+                        placeholder="Ex: 2"
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Types de clés</Label>
+                      <div className="flex flex-wrap gap-3">
+                        {[
+                          { value: "portes", label: "Portes" },
+                          { value: "boites_aux_lettres", label: "Boîtes aux lettres" },
+                          { value: "garage", label: "Garage" },
+                          { value: "badges", label: "Badges" }
+                        ].map((type) => (
+                          <label key={type.value} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={bailHabitationData.typesCles.includes(type.value)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setBailHabitationData({
+                                    ...bailHabitationData, 
+                                    typesCles: [...bailHabitationData.typesCles, type.value]
+                                  });
+                                } else {
+                                  setBailHabitationData({
+                                    ...bailHabitationData, 
+                                    typesCles: bailHabitationData.typesCles.filter(t => t !== type.value)
+                                  });
+                                }
+                              }}
+                              className="rounded border-gray-300"
+                            />
+                            <span className="text-sm">{type.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Informations complémentaires */}
