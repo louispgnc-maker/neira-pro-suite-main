@@ -102,6 +102,7 @@ export default function Contrats() {
   const [locataireDocsFiles, setLocataireDocsFiles] = useState<File[]>([]);
   const [bailleurIdFiles, setBailleurIdFiles] = useState<File[]>([]); // Pièce d'identité bailleur
   const [locataireIdFiles, setLocataireIdFiles] = useState<File[]>([]); // Documents locataire
+  const [inventaireMobilierFiles, setInventaireMobilierFiles] = useState<File[]>([]); // Inventaire mobilier PDF/images
   const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
   const [bailDiagnosticsFiles, setBailDiagnosticsFiles] = useState<File[]>([]);
   
@@ -5316,14 +5317,72 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         )}
 
                         {/* Inventaire du mobilier */}
-                        <div className="space-y-2 md:col-span-2">
-                          <Label>📋 Inventaire du mobilier (description complète)</Label>
-                          <Textarea 
-                            value={bailHabitationData.inventaireMobilierTexte} 
-                            onChange={(e) => setBailHabitationData({...bailHabitationData, inventaireMobilierTexte: e.target.value})} 
-                            placeholder="Liste détaillée du mobilier fourni par pièce..."
-                            rows={4}
-                          />
+                        <div className="md:col-span-2 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg space-y-3">
+                          <h4 className="font-medium text-orange-800 dark:text-orange-200">📋 Inventaire complet du mobilier (OBLIGATOIRE LÉGALEMENT)</h4>
+                          <div className="space-y-2">
+                            <Label>Description détaillée pièce par pièce *</Label>
+                            <Textarea 
+                              value={bailHabitationData.inventaireMobilierTexte} 
+                              onChange={(e) => setBailHabitationData({...bailHabitationData, inventaireMobilierTexte: e.target.value})} 
+                              placeholder="Ex: Salon: canapé 3 places en tissu gris, table basse en bois, 2 lampes...\nChambre: lit 140x190, matelas, couette, 2 oreillers, armoire 3 portes..."
+                              rows={5}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Fichier inventaire (PDF ou images)</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf,image/*"
+                                multiple
+                                className="hidden"
+                                id="inventaire-mobilier-upload"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length > 0) {
+                                    setInventaireMobilierFiles(prev => [...prev, ...files]);
+                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                  }
+                                  e.target.value = '';
+                                }}
+                              />
+                              <label htmlFor="inventaire-mobilier-upload" className="cursor-pointer flex items-center gap-3">
+                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">Joindre l'inventaire</p>
+                                  <p className="text-xs text-muted-foreground">PDF ou images acceptés</p>
+                                </div>
+                              </label>
+                            </div>
+                            {inventaireMobilierFiles.length > 0 && (
+                              <div className="space-y-2 mt-2">
+                                {inventaireMobilierFiles.map((file, index) => (
+                                  <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate">{file.name}</span>
+                                    <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 hover:bg-transparent"
+                                      onClick={() => setInventaireMobilierFiles(prev => prev.filter((_, i) => i !== index))}
+                                    >
+                                      <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         {/* Liste légale du mobilier minimal (décret 2015-981) */}
@@ -5669,6 +5728,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           <SelectItem value="6ans">6 ans (vide - personne morale)</SelectItem>
                           <SelectItem value="1an">1 an (meublé)</SelectItem>
                           <SelectItem value="9mois">9 mois (étudiant)</SelectItem>
+                          <SelectItem value="mobilite">Bail mobilité (1 à 10 mois)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
