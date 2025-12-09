@@ -2719,7 +2719,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="acheteur" id="acte-acheteur" />
-                        <Label htmlFor="acte-acheteur" className="cursor-pointer">Acheteur</Label>
+                        <Label htmlFor="acte-acheteur" className="cursor-pointer">Acquéreur</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="vendeur" id="acte-vendeur" />
