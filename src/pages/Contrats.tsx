@@ -120,6 +120,20 @@ export default function Contrats() {
     surfaceTerrain: "",
     nombrePieces: "",
     equipements: [] as string[],
+    // Bien - Année et annexes
+    anneeConstruction: "",
+    bienGarage: "",
+    bienParking: "",
+    bienCave: "",
+    bienGrenier: "",
+    bienJardin: "",
+    autresDependances: "",
+    // Bien - Équipements inclus
+    cuisineEquipee: "",
+    electromenagersInclus: "",
+    electromenagersListe: "",
+    mobilierLaisse: "",
+    autresEquipements: "",
     // Copropriété
     bienCopropriete: "",
     numerosLots: "",
@@ -132,6 +146,14 @@ export default function Contrats() {
     destinationBien: "",
     bienLibreOuOccupe: "",
     informationsBail: "",
+    // Si occupé par locataire
+    locataireNom: "",
+    dateBail: "",
+    dureeBail: "",
+    montantLoyer: "",
+    depotGarantieLocataire: "",
+    // Si vendeur occupant
+    dateLiberation: "",
     
     // Vendeur (soit client sélectionné avec auto-fill, soit manuel)
     vendeurNom: "",
@@ -146,6 +168,19 @@ export default function Contrats() {
     vendeurPrecisionRegime: "",
     vendeurPieceIdentite: "",
     vendeurNumeroIdentite: "",
+    // Vendeur - Type de partie
+    vendeurTypePartie: "personne_physique",
+    vendeurDenominationSociale: "",
+    vendeurFormeJuridique: "",
+    vendeurSiren: "",
+    vendeurSiegeSocial: "",
+    vendeurRepresentantNom: "",
+    vendeurRepresentantQualite: "",
+    // Vendeur - Représentation
+    vendeurRepresente: "",
+    vendeurMandataireNom: "",
+    vendeurMandatairePrenom: "",
+    vendeurTypePouvoir: "",
     
     // Acheteur (soit client sélectionné avec auto-fill, soit manuel)
     acheteurNom: "",
@@ -160,6 +195,19 @@ export default function Contrats() {
     acheteurPrecisionRegime: "",
     acheteurModeAcquisition: "",
     acheteurQuotePart: "",
+    // Acheteur - Type de partie
+    acheteurTypePartie: "personne_physique",
+    acheteurDenominationSociale: "",
+    acheteurFormeJuridique: "",
+    acheteurSiren: "",
+    acheteurSiegeSocial: "",
+    acheteurRepresentantNom: "",
+    acheteurRepresentantQualite: "",
+    // Acheteur - Représentation
+    acheteurRepresente: "",
+    acheteurMandataireNom: "",
+    acheteurMandatairePrenom: "",
+    acheteurTypePouvoir: "",
     
     // Conditions financières
     prixVente: "",
@@ -178,9 +226,17 @@ export default function Contrats() {
     typePret: "",
     dateAccordPret: "",
     conditionsPret: "",
+    tauxMaximal: "",
+    conditionSuspensivePret: "",
     
     // Documents et diagnostics
     diagnosticsFournis: "",
+    dateDPE: "",
+    classeEnergetique: "",
+    presenceAmiante: "",
+    presencePlomb: "",
+    presenceTermites: "",
+    assainissementConforme: "",
     
     // Origine de propriété
     origineProprieteDateAcquisition: "",
@@ -196,11 +252,17 @@ export default function Contrats() {
     droitPreemption: "",
     declarationsUrbanisme: "",
     documentsUrbanisme: "",
+    dateEnvoiDIA: "",
+    reponseMairieDIA: "",
     
     // Délais et signature
     dateSignatureActe: "",
     lieuSignature: "",
     remiseCles: "",
+    remiseClesAnticipee: "",
+    dateRemiseAnticipee: "",
+    indemnitéOccupation: "",
+    montantIndemnite: "",
     procuration: "",
     identiteMandataire: "",
     
