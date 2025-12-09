@@ -4674,11 +4674,6 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         ))}
                       </SelectContent>
                     </Select>
-                    {bailHabitationData.clientId && (
-                      <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
-                        <p className="font-medium">✓ Informations automatiquement remplies depuis la fiche client</p>
-                      </div>
-                    )}
                   </div>
                 )}
 
