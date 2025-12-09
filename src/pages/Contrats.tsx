@@ -4704,7 +4704,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                             className="bg-green-600 hover:bg-green-700 text-white"
                             onClick={() => window.open(bailClientIdentiteUrl, '_blank')}
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="mr-2 h-4 w-4" />
+                            Voir
                           </Button>
                         </div>
                       ) : (
@@ -4821,7 +4822,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                             className="bg-green-600 hover:bg-green-700 text-white"
                             onClick={() => window.open(bailClientIdentiteUrl, '_blank')}
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="mr-2 h-4 w-4" />
+                            Voir
                           </Button>
                         </div>
                       ) : (
