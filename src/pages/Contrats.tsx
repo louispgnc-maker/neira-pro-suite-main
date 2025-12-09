@@ -94,6 +94,7 @@ export default function Contrats() {
   const [compromisAutrePartieFiles, setCompromisAutrePartieFiles] = useState<File[]>([]); // Fichiers de l'autre partie
   const [compromisDiagnosticsFiles, setCompromisDiagnosticsFiles] = useState<File[]>([]);
   const [acteClientIdentiteUrl, setActeClientIdentiteUrl] = useState<string | null>(null); // URL du document du client acte
+  const [bailClientIdentiteUrl, setBailClientIdentiteUrl] = useState<string | null>(null); // URL du document du client bail
   const [acteAutrePartieFiles, setActeAutrePartieFiles] = useState<File[]>([]); // Fichiers de l'autre partie acte
   const [acteVendeurFiles, setActeVendeurFiles] = useState<File[]>([]); // Fichiers supplémentaires vendeur
   const [acteAcheteurFiles, setActeAcheteurFiles] = useState<File[]>([]); // Fichiers supplémentaires acheteur
@@ -284,6 +285,10 @@ export default function Contrats() {
 
   // State pour le bail d'habitation
   const [bailHabitationData, setBailHabitationData] = useState({
+    // Rôle du client
+    clientRole: "", // "bailleur" ou "locataire"
+    clientId: "",
+    
     // Sélection du bailleur (client)
     bailleurClientId: "",
     bailleurNom: "",
@@ -297,7 +302,8 @@ export default function Contrats() {
     bailleurPieceIdentite: "",
     bailleurNumeroIdentite: "",
     
-    // Locataire(s) - saisie manuelle
+    // Locataire(s) - saisie manuelle ou client
+    locataireClientId: "",
     locataireNom: "",
     locatairePrenom: "",
     locataireAdresse: "",
@@ -753,6 +759,71 @@ export default function Contrats() {
       setActeClientIdentiteUrl(null);
     }
   }, [acteVenteData.clientId, clients]);
+
+  // Charger la pièce d'identité du client (Bail d'habitation)
+  useEffect(() => {
+    if (bailHabitationData.clientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === bailHabitationData.clientId) as any;
+      console.log('📋 Client bail sélectionné:', selectedClient?.nom, selectedClient?.prenom);
+      console.log('📄 id_doc_path bail:', selectedClient?.id_doc_path);
+      
+      if (selectedClient?.id_doc_path) {
+        console.log('✅ Chargement document bail depuis id_doc_path:', selectedClient.id_doc_path);
+        supabase.storage
+          .from('documents')
+          .createSignedUrl(selectedClient.id_doc_path, 3600)
+          .then(({ data, error }) => {
+            if (error) {
+              console.error('❌ Erreur chargement document bail:', error);
+              setBailClientIdentiteUrl(null);
+            } else if (data?.signedUrl) {
+              console.log('✅ Document bail chargé avec succès');
+              setBailClientIdentiteUrl(data.signedUrl);
+            }
+          });
+      } else {
+        // Chercher dans client_documents si pas de id_doc_path
+        console.log('🔍 Recherche dans client_documents pour client (bail):', selectedClient?.id);
+        if (selectedClient?.id) {
+          supabase
+            .from('client_documents')
+            .select('file_path, file_name, document_type')
+            .eq('client_id', selectedClient.id)
+            .order('uploaded_at', { ascending: false })
+            .limit(5)
+            .then(({ data: docs, error: docsError }) => {
+              if (docsError) {
+                console.error('❌ Erreur recherche documents (bail):', docsError);
+                setBailClientIdentiteUrl(null);
+              } else if (docs && docs.length > 0) {
+                console.log(`📄 ${docs.length} document(s) bail trouvé(s) pour ce client`);
+                const idDoc = docs.find(d => d.document_type === 'piece_identite') || docs[0];
+                console.log('📄 Document bail sélectionné:', idDoc.file_name, '(type:', idDoc.document_type, ')');
+                supabase.storage
+                  .from('documents')
+                  .createSignedUrl(idDoc.file_path, 3600)
+                  .then(({ data, error }) => {
+                    if (error) {
+                      console.error('❌ Erreur chargement document bail:', error);
+                      setBailClientIdentiteUrl(null);
+                    } else if (data?.signedUrl) {
+                      console.log('✅ Document bail client_documents chargé avec succès');
+                      setBailClientIdentiteUrl(data.signedUrl);
+                    }
+                  });
+              } else {
+                console.log('⚠️ Aucun document trouvé dans client_documents (bail)');
+                setBailClientIdentiteUrl(null);
+              }
+            });
+        } else {
+          setBailClientIdentiteUrl(null);
+        }
+      }
+    } else {
+      setBailClientIdentiteUrl(null);
+    }
+  }, [bailHabitationData.clientId, clients]);
 
   // Auto-fill depuis le client sélectionné comme bailleur (Bail d'habitation)
   useEffect(() => {
@@ -1479,6 +1550,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
       
       // Réinitialiser le formulaire
       setBailHabitationData({
+        clientRole: "",
+        clientId: "",
         bailleurClientId: "",
         bailleurNom: "",
         bailleurPrenom: "",
@@ -1490,6 +1563,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         bailleurStatutMatrimonial: "",
         bailleurPieceIdentite: "",
         bailleurNumeroIdentite: "",
+        locataireClientId: "",
         locataireNom: "",
         locatairePrenom: "",
         locataireAdresse: "",
@@ -4504,12 +4578,95 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
             {/* Formulaire spécifique pour Bail d'habitation */}
             {(pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") && (
               <>
-                {/* Sélection du bailleur */}
+                {/* Sélection du rôle du client */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">👤 Bailleur (client)</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
                   <div className="space-y-2">
-                    <Label htmlFor="bail_bailleur">Sélectionner le client bailleur *</Label>
-                    <Select value={bailHabitationData.bailleurClientId} onValueChange={(value) => setBailHabitationData({...bailHabitationData, bailleurClientId: value})}>
+                    <Label>Votre client est le *</Label>
+                    <RadioGroup 
+                      value={bailHabitationData.clientRole} 
+                      onValueChange={(value) => {
+                        setBailHabitationData({
+                          ...bailHabitationData, 
+                          clientRole: value,
+                          clientId: "",
+                          // Reset des champs de l'autre partie
+                          ...(value === "bailleur" ? {
+                            locataireClientId: "",
+                            locataireNom: "",
+                            locatairePrenom: "",
+                            locataireAdresse: "",
+                            locataireDateNaissance: "",
+                            locataireLieuNaissance: "",
+                            locataireNationalite: "",
+                            locataireProfession: "",
+                            locataireStatutMatrimonial: "",
+                            nombreOccupants: "",
+                          } : {
+                            bailleurClientId: "",
+                            bailleurNom: "",
+                            bailleurPrenom: "",
+                            bailleurAdresse: "",
+                            bailleurDateNaissance: "",
+                            bailleurLieuNaissance: "",
+                            bailleurNationalite: "",
+                            bailleurProfession: "",
+                            bailleurStatutMatrimonial: "",
+                          })
+                        });
+                      }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="bailleur" id="role_bailleur" />
+                        <Label htmlFor="role_bailleur" className="cursor-pointer">Bailleur (propriétaire)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="locataire" id="role_locataire" />
+                        <Label htmlFor="role_locataire" className="cursor-pointer">Locataire</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
+
+                {/* Sélection du client depuis la liste */}
+                {bailHabitationData.clientRole && (
+                  <div className="space-y-2">
+                    <Label>Sélectionner le client *</Label>
+                    <Select 
+                      value={bailHabitationData.clientId} 
+                      onValueChange={(value) => {
+                        const selectedClient = clients.find(c => c.id === value);
+                        if (selectedClient && bailHabitationData.clientRole === "bailleur") {
+                          setBailHabitationData({
+                            ...bailHabitationData,
+                            clientId: value,
+                            bailleurClientId: value,
+                            bailleurNom: selectedClient.nom,
+                            bailleurPrenom: selectedClient.prenom,
+                            bailleurAdresse: selectedClient.adresse || "",
+                            bailleurDateNaissance: selectedClient.date_naissance || "",
+                            bailleurLieuNaissance: selectedClient.lieu_naissance || "",
+                            bailleurNationalite: selectedClient.nationalite || "",
+                            bailleurProfession: selectedClient.profession || "",
+                            bailleurStatutMatrimonial: selectedClient.statut_matrimonial || "",
+                          });
+                        } else if (selectedClient && bailHabitationData.clientRole === "locataire") {
+                          setBailHabitationData({
+                            ...bailHabitationData,
+                            clientId: value,
+                            locataireClientId: value,
+                            locataireNom: selectedClient.nom,
+                            locatairePrenom: selectedClient.prenom,
+                            locataireAdresse: selectedClient.adresse || "",
+                            locataireDateNaissance: selectedClient.date_naissance || "",
+                            locataireLieuNaissance: selectedClient.lieu_naissance || "",
+                            locataireNationalite: selectedClient.nationalite || "",
+                            locataireProfession: selectedClient.profession || "",
+                            locataireStatutMatrimonial: selectedClient.statut_matrimonial || "",
+                          });
+                        }
+                      }}
+                    >
                       <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
                       <SelectContent>
                         {clients.map((client) => (
@@ -4517,10 +4674,22 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                         ))}
                       </SelectContent>
                     </Select>
+                    {bailHabitationData.clientId && (
+                      <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
+                        <p className="font-medium">✓ Informations automatiquement remplies depuis la fiche client</p>
+                      </div>
+                    )}
                   </div>
-                  {bailHabitationData.bailleurClientId && (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
-                      <p className="font-medium">✓ Informations automatiquement remplies depuis la fiche client</p>
+                )}
+
+                {/* Bailleur */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">
+                    {bailHabitationData.clientRole === "bailleur" ? "👤 Bailleur (votre client)" : "👤 Bailleur"}
+                  </h3>
+                  {bailHabitationData.clientRole === "locataire" && (
+                    <div className="text-sm text-muted-foreground mb-2">
+                      Saisir manuellement les informations du bailleur
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -4537,11 +4706,55 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Input value={bailHabitationData.bailleurAdresse} onChange={(e) => setBailHabitationData({...bailHabitationData, bailleurAdresse: e.target.value})} />
                     </div>
                   </div>
+
+                  {/* Pièce d'identité du bailleur - chargée depuis client si c'est le client */}
+                  {bailHabitationData.clientRole === "bailleur" && bailHabitationData.clientId ? (
+                    <div className="space-y-2">
+                      <Label>📎 Pièce d'identité</Label>
+                      {bailClientIdentiteUrl ? (
+                        <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => window.open(bailClientIdentiteUrl, '_blank')}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : bailHabitationData.clientRole === "locataire" && (
+                    /* Upload pour bailleur si le client est locataire */
+                    <div className="space-y-2">
+                      <Label>📎 Pièce d'identité du bailleur</Label>
+                      <Input type="file" accept=".pdf,image/*" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Locataire */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">👥 Locataire</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">
+                    {bailHabitationData.clientRole === "locataire" ? "👥 Locataire (votre client)" : "👥 Locataire"}
+                  </h3>
+                  {bailHabitationData.clientRole === "bailleur" && (
+                    <div className="text-sm text-muted-foreground mb-2">
+                      Saisir manuellement les informations du locataire
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Nom *</Label>
@@ -4576,6 +4789,43 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       <Input type="number" value={bailHabitationData.nombreOccupants} onChange={(e) => setBailHabitationData({...bailHabitationData, nombreOccupants: e.target.value})} />
                     </div>
                   </div>
+
+                  {/* Pièce d'identité du locataire - chargée depuis client si c'est le client */}
+                  {bailHabitationData.clientRole === "locataire" && bailHabitationData.clientId ? (
+                    <div className="space-y-2">
+                      <Label>📎 Pièce d'identité</Label>
+                      {bailClientIdentiteUrl ? (
+                        <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => window.open(bailClientIdentiteUrl, '_blank')}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : bailHabitationData.clientRole === "bailleur" && (
+                    /* Upload section pour documents locataire si le client est bailleur */
+                    <div className="space-y-2">
+                      <Label>📎 Documents du locataire (pièce d'identité, justificatifs de revenus)</Label>
+                      <Input type="file" accept=".pdf,image/*" multiple />
+                    </div>
+                  )}
 
                   {/* Situation financière du locataire */}
                   <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg space-y-4">
