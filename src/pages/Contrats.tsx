@@ -2686,45 +2686,22 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
             {/* Formulaire spécifique pour Acte de vente immobilière */}
             {pendingContractType === "Acte de vente immobilière" && (
               <>
-                {/* Sélection du client */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">👤 Sélection du client</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="acte_client">Sélectionner votre client *</Label>
-                      <Select value={acteVenteData.clientId} onValueChange={(value) => setActeVenteData({...acteVenteData, clientId: value})}>
-                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {acteVenteData.clientId && clients.find(c => c.id === acteVenteData.clientId) && (
-                      <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
-                        <p><strong>Client:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.nom} {clients.find(c => c.id === acteVenteData.clientId)?.prenom}</p>
-                        {clients.find(c => c.id === acteVenteData.clientId)?.adresse && (
-                          <p><strong>Adresse:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.adresse}</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
                 {/* Sélection du rôle du client */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">🎭 Rôle du client</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">Rôle du client</h3>
                   <div className="space-y-2">
-                    <Label>Le client est * :</Label>
-                    <RadioGroup value={acteVenteData.clientRole} onValueChange={(value) => setActeVenteData({...acteVenteData, clientRole: value})}>
+                    <Label>Votre client est : *</Label>
+                    <RadioGroup 
+                      value={acteVenteData.clientRole}
+                      onValueChange={(value) => setActeVenteData({...acteVenteData, clientRole: value})}
+                    >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="vendeur" id="role-vendeur" />
-                        <Label htmlFor="role-vendeur" className="cursor-pointer">Vendeur</Label>
+                        <RadioGroupItem value="acheteur" id="acte-acheteur" />
+                        <Label htmlFor="acte-acheteur" className="cursor-pointer">Acheteur</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="acheteur" id="role-acheteur" />
-                        <Label htmlFor="role-acheteur" className="cursor-pointer">Acheteur</Label>
+                        <RadioGroupItem value="vendeur" id="acte-vendeur" />
+                        <Label htmlFor="acte-vendeur" className="cursor-pointer">Vendeur</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -2733,15 +2710,93 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                 {/* Vendeur - avec auto-fill si client sélectionné comme vendeur, sinon manuel */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-lg border-b pb-2">👤 Vendeur</h3>
-                  {acteVenteData.clientRole === "vendeur" && acteVenteData.clientId ? (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
-                      <p className="font-medium mb-2">✓ Informations automatiquement remplies depuis la fiche client</p>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-muted-foreground mb-2">
-                      Saisir manuellement les informations du vendeur
-                    </div>
-                  )}
+                  <div className="space-y-4">
+                    {acteVenteData.clientRole === "vendeur" ? (
+                      <>
+                        {/* Le client est le vendeur */}
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_clientId">Sélectionner votre client *</Label>
+                          <Select 
+                            value={acteVenteData.clientId}
+                            onValueChange={(value) => setActeVenteData({...acteVenteData, clientId: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choisir un client" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {clients.map((client) => (
+                                <SelectItem key={client.id} value={client.id}>
+                                  {client.nom} {client.prenom}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Afficher les informations du client sélectionné */}
+                        {acteVenteData.clientId && clients.find(c => c.id === acteVenteData.clientId) && (
+                          <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                            <p><strong>Nom complet:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.nom} {clients.find(c => c.id === acteVenteData.clientId)?.prenom}</p>
+                            {clients.find(c => c.id === acteVenteData.clientId)?.adresse && (
+                              <p><strong>Adresse:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.adresse}</p>
+                            )}
+                            {clients.find(c => c.id === acteVenteData.clientId)?.telephone && (
+                              <p><strong>Téléphone:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.telephone}</p>
+                            )}
+                            {clients.find(c => c.id === acteVenteData.clientId)?.email && (
+                              <p><strong>Email:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.email}</p>
+                            )}
+                            {clients.find(c => c.id === acteVenteData.clientId)?.date_naissance && (
+                              <p><strong>Date de naissance:</strong> {new Date(clients.find(c => c.id === acteVenteData.clientId)?.date_naissance).toLocaleDateString('fr-FR')}</p>
+                            )}
+                            {clients.find(c => c.id === acteVenteData.clientId)?.nationalite && (
+                              <p><strong>Nationalité:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.nationalite}</p>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Pièce d'identité du client vendeur */}
+                        {acteVenteData.clientId && (
+                          <div className="space-y-2">
+                            <Label>📎 Pièce d'identité</Label>
+                            {acteClientIdentiteUrl ? (
+                              <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                                <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {/* Saisie manuelle vendeur (le client est acheteur) */}
+                        <div className="text-sm text-muted-foreground mb-2">
+                          Saisir manuellement les informations du vendeur
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Champs communs pour le vendeur */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="acte_vendeurNom">Nom *</Label>
@@ -2843,37 +2898,6 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     </div>
                   </div>
                   
-                  {/* Pièce d'identité auto-chargée du client vendeur */}
-                  {acteVenteData.clientRole === "vendeur" && acteVenteData.clientId && (
-                    <div className="space-y-2">
-                      <Label>📎 Pièce d'identité (depuis le profil client)</Label>
-                      {acteClientIdentiteUrl ? (
-                        <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                            onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
-                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                          </svg>
-                          <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  
                   {/* Upload de pièces d'identité vendeur */}
                   <div className="space-y-2">
                     <Label>📎 Pièces d'identité du vendeur</Label>
@@ -2935,15 +2959,93 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                 {/* Acheteur - avec auto-fill si client sélectionné comme acheteur, sinon manuel */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-lg border-b pb-2">👥 Acheteur</h3>
-                  {acteVenteData.clientRole === "acheteur" && acteVenteData.clientId ? (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm">
-                      <p className="font-medium mb-2">✓ Informations automatiquement remplies depuis la fiche client</p>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-muted-foreground mb-2">
-                      Saisir manuellement les informations de l'acheteur
-                    </div>
-                  )}
+                  <div className="space-y-4">
+                    {acteVenteData.clientRole === "acheteur" ? (
+                      <>
+                        {/* Le client est l'acheteur */}
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_clientId_acheteur">Sélectionner votre client *</Label>
+                          <Select 
+                            value={acteVenteData.clientId}
+                            onValueChange={(value) => setActeVenteData({...acteVenteData, clientId: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choisir un client" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {clients.map((client) => (
+                                <SelectItem key={client.id} value={client.id}>
+                                  {client.nom} {client.prenom}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Afficher les informations du client sélectionné */}
+                        {acteVenteData.clientId && clients.find(c => c.id === acteVenteData.clientId) && (
+                          <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                            <p><strong>Nom complet:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.nom} {clients.find(c => c.id === acteVenteData.clientId)?.prenom}</p>
+                            {clients.find(c => c.id === acteVenteData.clientId)?.adresse && (
+                              <p><strong>Adresse:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.adresse}</p>
+                            )}
+                            {clients.find(c => c.id === acteVenteData.clientId)?.telephone && (
+                              <p><strong>Téléphone:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.telephone}</p>
+                            )}
+                            {clients.find(c => c.id === acteVenteData.clientId)?.email && (
+                              <p><strong>Email:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.email}</p>
+                            )}
+                            {clients.find(c => c.id === acteVenteData.clientId)?.date_naissance && (
+                              <p><strong>Date de naissance:</strong> {new Date(clients.find(c => c.id === acteVenteData.clientId)?.date_naissance).toLocaleDateString('fr-FR')}</p>
+                            )}
+                            {clients.find(c => c.id === acteVenteData.clientId)?.nationalite && (
+                              <p><strong>Nationalité:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.nationalite}</p>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Pièce d'identité du client acheteur */}
+                        {acteVenteData.clientId && (
+                          <div className="space-y-2">
+                            <Label>📎 Pièce d'identité</Label>
+                            {acteClientIdentiteUrl ? (
+                              <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                                <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {/* Saisie manuelle acheteur (le client est vendeur) */}
+                        <div className="text-sm text-muted-foreground mb-2">
+                          Saisir manuellement les informations de l'acheteur
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Champs communs pour l'acheteur */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="acte_acheteurNom">Nom *</Label>
@@ -3042,37 +3144,6 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       </div>
                     )}
                   </div>
-                  
-                  {/* Pièce d'identité auto-chargée du client acheteur */}
-                  {acteVenteData.clientRole === "acheteur" && acteVenteData.clientId && (
-                    <div className="space-y-2">
-                      <Label>📎 Pièce d'identité (depuis le profil client)</Label>
-                      {acteClientIdentiteUrl ? (
-                        <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                            onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
-                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                          </svg>
-                          <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
                   
                   {/* Upload de pièces d'identité acheteur */}
                   <div className="space-y-2">
