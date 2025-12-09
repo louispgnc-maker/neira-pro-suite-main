@@ -103,6 +103,11 @@ export default function Contrats() {
   const [bailleurIdFiles, setBailleurIdFiles] = useState<File[]>([]); // Pièce d'identité bailleur
   const [locataireIdFiles, setLocataireIdFiles] = useState<File[]>([]); // Documents locataire
   const [inventaireMobilierFiles, setInventaireMobilierFiles] = useState<File[]>([]); // Inventaire mobilier PDF/images
+  const [bailCommercialBailleurFiles, setBailCommercialBailleurFiles] = useState<File[]>([]); // Kbis/ID bailleur commercial
+  const [bailCommercialLocataireFiles, setBailCommercialLocataireFiles] = useState<File[]>([]); // Kbis/ID locataire commercial
+  const [bailCommercialDiagnosticsFiles, setBailCommercialDiagnosticsFiles] = useState<File[]>([]); // Diagnostics bail commercial
+  const [bailCommercialCautionFiles, setBailCommercialCautionFiles] = useState<File[]>([]); // Acte de caution
+  const [bailCommercialEtatLieuxFiles, setBailCommercialEtatLieuxFiles] = useState<File[]>([]); // État des lieux
   const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
   const [bailDiagnosticsFiles, setBailDiagnosticsFiles] = useState<File[]>([]);
   
@@ -454,6 +459,118 @@ export default function Contrats() {
     nombreJeuxCles: "",
     typesCles: [] as string[], // portes, boites_aux_lettres, garage, badges
     codesFournis: "", // WIFI, interphone, digicode...
+  });
+
+  // State pour le bail commercial
+  const [bailCommercialData, setBailCommercialData] = useState({
+    // Bailleur
+    statutBailleur: "", // "physique" ou "morale"
+    bailleurNom: "",
+    bailleurPrenom: "",
+    bailleurDenomination: "",
+    bailleurFormeJuridique: "",
+    bailleurAdresse: "",
+    bailleurSiren: "",
+    bailleurSiret: "",
+    bailleurRepresentant: "",
+    bailleurQualiteRepresentant: "",
+    
+    // Locataire (preneur)
+    statutLocataire: "", // "physique" ou "morale"
+    locataireNom: "",
+    locatairePrenom: "",
+    locataireAdresse: "",
+    locataireImmatriculation: "",
+    locataireDenomination: "",
+    locataireFormeJuridique: "",
+    locataireSiege: "",
+    locataireSiren: "",
+    locataireSiret: "",
+    locataireCapital: "",
+    locataireRepresentant: "",
+    locataireQualiteRepresentant: "",
+    
+    // Activité
+    activitePrincipale: "",
+    activitesAnnexes: "",
+    destinationBail: "",
+    clauseExclusivite: "",
+    clauseNonConcurrence: "",
+    
+    // Local commercial
+    adresseLocal: "",
+    natureLocal: "",
+    surfaceTotale: "",
+    lotsCopropriete: "",
+    etageNumero: "",
+    partiesPrivatives: [] as string[], // cave, sous-sol, mezzanine, parking, terrasse
+    longueurVitrine: "",
+    accesLivraison: "",
+    etatGeneral: "",
+    
+    // Travaux
+    travauxBailleur: "",
+    travauxLocataire: "",
+    etatLocalRemise: "",
+    diagnosticAmiante: "",
+    
+    // Durée
+    typeBail: "", // "3-6-9" "derogatoire" "saisonnier"
+    datePriseEffet: "",
+    dureeTotale: "",
+    renouvellementAuto: "",
+    
+    // Conditions financières
+    loyerAnnuelHT: "",
+    loyerMensuelHT: "",
+    modalitePaiement: "", // mensuel, trimestriel
+    typeIndexation: "", // ILC, ILAT
+    chargesMensuelles: "",
+    typeCharges: "", // provisions, forfait
+    depotGarantie: "",
+    modePaiementLoyer: "", // virement, prelevement, cheque
+    ibanBailleur: "",
+    
+    // Charges & travaux
+    chargesLocataire: [] as string[], // eau, electricite, chauffage, entretien, copro, teom, taxe_fonciere
+    chargesBailleur: [] as string[], // gros_travaux, mise_conformite, ravalement, remplacement, structurel
+    compteursIndividuels: "",
+    
+    // Garanties
+    cautionPersonnelle: "",
+    garantieBancaire: "",
+    montantGaranti: "",
+    dureeGarantie: "",
+    
+    // Diagnostics
+    diagnosticDPE: "",
+    diagnosticAmianteDTA: "",
+    diagnosticERP: "",
+    diagnosticElectricite: "",
+    diagnosticGaz: "",
+    accessibiliteHandicapes: "",
+    
+    // État des lieux
+    etatLieuxJoint: "",
+    etatEquipements: "",
+    
+    // Remise des clés
+    nombreJeuxCles: "",
+    typesCles: [] as string[],
+    codesAcces: "",
+    
+    // Clauses juridiques
+    clauseResolutoire: "",
+    resiliationTriennale: "",
+    clauseAssurances: "",
+    souslocationAutorisee: "",
+    cessionBailAutorisee: "",
+    
+    // Infos complémentaires
+    particularitesLocal: "",
+    conditionsSpecifiques: "",
+    restrictionsUsage: "",
+    horairesOuverture: "",
   });
   
   const [questionnaireData, setQuestionnaireData] = useState({
