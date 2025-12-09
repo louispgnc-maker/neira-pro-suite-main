@@ -6091,6 +6091,144 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
               </>
             )}
 
+            {/* Formulaire spécifique pour Bail commercial */}
+            {pendingContractType === "Bail commercial" && (
+              <>
+                <div className="space-y-6">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      📋 Formulaire bail commercial en cours de développement. Les sections complètes seront ajoutées progressivement.
+                    </p>
+                  </div>
+
+                  {/* Bailleur */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🏢 Bailleur</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Statut du bailleur *</Label>
+                        <Select 
+                          value={bailCommercialData.statutBailleur} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, statutBailleur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="physique">Personne physique</SelectItem>
+                            <SelectItem value="morale">Personne morale (société)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Local commercial */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🏪 Local commercial</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse complète du local *</Label>
+                        <Input 
+                          value={bailCommercialData.adresseLocal} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, adresseLocal: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Nature du local *</Label>
+                        <Select 
+                          value={bailCommercialData.natureLocal} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, natureLocal: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="boutique">Boutique</SelectItem>
+                            <SelectItem value="bureaux">Bureaux</SelectItem>
+                            <SelectItem value="restaurant">Restaurant</SelectItem>
+                            <SelectItem value="entrepot">Entrepôt</SelectItem>
+                            <SelectItem value="atelier">Atelier</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Surface totale (m²) *</Label>
+                        <Input 
+                          type="number"
+                          value={bailCommercialData.surfaceTotale} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, surfaceTotale: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Activité */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">💼 Activité</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Activité principale autorisée *</Label>
+                        <Input 
+                          value={bailCommercialData.activitePrincipale} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, activitePrincipale: e.target.value})} 
+                          placeholder="Ex: Commerce de détail, Restauration..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Conditions financières */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">💶 Conditions financières</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Loyer mensuel HT (€) *</Label>
+                        <Input 
+                          type="number"
+                          value={bailCommercialData.loyerMensuelHT} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, loyerMensuelHT: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Charges mensuelles (€) *</Label>
+                        <Input 
+                          type="number"
+                          value={bailCommercialData.chargesMensuelles} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, chargesMensuelles: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Durée */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📅 Durée du bail</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de bail *</Label>
+                        <Select 
+                          value={bailCommercialData.typeBail} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, typeBail: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="3-6-9">Bail commercial 3/6/9</SelectItem>
+                            <SelectItem value="derogatoire">Bail dérogatoire (≤ 3 ans)</SelectItem>
+                            <SelectItem value="saisonnier">Bail saisonnier</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de prise d'effet *</Label>
+                        <Input 
+                          type="date"
+                          value={bailCommercialData.datePriseEffet} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, datePriseEffet: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -6108,6 +6246,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                   handleActeVenteSubmit();
                 } else if (pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") {
                   handleBailHabitationSubmit();
+                } else if (pendingContractType === "Bail commercial") {
+                  toast.info("Le formulaire bail commercial est en cours de développement");
                 } else {
                   handleQuestionnaireSubmit();
                 }
