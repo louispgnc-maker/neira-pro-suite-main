@@ -1746,7 +1746,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="acheteur" id="acheteur" />
-                    <Label htmlFor="acheteur" className="cursor-pointer">Acheteur</Label>
+                    <Label htmlFor="acheteur" className="cursor-pointer">Acquéreur</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="vendeur" id="vendeur" />
@@ -2126,12 +2126,13 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                   </div>
                 )}
                 
-                {/* Upload pour l'autre partie */}
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {questionnaireData.clientRole === "vendeur" ? "Acquéreur" : "Vendeur"} (Autre partie)
-                  </p>
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                {/* Upload pour l'autre partie - seulement si client sélectionné ET pas de document client */}
+                {questionnaireData.clientId && !compromisClientIdentiteUrl && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {questionnaireData.clientRole === "vendeur" ? "Acquéreur" : "Vendeur"} (Autre partie)
+                    </p>
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
                     <input
                       type="file"
                       accept="application/pdf,image/*"
@@ -2183,7 +2184,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       ))}
                     </div>
                   )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -3073,12 +3075,13 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       </div>
                     )}
                     
-                    {/* Upload pour l'autre partie */}
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        {acteVenteData.clientRole === "vendeur" ? "Acquéreur" : "Vendeur"} (Autre partie)
-                      </p>
-                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                    {/* Upload pour l'autre partie - seulement si client sélectionné ET pas de document client */}
+                    {acteVenteData.clientId && !acteClientIdentiteUrl && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground">
+                          {acteVenteData.clientRole === "vendeur" ? "Acquéreur" : "Vendeur"} (Autre partie)
+                        </p>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
                         <input
                           type="file"
                           accept="application/pdf,image/*"
@@ -3130,7 +3133,8 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                           ))}
                         </div>
                       )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
