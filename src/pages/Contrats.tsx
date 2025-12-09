@@ -2780,37 +2780,6 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                             )}
                           </div>
                         )}
-
-                        {/* Pièce d'identité du client vendeur */}
-                        {acteVenteData.clientId && (
-                          <div className="space-y-2">
-                            <Label>📎 Pièce d'identité</Label>
-                            {acteClientIdentiteUrl ? (
-                              <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  className="bg-green-600 hover:bg-green-700 text-white"
-                                  onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
-                                <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                                <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
                       </>
                     ) : (
                       <>
@@ -2946,62 +2915,93 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     </div>
                   </div>
                   
-                  {/* Upload de pièces d'identité vendeur */}
-                  <div className="space-y-2">
-                    <Label>📎 Pièces d'identité du vendeur</Label>
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
-                      <input
-                        type="file"
-                        accept="application/pdf,image/*"
-                        multiple
-                        className="hidden"
-                        id="acte-vendeur-upload"
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          if (files.length > 0) {
-                            setActeVendeurFiles(prev => [...prev, ...files]);
-                            toast.success(`${files.length} fichier(s) ajouté(s)`);
-                          }
-                          e.target.value = '';
-                        }}
-                      />
-                      <label htmlFor="acte-vendeur-upload" className="cursor-pointer flex items-center gap-3">
-                        <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                  {/* Pièce d'identité du vendeur - chargée depuis client ou upload */}
+                  {acteVenteData.clientRole === "vendeur" && acteVenteData.clientId ? (
+                    <div className="space-y-2">
+                      <Label>📎 Pièce d'identité</Label>
+                      {acteClientIdentiteUrl ? (
+                        <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
+                          <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Joindre des pièces d'identité</p>
-                          <p className="text-xs text-muted-foreground">CNI, passeport, livret de famille - PDF ou images</p>
+                      ) : (
+                        <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
                         </div>
-                      </label>
+                      )}
                     </div>
-                    {acteVendeurFiles.length > 0 && (
-                      <div className="space-y-2 mt-2">
-                        {acteVendeurFiles.map((file, index) => (
-                          <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
-                            <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  ) : (
+                    /* Upload de pièces d'identité vendeur */
+                    <div className="space-y-2">
+                      <Label>📎 Pièces d'identité du vendeur</Label>
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                        <input
+                          type="file"
+                          accept="application/pdf,image/*"
+                          multiple
+                          className="hidden"
+                          id="acte-vendeur-upload"
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length > 0) {
+                              setActeVendeurFiles(prev => [...prev, ...files]);
+                              toast.success(`${files.length} fichier(s) ajouté(s)`);
+                            }
+                            e.target.value = '';
+                          }}
+                        />
+                        <label htmlFor="acte-vendeur-upload" className="cursor-pointer flex items-center gap-3">
+                          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                             </svg>
-                            <span className="text-sm flex-1 truncate">{file.name}</span>
-                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0 hover:bg-transparent"
-                              onClick={() => setActeVendeurFiles(prev => prev.filter((_, i) => i !== index))}
-                            >
-                              <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </Button>
                           </div>
-                        ))}
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">Joindre des pièces d'identité</p>
+                            <p className="text-xs text-muted-foreground">CNI, passeport, livret de famille - PDF ou images</p>
+                          </div>
+                        </label>
                       </div>
-                    )}
-                  </div>
+                      {acteVendeurFiles.length > 0 && (
+                        <div className="space-y-2 mt-2">
+                          {acteVendeurFiles.map((file, index) => (
+                            <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                              <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <span className="text-sm flex-1 truncate">{file.name}</span>
+                              <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 hover:bg-transparent"
+                                onClick={() => setActeVendeurFiles(prev => prev.filter((_, i) => i !== index))}
+                              >
+                                <svg className="w-4 h-4 text-muted-foreground hover:text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Acheteur - avec auto-fill si client sélectionné comme acheteur, sinon manuel */}
@@ -3048,37 +3048,6 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                             )}
                             {clients.find(c => c.id === acteVenteData.clientId)?.nationalite && (
                               <p><strong>Nationalité:</strong> {clients.find(c => c.id === acteVenteData.clientId)?.nationalite}</p>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Pièce d'identité du client acheteur */}
-                        {acteVenteData.clientId && (
-                          <div className="space-y-2">
-                            <Label>📎 Pièce d'identité</Label>
-                            {acteClientIdentiteUrl ? (
-                              <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  className="bg-green-600 hover:bg-green-700 text-white"
-                                  onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
-                                <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                                <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
-                              </div>
                             )}
                           </div>
                         )}
@@ -3215,7 +3184,37 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                     )}
                   </div>
                   
-                  {/* Upload de pièces d'identité acheteur */}
+                  {/* Pièce d'identité de l'acquéreur - chargée depuis client ou upload */}
+                  {acteVenteData.clientRole === "acheteur" && acteVenteData.clientId ? (
+                    <div className="space-y-2">
+                      <Label>📎 Pièce d'identité</Label>
+                      {acteClientIdentiteUrl ? (
+                        <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => window.open(acteClientIdentiteUrl, '_blank')}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Upload de pièces d'identité acheteur */
                   <div className="space-y-2">
                     <Label>📎 Pièces d'identité de l'acheteur</Label>
                     <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
@@ -3271,6 +3270,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       </div>
                     )}
                   </div>
+                  )}
                 </div>
 
                 {/* Informations sur le bien */}
