@@ -4628,61 +4628,46 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                   </div>
                 </div>
 
-                {/* Sélection du client depuis la liste */}
-                {bailHabitationData.clientRole && (
-                  <div className="space-y-2">
-                    <Label>Sélectionner le client *</Label>
-                    <Select 
-                      value={bailHabitationData.clientId} 
-                      onValueChange={(value) => {
-                        const selectedClient = clients.find(c => c.id === value);
-                        if (selectedClient && bailHabitationData.clientRole === "bailleur") {
-                          setBailHabitationData({
-                            ...bailHabitationData,
-                            clientId: value,
-                            bailleurClientId: value,
-                            bailleurNom: selectedClient.nom,
-                            bailleurPrenom: selectedClient.prenom,
-                            bailleurAdresse: selectedClient.adresse || "",
-                            bailleurDateNaissance: selectedClient.date_naissance || "",
-                            bailleurLieuNaissance: selectedClient.lieu_naissance || "",
-                            bailleurNationalite: selectedClient.nationalite || "",
-                            bailleurProfession: selectedClient.profession || "",
-                            bailleurStatutMatrimonial: selectedClient.statut_matrimonial || "",
-                          });
-                        } else if (selectedClient && bailHabitationData.clientRole === "locataire") {
-                          setBailHabitationData({
-                            ...bailHabitationData,
-                            clientId: value,
-                            locataireClientId: value,
-                            locataireNom: selectedClient.nom,
-                            locatairePrenom: selectedClient.prenom,
-                            locataireAdresse: selectedClient.adresse || "",
-                            locataireDateNaissance: selectedClient.date_naissance || "",
-                            locataireLieuNaissance: selectedClient.lieu_naissance || "",
-                            locataireNationalite: selectedClient.nationalite || "",
-                            locataireProfession: selectedClient.profession || "",
-                            locataireStatutMatrimonial: selectedClient.statut_matrimonial || "",
-                          });
-                        }
-                      }}
-                    >
-                      <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
-                      <SelectContent>
-                        {clients.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
                 {/* Bailleur */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-lg border-b pb-2">
                     {bailHabitationData.clientRole === "bailleur" ? "👤 Bailleur (votre client)" : "👤 Bailleur"}
                   </h3>
-                  {bailHabitationData.clientRole === "locataire" && (
+                  
+                  {/* Sélection du client si bailleur */}
+                  {bailHabitationData.clientRole === "bailleur" ? (
+                    <div className="space-y-2">
+                      <Label>Sélectionner le client bailleur *</Label>
+                      <Select 
+                        value={bailHabitationData.clientId} 
+                        onValueChange={(value) => {
+                          const selectedClient = clients.find(c => c.id === value);
+                          if (selectedClient) {
+                            setBailHabitationData({
+                              ...bailHabitationData,
+                              clientId: value,
+                              bailleurClientId: value,
+                              bailleurNom: selectedClient.nom,
+                              bailleurPrenom: selectedClient.prenom,
+                              bailleurAdresse: selectedClient.adresse || "",
+                              bailleurDateNaissance: selectedClient.date_naissance || "",
+                              bailleurLieuNaissance: selectedClient.lieu_naissance || "",
+                              bailleurNationalite: selectedClient.nationalite || "",
+                              bailleurProfession: selectedClient.profession || "",
+                              bailleurStatutMatrimonial: selectedClient.statut_matrimonial || "",
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : (
                     <div className="text-sm text-muted-foreground mb-2">
                       Saisir manuellement les informations du bailleur
                     </div>
@@ -4745,7 +4730,41 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                   <h3 className="font-semibold text-lg border-b pb-2">
                     {bailHabitationData.clientRole === "locataire" ? "👥 Locataire (votre client)" : "👥 Locataire"}
                   </h3>
-                  {bailHabitationData.clientRole === "bailleur" && (
+                  
+                  {/* Sélection du client si locataire */}
+                  {bailHabitationData.clientRole === "locataire" ? (
+                    <div className="space-y-2">
+                      <Label>Sélectionner le client locataire *</Label>
+                      <Select 
+                        value={bailHabitationData.clientId} 
+                        onValueChange={(value) => {
+                          const selectedClient = clients.find(c => c.id === value);
+                          if (selectedClient) {
+                            setBailHabitationData({
+                              ...bailHabitationData,
+                              clientId: value,
+                              locataireClientId: value,
+                              locataireNom: selectedClient.nom,
+                              locatairePrenom: selectedClient.prenom,
+                              locataireAdresse: selectedClient.adresse || "",
+                              locataireDateNaissance: selectedClient.date_naissance || "",
+                              locataireLieuNaissance: selectedClient.lieu_naissance || "",
+                              locataireNationalite: selectedClient.nationalite || "",
+                              locataireProfession: selectedClient.profession || "",
+                              locataireStatutMatrimonial: selectedClient.statut_matrimonial || "",
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : (
                     <div className="text-sm text-muted-foreground mb-2">
                       Saisir manuellement les informations du locataire
                     </div>
