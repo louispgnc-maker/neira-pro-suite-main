@@ -1771,12 +1771,12 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                   onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientRole: value})}
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="acheteur" id="acheteur" />
-                    <Label htmlFor="acheteur" className="cursor-pointer">Acquéreur</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
                     <RadioGroupItem value="vendeur" id="vendeur" />
                     <Label htmlFor="vendeur" className="cursor-pointer">Vendeur</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="acheteur" id="acheteur" />
+                    <Label htmlFor="acheteur" className="cursor-pointer">Acquéreur</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -2722,12 +2722,12 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       onValueChange={(value) => setActeVenteData({...acteVenteData, clientRole: value})}
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="acheteur" id="acte-acheteur" />
-                        <Label htmlFor="acte-acheteur" className="cursor-pointer">Acquéreur</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
                         <RadioGroupItem value="vendeur" id="acte-vendeur" />
                         <Label htmlFor="acte-vendeur" className="cursor-pointer">Vendeur</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="acheteur" id="acte-acheteur" />
+                        <Label htmlFor="acte-acheteur" className="cursor-pointer">Acquéreur</Label>
                       </div>
                     </RadioGroup>
                   </div>
