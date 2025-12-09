@@ -547,6 +547,7 @@ export default function Contrats() {
         if (acteVenteData.clientRole === "vendeur") {
           setActeVenteData(prev => ({
             ...prev,
+            // Remplir les infos du vendeur avec le client
             vendeurNom: selectedClient.nom || "",
             vendeurPrenom: selectedClient.prenom || "",
             vendeurAdresse: selectedClient.adresse || "",
@@ -557,10 +558,20 @@ export default function Contrats() {
             vendeurStatutMatrimonial: statutMatrimonial,
             vendeurPieceIdentite: selectedClient.type_identite || "",
             vendeurNumeroIdentite: selectedClient.numero_identite || "",
+            // Vider les champs de l'acheteur
+            acheteurNom: "",
+            acheteurPrenom: "",
+            acheteurAdresse: "",
+            acheteurDateNaissance: "",
+            acheteurLieuNaissance: "",
+            acheteurNationalite: "",
+            acheteurProfession: "",
+            acheteurStatutMatrimonial: "",
           }));
         } else if (acteVenteData.clientRole === "acheteur") {
           setActeVenteData(prev => ({
             ...prev,
+            // Remplir les infos de l'acheteur avec le client
             acheteurNom: selectedClient.nom || "",
             acheteurPrenom: selectedClient.prenom || "",
             acheteurAdresse: selectedClient.adresse || "",
@@ -569,6 +580,17 @@ export default function Contrats() {
             acheteurNationalite: selectedClient.nationalite || "",
             acheteurProfession: selectedClient.profession || "",
             acheteurStatutMatrimonial: statutMatrimonial,
+            // Vider les champs du vendeur
+            vendeurNom: "",
+            vendeurPrenom: "",
+            vendeurAdresse: "",
+            vendeurDateNaissance: "",
+            vendeurLieuNaissance: "",
+            vendeurNationalite: "",
+            vendeurProfession: "",
+            vendeurStatutMatrimonial: "",
+            vendeurPieceIdentite: "",
+            vendeurNumeroIdentite: "",
           }));
         }
       }
