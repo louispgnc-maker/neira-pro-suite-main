@@ -2980,7 +2980,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
 
                 {/* Acheteur - avec auto-fill si client sélectionné comme acheteur, sinon manuel */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">👥 Acheteur</h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">👥 Acquéreur</h3>
                   <div className="space-y-4">
                     {acteVenteData.clientRole === "acheteur" ? (
                       <>
