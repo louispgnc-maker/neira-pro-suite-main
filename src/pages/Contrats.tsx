@@ -143,6 +143,7 @@ export default function Contrats() {
     vendeurProfession: "",
     vendeurStatutMatrimonial: "",
     vendeurRegimeMatrimonial: "",
+    vendeurPrecisionRegime: "",
     vendeurPieceIdentite: "",
     vendeurNumeroIdentite: "",
     
@@ -156,6 +157,7 @@ export default function Contrats() {
     acheteurProfession: "",
     acheteurStatutMatrimonial: "",
     acheteurRegimeMatrimonial: "",
+    acheteurPrecisionRegime: "",
     acheteurModeAcquisition: "",
     acheteurQuotePart: "",
     
@@ -1195,6 +1197,7 @@ INFORMATIONS COMPLÉMENTAIRES
         vendeurProfession: "",
         vendeurStatutMatrimonial: "",
         vendeurRegimeMatrimonial: "",
+        vendeurPrecisionRegime: "",
         vendeurPieceIdentite: "",
         vendeurNumeroIdentite: "",
         acheteurNom: "",
@@ -1206,6 +1209,7 @@ INFORMATIONS COMPLÉMENTAIRES
         acheteurProfession: "",
         acheteurStatutMatrimonial: "",
         acheteurRegimeMatrimonial: "",
+        acheteurPrecisionRegime: "",
         acheteurModeAcquisition: "",
         acheteurQuotePart: "",
         prixVente: "",
@@ -2894,10 +2898,32 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       />
                     </div>
                     {(acteVenteData.vendeurStatutMatrimonial === "marie" || acteVenteData.vendeurStatutMatrimonial === "pacse") && (
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_vendeurRegime">Régime matrimonial *</Label>
-                        <Input id="acte_vendeurRegime" value={acteVenteData.vendeurRegimeMatrimonial} onChange={(e) => setActeVenteData({...acteVenteData, vendeurRegimeMatrimonial: e.target.value})} />
-                      </div>
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_vendeurRegime">Régime matrimonial *</Label>
+                          <Select value={acteVenteData.vendeurRegimeMatrimonial} onValueChange={(value) => setActeVenteData({...acteVenteData, vendeurRegimeMatrimonial: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                              <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                              <SelectItem value="autre">Autre</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {acteVenteData.vendeurRegimeMatrimonial === "autre" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="acte_vendeurPrecisionRegime">Préciser le régime</Label>
+                            <Input 
+                              id="acte_vendeurPrecisionRegime"
+                              value={acteVenteData.vendeurPrecisionRegime}
+                              onChange={(e) => setActeVenteData({...acteVenteData, vendeurPrecisionRegime: e.target.value})}
+                              placeholder="Précisez le régime matrimonial..."
+                            />
+                          </div>
+                        )}
+                      </>
                     )}
                     <div className="space-y-2">
                       <Label htmlFor="acte_vendeurPiece">Type de pièce d'identité *</Label>
@@ -3143,10 +3169,32 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                       />
                     </div>
                     {(acteVenteData.acheteurStatutMatrimonial === "marie" || acteVenteData.acheteurStatutMatrimonial === "pacse") && (
-                      <div className="space-y-2">
-                        <Label htmlFor="acte_acheteurRegime">Régime matrimonial *</Label>
-                        <Input id="acte_acheteurRegime" value={acteVenteData.acheteurRegimeMatrimonial} onChange={(e) => setActeVenteData({...acteVenteData, acheteurRegimeMatrimonial: e.target.value})} />
-                      </div>
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="acte_acheteurRegime">Régime matrimonial *</Label>
+                          <Select value={acteVenteData.acheteurRegimeMatrimonial} onValueChange={(value) => setActeVenteData({...acteVenteData, acheteurRegimeMatrimonial: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                              <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                              <SelectItem value="autre">Autre</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {acteVenteData.acheteurRegimeMatrimonial === "autre" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="acte_acheteurPrecisionRegime">Préciser le régime</Label>
+                            <Input 
+                              id="acte_acheteurPrecisionRegime"
+                              value={acteVenteData.acheteurPrecisionRegime}
+                              onChange={(e) => setActeVenteData({...acteVenteData, acheteurPrecisionRegime: e.target.value})}
+                              placeholder="Précisez le régime matrimonial..."
+                            />
+                          </div>
+                        )}
+                      </>
                     )}
                     <div className="space-y-2">
                       <Label htmlFor="acte_modeAcquisition">Mode d'acquisition *</Label>
