@@ -6428,6 +6428,9 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
+                              console.log('🔍 BAILLEUR - Client:', selectedClient);
+                              console.log('🔍 BAILLEUR - situation_matrimoniale:', selectedClient.situation_matrimoniale);
+                              
                               let situationFamiliale = "";
                               let regimeMatrimonial = "";
                               
@@ -6438,6 +6441,9 @@ DURÉE DU BAIL
                                   situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
                                   regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
                                   
+                                  console.log('🔍 BAILLEUR - Extrait situation_familiale:', situationFamiliale);
+                                  console.log('🔍 BAILLEUR - Extrait regime_matrimonial:', regimeMatrimonial);
+                                  
                                   // Capitaliser
                                   if (situationFamiliale) {
                                     situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
@@ -6445,11 +6451,16 @@ DURÉE DU BAIL
                                   if (regimeMatrimonial) {
                                     regimeMatrimonial = regimeMatrimonial.replace(/_/g, ' ');
                                   }
+                                  
+                                  console.log('🔍 BAILLEUR - Après capitalisation:', situationFamiliale, regimeMatrimonial);
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
                                   situationFamiliale = selectedClient.situation_matrimoniale;
+                                  console.log('🔍 BAILLEUR - String directe:', situationFamiliale);
                                 }
                               }
+                              
+                              console.log('🔍 BAILLEUR - Valeurs finales:', { situationFamiliale, regimeMatrimonial });
                               
                               setBailCommercialData({
                                 ...bailCommercialData,
