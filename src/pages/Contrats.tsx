@@ -479,8 +479,8 @@ export default function Contrats() {
     bailleurDateNaissance: "",
     bailleurLieuNaissance: "",
     bailleurNationalite: "",
-    bailleurStatutMatrimonial: "",
-    bailleurRegimeMatrimonial: "",
+    bailleurSituationFamiliale: "", // célibataire, marié, divorcé, veuf
+    bailleurRegimeMatrimonial: "", // si marié: communauté, séparation, etc.
     bailleurProfession: "",
     
     // Bailleur personne morale
@@ -507,8 +507,8 @@ export default function Contrats() {
     locataireDateNaissance: "",
     locataireLieuNaissance: "",
     locataireNationalite: "",
-    locataireStatutMatrimonial: "",
-    locataireRegimeMatrimonial: "",
+    locataireSituationFamiliale: "", // célibataire, marié, divorcé, veuf
+    locataireRegimeMatrimonial: "", // si marié: communauté, séparation, etc.
     locataireProfession: "",
     locataireTelephone: "",
     locataireEmail: "",
@@ -6428,31 +6428,28 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
-                              console.log('🔍 BAILLEUR - Client sélectionné:', selectedClient);
-                              console.log('🔍 BAILLEUR - situation_matrimoniale:', selectedClient.situation_matrimoniale);
-                              console.log('🔍 BAILLEUR - typeof:', typeof selectedClient.situation_matrimoniale);
-                              
-                              let situationFamilialeText = "";
+                              let situationFamiliale = "";
+                              let regimeMatrimonial = "";
                               
                               // Gérer les différents formats de situation_matrimoniale
                               if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
-                                  // Cas 1: Objet JSON - extraire situation_familiale
-                                  const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  console.log('🔍 BAILLEUR - situation_familiale extraite:', situationFamiliale);
+                                  // Cas 1: Objet JSON - extraire situation_familiale et regime_matrimonial
+                                  situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                  regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
+                                  
+                                  // Capitaliser
                                   if (situationFamiliale) {
-                                    situationFamilialeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
+                                  if (regimeMatrimonial) {
+                                    regimeMatrimonial = regimeMatrimonial.replace(/_/g, ' ');
                                   }
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
-                                  console.log('🔍 BAILLEUR - String détecté:', selectedClient.situation_matrimoniale);
-                                  situationFamilialeText = selectedClient.situation_matrimoniale;
+                                  situationFamiliale = selectedClient.situation_matrimoniale;
                                 }
-                              } else {
-                                console.log('⚠️ BAILLEUR - situation_matrimoniale est vide/null');
                               }
-                              
-                              console.log('🔍 BAILLEUR - situationFamilialeText final:', situationFamilialeText);
                               
                               setBailCommercialData({
                                 ...bailCommercialData,
@@ -6465,11 +6462,10 @@ DURÉE DU BAIL
                                 bailleurDateNaissance: selectedClient.date_naissance || "",
                                 bailleurLieuNaissance: selectedClient.lieu_naissance || "",
                                 bailleurNationalite: selectedClient.nationalite || "",
-                                bailleurRegimeMatrimonial: situationFamilialeText,
+                                bailleurSituationFamiliale: situationFamiliale,
+                                bailleurRegimeMatrimonial: regimeMatrimonial,
                                 bailleurProfession: selectedClient.profession || "",
                               });
-                              
-                              console.log('✅ BAILLEUR - État mis à jour avec regimeMatrimonial:', situationFamilialeText);
                             }
                           }}
                         >
@@ -6533,9 +6529,15 @@ DURÉE DU BAIL
                           <Input value={bailCommercialData.bailleurNationalite} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurNationalite: e.target.value})} placeholder="Ex: Française" />
                         </div>
                         <div className="space-y-2">
-                          <Label>Régime matrimonial</Label>
-                          <Input value={bailCommercialData.bailleurRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurRegimeMatrimonial: e.target.value})} placeholder="Ex: Marié(e) sous le régime de la communauté, Célibataire..." />
+                          <Label>Situation familiale</Label>
+                          <Input value={bailCommercialData.bailleurSituationFamiliale} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurSituationFamiliale: e.target.value})} placeholder="Ex: Célibataire, Marié, Divorcé..." />
                         </div>
+                        {bailCommercialData.bailleurSituationFamiliale && ['marié', 'marie', 'mariée', 'pacsé', 'pacse', 'pacs'].some(term => bailCommercialData.bailleurSituationFamiliale.toLowerCase().includes(term)) && (
+                          <div className="space-y-2">
+                            <Label>Régime matrimonial</Label>
+                            <Input value={bailCommercialData.bailleurRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurRegimeMatrimonial: e.target.value})} placeholder="Ex: Communauté légale, Séparation de biens..." />
+                          </div>
+                        )}
                         <div className="space-y-2">
                           <Label>Profession</Label>
                           <Input value={bailCommercialData.bailleurProfession} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurProfession: e.target.value})} />
@@ -6681,17 +6683,26 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
-                              let situationFamilialeText = "";
+                              let situationFamiliale = "";
+                              let regimeMatrimonial = "";
                               
                               // Gérer les différents formats de situation_matrimoniale
                               if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
-                                  // Cas 1: Objet JSON - extraire situation_familiale
-                                  const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  situationFamilialeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  // Cas 1: Objet JSON - extraire situation_familiale et regime_matrimonial
+                                  situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                  regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
+                                  
+                                  // Capitaliser
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
+                                  if (regimeMatrimonial) {
+                                    regimeMatrimonial = regimeMatrimonial.replace(/_/g, ' ');
+                                  }
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
-                                  situationFamilialeText = selectedClient.situation_matrimoniale;
+                                  situationFamiliale = selectedClient.situation_matrimoniale;
                                 }
                               }
                               
@@ -6706,7 +6717,8 @@ DURÉE DU BAIL
                                 locataireDateNaissance: selectedClient.date_naissance || "",
                                 locataireLieuNaissance: selectedClient.lieu_naissance || "",
                                 locataireNationalite: selectedClient.nationalite || "",
-                                locataireRegimeMatrimonial: situationFamilialeText,
+                                locataireSituationFamiliale: situationFamiliale,
+                                locataireRegimeMatrimonial: regimeMatrimonial,
                                 locataireProfession: selectedClient.profession || "",
                                 locataireTelephone: selectedClient.telephone || "",
                                 locataireEmail: selectedClient.email || "",
@@ -6774,9 +6786,15 @@ DURÉE DU BAIL
                           <Input value={bailCommercialData.locataireNationalite} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireNationalite: e.target.value})} placeholder="Ex: Française" />
                         </div>
                         <div className="space-y-2">
-                          <Label>Régime matrimonial</Label>
-                          <Input value={bailCommercialData.locataireRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireRegimeMatrimonial: e.target.value})} placeholder="Ex: Marié(e) sous le régime de la communauté, Célibataire..." />
+                          <Label>Situation familiale</Label>
+                          <Input value={bailCommercialData.locataireSituationFamiliale} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireSituationFamiliale: e.target.value})} placeholder="Ex: Célibataire, Marié, Divorcé..." />
                         </div>
+                        {bailCommercialData.locataireSituationFamiliale && ['marié', 'marie', 'mariée', 'pacsé', 'pacse', 'pacs'].some(term => bailCommercialData.locataireSituationFamiliale.toLowerCase().includes(term)) && (
+                          <div className="space-y-2">
+                            <Label>Régime matrimonial</Label>
+                            <Input value={bailCommercialData.locataireRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireRegimeMatrimonial: e.target.value})} placeholder="Ex: Communauté légale, Séparation de biens..." />
+                          </div>
+                        )}
                         <div className="space-y-2">
                           <Label>Profession *</Label>
                           <Input value={bailCommercialData.locataireProfession} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireProfession: e.target.value})} />
