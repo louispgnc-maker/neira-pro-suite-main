@@ -463,6 +463,9 @@ export default function Contrats() {
 
   // State pour le bail commercial
   const [bailCommercialData, setBailCommercialData] = useState({
+    // Type de bail
+    typeBail: "", // "commercial" ou "professionnel"
+    
     // Rôle du client
     clientRole: "", // "bailleur" ou "preneur"
     clientId: "",
@@ -555,7 +558,7 @@ export default function Contrats() {
     diagnosticAmiante: "",
     
     // Durée
-    typeBail: "", // "3-6-9" "derogatoire" "saisonnier"
+    dureeBail: "", // "3-6-9" "derogatoire" "saisonnier"
     datePriseEffet: "",
     dureeTotale: "",
     renouvellementAuto: "",
@@ -1882,13 +1885,13 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         return;
       }
 
-      if (!bailCommercialData.statutBailleur || !bailCommercialData.adresseLocal || !bailCommercialData.loyerMensuelHT) {
-        toast.error('Veuillez remplir les champs obligatoires (statut bailleur, adresse local, loyer)');
+      if (!bailCommercialData.typeBail || !bailCommercialData.statutBailleur || !bailCommercialData.adresseLocal || !bailCommercialData.loyerMensuelHT) {
+        toast.error('Veuillez remplir les champs obligatoires (type de bail, statut bailleur, adresse local, loyer)');
         return;
       }
 
       const descriptionData = `
-TYPE DE CONTRAT: Bail commercial
+TYPE DE CONTRAT: ${bailCommercialData.typeBail === "commercial" ? "Bail commercial" : "Bail professionnel"}
 
 ═══════════════════════════════════════════════════════════════
 BAILLEUR
@@ -6333,66 +6336,98 @@ DURÉE DU BAIL
             {pendingContractType === "Bail commercial / professionnel" && (
               <>
                 <div className="space-y-6">
-                  {/* Sélection du rôle du client */}
+                  {/* Sélection du type de bail */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">📋 Type de bail</h3>
                     <div className="space-y-2">
-                      <Label>Votre client est le *</Label>
+                      <Label>Type de bail *</Label>
                       <RadioGroup 
-                        value={bailCommercialData.clientRole} 
-                        onValueChange={(value) => {
-                          setBailCommercialData({
-                            ...bailCommercialData, 
-                            clientRole: value,
-                            clientId: "",
-                            // Reset des champs de l'autre partie
-                            ...(value === "bailleur" ? {
-                              locataireClientId: "",
-                              statutLocataire: "",
-                              locataireNom: "",
-                              locatairePrenom: "",
-                              locataireAdresse: "",
-                              locataireImmatriculation: "",
-                              locataireDenomination: "",
-                              locataireFormeJuridique: "",
-                              locataireSiege: "",
-                              locataireSiren: "",
-                              locataireSiret: "",
-                            } : {
-                              bailleurClientId: "",
-                              statutBailleur: "",
-                              bailleurNom: "",
-                              bailleurPrenom: "",
-                              bailleurDenomination: "",
-                              bailleurFormeJuridique: "",
-                              bailleurAdresse: "",
-                              bailleurSiren: "",
-                              bailleurSiret: "",
-                            })
-                          });
-                        }}
+                        value={bailCommercialData.typeBail} 
+                        onValueChange={(value) => setBailCommercialData({...bailCommercialData, typeBail: value})}
                       >
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="bailleur" id="bc_role_bailleur" />
-                          <Label htmlFor="bc_role_bailleur" className="cursor-pointer">Bailleur (propriétaire)</Label>
+                          <RadioGroupItem value="commercial" id="bail_type_commercial" />
+                          <Label htmlFor="bail_type_commercial" className="cursor-pointer">Bail commercial</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="preneur" id="bc_role_preneur" />
-                          <Label htmlFor="bc_role_preneur" className="cursor-pointer">Preneur (locataire)</Label>
+                          <RadioGroupItem value="professionnel" id="bail_type_professionnel" />
+                          <Label htmlFor="bail_type_professionnel" className="cursor-pointer">Bail professionnel</Label>
                         </div>
                       </RadioGroup>
                     </div>
                   </div>
 
-                  {/* Bailleur */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">
-                      {bailCommercialData.clientRole === "bailleur" ? "🏢 Bailleur (votre client)" : "🏢 Bailleur"}
-                    </h3>
-                    
-                    {/* Sélection du client si bailleur */}
-                    {bailCommercialData.clientRole === "bailleur" && (
-                      <div className="space-y-2">
+                  {bailCommercialData.typeBail && (
+                    <>
+                      {/* Titre dynamique */}
+                      <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                        <h2 className="text-xl font-bold text-primary">
+                          {bailCommercialData.typeBail === "commercial" 
+                            ? "📄 Informations pour le bail commercial" 
+                            : "📄 Informations pour le bail professionnel"}
+                        </h2>
+                      </div>
+
+                      {/* Sélection du rôle du client */}
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
+                        <div className="space-y-2">
+                          <Label>Votre client est le *</Label>
+                          <RadioGroup 
+                            value={bailCommercialData.clientRole} 
+                            onValueChange={(value) => {
+                              setBailCommercialData({
+                                ...bailCommercialData, 
+                                clientRole: value,
+                                clientId: "",
+                                // Reset des champs de l'autre partie
+                                ...(value === "bailleur" ? {
+                                  locataireClientId: "",
+                                  statutLocataire: "",
+                                  locataireNom: "",
+                                  locatairePrenom: "",
+                                  locataireAdresse: "",
+                                  locataireImmatriculation: "",
+                                  locataireDenomination: "",
+                                  locataireFormeJuridique: "",
+                                  locataireSiege: "",
+                                  locataireSiren: "",
+                                  locataireSiret: "",
+                                } : {
+                                  bailleurClientId: "",
+                                  statutBailleur: "",
+                                  bailleurNom: "",
+                                  bailleurPrenom: "",
+                                  bailleurDenomination: "",
+                                  bailleurFormeJuridique: "",
+                                  bailleurAdresse: "",
+                                  bailleurSiren: "",
+                                  bailleurSiret: "",
+                                })
+                              });
+                            }}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="bailleur" id="bc_role_bailleur" />
+                              <Label htmlFor="bc_role_bailleur" className="cursor-pointer">Bailleur (propriétaire)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="preneur" id="bc_role_preneur" />
+                              <Label htmlFor="bc_role_preneur" className="cursor-pointer">Preneur (locataire)</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+                      </div>
+
+                      {/* Bailleur */}
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-lg border-b pb-2">
+                          {bailCommercialData.clientRole === "bailleur" ? "🏢 Bailleur (votre client)" : "🏢 Bailleur"}
+                        </h3>
+                        
+                        {/* Sélection du client si bailleur */}
+                        {bailCommercialData.clientRole === "bailleur" && (
+                          <div className="space-y-2">
                         <Label>Sélectionner le client bailleur *</Label>
                         <Select 
                           value={bailCommercialData.clientId} 
@@ -6909,8 +6944,8 @@ DURÉE DU BAIL
                       <div className="space-y-2">
                         <Label>Type de bail *</Label>
                         <Select 
-                          value={bailCommercialData.typeBail} 
-                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, typeBail: value})}
+                          value={bailCommercialData.dureeBail} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, dureeBail: value})}
                         >
                           <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                           <SelectContent>
