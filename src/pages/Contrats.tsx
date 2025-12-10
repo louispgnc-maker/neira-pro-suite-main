@@ -155,6 +155,9 @@ export default function Contrats() {
   const [contratMariageTitresProprieteFiles, setContratMariageTitresProprieteFiles] = useState<File[]>([]); // Titres propriété
   const [contratMariageEstimationBiensFiles, setContratMariageEstimationBiensFiles] = useState<File[]>([]); // Estimation biens
   const [contratMariageActeDecesFiles, setContratMariageActeDecesFiles] = useState<File[]>([]); // Acte décès (si veuf)
+  const [contratMariageConsentementEnfantsFiles, setContratMariageConsentementEnfantsFiles] = useState<File[]>([]); // Consentement enfants majeurs
+  const [contratMariageCertificatBansFiles, setContratMariageCertificatBansFiles] = useState<File[]>([]); // Certificat publication bans
+  const [contratMariageDecisionJugeFiles, setContratMariageDecisionJugeFiles] = useState<File[]>([]); // Décision/autorisation judiciaire
   
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
@@ -1045,10 +1048,29 @@ export default function Contrats() {
     
     // Si changement de régime
     dateMariage: "",
-    regimeActuel: "",
+    regimeActuel: "", // separation_biens / communaute_legale / participation_acquets / communaute_universelle / regime_etranger / autre
+    regimeActuelAutre: "",
     motifChangement: "",
     accordEnfantsMajeurs: "",
     accordCreancier: "",
+    
+    // Consentement enfants majeurs (si changement)
+    consentementEnfantsMajeursRequis: "non",
+    
+    // Biens communs actuels (si changement depuis régime communautaire)
+    biensCommuns: [{
+      id: 1,
+      description: "",
+      valeurEstimee: "",
+      repartitionEnvisagee: "",
+    }],
+    
+    // Choix de la loi applicable (cas internationaux)
+    choixLoiApplicable: "loi_francaise", // loi_francaise / loi_residence / loi_nationalite / autre
+    choixLoiApplicableAutre: "",
+    
+    // Consentement juge (si enfants mineurs et changement)
+    accordJugeRequis: "non",
     
     // 2. Époux (tableau de 2 personnes)
     epoux: [
@@ -3187,11 +3209,20 @@ INFORMATIONS GÉNÉRALES
 ${contratMariageData.typeContrat === "changement_regime" ? `
 CHANGEMENT DE RÉGIME:
 - Date du mariage: ${contratMariageData.dateMariage}
-- Régime actuel: ${contratMariageData.regimeActuel}
+- Régime actuel: ${contratMariageData.regimeActuel === "autre" ? contratMariageData.regimeActuelAutre : contratMariageData.regimeActuel}
 - Motif du changement: ${contratMariageData.motifChangement}
 - Accord enfants majeurs: ${contratMariageData.accordEnfantsMajeurs}
+- Consentement enfants majeurs requis: ${contratMariageData.consentementEnfantsMajeursRequis}
+- Accord juge requis: ${contratMariageData.accordJugeRequis}
 ${contratMariageData.accordCreancier ? `- Accord créancier: ${contratMariageData.accordCreancier}` : ""}
+${contratMariageData.biensCommuns.length > 0 && contratMariageData.biensCommuns[0].description ? `
+BIENS COMMUNS ACTUELS:
+${contratMariageData.biensCommuns.map(bien => `  - ${bien.description} (${bien.valeurEstimee}€) - Répartition: ${bien.repartitionEnvisagee}`).join('\n')}
 ` : ""}
+` : ""}
+
+LOI APPLICABLE:
+- ${contratMariageData.choixLoiApplicable === "autre" ? contratMariageData.choixLoiApplicableAutre : contratMariageData.choixLoiApplicable}
 
 ═══════════════════════════════════════════════════════════════
 ÉPOUX
@@ -3282,9 +3313,20 @@ DÉCLARATIONS DES ÉPOUX
         typeContrat: "prenuptial",
         dateMariage: "",
         regimeActuel: "",
+        regimeActuelAutre: "",
         motifChangement: "",
         accordEnfantsMajeurs: "",
         accordCreancier: "",
+        consentementEnfantsMajeursRequis: "non",
+        biensCommuns: [{
+          id: 1,
+          description: "",
+          valeurEstimee: "",
+          repartitionEnvisagee: "",
+        }],
+        choixLoiApplicable: "loi_francaise",
+        choixLoiApplicableAutre: "",
+        accordJugeRequis: "non",
         epoux: [
           {
             id: 1,
@@ -3410,6 +3452,23 @@ DÉCLARATIONS DES ÉPOUX
           connaissanceEffetsJuridiques: true,
         },
       });
+
+      // Reset file uploads
+      setContratMariageEpoux1IdentiteFiles([]);
+      setContratMariageEpoux2IdentiteFiles([]);
+      setContratMariageEpoux1ActeNaissanceFiles([]);
+      setContratMariageEpoux2ActeNaissanceFiles([]);
+      setContratMariageEpoux1DomicileFiles([]);
+      setContratMariageEpoux2DomicileFiles([]);
+      setContratMariageContratInitialFiles([]);
+      setContratMariageJustificatifMariageFiles([]);
+      setContratMariageAccordEnfantsFiles([]);
+      setContratMariageTitresProprieteFiles([]);
+      setContratMariageEstimationBiensFiles([]);
+      setContratMariageActeDecesFiles([]);
+      setContratMariageConsentementEnfantsFiles([]);
+      setContratMariageCertificatBansFiles([]);
+      setContratMariageDecisionJugeFiles([]);
 
       loadContrats();
     } catch (err) {
@@ -13385,13 +13444,33 @@ DÉCLARATIONS DES ÉPOUX
                             />
                           </div>
 
-                          <div className="space-y-2">
-                            <Label>Régime actuel</Label>
-                            <Input
-                              value={contratMariageData.regimeActuel}
-                              onChange={(e) => setContratMariageData({...contratMariageData, regimeActuel: e.target.value})}
-                            />
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Régime matrimonial actuel *</Label>
+                            <Select 
+                              value={contratMariageData.regimeActuel} 
+                              onValueChange={(value) => setContratMariageData({...contratMariageData, regimeActuel: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                                <SelectItem value="communaute_legale">Communauté légale (réduite aux acquêts)</SelectItem>
+                                <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                                <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                                <SelectItem value="regime_etranger">Régime étranger</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
+
+                          {contratMariageData.regimeActuel === "autre" && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Préciser le régime actuel</Label>
+                              <Input
+                                value={contratMariageData.regimeActuelAutre}
+                                onChange={(e) => setContratMariageData({...contratMariageData, regimeActuelAutre: e.target.value})}
+                              />
+                            </div>
+                          )}
 
                           <div className="space-y-2 md:col-span-2">
                             <Label>Motif du changement</Label>
@@ -13697,6 +13776,260 @@ DÉCLARATIONS DES ÉPOUX
                       </div>
                     ))}
                   </div>
+
+                  {/* 2bis. Choix de la loi applicable (cas internationaux) */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🌍 Choix de la loi applicable au régime matrimonial</h3>
+                    <p className="text-sm text-muted-foreground">Pour les couples de nationalités différentes ou résidant à l'étranger</p>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Loi applicable *</Label>
+                        <RadioGroup
+                          value={contratMariageData.choixLoiApplicable}
+                          onValueChange={(value) => setContratMariageData({...contratMariageData, choixLoiApplicable: value})}
+                        >
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="loi_francaise" id="loi_fr" />
+                              <Label htmlFor="loi_fr" className="cursor-pointer">Loi française</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="loi_residence" id="loi_res" />
+                              <Label htmlFor="loi_res" className="cursor-pointer">Loi de la résidence habituelle</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="loi_nationalite" id="loi_nat" />
+                              <Label htmlFor="loi_nat" className="cursor-pointer">Loi de la nationalité</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="autre" id="loi_autre" />
+                              <Label htmlFor="loi_autre" className="cursor-pointer">Autre (préciser)</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {contratMariageData.choixLoiApplicable === "autre" && (
+                        <div className="space-y-2">
+                          <Label>Préciser la loi applicable</Label>
+                          <Input
+                            value={contratMariageData.choixLoiApplicableAutre}
+                            onChange={(e) => setContratMariageData({...contratMariageData, choixLoiApplicableAutre: e.target.value})}
+                            placeholder="Ex: Loi suisse, loi belge..."
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 2ter. Consentement des enfants majeurs (si changement de régime) */}
+                  {contratMariageData.typeContrat === "changement_regime" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">✍️ Consentement des enfants majeurs</h3>
+                      <p className="text-sm text-muted-foreground">Obligatoire en cas de changement de régime matrimonial</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Consentement des enfants majeurs requis ? *</Label>
+                          <RadioGroup
+                            value={contratMariageData.consentementEnfantsMajeursRequis}
+                            onValueChange={(value) => setContratMariageData({...contratMariageData, consentementEnfantsMajeursRequis: value})}
+                          >
+                            <div className="flex gap-4">
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="oui" id="consent_oui" />
+                                <Label htmlFor="consent_oui" className="cursor-pointer">Oui</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="non" id="consent_non" />
+                                <Label htmlFor="consent_non" className="cursor-pointer">Non</Label>
+                              </div>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {contratMariageData.consentementEnfantsMajeursRequis === "oui" && (
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Joindre le consentement des enfants majeurs (PDF)</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="cm_consent_enfants"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  setContratMariageConsentementEnfantsFiles(prev => [...prev, ...files]);
+                                }}
+                              />
+                              <label htmlFor="cm_consent_enfants" className="cursor-pointer text-sm text-muted-foreground">
+                                Cliquez pour joindre
+                              </label>
+                              {contratMariageConsentementEnfantsFiles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {contratMariageConsentementEnfantsFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                      <span className="truncate">{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setContratMariageConsentementEnfantsFiles(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-600 ml-2"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 2quater. Biens communs actuels (si changement depuis régime communautaire) */}
+                  {contratMariageData.typeContrat === "changement_regime" && 
+                   (contratMariageData.regimeActuel === "communaute_legale" || 
+                    contratMariageData.regimeActuel === "communaute_universelle") && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">🏠 Biens communs actuels</h3>
+                      <p className="text-sm text-muted-foreground">Nécessaire si vous changez depuis un régime de communauté</p>
+                      
+                      <div className="space-y-4">
+                        {contratMariageData.biensCommuns.map((bien, idx) => (
+                          <div key={bien.id} className="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 border rounded">
+                            <div className="space-y-2">
+                              <Label>Description du bien</Label>
+                              <Input
+                                placeholder="Ex: Appartement Paris 15e"
+                                value={bien.description}
+                                onChange={(e) => {
+                                  const newBiens = [...contratMariageData.biensCommuns];
+                                  newBiens[idx] = {...newBiens[idx], description: e.target.value};
+                                  setContratMariageData({...contratMariageData, biensCommuns: newBiens});
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Valeur estimée (€)</Label>
+                              <Input
+                                type="number"
+                                placeholder="250000"
+                                value={bien.valeurEstimee}
+                                onChange={(e) => {
+                                  const newBiens = [...contratMariageData.biensCommuns];
+                                  newBiens[idx] = {...newBiens[idx], valeurEstimee: e.target.value};
+                                  setContratMariageData({...contratMariageData, biensCommuns: newBiens});
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Répartition envisagée</Label>
+                              <Input
+                                placeholder="50/50 ou liquidation"
+                                value={bien.repartitionEnvisagee}
+                                onChange={(e) => {
+                                  const newBiens = [...contratMariageData.biensCommuns];
+                                  newBiens[idx] = {...newBiens[idx], repartitionEnvisagee: e.target.value};
+                                  setContratMariageData({...contratMariageData, biensCommuns: newBiens});
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
+                          onClick={() => {
+                            const newId = Math.max(...contratMariageData.biensCommuns.map(b => b.id), 0) + 1;
+                            setContratMariageData({
+                              ...contratMariageData,
+                              biensCommuns: [...contratMariageData.biensCommuns, {
+                                id: newId,
+                                description: "",
+                                valeurEstimee: "",
+                                repartitionEnvisagee: "",
+                              }]
+                            });
+                          }}
+                        >
+                          + Ajouter un bien commun
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 2quinquies. Consentement du juge (si enfants mineurs et changement) */}
+                  {contratMariageData.typeContrat === "changement_regime" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">⚖️ Consentement du juge</h3>
+                      <p className="text-sm text-muted-foreground">Requis si vous avez des enfants mineurs et changez de régime</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Accord du juge requis ? *</Label>
+                          <RadioGroup
+                            value={contratMariageData.accordJugeRequis}
+                            onValueChange={(value) => setContratMariageData({...contratMariageData, accordJugeRequis: value})}
+                          >
+                            <div className="flex gap-4">
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="oui" id="juge_oui" />
+                                <Label htmlFor="juge_oui" className="cursor-pointer">Oui</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="non" id="juge_non" />
+                                <Label htmlFor="juge_non" className="cursor-pointer">Non</Label>
+                              </div>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {contratMariageData.accordJugeRequis === "oui" && (
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Joindre la décision / autorisation judiciaire (PDF)</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="cm_decision_juge"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  setContratMariageDecisionJugeFiles(prev => [...prev, ...files]);
+                                }}
+                              />
+                              <label htmlFor="cm_decision_juge" className="cursor-pointer text-sm text-muted-foreground">
+                                Cliquez pour joindre
+                              </label>
+                              {contratMariageDecisionJugeFiles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {contratMariageDecisionJugeFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                      <span className="truncate">{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setContratMariageDecisionJugeFiles(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-600 ml-2"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* 3. Informations sur les enfants */}
                   <div className="space-y-4">
@@ -14594,6 +14927,45 @@ DÉCLARATIONS DES ÉPOUX
                             </div>
                           </div>
                         </>
+                      )}
+
+                      {/* Certificat de publication des bans (pour contrat prénuptial) */}
+                      {contratMariageData.typeContrat === "prenuptial" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Certificat de publication des bans</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="cm_certificat_bans"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setContratMariageCertificatBansFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="cm_certificat_bans" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {contratMariageCertificatBansFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {contratMariageCertificatBansFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setContratMariageCertificatBansFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       )}
 
                       {/* Documents optionnels */}
