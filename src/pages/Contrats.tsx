@@ -1046,6 +1046,15 @@ export default function Contrats() {
     autreRegimePrecision: "",
     typeContrat: "prenuptial", // prenuptial / changement_regime
     
+    // Lieu et date du mariage (prénuptial)
+    dateMariagePrevue: "",
+    lieuMariage: {
+      mairie: "",
+      commune: "",
+      departement: "",
+      pays: "France",
+    },
+    
     // Si changement de régime
     dateMariage: "",
     regimeActuel: "", // separation_biens / communaute_legale / participation_acquets / communaute_universelle / regime_etranger / autre
@@ -3213,6 +3222,16 @@ FRAIS
         return;
       }
 
+      if (!contratMariageData.dateMariagePrevue) {
+        toast.error('Veuillez renseigner la date prévue du mariage');
+        return;
+      }
+
+      if (!contratMariageData.lieuMariage.mairie || !contratMariageData.lieuMariage.commune) {
+        toast.error('Veuillez renseigner le lieu du mariage (mairie et commune obligatoires)');
+        return;
+      }
+
       const regimeLabels: Record<string, string> = {
         separation_biens: "Séparation de biens",
         communaute_acquets: "Communauté réduite aux acquêts",
@@ -3229,6 +3248,13 @@ TYPE DE CONTRAT: Contrat de mariage prénuptial (régimes matrimoniaux)
 INFORMATIONS GÉNÉRALES
 ═══════════════════════════════════════════════════════════════
 - Régime matrimonial choisi: ${regimeLabels[contratMariageData.typeRegime] || contratMariageData.typeRegime}
+
+DATE ET LIEU DU MARIAGE:
+- Date prévue: ${contratMariageData.dateMariagePrevue || "Non renseignée"}
+- Mairie: ${contratMariageData.lieuMariage.mairie || "Non renseignée"}
+- Commune: ${contratMariageData.lieuMariage.commune || "Non renseignée"}
+- Département: ${contratMariageData.lieuMariage.departement || "Non renseigné"}
+- Pays: ${contratMariageData.lieuMariage.pays || "France"}
 
 LOI APPLICABLE:
 - ${contratMariageData.choixLoiApplicable === "autre" ? contratMariageData.choixLoiApplicableAutre : contratMariageData.choixLoiApplicable}
@@ -13447,6 +13473,78 @@ DÉCLARATIONS DES ÉPOUX
                           />
                         </div>
                       )}
+
+                      {/* Date prévue du mariage */}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label className="flex items-center gap-2">
+                          📅 Date prévue du mariage
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          type="date"
+                          value={contratMariageData.dateMariagePrevue}
+                          onChange={(e) => setContratMariageData({...contratMariageData, dateMariagePrevue: e.target.value})}
+                        />
+                        <p className="text-xs text-muted-foreground">Le mariage sera célébré le...</p>
+                      </div>
+
+                      {/* Lieu prévu du mariage */}
+                      <div className="space-y-4 md:col-span-2 p-4 border rounded-lg bg-muted/30">
+                        <h4 className="font-medium flex items-center gap-2">
+                          📍 Lieu prévu du mariage
+                          <span className="text-red-500">*</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Mairie</Label>
+                            <Input
+                              value={contratMariageData.lieuMariage.mairie}
+                              onChange={(e) => setContratMariageData({
+                                ...contratMariageData,
+                                lieuMariage: {...contratMariageData.lieuMariage, mairie: e.target.value}
+                              })}
+                              placeholder="Ex: Mairie du 8ème arrondissement"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Commune</Label>
+                            <Input
+                              value={contratMariageData.lieuMariage.commune}
+                              onChange={(e) => setContratMariageData({
+                                ...contratMariageData,
+                                lieuMariage: {...contratMariageData.lieuMariage, commune: e.target.value}
+                              })}
+                              placeholder="Ex: Paris"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Département</Label>
+                            <Input
+                              value={contratMariageData.lieuMariage.departement}
+                              onChange={(e) => setContratMariageData({
+                                ...contratMariageData,
+                                lieuMariage: {...contratMariageData.lieuMariage, departement: e.target.value}
+                              })}
+                              placeholder="Ex: Paris (75)"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Pays</Label>
+                            <Input
+                              value={contratMariageData.lieuMariage.pays}
+                              onChange={(e) => setContratMariageData({
+                                ...contratMariageData,
+                                lieuMariage: {...contratMariageData.lieuMariage, pays: e.target.value}
+                              })}
+                              placeholder="France"
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Les futurs époux déclarent vouloir contracter mariage à la mairie de...</p>
+                      </div>
                     </div>
                   </div>
 
