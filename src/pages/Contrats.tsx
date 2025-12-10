@@ -469,7 +469,7 @@ export default function Contrats() {
   // State pour le bail commercial
   const [bailCommercialData, setBailCommercialData] = useState({
     // Type de bail
-    typeBail: "", // "commercial" ou "professionnel"
+    typeBail: "commercial", // "commercial" ou "professionnel"
     
     // Rôle du client
     clientRole: "", // "bailleur" ou "preneur"
