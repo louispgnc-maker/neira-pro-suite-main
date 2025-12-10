@@ -2367,6 +2367,169 @@ DURÉE DU BAIL
     }
   };
 
+  const handleIndivisionSubmit = async () => {
+    try {
+      if (!user) {
+        toast.error('Utilisateur non connecté');
+        return;
+      }
+
+      if (!indivisionData.typeBien || !indivisionData.origineIndivision) {
+        toast.error('Veuillez remplir les champs obligatoires (type de bien, origine)');
+        return;
+      }
+
+      const descriptionData = `
+TYPE DE CONTRAT: Convention d'indivision
+
+═══════════════════════════════════════════════════════════════
+INFORMATIONS GÉNÉRALES
+═══════════════════════════════════════════════════════════════
+- Type de bien: ${indivisionData.typeBien}
+${indivisionData.typeBien === "autre" ? `- Précision: ${indivisionData.typeBienAutre}` : ""}
+- Origine de l'indivision: ${indivisionData.origineIndivision}
+${indivisionData.origineIndivision === "autre" ? `- Précision: ${indivisionData.origineIndivisionAutre}` : ""}
+- Objet: ${indivisionData.objetConvention}
+
+═══════════════════════════════════════════════════════════════
+INDIVISAIRES
+═══════════════════════════════════════════════════════════════
+Nombre d'indivisaires: ${indivisionData.indivisaires.length}
+${indivisionData.indivisaires.map((ind, idx) => `
+Indivisaire ${idx + 1}:
+- Nom: ${ind.nom} ${ind.prenom}
+- Quote-part: ${ind.quotePart}%
+`).join('')}
+
+═══════════════════════════════════════════════════════════════
+BIEN EN INDIVISION
+═══════════════════════════════════════════════════════════════
+${indivisionData.typeBien === "immobilier" ? `- Adresse: ${indivisionData.adresseBien}
+- Nature: ${indivisionData.natureBienImmobilier}
+- Description: ${indivisionData.descriptionBien}
+- Surface: ${indivisionData.surfaceBien} m²
+- Références cadastrales: ${indivisionData.referencesCadastrales}
+- État locatif: ${indivisionData.etatLocatif}
+- Valeur vénale: ${indivisionData.valeurVenale} €` : 
+indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descriptionBienMobilier}
+- Valeur estimée: ${indivisionData.valeurEstimee} €` : ""}
+      `.trim();
+
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Convention d'indivision - ${indivisionData.adresseBien || indivisionData.descriptionBienMobilier || 'Bien indivis'}`,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: descriptionData,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success("Convention d'indivision créée avec succès");
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire
+      setIndivisionData({
+        typeBien: "",
+        typeBienAutre: "",
+        origineIndivision: "",
+        origineIndivisionAutre: "",
+        objetConvention: "",
+        indivisaires: [{
+          id: 1,
+          isClient: false,
+          clientId: "",
+          nom: "",
+          prenom: "",
+          adresse: "",
+          dateNaissance: "",
+          lieuNaissance: "",
+          nationalite: "",
+          profession: "",
+          statutMatrimonial: "",
+          regimeMatrimonial: "",
+          typeIdentite: "",
+          numeroIdentite: "",
+          email: "",
+          telephone: "",
+          quotePart: "",
+          origineQuotePart: "",
+        }],
+        adresseBien: "",
+        natureBienImmobilier: "",
+        descriptionBien: "",
+        surfaceBien: "",
+        referencesCadastrales: "",
+        etatLocatif: "",
+        montantLoyer: "",
+        dureeBail: "",
+        valeurVenale: "",
+        dateEstimation: "",
+        sourceEstimation: "",
+        descriptionBienMobilier: "",
+        valeurEstimee: "",
+        numerosSerie: "",
+        dureeType: "",
+        dureeAnnees: "",
+        conditionsRenouvellement: "",
+        conditionsSortie: "",
+        gerantNom: "",
+        gerantPrenom: "",
+        gerantEstIndivisaire: "",
+        pouvoirsGerant: [],
+        pouvoirsAutres: "",
+        dureeMandat: "",
+        decisionsType: "",
+        casUnanimite: "",
+        chargesRepartition: "",
+        chargesRepartitionAutre: "",
+        modalitesRemboursement: "",
+        compteBancaire: "",
+        compteTitulaires: "",
+        compteModalites: "",
+        utilisationParIndivisaires: "",
+        utilisationConditions: "",
+        indemnitéOccupation: "",
+        indemniteOccupationMontant: "",
+        indemniteOccupationFrequence: "",
+        locationAutorisee: "",
+        locationMandataire: "",
+        locationRepartitionLoyers: "",
+        travauxAutorises: "",
+        travauxDecision: "",
+        travauxRepartitionCouts: "",
+        travauxUrgents: "",
+        travauxDocumentation: "",
+        ventePartLibre: "",
+        droitPreemption: "",
+        evaluationPart: "",
+        delaiRachat: "",
+        modalitesPaiement: "",
+        conditionsMiseEnVente: "",
+        decisionVente: "",
+        mandataireVente: "",
+        repartitionPrix: "",
+        gestionPlusValues: "",
+        registreDepenses: "",
+        archivageFactures: "",
+        modalitesRemboursementAvances: "",
+        rapportAnnuel: "",
+        resolutionLitiges: [],
+        solidariteDettes: "",
+      });
+
+      loadContrats();
+    } catch (err) {
+      console.error('Erreur création convention d\'indivision:', err);
+      toast.error('Erreur lors de la création de la convention');
+    }
+  };
+
   const handleDelete = async (contrat: ContratRow) => {
     if (!user) return;
     if (!confirm(`Supprimer "${contrat.name}" ?`)) return;
@@ -2622,6 +2785,8 @@ DURÉE DU BAIL
                     : bailCommercialData.typeBail === "professionnel"
                     ? "Informations pour le bail professionnel" 
                     : "Informations pour le bail commercial / professionnel")
+                : pendingContractType === "Convention d'indivision"
+                ? "Informations pour la convention d'indivision"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
@@ -8390,6 +8555,8 @@ DURÉE DU BAIL
                   handleBailHabitationSubmit();
                 } else if (pendingContractType === "Bail commercial / professionnel") {
                   handleBailCommercialSubmit();
+                } else if (pendingContractType === "Convention d'indivision") {
+                  handleIndivisionSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
