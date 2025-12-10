@@ -142,6 +142,20 @@ export default function Contrats() {
   const [mainleveeInscriptionHypothequeFiles, setMainleveeInscriptionHypothequeFiles] = useState<File[]>([]); // Inscription hypothécaire
   const [mainleveeAttestationRemboursementFiles, setMainleveeAttestationRemboursementFiles] = useState<File[]>([]); // Attestation remboursement
   
+  // States pour contrat de mariage
+  const [contratMariageEpoux1IdentiteFiles, setContratMariageEpoux1IdentiteFiles] = useState<File[]>([]); // Identité époux 1
+  const [contratMariageEpoux2IdentiteFiles, setContratMariageEpoux2IdentiteFiles] = useState<File[]>([]); // Identité époux 2
+  const [contratMariageEpoux1ActeNaissanceFiles, setContratMariageEpoux1ActeNaissanceFiles] = useState<File[]>([]); // Acte naissance époux 1
+  const [contratMariageEpoux2ActeNaissanceFiles, setContratMariageEpoux2ActeNaissanceFiles] = useState<File[]>([]); // Acte naissance époux 2
+  const [contratMariageEpoux1DomicileFiles, setContratMariageEpoux1DomicileFiles] = useState<File[]>([]); // Justif domicile époux 1
+  const [contratMariageEpoux2DomicileFiles, setContratMariageEpoux2DomicileFiles] = useState<File[]>([]); // Justif domicile époux 2
+  const [contratMariageContratInitialFiles, setContratMariageContratInitialFiles] = useState<File[]>([]); // Contrat mariage initial (si changement)
+  const [contratMariageJustificatifMariageFiles, setContratMariageJustificatifMariageFiles] = useState<File[]>([]); // Justificatif mariage
+  const [contratMariageAccordEnfantsFiles, setContratMariageAccordEnfantsFiles] = useState<File[]>([]); // Accord enfants majeurs
+  const [contratMariageTitresProprieteFiles, setContratMariageTitresProprieteFiles] = useState<File[]>([]); // Titres propriété
+  const [contratMariageEstimationBiensFiles, setContratMariageEstimationBiensFiles] = useState<File[]>([]); // Estimation biens
+  const [contratMariageActeDecesFiles, setContratMariageActeDecesFiles] = useState<File[]>([]); // Acte décès (si veuf)
+  
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
     // Sélection du client et son rôle
@@ -1022,6 +1036,166 @@ export default function Contrats() {
     },
   });
 
+  // State pour contrat de mariage (régimes matrimoniaux)
+  const [contratMariageData, setContratMariageData] = useState({
+    // 1. Informations générales
+    typeRegime: "", // separation_biens / communaute_acquets / communaute_acquets_amenagee / communaute_universelle / participation_acquets / autre
+    autreRegimePrecision: "",
+    typeContrat: "prenuptial", // prenuptial / changement_regime
+    
+    // Si changement de régime
+    dateMariage: "",
+    regimeActuel: "",
+    motifChangement: "",
+    accordEnfantsMajeurs: "",
+    accordCreancier: "",
+    
+    // 2. Époux (tableau de 2 personnes)
+    epoux: [
+      {
+        id: 1,
+        isClient: false,
+        clientId: "",
+        nom: "",
+        prenom: "",
+        adresse: "",
+        dateNaissance: "",
+        lieuNaissance: "",
+        nationalite: "",
+        profession: "",
+        situationFamiliale: "", // celibataire / divorce / veuf
+        typeIdentite: "",
+        numeroIdentite: "",
+        dateEmissionIdentite: "",
+        lieuEmissionIdentite: "",
+        domicileActuel: "",
+        domicileApresMariage: "",
+        // Si mariage antérieur hors France
+        mariageAnterieurtHorsFrance: "non",
+        datePremierMariage: "",
+        lieuPremierMariage: "",
+        regimeMatrimonialInitial: "",
+        acteEtatCivilEtranger: "",
+      },
+      {
+        id: 2,
+        isClient: false,
+        clientId: "",
+        nom: "",
+        prenom: "",
+        adresse: "",
+        dateNaissance: "",
+        lieuNaissance: "",
+        nationalite: "",
+        profession: "",
+        situationFamiliale: "",
+        typeIdentite: "",
+        numeroIdentite: "",
+        dateEmissionIdentite: "",
+        lieuEmissionIdentite: "",
+        domicileActuel: "",
+        domicileApresMariage: "",
+        mariageAnterieurtHorsFrance: "non",
+        datePremierMariage: "",
+        lieuPremierMariage: "",
+        regimeMatrimonialInitial: "",
+        acteEtatCivilEtranger: "",
+      },
+    ],
+    
+    // 3. Informations sur les enfants
+    nombreEnfants: "",
+    enfantsMajeurs: [{
+      id: 1,
+      nom: "",
+      prenom: "",
+      adresse: "",
+      accordInformation: "", // oui / non
+    }],
+    enfantsMineurs: "",
+    informationJugeNecessaire: "",
+    
+    // 4. Patrimoine actuel des époux
+    patrimoineEpoux1: {
+      biensPropres: "",
+      biensAcquisPendantMariage: "",
+      valeurEstimee: "",
+      dettesPersonnelles: "",
+      dettesCommunes: "",
+      masseDepart: "",
+      masseFin: "",
+    },
+    patrimoineEpoux2: {
+      biensPropres: "",
+      biensAcquisPendantMariage: "",
+      valeurEstimee: "",
+      dettesPersonnelles: "",
+      dettesCommunes: "",
+      masseDepart: "",
+      masseFin: "",
+    },
+    
+    // 5. Clauses personnalisables selon le régime
+    
+    // A. Séparation de biens
+    clausesSeparation: {
+      administrationExclusive: false,
+      comptesSepares: false,
+      contributionCharges: "", // proportionnelle / 50_50 / autre
+      contributionChargesAutre: "",
+      miseEnCommunBien: "",
+      abandonCreance: "",
+    },
+    
+    // B. Communauté réduite aux acquêts aménagée
+    clausesCommunauteAmenagee: {
+      definitionBiensCommunsPropres: "",
+      amenagementBiensProfessionnels: "",
+      contributionCharges: "",
+      repartitionDettes: "",
+      typeAdministration: "", // symetriques / unique
+      pouvoirUniqueDetails: "",
+    },
+    
+    // C. Communauté universelle
+    clausesCommunauteUniverselle: {
+      tousLiensCommunsPresentsEtFuturs: true,
+      attributionIntegraleSurvivant: "", // oui / non
+      clausesPreciput: "",
+      exclusionCertainsBiens: "",
+    },
+    
+    // D. Participation aux acquêts
+    clausesParticipation: {
+      definitionPatrimoinesOriginels: "",
+      definitionPatrimoineFinal: "",
+      calculCreanceParticipation: "",
+      renonciationCreance: "",
+      biensPropresParNature: "",
+    },
+    
+    // E. Clauses optionnelles avancées
+    clausesAvancees: {
+      clauseRemploi: "",
+      clausePreciput: "",
+      attributionPreferentielle: "",
+      gestionSepareeBiensProfessionnels: "",
+      protectionConjointSurvivant: "",
+      donationEntreEpoux: "",
+      solidariteDetteSpecifiques: "",
+    },
+    
+    // 6. Déclarations obligatoires
+    declarations: {
+      identite: true,
+      capaciteJuridique: true,
+      situationMatrimoniale: true,
+      absenceOpposition: true,
+      choixLibreEclaire: true,
+      connaissanceEffetsJuridiques: true,
+    },
+  });
+
   const navigate = useNavigate();
 
   // debounce
@@ -1604,6 +1778,14 @@ export default function Contrats() {
     
     // Si c'est une mainlevée d'hypothèque, ouvrir le questionnaire spécifique
     if (contractType === "Mainlevée d'hypothèque" && categoryKey === "Immobilier") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est un contrat de mariage, ouvrir le questionnaire spécifique
+    if (contractType === "Contrat de mariage (régimes matrimoniaux)" && categoryKey === "Famille & Patrimoine") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -2972,6 +3154,270 @@ FRAIS
     }
   };
 
+  const handleContratMariageSubmit = async () => {
+    try {
+      if (!user) {
+        toast.error('Utilisateur non connecté');
+        return;
+      }
+
+      if (!contratMariageData.typeRegime || !contratMariageData.typeContrat) {
+        toast.error('Veuillez remplir les champs obligatoires (type de régime, type de contrat)');
+        return;
+      }
+
+      const regimeLabels: Record<string, string> = {
+        separation_biens: "Séparation de biens",
+        communaute_acquets: "Communauté réduite aux acquêts",
+        communaute_acquets_amenagee: "Communauté réduite aux acquêts aménagée",
+        communaute_universelle: "Communauté universelle",
+        participation_acquets: "Participation aux acquêts",
+        autre: contratMariageData.autreRegimePrecision
+      };
+
+      const descriptionData = `
+TYPE DE CONTRAT: Contrat de mariage (régimes matrimoniaux)
+
+═══════════════════════════════════════════════════════════════
+INFORMATIONS GÉNÉRALES
+═══════════════════════════════════════════════════════════════
+- Régime matrimonial choisi: ${regimeLabels[contratMariageData.typeRegime] || contratMariageData.typeRegime}
+- Type de contrat: ${contratMariageData.typeContrat === "prenuptial" ? "Contrat prénuptial (avant mariage)" : "Changement de régime matrimonial"}
+
+${contratMariageData.typeContrat === "changement_regime" ? `
+CHANGEMENT DE RÉGIME:
+- Date du mariage: ${contratMariageData.dateMariage}
+- Régime actuel: ${contratMariageData.regimeActuel}
+- Motif du changement: ${contratMariageData.motifChangement}
+- Accord enfants majeurs: ${contratMariageData.accordEnfantsMajeurs}
+${contratMariageData.accordCreancier ? `- Accord créancier: ${contratMariageData.accordCreancier}` : ""}
+` : ""}
+
+═══════════════════════════════════════════════════════════════
+ÉPOUX
+═══════════════════════════════════════════════════════════════
+${contratMariageData.epoux.map((epoux, idx) => `
+Époux ${idx + 1}:
+- Nom: ${epoux.nom} ${epoux.prenom}
+- Date de naissance: ${epoux.dateNaissance}
+- Lieu de naissance: ${epoux.lieuNaissance}
+- Nationalité: ${epoux.nationalite}
+- Profession: ${epoux.profession}
+- Situation familiale: ${epoux.situationFamiliale}
+- Domicile actuel: ${epoux.domicileActuel}
+${epoux.domicileApresMariage ? `- Domicile après mariage: ${epoux.domicileApresMariage}` : ""}
+${epoux.mariageAnterieurtHorsFrance === "oui" ? `
+MARIAGE ANTÉRIEUR HORS FRANCE:
+- Date: ${epoux.datePremierMariage}
+- Lieu: ${epoux.lieuPremierMariage}
+- Régime initial: ${epoux.regimeMatrimonialInitial}
+` : ""}
+`).join('')}
+
+═══════════════════════════════════════════════════════════════
+ENFANTS (si changement de régime)
+═══════════════════════════════════════════════════════════════
+${contratMariageData.nombreEnfants ? `
+- Nombre d'enfants: ${contratMariageData.nombreEnfants}
+- Enfants mineurs: ${contratMariageData.enfantsMineurs}
+- Information au juge: ${contratMariageData.informationJugeNecessaire}
+` : "Non applicable"}
+
+═══════════════════════════════════════════════════════════════
+CLAUSES SPÉCIFIQUES DU RÉGIME
+═══════════════════════════════════════════════════════════════
+Régime: ${regimeLabels[contratMariageData.typeRegime] || contratMariageData.typeRegime}
+
+${contratMariageData.typeRegime === "separation_biens" ? `
+SÉPARATION DE BIENS:
+- Administration exclusive: ${contratMariageData.clausesSeparation.administrationExclusive ? "Oui" : "Non"}
+- Comptes séparés: ${contratMariageData.clausesSeparation.comptesSepares ? "Oui" : "Non"}
+- Contribution aux charges: ${contratMariageData.clausesSeparation.contributionCharges}
+` : ""}
+
+${contratMariageData.typeRegime === "communaute_universelle" ? `
+COMMUNAUTÉ UNIVERSELLE:
+- Attribution intégrale au survivant: ${contratMariageData.clausesCommunauteUniverselle.attributionIntegraleSurvivant}
+- Clause de préciput: ${contratMariageData.clausesCommunauteUniverselle.clausesPreciput}
+- Exclusions de biens: ${contratMariageData.clausesCommunauteUniverselle.exclusionCertainsBiens}
+` : ""}
+
+${contratMariageData.typeRegime === "participation_acquets" ? `
+PARTICIPATION AUX ACQUÊTS:
+- Patrimoine originel défini: ${contratMariageData.clausesParticipation.definitionPatrimoinesOriginels}
+- Calcul créance: ${contratMariageData.clausesParticipation.calculCreanceParticipation}
+` : ""}
+
+═══════════════════════════════════════════════════════════════
+DÉCLARATIONS DES ÉPOUX
+═══════════════════════════════════════════════════════════════
+- Identité: ${contratMariageData.declarations.identite ? "✓" : "✗"}
+- Capacité juridique: ${contratMariageData.declarations.capaciteJuridique ? "✓" : "✗"}
+- Choix libre et éclairé: ${contratMariageData.declarations.choixLibreEclaire ? "✓" : "✗"}
+- Connaissance des effets juridiques: ${contratMariageData.declarations.connaissanceEffetsJuridiques ? "✓" : "✗"}
+      `.trim();
+
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Contrat de mariage - ${contratMariageData.epoux[0]?.nom || 'Époux 1'} & ${contratMariageData.epoux[1]?.nom || 'Époux 2'}`,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: descriptionData,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success("Contrat de mariage créé avec succès");
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire (structure minimale pour ne pas alourdir)
+      setContratMariageData({
+        typeRegime: "",
+        autreRegimePrecision: "",
+        typeContrat: "prenuptial",
+        dateMariage: "",
+        regimeActuel: "",
+        motifChangement: "",
+        accordEnfantsMajeurs: "",
+        accordCreancier: "",
+        epoux: [
+          {
+            id: 1,
+            isClient: false,
+            clientId: "",
+            nom: "",
+            prenom: "",
+            adresse: "",
+            dateNaissance: "",
+            lieuNaissance: "",
+            nationalite: "",
+            profession: "",
+            situationFamiliale: "",
+            typeIdentite: "",
+            numeroIdentite: "",
+            dateEmissionIdentite: "",
+            lieuEmissionIdentite: "",
+            domicileActuel: "",
+            domicileApresMariage: "",
+            mariageAnterieurtHorsFrance: "non",
+            datePremierMariage: "",
+            lieuPremierMariage: "",
+            regimeMatrimonialInitial: "",
+            acteEtatCivilEtranger: "",
+          },
+          {
+            id: 2,
+            isClient: false,
+            clientId: "",
+            nom: "",
+            prenom: "",
+            adresse: "",
+            dateNaissance: "",
+            lieuNaissance: "",
+            nationalite: "",
+            profession: "",
+            situationFamiliale: "",
+            typeIdentite: "",
+            numeroIdentite: "",
+            dateEmissionIdentite: "",
+            lieuEmissionIdentite: "",
+            domicileActuel: "",
+            domicileApresMariage: "",
+            mariageAnterieurtHorsFrance: "non",
+            datePremierMariage: "",
+            lieuPremierMariage: "",
+            regimeMatrimonialInitial: "",
+            acteEtatCivilEtranger: "",
+          },
+        ],
+        nombreEnfants: "",
+        enfantsMajeurs: [{
+          id: 1,
+          nom: "",
+          prenom: "",
+          adresse: "",
+          accordInformation: "",
+        }],
+        enfantsMineurs: "",
+        informationJugeNecessaire: "",
+        patrimoineEpoux1: {
+          biensPropres: "",
+          biensAcquisPendantMariage: "",
+          valeurEstimee: "",
+          dettesPersonnelles: "",
+          dettesCommunes: "",
+          masseDepart: "",
+          masseFin: "",
+        },
+        patrimoineEpoux2: {
+          biensPropres: "",
+          biensAcquisPendantMariage: "",
+          valeurEstimee: "",
+          dettesPersonnelles: "",
+          dettesCommunes: "",
+          masseDepart: "",
+          masseFin: "",
+        },
+        clausesSeparation: {
+          administrationExclusive: false,
+          comptesSepares: false,
+          contributionCharges: "",
+          contributionChargesAutre: "",
+          miseEnCommunBien: "",
+          abandonCreance: "",
+        },
+        clausesCommunauteAmenagee: {
+          definitionBiensCommunsPropres: "",
+          amenagementBiensProfessionnels: "",
+          contributionCharges: "",
+          repartitionDettes: "",
+          typeAdministration: "",
+          pouvoirUniqueDetails: "",
+        },
+        clausesCommunauteUniverselle: {
+          tousLiensCommunsPresentsEtFuturs: true,
+          attributionIntegraleSurvivant: "",
+          clausesPreciput: "",
+          exclusionCertainsBiens: "",
+        },
+        clausesParticipation: {
+          definitionPatrimoinesOriginels: "",
+          definitionPatrimoineFinal: "",
+          calculCreanceParticipation: "",
+          renonciationCreance: "",
+          biensPropresParNature: "",
+        },
+        clausesAvancees: {
+          clauseRemploi: "",
+          clausePreciput: "",
+          attributionPreferentielle: "",
+          gestionSepareeBiensProfessionnels: "",
+          protectionConjointSurvivant: "",
+          donationEntreEpoux: "",
+          solidariteDetteSpecifiques: "",
+        },
+        declarations: {
+          identite: true,
+          capaciteJuridique: true,
+          situationMatrimoniale: true,
+          absenceOpposition: true,
+          choixLibreEclaire: true,
+          connaissanceEffetsJuridiques: true,
+        },
+      });
+
+      loadContrats();
+    } catch (err) {
+      console.error('Erreur création contrat de mariage:', err);
+      toast.error('Erreur lors de la création du contrat de mariage');
+    }
+  };
+
   const handleDelete = async (contrat: ContratRow) => {
     if (!user) return;
     if (!confirm(`Supprimer "${contrat.name}" ?`)) return;
@@ -3231,6 +3677,8 @@ FRAIS
                 ? "Informations pour la convention d'indivision"
                 : pendingContractType === "Mainlevée d'hypothèque"
                 ? "Informations pour la mainlevée d'hypothèque"
+                : pendingContractType === "Contrat de mariage (régimes matrimoniaux)"
+                ? "Informations pour le contrat de mariage"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
@@ -12870,6 +13318,392 @@ FRAIS
               </>
             )}
 
+            {/* Formulaire spécifique pour Contrat de mariage (régimes matrimoniaux) */}
+            {pendingContractType === "Contrat de mariage (régimes matrimoniaux)" && (
+              <>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
+                  {/* 1. Informations générales sur le contrat */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📋 Informations générales</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Type de régime matrimonial *</Label>
+                        <Select 
+                          value={contratMariageData.typeRegime} 
+                          onValueChange={(value) => setContratMariageData({...contratMariageData, typeRegime: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                            <SelectItem value="communaute_acquets">Communauté réduite aux acquêts</SelectItem>
+                            <SelectItem value="communaute_acquets_amenagee">Communauté réduite aux acquêts aménagée</SelectItem>
+                            <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                            <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                            <SelectItem value="autre">Autre aménagement</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {contratMariageData.typeRegime === "autre" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Préciser le régime</Label>
+                          <Input
+                            value={contratMariageData.autreRegimePrecision}
+                            onChange={(e) => setContratMariageData({...contratMariageData, autreRegimePrecision: e.target.value})}
+                            placeholder="Ex: Communauté de meubles et acquêts..."
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Type de contrat *</Label>
+                        <RadioGroup
+                          value={contratMariageData.typeContrat}
+                          onValueChange={(value) => setContratMariageData({...contratMariageData, typeContrat: value})}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="prenuptial" id="type_prenuptial" />
+                              <Label htmlFor="type_prenuptial" className="cursor-pointer">Contrat prénuptial (avant mariage)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="changement_regime" id="type_changement" />
+                              <Label htmlFor="type_changement" className="cursor-pointer">Changement de régime (après mariage)</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {contratMariageData.typeContrat === "changement_regime" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Date du mariage</Label>
+                            <Input
+                              type="date"
+                              value={contratMariageData.dateMariage}
+                              onChange={(e) => setContratMariageData({...contratMariageData, dateMariage: e.target.value})}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Régime actuel</Label>
+                            <Input
+                              value={contratMariageData.regimeActuel}
+                              onChange={(e) => setContratMariageData({...contratMariageData, regimeActuel: e.target.value})}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Motif du changement</Label>
+                            <Textarea
+                              rows={2}
+                              value={contratMariageData.motifChangement}
+                              onChange={(e) => setContratMariageData({...contratMariageData, motifChangement: e.target.value})}
+                              placeholder="Ex: Meilleure protection du conjoint, situation patrimoniale..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Accord/information enfants majeurs</Label>
+                            <Input
+                              value={contratMariageData.accordEnfantsMajeurs}
+                              onChange={(e) => setContratMariageData({...contratMariageData, accordEnfantsMajeurs: e.target.value})}
+                              placeholder="Oui, tous informés"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Accord créancier (si applicable)</Label>
+                            <Input
+                              value={contratMariageData.accordCreancier}
+                              onChange={(e) => setContratMariageData({...contratMariageData, accordCreancier: e.target.value})}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 2. Identité des époux */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">💑 Identité des futurs époux / époux</h3>
+                    
+                    {contratMariageData.epoux.map((epoux, index) => (
+                      <div key={epoux.id} className="p-4 border rounded-lg space-y-4">
+                        <h4 className="font-medium">Époux #{index + 1}</h4>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Sélection client */}
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Sélectionner un client (optionnel)</Label>
+                            <Select 
+                              value={epoux.clientId} 
+                              onValueChange={async (value) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], clientId: value, isClient: !!value};
+                                
+                                if (value) {
+                                  const client = clients.find(c => c.id === value);
+                                  if (client) {
+                                    newEpoux[index].nom = client.nom || "";
+                                    newEpoux[index].prenom = client.prenom || "";
+                                    newEpoux[index].adresse = client.adresse || "";
+                                    newEpoux[index].dateNaissance = client.date_naissance || "";
+                                    newEpoux[index].lieuNaissance = client.lieu_naissance || "";
+                                    newEpoux[index].nationalite = client.nationalite || "";
+                                    newEpoux[index].profession = client.profession || "";
+                                    newEpoux[index].situationFamiliale = client.situation_matrimoniale || "";
+                                    newEpoux[index].typeIdentite = client.type_identite || "";
+                                    newEpoux[index].numeroIdentite = client.numero_identite || "";
+
+                                    // Auto-charger le document d'identité
+                                    if (client.id_doc_path) {
+                                      try {
+                                        const { data: fileData } = await supabase.storage
+                                          .from('client_documents')
+                                          .download(client.id_doc_path);
+                                        if (fileData) {
+                                          const file = new File([fileData], `identite_epoux_${index + 1}.pdf`, { type: 'application/pdf' });
+                                          if (index === 0) {
+                                            setContratMariageEpoux1IdentiteFiles([file]);
+                                          } else {
+                                            setContratMariageEpoux2IdentiteFiles([file]);
+                                          }
+                                        }
+                                      } catch (err) {
+                                        console.error('Erreur chargement document:', err);
+                                      }
+                                    }
+                                  }
+                                }
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner un client..." /></SelectTrigger>
+                              <SelectContent>
+                                {clients.map(client => (
+                                  <SelectItem key={client.id} value={client.id}>
+                                    {client.nom} {client.prenom}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nom *</Label>
+                            <Input
+                              value={epoux.nom}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], nom: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Prénom *</Label>
+                            <Input
+                              value={epoux.prenom}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], prenom: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse</Label>
+                            <Input
+                              value={epoux.adresse}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], adresse: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date de naissance</Label>
+                            <Input
+                              type="date"
+                              value={epoux.dateNaissance}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], dateNaissance: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Lieu de naissance</Label>
+                            <Input
+                              value={epoux.lieuNaissance}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], lieuNaissance: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nationalité</Label>
+                            <Input
+                              value={epoux.nationalite}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], nationalite: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Profession</Label>
+                            <Input
+                              value={epoux.profession}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], profession: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Situation familiale</Label>
+                            <Select 
+                              value={epoux.situationFamiliale} 
+                              onValueChange={(value) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], situationFamiliale: value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="celibataire">Célibataire</SelectItem>
+                                <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                                <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Domicile actuel</Label>
+                            <Input
+                              value={epoux.domicileActuel}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], domicileActuel: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Domicile après mariage (si différent)</Label>
+                            <Input
+                              value={epoux.domicileApresMariage}
+                              onChange={(e) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], domicileApresMariage: e.target.value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Mariage antérieur hors de France ?</Label>
+                            <RadioGroup
+                              value={epoux.mariageAnterieurtHorsFrance}
+                              onValueChange={(value) => {
+                                const newEpoux = [...contratMariageData.epoux];
+                                newEpoux[index] = {...newEpoux[index], mariageAnterieurtHorsFrance: value};
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }}
+                            >
+                              <div className="flex gap-4">
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="oui" id={`mariage_etr_oui_${index}`} />
+                                  <Label htmlFor={`mariage_etr_oui_${index}`} className="cursor-pointer">Oui</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="non" id={`mariage_etr_non_${index}`} />
+                                  <Label htmlFor={`mariage_etr_non_${index}`} className="cursor-pointer">Non</Label>
+                                </div>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          {epoux.mariageAnterieurtHorsFrance === "oui" && (
+                            <>
+                              <div className="space-y-2">
+                                <Label>Date du premier mariage</Label>
+                                <Input
+                                  type="date"
+                                  value={epoux.datePremierMariage}
+                                  onChange={(e) => {
+                                    const newEpoux = [...contratMariageData.epoux];
+                                    newEpoux[index] = {...newEpoux[index], datePremierMariage: e.target.value};
+                                    setContratMariageData({...contratMariageData, epoux: newEpoux});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Lieu du premier mariage</Label>
+                                <Input
+                                  value={epoux.lieuPremierMariage}
+                                  onChange={(e) => {
+                                    const newEpoux = [...contratMariageData.epoux];
+                                    newEpoux[index] = {...newEpoux[index], lieuPremierMariage: e.target.value};
+                                    setContratMariageData({...contratMariageData, epoux: newEpoux});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Régime matrimonial initial</Label>
+                                <Input
+                                  value={epoux.regimeMatrimonialInitial}
+                                  onChange={(e) => {
+                                    const newEpoux = [...contratMariageData.epoux];
+                                    newEpoux[index] = {...newEpoux[index], regimeMatrimonialInitial: e.target.value};
+                                    setContratMariageData({...contratMariageData, epoux: newEpoux});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Acte d'état civil étranger</Label>
+                                <Input
+                                  value={epoux.acteEtatCivilEtranger}
+                                  onChange={(e) => {
+                                    const newEpoux = [...contratMariageData.epoux];
+                                    newEpoux[index] = {...newEpoux[index], acteEtatCivilEtranger: e.target.value};
+                                    setContratMariageData({...contratMariageData, epoux: newEpoux});
+                                  }}
+                                  placeholder="Nom du fichier ou référence"
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Suite du formulaire dans le prochain message (trop long) */}
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -12893,6 +13727,8 @@ FRAIS
                   handleIndivisionSubmit();
                 } else if (pendingContractType === "Mainlevée d'hypothèque") {
                   handleMainleveeSubmit();
+                } else if (pendingContractType === "Contrat de mariage (régimes matrimoniaux)") {
+                  handleContratMariageSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
