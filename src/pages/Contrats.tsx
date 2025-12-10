@@ -1599,6 +1599,14 @@ export default function Contrats() {
       return;
     }
     
+    // Si c'est une mainlevée d'hypothèque, ouvrir le questionnaire spécifique
+    if (contractType === "Mainlevée d'hypothèque" && categoryKey === "Immobilier") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
     // Sinon, créer directement le contrat
     try {
       const { data, error } = await supabase
@@ -2700,6 +2708,263 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
     }
   };
 
+  const handleMainleveeSubmit = async () => {
+    try {
+      if (!user) {
+        toast.error('Utilisateur non connecté');
+        return;
+      }
+
+      if (!mainleveeData.informationsGenerales.typeMainlevee || !mainleveeData.informationsGenerales.natureInscription) {
+        toast.error('Veuillez remplir les champs obligatoires (type de mainlevée, nature de l\'inscription)');
+        return;
+      }
+
+      const descriptionData = `
+TYPE DE CONTRAT: Mainlevée d'hypothèque
+
+═══════════════════════════════════════════════════════════════
+INFORMATIONS GÉNÉRALES
+═══════════════════════════════════════════════════════════════
+- Type de mainlevée: ${mainleveeData.informationsGenerales.typeMainlevee}
+${mainleveeData.informationsGenerales.typeMainlevee === "partielle" ? `- Précision: ${mainleveeData.informationsGenerales.precisionPartielle}` : ""}
+- Nature de l'inscription: ${mainleveeData.informationsGenerales.natureInscription}
+- Numéro d'inscription: ${mainleveeData.informationsGenerales.numeroInscription}
+- Date d'inscription: ${mainleveeData.informationsGenerales.dateInscription}
+- Volume: ${mainleveeData.informationsGenerales.volume}
+- Numéro de publication: ${mainleveeData.informationsGenerales.numeroPublication}
+
+═══════════════════════════════════════════════════════════════
+CRÉANCIER
+═══════════════════════════════════════════════════════════════
+Type: ${mainleveeData.creancier.typeCreancier}
+${mainleveeData.creancier.typeCreancier === "banque" ? `
+- Dénomination: ${mainleveeData.creancierBanque.denomination}
+- SIREN: ${mainleveeData.creancierBanque.siren}
+- Siège social: ${mainleveeData.creancierBanque.siegeSocial}
+- Représentant: ${mainleveeData.creancierBanque.representantNom} ${mainleveeData.creancierBanque.representantPrenom}
+- Fonction: ${mainleveeData.creancierBanque.representantFonction}
+` : `
+- Nom: ${mainleveeData.creancierPersonne.nom} ${mainleveeData.creancierPersonne.prenom}
+- Date de naissance: ${mainleveeData.creancierPersonne.dateNaissance}
+- Lieu de naissance: ${mainleveeData.creancierPersonne.lieuNaissance}
+- Adresse: ${mainleveeData.creancierPersonne.adresse}
+- Nationalité: ${mainleveeData.creancierPersonne.nationalite}
+- Situation familiale: ${mainleveeData.creancierPersonne.situationFamiliale}
+${mainleveeData.creancierPersonne.regimeMatrimonial ? `- Régime matrimonial: ${mainleveeData.creancierPersonne.regimeMatrimonial}` : ""}
+`}
+
+═══════════════════════════════════════════════════════════════
+DÉBITEURS
+═══════════════════════════════════════════════════════════════
+Nombre de débiteurs: ${mainleveeData.debiteurs.length}
+${mainleveeData.debiteurs.map((deb, idx) => `
+Débiteur ${idx + 1}:
+- Nom: ${deb.nom} ${deb.prenom}
+- Date de naissance: ${deb.dateNaissance}
+- Lieu de naissance: ${deb.lieuNaissance}
+- Adresse: ${deb.adresse}
+- Situation familiale: ${deb.situationFamiliale}
+${deb.regimeMatrimonial ? `- Régime matrimonial: ${deb.regimeMatrimonial}` : ""}
+- Qualité: ${deb.qualite}
+`).join('')}
+
+═══════════════════════════════════════════════════════════════
+ACTE CONSTITUTIF
+═══════════════════════════════════════════════════════════════
+- Date de signature: ${mainleveeData.acteOrigine.dateSignature}
+- Nature de l'acte: ${mainleveeData.acteOrigine.natureActe}
+- Notaire/Auteur: ${mainleveeData.acteOrigine.notaireAuteur}
+- Date de publication: ${mainleveeData.acteOrigine.datePublication}
+- Numéro de publication: ${mainleveeData.acteOrigine.numeroPublication}
+
+CONDITIONS DU PRÊT:
+- Montant initial: ${mainleveeData.conditionsPret.montantInitial} €
+- Taux d'intérêt: ${mainleveeData.conditionsPret.tauxInteret}
+- Durée: ${mainleveeData.conditionsPret.dureePret}
+- Numéro de contrat: ${mainleveeData.conditionsPret.numeroContrat}
+- Établissement prêteur: ${mainleveeData.conditionsPret.etablissementPreteur}
+- Numéro de dossier: ${mainleveeData.conditionsPret.numeroDossier}
+
+═══════════════════════════════════════════════════════════════
+BIENS HYPOTHÉQUÉS
+═══════════════════════════════════════════════════════════════
+Nombre de biens: ${mainleveeData.biens.length}
+${mainleveeData.biens.map((bien, idx) => `
+Bien ${idx + 1}:
+- Adresse: ${bien.adresse}
+- Type: ${bien.typeBien}
+- Description: ${bien.descriptionBien}
+- Cadastre: Section ${bien.cadastreSection}, Parcelle ${bien.cadastreParcelle}
+- Contenance: ${bien.cadastreContenance}
+${bien.estCopropriete === "oui" ? `- Copropriété: Lot n°${bien.numeroLot}, Quote-part: ${bien.quotePart}` : ""}
+`).join('')}
+
+═══════════════════════════════════════════════════════════════
+DÉCLARATION DU CRÉANCIER
+═══════════════════════════════════════════════════════════════
+- Créance intégralement payée: ${mainleveeData.declaration.creancePayee ? "Oui" : "Non"}
+- Aucune dette subsistante: ${mainleveeData.declaration.aucuneDette ? "Oui" : "Non"}
+- Consent à la mainlevée: ${mainleveeData.declaration.consentMainlevee ? "Oui" : "Non"}
+- Renonce à l'inscription: ${mainleveeData.declaration.renonciation ? "Oui" : "Non"}
+- Demande la radiation au SPF: ${mainleveeData.declaration.demandeRadiation ? "Oui" : "Non"}
+
+═══════════════════════════════════════════════════════════════
+MANDAT/PROCURATION
+═══════════════════════════════════════════════════════════════
+${mainleveeData.mandataire.existe === "oui" ? `
+- Mandataire: ${mainleveeData.mandataire.nom} ${mainleveeData.mandataire.prenom}
+- Fonction: ${mainleveeData.mandataire.fonction}
+- Pouvoirs: ${mainleveeData.mandataire.pouvoirSigner ? "Signer la mainlevée" : ""}${mainleveeData.mandataire.pouvoirDeposer ? ", Déposer au SPF" : ""}
+` : "Aucun mandataire"}
+
+═══════════════════════════════════════════════════════════════
+CONSENTEMENT DÉBITEUR
+═══════════════════════════════════════════════════════════════
+${mainleveeData.consentementDebiteur.requis === "oui" ? `
+- Accord pour la radiation: ${mainleveeData.consentementDebiteur.accordRadiation ? "Oui" : "Non"}
+- Déclarations complémentaires: ${mainleveeData.consentementDebiteur.declarationsComplementaires}
+` : "Non requis"}
+
+═══════════════════════════════════════════════════════════════
+FRAIS
+═══════════════════════════════════════════════════════════════
+- Frais de radiation: ${mainleveeData.frais.fraisRadiation} €
+- Honoraires: ${mainleveeData.frais.honoraires} €
+- Timbres fiscaux: ${mainleveeData.frais.timbresFiscaux} €
+      `.trim();
+
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Mainlevée d'hypothèque - ${mainleveeData.debiteurs[0]?.nom || 'Débiteur'} - ${mainleveeData.biens[0]?.adresse || 'Bien'}`,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: descriptionData,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success("Mainlevée d'hypothèque créée avec succès");
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire
+      setMainleveeData({
+        informationsGenerales: {
+          typeMainlevee: "",
+          precisionPartielle: "",
+          natureInscription: "",
+          numeroInscription: "",
+          dateInscription: "",
+          volume: "",
+          numeroPublication: "",
+        },
+        creancier: {
+          typeCreancier: "",
+        },
+        creancierBanque: {
+          denomination: "",
+          siren: "",
+          siegeSocial: "",
+          representantNom: "",
+          representantPrenom: "",
+          representantFonction: "",
+        },
+        creancierPersonne: {
+          isClient: false,
+          clientId: "",
+          nom: "",
+          prenom: "",
+          dateNaissance: "",
+          lieuNaissance: "",
+          adresse: "",
+          nationalite: "",
+          situationFamiliale: "",
+          regimeMatrimonial: "",
+          typeIdentite: "",
+          numeroIdentite: "",
+        },
+        debiteurs: [{
+          id: 1,
+          isClient: false,
+          clientId: "",
+          nom: "",
+          prenom: "",
+          dateNaissance: "",
+          lieuNaissance: "",
+          adresse: "",
+          nationalite: "",
+          situationFamiliale: "",
+          regimeMatrimonial: "",
+          qualite: "",
+          typeIdentite: "",
+          numeroIdentite: "",
+        }],
+        acteOrigine: {
+          dateSignature: "",
+          natureActe: "",
+          notaireAuteur: "",
+          datePublication: "",
+          numeroPublication: "",
+        },
+        conditionsPret: {
+          montantInitial: "",
+          tauxInteret: "",
+          dureePret: "",
+          numeroContrat: "",
+          etablissementPreteur: "",
+          numeroDossier: "",
+        },
+        biens: [{
+          id: 1,
+          adresse: "",
+          descriptionBien: "",
+          typeBien: "",
+          cadastreSection: "",
+          cadastreParcelle: "",
+          cadastreContenance: "",
+          estCopropriete: "non",
+          numeroLot: "",
+          quotePart: "",
+        }],
+        declaration: {
+          creancePayee: false,
+          aucuneDette: false,
+          consentMainlevee: false,
+          renonciation: false,
+          demandeRadiation: false,
+        },
+        mandataire: {
+          existe: "non",
+          nom: "",
+          prenom: "",
+          fonction: "",
+          pouvoirSigner: false,
+          pouvoirDeposer: false,
+        },
+        consentementDebiteur: {
+          requis: "non",
+          accordRadiation: false,
+          declarationsComplementaires: "",
+        },
+        frais: {
+          fraisRadiation: "",
+          honoraires: "",
+          timbresFiscaux: "",
+        },
+      });
+
+      loadContrats();
+    } catch (err) {
+      console.error('Erreur création mainlevée d\'hypothèque:', err);
+      toast.error('Erreur lors de la création de la mainlevée');
+    }
+  };
+
   const handleDelete = async (contrat: ContratRow) => {
     if (!user) return;
     if (!confirm(`Supprimer "${contrat.name}" ?`)) return;
@@ -2957,6 +3222,8 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                     : "Informations pour le bail commercial / professionnel")
                 : pendingContractType === "Convention d'indivision"
                 ? "Informations pour la convention d'indivision"
+                : pendingContractType === "Mainlevée d'hypothèque"
+                ? "Informations pour la mainlevée d'hypothèque"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
@@ -12560,6 +12827,8 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                   handleBailCommercialSubmit();
                 } else if (pendingContractType === "Convention d'indivision") {
                   handleIndivisionSubmit();
+                } else if (pendingContractType === "Mainlevée d'hypothèque") {
+                  handleMainleveeSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }

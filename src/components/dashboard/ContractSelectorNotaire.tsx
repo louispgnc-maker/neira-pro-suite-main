@@ -30,7 +30,7 @@ export const NOTAIRE_CONTRACT_CATEGORIES = [
       "Bail d'habitation meublé",
       "Bail commercial / professionnel",
       "Convention d'indivision",
-      "Acte de mainlevée d'hypothèque",
+      "Mainlevée d'hypothèque",
     ],
   },
   {
@@ -136,6 +136,13 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
 
     // Si c'est une "Convention d'indivision", rediriger vers la page Contrats avec paramètres
     if (contractType === "Convention d'indivision") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
+    // Si c'est une "Mainlevée d'hypothèque", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Mainlevée d'hypothèque") {
       const basePath = role === 'notaire' ? '/notaires' : '/avocats';
       navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
       return;
