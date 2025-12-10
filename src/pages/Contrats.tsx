@@ -16078,6 +16078,772 @@ Bien ${idx + 1}:
                     </div>
                   </div>
 
+                  {/* 4. Identité des partenaires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Identité des partenaires</h3>
+                    
+                    {pacsData.partenaires.map((partenaire, index) => (
+                      <div key={partenaire.id} className="p-4 border rounded-lg space-y-4 bg-muted/20">
+                        <h4 className="font-medium text-base">Partenaire #{index + 1}</h4>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Sélection client */}
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Sélectionner un client (optionnel)</Label>
+                            <Select 
+                              value={partenaire.clientId} 
+                              onValueChange={async (value) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index] = {...newPartenaires[index], clientId: value, isClient: !!value};
+                                
+                                if (value) {
+                                  const client = clients.find(c => c.id === value);
+                                  if (client) {
+                                    newPartenaires[index].nom = client.nom || "";
+                                    newPartenaires[index].prenom = client.prenom || "";
+                                    newPartenaires[index].nomNaissance = client.nom || "";
+                                    newPartenaires[index].adresseActuelle = client.adresse || "";
+                                    newPartenaires[index].dateNaissance = client.date_naissance || "";
+                                    newPartenaires[index].lieuNaissance = client.lieu_naissance || "";
+                                    newPartenaires[index].nationalite = client.nationalite || "";
+                                    newPartenaires[index].profession = client.profession || "";
+                                    newPartenaires[index].telephone = client.telephone || "";
+                                    newPartenaires[index].email = client.email || "";
+                                    newPartenaires[index].typeIdentite = client.type_identite || "";
+                                    newPartenaires[index].numeroIdentite = client.numero_identite || "";
+                                    
+                                    let situationFamiliale = client.situation_matrimoniale || "";
+                                    if (!situationFamiliale && client.situation_familiale) {
+                                      if (typeof client.situation_familiale === 'string') {
+                                        situationFamiliale = client.situation_familiale;
+                                      }
+                                    }
+                                    newPartenaires[index].situationFamiliale = situationFamiliale;
+                                  }
+                                }
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                              <SelectContent>
+                                {clients.map((c) => (
+                                  <SelectItem key={c.id} value={c.id}>
+                                    {c.nom} {c.prenom}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Informations civiles */}
+                          <div className="space-y-2">
+                            <Label>Nom <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={partenaire.nom}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].nom = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Prénom <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={partenaire.prenom}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].prenom = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nom de naissance</Label>
+                            <Input
+                              value={partenaire.nomNaissance}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].nomNaissance = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="date"
+                              value={partenaire.dateNaissance}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].dateNaissance = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Lieu de naissance <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={partenaire.lieuNaissance}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].lieuNaissance = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nationalité <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={partenaire.nationalite}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].nationalite = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Profession</Label>
+                            <Input
+                              value={partenaire.profession}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].profession = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Téléphone</Label>
+                            <Input
+                              value={partenaire.telephone}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].telephone = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input
+                              type="email"
+                              value={partenaire.email}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].email = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse actuelle <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={partenaire.adresseActuelle}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].adresseActuelle = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          {/* Situation familiale */}
+                          <div className="space-y-2">
+                            <Label>Situation familiale actuelle <span className="text-red-500">*</span></Label>
+                            <Select 
+                              value={partenaire.situationFamiliale}
+                              onValueChange={(value) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].situationFamiliale = value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="celibataire">Célibataire</SelectItem>
+                                <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                                <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Pièce d'identité */}
+                          <div className="space-y-2">
+                            <Label>Type de pièce d'identité</Label>
+                            <Select 
+                              value={partenaire.typeIdentite}
+                              onValueChange={(value) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].typeIdentite = value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="CNI">Carte Nationale d'Identité</SelectItem>
+                                <SelectItem value="Passeport">Passeport</SelectItem>
+                                <SelectItem value="Titre de séjour">Titre de séjour</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro de pièce d'identité</Label>
+                            <Input
+                              value={partenaire.numeroIdentite}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].numeroIdentite = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date d'émission</Label>
+                            <Input
+                              type="date"
+                              value={partenaire.dateEmissionIdentite}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].dateEmissionIdentite = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Autorité délivrante</Label>
+                            <Input
+                              value={partenaire.autoriteDelivrante}
+                              onChange={(e) => {
+                                const newPartenaires = [...pacsData.partenaires];
+                                newPartenaires[index].autoriteDelivrante = e.target.value;
+                                setPacsData({...pacsData, partenaires: newPartenaires});
+                              }}
+                              placeholder="Ex: Préfecture de Paris"
+                            />
+                          </div>
+
+                          {/* Partenaire étranger */}
+                          <div className="space-y-2 md:col-span-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`etranger-${index}`}
+                                checked={partenaire.estEtranger}
+                                onChange={(e) => {
+                                  const newPartenaires = [...pacsData.partenaires];
+                                  newPartenaires[index].estEtranger = e.target.checked;
+                                  setPacsData({...pacsData, partenaires: newPartenaires});
+                                }}
+                              />
+                              <label htmlFor={`etranger-${index}`} className="text-sm font-medium">
+                                Partenaire étranger (nécessite documents supplémentaires)
+                              </label>
+                            </div>
+                          </div>
+
+                          {partenaire.estEtranger && (
+                            <div className="md:col-span-2 p-3 bg-yellow-50 border border-yellow-200 rounded space-y-2">
+                              <p className="text-sm font-medium text-yellow-800">Documents supplémentaires requis :</p>
+                              <div className="space-y-2">
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    id={`attestation-${index}`}
+                                    checked={partenaire.attestationNonPacsPaysOrigine}
+                                    onChange={(e) => {
+                                      const newPartenaires = [...pacsData.partenaires];
+                                      newPartenaires[index].attestationNonPacsPaysOrigine = e.target.checked;
+                                      setPacsData({...pacsData, partenaires: newPartenaires});
+                                    }}
+                                  />
+                                  <label htmlFor={`attestation-${index}`} className="text-sm">Attestation de non-PACS du pays d'origine</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    id={`coutume-${index}`}
+                                    checked={partenaire.certificatCoutumeRequis}
+                                    onChange={(e) => {
+                                      const newPartenaires = [...pacsData.partenaires];
+                                      newPartenaires[index].certificatCoutumeRequis = e.target.checked;
+                                      setPacsData({...pacsData, partenaires: newPartenaires});
+                                    }}
+                                  />
+                                  <label htmlFor={`coutume-${index}`} className="text-sm">Certificat de coutume</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    id={`traduction-${index}`}
+                                    checked={partenaire.traductionRequise}
+                                    onChange={(e) => {
+                                      const newPartenaires = [...pacsData.partenaires];
+                                      newPartenaires[index].traductionRequise = e.target.checked;
+                                      setPacsData({...pacsData, partenaires: newPartenaires});
+                                    }}
+                                  />
+                                  <label htmlFor={`traduction-${index}`} className="text-sm">Traductions certifiées nécessaires</label>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 5. Modification de PACS (si applicable) */}
+                  {pacsData.objetPacs === "modification" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Référence du PACS initial</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Date du PACS initial</Label>
+                          <Input
+                            type="date"
+                            value={pacsData.pacsInitialDate}
+                            onChange={(e) => setPacsData({...pacsData, pacsInitialDate: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Mairie ou notaire d'enregistrement</Label>
+                          <Input
+                            value={pacsData.pacsInitialMairie}
+                            onChange={(e) => setPacsData({...pacsData, pacsInitialMairie: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Numéro d'enregistrement (si connu)</Label>
+                          <Input
+                            value={pacsData.pacsInitialNumero}
+                            onChange={(e) => setPacsData({...pacsData, pacsInitialNumero: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Clauses modifiées</Label>
+                          <Textarea
+                            value={pacsData.clausesModifiees}
+                            onChange={(e) => setPacsData({...pacsData, clausesModifiees: e.target.value})}
+                            rows={4}
+                            placeholder="Décrivez les modifications apportées..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 6. Clauses du PACS */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Clauses du PACS</h3>
+                    
+                    {/* A. Contribution aux charges */}
+                    <div className="space-y-3 p-4 border rounded-lg">
+                      <h4 className="font-medium">A. Contribution aux charges du ménage (obligatoire)</h4>
+                      <div className="space-y-2">
+                        <Select 
+                          value={pacsData.contributionCharges}
+                          onValueChange={(value) => setPacsData({...pacsData, contributionCharges: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="proportionnelle">Proportionnelle aux revenus</SelectItem>
+                            <SelectItem value="50_50">50/50</SelectItem>
+                            <SelectItem value="autre">Autre (préciser)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {pacsData.contributionCharges === "autre" && (
+                          <Input
+                            value={pacsData.contributionChargesAutre}
+                            onChange={(e) => setPacsData({...pacsData, contributionChargesAutre: e.target.value})}
+                            placeholder="Précisez la répartition..."
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* B. Clauses facultatives */}
+                    <div className="space-y-3 p-4 border rounded-lg bg-muted/20">
+                      <h4 className="font-medium">B. Clauses facultatives</h4>
+                      
+                      <div className="space-y-2">
+                        <Label>Gestion des biens personnels</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.gestionBiensPersonnels}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, gestionBiensPersonnels: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Gestion d'un bien commun</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.gestionBienCommun}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, gestionBienCommun: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Usage d'un bien indivis</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.usageBienIndivis}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, usageBienIndivis: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Répartition de dépenses spécifiques</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.repartitionDepensesSpecifiques}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, repartitionDepensesSpecifiques: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clause d'occupation du logement en cas de séparation</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.clauseOccupationLogementSeparation}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, clauseOccupationLogementSeparation: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clause de reprise de bien en cas de décès</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.clauseRepriseBienDeces}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, clauseRepriseBienDeces: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clause d'abandon de créance entre partenaires</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.clauseAbandonCreance}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, clauseAbandonCreance: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Modalités d'utilisation d'un compte bancaire commun</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.modalitesCompteBancaireCommun}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, modalitesCompteBancaireCommun: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clauses financières personnalisées</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.clausesFinancieresPersonnalisees}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, clausesFinancieresPersonnalisees: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clauses de solidarité sur certaines dettes</Label>
+                        <Textarea
+                          value={pacsData.clausesFacultatives.clausesSolidariteDettes}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            clausesFacultatives: {...pacsData.clausesFacultatives, clausesSolidariteDettes: e.target.value}
+                          })}
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7. Enfants en commun */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Enfant(s) en commun (optionnel)</h3>
+                    <div className="space-y-2">
+                      <Label>Avez-vous un ou plusieurs enfants en commun ?</Label>
+                      <Select 
+                        value={pacsData.enfantEnCommun}
+                        onValueChange={(value) => setPacsData({...pacsData, enfantEnCommun: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {pacsData.enfantEnCommun === "oui" && (
+                      <div className="space-y-4">
+                        {pacsData.enfants.map((enfant, idx) => (
+                          <div key={enfant.id} className="p-4 border rounded-lg space-y-3 bg-muted/10">
+                            <div className="flex justify-between items-center">
+                              <h5 className="font-medium">Enfant #{idx + 1}</h5>
+                              {idx > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newEnfants = pacsData.enfants.filter((_, i) => i !== idx);
+                                    setPacsData({...pacsData, enfants: newEnfants});
+                                  }}
+                                  className="text-red-600 text-sm"
+                                >
+                                  Supprimer
+                                </button>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>Nom</Label>
+                                <Input
+                                  value={enfant.nom}
+                                  onChange={(e) => {
+                                    const newEnfants = [...pacsData.enfants];
+                                    newEnfants[idx].nom = e.target.value;
+                                    setPacsData({...pacsData, enfants: newEnfants});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Prénom</Label>
+                                <Input
+                                  value={enfant.prenom}
+                                  onChange={(e) => {
+                                    const newEnfants = [...pacsData.enfants];
+                                    newEnfants[idx].prenom = e.target.value;
+                                    setPacsData({...pacsData, enfants: newEnfants});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Date de naissance</Label>
+                                <Input
+                                  type="date"
+                                  value={enfant.dateNaissance}
+                                  onChange={(e) => {
+                                    const newEnfants = [...pacsData.enfants];
+                                    newEnfants[idx].dateNaissance = e.target.value;
+                                    setPacsData({...pacsData, enfants: newEnfants});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Autorité parentale</Label>
+                                <Input
+                                  value={enfant.autoriteParentale}
+                                  onChange={(e) => {
+                                    const newEnfants = [...pacsData.enfants];
+                                    newEnfants[idx].autoriteParentale = e.target.value;
+                                    setPacsData({...pacsData, enfants: newEnfants});
+                                  }}
+                                  placeholder="Conjointe / Exclusive / Autre"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setPacsData({
+                              ...pacsData,
+                              enfants: [...pacsData.enfants, {
+                                id: pacsData.enfants.length + 1,
+                                nom: "",
+                                prenom: "",
+                                dateNaissance: "",
+                                autoriteParentale: "",
+                              }]
+                            });
+                          }}
+                        >
+                          + Ajouter un enfant
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 8. Biens préexistants */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Biens déjà acquis ensemble</h3>
+                    <div className="space-y-2">
+                      <Label>Avez-vous déjà des biens acquis ensemble ?</Label>
+                      <Select 
+                        value={pacsData.biensPreexistants}
+                        onValueChange={(value) => setPacsData({...pacsData, biensPreexistants: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {pacsData.biensPreexistants === "oui" && (
+                      <div className="space-y-4">
+                        {pacsData.biensListe.map((bien, idx) => (
+                          <div key={bien.id} className="p-4 border rounded-lg space-y-3 bg-muted/10">
+                            <div className="flex justify-between items-center">
+                              <h5 className="font-medium">Bien #{idx + 1}</h5>
+                              {idx > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newBiens = pacsData.biensListe.filter((_, i) => i !== idx);
+                                    setPacsData({...pacsData, biensListe: newBiens});
+                                  }}
+                                  className="text-red-600 text-sm"
+                                >
+                                  Supprimer
+                                </button>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Description du bien</Label>
+                                <Textarea
+                                  value={bien.description}
+                                  onChange={(e) => {
+                                    const newBiens = [...pacsData.biensListe];
+                                    newBiens[idx].description = e.target.value;
+                                    setPacsData({...pacsData, biensListe: newBiens});
+                                  }}
+                                  rows={2}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Quote-part partenaire 1</Label>
+                                <Input
+                                  value={bien.quotePart1}
+                                  onChange={(e) => {
+                                    const newBiens = [...pacsData.biensListe];
+                                    newBiens[idx].quotePart1 = e.target.value;
+                                    setPacsData({...pacsData, biensListe: newBiens});
+                                  }}
+                                  placeholder="Ex: 50%"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Quote-part partenaire 2</Label>
+                                <Input
+                                  value={bien.quotePart2}
+                                  onChange={(e) => {
+                                    const newBiens = [...pacsData.biensListe];
+                                    newBiens[idx].quotePart2 = e.target.value;
+                                    setPacsData({...pacsData, biensListe: newBiens});
+                                  }}
+                                  placeholder="Ex: 50%"
+                                />
+                              </div>
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Indivision</Label>
+                                <Input
+                                  value={bien.indivision}
+                                  onChange={(e) => {
+                                    const newBiens = [...pacsData.biensListe];
+                                    newBiens[idx].indivision = e.target.value;
+                                    setPacsData({...pacsData, biensListe: newBiens});
+                                  }}
+                                  placeholder="Modalités d'indivision..."
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setPacsData({
+                              ...pacsData,
+                              biensListe: [...pacsData.biensListe, {
+                                id: pacsData.biensListe.length + 1,
+                                description: "",
+                                quotePart1: "",
+                                quotePart2: "",
+                                indivision: "",
+                              }]
+                            });
+                          }}
+                        >
+                          + Ajouter un bien
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 9. Droit applicable */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Droit applicable</h3>
+                    <div className="space-y-2">
+                      <Label>Droit applicable au PACS</Label>
+                      <Select 
+                        value={pacsData.droitApplicable}
+                        onValueChange={(value) => setPacsData({...pacsData, droitApplicable: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="francais">Droit français</SelectItem>
+                          <SelectItem value="autre">Autre droit (préciser)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {pacsData.droitApplicable === "autre" && (
+                        <Input
+                          value={pacsData.droitApplicableAutre}
+                          onChange={(e) => setPacsData({...pacsData, droitApplicableAutre: e.target.value})}
+                          placeholder="Précisez le droit applicable..."
+                        />
+                      )}
+                    </div>
+                  </div>
+
                 </div>
               </>
             )}
