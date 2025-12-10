@@ -8942,7 +8942,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                 onChange={(e) => {
                                   const files = Array.from(e.target.files || []);
                                   if (files.length > 0) {
-                                    setDomicileFiles(prev => ({...prev, [indivisaire.id]: files}));
+                                    setIndivisairesDomicileFiles(prev => ({...prev, [indivisaire.id]: files}));
                                     toast.success(`${files.length} fichier(s) ajouté(s)`);
                                   }
                                   e.target.value = '';
@@ -8960,9 +8960,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                 </div>
                               </label>
                             </div>
-                            {domicileFiles[indivisaire.id]?.length > 0 && (
+                            {indivisairesDomicileFiles[indivisaire.id]?.length > 0 && (
                               <div className="space-y-2 mt-2">
-                                {domicileFiles[indivisaire.id].map((file, idx) => (
+                                {indivisairesDomicileFiles[indivisaire.id].map((file, idx) => (
                                   <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                     <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -8974,7 +8974,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                       size="sm"
                                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                       onClick={() => {
-                                        setDomicileFiles(prev => ({
+                                        setIndivisairesDomicileFiles(prev => ({
                                           ...prev,
                                           [indivisaire.id]: prev[indivisaire.id].filter((_, i) => i !== idx)
                                         }));
@@ -9003,7 +9003,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                   onChange={(e) => {
                                     const files = Array.from(e.target.files || []);
                                     if (files.length > 0) {
-                                      setContratMariageFiles(prev => ({...prev, [indivisaire.id]: files}));
+                                      setIndivisairesContratMariageFiles(prev => ({...prev, [indivisaire.id]: files}));
                                       toast.success(`${files.length} fichier(s) ajouté(s)`);
                                     }
                                     e.target.value = '';
@@ -9021,9 +9021,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                   </div>
                                 </label>
                               </div>
-                              {contratMariageFiles[indivisaire.id]?.length > 0 && (
+                              {indivisairesContratMariageFiles[indivisaire.id]?.length > 0 && (
                                 <div className="space-y-2 mt-2">
-                                  {contratMariageFiles[indivisaire.id].map((file, idx) => (
+                                  {indivisairesContratMariageFiles[indivisaire.id].map((file, idx) => (
                                     <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                       <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -9035,7 +9035,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                         size="sm"
                                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                         onClick={() => {
-                                          setContratMariageFiles(prev => ({
+                                          setIndivisairesContratMariageFiles(prev => ({
                                             ...prev,
                                             [indivisaire.id]: prev[indivisaire.id].filter((_, i) => i !== idx)
                                           }));
@@ -9065,7 +9065,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                   onChange={(e) => {
                                     const files = Array.from(e.target.files || []);
                                     if (files.length > 0) {
-                                      setLivretFamilleFiles(prev => ({...prev, [indivisaire.id]: files}));
+                                      setIndivisairesLivretFamilleFiles(prev => ({...prev, [indivisaire.id]: files}));
                                       toast.success(`${files.length} fichier(s) ajouté(s)`);
                                     }
                                     e.target.value = '';
@@ -9083,9 +9083,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                   </div>
                                 </label>
                               </div>
-                              {livretFamilleFiles[indivisaire.id]?.length > 0 && (
+                              {indivisairesLivretFamilleFiles[indivisaire.id]?.length > 0 && (
                                 <div className="space-y-2 mt-2">
-                                  {livretFamilleFiles[indivisaire.id].map((file, idx) => (
+                                  {indivisairesLivretFamilleFiles[indivisaire.id].map((file, idx) => (
                                     <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                       <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -9097,7 +9097,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                         size="sm"
                                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                         onClick={() => {
-                                          setLivretFamilleFiles(prev => ({
+                                          setIndivisairesLivretFamilleFiles(prev => ({
                                             ...prev,
                                             [indivisaire.id]: prev[indivisaire.id].filter((_, i) => i !== idx)
                                           }));
