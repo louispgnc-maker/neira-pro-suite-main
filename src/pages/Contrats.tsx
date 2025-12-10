@@ -8928,6 +8928,190 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               </div>
                             )}
                           </div>
+
+                          {/* Upload justificatif de domicile */}
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>📎 Justificatif de domicile</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf,image/*"
+                                multiple
+                                className="hidden"
+                                id={`indiv_${indivisaire.id}_domicile_upload`}
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length > 0) {
+                                    setDomicileFiles(prev => ({...prev, [indivisaire.id]: files}));
+                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                  }
+                                  e.target.value = '';
+                                }}
+                              />
+                              <label htmlFor={`indiv_${indivisaire.id}_domicile_upload`} className="cursor-pointer flex items-center gap-3">
+                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">Joindre le justificatif de domicile</p>
+                                  <p className="text-xs text-muted-foreground">Facture, quittance de loyer, etc.</p>
+                                </div>
+                              </label>
+                            </div>
+                            {domicileFiles[indivisaire.id]?.length > 0 && (
+                              <div className="space-y-2 mt-2">
+                                {domicileFiles[indivisaire.id].map((file, idx) => (
+                                  <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate">{file.name}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      onClick={() => {
+                                        setDomicileFiles(prev => ({
+                                          ...prev,
+                                          [indivisaire.id]: prev[indivisaire.id].filter((_, i) => i !== idx)
+                                        }));
+                                        toast.success('Fichier supprimé');
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Upload contrat de mariage si marié */}
+                          {indivisaire.statutMatrimonial === "marie" && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>📎 Contrat de mariage (si applicable)</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id={`indiv_${indivisaire.id}_contrat_mariage_upload`}
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    if (files.length > 0) {
+                                      setContratMariageFiles(prev => ({...prev, [indivisaire.id]: files}));
+                                      toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                    }
+                                    e.target.value = '';
+                                  }}
+                                />
+                                <label htmlFor={`indiv_${indivisaire.id}_contrat_mariage_upload`} className="cursor-pointer flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">Joindre le contrat de mariage</p>
+                                    <p className="text-xs text-muted-foreground">PDF uniquement</p>
+                                  </div>
+                                </label>
+                              </div>
+                              {contratMariageFiles[indivisaire.id]?.length > 0 && (
+                                <div className="space-y-2 mt-2">
+                                  {contratMariageFiles[indivisaire.id].map((file, idx) => (
+                                    <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                      <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                      <span className="text-sm flex-1 truncate">{file.name}</span>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                        onClick={() => {
+                                          setContratMariageFiles(prev => ({
+                                            ...prev,
+                                            [indivisaire.id]: prev[indivisaire.id].filter((_, i) => i !== idx)
+                                          }));
+                                          toast.success('Fichier supprimé');
+                                        }}
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Upload livret de famille si succession */}
+                          {indivisionData.origine === "succession" && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>📎 Livret de famille (si succession)</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                                <input
+                                  type="file"
+                                  accept="application/pdf,image/*"
+                                  multiple
+                                  className="hidden"
+                                  id={`indiv_${indivisaire.id}_livret_famille_upload`}
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    if (files.length > 0) {
+                                      setLivretFamilleFiles(prev => ({...prev, [indivisaire.id]: files}));
+                                      toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                    }
+                                    e.target.value = '';
+                                  }}
+                                />
+                                <label htmlFor={`indiv_${indivisaire.id}_livret_famille_upload`} className="cursor-pointer flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">Joindre le livret de famille</p>
+                                    <p className="text-xs text-muted-foreground">PDF ou images</p>
+                                  </div>
+                                </label>
+                              </div>
+                              {livretFamilleFiles[indivisaire.id]?.length > 0 && (
+                                <div className="space-y-2 mt-2">
+                                  {livretFamilleFiles[indivisaire.id].map((file, idx) => (
+                                    <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                      <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                      <span className="text-sm flex-1 truncate">{file.name}</span>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                        onClick={() => {
+                                          setLivretFamilleFiles(prev => ({
+                                            ...prev,
+                                            [indivisaire.id]: prev[indivisaire.id].filter((_, i) => i !== idx)
+                                          }));
+                                          toast.success('Fichier supprimé');
+                                        }}
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -9068,6 +9252,289 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                             placeholder="Ex: Section AB n° 123"
                           />
                         </div>
+
+                        {/* Uploads pour bien immobilier */}
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>📎 Titre de propriété *</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="titre_propriete_upload"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                if (files.length > 0) {
+                                  setTitreProprietFiles(files);
+                                  toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                }
+                                e.target.value = '';
+                              }}
+                            />
+                            <label htmlFor="titre_propriete_upload" className="cursor-pointer flex items-center gap-3">
+                              <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Joindre le titre de propriété</p>
+                                <p className="text-xs text-muted-foreground">Acte notarié, attestation immobilière...</p>
+                              </div>
+                            </label>
+                          </div>
+                          {titreProprietFiles.length > 0 && (
+                            <div className="space-y-2 mt-2">
+                              {titreProprietFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                  <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm flex-1 truncate">{file.name}</span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => {
+                                      setTitreProprietFiles(titreProprietFiles.filter((_, i) => i !== idx));
+                                      toast.success('Fichier supprimé');
+                                    }}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>📎 Évaluation du bien</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="evaluation_upload"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                if (files.length > 0) {
+                                  setEvaluationFiles(files);
+                                  toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                }
+                                e.target.value = '';
+                              }}
+                            />
+                            <label htmlFor="evaluation_upload" className="cursor-pointer flex items-center gap-3">
+                              <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Joindre l'évaluation du bien</p>
+                                <p className="text-xs text-muted-foreground">Rapport d'expert, estimation notariale...</p>
+                              </div>
+                            </label>
+                          </div>
+                          {evaluationFiles.length > 0 && (
+                            <div className="space-y-2 mt-2">
+                              {evaluationFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                  <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm flex-1 truncate">{file.name}</span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => {
+                                      setEvaluationFiles(evaluationFiles.filter((_, i) => i !== idx));
+                                      toast.success('Fichier supprimé');
+                                    }}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>📎 Plan cadastral</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="cadastre_upload"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                if (files.length > 0) {
+                                  setCadastreFiles(files);
+                                  toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                }
+                                e.target.value = '';
+                              }}
+                            />
+                            <label htmlFor="cadastre_upload" className="cursor-pointer flex items-center gap-3">
+                              <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Joindre le plan cadastral</p>
+                                <p className="text-xs text-muted-foreground">PDF ou images</p>
+                              </div>
+                            </label>
+                          </div>
+                          {cadastreFiles.length > 0 && (
+                            <div className="space-y-2 mt-2">
+                              {cadastreFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                  <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm flex-1 truncate">{file.name}</span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => {
+                                      setCadastreFiles(cadastreFiles.filter((_, i) => i !== idx));
+                                      toast.success('Fichier supprimé');
+                                    }}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>📎 Diagnostics techniques</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="diagnostics_upload"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                if (files.length > 0) {
+                                  setDiagnosticsFiles(files);
+                                  toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                }
+                                e.target.value = '';
+                              }}
+                            />
+                            <label htmlFor="diagnostics_upload" className="cursor-pointer flex items-center gap-3">
+                              <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Joindre les diagnostics</p>
+                                <p className="text-xs text-muted-foreground">DPE, amiante, plomb, termites...</p>
+                              </div>
+                            </label>
+                          </div>
+                          {diagnosticsFiles.length > 0 && (
+                            <div className="space-y-2 mt-2">
+                              {diagnosticsFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                  <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm flex-1 truncate">{file.name}</span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => {
+                                      setDiagnosticsFiles(diagnosticsFiles.filter((_, i) => i !== idx));
+                                      toast.success('Fichier supprimé');
+                                    }}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {indivisionData.description.immobilier.etatLocatif === "loue" && (
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>📎 Bail en cours</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="bail_upload"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length > 0) {
+                                    setBailFiles(files);
+                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                  }
+                                  e.target.value = '';
+                                }}
+                              />
+                              <label htmlFor="bail_upload" className="cursor-pointer flex items-center gap-3">
+                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">Joindre le bail</p>
+                                  <p className="text-xs text-muted-foreground">PDF uniquement</p>
+                                </div>
+                              </label>
+                            </div>
+                            {bailFiles.length > 0 && (
+                              <div className="space-y-2 mt-2">
+                                {bailFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate">{file.name}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      onClick={() => {
+                                        setBailFiles(bailFiles.filter((_, i) => i !== idx));
+                                        toast.success('Fichier supprimé');
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -9317,6 +9784,65 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                           placeholder="Coordonnées du compte (IBAN, nom de la banque...)"
                         />
                       </div>
+
+                      {/* Upload mandat du gérant */}
+                      {indivisionData.gestion.gerant && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>📎 Mandat du gérant</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="mandat_gerant_upload"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                if (files.length > 0) {
+                                  setMandatGerantFiles(files);
+                                  toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                }
+                                e.target.value = '';
+                              }}
+                            />
+                            <label htmlFor="mandat_gerant_upload" className="cursor-pointer flex items-center gap-3">
+                              <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Joindre le mandat du gérant</p>
+                                <p className="text-xs text-muted-foreground">PDF uniquement</p>
+                              </div>
+                            </label>
+                          </div>
+                          {mandatGerantFiles.length > 0 && (
+                            <div className="space-y-2 mt-2">
+                              {mandatGerantFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                  <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm flex-1 truncate">{file.name}</span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => {
+                                      setMandatGerantFiles(mandatGerantFiles.filter((_, i) => i !== idx));
+                                      toast.success('Fichier supprimé');
+                                    }}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -9819,6 +10345,68 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                             </div>
                           </div>
                         </RadioGroup>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 12. Procurations et documents complémentaires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📎 Procurations et documents complémentaires</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Procurations (si applicable)</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            multiple
+                            className="hidden"
+                            id="procurations_upload"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              if (files.length > 0) {
+                                setProcurationFiles(files);
+                                toast.success(`${files.length} fichier(s) ajouté(s)`);
+                              }
+                              e.target.value = '';
+                            }}
+                          />
+                          <label htmlFor="procurations_upload" className="cursor-pointer flex items-center gap-3">
+                            <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">Joindre les procurations</p>
+                              <p className="text-xs text-muted-foreground">Si un indivisaire est représenté</p>
+                            </div>
+                          </label>
+                        </div>
+                        {procurationFiles.length > 0 && (
+                          <div className="space-y-2 mt-2">
+                            {procurationFiles.map((file, idx) => (
+                              <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span className="text-sm flex-1 truncate">{file.name}</span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  onClick={() => {
+                                    setProcurationFiles(procurationFiles.filter((_, i) => i !== idx));
+                                    toast.success('Fichier supprimé');
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
