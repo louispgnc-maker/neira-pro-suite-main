@@ -6706,6 +6706,27 @@ DURÉE DU BAIL
                           <Label>Profession</Label>
                           <Input value={bailCommercialData.bailleurProfession} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurProfession: e.target.value})} />
                         </div>
+
+                        {/* Upload carte identité bailleur si le client est preneur (avant la fin de la grid) */}
+                        {bailCommercialData.clientRole === "preneur" && (
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>📎 Carte d'identité du bailleur (à uploader)</Label>
+                            <Input 
+                              type="file" 
+                              accept="image/*,application/pdf"
+                              multiple
+                              onChange={(e) => {
+                                if (e.target.files) {
+                                  setBailCommercialBailleurFiles(Array.from(e.target.files));
+                                }
+                              }}
+                            />
+                            {bailCommercialBailleurFiles.length > 0 && (
+                              <p className="text-sm text-green-600">✓ {bailCommercialBailleurFiles.length} fichier(s) sélectionné(s)</p>
+                            )}
+                            <p className="text-xs text-muted-foreground">CNI, passeport - PDF ou images</p>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -6737,27 +6758,6 @@ DURÉE DU BAIL
                             <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
                           </div>
                         )}
-                      </div>
-                    )}
-
-                    {/* Upload carte identité pour l'autre partie (preneur qui n'est pas client) */}
-                    {bailCommercialData.clientRole === "bailleur" && bailCommercialData.statutLocataire === "physique" && (
-                      <div className="space-y-2 mt-4">
-                        <Label>📎 Carte d'identité du preneur (à uploader)</Label>
-                        <Input 
-                          type="file" 
-                          accept="image/*,application/pdf"
-                          multiple
-                          onChange={(e) => {
-                            if (e.target.files) {
-                              setBailCommercialLocataireFiles(Array.from(e.target.files));
-                            }
-                          }}
-                        />
-                        {bailCommercialLocataireFiles.length > 0 && (
-                          <p className="text-sm text-green-600">✓ {bailCommercialLocataireFiles.length} fichier(s) sélectionné(s)</p>
-                        )}
-                        <p className="text-xs text-muted-foreground">CNI, passeport - PDF ou images</p>
                       </div>
                     )}
 
@@ -7039,7 +7039,29 @@ DURÉE DU BAIL
                           <Label>Téléphone *</Label>
                           <Input value={bailCommercialData.locataireTelephone} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireTelephone: e.target.value})} placeholder="06 XX XX XX XX" />
                         </div>
-                        <div className="space-y-2">
+
+                        {/* Upload carte identité preneur si le client est bailleur (avant Email) */}
+                        {bailCommercialData.clientRole === "bailleur" && (
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>📎 Carte d'identité du preneur (à uploader)</Label>
+                            <Input 
+                              type="file" 
+                              accept="image/*,application/pdf"
+                              multiple
+                              onChange={(e) => {
+                                if (e.target.files) {
+                                  setBailCommercialLocataireFiles(Array.from(e.target.files));
+                                }
+                              }}
+                            />
+                            {bailCommercialLocataireFiles.length > 0 && (
+                              <p className="text-sm text-green-600">✓ {bailCommercialLocataireFiles.length} fichier(s) sélectionné(s)</p>
+                            )}
+                            <p className="text-xs text-muted-foreground">CNI, passeport - PDF ou images</p>
+                          </div>
+                        )}
+
+                        <div className="space-y-2 md:col-span-2">
                           <Label>Email *</Label>
                           <Input type="email" value={bailCommercialData.locataireEmail} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireEmail: e.target.value})} />
                         </div>
@@ -7108,26 +7130,7 @@ DURÉE DU BAIL
                       </div>
                     )}
 
-                    {/* Upload carte identité pour l'autre partie (bailleur qui n'est pas client) */}
-                    {bailCommercialData.clientRole === "preneur" && bailCommercialData.statutBailleur === "physique" && (
-                      <div className="space-y-2 mt-4">
-                        <Label>📎 Carte d'identité du bailleur (à uploader)</Label>
-                        <Input 
-                          type="file" 
-                          accept="image/*,application/pdf"
-                          multiple
-                          onChange={(e) => {
-                            if (e.target.files) {
-                              setBailCommercialBailleurFiles(Array.from(e.target.files));
-                            }
-                          }}
-                        />
-                        {bailCommercialBailleurFiles.length > 0 && (
-                          <p className="text-sm text-green-600">✓ {bailCommercialBailleurFiles.length} fichier(s) sélectionné(s)</p>
-                        )}
-                        <p className="text-xs text-muted-foreground">CNI, passeport - PDF ou images</p>
-                      </div>
-                    )}
+                    {/* Upload carte identité pour l'autre partie (bailleur qui n'est pas client) - déplacé ailleurs */}
 
                     {/* Champs personne morale */}
                     {bailCommercialData.statutLocataire === "morale" && (
