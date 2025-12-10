@@ -6399,6 +6399,10 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
+                              console.log('🔍 Client sélectionné:', selectedClient);
+                              console.log('🔍 situation_matrimoniale:', selectedClient.situation_matrimoniale);
+                              console.log('🔍 situation_familiale:', selectedClient.situation_familiale);
+                              
                               let situationFamilialeText = "";
                               
                               // Gérer les différents formats de situation_matrimoniale
@@ -6406,12 +6410,17 @@ DURÉE DU BAIL
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
                                   // Cas 1: Objet JSON - extraire situation_familiale
                                   const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  situationFamilialeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  console.log('🔍 Extrait situation_familiale:', situationFamiliale);
+                                  if (situationFamiliale) {
+                                    situationFamilialeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
                                   situationFamilialeText = selectedClient.situation_matrimoniale;
                                 }
                               }
+                              
+                              console.log('🔍 situationFamilialeText final:', situationFamilialeText);
                               
                               setBailCommercialData({
                                 ...bailCommercialData,
