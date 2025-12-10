@@ -1996,7 +1996,7 @@ export default function Contrats() {
     }
     
     // Si c'est un PACS, ouvrir le questionnaire spécifique
-    if (contractType === "PACS (Pacte Civil de Solidarité)" && categoryKey === "Famille & Patrimoine") {
+    if (contractType === "PACS (convention + enregistrement)" && categoryKey === "Famille & Patrimoine") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -15915,7 +15915,7 @@ Bien ${idx + 1}:
             )}
 
             {/* Formulaire spécifique pour PACS */}
-            {pendingContractType === "PACS (Pacte Civil de Solidarité)" && (
+            {pendingContractType === "PACS (convention + enregistrement)" && (
               <>
                 <div className="space-y-6">
                   <div className="bg-muted/30 p-4 rounded-lg">
@@ -16107,7 +16107,7 @@ Bien ${idx + 1}:
                   handleMainleveeSubmit();
                 } else if (pendingContractType === "Contrat de mariage (régimes matrimoniaux)") {
                   handleContratMariageSubmit();
-                } else if (pendingContractType === "PACS (Pacte Civil de Solidarité)") {
+                } else if (pendingContractType === "PACS (convention + enregistrement)") {
                   handlePacsSubmit();
                 } else {
                   handleQuestionnaireSubmit();
