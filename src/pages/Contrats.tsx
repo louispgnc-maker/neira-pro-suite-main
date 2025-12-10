@@ -467,34 +467,68 @@ export default function Contrats() {
     clientRole: "", // "bailleur" ou "preneur"
     clientId: "",
     
-    // Bailleur
+    // Bailleur personne physique
     bailleurClientId: "",
     statutBailleur: "", // "physique" ou "morale"
     bailleurNom: "",
     bailleurPrenom: "",
+    bailleurAdresse: "",
+    bailleurDateNaissance: "",
+    bailleurLieuNaissance: "",
+    bailleurNationalite: "",
+    bailleurStatutMatrimonial: "",
+    bailleurRegimeMatrimonial: "",
+    bailleurProfession: "",
+    
+    // Bailleur personne morale
     bailleurDenomination: "",
     bailleurFormeJuridique: "",
-    bailleurAdresse: "",
     bailleurSiren: "",
     bailleurSiret: "",
+    bailleurSiegeSocial: "",
+    bailleurCapitalSocial: "",
     bailleurRepresentant: "",
-    bailleurQualiteRepresentant: "",
+    bailleurRepresentantPrenom: "",
+    bailleurRepresentantFonction: "",
+    bailleurRepresentantEstLegal: "", // "oui" ou "non"
+    bailleurMandataireNom: "",
+    bailleurMandatairePrenom: "",
+    bailleurMandataireTypePouvoir: "",
     
-    // Locataire (preneur)
+    // Preneur (locataire) personne physique
     locataireClientId: "",
     statutLocataire: "", // "physique" ou "morale"
     locataireNom: "",
     locatairePrenom: "",
     locataireAdresse: "",
+    locataireDateNaissance: "",
+    locataireLieuNaissance: "",
+    locataireNationalite: "",
+    locataireStatutMatrimonial: "",
+    locataireRegimeMatrimonial: "",
+    locataireProfession: "",
+    locataireTelephone: "",
+    locataireEmail: "",
+    locataireExerceEnNomPropre: "", // "oui" ou "non"
+    locataireActivite: "",
+    locataireSirenPersonnel: "",
+    locataireEntrepriseEnCreation: "", // "oui" ou "non"
+    
+    // Preneur personne morale
     locataireImmatriculation: "",
     locataireDenomination: "",
     locataireFormeJuridique: "",
     locataireSiege: "",
     locataireSiren: "",
     locataireSiret: "",
+    locataireObjetSocial: "",
     locataireCapital: "",
     locataireRepresentant: "",
-    locataireQualiteRepresentant: "",
+    locataireRepresentantPrenom: "",
+    locataireRepresentantFonction: "",
+    locataireMandataireNom: "",
+    locataireMandatairePrenom: "",
+    locataireMandataireTypePouvoir: "",
     
     // Activité
     activitePrincipale: "",
@@ -1917,27 +1951,57 @@ DURÉE DU BAIL
         statutBailleur: "",
         bailleurNom: "",
         bailleurPrenom: "",
+        bailleurAdresse: "",
+        bailleurDateNaissance: "",
+        bailleurLieuNaissance: "",
+        bailleurNationalite: "",
+        bailleurStatutMatrimonial: "",
+        bailleurRegimeMatrimonial: "",
+        bailleurProfession: "",
         bailleurDenomination: "",
         bailleurFormeJuridique: "",
-        bailleurAdresse: "",
         bailleurSiren: "",
         bailleurSiret: "",
+        bailleurSiegeSocial: "",
+        bailleurCapitalSocial: "",
         bailleurRepresentant: "",
-        bailleurQualiteRepresentant: "",
+        bailleurRepresentantPrenom: "",
+        bailleurRepresentantFonction: "",
+        bailleurRepresentantEstLegal: "",
+        bailleurMandataireNom: "",
+        bailleurMandatairePrenom: "",
+        bailleurMandataireTypePouvoir: "",
         locataireClientId: "",
         statutLocataire: "",
         locataireNom: "",
         locatairePrenom: "",
         locataireAdresse: "",
+        locataireDateNaissance: "",
+        locataireLieuNaissance: "",
+        locataireNationalite: "",
+        locataireStatutMatrimonial: "",
+        locataireRegimeMatrimonial: "",
+        locataireProfession: "",
+        locataireTelephone: "",
+        locataireEmail: "",
+        locataireExerceEnNomPropre: "",
+        locataireActivite: "",
+        locataireSirenPersonnel: "",
+        locataireEntrepriseEnCreation: "",
         locataireImmatriculation: "",
         locataireDenomination: "",
         locataireFormeJuridique: "",
         locataireSiege: "",
         locataireSiren: "",
         locataireSiret: "",
+        locataireObjetSocial: "",
         locataireCapital: "",
         locataireRepresentant: "",
-        locataireQualiteRepresentant: "",
+        locataireRepresentantPrenom: "",
+        locataireRepresentantFonction: "",
+        locataireMandataireNom: "",
+        locataireMandatairePrenom: "",
+        locataireMandataireTypePouvoir: "",
         activitePrincipale: "",
         activitesAnnexes: "",
         destinationBail: "",
@@ -6384,6 +6448,151 @@ DURÉE DU BAIL
                         </Select>
                       </div>
                     </div>
+
+                    {/* Champs personne physique */}
+                    {bailCommercialData.statutBailleur === "physique" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div className="space-y-2">
+                          <Label>Nom *</Label>
+                          <Input value={bailCommercialData.bailleurNom} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurNom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom *</Label>
+                          <Input value={bailCommercialData.bailleurPrenom} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurPrenom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse complète *</Label>
+                          <Input value={bailCommercialData.bailleurAdresse} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurAdresse: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance *</Label>
+                          <Input type="date" value={bailCommercialData.bailleurDateNaissance} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurDateNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de naissance *</Label>
+                          <Input value={bailCommercialData.bailleurLieuNaissance} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurLieuNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nationalité *</Label>
+                          <Input value={bailCommercialData.bailleurNationalite} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurNationalite: e.target.value})} placeholder="Ex: Française" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Statut matrimonial *</Label>
+                          <Select value={bailCommercialData.bailleurStatutMatrimonial} onValueChange={(value) => setBailCommercialData({...bailCommercialData, bailleurStatutMatrimonial: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="celibataire">Célibataire</SelectItem>
+                              <SelectItem value="marie">Marié(e)</SelectItem>
+                              <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                              <SelectItem value="veuf">Veuf(ve)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {bailCommercialData.bailleurStatutMatrimonial === "marie" && (
+                          <div className="space-y-2">
+                            <Label>Régime matrimonial *</Label>
+                            <Select value={bailCommercialData.bailleurRegimeMatrimonial} onValueChange={(value) => setBailCommercialData({...bailCommercialData, bailleurRegimeMatrimonial: value})}>
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="communaute">Communauté</SelectItem>
+                                <SelectItem value="separation">Séparation de biens</SelectItem>
+                                <SelectItem value="participation">Participation aux acquêts</SelectItem>
+                                <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        <div className="space-y-2">
+                          <Label>Profession</Label>
+                          <Input value={bailCommercialData.bailleurProfession} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurProfession: e.target.value})} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Champs personne morale */}
+                    {bailCommercialData.statutBailleur === "morale" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Dénomination sociale *</Label>
+                          <Input value={bailCommercialData.bailleurDenomination} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurDenomination: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Forme juridique *</Label>
+                          <Select value={bailCommercialData.bailleurFormeJuridique} onValueChange={(value) => setBailCommercialData({...bailCommercialData, bailleurFormeJuridique: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="SAS">SAS</SelectItem>
+                              <SelectItem value="SARL">SARL</SelectItem>
+                              <SelectItem value="SCI">SCI</SelectItem>
+                              <SelectItem value="SA">SA</SelectItem>
+                              <SelectItem value="EURL">EURL</SelectItem>
+                              <SelectItem value="SASU">SASU</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>SIREN *</Label>
+                          <Input value={bailCommercialData.bailleurSiren} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurSiren: e.target.value})} placeholder="9 chiffres" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>SIRET *</Label>
+                          <Input value={bailCommercialData.bailleurSiret} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurSiret: e.target.value})} placeholder="14 chiffres" />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse du siège social *</Label>
+                          <Input value={bailCommercialData.bailleurSiegeSocial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurSiegeSocial: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Capital social</Label>
+                          <Input value={bailCommercialData.bailleurCapitalSocial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurCapitalSocial: e.target.value})} placeholder="Ex: 10000 €" />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <h4 className="font-medium text-sm mt-4">Représentant légal</h4>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nom du représentant *</Label>
+                          <Input value={bailCommercialData.bailleurRepresentant} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurRepresentant: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom du représentant *</Label>
+                          <Input value={bailCommercialData.bailleurRepresentantPrenom} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurRepresentantPrenom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Fonction *</Label>
+                          <Input value={bailCommercialData.bailleurRepresentantFonction} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurRepresentantFonction: e.target.value})} placeholder="Ex: Gérant, Président..." />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Le signataire est-il le représentant légal ? *</Label>
+                          <Select value={bailCommercialData.bailleurRepresentantEstLegal} onValueChange={(value) => setBailCommercialData({...bailCommercialData, bailleurRepresentantEstLegal: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non (mandataire)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {bailCommercialData.bailleurRepresentantEstLegal === "non" && (
+                          <>
+                            <div className="space-y-2 md:col-span-2">
+                              <h4 className="font-medium text-sm mt-2">Mandataire</h4>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Nom du mandataire *</Label>
+                              <Input value={bailCommercialData.bailleurMandataireNom} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurMandataireNom: e.target.value})} />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Prénom du mandataire *</Label>
+                              <Input value={bailCommercialData.bailleurMandatairePrenom} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurMandatairePrenom: e.target.value})} />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Type de pouvoir *</Label>
+                              <Input value={bailCommercialData.bailleurMandataireTypePouvoir} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurMandataireTypePouvoir: e.target.value})} placeholder="Ex: Procuration spéciale..." />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Local commercial */}
@@ -6482,6 +6691,180 @@ DURÉE DU BAIL
                         </Select>
                       </div>
                     </div>
+
+                    {/* Champs personne physique */}
+                    {bailCommercialData.statutLocataire === "physique" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div className="space-y-2">
+                          <Label>Nom *</Label>
+                          <Input value={bailCommercialData.locataireNom} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireNom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom *</Label>
+                          <Input value={bailCommercialData.locatairePrenom} onChange={(e) => setBailCommercialData({...bailCommercialData, locatairePrenom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse actuelle *</Label>
+                          <Input value={bailCommercialData.locataireAdresse} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireAdresse: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance *</Label>
+                          <Input type="date" value={bailCommercialData.locataireDateNaissance} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireDateNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de naissance *</Label>
+                          <Input value={bailCommercialData.locataireLieuNaissance} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireLieuNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nationalité *</Label>
+                          <Input value={bailCommercialData.locataireNationalite} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireNationalite: e.target.value})} placeholder="Ex: Française" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Statut matrimonial *</Label>
+                          <Select value={bailCommercialData.locataireStatutMatrimonial} onValueChange={(value) => setBailCommercialData({...bailCommercialData, locataireStatutMatrimonial: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="celibataire">Célibataire</SelectItem>
+                              <SelectItem value="marie">Marié(e)</SelectItem>
+                              <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                              <SelectItem value="veuf">Veuf(ve)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {bailCommercialData.locataireStatutMatrimonial === "marie" && (
+                          <div className="space-y-2">
+                            <Label>Régime matrimonial *</Label>
+                            <Select value={bailCommercialData.locataireRegimeMatrimonial} onValueChange={(value) => setBailCommercialData({...bailCommercialData, locataireRegimeMatrimonial: value})}>
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="communaute">Communauté</SelectItem>
+                                <SelectItem value="separation">Séparation de biens</SelectItem>
+                                <SelectItem value="participation">Participation aux acquêts</SelectItem>
+                                <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        <div className="space-y-2">
+                          <Label>Profession *</Label>
+                          <Input value={bailCommercialData.locataireProfession} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireProfession: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Téléphone *</Label>
+                          <Input value={bailCommercialData.locataireTelephone} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireTelephone: e.target.value})} placeholder="06 XX XX XX XX" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Email *</Label>
+                          <Input type="email" value={bailCommercialData.locataireEmail} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireEmail: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <h4 className="font-medium text-sm mt-4">Activité professionnelle</h4>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Exerce en nom propre ou sous EI ? *</Label>
+                          <Select value={bailCommercialData.locataireExerceEnNomPropre} onValueChange={(value) => setBailCommercialData({...bailCommercialData, locataireExerceEnNomPropre: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Intitulé de l'activité exercée *</Label>
+                          <Input value={bailCommercialData.locataireActivite} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireActivite: e.target.value})} placeholder="Ex: Commerce de détail, Artisan..." />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Numéro SIREN</Label>
+                          <Input value={bailCommercialData.locataireSirenPersonnel} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireSirenPersonnel: e.target.value})} placeholder="Si existant" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Entreprise en cours de création ? *</Label>
+                          <Select value={bailCommercialData.locataireEntrepriseEnCreation} onValueChange={(value) => setBailCommercialData({...bailCommercialData, locataireEntrepriseEnCreation: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Champs personne morale */}
+                    {bailCommercialData.statutLocataire === "morale" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Dénomination sociale *</Label>
+                          <Input value={bailCommercialData.locataireDenomination} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireDenomination: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Forme juridique *</Label>
+                          <Select value={bailCommercialData.locataireFormeJuridique} onValueChange={(value) => setBailCommercialData({...bailCommercialData, locataireFormeJuridique: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="SAS">SAS</SelectItem>
+                              <SelectItem value="SARL">SARL</SelectItem>
+                              <SelectItem value="SCI">SCI</SelectItem>
+                              <SelectItem value="SA">SA</SelectItem>
+                              <SelectItem value="EURL">EURL</SelectItem>
+                              <SelectItem value="SASU">SASU</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>SIREN *</Label>
+                          <Input value={bailCommercialData.locataireSiren} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireSiren: e.target.value})} placeholder="9 chiffres" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>SIRET *</Label>
+                          <Input value={bailCommercialData.locataireSiret} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireSiret: e.target.value})} placeholder="14 chiffres" />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse du siège social *</Label>
+                          <Input value={bailCommercialData.locataireSiege} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireSiege: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Objet social *</Label>
+                          <Input value={bailCommercialData.locataireObjetSocial} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireObjetSocial: e.target.value})} placeholder="Pour vérifier compatibilité" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Capital social</Label>
+                          <Input value={bailCommercialData.locataireCapital} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireCapital: e.target.value})} placeholder="Ex: 5000 €" />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <h4 className="font-medium text-sm mt-4">Représentant légal</h4>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nom du représentant *</Label>
+                          <Input value={bailCommercialData.locataireRepresentant} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireRepresentant: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom du représentant *</Label>
+                          <Input value={bailCommercialData.locataireRepresentantPrenom} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireRepresentantPrenom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Fonction *</Label>
+                          <Input value={bailCommercialData.locataireRepresentantFonction} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireRepresentantFonction: e.target.value})} placeholder="Ex: Gérant, Président..." />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <h4 className="font-medium text-sm mt-2">Mandataire (si différent du représentant)</h4>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nom du mandataire</Label>
+                          <Input value={bailCommercialData.locataireMandataireNom} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireMandataireNom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom du mandataire</Label>
+                          <Input value={bailCommercialData.locataireMandatairePrenom} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireMandatairePrenom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Type de pouvoir</Label>
+                          <Input value={bailCommercialData.locataireMandataireTypePouvoir} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireMandataireTypePouvoir: e.target.value})} placeholder="Ex: Procuration..." />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Activité */}
