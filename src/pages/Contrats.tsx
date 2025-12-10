@@ -6410,9 +6410,16 @@ DURÉE DU BAIL
                                 bailleurDateNaissance: selectedClient.date_naissance || "",
                                 bailleurLieuNaissance: selectedClient.lieu_naissance || "",
                                 bailleurNationalite: selectedClient.nationalite || "",
-                                bailleurRegimeMatrimonial: (selectedClient.situation_matrimoniale && selectedClient.situation_familiale) 
-                                  ? `${selectedClient.situation_matrimoniale} - ${selectedClient.situation_familiale}`
-                                  : (selectedClient.situation_matrimoniale || selectedClient.situation_familiale || ""),
+                                bailleurRegimeMatrimonial: (() => {
+                                  const matrimonial = typeof selectedClient.situation_matrimoniale === 'string' 
+                                    ? selectedClient.situation_matrimoniale 
+                                    : (selectedClient.situation_matrimoniale?.value || selectedClient.situation_matrimoniale?.label || "");
+                                  const familial = typeof selectedClient.situation_familiale === 'string'
+                                    ? selectedClient.situation_familiale
+                                    : (selectedClient.situation_familiale?.value || selectedClient.situation_familiale?.label || "");
+                                  if (matrimonial && familial) return `${matrimonial} - ${familial}`;
+                                  return matrimonial || familial || "";
+                                })(),
                                 bailleurProfession: selectedClient.profession || "",
                               });
                             }
@@ -6637,9 +6644,16 @@ DURÉE DU BAIL
                                 locataireDateNaissance: selectedClient.date_naissance || "",
                                 locataireLieuNaissance: selectedClient.lieu_naissance || "",
                                 locataireNationalite: selectedClient.nationalite || "",
-                                locataireRegimeMatrimonial: (selectedClient.situation_matrimoniale && selectedClient.situation_familiale) 
-                                  ? `${selectedClient.situation_matrimoniale} - ${selectedClient.situation_familiale}`
-                                  : (selectedClient.situation_matrimoniale || selectedClient.situation_familiale || ""),
+                                locataireRegimeMatrimonial: (() => {
+                                  const matrimonial = typeof selectedClient.situation_matrimoniale === 'string' 
+                                    ? selectedClient.situation_matrimoniale 
+                                    : (selectedClient.situation_matrimoniale?.value || selectedClient.situation_matrimoniale?.label || "");
+                                  const familial = typeof selectedClient.situation_familiale === 'string'
+                                    ? selectedClient.situation_familiale
+                                    : (selectedClient.situation_familiale?.value || selectedClient.situation_familiale?.label || "");
+                                  if (matrimonial && familial) return `${matrimonial} - ${familial}`;
+                                  return matrimonial || familial || "";
+                                })(),
                                 locataireProfession: selectedClient.profession || "",
                                 locataireTelephone: selectedClient.telephone || "",
                                 locataireEmail: selectedClient.email || "",
