@@ -9015,16 +9015,16 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                           {/* Affichage de la carte d'identité chargée depuis le client */}
                           {indivisaire.isClient && indivisairesIdentiteFiles[indivisaire.id]?.length > 0 && (
                             <div className="space-y-2 md:col-span-2">
-                              <Label>📎 Pièce d'identité (chargée depuis la fiche client)</Label>
-                              <div className="space-y-2">
-                                {indivisairesIdentiteFiles[indivisaire.id].map((file, idx) => (
-                                  <div key={idx} className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                                    <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span className="text-sm flex-1 truncate text-green-800">{file.name}</span>
-                                  </div>
-                                ))}
+                              <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-green-800">✓ Pièce d'identité chargée depuis la fiche client</p>
+                                  <p className="text-xs text-green-700 mt-1">
+                                    {indivisairesIdentiteFiles[indivisaire.id].map((file, idx) => file.name).join(', ')}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           )}
