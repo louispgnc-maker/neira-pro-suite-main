@@ -87,7 +87,7 @@ export default function Contrats() {
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [pendingContractType, setPendingContractType] = useState<string>("");
   const [pendingCategory, setPendingCategory] = useState<string>("");
-  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string, type_identite?: string, numero_identite?: string}>>([]);
+  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string, type_identite?: string, numero_identite?: string, id_doc_path?: string}>>([]);
 
   // States pour les fichiers uploadés
   const [compromisClientIdentiteUrl, setCompromisClientIdentiteUrl] = useState<string | null>(null); // URL du document du client
@@ -8653,9 +8653,15 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                     const newIndivisaires = [...indivisionData.indivisaires];
                                     const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
                                     if (selectedClient) {
+                                      console.log('🔍 Client sélectionné:', selectedClient.nom, selectedClient.prenom);
+                                      console.log('📋 situation_matrimoniale:', selectedClient.situation_matrimoniale);
+                                      console.log('📋 situation_familiale:', selectedClient.situation_familiale);
+                                      console.log('📄 id_doc_path:', selectedClient.id_doc_path);
+                                      
                                       newIndivisaires[idx] = {
                                         ...newIndivisaires[idx],
                                         clientId: value,
+                                        isClient: true,
                                         nom: selectedClient.nom || "",
                                         prenom: selectedClient.prenom || "",
                                         adresse: selectedClient.adresse || "",
@@ -8663,8 +8669,8 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                         lieuNaissance: selectedClient.lieu_naissance || "",
                                         nationalite: selectedClient.nationalite || "",
                                         profession: selectedClient.profession || "",
-                                        statutMatrimonial: selectedClient.statut_matrimonial || "",
-                                        regimeMatrimonial: selectedClient.regime_matrimonial || "",
+                                        statutMatrimonial: selectedClient.situation_matrimoniale || "",
+                                        regimeMatrimonial: selectedClient.situation_familiale || "",
                                         typeIdentite: selectedClient.type_identite || "",
                                         numeroIdentite: selectedClient.numero_identite || "",
                                         email: selectedClient.email || "",
@@ -8672,27 +8678,38 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                       };
                                       
                                       // Charger automatiquement la carte d'identité depuis Supabase storage
-                                      if (selectedClient.identite_url) {
+                                      if (selectedClient.id_doc_path) {
+                                        console.log('✅ Début chargement document:', selectedClient.id_doc_path);
                                         try {
                                           const { data, error } = await supabase.storage
                                             .from('documents')
-                                            .download(selectedClient.identite_url);
+                                            .download(selectedClient.id_doc_path);
                                           
                                           if (data && !error) {
-                                            const fileName = selectedClient.identite_url.split('/').pop() || 'identite.pdf';
+                                            console.log('✅ Document téléchargé avec succès');
+                                            const fileName = selectedClient.id_doc_path.split('/').pop() || 'identite.pdf';
                                             const file = new File([data], fileName, { type: data.type });
-                                            setIndivisairesIdentiteFiles(prev => ({
-                                              ...prev,
-                                              [indivisaire.id]: [file]
-                                            }));
+                                            console.log('📁 Fichier créé:', fileName, 'taille:', file.size);
+                                            setIndivisairesIdentiteFiles(prev => {
+                                              const newState = {
+                                                ...prev,
+                                                [indivisaire.id]: [file]
+                                              };
+                                              console.log('📊 Nouveau state identiteFiles:', newState);
+                                              return newState;
+                                            });
                                             setIndivisairesIdentiteUrls(prev => ({
                                               ...prev,
-                                              [indivisaire.id]: [selectedClient.identite_url]
+                                              [indivisaire.id]: [selectedClient.id_doc_path]
                                             }));
+                                          } else {
+                                            console.error('❌ Erreur téléchargement:', error);
                                           }
                                         } catch (error) {
-                                          console.error('Erreur chargement carte identité:', error);
+                                          console.error('❌ Erreur chargement carte identité:', error);
                                         }
+                                      } else {
+                                        console.log('⚠️ Pas de id_doc_path pour ce client');
                                       }
                                     }
                                     setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
@@ -8836,7 +8853,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                           {/* Statut matrimonial */}
                           <div className="space-y-2">
                             <Label>Statut matrimonial</Label>
-                            {indivisaire.isClient ? (
+                            {indivisaire.isClient && indivisaire.statutMatrimonial ? (
                               <Input
                                 value={indivisaire.statutMatrimonial}
                                 readOnly
@@ -8867,7 +8884,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                           {indivisaire.statutMatrimonial === "marie" && (
                             <div className="space-y-2">
                               <Label>Régime matrimonial</Label>
-                              {indivisaire.isClient ? (
+                              {indivisaire.isClient && indivisaire.regimeMatrimonial ? (
                                 <Input
                                   value={indivisaire.regimeMatrimonial}
                                   readOnly
