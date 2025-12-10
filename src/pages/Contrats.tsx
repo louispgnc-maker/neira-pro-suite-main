@@ -87,7 +87,7 @@ export default function Contrats() {
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [pendingContractType, setPendingContractType] = useState<string>("");
   const [pendingCategory, setPendingCategory] = useState<string>("");
-  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string, type_identite?: string, numero_identite?: string, id_doc_path?: string}>>([]);
+  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string | {regime_matrimonial?: string, nombre_enfants?: string, personne_a_charge?: any}, type_identite?: string, numero_identite?: string, id_doc_path?: string}>>([]);
 
   // States pour les fichiers uploadés
   const [compromisClientIdentiteUrl, setCompromisClientIdentiteUrl] = useState<string | null>(null); // URL du document du client
@@ -762,7 +762,7 @@ export default function Contrats() {
       lieuNaissance: "",
       nationalite: "",
       profession: "",
-      statutMatrimonial: "", // celibataire / marie / pacse / divorce / veuf
+      situationFamiliale: "", // celibataire / marie / pacse / divorce / veuf
       regimeMatrimonial: "", // communaute / separation / participation / autre
       typeIdentite: "",
       numeroIdentite: "",
@@ -8658,6 +8658,17 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                       console.log('📋 situation_familiale:', selectedClient.situation_familiale);
                                       console.log('📄 id_doc_path:', selectedClient.id_doc_path);
                                       
+                                      // Extraire le régime matrimonial de l'objet situation_familiale si c'est un objet
+                                      let regimeMatrimonial = "";
+                                      if (selectedClient.situation_familiale) {
+                                        if (typeof selectedClient.situation_familiale === 'string') {
+                                          regimeMatrimonial = selectedClient.situation_familiale;
+                                        } else if (typeof selectedClient.situation_familiale === 'object') {
+                                          regimeMatrimonial = (selectedClient.situation_familiale as any).regime_matrimonial || "";
+                                        }
+                                      }
+                                      console.log('📋 regimeMatrimonial extrait:', regimeMatrimonial);
+                                      
                                       newIndivisaires[idx] = {
                                         ...newIndivisaires[idx],
                                         clientId: value,
@@ -8669,8 +8680,8 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                         lieuNaissance: selectedClient.lieu_naissance || "",
                                         nationalite: selectedClient.nationalite || "",
                                         profession: selectedClient.profession || "",
-                                        statutMatrimonial: selectedClient.situation_matrimoniale || "",
-                                        regimeMatrimonial: selectedClient.situation_familiale || "",
+                                        situationFamiliale: selectedClient.situation_matrimoniale || "",
+                                        regimeMatrimonial: regimeMatrimonial,
                                         typeIdentite: selectedClient.type_identite || "",
                                         numeroIdentite: selectedClient.numero_identite || "",
                                         email: selectedClient.email || "",
@@ -8850,65 +8861,34 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                             </>
                           )}
 
-                          {/* Statut matrimonial */}
+                          {/* Situation familiale */}
                           <div className="space-y-2">
-                            <Label>Statut matrimonial</Label>
-                            {indivisaire.isClient && indivisaire.statutMatrimonial ? (
-                              <Input
-                                value={indivisaire.statutMatrimonial}
-                                readOnly
-                                className="bg-muted cursor-not-allowed"
-                              />
-                            ) : (
-                              <Select
-                                value={indivisaire.statutMatrimonial}
-                                onValueChange={(value) => {
-                                  const newIndivisaires = [...indivisionData.indivisaires];
-                                  const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
-                                  newIndivisaires[idx] = {...newIndivisaires[idx], statutMatrimonial: value};
-                                  setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
-                                }}
-                              >
-                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="celibataire">Célibataire</SelectItem>
-                                  <SelectItem value="marie">Marié(e)</SelectItem>
-                                  <SelectItem value="pacse">Pacsé(e)</SelectItem>
-                                  <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                                  <SelectItem value="veuf">Veuf/Veuve</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            )}
+                            <Label>Situation familiale</Label>
+                            <Input
+                              value={indivisaire.situationFamiliale}
+                              onChange={(e) => {
+                                const newIndivisaires = [...indivisionData.indivisaires];
+                                const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                newIndivisaires[idx] = {...newIndivisaires[idx], situationFamiliale: e.target.value};
+                                setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                              }}
+                              placeholder="Ex: Célibataire, Marié, Divorcé..."
+                            />
                           </div>
 
-                          {indivisaire.statutMatrimonial === "marie" && (
+                          {indivisaire.situationFamiliale && ['marié', 'marie', 'mariée', 'pacsé', 'pacse', 'pacs'].some(term => indivisaire.situationFamiliale.toLowerCase().includes(term)) && (
                             <div className="space-y-2">
                               <Label>Régime matrimonial</Label>
-                              {indivisaire.isClient && indivisaire.regimeMatrimonial ? (
-                                <Input
-                                  value={indivisaire.regimeMatrimonial}
-                                  readOnly
-                                  className="bg-muted cursor-not-allowed"
-                                />
-                              ) : (
-                                <Select
-                                  value={indivisaire.regimeMatrimonial}
-                                  onValueChange={(value) => {
-                                    const newIndivisaires = [...indivisionData.indivisaires];
-                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
-                                    newIndivisaires[idx] = {...newIndivisaires[idx], regimeMatrimonial: value};
-                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
-                                  }}
-                                >
-                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="communaute">Communauté</SelectItem>
-                                    <SelectItem value="separation">Séparation de biens</SelectItem>
-                                    <SelectItem value="participation">Participation aux acquêts</SelectItem>
-                                    <SelectItem value="autre">Autre</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              )}
+                              <Input
+                                value={indivisaire.regimeMatrimonial}
+                                onChange={(e) => {
+                                  const newIndivisaires = [...indivisionData.indivisaires];
+                                  const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                  newIndivisaires[idx] = {...newIndivisaires[idx], regimeMatrimonial: e.target.value};
+                                  setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                }}
+                                placeholder="Ex: Communauté légale, Séparation de biens..."
+                              />
                             </div>
                           )}
 
