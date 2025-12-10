@@ -6478,31 +6478,12 @@ DURÉE DU BAIL
                         </div>
                         <div className="space-y-2">
                           <Label>Statut matrimonial *</Label>
-                          <Select value={bailCommercialData.bailleurStatutMatrimonial} onValueChange={(value) => setBailCommercialData({...bailCommercialData, bailleurStatutMatrimonial: value})}>
-                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="celibataire">Célibataire</SelectItem>
-                              <SelectItem value="marie">Marié(e)</SelectItem>
-                              <SelectItem value="pacse">Pacsé(e)</SelectItem>
-                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                              <SelectItem value="veuf">Veuf(ve)</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Input value={bailCommercialData.bailleurStatutMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurStatutMatrimonial: e.target.value})} placeholder="Ex: Marié(e), Célibataire, Pacsé(e)..." />
                         </div>
-                        {bailCommercialData.bailleurStatutMatrimonial === "marie" && (
-                          <div className="space-y-2">
-                            <Label>Régime matrimonial *</Label>
-                            <Select value={bailCommercialData.bailleurRegimeMatrimonial} onValueChange={(value) => setBailCommercialData({...bailCommercialData, bailleurRegimeMatrimonial: value})}>
-                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="communaute">Communauté</SelectItem>
-                                <SelectItem value="separation">Séparation de biens</SelectItem>
-                                <SelectItem value="participation">Participation aux acquêts</SelectItem>
-                                <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        )}
+                        <div className="space-y-2">
+                          <Label>Régime matrimonial</Label>
+                          <Input value={bailCommercialData.bailleurRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurRegimeMatrimonial: e.target.value})} placeholder="Ex: Communauté, Séparation de biens..." />
+                        </div>
                         <div className="space-y-2">
                           <Label>Profession</Label>
                           <Input value={bailCommercialData.bailleurProfession} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurProfession: e.target.value})} />
@@ -6729,31 +6710,12 @@ DURÉE DU BAIL
                         </div>
                         <div className="space-y-2">
                           <Label>Statut matrimonial *</Label>
-                          <Select value={bailCommercialData.locataireStatutMatrimonial} onValueChange={(value) => setBailCommercialData({...bailCommercialData, locataireStatutMatrimonial: value})}>
-                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="celibataire">Célibataire</SelectItem>
-                              <SelectItem value="marie">Marié(e)</SelectItem>
-                              <SelectItem value="pacse">Pacsé(e)</SelectItem>
-                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                              <SelectItem value="veuf">Veuf(ve)</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Input value={bailCommercialData.locataireStatutMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireStatutMatrimonial: e.target.value})} placeholder="Ex: Marié(e), Célibataire, Pacsé(e)..." />
                         </div>
-                        {bailCommercialData.locataireStatutMatrimonial === "marie" && (
-                          <div className="space-y-2">
-                            <Label>Régime matrimonial *</Label>
-                            <Select value={bailCommercialData.locataireRegimeMatrimonial} onValueChange={(value) => setBailCommercialData({...bailCommercialData, locataireRegimeMatrimonial: value})}>
-                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="communaute">Communauté</SelectItem>
-                                <SelectItem value="separation">Séparation de biens</SelectItem>
-                                <SelectItem value="participation">Participation aux acquêts</SelectItem>
-                                <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        )}
+                        <div className="space-y-2">
+                          <Label>Régime matrimonial</Label>
+                          <Input value={bailCommercialData.locataireRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireRegimeMatrimonial: e.target.value})} placeholder="Ex: Communauté, Séparation de biens..." />
+                        </div>
                         <div className="space-y-2">
                           <Label>Profession *</Label>
                           <Input value={bailCommercialData.locataireProfession} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireProfession: e.target.value})} />
