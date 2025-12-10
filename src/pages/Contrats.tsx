@@ -746,11 +746,9 @@ export default function Contrats() {
   // State pour convention d'indivision
   const [indivisionData, setIndivisionData] = useState({
     // Informations générales
-    typeBien: "", // immobilier / mobilier / autre
-    typeBienAutre: "",
-    origineIndivision: "", // succession / achat_commun / investissement / donation / autre
-    origineIndivisionAutre: "",
-    objetConvention: "", // Texte libre
+    typeBien: "immobilier", // immobilier / mobilier / autre
+    origine: "", // succession / achat_commun / investissement / donation / autre
+    objet: "", // Texte libre
     
     // Indivisaires (tableau)
     indivisaires: [{
@@ -775,86 +773,101 @@ export default function Contrats() {
     }],
     
     // Description du bien
-    // Pour immobilier
-    adresseBien: "",
-    natureBienImmobilier: "", // maison / appartement / terrain / autre
-    descriptionBien: "",
-    surfaceBien: "",
-    referencesCadastrales: "",
-    etatLocatif: "", // libre / loue
-    montantLoyer: "",
-    dureeBail: "",
-    valeurVenale: "",
-    dateEstimation: "",
-    sourceEstimation: "", // expert / agent_immobilier / succession / autre
-    
-    // Pour mobilier
-    descriptionBienMobilier: "",
-    valeurEstimee: "",
-    numerosSerie: "",
+    description: {
+      typeBien: "immobilier",
+      immobilier: {
+        adresse: "",
+        nature: "", // maison / appartement / terrain / immeuble / local_commercial / autre
+        description: "",
+        surface: "",
+        cadastre: "",
+        etatLocatif: "", // libre / loue / occupe
+        loyer: "",
+        valeurVenale: "",
+      },
+      mobilier: {
+        description: "",
+        valeurEstimee: "",
+        numerosIdentification: "",
+      }
+    },
     
     // Durée de la convention
-    dureeType: "", // indeterminee / determinee
-    dureeAnnees: "", // Si déterminée (max 5 ans)
-    conditionsRenouvellement: "",
-    conditionsSortie: "",
+    duree: {
+      type: "indeterminee", // indeterminee / determinee
+      annees: "", // Si déterminée (max 5 ans)
+      conditionsRenouvellement: "",
+      conditionsSortie: "",
+    },
     
     // Gestion
-    gerantNom: "",
-    gerantPrenom: "",
-    gerantEstIndivisaire: "", // oui / non
-    pouvoirsGerant: [] as string[], // gestion_courante / travaux / representation / signature_actes
-    pouvoirsAutres: "",
-    dureeMandat: "",
-    decisionsType: "", // unanimite / majorite_2_3 / majorite_simple
-    casUnanimite: "", // Texte libre listant les cas
-    chargesRepartition: "", // proportionnelle / autre
-    chargesRepartitionAutre: "",
-    modalitesRemboursement: "",
-    compteBancaire: "", // oui / non
-    compteTitulaires: "",
-    compteModalites: "",
+    gestion: {
+      gerant: "",
+      pouvoirs: {
+        gestion_courante: false,
+        travaux: false,
+        representation: false,
+        signature_actes: false,
+      },
+      decisions: "", // unanimite / majorite_2_3 / majorite_simple
+      charges: "",
+      compteBancaire: "",
+    },
     
     // Utilisation du bien
-    utilisationParIndivisaires: "", // oui / non
-    utilisationConditions: "",
-    indemnitéOccupation: "", // oui / non
-    indemniteOccupationMontant: "",
-    indemniteOccupationFrequence: "", // mensuelle / annuelle
-    locationAutorisee: "", // oui / non
-    locationMandataire: "",
-    locationRepartitionLoyers: "",
+    utilisation: {
+      utilisationParIndivisaires: "non",
+      conditionsUtilisation: "",
+      indemniteMontant: "",
+      indemniteFrequence: "",
+      locationAutorisee: "non",
+      mandataireLocation: "",
+      repartitionLoyers: "",
+    },
     
     // Travaux
-    travauxAutorises: "",
-    travauxDecision: "", // unanimite / majorite
-    travauxRepartitionCouts: "",
-    travauxUrgents: "",
-    travauxDocumentation: "",
+    travaux: {
+      typesAutorises: "",
+      decisionRequise: "",
+      repartitionCouts: "",
+      travauxUrgents: "",
+      documentation: "",
+    },
     
     // Sortie d'indivisaire
-    ventePartLibre: "", // oui / non
-    droitPreemption: "", // oui / non
-    evaluationPart: "", // gerant / indivisaires / juge
-    delaiRachat: "",
-    modalitesPaiement: "",
+    sortie: {
+      venteLibre: "libre", // libre / droit_preemption
+      evaluationPart: "", // gerant / accord_indivisaires / expert / juge
+      delaiRachat: "",
+      modalitesPaiement: "",
+    },
     
     // Vente du bien
-    conditionsMiseEnVente: "",
-    decisionVente: "", // unanimite / majorite
-    mandataireVente: "",
-    repartitionPrix: "",
-    gestionPlusValues: "",
+    vente: {
+      conditionsMiseEnVente: "",
+      decisionRequise: "", // unanimite / majorite_2_3 / majorite_simple
+      mandataire: "",
+      repartitionPrix: "",
+      gestionPlusValues: "",
+    },
     
     // Comptabilité
-    registreDepenses: "", // oui / non
-    archivageFactures: "", // oui / non
-    modalitesRemboursementAvances: "",
-    rapportAnnuel: "", // oui / non
+    comptabilite: {
+      registreDepenses: "non",
+      archivageFactures: "",
+      remboursementAvances: "",
+      rapportAnnuel: "non",
+    },
     
     // Litiges
-    resolutionLitiges: [] as string[], // mediation / arbitrage / tribunal
-    solidariteDettes: "",
+    litiges: {
+      modesResolution: {
+        mediation: false,
+        arbitrage: false,
+        tribunal: false,
+      },
+      solidariteDettes: "non",
+    },
   });
 
   const navigate = useNavigate();
