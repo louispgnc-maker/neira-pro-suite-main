@@ -7591,20 +7591,34 @@ DURÉE DU BAIL
                   <div className="space-y-4">
                     <h3 className="font-semibold text-lg border-b pb-2">📅 Durée du bail</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Type de bail *</Label>
-                        <Select 
-                          value={bailCommercialData.dureeBail} 
-                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, dureeBail: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="3-6-9">Bail commercial 3/6/9</SelectItem>
-                            <SelectItem value="derogatoire">Bail dérogatoire (≤ 3 ans)</SelectItem>
-                            <SelectItem value="saisonnier">Bail saisonnier</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {bailCommercialData.typeBail === "commercial" ? (
+                        <div className="space-y-2">
+                          <Label>Type de bail *</Label>
+                          <Select 
+                            value={bailCommercialData.dureeBail} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, dureeBail: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="3-6-9">Bail commercial 3/6/9</SelectItem>
+                              <SelectItem value="derogatoire">Bail dérogatoire (≤ 3 ans)</SelectItem>
+                              <SelectItem value="saisonnier">Bail saisonnier</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Durée du bail professionnel</Label>
+                          <p className="text-sm text-muted-foreground">Durée minimum de 6 ans avec possibilité de résiliation triennale</p>
+                          <Input 
+                            type="number"
+                            value={bailCommercialData.dureeBail || "6"} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, dureeBail: e.target.value})}
+                            placeholder="6"
+                            min="6"
+                          />
+                        </div>
+                      )}
                       <div className="space-y-2">
                         <Label>Date de prise d'effet *</Label>
                         <Input 
@@ -7616,77 +7630,81 @@ DURÉE DU BAIL
                     </div>
                   </div>
 
-                  {/* 4. Travaux et réparations */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">🔧 Travaux et réparations</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <Label>Travaux à la charge du bailleur</Label>
-                        <Textarea 
-                          value={bailCommercialData.travauxChargeBailleur} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, travauxChargeBailleur: e.target.value})} 
-                          placeholder="Ex: Gros œuvre, ravalement, toiture, structure..."
-                          rows={3}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Travaux à la charge du preneur</Label>
-                        <Textarea 
-                          value={bailCommercialData.travauxChargePreneur} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, travauxChargePreneur: e.target.value})} 
-                          placeholder="Ex: Entretien courant, réparations locatives, aménagements intérieurs..."
-                          rows={3}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Charges supportées par le bailleur</Label>
-                        <Textarea 
-                          value={bailCommercialData.chargesSupporteesBailleur} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, chargesSupporteesBailleur: e.target.value})} 
-                          placeholder="Ex: Taxe foncière, gros entretien..."
-                          rows={2}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Charges supportées par le preneur</Label>
-                        <Textarea 
-                          value={bailCommercialData.chargesSupporteesPreneur} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, chargesSupporteesPreneur: e.target.value})} 
-                          placeholder="Ex: Eau, électricité, chauffage, taxe ordures ménagères..."
-                          rows={2}
+                  {/* 4. Travaux et réparations (COMMERCIAL UNIQUEMENT) */}
+                  {bailCommercialData.typeBail === "commercial" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">🔧 Travaux et réparations</h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label>Travaux à la charge du bailleur</Label>
+                          <Textarea 
+                            value={bailCommercialData.travauxChargeBailleur} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, travauxChargeBailleur: e.target.value})} 
+                            placeholder="Ex: Gros œuvre, ravalement, toiture, structure..."
+                            rows={3}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Travaux à la charge du preneur</Label>
+                          <Textarea 
+                            value={bailCommercialData.travauxChargePreneur} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, travauxChargePreneur: e.target.value})} 
+                            placeholder="Ex: Entretien courant, réparations locatives, aménagements intérieurs..."
+                            rows={3}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Charges supportées par le bailleur</Label>
+                          <Textarea 
+                            value={bailCommercialData.chargesSupporteesBailleur} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, chargesSupporteesBailleur: e.target.value})} 
+                            placeholder="Ex: Taxe foncière, gros entretien..."
+                            rows={2}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Charges supportées par le preneur</Label>
+                          <Textarea 
+                            value={bailCommercialData.chargesSupporteesPreneur} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, chargesSupporteesPreneur: e.target.value})} 
+                            placeholder="Ex: Eau, électricité, chauffage, taxe ordures ménagères..."
+                            rows={2}
                         />
                       </div>
                     </div>
                   </div>
+                  )}
 
-                  {/* 5. Impôts et taxes */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">💰 Impôts et taxes</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <Label>Taxe foncière supportée par *</Label>
-                        <Select 
-                          value={bailCommercialData.taxeFonciereSupporteePar} 
-                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, taxeFonciereSupporteePar: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="bailleur">Bailleur</SelectItem>
-                            <SelectItem value="locataire">Locataire</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Taxes et contributions récupérables</Label>
-                        <Textarea 
-                          value={bailCommercialData.taxesRecuperables} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, taxesRecuperables: e.target.value})} 
-                          placeholder="Ex: TEOM, CFE..."
-                          rows={2}
-                        />
+                  {/* 5. Impôts et taxes (COMMERCIAL UNIQUEMENT) */}
+                  {bailCommercialData.typeBail === "commercial" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">💰 Impôts et taxes</h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label>Taxe foncière supportée par *</Label>
+                          <Select 
+                            value={bailCommercialData.taxeFonciereSupporteePar} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, taxeFonciereSupporteePar: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="bailleur">Bailleur</SelectItem>
+                              <SelectItem value="locataire">Locataire</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Taxes et contributions récupérables</Label>
+                          <Textarea 
+                            value={bailCommercialData.taxesRecuperables} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, taxesRecuperables: e.target.value})} 
+                            placeholder="Ex: TEOM, CFE..."
+                            rows={2}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* 6. État des lieux */}
                   <div className="space-y-4">
