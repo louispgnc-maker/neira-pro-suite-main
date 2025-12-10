@@ -13452,9 +13452,20 @@ DÉCLARATIONS DES ÉPOUX
                                     newEpoux[index].lieuNaissance = client.lieu_naissance || "";
                                     newEpoux[index].nationalite = client.nationalite || "";
                                     newEpoux[index].profession = client.profession || "";
-                                    newEpoux[index].situationFamiliale = client.situation_matrimoniale || "";
                                     newEpoux[index].typeIdentite = client.type_identite || "";
                                     newEpoux[index].numeroIdentite = client.numero_identite || "";
+                                    
+                                    // Auto-remplir la situation familiale
+                                    let situationFamiliale = client.situation_matrimoniale || "";
+                                    if (!situationFamiliale && client.situation_familiale) {
+                                      if (typeof client.situation_familiale === 'string') {
+                                        situationFamiliale = client.situation_familiale;
+                                      } else if (typeof client.situation_familiale === 'object') {
+                                        const sitFam = client.situation_familiale as any;
+                                        situationFamiliale = sitFam.situation_familiale || "";
+                                      }
+                                    }
+                                    newEpoux[index].situationFamiliale = situationFamiliale;
 
                                     // Auto-charger le document d'identité
                                     if (client.id_doc_path) {
@@ -13594,20 +13605,8 @@ DÉCLARATIONS DES ÉPOUX
                             </Select>
                           </div>
 
-                          <div className="space-y-2">
-                            <Label>Domicile actuel</Label>
-                            <Input
-                              value={epoux.domicileActuel}
-                              onChange={(e) => {
-                                const newEpoux = [...contratMariageData.epoux];
-                                newEpoux[index] = {...newEpoux[index], domicileActuel: e.target.value};
-                                setContratMariageData({...contratMariageData, epoux: newEpoux});
-                              }}
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Domicile après mariage (si différent)</Label>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Domicile après mariage (si différent de l'adresse)</Label>
                             <Input
                               value={epoux.domicileApresMariage}
                               onChange={(e) => {
