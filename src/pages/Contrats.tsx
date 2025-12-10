@@ -13699,7 +13699,943 @@ DÉCLARATIONS DES ÉPOUX
                     ))}
                   </div>
 
-                  {/* Suite du formulaire dans le prochain message (trop long) */}
+                  {/* 3. Informations sur les enfants */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">👶 Informations sur les enfants</h3>
+                    <p className="text-sm text-muted-foreground">Obligatoire pour les changements de régime matrimonial</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nombre d'enfants</Label>
+                        <Input
+                          type="number"
+                          value={contratMariageData.nombreEnfants}
+                          onChange={(e) => setContratMariageData({...contratMariageData, nombreEnfants: e.target.value})}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Enfants mineurs (mention)</Label>
+                        <Input
+                          value={contratMariageData.enfantsMineurs}
+                          onChange={(e) => setContratMariageData({...contratMariageData, enfantsMineurs: e.target.value})}
+                          placeholder="Ex: 2 enfants mineurs"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Information au juge nécessaire ?</Label>
+                        <Input
+                          value={contratMariageData.informationJugeNecessaire}
+                          onChange={(e) => setContratMariageData({...contratMariageData, informationJugeNecessaire: e.target.value})}
+                          placeholder="Oui / Non"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Enfants majeurs (si applicable)</Label>
+                        {contratMariageData.enfantsMajeurs.map((enfant, idx) => (
+                          <div key={enfant.id} className="grid grid-cols-1 md:grid-cols-3 gap-2 p-2 border rounded">
+                            <Input
+                              placeholder="Nom"
+                              value={enfant.nom}
+                              onChange={(e) => {
+                                const newEnfants = [...contratMariageData.enfantsMajeurs];
+                                newEnfants[idx] = {...newEnfants[idx], nom: e.target.value};
+                                setContratMariageData({...contratMariageData, enfantsMajeurs: newEnfants});
+                              }}
+                            />
+                            <Input
+                              placeholder="Prénom"
+                              value={enfant.prenom}
+                              onChange={(e) => {
+                                const newEnfants = [...contratMariageData.enfantsMajeurs];
+                                newEnfants[idx] = {...newEnfants[idx], prenom: e.target.value};
+                                setContratMariageData({...contratMariageData, enfantsMajeurs: newEnfants});
+                              }}
+                            />
+                            <Input
+                              placeholder="Accord/Information reçue"
+                              value={enfant.accordInformation}
+                              onChange={(e) => {
+                                const newEnfants = [...contratMariageData.enfantsMajeurs];
+                                newEnfants[idx] = {...newEnfants[idx], accordInformation: e.target.value};
+                                setContratMariageData({...contratMariageData, enfantsMajeurs: newEnfants});
+                              }}
+                            />
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
+                          onClick={() => {
+                            const newId = Math.max(...contratMariageData.enfantsMajeurs.map(e => e.id), 0) + 1;
+                            setContratMariageData({
+                              ...contratMariageData,
+                              enfantsMajeurs: [...contratMariageData.enfantsMajeurs, {
+                                id: newId,
+                                nom: "",
+                                prenom: "",
+                                adresse: "",
+                                accordInformation: "",
+                              }]
+                            });
+                          }}
+                        >
+                          + Ajouter un enfant majeur
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4. Patrimoine des époux */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">💰 Patrimoine actuel des époux</h3>
+                    <p className="text-sm text-muted-foreground">Nécessaire pour participation aux acquêts ou communauté aménagée</p>
+                    
+                    {/* Époux 1 */}
+                    <div className="p-4 border rounded-lg space-y-4">
+                      <h4 className="font-medium">Patrimoine Époux 1</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Biens propres (avant mariage)</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.patrimoineEpoux1.biensPropres}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux1: {...contratMariageData.patrimoineEpoux1, biensPropres: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Biens acquis pendant mariage</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.patrimoineEpoux1.biensAcquisPendantMariage}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux1: {...contratMariageData.patrimoineEpoux1, biensAcquisPendantMariage: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Valeur estimée totale (€)</Label>
+                          <Input
+                            type="number"
+                            value={contratMariageData.patrimoineEpoux1.valeurEstimee}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux1: {...contratMariageData.patrimoineEpoux1, valeurEstimee: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Dettes personnelles (€)</Label>
+                          <Input
+                            type="number"
+                            value={contratMariageData.patrimoineEpoux1.dettesPersonnelles}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux1: {...contratMariageData.patrimoineEpoux1, dettesPersonnelles: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Masse de départ (patrimoine initial)</Label>
+                          <Input
+                            value={contratMariageData.patrimoineEpoux1.masseDepart}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux1: {...contratMariageData.patrimoineEpoux1, masseDepart: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Masse de fin (patrimoine final)</Label>
+                          <Input
+                            value={contratMariageData.patrimoineEpoux1.masseFin}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux1: {...contratMariageData.patrimoineEpoux1, masseFin: e.target.value}
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Époux 2 */}
+                    <div className="p-4 border rounded-lg space-y-4">
+                      <h4 className="font-medium">Patrimoine Époux 2</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Biens propres (avant mariage)</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.patrimoineEpoux2.biensPropres}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux2: {...contratMariageData.patrimoineEpoux2, biensPropres: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Biens acquis pendant mariage</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.patrimoineEpoux2.biensAcquisPendantMariage}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux2: {...contratMariageData.patrimoineEpoux2, biensAcquisPendantMariage: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Valeur estimée totale (€)</Label>
+                          <Input
+                            type="number"
+                            value={contratMariageData.patrimoineEpoux2.valeurEstimee}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux2: {...contratMariageData.patrimoineEpoux2, valeurEstimee: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Dettes personnelles (€)</Label>
+                          <Input
+                            type="number"
+                            value={contratMariageData.patrimoineEpoux2.dettesPersonnelles}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux2: {...contratMariageData.patrimoineEpoux2, dettesPersonnelles: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Masse de départ (patrimoine initial)</Label>
+                          <Input
+                            value={contratMariageData.patrimoineEpoux2.masseDepart}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux2: {...contratMariageData.patrimoineEpoux2, masseDepart: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Masse de fin (patrimoine final)</Label>
+                          <Input
+                            value={contratMariageData.patrimoineEpoux2.masseFin}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              patrimoineEpoux2: {...contratMariageData.patrimoineEpoux2, masseFin: e.target.value}
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5. Clauses selon le régime choisi */}
+                  {contratMariageData.typeRegime === "separation_biens" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">📝 Clauses - Séparation de biens</h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="admin_exclusive"
+                            checked={contratMariageData.clausesSeparation.administrationExclusive}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesSeparation: {...contratMariageData.clausesSeparation, administrationExclusive: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="admin_exclusive" className="cursor-pointer">Administration et jouissance exclusives par chaque époux</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="comptes_sep"
+                            checked={contratMariageData.clausesSeparation.comptesSepares}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesSeparation: {...contratMariageData.clausesSeparation, comptesSepares: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="comptes_sep" className="cursor-pointer">Comptes bancaires séparés</Label>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Contribution aux charges du mariage</Label>
+                          <Select 
+                            value={contratMariageData.clausesSeparation.contributionCharges} 
+                            onValueChange={(value) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesSeparation: {...contratMariageData.clausesSeparation, contributionCharges: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="proportionnelle">Proportionnelle aux revenus</SelectItem>
+                              <SelectItem value="50_50">50/50</SelectItem>
+                              <SelectItem value="autre">Autre</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {contratMariageData.clausesSeparation.contributionCharges === "autre" && (
+                          <div className="space-y-2">
+                            <Label>Préciser</Label>
+                            <Input
+                              value={contratMariageData.clausesSeparation.contributionChargesAutre}
+                              onChange={(e) => setContratMariageData({
+                                ...contratMariageData,
+                                clausesSeparation: {...contratMariageData.clausesSeparation, contributionChargesAutre: e.target.value}
+                              })}
+                            />
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          <Label>Mise en commun éventuelle d'un bien</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.clausesSeparation.miseEnCommunBien}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesSeparation: {...contratMariageData.clausesSeparation, miseEnCommunBien: e.target.value}
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {contratMariageData.typeRegime === "communaute_acquets_amenagee" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">📝 Clauses - Communauté aménagée</h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label>Définition des biens communs et propres</Label>
+                          <Textarea
+                            rows={3}
+                            value={contratMariageData.clausesCommunauteAmenagee.definitionBiensCommunsPropres}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesCommunauteAmenagee: {...contratMariageData.clausesCommunauteAmenagee, definitionBiensCommunsPropres: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Aménagement des biens professionnels</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.clausesCommunauteAmenagee.amenagementBiensProfessionnels}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesCommunauteAmenagee: {...contratMariageData.clausesCommunauteAmenagee, amenagementBiensProfessionnels: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Type d'administration</Label>
+                          <RadioGroup
+                            value={contratMariageData.clausesCommunauteAmenagee.typeAdministration}
+                            onValueChange={(value) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesCommunauteAmenagee: {...contratMariageData.clausesCommunauteAmenagee, typeAdministration: value}
+                            })}
+                          >
+                            <div className="flex gap-4">
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="symetriques" id="admin_sym" />
+                                <Label htmlFor="admin_sym" className="cursor-pointer">Pouvoirs symétriques</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="unique" id="admin_uniq" />
+                                <Label htmlFor="admin_uniq" className="cursor-pointer">Pouvoir unique pour certains biens</Label>
+                              </div>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {contratMariageData.clausesCommunauteAmenagee.typeAdministration === "unique" && (
+                          <div className="space-y-2">
+                            <Label>Détails du pouvoir unique</Label>
+                            <Textarea
+                              rows={2}
+                              value={contratMariageData.clausesCommunauteAmenagee.pouvoirUniqueDetails}
+                              onChange={(e) => setContratMariageData({
+                                ...contratMariageData,
+                                clausesCommunauteAmenagee: {...contratMariageData.clausesCommunauteAmenagee, pouvoirUniqueDetails: e.target.value}
+                              })}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {contratMariageData.typeRegime === "communaute_universelle" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">📝 Clauses - Communauté universelle</h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label>Clause d'attribution intégrale au survivant</Label>
+                          <RadioGroup
+                            value={contratMariageData.clausesCommunauteUniverselle.attributionIntegraleSurvivant}
+                            onValueChange={(value) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesCommunauteUniverselle: {...contratMariageData.clausesCommunauteUniverselle, attributionIntegraleSurvivant: value}
+                            })}
+                          >
+                            <div className="flex gap-4">
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="oui" id="attrib_oui" />
+                                <Label htmlFor="attrib_oui" className="cursor-pointer">Oui</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="non" id="attrib_non" />
+                                <Label htmlFor="attrib_non" className="cursor-pointer">Non</Label>
+                              </div>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Clause de préciput (le survivant prend un bien avant partage)</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.clausesCommunauteUniverselle.clausesPreciput}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesCommunauteUniverselle: {...contratMariageData.clausesCommunauteUniverselle, clausesPreciput: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Exclusion de certains biens</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.clausesCommunauteUniverselle.exclusionCertainsBiens}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesCommunauteUniverselle: {...contratMariageData.clausesCommunauteUniverselle, exclusionCertainsBiens: e.target.value}
+                            })}
+                            placeholder="Ex: héritages, biens professionnels..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {contratMariageData.typeRegime === "participation_acquets" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">📝 Clauses - Participation aux acquêts</h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label>Définition des patrimoines originels</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.clausesParticipation.definitionPatrimoinesOriginels}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesParticipation: {...contratMariageData.clausesParticipation, definitionPatrimoinesOriginels: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Définition du patrimoine final</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.clausesParticipation.definitionPatrimoineFinal}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesParticipation: {...contratMariageData.clausesParticipation, definitionPatrimoineFinal: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Calcul de la créance de participation</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.clausesParticipation.calculCreanceParticipation}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesParticipation: {...contratMariageData.clausesParticipation, calculCreanceParticipation: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Détermination des biens propres par nature</Label>
+                          <Textarea
+                            rows={2}
+                            value={contratMariageData.clausesParticipation.biensPropresParNature}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              clausesParticipation: {...contratMariageData.clausesParticipation, biensPropresParNature: e.target.value}
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 6. Clauses optionnelles avancées */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">⚙️ Clauses optionnelles avancées</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Clause de remploi</Label>
+                        <Textarea
+                          rows={2}
+                          value={contratMariageData.clausesAvancees.clauseRemploi}
+                          onChange={(e) => setContratMariageData({
+                            ...contratMariageData,
+                            clausesAvancees: {...contratMariageData.clausesAvancees, clauseRemploi: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clause de préciput</Label>
+                        <Textarea
+                          rows={2}
+                          value={contratMariageData.clausesAvancees.clausePreciput}
+                          onChange={(e) => setContratMariageData({
+                            ...contratMariageData,
+                            clausesAvancees: {...contratMariageData.clausesAvancees, clausePreciput: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Attribution préférentielle de biens</Label>
+                        <Textarea
+                          rows={2}
+                          value={contratMariageData.clausesAvancees.attributionPreferentielle}
+                          onChange={(e) => setContratMariageData({
+                            ...contratMariageData,
+                            clausesAvancees: {...contratMariageData.clausesAvancees, attributionPreferentielle: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Gestion séparée des biens professionnels</Label>
+                        <Textarea
+                          rows={2}
+                          value={contratMariageData.clausesAvancees.gestionSepareeBiensProfessionnels}
+                          onChange={(e) => setContratMariageData({
+                            ...contratMariageData,
+                            clausesAvancees: {...contratMariageData.clausesAvancees, gestionSepareeBiensProfessionnels: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Protection du conjoint survivant</Label>
+                        <Textarea
+                          rows={2}
+                          value={contratMariageData.clausesAvancees.protectionConjointSurvivant}
+                          onChange={(e) => setContratMariageData({
+                            ...contratMariageData,
+                            clausesAvancees: {...contratMariageData.clausesAvancees, protectionConjointSurvivant: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Donation entre époux (si intégrée)</Label>
+                        <Textarea
+                          rows={2}
+                          value={contratMariageData.clausesAvancees.donationEntreEpoux}
+                          onChange={(e) => setContratMariageData({
+                            ...contratMariageData,
+                            clausesAvancees: {...contratMariageData.clausesAvancees, donationEntreEpoux: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7. Déclarations obligatoires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">✅ Déclarations obligatoires des époux</h3>
+                    <div className="p-4 bg-muted/30 rounded-lg space-y-3">
+                      <p className="text-sm text-muted-foreground">Les époux déclarent :</p>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_identite"
+                            checked={contratMariageData.declarations.identite}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              declarations: {...contratMariageData.declarations, identite: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_identite" className="cursor-pointer">Leur identité</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_capacite"
+                            checked={contratMariageData.declarations.capaciteJuridique}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              declarations: {...contratMariageData.declarations, capaciteJuridique: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_capacite" className="cursor-pointer">Leur capacité juridique</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_situation"
+                            checked={contratMariageData.declarations.situationMatrimoniale}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              declarations: {...contratMariageData.declarations, situationMatrimoniale: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_situation" className="cursor-pointer">Leur situation matrimoniale</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_opposition"
+                            checked={contratMariageData.declarations.absenceOpposition}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              declarations: {...contratMariageData.declarations, absenceOpposition: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_opposition" className="cursor-pointer">L'absence d'opposition au mariage</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_choix"
+                            checked={contratMariageData.declarations.choixLibreEclaire}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              declarations: {...contratMariageData.declarations, choixLibreEclaire: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_choix" className="cursor-pointer">Leur choix libre et éclairé du régime</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_connaissance"
+                            checked={contratMariageData.declarations.connaissanceEffetsJuridiques}
+                            onChange={(e) => setContratMariageData({
+                              ...contratMariageData,
+                              declarations: {...contratMariageData.declarations, connaissanceEffetsJuridiques: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_connaissance" className="cursor-pointer">Leur connaissance des effets juridiques du régime</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8. Documents à fournir */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📎 Documents à fournir</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Époux 1 - Identité */}
+                      <div className="space-y-2">
+                        <Label>Époux 1 - Pièce d'identité</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                          <input
+                            type="file"
+                            accept="application/pdf,image/*"
+                            multiple
+                            className="hidden"
+                            id="cm_epoux1_identite"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              setContratMariageEpoux1IdentiteFiles(prev => [...prev, ...files]);
+                            }}
+                          />
+                          <label htmlFor="cm_epoux1_identite" className="cursor-pointer text-sm text-muted-foreground">
+                            Cliquez pour joindre
+                          </label>
+                          {contratMariageEpoux1IdentiteFiles.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {contratMariageEpoux1IdentiteFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setContratMariageEpoux1IdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Époux 2 - Identité */}
+                      <div className="space-y-2">
+                        <Label>Époux 2 - Pièce d'identité</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                          <input
+                            type="file"
+                            accept="application/pdf,image/*"
+                            multiple
+                            className="hidden"
+                            id="cm_epoux2_identite"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              setContratMariageEpoux2IdentiteFiles(prev => [...prev, ...files]);
+                            }}
+                          />
+                          <label htmlFor="cm_epoux2_identite" className="cursor-pointer text-sm text-muted-foreground">
+                            Cliquez pour joindre
+                          </label>
+                          {contratMariageEpoux2IdentiteFiles.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {contratMariageEpoux2IdentiteFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setContratMariageEpoux2IdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actes de naissance */}
+                      <div className="space-y-2">
+                        <Label>Époux 1 - Acte de naissance (&lt; 3 mois)</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            multiple
+                            className="hidden"
+                            id="cm_epoux1_naissance"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              setContratMariageEpoux1ActeNaissanceFiles(prev => [...prev, ...files]);
+                            }}
+                          />
+                          <label htmlFor="cm_epoux1_naissance" className="cursor-pointer text-sm text-muted-foreground">
+                            Cliquez pour joindre
+                          </label>
+                          {contratMariageEpoux1ActeNaissanceFiles.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {contratMariageEpoux1ActeNaissanceFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setContratMariageEpoux1ActeNaissanceFiles(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Époux 2 - Acte de naissance (&lt; 3 mois)</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            multiple
+                            className="hidden"
+                            id="cm_epoux2_naissance"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              setContratMariageEpoux2ActeNaissanceFiles(prev => [...prev, ...files]);
+                            }}
+                          />
+                          <label htmlFor="cm_epoux2_naissance" className="cursor-pointer text-sm text-muted-foreground">
+                            Cliquez pour joindre
+                          </label>
+                          {contratMariageEpoux2ActeNaissanceFiles.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {contratMariageEpoux2ActeNaissanceFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setContratMariageEpoux2ActeNaissanceFiles(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Si changement de régime */}
+                      {contratMariageData.typeContrat === "changement_regime" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Contrat de mariage initial</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="cm_contrat_initial"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  setContratMariageContratInitialFiles(prev => [...prev, ...files]);
+                                }}
+                              />
+                              <label htmlFor="cm_contrat_initial" className="cursor-pointer text-sm text-muted-foreground">
+                                Cliquez pour joindre
+                              </label>
+                              {contratMariageContratInitialFiles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {contratMariageContratInitialFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                      <span className="truncate">{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setContratMariageContratInitialFiles(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-600 ml-2"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Accord enfants majeurs</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="cm_accord_enfants"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  setContratMariageAccordEnfantsFiles(prev => [...prev, ...files]);
+                                }}
+                              />
+                              <label htmlFor="cm_accord_enfants" className="cursor-pointer text-sm text-muted-foreground">
+                                Cliquez pour joindre
+                              </label>
+                              {contratMariageAccordEnfantsFiles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {contratMariageAccordEnfantsFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                      <span className="truncate">{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setContratMariageAccordEnfantsFiles(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-600 ml-2"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Documents optionnels */}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Titres de propriété (si clause sur bien immobilier)</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            multiple
+                            className="hidden"
+                            id="cm_titres"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              setContratMariageTitresProprieteFiles(prev => [...prev, ...files]);
+                            }}
+                          />
+                          <label htmlFor="cm_titres" className="cursor-pointer text-sm text-muted-foreground">
+                            Cliquez pour joindre
+                          </label>
+                          {contratMariageTitresProprieteFiles.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {contratMariageTitresProprieteFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setContratMariageTitresProprieteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </>
             )}
