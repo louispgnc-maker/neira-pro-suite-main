@@ -6333,12 +6333,6 @@ DURÉE DU BAIL
             {pendingContractType === "Bail commercial / professionnel" && (
               <>
                 <div className="space-y-6">
-                  <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
-                      📋 Formulaire bail commercial en cours de développement. Les sections complètes seront ajoutées progressivement.
-                    </p>
-                  </div>
-
                   {/* Sélection du rôle du client */}
                   <div className="space-y-4">
                     <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
@@ -6409,10 +6403,16 @@ DURÉE DU BAIL
                                 ...bailCommercialData,
                                 clientId: value,
                                 bailleurClientId: value,
-                                statutBailleur: "physique", // Par défaut personne physique
-                                bailleurNom: selectedClient.nom,
-                                bailleurPrenom: selectedClient.prenom,
+                                statutBailleur: "physique",
+                                bailleurNom: selectedClient.nom || "",
+                                bailleurPrenom: selectedClient.prenom || "",
                                 bailleurAdresse: selectedClient.adresse || "",
+                                bailleurDateNaissance: selectedClient.date_naissance || "",
+                                bailleurLieuNaissance: selectedClient.lieu_naissance || "",
+                                bailleurNationalite: selectedClient.nationalite || "",
+                                bailleurStatutMatrimonial: selectedClient.statut_matrimonial || "",
+                                bailleurRegimeMatrimonial: selectedClient.regime_matrimonial || "",
+                                bailleurProfession: selectedClient.profession || "",
                               });
                             }
                           }}
@@ -6652,10 +6652,18 @@ DURÉE DU BAIL
                                 ...bailCommercialData,
                                 clientId: value,
                                 locataireClientId: value,
-                                statutLocataire: "physique", // Par défaut personne physique
-                                locataireNom: selectedClient.nom,
-                                locatairePrenom: selectedClient.prenom,
+                                statutLocataire: "physique",
+                                locataireNom: selectedClient.nom || "",
+                                locatairePrenom: selectedClient.prenom || "",
                                 locataireAdresse: selectedClient.adresse || "",
+                                locataireDateNaissance: selectedClient.date_naissance || "",
+                                locataireLieuNaissance: selectedClient.lieu_naissance || "",
+                                locataireNationalite: selectedClient.nationalite || "",
+                                locataireStatutMatrimonial: selectedClient.statut_matrimonial || "",
+                                locataireRegimeMatrimonial: selectedClient.regime_matrimonial || "",
+                                locataireProfession: selectedClient.profession || "",
+                                locataireTelephone: selectedClient.telephone || "",
+                                locataireEmail: selectedClient.email || "",
                               });
                             }
                           }}
