@@ -6428,6 +6428,10 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
+                              console.log('🔍 BAILLEUR - Client sélectionné:', selectedClient);
+                              console.log('🔍 BAILLEUR - situation_matrimoniale:', selectedClient.situation_matrimoniale);
+                              console.log('🔍 BAILLEUR - typeof:', typeof selectedClient.situation_matrimoniale);
+                              
                               let situationFamilialeText = "";
                               
                               // Gérer les différents formats de situation_matrimoniale
@@ -6435,14 +6439,20 @@ DURÉE DU BAIL
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
                                   // Cas 1: Objet JSON - extraire situation_familiale
                                   const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                  console.log('🔍 BAILLEUR - situation_familiale extraite:', situationFamiliale);
                                   if (situationFamiliale) {
                                     situationFamilialeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                                   }
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
+                                  console.log('🔍 BAILLEUR - String détecté:', selectedClient.situation_matrimoniale);
                                   situationFamilialeText = selectedClient.situation_matrimoniale;
                                 }
+                              } else {
+                                console.log('⚠️ BAILLEUR - situation_matrimoniale est vide/null');
                               }
+                              
+                              console.log('🔍 BAILLEUR - situationFamilialeText final:', situationFamilialeText);
                               
                               setBailCommercialData({
                                 ...bailCommercialData,
@@ -6458,6 +6468,8 @@ DURÉE DU BAIL
                                 bailleurRegimeMatrimonial: situationFamilialeText,
                                 bailleurProfession: selectedClient.profession || "",
                               });
+                              
+                              console.log('✅ BAILLEUR - État mis à jour avec regimeMatrimonial:', situationFamilialeText);
                             }
                           }}
                         >
