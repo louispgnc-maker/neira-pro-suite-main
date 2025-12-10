@@ -10906,6 +10906,1639 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
               </>
             )}
 
+            {/* Formulaire spécifique pour Mainlevée d'hypothèque */}
+            {pendingContractType === "Mainlevée d'hypothèque" && (
+              <>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
+                  {/* 1. Informations générales sur l'hypothèque */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📋 Informations générales sur l'hypothèque</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de mainlevée *</Label>
+                        <Select 
+                          value={mainleveeData.typeMainlevee} 
+                          onValueChange={(value) => setMainleveeData({...mainleveeData, typeMainlevee: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="totale">Mainlevée totale</SelectItem>
+                            <SelectItem value="partielle">Mainlevée partielle</SelectItem>
+                            <SelectItem value="renonciation">Renonciation à l'inscription</SelectItem>
+                            <SelectItem value="substitution">Substitution</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {mainleveeData.typeMainlevee === "partielle" && (
+                        <div className="space-y-2">
+                          <Label>Précision sur la mainlevée partielle</Label>
+                          <Input
+                            value={mainleveeData.precisionPartielle}
+                            onChange={(e) => setMainleveeData({...mainleveeData, precisionPartielle: e.target.value})}
+                            placeholder="Ex: Sur le lot n°2 uniquement..."
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Nature de l'inscription à radier *</Label>
+                        <Select 
+                          value={mainleveeData.natureInscription} 
+                          onValueChange={(value) => setMainleveeData({...mainleveeData, natureInscription: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="hypotheque_conventionnelle">Hypothèque conventionnelle</SelectItem>
+                            <SelectItem value="hypotheque_legale">Hypothèque légale</SelectItem>
+                            <SelectItem value="hypotheque_judiciaire">Hypothèque judiciaire</SelectItem>
+                            <SelectItem value="privilege_ppd">Privilège de prêteur de deniers (PPD)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Numéro d'inscription hypothécaire *</Label>
+                        <Input
+                          value={mainleveeData.numeroInscription}
+                          onChange={(e) => setMainleveeData({...mainleveeData, numeroInscription: e.target.value})}
+                          placeholder="Numéro exact au SPF"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de l'inscription</Label>
+                        <Input
+                          type="date"
+                          value={mainleveeData.dateInscription}
+                          onChange={(e) => setMainleveeData({...mainleveeData, dateInscription: e.target.value})}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Volume / Numéro d'ordre (ancien format)</Label>
+                        <Input
+                          value={mainleveeData.volumeNumero}
+                          onChange={(e) => setMainleveeData({...mainleveeData, volumeNumero: e.target.value})}
+                          placeholder="Volume X, n° Y"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Référence partenaire bancaire</Label>
+                        <Input
+                          value={mainleveeData.referencePartenaire}
+                          onChange={(e) => setMainleveeData({...mainleveeData, referencePartenaire: e.target.value})}
+                          placeholder="Facultatif"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Identité du créancier */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🏦 Identité du créancier (donneur de mainlevée)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Type de créancier *</Label>
+                        <RadioGroup
+                          value={mainleveeData.creancierType}
+                          onValueChange={(value) => setMainleveeData({...mainleveeData, creancierType: value})}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="banque" id="creancier_banque" />
+                              <Label htmlFor="creancier_banque" className="cursor-pointer">Banque / Établissement financier</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="personne_physique" id="creancier_personne" />
+                              <Label htmlFor="creancier_personne" className="cursor-pointer">Personne physique</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {mainleveeData.creancierType === "banque" ? (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Dénomination sociale *</Label>
+                            <Input
+                              value={mainleveeData.creancierBanque.denominationSociale}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierBanque: {...mainleveeData.creancierBanque, denominationSociale: e.target.value}
+                              })}
+                              placeholder="Ex: Société Générale"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Forme juridique</Label>
+                            <Input
+                              value={mainleveeData.creancierBanque.formeJuridique}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierBanque: {...mainleveeData.creancierBanque, formeJuridique: e.target.value}
+                              })}
+                              placeholder="Ex: SA, SAS..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Capital social</Label>
+                            <Input
+                              value={mainleveeData.creancierBanque.capitalSocial}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierBanque: {...mainleveeData.creancierBanque, capitalSocial: e.target.value}
+                              })}
+                              placeholder="Ex: 1 000 000 €"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Adresse du siège *</Label>
+                            <Input
+                              value={mainleveeData.creancierBanque.adresseSiege}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierBanque: {...mainleveeData.creancierBanque, adresseSiege: e.target.value}
+                              })}
+                              placeholder="Adresse complète"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>RCS</Label>
+                            <Input
+                              value={mainleveeData.creancierBanque.rcs}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierBanque: {...mainleveeData.creancierBanque, rcs: e.target.value}
+                              })}
+                              placeholder="Ex: RCS Paris B 123 456 789"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>SIREN</Label>
+                            <Input
+                              value={mainleveeData.creancierBanque.siren}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierBanque: {...mainleveeData.creancierBanque, siren: e.target.value}
+                              })}
+                              placeholder="9 chiffres"
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2 bg-muted/30 p-3 rounded-lg">
+                            <h4 className="font-medium text-sm">Représentant habilité</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>Nom du représentant</Label>
+                                <Input
+                                  value={mainleveeData.creancierBanque.representantNom}
+                                  onChange={(e) => setMainleveeData({
+                                    ...mainleveeData,
+                                    creancierBanque: {...mainleveeData.creancierBanque, representantNom: e.target.value}
+                                  })}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Prénom du représentant</Label>
+                                <Input
+                                  value={mainleveeData.creancierBanque.representantPrenom}
+                                  onChange={(e) => setMainleveeData({
+                                    ...mainleveeData,
+                                    creancierBanque: {...mainleveeData.creancierBanque, representantPrenom: e.target.value}
+                                  })}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Fonction</Label>
+                                <Input
+                                  value={mainleveeData.creancierBanque.representantFonction}
+                                  onChange={(e) => setMainleveeData({
+                                    ...mainleveeData,
+                                    creancierBanque: {...mainleveeData.creancierBanque, representantFonction: e.target.value}
+                                  })}
+                                  placeholder="Ex: Directeur d'agence"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Type de pouvoirs</Label>
+                                <Select 
+                                  value={mainleveeData.creancierBanque.pouvoirsType} 
+                                  onValueChange={(value) => setMainleveeData({
+                                    ...mainleveeData,
+                                    creancierBanque: {...mainleveeData.creancierBanque, pouvoirsType: value}
+                                  })}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="mandat">Mandat</SelectItem>
+                                    <SelectItem value="delegation">Délégation interne</SelectItem>
+                                    <SelectItem value="pv">PV désignant les pouvoirs</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Upload pièces créancier banque */}
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>📎 Pièces justificatives du créancier</Label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {/* KBIS */}
+                              <div className="space-y-2">
+                                <Label className="text-sm">KBIS</Label>
+                                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                  <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    multiple
+                                    className="hidden"
+                                    id="mainlevee_kbis_upload"
+                                    onChange={(e) => {
+                                      const files = Array.from(e.target.files || []);
+                                      setMainleveeCreancierKbisFiles(prev => [...prev, ...files]);
+                                    }}
+                                  />
+                                  <label htmlFor="mainlevee_kbis_upload" className="cursor-pointer text-sm text-muted-foreground">
+                                    Cliquez pour joindre le KBIS
+                                  </label>
+                                  {mainleveeCreancierKbisFiles.length > 0 && (
+                                    <div className="mt-2 space-y-1">
+                                      {mainleveeCreancierKbisFiles.map((file, idx) => (
+                                        <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                          <span className="truncate">{file.name}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => setMainleveeCreancierKbisFiles(prev => prev.filter((_, i) => i !== idx))}
+                                            className="text-red-600 ml-2"
+                                          >
+                                            ✕
+                                          </button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Mandat du représentant */}
+                              <div className="space-y-2">
+                                <Label className="text-sm">Mandat / Délégation de pouvoir</Label>
+                                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                  <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    multiple
+                                    className="hidden"
+                                    id="mainlevee_mandat_upload"
+                                    onChange={(e) => {
+                                      const files = Array.from(e.target.files || []);
+                                      setMainleveeCreancierMandatFiles(prev => [...prev, ...files]);
+                                    }}
+                                  />
+                                  <label htmlFor="mainlevee_mandat_upload" className="cursor-pointer text-sm text-muted-foreground">
+                                    Cliquez pour joindre le mandat
+                                  </label>
+                                  {mainleveeCreancierMandatFiles.length > 0 && (
+                                    <div className="mt-2 space-y-1">
+                                      {mainleveeCreancierMandatFiles.map((file, idx) => (
+                                        <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                          <span className="truncate">{file.name}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => setMainleveeCreancierMandatFiles(prev => prev.filter((_, i) => i !== idx))}
+                                            className="text-red-600 ml-2"
+                                          >
+                                            ✕
+                                          </button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Pièce d'identité représentant */}
+                              <div className="space-y-2">
+                                <Label className="text-sm">Pièce d'identité du représentant</Label>
+                                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                  <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    multiple
+                                    className="hidden"
+                                    id="mainlevee_identite_rep_upload"
+                                    onChange={(e) => {
+                                      const files = Array.from(e.target.files || []);
+                                      setMainleveeCreancierIdentiteFiles(prev => [...prev, ...files]);
+                                    }}
+                                  />
+                                  <label htmlFor="mainlevee_identite_rep_upload" className="cursor-pointer text-sm text-muted-foreground">
+                                    Cliquez pour joindre la pièce d'identité
+                                  </label>
+                                  {mainleveeCreancierIdentiteFiles.length > 0 && (
+                                    <div className="mt-2 space-y-1">
+                                      {mainleveeCreancierIdentiteFiles.map((file, idx) => (
+                                        <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                          <span className="truncate">{file.name}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => setMainleveeCreancierIdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                            className="text-red-600 ml-2"
+                                          >
+                                            ✕
+                                          </button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {/* Créancier personne physique */}
+                          <div className="space-y-2">
+                            <Label>Nom *</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.nom}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, nom: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Prénom *</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.prenom}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, prenom: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Adresse</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.adresse}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, adresse: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date de naissance</Label>
+                            <Input
+                              type="date"
+                              value={mainleveeData.creancierPersonne.dateNaissance}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, dateNaissance: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Lieu de naissance</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.lieuNaissance}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, lieuNaissance: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nationalité</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.nationalite}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, nationalite: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Profession</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.profession}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, profession: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Situation familiale</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.statutMatrimonial}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, statutMatrimonial: e.target.value}
+                              })}
+                              placeholder="Ex: Célibataire, Marié..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Type de pièce d'identité</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.typeIdentite}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, typeIdentite: e.target.value}
+                              })}
+                              placeholder="Ex: CNI, Passeport..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro de pièce d'identité</Label>
+                            <Input
+                              value={mainleveeData.creancierPersonne.numeroIdentite}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                creancierPersonne: {...mainleveeData.creancierPersonne, numeroIdentite: e.target.value}
+                              })}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 3. Débiteurs hypothécaires - À CONTINUER */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">👥 Débiteurs hypothécaires (emprunteurs)</h3>
+                    <p className="text-sm text-muted-foreground">Les personnes qui avaient contracté le prêt</p>
+                    
+                    {mainleveeData.debiteurs.map((debiteur, index) => (
+                      <div key={debiteur.id} className="p-4 border rounded-lg space-y-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium">Débiteur #{index + 1}</h4>
+                          {mainleveeData.debiteurs.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                setMainleveeData({
+                                  ...mainleveeData,
+                                  debiteurs: mainleveeData.debiteurs.filter(d => d.id !== debiteur.id)
+                                });
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Sélection client pour ce débiteur - même logique que Convention d'indivision */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Ce débiteur est-il votre client ?</Label>
+                            <RadioGroup
+                              value={debiteur.isClient ? "client" : "autre"}
+                              onValueChange={(value) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], isClient: value === "client"};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            >
+                              <div className="flex gap-4">
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="client" id={`deb_client_${debiteur.id}`} />
+                                  <Label htmlFor={`deb_client_${debiteur.id}`} className="cursor-pointer">Oui (client)</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="autre" id={`deb_autre_${debiteur.id}`} />
+                                  <Label htmlFor={`deb_autre_${debiteur.id}`} className="cursor-pointer">Non (autre partie)</Label>
+                                </div>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          {debiteur.isClient && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Sélectionner le client *</Label>
+                              <Select
+                                value={debiteur.clientId}
+                                onValueChange={async (value) => {
+                                  const selectedClient = clients.find(c => c.id === value);
+                                  const newDebiteurs = [...mainleveeData.debiteurs];
+                                  const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                  
+                                  if (selectedClient) {
+                                    let situationFamiliale = selectedClient.situation_matrimoniale || "";
+                                    let regimeMatrimonial = "";
+                                    
+                                    if (selectedClient.situation_familiale) {
+                                      if (typeof selectedClient.situation_familiale === 'object') {
+                                        const sitFam = selectedClient.situation_familiale as any;
+                                        situationFamiliale = selectedClient.situation_matrimoniale || sitFam.situation_familiale || "";
+                                        regimeMatrimonial = sitFam.regime_matrimonial || "";
+                                      }
+                                    }
+
+                                    newDebiteurs[idx] = {
+                                      ...newDebiteurs[idx],
+                                      clientId: value,
+                                      nom: selectedClient.nom || "",
+                                      prenom: selectedClient.prenom || "",
+                                      adresse: selectedClient.adresse || "",
+                                      dateNaissance: selectedClient.date_naissance || "",
+                                      lieuNaissance: selectedClient.lieu_naissance || "",
+                                      nationalite: selectedClient.nationalite || "",
+                                      profession: selectedClient.profession || "",
+                                      situationFamiliale: situationFamiliale,
+                                      regimeMatrimonial: regimeMatrimonial,
+                                      typeIdentite: selectedClient.type_identite || "",
+                                      numeroIdentite: selectedClient.numero_identite || "",
+                                    };
+
+                                    // Auto-load identité
+                                    if (selectedClient.id_doc_path) {
+                                      try {
+                                        const { data, error } = await supabase.storage
+                                          .from('documents')
+                                          .download(selectedClient.id_doc_path);
+                                        
+                                        if (data && !error) {
+                                          const fileName = selectedClient.id_doc_path.split('/').pop() || 'identite.pdf';
+                                          const file = new File([data], fileName, { type: data.type });
+                                          setMainleveeDebiteursIdentiteFiles(prev => ({
+                                            ...prev,
+                                            [debiteur.id]: [file]
+                                          }));
+                                        }
+                                      } catch (error) {
+                                        console.error('Erreur chargement identité:', error);
+                                      }
+                                    } else {
+                                      // Chercher dans client_documents
+                                      try {
+                                        const { data: docs, error: docsError } = await supabase
+                                          .from('client_documents')
+                                          .select('file_path, file_name')
+                                          .eq('client_id', selectedClient.id)
+                                          .eq('document_type', 'piece_identite')
+                                          .order('uploaded_at', { ascending: false })
+                                          .limit(1);
+                                        
+                                        if (docs && docs.length > 0) {
+                                          const { data, error } = await supabase.storage
+                                            .from('documents')
+                                            .download(docs[0].file_path);
+                                          
+                                          if (data && !error) {
+                                            const file = new File([data], docs[0].file_name, { type: data.type });
+                                            setMainleveeDebiteursIdentiteFiles(prev => ({
+                                              ...prev,
+                                              [debiteur.id]: [file]
+                                            }));
+                                          }
+                                        }
+                                      } catch (error) {
+                                        console.error('Erreur recherche client_documents:', error);
+                                      }
+                                    }
+                                  }
+                                  setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                                <SelectContent>
+                                  {clients.map((client) => (
+                                    <SelectItem key={client.id} value={client.id}>
+                                      {client.nom} {client.prenom}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+
+                              {debiteur.clientId && (
+                                <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800">
+                                  ✓ Informations chargées depuis la fiche client
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="space-y-2">
+                            <Label>Nom</Label>
+                            <Input
+                              value={debiteur.nom}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], nom: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Prénom</Label>
+                            <Input
+                              value={debiteur.prenom}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], prenom: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse personnelle</Label>
+                            <Input
+                              value={debiteur.adresse}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], adresse: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date de naissance</Label>
+                            <Input
+                              type="date"
+                              value={debiteur.dateNaissance}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], dateNaissance: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Lieu de naissance</Label>
+                            <Input
+                              value={debiteur.lieuNaissance}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], lieuNaissance: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nationalité</Label>
+                            <Input
+                              value={debiteur.nationalite}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], nationalite: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Profession</Label>
+                            <Input
+                              value={debiteur.profession}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], profession: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Situation familiale</Label>
+                            <Input
+                              value={debiteur.situationFamiliale}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], situationFamiliale: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                              placeholder="Ex: Célibataire, Marié..."
+                            />
+                          </div>
+
+                          {debiteur.situationFamiliale && ['marié', 'marie', 'mariée', 'pacsé', 'pacse', 'pacs'].some(term => debiteur.situationFamiliale.toLowerCase().includes(term)) && (
+                            <div className="space-y-2">
+                              <Label>Régime matrimonial</Label>
+                              <Input
+                                value={debiteur.regimeMatrimonial}
+                                onChange={(e) => {
+                                  const newDebiteurs = [...mainleveeData.debiteurs];
+                                  const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                  newDebiteurs[idx] = {...newDebiteurs[idx], regimeMatrimonial: e.target.value};
+                                  setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                                }}
+                                placeholder="Ex: Communauté légale..."
+                              />
+                            </div>
+                          )}
+
+                          <div className="space-y-2">
+                            <Label>Type de pièce d'identité</Label>
+                            <Input
+                              value={debiteur.typeIdentite}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], typeIdentite: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                              placeholder="CNI, Passeport..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro de pièce d'identité</Label>
+                            <Input
+                              value={debiteur.numeroIdentite}
+                              onChange={(e) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], numeroIdentite: e.target.value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Qualité dans l'acte</Label>
+                            <Select 
+                              value={debiteur.qualite} 
+                              onValueChange={(value) => {
+                                const newDebiteurs = [...mainleveeData.debiteurs];
+                                const idx = newDebiteurs.findIndex(d => d.id === debiteur.id);
+                                newDebiteurs[idx] = {...newDebiteurs[idx], qualite: value};
+                                setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="emprunteur">Emprunteur</SelectItem>
+                                <SelectItem value="cofinanceur">Cofinanceur</SelectItem>
+                                <SelectItem value="caution_hypothecaire">Caution hypothécaire</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Upload pièces débiteur */}
+                          {!debiteur.isClient && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>📎 Pièce d'identité du débiteur</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id={`mainlevee_deb_identite_${debiteur.id}`}
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setMainleveeDebiteursIdentiteFiles(prev => ({
+                                      ...prev,
+                                      [debiteur.id]: [...(prev[debiteur.id] || []), ...files]
+                                    }));
+                                  }}
+                                />
+                                <label htmlFor={`mainlevee_deb_identite_${debiteur.id}`} className="cursor-pointer text-sm text-muted-foreground">
+                                  Cliquez pour joindre la pièce d'identité
+                                </label>
+                              </div>
+                            </div>
+                          )}
+
+                          {debiteur.isClient && mainleveeDebiteursIdentiteFiles[debiteur.id]?.length > 0 && (
+                            <div className="md:col-span-2 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800">
+                              ✓ Pièce d'identité chargée depuis la fiche client
+                            </div>
+                          )}
+
+                          {mainleveeDebiteursIdentiteFiles[debiteur.id]?.length > 0 && (
+                            <div className="md:col-span-2 space-y-1">
+                              {mainleveeDebiteursIdentiteFiles[debiteur.id].map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-2 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setMainleveeDebiteursIdentiteFiles(prev => ({
+                                        ...prev,
+                                        [debiteur.id]: prev[debiteur.id].filter((_, i) => i !== idx)
+                                      }));
+                                    }}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    Supprimer
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
+                      onClick={() => {
+                        const newId = Math.max(...mainleveeData.debiteurs.map(d => d.id), 0) + 1;
+                        setMainleveeData({
+                          ...mainleveeData,
+                          debiteurs: [...mainleveeData.debiteurs, {
+                            id: newId,
+                            isClient: false,
+                            clientId: "",
+                            nom: "",
+                            prenom: "",
+                            adresse: "",
+                            dateNaissance: "",
+                            lieuNaissance: "",
+                            nationalite: "",
+                            profession: "",
+                            situationFamiliale: "",
+                            regimeMatrimonial: "",
+                            typeIdentite: "",
+                            numeroIdentite: "",
+                            qualite: "emprunteur",
+                          }]
+                        });
+                      }}
+                    >
+                      + Ajouter un débiteur
+                    </Button>
+                  </div>
+
+                  {/* 4. Acte constitutif de l'hypothèque */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📄 Informations sur l'acte constitutif</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <h4 className="font-medium md:col-span-2">A. Acte d'origine</h4>
+                      
+                      <div className="space-y-2">
+                        <Label>Date de signature de l'acte</Label>
+                        <Input
+                          type="date"
+                          value={mainleveeData.acteOrigine.dateSignature}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            acteOrigine: {...mainleveeData.acteOrigine, dateSignature: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nature de l'acte</Label>
+                        <Select 
+                          value={mainleveeData.acteOrigine.natureActe} 
+                          onValueChange={(value) => setMainleveeData({
+                            ...mainleveeData,
+                            acteOrigine: {...mainleveeData.acteOrigine, natureActe: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="acte_notarie">Acte notarié</SelectItem>
+                            <SelectItem value="acte_sous_seing_prive">Acte sous seing privé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Notaire ou auteur de l'acte</Label>
+                        <Input
+                          value={mainleveeData.acteOrigine.notaireAuteur}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            acteOrigine: {...mainleveeData.acteOrigine, notaireAuteur: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de publication au SPF</Label>
+                        <Input
+                          type="date"
+                          value={mainleveeData.acteOrigine.datePublication}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            acteOrigine: {...mainleveeData.acteOrigine, datePublication: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Numéro de publication</Label>
+                        <Input
+                          value={mainleveeData.acteOrigine.numeroPublication}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            acteOrigine: {...mainleveeData.acteOrigine, numeroPublication: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <h4 className="font-medium md:col-span-2 mt-4">B. Conditions du prêt</h4>
+
+                      <div className="space-y-2">
+                        <Label>Montant initial du prêt (€)</Label>
+                        <Input
+                          type="number"
+                          value={mainleveeData.conditionsPret.montantInitial}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            conditionsPret: {...mainleveeData.conditionsPret, montantInitial: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Taux d'intérêt</Label>
+                        <Input
+                          value={mainleveeData.conditionsPret.tauxInteret}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            conditionsPret: {...mainleveeData.conditionsPret, tauxInteret: e.target.value}
+                          })}
+                          placeholder="Ex: 1,5%"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Durée du prêt</Label>
+                        <Input
+                          value={mainleveeData.conditionsPret.dureePret}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            conditionsPret: {...mainleveeData.conditionsPret, dureePret: e.target.value}
+                          })}
+                          placeholder="Ex: 20 ans"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Numéro de contrat de prêt</Label>
+                        <Input
+                          value={mainleveeData.conditionsPret.numeroContrat}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            conditionsPret: {...mainleveeData.conditionsPret, numeroContrat: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Établissement prêteur</Label>
+                        <Input
+                          value={mainleveeData.conditionsPret.etablissementPreteur}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            conditionsPret: {...mainleveeData.conditionsPret, etablissementPreteur: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Numéro de dossier</Label>
+                        <Input
+                          value={mainleveeData.conditionsPret.numeroDossier}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            conditionsPret: {...mainleveeData.conditionsPret, numeroDossier: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5. Bien(s) hypothéqué(s) */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🏠 Description du/des bien(s) hypothéqué(s)</h3>
+                    
+                    {mainleveeData.biens.map((bien, index) => (
+                      <div key={bien.id} className="p-4 border rounded-lg space-y-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium">Bien #{index + 1}</h4>
+                          {mainleveeData.biens.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                setMainleveeData({
+                                  ...mainleveeData,
+                                  biens: mainleveeData.biens.filter(b => b.id !== bien.id)
+                                });
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse complète du bien</Label>
+                            <Input
+                              value={bien.adresse}
+                              onChange={(e) => {
+                                const newBiens = [...mainleveeData.biens];
+                                const idx = newBiens.findIndex(b => b.id === bien.id);
+                                newBiens[idx] = {...newBiens[idx], adresse: e.target.value};
+                                setMainleveeData({...mainleveeData, biens: newBiens});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Type de bien</Label>
+                            <Select 
+                              value={bien.typeBien} 
+                              onValueChange={(value) => {
+                                const newBiens = [...mainleveeData.biens];
+                                const idx = newBiens.findIndex(b => b.id === bien.id);
+                                newBiens[idx] = {...newBiens[idx], typeBien: value};
+                                setMainleveeData({...mainleveeData, biens: newBiens});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="maison">Maison</SelectItem>
+                                <SelectItem value="appartement">Appartement</SelectItem>
+                                <SelectItem value="terrain">Terrain</SelectItem>
+                                <SelectItem value="locaux">Locaux commerciaux</SelectItem>
+                                <SelectItem value="dependances">Dépendances</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Description du bien</Label>
+                            <Input
+                              value={bien.descriptionBien}
+                              onChange={(e) => {
+                                const newBiens = [...mainleveeData.biens];
+                                const idx = newBiens.findIndex(b => b.id === bien.id);
+                                newBiens[idx] = {...newBiens[idx], descriptionBien: e.target.value};
+                                setMainleveeData({...mainleveeData, biens: newBiens});
+                              }}
+                              placeholder="Ex: Villa 5 pièces..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Section cadastrale</Label>
+                            <Input
+                              value={bien.cadastreSection}
+                              onChange={(e) => {
+                                const newBiens = [...mainleveeData.biens];
+                                const idx = newBiens.findIndex(b => b.id === bien.id);
+                                newBiens[idx] = {...newBiens[idx], cadastreSection: e.target.value};
+                                setMainleveeData({...mainleveeData, biens: newBiens});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro de parcelle</Label>
+                            <Input
+                              value={bien.cadastreParcelle}
+                              onChange={(e) => {
+                                const newBiens = [...mainleveeData.biens];
+                                const idx = newBiens.findIndex(b => b.id === bien.id);
+                                newBiens[idx] = {...newBiens[idx], cadastreParcelle: e.target.value};
+                                setMainleveeData({...mainleveeData, biens: newBiens});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Contenance (surface)</Label>
+                            <Input
+                              value={bien.cadastreContenance}
+                              onChange={(e) => {
+                                const newBiens = [...mainleveeData.biens];
+                                const idx = newBiens.findIndex(b => b.id === bien.id);
+                                newBiens[idx] = {...newBiens[idx], cadastreContenance: e.target.value};
+                                setMainleveeData({...mainleveeData, biens: newBiens});
+                              }}
+                              placeholder="Ex: 500 m²"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Est-ce en copropriété ?</Label>
+                            <RadioGroup
+                              value={bien.estCopropriete}
+                              onValueChange={(value) => {
+                                const newBiens = [...mainleveeData.biens];
+                                const idx = newBiens.findIndex(b => b.id === bien.id);
+                                newBiens[idx] = {...newBiens[idx], estCopropriete: value};
+                                setMainleveeData({...mainleveeData, biens: newBiens});
+                              }}
+                            >
+                              <div className="flex gap-4">
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="oui" id={`copro_oui_${bien.id}`} />
+                                  <Label htmlFor={`copro_oui_${bien.id}`} className="cursor-pointer">Oui</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="non" id={`copro_non_${bien.id}`} />
+                                  <Label htmlFor={`copro_non_${bien.id}`} className="cursor-pointer">Non</Label>
+                                </div>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          {bien.estCopropriete === "oui" && (
+                            <>
+                              <div className="space-y-2">
+                                <Label>Numéro de lot</Label>
+                                <Input
+                                  value={bien.numeroLot}
+                                  onChange={(e) => {
+                                    const newBiens = [...mainleveeData.biens];
+                                    const idx = newBiens.findIndex(b => b.id === bien.id);
+                                    newBiens[idx] = {...newBiens[idx], numeroLot: e.target.value};
+                                    setMainleveeData({...mainleveeData, biens: newBiens});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Quote-part dans les parties communes</Label>
+                                <Input
+                                  value={bien.quotePart}
+                                  onChange={(e) => {
+                                    const newBiens = [...mainleveeData.biens];
+                                    const idx = newBiens.findIndex(b => b.id === bien.id);
+                                    newBiens[idx] = {...newBiens[idx], quotePart: e.target.value};
+                                    setMainleveeData({...mainleveeData, biens: newBiens});
+                                  }}
+                                  placeholder="Ex: 50/1000"
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
+                      onClick={() => {
+                        const newId = Math.max(...mainleveeData.biens.map(b => b.id), 0) + 1;
+                        setMainleveeData({
+                          ...mainleveeData,
+                          biens: [...mainleveeData.biens, {
+                            id: newId,
+                            adresse: "",
+                            descriptionBien: "",
+                            typeBien: "",
+                            cadastreSection: "",
+                            cadastreParcelle: "",
+                            cadastreContenance: "",
+                            estCopropriete: "non",
+                            numeroLot: "",
+                            quotePart: "",
+                          }]
+                        });
+                      }}
+                    >
+                      + Ajouter un bien
+                    </Button>
+                  </div>
+
+                  {/* 6. Déclaration du créancier */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">✅ Déclaration du créancier</h3>
+                    <div className="p-4 bg-muted/30 rounded-lg space-y-3">
+                      <p className="text-sm text-muted-foreground">Le créancier déclare :</p>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_payee"
+                            checked={mainleveeData.declaration.creancePayee}
+                            onChange={(e) => setMainleveeData({
+                              ...mainleveeData,
+                              declaration: {...mainleveeData.declaration, creancePayee: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_payee" className="cursor-pointer">Que la créance est intégralement payée</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_aucune_dette"
+                            checked={mainleveeData.declaration.aucuneDette}
+                            onChange={(e) => setMainleveeData({
+                              ...mainleveeData,
+                              declaration: {...mainleveeData.declaration, aucuneDette: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_aucune_dette" className="cursor-pointer">Qu'il n'existe plus de dette en principal, intérêts, pénalités</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_consent"
+                            checked={mainleveeData.declaration.consentMainlevee}
+                            onChange={(e) => setMainleveeData({
+                              ...mainleveeData,
+                              declaration: {...mainleveeData.declaration, consentMainlevee: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_consent" className="cursor-pointer">Qu'il consent à la mainlevée totale/partielle</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_renonce"
+                            checked={mainleveeData.declaration.renonciation}
+                            onChange={(e) => setMainleveeData({
+                              ...mainleveeData,
+                              declaration: {...mainleveeData.declaration, renonciation: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_renonce" className="cursor-pointer">Qu'il renonce à l'inscription hypothécaire</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decl_radiation"
+                            checked={mainleveeData.declaration.demandeRadiation}
+                            onChange={(e) => setMainleveeData({
+                              ...mainleveeData,
+                              declaration: {...mainleveeData.declaration, demandeRadiation: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="decl_radiation" className="cursor-pointer">Qu'il demande la radiation au SPF</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7. Mandat/Procuration */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📝 Mandat ou procuration</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Y a-t-il un mandataire ?</Label>
+                        <RadioGroup
+                          value={mainleveeData.mandataire.existe}
+                          onValueChange={(value) => setMainleveeData({
+                            ...mainleveeData,
+                            mandataire: {...mainleveeData.mandataire, existe: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="oui" id="mand_oui" />
+                              <Label htmlFor="mand_oui" className="cursor-pointer">Oui</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="non" id="mand_non" />
+                              <Label htmlFor="mand_non" className="cursor-pointer">Non</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {mainleveeData.mandataire.existe === "oui" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Nom du mandataire</Label>
+                            <Input
+                              value={mainleveeData.mandataire.nom}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                mandataire: {...mainleveeData.mandataire, nom: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Prénom du mandataire</Label>
+                            <Input
+                              value={mainleveeData.mandataire.prenom}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                mandataire: {...mainleveeData.mandataire, prenom: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Fonction</Label>
+                            <Input
+                              value={mainleveeData.mandataire.fonction}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                mandataire: {...mainleveeData.mandataire, fonction: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Pouvoirs du mandataire</Label>
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="pouvoir_signer"
+                                  checked={mainleveeData.mandataire.pouvoirSigner}
+                                  onChange={(e) => setMainleveeData({
+                                    ...mainleveeData,
+                                    mandataire: {...mainleveeData.mandataire, pouvoirSigner: e.target.checked}
+                                  })}
+                                  className="rounded"
+                                />
+                                <Label htmlFor="pouvoir_signer" className="cursor-pointer">Signer la mainlevée</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="pouvoir_deposer"
+                                  checked={mainleveeData.mandataire.pouvoirDeposer}
+                                  onChange={(e) => setMainleveeData({
+                                    ...mainleveeData,
+                                    mandataire: {...mainleveeData.mandataire, pouvoirDeposer: e.target.checked}
+                                  })}
+                                  className="rounded"
+                                />
+                                <Label htmlFor="pouvoir_deposer" className="cursor-pointer">Déposer au SPF</Label>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 8. Consentement débiteur */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">👤 Consentement du débiteur</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Consentement du débiteur requis ?</Label>
+                        <RadioGroup
+                          value={mainleveeData.consentementDebiteur.requis}
+                          onValueChange={(value) => setMainleveeData({
+                            ...mainleveeData,
+                            consentementDebiteur: {...mainleveeData.consentementDebiteur, requis: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="oui" id="consent_oui" />
+                              <Label htmlFor="consent_oui" className="cursor-pointer">Oui</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="non" id="consent_non" />
+                              <Label htmlFor="consent_non" className="cursor-pointer">Non</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {mainleveeData.consentementDebiteur.requis === "oui" && (
+                        <>
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="accord_rad"
+                                checked={mainleveeData.consentementDebiteur.accordRadiation}
+                                onChange={(e) => setMainleveeData({
+                                  ...mainleveeData,
+                                  consentementDebiteur: {...mainleveeData.consentementDebiteur, accordRadiation: e.target.checked}
+                                })}
+                                className="rounded"
+                              />
+                              <Label htmlFor="accord_rad" className="cursor-pointer">Accord pour la radiation</Label>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Déclarations complémentaires</Label>
+                            <Textarea
+                              rows={3}
+                              value={mainleveeData.consentementDebiteur.declarationsComplementaires}
+                              onChange={(e) => setMainleveeData({
+                                ...mainleveeData,
+                                consentementDebiteur: {...mainleveeData.consentementDebiteur, declarationsComplementaires: e.target.value}
+                              })}
+                              placeholder="Ex: Aucune autre inscription liée..."
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 10. Frais et débours */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">💰 Frais et débours</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Frais de radiation (€)</Label>
+                        <Input
+                          type="number"
+                          value={mainleveeData.frais.fraisRadiation}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            frais: {...mainleveeData.frais, fraisRadiation: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Honoraires (€)</Label>
+                        <Input
+                          type="number"
+                          value={mainleveeData.frais.honoraires}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            frais: {...mainleveeData.frais, honoraires: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Timbres fiscaux (€)</Label>
+                        <Input
+                          type="number"
+                          value={mainleveeData.frais.timbresFiscaux}
+                          onChange={(e) => setMainleveeData({
+                            ...mainleveeData,
+                            frais: {...mainleveeData.frais, timbresFiscaux: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 11. Pièces justificatives obligatoires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📎 Pièces justificatives obligatoires</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Copie acte constitutif */}
+                      <div className="space-y-2">
+                        <Label>Copie de l'acte constitutif</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            multiple
+                            className="hidden"
+                            id="mainlevee_acte_upload"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              setMainleveeActeConstitutifFiles(prev => [...prev, ...files]);
+                            }}
+                          />
+                          <label htmlFor="mainlevee_acte_upload" className="cursor-pointer text-sm text-muted-foreground">
+                            Cliquez pour joindre l'acte constitutif
+                          </label>
+                          {mainleveeActeConstitutifFiles.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {mainleveeActeConstitutifFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setMainleveeActeConstitutifFiles(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Copie inscription hypothécaire */}
+                      <div className="space-y-2">
+                        <Label>Copie de l'inscription hypothécaire (SPF)</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            multiple
+                            className="hidden"
+                            id="mainlevee_inscription_upload"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              setMainleveeInscriptionHypothequeFiles(prev => [...prev, ...files]);
+                            }}
+                          />
+                          <label htmlFor="mainlevee_inscription_upload" className="cursor-pointer text-sm text-muted-foreground">
+                            Cliquez pour joindre l'inscription
+                          </label>
+                          {mainleveeInscriptionHypothequeFiles.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {mainleveeInscriptionHypothequeFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setMainleveeInscriptionHypothequeFiles(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Attestation remboursement */}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Attestation de remboursement total du prêt</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            multiple
+                            className="hidden"
+                            id="mainlevee_attestation_upload"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              setMainleveeAttestationRemboursementFiles(prev => [...prev, ...files]);
+                            }}
+                          />
+                          <label htmlFor="mainlevee_attestation_upload" className="cursor-pointer text-sm text-muted-foreground">
+                            Cliquez pour joindre l'attestation de remboursement
+                          </label>
+                          {mainleveeAttestationRemboursementFiles.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {mainleveeAttestationRemboursementFiles.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                  <span className="truncate">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setMainleveeAttestationRemboursementFiles(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-red-600 ml-2"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
