@@ -770,6 +770,7 @@ export default function Contrats() {
       telephone: "",
       quotePart: "", // % de propriété
       origineQuotePart: "", // heritage / achat / donation...
+      origineQuotePartAutre: "", // Si origine = autre
     }],
     
     // Description du bien
@@ -8555,7 +8556,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="text-primary"
+                        className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
                         onClick={() => {
                           const newId = Math.max(...indivisionData.indivisaires.map(i => i.id), 0) + 1;
                           setIndivisionData({
@@ -8579,6 +8580,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               telephone: "",
                               quotePart: "",
                               origineQuotePart: "",
+                              origineQuotePartAutre: "",
                             }]
                           });
                         }}
@@ -8646,7 +8648,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                 <Label>Sélectionner le client *</Label>
                                 <Select
                                   value={indivisaire.clientId}
-                                  onValueChange={(value) => {
+                                  onValueChange={async (value) => {
                                     const selectedClient = clients.find(c => c.id === value);
                                     const newIndivisaires = [...indivisionData.indivisaires];
                                     const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
@@ -8661,11 +8663,37 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                         lieuNaissance: selectedClient.lieu_naissance || "",
                                         nationalite: selectedClient.nationalite || "",
                                         profession: selectedClient.profession || "",
+                                        statutMatrimonial: selectedClient.statut_matrimonial || "",
+                                        regimeMatrimonial: selectedClient.regime_matrimonial || "",
                                         typeIdentite: selectedClient.type_identite || "",
                                         numeroIdentite: selectedClient.numero_identite || "",
                                         email: selectedClient.email || "",
                                         telephone: selectedClient.telephone || "",
                                       };
+                                      
+                                      // Charger automatiquement la carte d'identité depuis Supabase storage
+                                      if (selectedClient.identite_url) {
+                                        try {
+                                          const { data, error } = await supabase.storage
+                                            .from('documents')
+                                            .download(selectedClient.identite_url);
+                                          
+                                          if (data && !error) {
+                                            const fileName = selectedClient.identite_url.split('/').pop() || 'identite.pdf';
+                                            const file = new File([data], fileName, { type: data.type });
+                                            setIndivisairesIdentiteFiles(prev => ({
+                                              ...prev,
+                                              [indivisaire.id]: [file]
+                                            }));
+                                            setIndivisairesIdentiteUrls(prev => ({
+                                              ...prev,
+                                              [indivisaire.id]: [selectedClient.identite_url]
+                                            }));
+                                          }
+                                        } catch (error) {
+                                          console.error('Erreur chargement carte identité:', error);
+                                        }
+                                      }
                                     }
                                     setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
                                   }}
@@ -8870,17 +8898,41 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                           </div>
                           <div className="space-y-2">
                             <Label>Origine de la quote-part</Label>
-                            <Input
+                            <Select
                               value={indivisaire.origineQuotePart}
-                              onChange={(e) => {
+                              onValueChange={(value) => {
                                 const newIndivisaires = [...indivisionData.indivisaires];
                                 const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
-                                newIndivisaires[idx] = {...newIndivisaires[idx], origineQuotePart: e.target.value};
+                                newIndivisaires[idx] = {...newIndivisaires[idx], origineQuotePart: value};
                                 setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
                               }}
-                              placeholder="Ex: Héritage, achat..."
-                            />
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="heritage">Héritage</SelectItem>
+                                <SelectItem value="achat">Achat</SelectItem>
+                                <SelectItem value="donation">Donation</SelectItem>
+                                <SelectItem value="succession">Succession</SelectItem>
+                                <SelectItem value="investissement">Investissement</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
+                          {indivisaire.origineQuotePart === "autre" && (
+                            <div className="space-y-2">
+                              <Label>Préciser l'origine</Label>
+                              <Input
+                                value={indivisaire.origineQuotePartAutre || ""}
+                                onChange={(e) => {
+                                  const newIndivisaires = [...indivisionData.indivisaires];
+                                  const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                  newIndivisaires[idx] = {...newIndivisaires[idx], origineQuotePartAutre: e.target.value};
+                                  setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                }}
+                                placeholder="Ex: Partage amiable..."
+                              />
+                            </div>
+                          )}
 
                           {/* Upload pièces jointes pour cet indivisaire */}
                           <div className="space-y-2 md:col-span-2">
