@@ -110,6 +110,8 @@ export default function Contrats() {
   const [bailCommercialDiagnosticsFiles, setBailCommercialDiagnosticsFiles] = useState<File[]>([]); // Diagnostics bail commercial
   const [bailCommercialCautionFiles, setBailCommercialCautionFiles] = useState<File[]>([]); // Acte de caution
   const [bailCommercialEtatLieuxFiles, setBailCommercialEtatLieuxFiles] = useState<File[]>([]); // État des lieux
+  const [bailCommercialCautionIdFiles, setBailCommercialCautionIdFiles] = useState<File[]>([]); // Pièce d'identité caution
+  const [bailCommercialAssuranceFiles, setBailCommercialAssuranceFiles] = useState<File[]>([]); // Attestation d'assurance
   const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
   const [bailDiagnosticsFiles, setBailDiagnosticsFiles] = useState<File[]>([]);
   
@@ -535,10 +537,13 @@ export default function Contrats() {
     locataireMandatairePrenom: "",
     locataireMandataireTypePouvoir: "",
     
-    // Activité
+    // Activité (1. Destination des lieux)
     activitePrincipale: "",
     activitesAnnexes: "",
     destinationBail: "",
+    destinationContractuelle: "", // Description précise des activités autorisées
+    exclusivitesEventuelles: "", // Exclusivités accordées
+    interdictionsUsage: "", // Activités interdites
     clauseExclusivite: "",
     clauseNonConcurrence: "",
     
@@ -565,26 +570,43 @@ export default function Contrats() {
     dureeTotale: "",
     renouvellementAuto: "",
     
-    // Conditions financières
+    // Conditions financières (2. Clause de révision du loyer)
     loyerAnnuelHT: "",
     loyerMensuelHT: "",
     modalitePaiement: "", // mensuel, trimestriel
     typeIndexation: "", // ILC, ILAT
+    indiceApplicable: "", // ILC / ILAT
+    baseCalculIndice: "", // Année de base
+    modaliteRevision: "", // annuelle / triennale
     chargesMensuelles: "",
     typeCharges: "", // provisions, forfait
-    depotGarantie: "",
+    modeReglementCharges: "", // Forfait ou Provision avec régularisation
+    depotGarantie: "", // 3. Dépôt de garantie
+    montantDepotGarantie: "",
+    restitutionDepot: "", // Modalités de restitution
     modePaiementLoyer: "", // virement, prelevement, cheque
     ibanBailleur: "",
     
-    // Charges & travaux
+    // Charges & travaux (4. Travaux et réparations)
     chargesLocataire: [] as string[], // eau, electricite, chauffage, entretien, copro, teom, taxe_fonciere
     chargesBailleur: [] as string[], // gros_travaux, mise_conformite, ravalement, remplacement, structurel
+    chargesSupporteesBailleur: "", // Description des charges du bailleur
+    chargesSupporteesPreneur: "", // Description des charges du preneur
+    travauxChargeBailleur: "", // Travaux à la charge du bailleur
+    travauxChargePreneur: "", // Travaux à la charge du preneur
     compteursIndividuels: "",
     
-    // Garanties
+    // 5. Impôts et taxes
+    taxeFonciereSupporteePar: "", // bailleur ou locataire
+    taxesRecuperables: "", // Description des taxes récupérables
+    
+    // Garanties (9. Garanties)
     cautionPersonnelle: "",
-    garantieBancaire: "",
+    cautionPersonnelleOuiNon: "", // Oui / Non
+    nomCaution: "",
+    prenomCaution: "",
     montantGaranti: "",
+    garantieBancaire: "",
     dureeGarantie: "",
     
     // Diagnostics
@@ -595,8 +617,9 @@ export default function Contrats() {
     diagnosticGaz: "",
     accessibiliteHandicapes: "",
     
-    // État des lieux
+    // État des lieux (6. État des lieux)
     etatLieuxJoint: "",
+    etatLieuxRealise: "", // Oui / Non
     etatEquipements: "",
     
     // Remise des clés
@@ -604,12 +627,19 @@ export default function Contrats() {
     typesCles: [] as string[],
     codesAcces: "",
     
-    // Clauses juridiques
+    // Clauses juridiques (8. Sous-location & cession)
     clauseResolutoire: "",
     resiliationTriennale: "",
     clauseAssurances: "",
-    souslocationAutorisee: "",
-    cessionBailAutorisee: "",
+    souslocationAutorisee: "", // Oui / Non
+    souslocationConditions: "", // Conditions si autorisée
+    cessionBailAutorisee: "", // Oui / Non
+    cessionConditions: "", // Conditions (agrément du bailleur...)
+    
+    // 10. Assurance obligatoire
+    assuranceMultirisqueSouscrite: "", // Oui / Non
+    nomAssureur: "",
+    numeropolice: "",
     
     // Infos complémentaires
     particularitesLocal: "",
@@ -7295,6 +7325,38 @@ DURÉE DU BAIL
                           placeholder="Ex: Commerce de détail, Restauration..."
                         />
                       </div>
+
+                      {/* 1. Destination des lieux */}
+                      <div className="space-y-2">
+                        <Label>Destination contractuelle précise *</Label>
+                        <Textarea 
+                          value={bailCommercialData.destinationContractuelle} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, destinationContractuelle: e.target.value})} 
+                          placeholder="Ex: Vente et préparation de produits alimentaires à consommer sur place ou à emporter"
+                          rows={3}
+                        />
+                        <p className="text-xs text-muted-foreground">Décrivez précisément les activités autorisées</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Exclusivités éventuelles</Label>
+                        <Textarea 
+                          value={bailCommercialData.exclusivitesEventuelles} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, exclusivitesEventuelles: e.target.value})} 
+                          placeholder="Ex: Exclusivité de vente de produits bio dans l'immeuble"
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Interdictions d'usage</Label>
+                        <Textarea 
+                          value={bailCommercialData.interdictionsUsage} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, interdictionsUsage: e.target.value})} 
+                          placeholder="Ex: À l'exclusion de toute activité bruyante ou nuisible"
+                          rows={2}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -7316,6 +7378,81 @@ DURÉE DU BAIL
                           type="number"
                           value={bailCommercialData.chargesMensuelles} 
                           onChange={(e) => setBailCommercialData({...bailCommercialData, chargesMensuelles: e.target.value})} 
+                        />
+                      </div>
+
+                      {/* 2. Clause de révision du loyer */}
+                      <div className="space-y-2 md:col-span-2 mt-4">
+                        <h4 className="font-medium">Révision du loyer</h4>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Indice applicable *</Label>
+                        <Select 
+                          value={bailCommercialData.indiceApplicable} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, indiceApplicable: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ILC">ILC (Indice des Loyers Commerciaux)</SelectItem>
+                            <SelectItem value="ILAT">ILAT (Indice des Loyers des Activités Tertiaires)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Base de calcul de l'indice</Label>
+                        <Input 
+                          value={bailCommercialData.baseCalculIndice} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, baseCalculIndice: e.target.value})} 
+                          placeholder="Ex: Indice du 1er trimestre 2025"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Modalité de révision *</Label>
+                        <Select 
+                          value={bailCommercialData.modaliteRevision} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, modaliteRevision: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="annuelle">Annuelle</SelectItem>
+                            <SelectItem value="triennale">Triennale</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* 7. Charges récupérables */}
+                      <div className="space-y-2">
+                        <Label>Mode de règlement des charges *</Label>
+                        <Select 
+                          value={bailCommercialData.modeReglementCharges} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, modeReglementCharges: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="forfait">Forfait</SelectItem>
+                            <SelectItem value="provision">Provision avec régularisation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* 3. Dépôt de garantie */}
+                      <div className="space-y-2 md:col-span-2 mt-4">
+                        <h4 className="font-medium">Dépôt de garantie</h4>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Montant du dépôt de garantie (€)</Label>
+                        <Input 
+                          type="number"
+                          value={bailCommercialData.montantDepotGarantie} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, montantDepotGarantie: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Modalités de restitution</Label>
+                        <Input 
+                          value={bailCommercialData.restitutionDepot} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, restitutionDepot: e.target.value})} 
+                          placeholder="Ex: Dans les 30 jours suivant la restitution des lieux"
                         />
                       </div>
                     </div>
@@ -7347,6 +7484,412 @@ DURÉE DU BAIL
                           onChange={(e) => setBailCommercialData({...bailCommercialData, datePriseEffet: e.target.value})} 
                         />
                       </div>
+                    </div>
+                  </div>
+
+                  {/* 4. Travaux et réparations */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔧 Travaux et réparations</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Travaux à la charge du bailleur</Label>
+                        <Textarea 
+                          value={bailCommercialData.travauxChargeBailleur} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, travauxChargeBailleur: e.target.value})} 
+                          placeholder="Ex: Gros œuvre, ravalement, toiture, structure..."
+                          rows={3}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Travaux à la charge du preneur</Label>
+                        <Textarea 
+                          value={bailCommercialData.travauxChargePreneur} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, travauxChargePreneur: e.target.value})} 
+                          placeholder="Ex: Entretien courant, réparations locatives, aménagements intérieurs..."
+                          rows={3}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Charges supportées par le bailleur</Label>
+                        <Textarea 
+                          value={bailCommercialData.chargesSupporteesBailleur} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, chargesSupporteesBailleur: e.target.value})} 
+                          placeholder="Ex: Taxe foncière, gros entretien..."
+                          rows={2}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Charges supportées par le preneur</Label>
+                        <Textarea 
+                          value={bailCommercialData.chargesSupporteesPreneur} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, chargesSupporteesPreneur: e.target.value})} 
+                          placeholder="Ex: Eau, électricité, chauffage, taxe ordures ménagères..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5. Impôts et taxes */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">💰 Impôts et taxes</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Taxe foncière supportée par *</Label>
+                        <Select 
+                          value={bailCommercialData.taxeFonciereSupporteePar} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, taxeFonciereSupporteePar: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="bailleur">Bailleur</SelectItem>
+                            <SelectItem value="locataire">Locataire</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Taxes et contributions récupérables</Label>
+                        <Textarea 
+                          value={bailCommercialData.taxesRecuperables} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, taxesRecuperables: e.target.value})} 
+                          placeholder="Ex: TEOM, CFE..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6. État des lieux */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📋 État des lieux</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>État des lieux d'entrée réalisé ? *</Label>
+                        <Select 
+                          value={bailCommercialData.etatLieuxRealise} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, etatLieuxRealise: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.etatLieuxRealise === "oui" && (
+                        <div className="space-y-2">
+                          <Label>📎 État des lieux (PDF)</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="bail-commercial-etat-lieux-upload"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                if (files.length > 0) {
+                                  setBailCommercialEtatLieuxFiles(files);
+                                  toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                }
+                                e.target.value = '';
+                              }}
+                            />
+                            <label htmlFor="bail-commercial-etat-lieux-upload" className="cursor-pointer flex items-center gap-3">
+                              <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Joindre l'état des lieux</p>
+                                <p className="text-xs text-muted-foreground">PDF uniquement</p>
+                              </div>
+                            </label>
+                          </div>
+                          {bailCommercialEtatLieuxFiles.length > 0 && (
+                            <div className="space-y-2 mt-2">
+                              {bailCommercialEtatLieuxFiles.map((file, index) => (
+                                <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                  <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm flex-1 truncate">{file.name}</span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => {
+                                      setBailCommercialEtatLieuxFiles(prev => prev.filter((_, i) => i !== index));
+                                      toast.success('Fichier supprimé');
+                                    }}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 8. Sous-location & cession */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📄 Sous-location & Cession</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Sous-location autorisée ? *</Label>
+                        <Select 
+                          value={bailCommercialData.souslocationAutorisee} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, souslocationAutorisee: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {bailCommercialData.souslocationAutorisee === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Conditions de sous-location</Label>
+                          <Input 
+                            value={bailCommercialData.souslocationConditions} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, souslocationConditions: e.target.value})} 
+                            placeholder="Ex: Avec accord préalable du bailleur"
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label>Cession du bail autorisée ? *</Label>
+                        <Select 
+                          value={bailCommercialData.cessionBailAutorisee} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, cessionBailAutorisee: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {bailCommercialData.cessionBailAutorisee === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Conditions de cession</Label>
+                          <Input 
+                            value={bailCommercialData.cessionConditions} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, cessionConditions: e.target.value})} 
+                            placeholder="Ex: Agrément du bailleur requis"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 9. Garanties */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🛡️ Garanties</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Caution personnelle ? *</Label>
+                        <Select 
+                          value={bailCommercialData.cautionPersonnelleOuiNon} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, cautionPersonnelleOuiNon: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.cautionPersonnelleOuiNon === "oui" && (
+                        <>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Nom de la caution *</Label>
+                              <Input 
+                                value={bailCommercialData.nomCaution} 
+                                onChange={(e) => setBailCommercialData({...bailCommercialData, nomCaution: e.target.value})} 
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Prénom de la caution *</Label>
+                              <Input 
+                                value={bailCommercialData.prenomCaution} 
+                                onChange={(e) => setBailCommercialData({...bailCommercialData, prenomCaution: e.target.value})} 
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Montant garanti (€)</Label>
+                            <Input 
+                              type="number"
+                              value={bailCommercialData.montantGaranti} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, montantGaranti: e.target.value})} 
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>📎 Pièce d'identité de la caution</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf,image/*"
+                                multiple
+                                className="hidden"
+                                id="bail-commercial-caution-id-upload"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length > 0) {
+                                    setBailCommercialCautionIdFiles(files);
+                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                  }
+                                  e.target.value = '';
+                                }}
+                              />
+                              <label htmlFor="bail-commercial-caution-id-upload" className="cursor-pointer flex items-center gap-3">
+                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">Joindre la pièce d'identité</p>
+                                  <p className="text-xs text-muted-foreground">PDF ou images</p>
+                                </div>
+                              </label>
+                            </div>
+                            {bailCommercialCautionIdFiles.length > 0 && (
+                              <div className="space-y-2 mt-2">
+                                {bailCommercialCautionIdFiles.map((file, index) => (
+                                  <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate">{file.name}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      onClick={() => {
+                                        setBailCommercialCautionIdFiles(prev => prev.filter((_, i) => i !== index));
+                                        toast.success('Fichier supprimé');
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 10. Assurance obligatoire */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🏥 Assurance obligatoire</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Assurance multirisque professionnelle souscrite ? *</Label>
+                        <Select 
+                          value={bailCommercialData.assuranceMultirisqueSouscrite} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, assuranceMultirisqueSouscrite: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non (à souscrire avant entrée)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.assuranceMultirisqueSouscrite === "oui" && (
+                        <>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Nom de l'assureur</Label>
+                              <Input 
+                                value={bailCommercialData.nomAssureur} 
+                                onChange={(e) => setBailCommercialData({...bailCommercialData, nomAssureur: e.target.value})} 
+                                placeholder="Ex: AXA, Allianz..."
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Numéro de police</Label>
+                              <Input 
+                                value={bailCommercialData.numeropolice} 
+                                onChange={(e) => setBailCommercialData({...bailCommercialData, numeropolice: e.target.value})} 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>📎 Attestation d'assurance</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="bail-commercial-assurance-upload"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length > 0) {
+                                    setBailCommercialAssuranceFiles(files);
+                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                  }
+                                  e.target.value = '';
+                                }}
+                              />
+                              <label htmlFor="bail-commercial-assurance-upload" className="cursor-pointer flex items-center gap-3">
+                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">Joindre l'attestation d'assurance</p>
+                                  <p className="text-xs text-muted-foreground">PDF uniquement</p>
+                                </div>
+                              </label>
+                            </div>
+                            {bailCommercialAssuranceFiles.length > 0 && (
+                              <div className="space-y-2 mt-2">
+                                {bailCommercialAssuranceFiles.map((file, index) => (
+                                  <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate">{file.name}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      onClick={() => {
+                                        setBailCommercialAssuranceFiles(prev => prev.filter((_, i) => i !== index));
+                                        toast.success('Fichier supprimé');
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
