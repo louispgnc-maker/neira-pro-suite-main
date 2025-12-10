@@ -112,6 +112,7 @@ export default function Contrats() {
   const [bailCommercialEtatLieuxFiles, setBailCommercialEtatLieuxFiles] = useState<File[]>([]); // État des lieux
   const [bailCommercialCautionIdFiles, setBailCommercialCautionIdFiles] = useState<File[]>([]); // Pièce d'identité caution
   const [bailCommercialAssuranceFiles, setBailCommercialAssuranceFiles] = useState<File[]>([]); // Attestation d'assurance
+  const [bailProfessionnelOrdreFiles, setBailProfessionnelOrdreFiles] = useState<File[]>([]); // Attestation inscription ordre professionnel
   const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
   const [bailDiagnosticsFiles, setBailDiagnosticsFiles] = useState<File[]>([]);
   
@@ -541,11 +542,19 @@ export default function Contrats() {
     activitePrincipale: "",
     activitesAnnexes: "",
     destinationBail: "",
-    destinationContractuelle: "", // Description précise des activités autorisées
-    exclusivitesEventuelles: "", // Exclusivités accordées
-    interdictionsUsage: "", // Activités interdites
+    destinationContractuelle: "", // Description précise des activités autorisées (commercial uniquement)
+    exclusivitesEventuelles: "", // Exclusivités accordées (commercial uniquement)
+    interdictionsUsage: "", // Activités interdites (commercial uniquement)
     clauseExclusivite: "",
     clauseNonConcurrence: "",
+    
+    // Bail professionnel spécifique
+    typeProfession: "", // libérale_reglementee / libérale_non_reglementee
+    numeroOrdreProfessionnel: "",
+    assuranceRCPro: "", // oui / non
+    assuranceLocaux: "", // oui / non
+    clauseResiliationTriennale: "", // oui / non
+    preavisResiliation: "", // 6 mois standard
     
     // Local commercial
     adresseLocal: "",
@@ -6514,11 +6523,17 @@ DURÉE DU BAIL
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="commercial" id="bail_type_commercial" />
-                          <Label htmlFor="bail_type_commercial" className="cursor-pointer">Bail commercial</Label>
+                          <Label htmlFor="bail_type_commercial" className="cursor-pointer">
+                            <span className="font-medium">Bail commercial</span>
+                            <span className="text-xs text-muted-foreground ml-2">(statut 3/6/9 - activité commerciale)</span>
+                          </Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="professionnel" id="bail_type_professionnel" />
-                          <Label htmlFor="bail_type_professionnel" className="cursor-pointer">Bail professionnel</Label>
+                          <Label htmlFor="bail_type_professionnel" className="cursor-pointer">
+                            <span className="font-medium">Bail professionnel</span>
+                            <span className="text-xs text-muted-foreground ml-2">(profession libérale - min. 6 ans)</span>
+                          </Label>
                         </div>
                       </RadioGroup>
                     </div>
@@ -7322,41 +7337,133 @@ DURÉE DU BAIL
                         <Input 
                           value={bailCommercialData.activitePrincipale} 
                           onChange={(e) => setBailCommercialData({...bailCommercialData, activitePrincipale: e.target.value})} 
-                          placeholder="Ex: Commerce de détail, Restauration..."
+                          placeholder="Ex: Commerce de détail, Restauration, Cabinet médical..."
                         />
                       </div>
 
-                      {/* 1. Destination des lieux */}
-                      <div className="space-y-2">
-                        <Label>Destination contractuelle précise *</Label>
-                        <Textarea 
-                          value={bailCommercialData.destinationContractuelle} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, destinationContractuelle: e.target.value})} 
-                          placeholder="Ex: Vente et préparation de produits alimentaires à consommer sur place ou à emporter"
-                          rows={3}
-                        />
-                        <p className="text-xs text-muted-foreground">Décrivez précisément les activités autorisées</p>
-                      </div>
+                      {/* COMMERCIAL UNIQUEMENT - 1. Destination des lieux */}
+                      {bailCommercialData.typeBail === "commercial" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Destination contractuelle précise *</Label>
+                            <Textarea 
+                              value={bailCommercialData.destinationContractuelle} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, destinationContractuelle: e.target.value})} 
+                              placeholder="Ex: Vente et préparation de produits alimentaires à consommer sur place ou à emporter"
+                              rows={3}
+                            />
+                            <p className="text-xs text-muted-foreground">Décrivez précisément les activités autorisées</p>
+                          </div>
 
-                      <div className="space-y-2">
-                        <Label>Exclusivités éventuelles</Label>
-                        <Textarea 
-                          value={bailCommercialData.exclusivitesEventuelles} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, exclusivitesEventuelles: e.target.value})} 
-                          placeholder="Ex: Exclusivité de vente de produits bio dans l'immeuble"
-                          rows={2}
-                        />
-                      </div>
+                          <div className="space-y-2">
+                            <Label>Exclusivités éventuelles</Label>
+                            <Textarea 
+                              value={bailCommercialData.exclusivitesEventuelles} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, exclusivitesEventuelles: e.target.value})} 
+                              placeholder="Ex: Exclusivité de vente de produits bio dans l'immeuble"
+                              rows={2}
+                            />
+                          </div>
 
-                      <div className="space-y-2">
-                        <Label>Interdictions d'usage</Label>
-                        <Textarea 
-                          value={bailCommercialData.interdictionsUsage} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, interdictionsUsage: e.target.value})} 
-                          placeholder="Ex: À l'exclusion de toute activité bruyante ou nuisible"
-                          rows={2}
-                        />
-                      </div>
+                          <div className="space-y-2">
+                            <Label>Interdictions d'usage</Label>
+                            <Textarea 
+                              value={bailCommercialData.interdictionsUsage} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, interdictionsUsage: e.target.value})} 
+                              placeholder="Ex: À l'exclusion de toute activité bruyante ou nuisible"
+                              rows={2}
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      {/* PROFESSIONNEL UNIQUEMENT - Type de profession */}
+                      {bailCommercialData.typeBail === "professionnel" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Type de profession *</Label>
+                            <Select 
+                              value={bailCommercialData.typeProfession} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, typeProfession: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="libérale_reglementee">Profession libérale réglementée (médecin, avocat, architecte...)</SelectItem>
+                                <SelectItem value="libérale_non_reglementee">Profession libérale non réglementée (consultant, coach...)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {bailCommercialData.typeProfession === "libérale_reglementee" && (
+                            <>
+                              <div className="space-y-2">
+                                <Label>Numéro d'ordre professionnel *</Label>
+                                <Input 
+                                  value={bailCommercialData.numeroOrdreProfessionnel} 
+                                  onChange={(e) => setBailCommercialData({...bailCommercialData, numeroOrdreProfessionnel: e.target.value})} 
+                                  placeholder="Ex: Numéro RPPS, numéro d'inscription au barreau..."
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>📎 Attestation d'inscription à l'ordre</Label>
+                                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                                  <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    multiple
+                                    className="hidden"
+                                    id="bail-professionnel-ordre-upload"
+                                    onChange={(e) => {
+                                      const files = Array.from(e.target.files || []);
+                                      if (files.length > 0) {
+                                        setBailProfessionnelOrdreFiles(files);
+                                        toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                      }
+                                      e.target.value = '';
+                                    }}
+                                  />
+                                  <label htmlFor="bail-professionnel-ordre-upload" className="cursor-pointer flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                      <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-sm font-medium">Joindre l'attestation d'inscription</p>
+                                      <p className="text-xs text-muted-foreground">PDF uniquement</p>
+                                    </div>
+                                  </label>
+                                </div>
+                                {bailProfessionnelOrdreFiles.length > 0 && (
+                                  <div className="space-y-2 mt-2">
+                                    {bailProfessionnelOrdreFiles.map((file, index) => (
+                                      <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                        <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <span className="text-sm flex-1 truncate">{file.name}</span>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                          onClick={() => {
+                                            setBailProfessionnelOrdreFiles(prev => prev.filter((_, i) => i !== index));
+                                            toast.success('Fichier supprimé');
+                                          }}
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -7385,40 +7492,62 @@ DURÉE DU BAIL
                       <div className="space-y-2 md:col-span-2 mt-4">
                         <h4 className="font-medium">Révision du loyer</h4>
                       </div>
-                      <div className="space-y-2">
-                        <Label>Indice applicable *</Label>
-                        <Select 
-                          value={bailCommercialData.indiceApplicable} 
-                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, indiceApplicable: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ILC">ILC (Indice des Loyers Commerciaux)</SelectItem>
-                            <SelectItem value="ILAT">ILAT (Indice des Loyers des Activités Tertiaires)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Base de calcul de l'indice</Label>
-                        <Input 
-                          value={bailCommercialData.baseCalculIndice} 
-                          onChange={(e) => setBailCommercialData({...bailCommercialData, baseCalculIndice: e.target.value})} 
-                          placeholder="Ex: Indice du 1er trimestre 2025"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Modalité de révision *</Label>
-                        <Select 
-                          value={bailCommercialData.modaliteRevision} 
-                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, modaliteRevision: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="annuelle">Annuelle</SelectItem>
-                            <SelectItem value="triennale">Triennale</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      
+                      {bailCommercialData.typeBail === "commercial" ? (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Indice applicable *</Label>
+                            <Select 
+                              value={bailCommercialData.indiceApplicable} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, indiceApplicable: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="ILC">ILC (Indice des Loyers Commerciaux)</SelectItem>
+                                <SelectItem value="ILAT">ILAT (Indice des Loyers des Activités Tertiaires)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Base de calcul de l'indice</Label>
+                            <Input 
+                              value={bailCommercialData.baseCalculIndice} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, baseCalculIndice: e.target.value})} 
+                              placeholder="Ex: Indice du 1er trimestre 2025"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Modalité de révision *</Label>
+                            <Select 
+                              value={bailCommercialData.modaliteRevision} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, modaliteRevision: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="annuelle">Annuelle</SelectItem>
+                                <SelectItem value="triennale">Triennale</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {/* PROFESSIONNEL - Révision via IRL uniquement */}
+                          <div className="space-y-2 md:col-span-2">
+                            <p className="text-sm text-muted-foreground">
+                              Pour un bail professionnel : révision annuelle via IRL (Indice de Référence des Loyers)
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Base de calcul de l'indice IRL</Label>
+                            <Input 
+                              value={bailCommercialData.baseCalculIndice} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, baseCalculIndice: e.target.value})} 
+                              placeholder="Ex: IRL du 1er trimestre 2025"
+                            />
+                          </div>
+                        </>
+                      )}
 
                       {/* 7. Charges récupérables */}
                       <div className="space-y-2">
@@ -7637,58 +7766,60 @@ DURÉE DU BAIL
                     </div>
                   </div>
 
-                  {/* 8. Sous-location & cession */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">📄 Sous-location & Cession</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Sous-location autorisée ? *</Label>
-                        <Select 
-                          value={bailCommercialData.souslocationAutorisee} 
-                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, souslocationAutorisee: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="oui">Oui</SelectItem>
-                            <SelectItem value="non">Non</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {bailCommercialData.souslocationAutorisee === "oui" && (
+                  {/* 8. Sous-location & cession (COMMERCIAL UNIQUEMENT) */}
+                  {bailCommercialData.typeBail === "commercial" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">📄 Sous-location & Cession</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label>Conditions de sous-location</Label>
-                          <Input 
-                            value={bailCommercialData.souslocationConditions} 
-                            onChange={(e) => setBailCommercialData({...bailCommercialData, souslocationConditions: e.target.value})} 
-                            placeholder="Ex: Avec accord préalable du bailleur"
-                          />
+                          <Label>Sous-location autorisée ? *</Label>
+                          <Select 
+                            value={bailCommercialData.souslocationAutorisee} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, souslocationAutorisee: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                      )}
-                      <div className="space-y-2">
-                        <Label>Cession du bail autorisée ? *</Label>
-                        <Select 
-                          value={bailCommercialData.cessionBailAutorisee} 
-                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, cessionBailAutorisee: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="oui">Oui</SelectItem>
-                            <SelectItem value="non">Non</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {bailCommercialData.cessionBailAutorisee === "oui" && (
+                        {bailCommercialData.souslocationAutorisee === "oui" && (
+                          <div className="space-y-2">
+                            <Label>Conditions de sous-location</Label>
+                            <Input 
+                              value={bailCommercialData.souslocationConditions} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, souslocationConditions: e.target.value})} 
+                              placeholder="Ex: Avec accord préalable du bailleur"
+                            />
+                          </div>
+                        )}
                         <div className="space-y-2">
-                          <Label>Conditions de cession</Label>
-                          <Input 
-                            value={bailCommercialData.cessionConditions} 
-                            onChange={(e) => setBailCommercialData({...bailCommercialData, cessionConditions: e.target.value})} 
-                            placeholder="Ex: Agrément du bailleur requis"
-                          />
+                          <Label>Cession du bail autorisée ? *</Label>
+                          <Select 
+                            value={bailCommercialData.cessionBailAutorisee} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, cessionBailAutorisee: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                      )}
+                        {bailCommercialData.cessionBailAutorisee === "oui" && (
+                          <div className="space-y-2">
+                            <Label>Conditions de cession</Label>
+                            <Input 
+                              value={bailCommercialData.cessionConditions} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, cessionConditions: e.target.value})} 
+                              placeholder="Ex: Agrément du bailleur requis"
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* 9. Garanties */}
                   <div className="space-y-4">
@@ -7799,95 +7930,215 @@ DURÉE DU BAIL
                   <div className="space-y-4">
                     <h3 className="font-semibold text-lg border-b pb-2">🏥 Assurance obligatoire</h3>
                     <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <Label>Assurance multirisque professionnelle souscrite ? *</Label>
-                        <Select 
-                          value={bailCommercialData.assuranceMultirisqueSouscrite} 
-                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, assuranceMultirisqueSouscrite: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="oui">Oui</SelectItem>
-                            <SelectItem value="non">Non (à souscrire avant entrée)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {bailCommercialData.assuranceMultirisqueSouscrite === "oui" && (
+                      {bailCommercialData.typeBail === "commercial" ? (
                         <>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Nom de l'assureur</Label>
-                              <Input 
-                                value={bailCommercialData.nomAssureur} 
-                                onChange={(e) => setBailCommercialData({...bailCommercialData, nomAssureur: e.target.value})} 
-                                placeholder="Ex: AXA, Allianz..."
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Numéro de police</Label>
-                              <Input 
-                                value={bailCommercialData.numeropolice} 
-                                onChange={(e) => setBailCommercialData({...bailCommercialData, numeropolice: e.target.value})} 
-                              />
-                            </div>
+                          {/* COMMERCIAL - Assurance multirisque professionnelle */}
+                          <div className="space-y-2">
+                            <Label>Assurance multirisque professionnelle souscrite ? *</Label>
+                            <Select 
+                              value={bailCommercialData.assuranceMultirisqueSouscrite} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, assuranceMultirisqueSouscrite: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui</SelectItem>
+                                <SelectItem value="non">Non (à souscrire avant entrée)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {bailCommercialData.assuranceMultirisqueSouscrite === "oui" && (
+                            <>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label>Nom de l'assureur</Label>
+                                  <Input 
+                                    value={bailCommercialData.nomAssureur} 
+                                    onChange={(e) => setBailCommercialData({...bailCommercialData, nomAssureur: e.target.value})} 
+                                    placeholder="Ex: AXA, Allianz..."
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Numéro de police</Label>
+                                  <Input 
+                                    value={bailCommercialData.numeropolice} 
+                                    onChange={(e) => setBailCommercialData({...bailCommercialData, numeropolice: e.target.value})} 
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>📎 Attestation d'assurance</Label>
+                                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                                  <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    multiple
+                                    className="hidden"
+                                    id="bail-commercial-assurance-upload"
+                                    onChange={(e) => {
+                                      const files = Array.from(e.target.files || []);
+                                      if (files.length > 0) {
+                                        setBailCommercialAssuranceFiles(files);
+                                        toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                      }
+                                      e.target.value = '';
+                                    }}
+                                  />
+                                  <label htmlFor="bail-commercial-assurance-upload" className="cursor-pointer flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                      <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-sm font-medium">Joindre l'attestation d'assurance</p>
+                                      <p className="text-xs text-muted-foreground">PDF uniquement</p>
+                                    </div>
+                                  </label>
+                                </div>
+                                {bailCommercialAssuranceFiles.length > 0 && (
+                                  <div className="space-y-2 mt-2">
+                                    {bailCommercialAssuranceFiles.map((file, index) => (
+                                      <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                        <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <span className="text-sm flex-1 truncate">{file.name}</span>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                          onClick={() => {
+                                            setBailCommercialAssuranceFiles(prev => prev.filter((_, i) => i !== index));
+                                            toast.success('Fichier supprimé');
+                                          }}
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {/* PROFESSIONNEL - RC Pro + Assurance locaux */}
+                          <div className="space-y-2 md:col-span-2">
+                            <p className="text-sm text-muted-foreground">
+                              Pour un bail professionnel : obligation d'assurer la RC professionnelle et les locaux
+                            </p>
                           </div>
 
                           <div className="space-y-2">
-                            <Label>📎 Attestation d'assurance</Label>
-                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
-                              <input
-                                type="file"
-                                accept="application/pdf"
-                                multiple
-                                className="hidden"
-                                id="bail-commercial-assurance-upload"
-                                onChange={(e) => {
-                                  const files = Array.from(e.target.files || []);
-                                  if (files.length > 0) {
-                                    setBailCommercialAssuranceFiles(files);
-                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
-                                  }
-                                  e.target.value = '';
-                                }}
-                              />
-                              <label htmlFor="bail-commercial-assurance-upload" className="cursor-pointer flex items-center gap-3">
-                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                  </svg>
-                                </div>
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium">Joindre l'attestation d'assurance</p>
-                                  <p className="text-xs text-muted-foreground">PDF uniquement</p>
-                                </div>
-                              </label>
+                            <Label>Assurance RC Professionnelle souscrite ? *</Label>
+                            <Select 
+                              value={bailCommercialData.assuranceRCPro} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, assuranceRCPro: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui</SelectItem>
+                                <SelectItem value="non">Non (à souscrire avant entrée)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Assurance des locaux souscrite ? *</Label>
+                            <Select 
+                              value={bailCommercialData.assuranceLocaux} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, assuranceLocaux: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui</SelectItem>
+                                <SelectItem value="non">Non (à souscrire avant entrée)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {(bailCommercialData.assuranceRCPro === "oui" || bailCommercialData.assuranceLocaux === "oui") && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2">
+                              <div className="space-y-2">
+                                <Label>Nom de l'assureur</Label>
+                                <Input 
+                                  value={bailCommercialData.nomAssureur} 
+                                  onChange={(e) => setBailCommercialData({...bailCommercialData, nomAssureur: e.target.value})} 
+                                  placeholder="Ex: AXA, Allianz..."
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Numéro de police</Label>
+                                <Input 
+                                  value={bailCommercialData.numeropolice} 
+                                  onChange={(e) => setBailCommercialData({...bailCommercialData, numeropolice: e.target.value})} 
+                                />
+                              </div>
                             </div>
-                            {bailCommercialAssuranceFiles.length > 0 && (
-                              <div className="space-y-2 mt-2">
-                                {bailCommercialAssuranceFiles.map((file, index) => (
-                                  <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
-                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          )}
+
+                          {(bailCommercialData.assuranceRCPro === "oui" || bailCommercialData.assuranceLocaux === "oui") && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>📎 Attestations d'assurance</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="bail-professionnel-assurance-upload"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    if (files.length > 0) {
+                                      setBailCommercialAssuranceFiles(files);
+                                      toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                    }
+                                    e.target.value = '';
+                                  }}
+                                />
+                                <label htmlFor="bail-professionnel-assurance-upload" className="cursor-pointer flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    <span className="text-sm flex-1 truncate">{file.name}</span>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                      onClick={() => {
-                                        setBailCommercialAssuranceFiles(prev => prev.filter((_, i) => i !== index));
-                                        toast.success('Fichier supprimé');
-                                      }}
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
                                   </div>
-                                ))}
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">Joindre les attestations (RC Pro et/ou Locaux)</p>
+                                    <p className="text-xs text-muted-foreground">PDF uniquement</p>
+                                  </div>
+                                </label>
                               </div>
-                            )}
-                          </div>
+                              {bailCommercialAssuranceFiles.length > 0 && (
+                                <div className="space-y-2 mt-2">
+                                  {bailCommercialAssuranceFiles.map((file, index) => (
+                                    <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                      <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                      <span className="text-sm flex-1 truncate">{file.name}</span>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                        onClick={() => {
+                                          setBailCommercialAssuranceFiles(prev => prev.filter((_, i) => i !== index));
+                                          toast.success('Fichier supprimé');
+                                        }}
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </>
                       )}
                     </div>
