@@ -124,6 +124,14 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
       return;
     }
 
+    // Si c'est un "Bail commercial", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Bail commercial") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      // Utiliser le type normalisé "Bail commercial / professionnel"
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent("Bail commercial / professionnel")}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('contrats')
