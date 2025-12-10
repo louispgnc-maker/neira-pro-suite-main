@@ -2317,6 +2317,12 @@ DURÉE DU BAIL
                 ? "Informations pour l'acte de vente immobilière" 
                 : (pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé")
                 ? "Informations pour le bail d'habitation"
+                : pendingContractType === "Bail commercial / professionnel"
+                ? (bailCommercialData.typeBail === "commercial" 
+                    ? "Informations pour le bail commercial"
+                    : bailCommercialData.typeBail === "professionnel"
+                    ? "Informations pour le bail professionnel" 
+                    : "Informations pour le bail commercial / professionnel")
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
@@ -6337,10 +6343,9 @@ DURÉE DU BAIL
               <>
                 <div className="space-y-6">
                   {/* Sélection du type de bail */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">📋 Type de bail</h3>
+                  <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-lg">📋 Type de bail *</h3>
                     <div className="space-y-2">
-                      <Label>Type de bail *</Label>
                       <RadioGroup 
                         value={bailCommercialData.typeBail} 
                         onValueChange={(value) => setBailCommercialData({...bailCommercialData, typeBail: value})}
@@ -6357,22 +6362,11 @@ DURÉE DU BAIL
                     </div>
                   </div>
 
-                  {bailCommercialData.typeBail && (
-                    <>
-                      {/* Titre dynamique */}
-                      <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
-                        <h2 className="text-xl font-bold text-primary">
-                          {bailCommercialData.typeBail === "commercial" 
-                            ? "📄 Informations pour le bail commercial" 
-                            : "📄 Informations pour le bail professionnel"}
-                        </h2>
-                      </div>
-
-                      {/* Sélection du rôle du client */}
-                      <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
-                        <div className="space-y-2">
-                          <Label>Votre client est le *</Label>
+                  {/* Sélection du rôle du client */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
+                    <div className="space-y-2">
+                      <Label>Votre client est le *</Label>
                           <RadioGroup 
                             value={bailCommercialData.clientRole} 
                             onValueChange={(value) => {
@@ -6965,8 +6959,6 @@ DURÉE DU BAIL
                       </div>
                     </div>
                   </div>
-                    </>
-                  )}
                 </div>
               </>
             )}
