@@ -8658,23 +8658,23 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                       console.log('📋 situation_familiale:', selectedClient.situation_familiale);
                                       console.log('📄 id_doc_path:', selectedClient.id_doc_path);
                                       
-                                      // Extraire la situation familiale et le régime matrimonial de l'objet situation_familiale si c'est un objet
-                                      let situationFamiliale = "";
+                                      // Extraire la situation familiale et le régime matrimonial
+                                      // Priorité 1: utiliser situation_matrimoniale directement (c'est le champ principal)
+                                      let situationFamiliale = selectedClient.situation_matrimoniale || "";
                                       let regimeMatrimonial = "";
                                       
+                                      // Extraire le régime matrimonial de l'objet situation_familiale si c'est un objet
                                       if (selectedClient.situation_familiale) {
                                         if (typeof selectedClient.situation_familiale === 'string') {
-                                          situationFamiliale = selectedClient.situation_familiale;
+                                          if (!situationFamiliale) situationFamiliale = selectedClient.situation_familiale;
                                         } else if (typeof selectedClient.situation_familiale === 'object') {
                                           const sitFam = selectedClient.situation_familiale as any;
-                                          situationFamiliale = sitFam.situation_familiale || "";
                                           regimeMatrimonial = sitFam.regime_matrimonial || "";
+                                          // Si pas de situation_matrimoniale, essayer de l'extraire de l'objet
+                                          if (!situationFamiliale && sitFam.situation_familiale) {
+                                            situationFamiliale = sitFam.situation_familiale;
+                                          }
                                         }
-                                      }
-                                      
-                                      // Fallback sur situation_matrimoniale si situation_familiale est vide
-                                      if (!situationFamiliale && selectedClient.situation_matrimoniale) {
-                                        situationFamiliale = selectedClient.situation_matrimoniale;
                                       }
                                       
                                       console.log('📋 situationFamiliale extraite:', situationFamiliale);
@@ -8731,7 +8731,47 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                           console.error('❌ Erreur chargement carte identité:', error);
                                         }
                                       } else {
-                                        console.log('⚠️ Pas de id_doc_path pour ce client');
+                                        console.log('⚠️ Pas de id_doc_path, recherche dans client_documents pour client:', selectedClient.id);
+                                        // Chercher dans client_documents si pas de id_doc_path
+                                        try {
+                                          const { data: docs, error: docsError } = await supabase
+                                            .from('client_documents')
+                                            .select('file_path, file_name, document_type')
+                                            .eq('client_id', selectedClient.id)
+                                            .eq('document_type', 'piece_identite')
+                                            .order('uploaded_at', { ascending: false })
+                                            .limit(1);
+                                          
+                                          if (docsError) {
+                                            console.error('❌ Erreur recherche documents:', docsError);
+                                          } else if (docs && docs.length > 0) {
+                                            const idDoc = docs[0];
+                                            console.log('📄 Document pièce identité trouvé:', idDoc.file_name);
+                                            
+                                            const { data, error } = await supabase.storage
+                                              .from('documents')
+                                              .download(idDoc.file_path);
+                                            
+                                            if (data && !error) {
+                                              console.log('✅ Document téléchargé avec succès depuis client_documents');
+                                              const file = new File([data], idDoc.file_name, { type: data.type });
+                                              setIndivisairesIdentiteFiles(prev => ({
+                                                ...prev,
+                                                [indivisaire.id]: [file]
+                                              }));
+                                              setIndivisairesIdentiteUrls(prev => ({
+                                                ...prev,
+                                                [indivisaire.id]: [idDoc.file_path]
+                                              }));
+                                            } else {
+                                              console.error('❌ Erreur téléchargement depuis storage:', error);
+                                            }
+                                          } else {
+                                            console.log('ℹ️ Aucune pièce d\'identité trouvée dans client_documents');
+                                          }
+                                        } catch (error) {
+                                          console.error('❌ Erreur recherche client_documents:', error);
+                                        }
                                       }
                                     }
                                     setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
