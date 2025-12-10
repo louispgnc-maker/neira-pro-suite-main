@@ -6399,12 +6399,19 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
+                              console.log('🔍 BAILLEUR - selectedClient:', selectedClient);
+                              console.log('🔍 BAILLEUR - situation_matrimoniale:', selectedClient.situation_matrimoniale);
+                              console.log('🔍 BAILLEUR - typeof:', typeof selectedClient.situation_matrimoniale);
+                              
                               // Parse situation_matrimoniale JSON
                               let regimeText = "";
                               
                               if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
                                 const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
                                 const regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
+                                
+                                console.log('🔍 BAILLEUR - situationFamiliale:', situationFamiliale);
+                                console.log('🔍 BAILLEUR - regimeMatrimonial:', regimeMatrimonial);
                                 
                                 const situationLower = situationFamiliale.toLowerCase();
                                 if (['celibataire', 'célibataire', 'divorce', 'divorcé', 'veuf', 'veuve'].includes(situationLower)) {
@@ -6414,6 +6421,9 @@ DURÉE DU BAIL
                                   regimeText = regimeMatrimonial ? `Marié(e) sous le régime de ${regime}` : 'Marié(e)';
                                 }
                               }
+                              
+                              console.log('🔍 BAILLEUR - regimeText FINAL:', regimeText);
+                              console.log('🔍 BAILLEUR - typeof regimeText:', typeof regimeText);
                               
                               setBailCommercialData({
                                 ...bailCommercialData,
