@@ -159,6 +159,24 @@ export default function Contrats() {
   const [contratMariageCertificatBansFiles, setContratMariageCertificatBansFiles] = useState<File[]>([]); // Certificat publication bans
   const [contratMariageDecisionJugeFiles, setContratMariageDecisionJugeFiles] = useState<File[]>([]); // Décision/autorisation judiciaire
   
+  // State pour PACS - Pièces justificatives
+  const [pacsPartenaire1IdentiteFiles, setPacsPartenaire1IdentiteFiles] = useState<File[]>([]); // Identité partenaire 1
+  const [pacsPartenaire2IdentiteFiles, setPacsPartenaire2IdentiteFiles] = useState<File[]>([]); // Identité partenaire 2
+  const [pacsPartenaire1ActeNaissanceFiles, setPacsPartenaire1ActeNaissanceFiles] = useState<File[]>([]); // Acte naissance partenaire 1
+  const [pacsPartenaire2ActeNaissanceFiles, setPacsPartenaire2ActeNaissanceFiles] = useState<File[]>([]); // Acte naissance partenaire 2
+  const [pacsPartenaire1DomicileFiles, setPacsPartenaire1DomicileFiles] = useState<File[]>([]); // Justif domicile partenaire 1
+  const [pacsPartenaire2DomicileFiles, setPacsPartenaire2DomicileFiles] = useState<File[]>([]); // Justif domicile partenaire 2
+  const [pacsPartenaire1DivorceFiles, setPacsPartenaire1DivorceFiles] = useState<File[]>([]); // Jugement divorce partenaire 1
+  const [pacsPartenaire2DivorceFiles, setPacsPartenaire2DivorceFiles] = useState<File[]>([]); // Jugement divorce partenaire 2
+  const [pacsPartenaire1DecesFiles, setPacsPartenaire1DecesFiles] = useState<File[]>([]); // Acte décès conjoint précédent partenaire 1
+  const [pacsPartenaire2DecesFiles, setPacsPartenaire2DecesFiles] = useState<File[]>([]); // Acte décès conjoint précédent partenaire 2
+  const [pacsPartenaire1CertificatCoutumeFiles, setPacsPartenaire1CertificatCoutumeFiles] = useState<File[]>([]); // Certificat coutume étranger partenaire 1
+  const [pacsPartenaire2CertificatCoutumeFiles, setPacsPartenaire2CertificatCoutumeFiles] = useState<File[]>([]); // Certificat coutume étranger partenaire 2
+  const [pacsPartenaire1CertificatNonPacsFiles, setPacsPartenaire1CertificatNonPacsFiles] = useState<File[]>([]); // Certificat non-PACS étranger partenaire 1
+  const [pacsPartenaire2CertificatNonPacsFiles, setPacsPartenaire2CertificatNonPacsFiles] = useState<File[]>([]); // Certificat non-PACS étranger partenaire 2
+  const [pacsPartenaire1TraductionsFiles, setPacsPartenaire1TraductionsFiles] = useState<File[]>([]); // Traductions certifiées partenaire 1
+  const [pacsPartenaire2TraductionsFiles, setPacsPartenaire2TraductionsFiles] = useState<File[]>([]); // Traductions certifiées partenaire 2
+  
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
     // Sélection du client et son rôle
@@ -1252,6 +1270,135 @@ export default function Contrats() {
     },
   });
 
+  // State pour PACS
+  const [pacsData, setPacsData] = useState({
+    // 1. Informations générales sur le PACS
+    objetPacs: "initial", // initial / modification / dissolution
+    regimePacs: "separation", // separation / indivision / personnalise
+    regimePersonnalise: {
+      definitionBiensCommuns: "",
+      biensPropres: "",
+      clausesSpecifiques: "",
+    },
+    datePriseEffetSouhaitee: "",
+    
+    // Si modification de PACS
+    pacsInitialDate: "",
+    pacsInitialMairie: "",
+    pacsInitialNumero: "",
+    clausesModifiees: "",
+    
+    // 2. Partenaires (tableau de 2 personnes)
+    partenaires: [
+      {
+        id: 1,
+        isClient: false,
+        clientId: "",
+        // A. Informations civiles obligatoires
+        nom: "",
+        prenom: "",
+        nomNaissance: "",
+        adresseActuelle: "",
+        dateNaissance: "",
+        lieuNaissance: "",
+        nationalite: "",
+        profession: "",
+        telephone: "",
+        email: "",
+        // B. Informations pour contrôle juridique
+        situationFamiliale: "", // celibataire / divorce / veuf
+        typeIdentite: "",
+        numeroIdentite: "",
+        dateEmissionIdentite: "",
+        autoriteDelivrante: "",
+        // C. Pour partenaire étranger
+        estEtranger: false,
+        attestationNonPacsPaysOrigine: false,
+        certificatCoutumeRequis: false,
+        traductionRequise: false,
+      },
+      {
+        id: 2,
+        isClient: false,
+        clientId: "",
+        nom: "",
+        prenom: "",
+        nomNaissance: "",
+        adresseActuelle: "",
+        dateNaissance: "",
+        lieuNaissance: "",
+        nationalite: "",
+        profession: "",
+        telephone: "",
+        email: "",
+        situationFamiliale: "",
+        typeIdentite: "",
+        numeroIdentite: "",
+        dateEmissionIdentite: "",
+        autoriteDelivrante: "",
+        estEtranger: false,
+        attestationNonPacsPaysOrigine: false,
+        certificatCoutumeRequis: false,
+        traductionRequise: false,
+      }
+    ],
+    
+    // 3. Adresse commune (obligatoire)
+    adresseCommune: "",
+    dateDebutResidenceCommune: "",
+    
+    // 4. Clauses du PACS
+    // A. Clauses obligatoires
+    contributionCharges: "proportionnelle", // proportionnelle / 50_50 / autre
+    contributionChargesAutre: "",
+    
+    // B. Clauses facultatives
+    clausesFacultatives: {
+      gestionBiensPersonnels: "",
+      gestionBienCommun: "",
+      usageBienIndivis: "",
+      repartitionDepensesSpecifiques: "",
+      clauseOccupationLogementSeparation: "",
+      clauseRepriseBienDeces: "",
+      clauseAbandonCreance: "",
+      modalitesCompteBancaireCommun: "",
+      clausesFinancieresPersonnalisees: "",
+      clausesSolidariteDettes: "",
+    },
+    
+    // 6. Déclarations sur l'honneur (obligatoires)
+    declarations: {
+      residenceCommune: false,
+      absenceLienParente: false,
+      absenceMariageEtPacs: false,
+    },
+    
+    // 7. Cas particuliers
+    // A. Enfant en commun
+    enfantEnCommun: "non",
+    enfants: [{
+      id: 1,
+      nom: "",
+      prenom: "",
+      dateNaissance: "",
+      autoriteParentale: "",
+    }],
+    
+    // B. Régimes patrimoniaux étrangers
+    droitApplicable: "francais",
+    droitApplicableAutre: "",
+    
+    // C. Biens déjà acquis ensemble
+    biensPreexistants: "non",
+    biensListe: [{
+      id: 1,
+      description: "",
+      quotePart1: "",
+      quotePart2: "",
+      indivision: "",
+    }],
+  });
+
   const navigate = useNavigate();
 
   // debounce
@@ -1842,6 +1989,14 @@ export default function Contrats() {
     
     // Si c'est un contrat de mariage, ouvrir le questionnaire spécifique
     if (contractType === "Contrat de mariage (régimes matrimoniaux)" && categoryKey === "Famille & Patrimoine") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est un PACS, ouvrir le questionnaire spécifique
+    if (contractType === "PACS (Pacte Civil de Solidarité)" && categoryKey === "Famille & Patrimoine") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -2589,7 +2744,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
         codesFournis: "",
       });
 
-      loadContrats();
+      refreshContrats();
     } catch (err) {
       console.error('Erreur création bail:', err);
       toast.error('Erreur lors de la création du bail');
@@ -2779,7 +2934,7 @@ DURÉE DU BAIL
         releveCompteurs: "",
       });
 
-      loadContrats();
+      refreshContrats();
     } catch (err) {
       console.error('Erreur création bail commercial:', err);
       toast.error('Erreur lors de la création du bail commercial');
@@ -2942,7 +3097,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
         solidariteDettes: "",
       });
 
-      loadContrats();
+      refreshContrats();
     } catch (err) {
       console.error('Erreur création convention d\'indivision:', err);
       toast.error('Erreur lors de la création de la convention');
@@ -3203,7 +3358,7 @@ FRAIS
         },
       });
 
-      loadContrats();
+      refreshContrats();
     } catch (err) {
       console.error('Erreur création mainlevée d\'hypothèque:', err);
       toast.error('Erreur lors de la création de la mainlevée');
@@ -3346,6 +3501,13 @@ DÉCLARATIONS DES ÉPOUX
         typeRegime: "",
         autreRegimePrecision: "",
         typeContrat: "prenuptial",
+        dateMariagePrevue: "",
+        lieuMariage: {
+          mairie: "",
+          commune: "",
+          departement: "",
+          pays: "France",
+        },
         dateMariage: "",
         regimeActuel: "",
         regimeActuelAutre: "",
@@ -3530,10 +3692,305 @@ DÉCLARATIONS DES ÉPOUX
       setContratMariageCertificatBansFiles([]);
       setContratMariageDecisionJugeFiles([]);
 
-      loadContrats();
+      refreshContrats();
     } catch (err) {
       console.error('Erreur création contrat de mariage:', err);
       toast.error('Erreur lors de la création du contrat de mariage');
+    }
+  };
+
+  const handlePacsSubmit = async () => {
+    try {
+      if (!user) {
+        toast.error('Utilisateur non connecté');
+        return;
+      }
+
+      // Validations obligatoires
+      if (!pacsData.regimePacs) {
+        toast.error('Veuillez sélectionner un régime de PACS');
+        return;
+      }
+
+      if (!pacsData.adresseCommune) {
+        toast.error('Veuillez renseigner l\'adresse commune (obligatoire pour l\'enregistrement)');
+        return;
+      }
+
+      if (!pacsData.declarations.residenceCommune || !pacsData.declarations.absenceLienParente || !pacsData.declarations.absenceMariageEtPacs) {
+        toast.error('Veuillez valider toutes les déclarations sur l\'honneur obligatoires');
+        return;
+      }
+
+      const regimeLabels: Record<string, string> = {
+        separation: "Séparation de biens (régime légal par défaut)",
+        indivision: "Indivision",
+        personnalise: "Régime personnalisé"
+      };
+
+      const objetLabels: Record<string, string> = {
+        initial: "PACS initial",
+        modification: "Modification de PACS existant",
+        dissolution: "Dissolution de PACS"
+      };
+
+      const descriptionData = `
+TYPE DE CONTRAT: PACS (Pacte Civil de Solidarité)
+
+═══════════════════════════════════════════════════════════════
+INFORMATIONS GÉNÉRALES
+═══════════════════════════════════════════════════════════════
+- Objet du PACS: ${objetLabels[pacsData.objetPacs] || pacsData.objetPacs}
+- Régime choisi: ${regimeLabels[pacsData.regimePacs] || pacsData.regimePacs}
+${pacsData.regimePacs === "personnalise" ? `
+  • Définition biens communs: ${pacsData.regimePersonnalise.definitionBiensCommuns || "Non renseigné"}
+  • Biens propres: ${pacsData.regimePersonnalise.biensPropres || "Non renseigné"}
+  • Clauses spécifiques: ${pacsData.regimePersonnalise.clausesSpecifiques || "Non renseigné"}
+` : ""}
+- Date de prise d'effet souhaitée: ${pacsData.datePriseEffetSouhaitee || "À l'enregistrement"}
+
+${pacsData.objetPacs === "modification" ? `
+RÉFÉRENCE DU PACS INITIAL:
+- Date: ${pacsData.pacsInitialDate || "Non renseignée"}
+- Mairie/Notaire: ${pacsData.pacsInitialMairie || "Non renseigné"}
+- Numéro d'enregistrement: ${pacsData.pacsInitialNumero || "Non renseigné"}
+- Clauses modifiées: ${pacsData.clausesModifiees || "Non renseigné"}
+` : ""}
+
+═══════════════════════════════════════════════════════════════
+PARTENAIRES
+═══════════════════════════════════════════════════════════════
+${pacsData.partenaires.map((p, idx) => `
+Partenaire ${idx + 1}:
+- Nom: ${p.nom} ${p.prenom}
+- Nom de naissance: ${p.nomNaissance || p.nom}
+- Date de naissance: ${p.dateNaissance || "Non renseignée"}
+- Lieu de naissance: ${p.lieuNaissance || "Non renseigné"}
+- Nationalité: ${p.nationalite || "Non renseignée"}
+- Profession: ${p.profession || "Non renseignée"}
+- Adresse actuelle: ${p.adresseActuelle || "Non renseignée"}
+- Téléphone: ${p.telephone || "Non renseigné"}
+- Email: ${p.email || "Non renseigné"}
+- Situation familiale: ${p.situationFamiliale || "Non renseignée"}
+- Pièce d'identité: ${p.typeIdentite || "Non renseigné"} n°${p.numeroIdentite || "Non renseigné"}
+  Délivrée le ${p.dateEmissionIdentite || "Non renseigné"} par ${p.autoriteDelivrante || "Non renseigné"}
+${p.estEtranger ? `
+  ⚠️ PARTENAIRE ÉTRANGER:
+  - Attestation non-PACS pays d'origine: ${p.attestationNonPacsPaysOrigine ? "Oui" : "Non"}
+  - Certificat de coutume requis: ${p.certificatCoutumeRequis ? "Oui" : "Non"}
+  - Traduction requise: ${p.traductionRequise ? "Oui" : "Non"}
+` : ""}
+`).join('\n')}
+
+═══════════════════════════════════════════════════════════════
+ADRESSE COMMUNE (OBLIGATOIRE)
+═══════════════════════════════════════════════════════════════
+- Adresse commune déclarée: ${pacsData.adresseCommune}
+- Date de début de résidence commune: ${pacsData.dateDebutResidenceCommune || "Non renseignée"}
+
+═══════════════════════════════════════════════════════════════
+CLAUSES DU PACS
+═══════════════════════════════════════════════════════════════
+A. CLAUSES OBLIGATOIRES
+- Contribution aux charges du ménage: ${pacsData.contributionCharges === "proportionnelle" ? "Proportionnelle aux revenus" : pacsData.contributionCharges === "50_50" ? "50/50" : pacsData.contributionChargesAutre || "Non renseigné"}
+
+B. CLAUSES FACULTATIVES
+${pacsData.clausesFacultatives.gestionBiensPersonnels ? `- Gestion des biens personnels: ${pacsData.clausesFacultatives.gestionBiensPersonnels}` : ""}
+${pacsData.clausesFacultatives.gestionBienCommun ? `- Gestion d'un bien commun: ${pacsData.clausesFacultatives.gestionBienCommun}` : ""}
+${pacsData.clausesFacultatives.usageBienIndivis ? `- Usage d'un bien indivis: ${pacsData.clausesFacultatives.usageBienIndivis}` : ""}
+${pacsData.clausesFacultatives.repartitionDepensesSpecifiques ? `- Répartition dépenses spécifiques: ${pacsData.clausesFacultatives.repartitionDepensesSpecifiques}` : ""}
+${pacsData.clausesFacultatives.clauseOccupationLogementSeparation ? `- Clause occupation logement en cas de séparation: ${pacsData.clausesFacultatives.clauseOccupationLogementSeparation}` : ""}
+${pacsData.clausesFacultatives.clauseRepriseBienDeces ? `- Clause reprise bien en cas de décès: ${pacsData.clausesFacultatives.clauseRepriseBienDeces}` : ""}
+${pacsData.clausesFacultatives.clauseAbandonCreance ? `- Clause abandon de créance: ${pacsData.clausesFacultatives.clauseAbandonCreance}` : ""}
+${pacsData.clausesFacultatives.modalitesCompteBancaireCommun ? `- Modalités compte bancaire commun: ${pacsData.clausesFacultatives.modalitesCompteBancaireCommun}` : ""}
+${pacsData.clausesFacultatives.clausesFinancieresPersonnalisees ? `- Clauses financières personnalisées: ${pacsData.clausesFacultatives.clausesFinancieresPersonnalisees}` : ""}
+${pacsData.clausesFacultatives.clausesSolidariteDettes ? `- Clauses solidarité sur dettes: ${pacsData.clausesFacultatives.clausesSolidariteDettes}` : ""}
+
+═══════════════════════════════════════════════════════════════
+DÉCLARATIONS SUR L'HONNEUR (OBLIGATOIRES)
+═══════════════════════════════════════════════════════════════
+✓ Déclaration de résidence commune: ${pacsData.declarations.residenceCommune ? "Oui" : "Non"}
+✓ Déclaration d'absence de lien de parenté: ${pacsData.declarations.absenceLienParente ? "Oui" : "Non"}
+✓ Déclaration d'absence de mariage et PACS en cours: ${pacsData.declarations.absenceMariageEtPacs ? "Oui" : "Non"}
+
+${pacsData.enfantEnCommun === "oui" ? `
+═══════════════════════════════════════════════════════════════
+ENFANT(S) EN COMMUN
+═══════════════════════════════════════════════════════════════
+${pacsData.enfants.map((e, idx) => `
+Enfant ${idx + 1}:
+- Nom: ${e.nom} ${e.prenom}
+- Date de naissance: ${e.dateNaissance || "Non renseignée"}
+- Autorité parentale: ${e.autoriteParentale || "Non renseignée"}
+`).join('\n')}
+` : ""}
+
+${pacsData.droitApplicable !== "francais" ? `
+═══════════════════════════════════════════════════════════════
+RÉGIME PATRIMONIAL ÉTRANGER
+═══════════════════════════════════════════════════════════════
+- Droit applicable: ${pacsData.droitApplicableAutre || pacsData.droitApplicable}
+- Clause de priorité du droit français pour le PACS appliquée
+` : ""}
+
+${pacsData.biensPreexistants === "oui" ? `
+═══════════════════════════════════════════════════════════════
+BIENS DÉJÀ ACQUIS ENSEMBLE
+═══════════════════════════════════════════════════════════════
+${pacsData.biensListe.map((b, idx) => `
+Bien ${idx + 1}:
+- Description: ${b.description || "Non renseigné"}
+- Quote-part partenaire 1: ${b.quotePart1 || "Non renseigné"}
+- Quote-part partenaire 2: ${b.quotePart2 || "Non renseigné"}
+- Indivision: ${b.indivision || "Non renseigné"}
+`).join('\n')}
+` : ""}
+      `.trim();
+
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          role: role,
+          type: 'pacs',
+          name: `PACS - ${pacsData.partenaires[0]?.nom || "Sans nom"} & ${pacsData.partenaires[1]?.nom || "Sans nom"}`,
+          status: 'draft',
+          description: descriptionData,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success('Convention de PACS créée avec succès');
+
+      // Reset du formulaire
+      setPacsData({
+        objetPacs: "initial",
+        regimePacs: "separation",
+        regimePersonnalise: {
+          definitionBiensCommuns: "",
+          biensPropres: "",
+          clausesSpecifiques: "",
+        },
+        datePriseEffetSouhaitee: "",
+        pacsInitialDate: "",
+        pacsInitialMairie: "",
+        pacsInitialNumero: "",
+        clausesModifiees: "",
+        partenaires: [
+          {
+            id: 1,
+            isClient: false,
+            clientId: "",
+            nom: "",
+            prenom: "",
+            nomNaissance: "",
+            adresseActuelle: "",
+            dateNaissance: "",
+            lieuNaissance: "",
+            nationalite: "",
+            profession: "",
+            telephone: "",
+            email: "",
+            situationFamiliale: "",
+            typeIdentite: "",
+            numeroIdentite: "",
+            dateEmissionIdentite: "",
+            autoriteDelivrante: "",
+            estEtranger: false,
+            attestationNonPacsPaysOrigine: false,
+            certificatCoutumeRequis: false,
+            traductionRequise: false,
+          },
+          {
+            id: 2,
+            isClient: false,
+            clientId: "",
+            nom: "",
+            prenom: "",
+            nomNaissance: "",
+            adresseActuelle: "",
+            dateNaissance: "",
+            lieuNaissance: "",
+            nationalite: "",
+            profession: "",
+            telephone: "",
+            email: "",
+            situationFamiliale: "",
+            typeIdentite: "",
+            numeroIdentite: "",
+            dateEmissionIdentite: "",
+            autoriteDelivrante: "",
+            estEtranger: false,
+            attestationNonPacsPaysOrigine: false,
+            certificatCoutumeRequis: false,
+            traductionRequise: false,
+          }
+        ],
+        adresseCommune: "",
+        dateDebutResidenceCommune: "",
+        contributionCharges: "proportionnelle",
+        contributionChargesAutre: "",
+        clausesFacultatives: {
+          gestionBiensPersonnels: "",
+          gestionBienCommun: "",
+          usageBienIndivis: "",
+          repartitionDepensesSpecifiques: "",
+          clauseOccupationLogementSeparation: "",
+          clauseRepriseBienDeces: "",
+          clauseAbandonCreance: "",
+          modalitesCompteBancaireCommun: "",
+          clausesFinancieresPersonnalisees: "",
+          clausesSolidariteDettes: "",
+        },
+        declarations: {
+          residenceCommune: false,
+          absenceLienParente: false,
+          absenceMariageEtPacs: false,
+        },
+        enfantEnCommun: "non",
+        enfants: [{
+          id: 1,
+          nom: "",
+          prenom: "",
+          dateNaissance: "",
+          autoriteParentale: "",
+        }],
+        droitApplicable: "francais",
+        droitApplicableAutre: "",
+        biensPreexistants: "non",
+        biensListe: [{
+          id: 1,
+          description: "",
+          quotePart1: "",
+          quotePart2: "",
+          indivision: "",
+        }],
+      });
+
+      // Reset file uploads
+      setPacsPartenaire1IdentiteFiles([]);
+      setPacsPartenaire2IdentiteFiles([]);
+      setPacsPartenaire1ActeNaissanceFiles([]);
+      setPacsPartenaire2ActeNaissanceFiles([]);
+      setPacsPartenaire1DomicileFiles([]);
+      setPacsPartenaire2DomicileFiles([]);
+      setPacsPartenaire1DivorceFiles([]);
+      setPacsPartenaire2DivorceFiles([]);
+      setPacsPartenaire1DecesFiles([]);
+      setPacsPartenaire2DecesFiles([]);
+      setPacsPartenaire1CertificatCoutumeFiles([]);
+      setPacsPartenaire2CertificatCoutumeFiles([]);
+      setPacsPartenaire1CertificatNonPacsFiles([]);
+      setPacsPartenaire2CertificatNonPacsFiles([]);
+      setPacsPartenaire1TraductionsFiles([]);
+      setPacsPartenaire2TraductionsFiles([]);
+
+      refreshContrats();
+    } catch (err) {
+      console.error('Erreur création PACS:', err);
+      toast.error('Erreur lors de la création de la convention de PACS');
     }
   };
 
@@ -15457,6 +15914,174 @@ DÉCLARATIONS DES ÉPOUX
               </>
             )}
 
+            {/* Formulaire spécifique pour PACS */}
+            {pendingContractType === "PACS (Pacte Civil de Solidarité)" && (
+              <>
+                <div className="space-y-6">
+                  <div className="bg-muted/30 p-4 rounded-lg">
+                    <h3 className="font-semibold text-lg mb-4">📋 Convention de PACS</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Complétez les informations nécessaires pour la rédaction de la convention de PACS.
+                    </p>
+                  </div>
+
+                  {/* 1. Informations générales */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Informations générales sur le PACS</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Objet du PACS */}
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          Objet du PACS
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <Select value={pacsData.objetPacs} onValueChange={(value) => setPacsData({...pacsData, objetPacs: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="initial">PACS initial</SelectItem>
+                            <SelectItem value="modification">Modification de PACS existant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Régime choisi */}
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          Régime choisi
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <Select value={pacsData.regimePacs} onValueChange={(value) => setPacsData({...pacsData, regimePacs: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="separation">Séparation de biens (régime légal par défaut)</SelectItem>
+                            <SelectItem value="indivision">Indivision</SelectItem>
+                            <SelectItem value="personnalise">Régime personnalisé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Date prise d'effet */}
+                      <div className="space-y-2">
+                        <Label>Date de prise d'effet souhaitée</Label>
+                        <Input
+                          type="date"
+                          value={pacsData.datePriseEffetSouhaitee}
+                          onChange={(e) => setPacsData({...pacsData, datePriseEffetSouhaitee: e.target.value})}
+                        />
+                        <p className="text-xs text-muted-foreground">Par défaut : à l'enregistrement</p>
+                      </div>
+                    </div>
+
+                    {/* Régime personnalisé */}
+                    {pacsData.regimePacs === "personnalise" && (
+                      <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                        <h4 className="font-medium">Régime personnalisé</h4>
+                        <div className="space-y-2">
+                          <Label>Définition des biens communs</Label>
+                          <Textarea
+                            value={pacsData.regimePersonnalise.definitionBiensCommuns}
+                            onChange={(e) => setPacsData({
+                              ...pacsData,
+                              regimePersonnalise: {...pacsData.regimePersonnalise, definitionBiensCommuns: e.target.value}
+                            })}
+                            rows={3}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Biens propres</Label>
+                          <Textarea
+                            value={pacsData.regimePersonnalise.biensPropres}
+                            onChange={(e) => setPacsData({
+                              ...pacsData,
+                              regimePersonnalise: {...pacsData.regimePersonnalise, biensPropres: e.target.value}
+                            })}
+                            rows={3}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 2. Adresse commune */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Adresse commune (obligatoire)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label className="flex items-center gap-2">
+                          Adresse commune déclarée
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          value={pacsData.adresseCommune}
+                          onChange={(e) => setPacsData({...pacsData, adresseCommune: e.target.value})}
+                          placeholder="Adresse complète de résidence commune"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de début de résidence commune</Label>
+                        <Input
+                          type="date"
+                          value={pacsData.dateDebutResidenceCommune}
+                          onChange={(e) => setPacsData({...pacsData, dateDebutResidenceCommune: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Déclarations obligatoires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Déclarations sur l'honneur (obligatoires)</h3>
+                    <div className="space-y-3 p-4 border rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decl1"
+                          checked={pacsData.declarations.residenceCommune}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            declarations: {...pacsData.declarations, residenceCommune: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="decl1" className="text-sm">
+                          Déclaration de résidence commune <span className="text-red-500">*</span>
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decl2"
+                          checked={pacsData.declarations.absenceLienParente}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            declarations: {...pacsData.declarations, absenceLienParente: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="decl2" className="text-sm">
+                          Déclaration d'absence de lien de parenté <span className="text-red-500">*</span>
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decl3"
+                          checked={pacsData.declarations.absenceMariageEtPacs}
+                          onChange={(e) => setPacsData({
+                            ...pacsData,
+                            declarations: {...pacsData.declarations, absenceMariageEtPacs: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="decl3" className="text-sm">
+                          Déclaration d'absence de mariage et PACS en cours <span className="text-red-500">*</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -15482,6 +16107,8 @@ DÉCLARATIONS DES ÉPOUX
                   handleMainleveeSubmit();
                 } else if (pendingContractType === "Contrat de mariage (régimes matrimoniaux)") {
                   handleContratMariageSubmit();
+                } else if (pendingContractType === "PACS (Pacte Civil de Solidarité)") {
+                  handlePacsSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
