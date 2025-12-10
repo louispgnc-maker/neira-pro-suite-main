@@ -6399,31 +6399,27 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
-                              console.log('🔍 BAILLEUR - selectedClient:', selectedClient);
-                              console.log('🔍 BAILLEUR - situation_matrimoniale:', selectedClient.situation_matrimoniale);
-                              console.log('🔍 BAILLEUR - typeof:', typeof selectedClient.situation_matrimoniale);
-                              
-                              // Parse situation_matrimoniale JSON
                               let regimeText = "";
                               
-                              if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
-                                const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                const regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
-                                
-                                console.log('🔍 BAILLEUR - situationFamiliale:', situationFamiliale);
-                                console.log('🔍 BAILLEUR - regimeMatrimonial:', regimeMatrimonial);
-                                
-                                const situationLower = situationFamiliale.toLowerCase();
-                                if (['celibataire', 'célibataire', 'divorce', 'divorcé', 'veuf', 'veuve'].includes(situationLower)) {
-                                  regimeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
-                                } else if (['marie', 'marié', 'mariée', 'pacse', 'pacsé'].includes(situationLower)) {
-                                  const regime = regimeMatrimonial.replace(/_/g, ' ');
-                                  regimeText = regimeMatrimonial ? `Marié(e) sous le régime de ${regime}` : 'Marié(e)';
+                              // Gérer les différents formats de situation_matrimoniale
+                              if (selectedClient.situation_matrimoniale) {
+                                if (typeof selectedClient.situation_matrimoniale === 'object') {
+                                  // Cas 1: Objet JSON avec situation_familiale et regime_matrimonial
+                                  const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                  const regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
+                                  
+                                  const situationLower = situationFamiliale.toLowerCase();
+                                  if (['celibataire', 'célibataire', 'divorce', 'divorcé', 'veuf', 'veuve'].includes(situationLower)) {
+                                    regimeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  } else if (['marie', 'marié', 'mariée', 'pacse', 'pacsé'].includes(situationLower)) {
+                                    const regime = regimeMatrimonial.replace(/_/g, ' ');
+                                    regimeText = regimeMatrimonial ? `Marié(e) sous le régime de ${regime}` : 'Marié(e)';
+                                  }
+                                } else if (typeof selectedClient.situation_matrimoniale === 'string') {
+                                  // Cas 2: Simple chaîne de texte
+                                  regimeText = selectedClient.situation_matrimoniale;
                                 }
                               }
-                              
-                              console.log('🔍 BAILLEUR - regimeText FINAL:', regimeText);
-                              console.log('🔍 BAILLEUR - typeof regimeText:', typeof regimeText);
                               
                               setBailCommercialData({
                                 ...bailCommercialData,
@@ -6650,19 +6646,25 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
-                              // Parse situation_matrimoniale JSON
                               let regimeText = "";
                               
-                              if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
-                                const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                const regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
-                                
-                                const situationLower = situationFamiliale.toLowerCase();
-                                if (['celibataire', 'célibataire', 'divorce', 'divorcé', 'veuf', 'veuve'].includes(situationLower)) {
-                                  regimeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
-                                } else if (['marie', 'marié', 'mariée', 'pacse', 'pacsé'].includes(situationLower)) {
-                                  const regime = regimeMatrimonial.replace(/_/g, ' ');
-                                  regimeText = regimeMatrimonial ? `Marié(e) sous le régime de ${regime}` : 'Marié(e)';
+                              // Gérer les différents formats de situation_matrimoniale
+                              if (selectedClient.situation_matrimoniale) {
+                                if (typeof selectedClient.situation_matrimoniale === 'object') {
+                                  // Cas 1: Objet JSON avec situation_familiale et regime_matrimonial
+                                  const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                  const regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
+                                  
+                                  const situationLower = situationFamiliale.toLowerCase();
+                                  if (['celibataire', 'célibataire', 'divorce', 'divorcé', 'veuf', 'veuve'].includes(situationLower)) {
+                                    regimeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  } else if (['marie', 'marié', 'mariée', 'pacse', 'pacsé'].includes(situationLower)) {
+                                    const regime = regimeMatrimonial.replace(/_/g, ' ');
+                                    regimeText = regimeMatrimonial ? `Marié(e) sous le régime de ${regime}` : 'Marié(e)';
+                                  }
+                                } else if (typeof selectedClient.situation_matrimoniale === 'string') {
+                                  // Cas 2: Simple chaîne de texte
+                                  regimeText = selectedClient.situation_matrimoniale;
                                 }
                               }
                               
