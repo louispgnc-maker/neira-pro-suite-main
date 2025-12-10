@@ -3208,8 +3208,8 @@ FRAIS
         return;
       }
 
-      if (!contratMariageData.typeRegime || !contratMariageData.typeContrat) {
-        toast.error('Veuillez remplir les champs obligatoires (type de régime, type de contrat)');
+      if (!contratMariageData.typeRegime) {
+        toast.error('Veuillez sélectionner un type de régime matrimonial');
         return;
       }
 
@@ -3223,28 +3223,12 @@ FRAIS
       };
 
       const descriptionData = `
-TYPE DE CONTRAT: Contrat de mariage (régimes matrimoniaux)
+TYPE DE CONTRAT: Contrat de mariage prénuptial (régimes matrimoniaux)
 
 ═══════════════════════════════════════════════════════════════
 INFORMATIONS GÉNÉRALES
 ═══════════════════════════════════════════════════════════════
 - Régime matrimonial choisi: ${regimeLabels[contratMariageData.typeRegime] || contratMariageData.typeRegime}
-- Type de contrat: ${contratMariageData.typeContrat === "prenuptial" ? "Contrat prénuptial (avant mariage)" : "Changement de régime matrimonial"}
-
-${contratMariageData.typeContrat === "changement_regime" ? `
-CHANGEMENT DE RÉGIME:
-- Date du mariage: ${contratMariageData.dateMariage}
-- Régime actuel: ${contratMariageData.regimeActuel === "autre" ? contratMariageData.regimeActuelAutre : contratMariageData.regimeActuel}
-- Motif du changement: ${contratMariageData.motifChangement}
-- Accord enfants majeurs: ${contratMariageData.accordEnfantsMajeurs}
-- Consentement enfants majeurs requis: ${contratMariageData.consentementEnfantsMajeursRequis}
-- Accord juge requis: ${contratMariageData.accordJugeRequis}
-${contratMariageData.accordCreancier ? `- Accord créancier: ${contratMariageData.accordCreancier}` : ""}
-${contratMariageData.biensCommuns.length > 0 && contratMariageData.biensCommuns[0].description ? `
-BIENS COMMUNS ACTUELS:
-${contratMariageData.biensCommuns.map(bien => `  - ${bien.description} (${bien.valeurEstimee}€) - Répartition: ${bien.repartitionEnvisagee}`).join('\n')}
-` : ""}
-` : ""}
 
 LOI APPLICABLE:
 - ${contratMariageData.choixLoiApplicable === "autre" ? contratMariageData.choixLoiApplicableAutre : contratMariageData.choixLoiApplicable}
@@ -13463,99 +13447,12 @@ DÉCLARATIONS DES ÉPOUX
                           />
                         </div>
                       )}
-
-                      <div className="space-y-2 md:col-span-2">
-                        <Label>Type de contrat *</Label>
-                        <RadioGroup
-                          value={contratMariageData.typeContrat}
-                          onValueChange={(value) => setContratMariageData({...contratMariageData, typeContrat: value})}
-                        >
-                          <div className="flex gap-4">
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="prenuptial" id="type_prenuptial" />
-                              <Label htmlFor="type_prenuptial" className="cursor-pointer">Contrat prénuptial (avant mariage)</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="changement_regime" id="type_changement" />
-                              <Label htmlFor="type_changement" className="cursor-pointer">Changement de régime (après mariage)</Label>
-                            </div>
-                          </div>
-                        </RadioGroup>
-                      </div>
-
-                      {contratMariageData.typeContrat === "changement_regime" && (
-                        <>
-                          <div className="space-y-2">
-                            <Label>Date du mariage</Label>
-                            <Input
-                              type="date"
-                              value={contratMariageData.dateMariage}
-                              onChange={(e) => setContratMariageData({...contratMariageData, dateMariage: e.target.value})}
-                            />
-                          </div>
-
-                          <div className="space-y-2 md:col-span-2">
-                            <Label>Régime matrimonial actuel *</Label>
-                            <Select 
-                              value={contratMariageData.regimeActuel} 
-                              onValueChange={(value) => setContratMariageData({...contratMariageData, regimeActuel: value})}
-                            >
-                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="separation_biens">Séparation de biens</SelectItem>
-                                <SelectItem value="communaute_legale">Communauté légale (réduite aux acquêts)</SelectItem>
-                                <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
-                                <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
-                                <SelectItem value="regime_etranger">Régime étranger</SelectItem>
-                                <SelectItem value="autre">Autre</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          {contratMariageData.regimeActuel === "autre" && (
-                            <div className="space-y-2 md:col-span-2">
-                              <Label>Préciser le régime actuel</Label>
-                              <Input
-                                value={contratMariageData.regimeActuelAutre}
-                                onChange={(e) => setContratMariageData({...contratMariageData, regimeActuelAutre: e.target.value})}
-                              />
-                            </div>
-                          )}
-
-                          <div className="space-y-2 md:col-span-2">
-                            <Label>Motif du changement</Label>
-                            <Textarea
-                              rows={2}
-                              value={contratMariageData.motifChangement}
-                              onChange={(e) => setContratMariageData({...contratMariageData, motifChangement: e.target.value})}
-                              placeholder="Ex: Meilleure protection du conjoint, situation patrimoniale..."
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Accord/information enfants majeurs</Label>
-                            <Input
-                              value={contratMariageData.accordEnfantsMajeurs}
-                              onChange={(e) => setContratMariageData({...contratMariageData, accordEnfantsMajeurs: e.target.value})}
-                              placeholder="Oui, tous informés"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>Accord créancier (si applicable)</Label>
-                            <Input
-                              value={contratMariageData.accordCreancier}
-                              onChange={(e) => setContratMariageData({...contratMariageData, accordCreancier: e.target.value})}
-                            />
-                          </div>
-                        </>
-                      )}
                     </div>
                   </div>
 
-                  {/* 2. Identité des époux */}
+                  {/* 2. Choix de la loi applicable (cas internationaux) */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">💑 Identité des futurs époux / époux</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">🌍 Choix de la loi applicable au régime matrimonial</h3>
                     
                     {contratMariageData.epoux.map((epoux, index) => (
                       <div key={epoux.id} className="p-4 border rounded-lg space-y-4">
@@ -13873,8 +13770,8 @@ DÉCLARATIONS DES ÉPOUX
                     </div>
                   </div>
 
-                  {/* 2ter. Consentement des enfants majeurs (si changement de régime) */}
-                  {contratMariageData.typeContrat === "changement_regime" && (
+                  {/* 2ter. Consentement des enfants majeurs - SUPPRIMÉ (changement régime uniquement) */}
+                  {false && (
                     <div className="space-y-4">
                       <h3 className="font-semibold text-lg border-b pb-2">✍️ Consentement des enfants majeurs</h3>
                       <p className="text-sm text-muted-foreground">Obligatoire en cas de changement de régime matrimonial</p>
@@ -13940,10 +13837,8 @@ DÉCLARATIONS DES ÉPOUX
                     </div>
                   )}
 
-                  {/* 2quater. Biens communs actuels (si changement depuis régime communautaire) */}
-                  {contratMariageData.typeContrat === "changement_regime" && 
-                   (contratMariageData.regimeActuel === "communaute_legale" || 
-                    contratMariageData.regimeActuel === "communaute_universelle") && (
+                  {/* 2quater. Biens communs actuels - SUPPRIMÉ (changement régime uniquement) */}
+                  {false && (
                     <div className="space-y-4">
                       <h3 className="font-semibold text-lg border-b pb-2">🏠 Biens communs actuels</h3>
                       <p className="text-sm text-muted-foreground">Nécessaire si vous changez depuis un régime de communauté</p>
@@ -14014,8 +13909,8 @@ DÉCLARATIONS DES ÉPOUX
                     </div>
                   )}
 
-                  {/* 2quinquies. Consentement du juge (si enfants mineurs et changement) */}
-                  {contratMariageData.typeContrat === "changement_regime" && (
+                  {/* 2quinquies. Consentement du juge - SUPPRIMÉ (changement régime uniquement) */}
+                  {false && (
                     <div className="space-y-4">
                       <h3 className="font-semibold text-lg border-b pb-2">⚖️ Consentement du juge</h3>
                       <p className="text-sm text-muted-foreground">Requis si vous avez des enfants mineurs et changez de régime</p>
@@ -14330,8 +14225,8 @@ DÉCLARATIONS DES ÉPOUX
                     </div>
                   </div>
 
-                  {/* 4bis. Liquidation du régime matrimonial actuel */}
-                  {contratMariageData.typeContrat === "changement_regime" && (
+                  {/* 4bis. Liquidation du régime matrimonial actuel - SUPPRIMÉ (changement régime uniquement) */}
+                  {false && (
                     <div className="space-y-4">
                       <h3 className="font-semibold text-lg border-b pb-2">📦 Liquidation du régime matrimonial actuel</h3>
                       <p className="text-sm text-muted-foreground">Obligatoire si vous quittez un régime communautaire</p>
@@ -15307,8 +15202,8 @@ DÉCLARATIONS DES ÉPOUX
                         </div>
                       </div>
 
-                      {/* Si changement de régime */}
-                      {contratMariageData.typeContrat === "changement_regime" && (
+                      {/* Si changement de régime - SUPPRIMÉ */}
+                      {false && (
                         <>
                           <div className="space-y-2">
                             <Label>Contrat de mariage initial</Label>
@@ -15384,11 +15279,10 @@ DÉCLARATIONS DES ÉPOUX
                         </>
                       )}
 
-                      {/* Certificat de publication des bans (pour contrat prénuptial) */}
-                      {contratMariageData.typeContrat === "prenuptial" && (
-                        <div className="space-y-2 md:col-span-2">
-                          <Label>Certificat de publication des bans</Label>
-                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                      {/* Certificat de publication des bans */}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Certificat de publication des bans</Label>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
                             <input
                               type="file"
                               accept="application/pdf"
@@ -15421,7 +15315,6 @@ DÉCLARATIONS DES ÉPOUX
                             )}
                           </div>
                         </div>
-                      )}
 
                       {/* Documents optionnels */}
                       <div className="space-y-2 md:col-span-2">
