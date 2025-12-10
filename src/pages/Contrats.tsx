@@ -8836,46 +8836,62 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                           {/* Statut matrimonial */}
                           <div className="space-y-2">
                             <Label>Statut matrimonial</Label>
-                            <Select
-                              value={indivisaire.statutMatrimonial}
-                              onValueChange={(value) => {
-                                const newIndivisaires = [...indivisionData.indivisaires];
-                                const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
-                                newIndivisaires[idx] = {...newIndivisaires[idx], statutMatrimonial: value};
-                                setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
-                              }}
-                            >
-                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="celibataire">Célibataire</SelectItem>
-                                <SelectItem value="marie">Marié(e)</SelectItem>
-                                <SelectItem value="pacse">Pacsé(e)</SelectItem>
-                                <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                                <SelectItem value="veuf">Veuf/Veuve</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          {indivisaire.statutMatrimonial === "marie" && (
-                            <div className="space-y-2">
-                              <Label>Régime matrimonial</Label>
+                            {indivisaire.isClient ? (
+                              <Input
+                                value={indivisaire.statutMatrimonial}
+                                readOnly
+                                className="bg-muted cursor-not-allowed"
+                              />
+                            ) : (
                               <Select
-                                value={indivisaire.regimeMatrimonial}
+                                value={indivisaire.statutMatrimonial}
                                 onValueChange={(value) => {
                                   const newIndivisaires = [...indivisionData.indivisaires];
                                   const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
-                                  newIndivisaires[idx] = {...newIndivisaires[idx], regimeMatrimonial: value};
+                                  newIndivisaires[idx] = {...newIndivisaires[idx], statutMatrimonial: value};
                                   setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
                                 }}
                               >
                                 <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="communaute">Communauté</SelectItem>
-                                  <SelectItem value="separation">Séparation de biens</SelectItem>
-                                  <SelectItem value="participation">Participation aux acquêts</SelectItem>
-                                  <SelectItem value="autre">Autre</SelectItem>
+                                  <SelectItem value="celibataire">Célibataire</SelectItem>
+                                  <SelectItem value="marie">Marié(e)</SelectItem>
+                                  <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                                  <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                                  <SelectItem value="veuf">Veuf/Veuve</SelectItem>
                                 </SelectContent>
                               </Select>
+                            )}
+                          </div>
+
+                          {indivisaire.statutMatrimonial === "marie" && (
+                            <div className="space-y-2">
+                              <Label>Régime matrimonial</Label>
+                              {indivisaire.isClient ? (
+                                <Input
+                                  value={indivisaire.regimeMatrimonial}
+                                  readOnly
+                                  className="bg-muted cursor-not-allowed"
+                                />
+                              ) : (
+                                <Select
+                                  value={indivisaire.regimeMatrimonial}
+                                  onValueChange={(value) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], regimeMatrimonial: value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="communaute">Communauté</SelectItem>
+                                    <SelectItem value="separation">Séparation de biens</SelectItem>
+                                    <SelectItem value="participation">Participation aux acquêts</SelectItem>
+                                    <SelectItem value="autre">Autre</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              )}
                             </div>
                           )}
 
@@ -8935,37 +8951,38 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                           )}
 
                           {/* Upload pièces jointes pour cet indivisaire */}
-                          <div className="space-y-2 md:col-span-2">
-                            <Label>📎 Pièce d'identité</Label>
-                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
-                              <input
-                                type="file"
-                                accept="application/pdf,image/*"
-                                multiple
-                                className="hidden"
-                                id={`indiv_${indivisaire.id}_id_upload`}
-                                onChange={(e) => {
-                                  const files = Array.from(e.target.files || []);
-                                  if (files.length > 0) {
-                                    setIndivisairesIdentiteFiles(prev => ({...prev, [indivisaire.id]: files}));
-                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
-                                  }
-                                  e.target.value = '';
-                                }}
-                              />
-                              <label htmlFor={`indiv_${indivisaire.id}_id_upload`} className="cursor-pointer flex items-center gap-3">
-                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                                  </svg>
-                                </div>
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium">Joindre la pièce d'identité</p>
-                                  <p className="text-xs text-muted-foreground">PDF ou images</p>
-                                </div>
-                              </label>
-                            </div>
-                            {indivisairesIdentiteFiles[indivisaire.id]?.length > 0 && (
+                          {!indivisaire.isClient && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>📎 Pièce d'identité</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                                <input
+                                  type="file"
+                                  accept="application/pdf,image/*"
+                                  multiple
+                                  className="hidden"
+                                  id={`indiv_${indivisaire.id}_id_upload`}
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    if (files.length > 0) {
+                                      setIndivisairesIdentiteFiles(prev => ({...prev, [indivisaire.id]: files}));
+                                      toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                    }
+                                    e.target.value = '';
+                                  }}
+                                />
+                                <label htmlFor={`indiv_${indivisaire.id}_id_upload`} className="cursor-pointer flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                    </svg>
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">Joindre la pièce d'identité</p>
+                                    <p className="text-xs text-muted-foreground">PDF ou images</p>
+                                  </div>
+                                </label>
+                              </div>
+                              {indivisairesIdentiteFiles[indivisaire.id]?.length > 0 && (
                               <div className="space-y-2 mt-2">
                                 {indivisairesIdentiteFiles[indivisaire.id].map((file, idx) => (
                                   <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
@@ -8993,6 +9010,24 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               </div>
                             )}
                           </div>
+                          )}
+
+                          {/* Affichage de la carte d'identité chargée depuis le client */}
+                          {indivisaire.isClient && indivisairesIdentiteFiles[indivisaire.id]?.length > 0 && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>📎 Pièce d'identité (chargée depuis la fiche client)</Label>
+                              <div className="space-y-2">
+                                {indivisairesIdentiteFiles[indivisaire.id].map((file, idx) => (
+                                  <div key={idx} className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                                    <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate text-green-800">{file.name}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
                           {/* Upload justificatif de domicile */}
                           <div className="space-y-2 md:col-span-2">
