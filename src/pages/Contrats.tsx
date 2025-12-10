@@ -6410,8 +6410,9 @@ DURÉE DU BAIL
                                 bailleurDateNaissance: selectedClient.date_naissance || "",
                                 bailleurLieuNaissance: selectedClient.lieu_naissance || "",
                                 bailleurNationalite: selectedClient.nationalite || "",
-                                bailleurStatutMatrimonial: selectedClient.situation_matrimoniale || "",
-                                bailleurRegimeMatrimonial: selectedClient.situation_familiale || "",
+                                bailleurRegimeMatrimonial: (selectedClient.situation_matrimoniale && selectedClient.situation_familiale) 
+                                  ? `${selectedClient.situation_matrimoniale} - ${selectedClient.situation_familiale}`
+                                  : (selectedClient.situation_matrimoniale || selectedClient.situation_familiale || ""),
                                 bailleurProfession: selectedClient.profession || "",
                               });
                             }
@@ -6477,12 +6478,8 @@ DURÉE DU BAIL
                           <Input value={bailCommercialData.bailleurNationalite} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurNationalite: e.target.value})} placeholder="Ex: Française" />
                         </div>
                         <div className="space-y-2">
-                          <Label>Statut matrimonial *</Label>
-                          <Input value={bailCommercialData.bailleurStatutMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurStatutMatrimonial: e.target.value})} placeholder="Ex: Marié(e), Célibataire, Pacsé(e)..." />
-                        </div>
-                        <div className="space-y-2">
                           <Label>Régime matrimonial</Label>
-                          <Input value={bailCommercialData.bailleurRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurRegimeMatrimonial: e.target.value})} placeholder="Ex: Communauté, Séparation de biens..." />
+                          <Input value={bailCommercialData.bailleurRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, bailleurRegimeMatrimonial: e.target.value})} placeholder="Ex: Marié(e) sous le régime de la communauté, Célibataire..." />
                         </div>
                         <div className="space-y-2">
                           <Label>Profession</Label>
@@ -6640,8 +6637,9 @@ DURÉE DU BAIL
                                 locataireDateNaissance: selectedClient.date_naissance || "",
                                 locataireLieuNaissance: selectedClient.lieu_naissance || "",
                                 locataireNationalite: selectedClient.nationalite || "",
-                                locataireStatutMatrimonial: selectedClient.situation_matrimoniale || "",
-                                locataireRegimeMatrimonial: selectedClient.situation_familiale || "",
+                                locataireRegimeMatrimonial: (selectedClient.situation_matrimoniale && selectedClient.situation_familiale) 
+                                  ? `${selectedClient.situation_matrimoniale} - ${selectedClient.situation_familiale}`
+                                  : (selectedClient.situation_matrimoniale || selectedClient.situation_familiale || ""),
                                 locataireProfession: selectedClient.profession || "",
                                 locataireTelephone: selectedClient.telephone || "",
                                 locataireEmail: selectedClient.email || "",
@@ -6709,12 +6707,8 @@ DURÉE DU BAIL
                           <Input value={bailCommercialData.locataireNationalite} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireNationalite: e.target.value})} placeholder="Ex: Française" />
                         </div>
                         <div className="space-y-2">
-                          <Label>Statut matrimonial *</Label>
-                          <Input value={bailCommercialData.locataireStatutMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireStatutMatrimonial: e.target.value})} placeholder="Ex: Marié(e), Célibataire, Pacsé(e)..." />
-                        </div>
-                        <div className="space-y-2">
                           <Label>Régime matrimonial</Label>
-                          <Input value={bailCommercialData.locataireRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireRegimeMatrimonial: e.target.value})} placeholder="Ex: Communauté, Séparation de biens..." />
+                          <Input value={bailCommercialData.locataireRegimeMatrimonial} onChange={(e) => setBailCommercialData({...bailCommercialData, locataireRegimeMatrimonial: e.target.value})} placeholder="Ex: Marié(e) sous le régime de la communauté, Célibataire..." />
                         </div>
                         <div className="space-y-2">
                           <Label>Profession *</Label>
