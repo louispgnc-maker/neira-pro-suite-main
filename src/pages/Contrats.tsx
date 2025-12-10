@@ -7149,8 +7149,8 @@ DURÉE DU BAIL
                           <Select value={bailCommercialData.locataireExerceEnNomPropre} onValueChange={(value) => setBailCommercialData({...bailCommercialData, locataireExerceEnNomPropre: value})}>
                             <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="oui">Oui</SelectItem>
-                              <SelectItem value="non">Non</SelectItem>
+                              <SelectItem value="nom_propre">Nom propre</SelectItem>
+                              <SelectItem value="ei">EI</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
