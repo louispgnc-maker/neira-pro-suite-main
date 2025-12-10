@@ -6430,19 +6430,19 @@ DURÉE DU BAIL
                             if (selectedClient) {
                               console.log('🔍 BAILLEUR - Client:', selectedClient);
                               console.log('🔍 BAILLEUR - situation_matrimoniale:', selectedClient.situation_matrimoniale);
+                              console.log('🔍 BAILLEUR - situation_familiale:', selectedClient.situation_familiale);
                               
                               let situationFamiliale = "";
                               let regimeMatrimonial = "";
                               
-                              // Gérer les différents formats de situation_matrimoniale
+                              // Essayer d'abord situation_matrimoniale
                               if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
-                                  // Cas 1: Objet JSON - extraire situation_familiale et regime_matrimonial
+                                  // Cas 1: Objet JSON dans situation_matrimoniale
                                   situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
                                   regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
                                   
-                                  console.log('🔍 BAILLEUR - Extrait situation_familiale:', situationFamiliale);
-                                  console.log('🔍 BAILLEUR - Extrait regime_matrimonial:', regimeMatrimonial);
+                                  console.log('🔍 BAILLEUR - Extrait de situation_matrimoniale:', situationFamiliale, regimeMatrimonial);
                                   
                                   // Capitaliser
                                   if (situationFamiliale) {
@@ -6451,12 +6451,33 @@ DURÉE DU BAIL
                                   if (regimeMatrimonial) {
                                     regimeMatrimonial = regimeMatrimonial.replace(/_/g, ' ');
                                   }
-                                  
-                                  console.log('🔍 BAILLEUR - Après capitalisation:', situationFamiliale, regimeMatrimonial);
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
                                   situationFamiliale = selectedClient.situation_matrimoniale;
                                   console.log('🔍 BAILLEUR - String directe:', situationFamiliale);
+                                }
+                              }
+                              
+                              // Si pas trouvé, essayer situation_familiale
+                              if (!situationFamiliale && selectedClient.situation_familiale) {
+                                if (typeof selectedClient.situation_familiale === 'object') {
+                                  // Objet JSON dans situation_familiale
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || '';
+                                  regimeMatrimonial = selectedClient.situation_familiale.regime_matrimonial || '';
+                                  
+                                  console.log('🔍 BAILLEUR - Extrait de situation_familiale:', situationFamiliale, regimeMatrimonial);
+                                  
+                                  // Capitaliser
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
+                                  if (regimeMatrimonial) {
+                                    regimeMatrimonial = regimeMatrimonial.replace(/_/g, ' ');
+                                  }
+                                } else if (typeof selectedClient.situation_familiale === 'string') {
+                                  // Simple chaîne
+                                  situationFamiliale = selectedClient.situation_familiale;
+                                  console.log('🔍 BAILLEUR - String situation_familiale:', situationFamiliale);
                                 }
                               }
                               
@@ -6697,10 +6718,10 @@ DURÉE DU BAIL
                               let situationFamiliale = "";
                               let regimeMatrimonial = "";
                               
-                              // Gérer les différents formats de situation_matrimoniale
+                              // Essayer d'abord situation_matrimoniale
                               if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
-                                  // Cas 1: Objet JSON - extraire situation_familiale et regime_matrimonial
+                                  // Cas 1: Objet JSON dans situation_matrimoniale
                                   situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
                                   regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
                                   
@@ -6714,6 +6735,26 @@ DURÉE DU BAIL
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
                                   situationFamiliale = selectedClient.situation_matrimoniale;
+                                }
+                              }
+                              
+                              // Si pas trouvé, essayer situation_familiale
+                              if (!situationFamiliale && selectedClient.situation_familiale) {
+                                if (typeof selectedClient.situation_familiale === 'object') {
+                                  // Objet JSON dans situation_familiale
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || '';
+                                  regimeMatrimonial = selectedClient.situation_familiale.regime_matrimonial || '';
+                                  
+                                  // Capitaliser
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
+                                  if (regimeMatrimonial) {
+                                    regimeMatrimonial = regimeMatrimonial.replace(/_/g, ' ');
+                                  }
+                                } else if (typeof selectedClient.situation_familiale === 'string') {
+                                  // Simple chaîne
+                                  situationFamiliale = selectedClient.situation_familiale;
                                 }
                               }
                               
