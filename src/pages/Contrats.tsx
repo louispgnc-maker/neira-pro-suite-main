@@ -1080,7 +1080,7 @@ export default function Contrats() {
     }
     
     // Si c'est un bail commercial, ouvrir le questionnaire spécifique
-    if (contractType === "Bail commercial" && categoryKey === "Immobilier") {
+    if (contractType === "Bail commercial / professionnel" && categoryKey === "Immobilier") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -6256,7 +6256,7 @@ DURÉE DU BAIL
             )}
 
             {/* Formulaire spécifique pour Bail commercial */}
-            {pendingContractType === "Bail commercial" && (
+            {pendingContractType === "Bail commercial / professionnel" && (
               <>
                 <div className="space-y-6">
                   <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
@@ -6410,7 +6410,7 @@ DURÉE DU BAIL
                   handleActeVenteSubmit();
                 } else if (pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") {
                   handleBailHabitationSubmit();
-                } else if (pendingContractType === "Bail commercial") {
+                } else if (pendingContractType === "Bail commercial / professionnel") {
                   handleBailCommercialSubmit();
                 } else {
                   handleQuestionnaireSubmit();
