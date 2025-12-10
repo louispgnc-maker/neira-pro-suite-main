@@ -129,6 +129,7 @@ export default function Contrats() {
   const [indivisionBailFiles, setIndivisionBailFiles] = useState<File[]>([]); // Bail si bien loué
   const [indivisionProcurationFiles, setIndivisionProcurationFiles] = useState<File[]>([]); // Procurations
   const [indivisionMandatGerantFiles, setIndivisionMandatGerantFiles] = useState<File[]>([]); // Mandat du gérant
+  const [indivisionAssuranceFiles, setIndivisionAssuranceFiles] = useState<File[]>([]); // Attestation d'assurance
   
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
@@ -813,12 +814,17 @@ export default function Contrats() {
       decisions: "", // unanimite / majorite_2_3 / majorite_simple
       charges: "",
       compteBancaire: "",
+      repartitionDepensesExceptionnelles: "", // Nouvelle section
+      repartitionRevenus: "", // Nouvelle section
     },
     
     // Utilisation du bien
     utilisation: {
       utilisationParIndivisaires: "non",
       conditionsUtilisation: "",
+      indemniteOccupation: "non", // Nouvelle section: oui/non/conditions
+      indemniteOccupationMontant: "", // Si oui ou conditions
+      indemniteOccupationConditions: "", // Si conditions
       indemniteMontant: "",
       indemniteFrequence: "",
       locationAutorisee: "non",
@@ -868,6 +874,15 @@ export default function Contrats() {
         tribunal: false,
       },
       solidariteDettes: "non",
+    },
+    
+    // Assurance (nouvelle section)
+    assurance: {
+      assuranceObligatoire: "oui",
+      nomAssureur: "",
+      numeroPolice: "",
+      repartitionPrime: "",
+      dateEcheance: "",
     },
   });
 
@@ -9921,6 +9936,30 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                         />
                       </div>
 
+                      <div className="space-y-2">
+                        <Label>Répartition des dépenses exceptionnelles</Label>
+                        <Input
+                          value={indivisionData.gestion.repartitionDepensesExceptionnelles}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            gestion: {...indivisionData.gestion, repartitionDepensesExceptionnelles: e.target.value}
+                          })}
+                          placeholder="Ex: Gros travaux, sinistres, procédures..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Répartition des revenus tirés du bien</Label>
+                        <Input
+                          value={indivisionData.gestion.repartitionRevenus}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            gestion: {...indivisionData.gestion, repartitionRevenus: e.target.value}
+                          })}
+                          placeholder="Ex: Loyers, indemnités d'occupation, revenus divers..."
+                        />
+                      </div>
+
                       <div className="space-y-2 md:col-span-2">
                         <Label>Compte bancaire dédié</Label>
                         <Input
@@ -10034,34 +10073,81 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               placeholder="Préciser les conditions..."
                             />
                           </div>
-                          <div className="space-y-2">
-                            <Label>Indemnité d'occupation (€)</Label>
-                            <Input
-                              type="number"
-                              value={indivisionData.utilisation.indemniteMontant}
-                              onChange={(e) => setIndivisionData({
-                                ...indivisionData,
-                                utilisation: {...indivisionData.utilisation, indemniteMontant: e.target.value}
-                              })}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Fréquence de l'indemnité</Label>
-                            <Select
-                              value={indivisionData.utilisation.indemniteFrequence}
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Indemnité d'occupation (clause centrale)</Label>
+                            <RadioGroup
+                              value={indivisionData.utilisation.indemniteOccupation}
                               onValueChange={(value) => setIndivisionData({
                                 ...indivisionData,
-                                utilisation: {...indivisionData.utilisation, indemniteFrequence: value}
+                                utilisation: {...indivisionData.utilisation, indemniteOccupation: value}
                               })}
                             >
-                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="mensuelle">Mensuelle</SelectItem>
-                                <SelectItem value="trimestrielle">Trimestrielle</SelectItem>
-                                <SelectItem value="annuelle">Annuelle</SelectItem>
-                              </SelectContent>
-                            </Select>
+                              <div className="flex gap-4">
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="oui" id="indem_oui" />
+                                  <Label htmlFor="indem_oui" className="cursor-pointer">Oui, indemnité obligatoire</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="non" id="indem_non" />
+                                  <Label htmlFor="indem_non" className="cursor-pointer">Non, aucune indemnité</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="conditions" id="indem_cond" />
+                                  <Label htmlFor="indem_cond" className="cursor-pointer">Selon conditions</Label>
+                                </div>
+                              </div>
+                            </RadioGroup>
                           </div>
+
+                          {(indivisionData.utilisation.indemniteOccupation === "oui" || indivisionData.utilisation.indemniteOccupation === "conditions") && (
+                            <>
+                              <div className="space-y-2">
+                                <Label>Montant de l'indemnité d'occupation (€)</Label>
+                                <Input
+                                  type="number"
+                                  value={indivisionData.utilisation.indemniteOccupationMontant}
+                                  onChange={(e) => setIndivisionData({
+                                    ...indivisionData,
+                                    utilisation: {...indivisionData.utilisation, indemniteOccupationMontant: e.target.value}
+                                  })}
+                                  placeholder="Montant mensuel ou annuel"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Fréquence de l'indemnité</Label>
+                                <Select
+                                  value={indivisionData.utilisation.indemniteFrequence}
+                                  onValueChange={(value) => setIndivisionData({
+                                    ...indivisionData,
+                                    utilisation: {...indivisionData.utilisation, indemniteFrequence: value}
+                                  })}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="mensuelle">Mensuelle</SelectItem>
+                                    <SelectItem value="trimestrielle">Trimestrielle</SelectItem>
+                                    <SelectItem value="annuelle">Annuelle</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </>
+                          )}
+
+                          {indivisionData.utilisation.indemniteOccupation === "conditions" && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Conditions pour l'indemnité d'occupation</Label>
+                              <Textarea
+                                rows={2}
+                                value={indivisionData.utilisation.indemniteOccupationConditions}
+                                onChange={(e) => setIndivisionData({
+                                  ...indivisionData,
+                                  utilisation: {...indivisionData.utilisation, indemniteOccupationConditions: e.target.value}
+                                })}
+                                placeholder="Ex: Indemnité due uniquement si occupation exclusive pendant plus de 6 mois..."
+                              />
+                            </div>
+                          )}
                         </>
                       )}
 
@@ -10497,7 +10583,131 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                     </div>
                   </div>
 
-                  {/* 12. Procurations et documents complémentaires */}
+                  {/* 12. Assurance du bien indivis */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🛡️ Assurance du bien indivis</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Assurance obligatoire</Label>
+                        <RadioGroup
+                          value={indivisionData.assurance.assuranceObligatoire}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            assurance: {...indivisionData.assurance, assuranceObligatoire: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="oui" id="assur_oui" />
+                              <Label htmlFor="assur_oui" className="cursor-pointer">Oui</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="non" id="assur_non" />
+                              <Label htmlFor="assur_non" className="cursor-pointer">Non</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {indivisionData.assurance.assuranceObligatoire === "oui" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Nom de l'assureur</Label>
+                            <Input
+                              value={indivisionData.assurance.nomAssureur}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                assurance: {...indivisionData.assurance, nomAssureur: e.target.value}
+                              })}
+                              placeholder="Ex: AXA, MAIF, Allianz..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro de police d'assurance</Label>
+                            <Input
+                              value={indivisionData.assurance.numeroPolice}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                assurance: {...indivisionData.assurance, numeroPolice: e.target.value}
+                              })}
+                              placeholder="Numéro de contrat"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Répartition de la prime d'assurance</Label>
+                            <Input
+                              value={indivisionData.assurance.repartitionPrime}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                assurance: {...indivisionData.assurance, repartitionPrime: e.target.value}
+                              })}
+                              placeholder="Ex: Proportionnellement aux quote-parts"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date d'échéance</Label>
+                            <Input
+                              type="date"
+                              value={indivisionData.assurance.dateEcheance}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                assurance: {...indivisionData.assurance, dateEcheance: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>📎 Attestation d'assurance</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="indivision_assurance_upload"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  setIndivisionAssuranceFiles(prev => [...prev, ...files]);
+                                }}
+                              />
+                              <label htmlFor="indivision_assurance_upload" className="cursor-pointer">
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                  </svg>
+                                  <div>
+                                    <div className="font-medium text-foreground">Cliquez pour joindre l'attestation d'assurance</div>
+                                    <div className="text-xs">PDF uniquement</div>
+                                  </div>
+                                </div>
+                              </label>
+                              {indivisionAssuranceFiles.length > 0 && (
+                                <div className="mt-3 space-y-2">
+                                  {indivisionAssuranceFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-2 bg-muted rounded">
+                                      <span className="text-sm">{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setIndivisionAssuranceFiles(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                      >
+                                        Supprimer
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 13. Procurations et documents complémentaires */}
                   <div className="space-y-4">
                     <h3 className="font-semibold text-lg border-b pb-2">📎 Procurations et documents complémentaires</h3>
                     <div className="grid grid-cols-1 gap-4">
