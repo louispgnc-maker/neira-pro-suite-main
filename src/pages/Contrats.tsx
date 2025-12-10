@@ -87,7 +87,7 @@ export default function Contrats() {
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [pendingContractType, setPendingContractType] = useState<string>("");
   const [pendingCategory, setPendingCategory] = useState<string>("");
-  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string}>>([]);
+  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string, type_identite?: string, numero_identite?: string}>>([]);
 
   // States pour les fichiers uploadés
   const [compromisClientIdentiteUrl, setCompromisClientIdentiteUrl] = useState<string | null>(null); // URL du document du client
@@ -6410,8 +6410,8 @@ DURÉE DU BAIL
                                 bailleurDateNaissance: selectedClient.date_naissance || "",
                                 bailleurLieuNaissance: selectedClient.lieu_naissance || "",
                                 bailleurNationalite: selectedClient.nationalite || "",
-                                bailleurStatutMatrimonial: selectedClient.statut_matrimonial || "",
-                                bailleurRegimeMatrimonial: selectedClient.regime_matrimonial || "",
+                                bailleurStatutMatrimonial: selectedClient.situation_matrimoniale || "",
+                                bailleurRegimeMatrimonial: selectedClient.situation_familiale || "",
                                 bailleurProfession: selectedClient.profession || "",
                               });
                             }
@@ -6640,8 +6640,8 @@ DURÉE DU BAIL
                                 locataireDateNaissance: selectedClient.date_naissance || "",
                                 locataireLieuNaissance: selectedClient.lieu_naissance || "",
                                 locataireNationalite: selectedClient.nationalite || "",
-                                locataireStatutMatrimonial: selectedClient.statut_matrimonial || "",
-                                locataireRegimeMatrimonial: selectedClient.regime_matrimonial || "",
+                                locataireStatutMatrimonial: selectedClient.situation_matrimoniale || "",
+                                locataireRegimeMatrimonial: selectedClient.situation_familiale || "",
                                 locataireProfession: selectedClient.profession || "",
                                 locataireTelephone: selectedClient.telephone || "",
                                 locataireEmail: selectedClient.email || "",
