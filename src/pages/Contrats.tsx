@@ -116,6 +116,20 @@ export default function Contrats() {
   const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
   const [bailDiagnosticsFiles, setBailDiagnosticsFiles] = useState<File[]>([]);
   
+  // States pour convention d'indivision
+  const [indivisairesIdentiteUrls, setIndivisairesIdentiteUrls] = useState<Record<number, string | null>>({}); // URLs des documents identité indivisaires clients
+  const [indivisairesIdentiteFiles, setIndivisairesIdentiteFiles] = useState<Record<number, File[]>>({}); // Fichiers identité indivisaires non-clients
+  const [indivisairesDomicileFiles, setIndivisairesDomicileFiles] = useState<Record<number, File[]>>({}); // Justificatifs domicile
+  const [indivisairesContratMariageFiles, setIndivisairesContratMariageFiles] = useState<Record<number, File[]>>({}); // Contrats de mariage
+  const [indivisairesLivretFamilleFiles, setIndivisairesLivretFamilleFiles] = useState<Record<number, File[]>>({}); // Livrets de famille
+  const [indivisionTitreProprietFiles, setIndivisionTitreProprietFiles] = useState<File[]>([]); // Titre de propriété
+  const [indivisionEvaluationFiles, setIndivisionEvaluationFiles] = useState<File[]>([]); // Évaluation/estimation
+  const [indivisionCadastreFiles, setIndivisionCadastreFiles] = useState<File[]>([]); // Relevé cadastral
+  const [indivisionDiagnosticsFiles, setIndivisionDiagnosticsFiles] = useState<File[]>([]); // Diagnostics
+  const [indivisionBailFiles, setIndivisionBailFiles] = useState<File[]>([]); // Bail si bien loué
+  const [indivisionProcurationFiles, setIndivisionProcurationFiles] = useState<File[]>([]); // Procurations
+  const [indivisionMandatGerantFiles, setIndivisionMandatGerantFiles] = useState<File[]>([]); // Mandat du gérant
+  
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
     // Sélection du client et son rôle
@@ -727,6 +741,120 @@ export default function Contrats() {
     chargesCopropriete: "",
     travauxAPrevenir: "",
     autresInformations: "",
+  });
+
+  // State pour convention d'indivision
+  const [indivisionData, setIndivisionData] = useState({
+    // Informations générales
+    typeBien: "", // immobilier / mobilier / autre
+    typeBienAutre: "",
+    origineIndivision: "", // succession / achat_commun / investissement / donation / autre
+    origineIndivisionAutre: "",
+    objetConvention: "", // Texte libre
+    
+    // Indivisaires (tableau)
+    indivisaires: [{
+      id: 1,
+      isClient: false, // true si c'est un de nos clients
+      clientId: "",
+      nom: "",
+      prenom: "",
+      adresse: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      statutMatrimonial: "", // celibataire / marie / pacse / divorce / veuf
+      regimeMatrimonial: "", // communaute / separation / participation / autre
+      typeIdentite: "",
+      numeroIdentite: "",
+      email: "",
+      telephone: "",
+      quotePart: "", // % de propriété
+      origineQuotePart: "", // heritage / achat / donation...
+    }],
+    
+    // Description du bien
+    // Pour immobilier
+    adresseBien: "",
+    natureBienImmobilier: "", // maison / appartement / terrain / autre
+    descriptionBien: "",
+    surfaceBien: "",
+    referencesCadastrales: "",
+    etatLocatif: "", // libre / loue
+    montantLoyer: "",
+    dureeBail: "",
+    valeurVenale: "",
+    dateEstimation: "",
+    sourceEstimation: "", // expert / agent_immobilier / succession / autre
+    
+    // Pour mobilier
+    descriptionBienMobilier: "",
+    valeurEstimee: "",
+    numerosSerie: "",
+    
+    // Durée de la convention
+    dureeType: "", // indeterminee / determinee
+    dureeAnnees: "", // Si déterminée (max 5 ans)
+    conditionsRenouvellement: "",
+    conditionsSortie: "",
+    
+    // Gestion
+    gerantNom: "",
+    gerantPrenom: "",
+    gerantEstIndivisaire: "", // oui / non
+    pouvoirsGerant: [] as string[], // gestion_courante / travaux / representation / signature_actes
+    pouvoirsAutres: "",
+    dureeMandat: "",
+    decisionsType: "", // unanimite / majorite_2_3 / majorite_simple
+    casUnanimite: "", // Texte libre listant les cas
+    chargesRepartition: "", // proportionnelle / autre
+    chargesRepartitionAutre: "",
+    modalitesRemboursement: "",
+    compteBancaire: "", // oui / non
+    compteTitulaires: "",
+    compteModalites: "",
+    
+    // Utilisation du bien
+    utilisationParIndivisaires: "", // oui / non
+    utilisationConditions: "",
+    indemnitéOccupation: "", // oui / non
+    indemniteOccupationMontant: "",
+    indemniteOccupationFrequence: "", // mensuelle / annuelle
+    locationAutorisee: "", // oui / non
+    locationMandataire: "",
+    locationRepartitionLoyers: "",
+    
+    // Travaux
+    travauxAutorises: "",
+    travauxDecision: "", // unanimite / majorite
+    travauxRepartitionCouts: "",
+    travauxUrgents: "",
+    travauxDocumentation: "",
+    
+    // Sortie d'indivisaire
+    ventePartLibre: "", // oui / non
+    droitPreemption: "", // oui / non
+    evaluationPart: "", // gerant / indivisaires / juge
+    delaiRachat: "",
+    modalitesPaiement: "",
+    
+    // Vente du bien
+    conditionsMiseEnVente: "",
+    decisionVente: "", // unanimite / majorite
+    mandataireVente: "",
+    repartitionPrix: "",
+    gestionPlusValues: "",
+    
+    // Comptabilité
+    registreDepenses: "", // oui / non
+    archivageFactures: "", // oui / non
+    modalitesRemboursementAvances: "",
+    rapportAnnuel: "", // oui / non
+    
+    // Litiges
+    resolutionLitiges: [] as string[], // mediation / arbitrage / tribunal
+    solidariteDettes: "",
   });
 
   const navigate = useNavigate();
@@ -8161,6 +8289,84 @@ DURÉE DU BAIL
                       )}
                     </div>
                   </div>
+                </div>
+              </>
+            )}
+
+            {/* Formulaire spécifique pour Convention d'indivision */}
+            {pendingContractType === "Convention d'indivision" && (
+              <>
+                <div className="space-y-6">
+                  {/* 1. Informations générales */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📋 Informations générales sur l'indivision</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de bien *</Label>
+                        <Select 
+                          value={indivisionData.typeBien} 
+                          onValueChange={(value) => setIndivisionData({...indivisionData, typeBien: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="immobilier">Immobilier</SelectItem>
+                            <SelectItem value="mobilier">Mobilier</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {indivisionData.typeBien === "autre" && (
+                        <div className="space-y-2">
+                          <Label>Préciser le type de bien</Label>
+                          <Input 
+                            value={indivisionData.typeBienAutre} 
+                            onChange={(e) => setIndivisionData({...indivisionData, typeBienAutre: e.target.value})} 
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label>Origine de l'indivision *</Label>
+                        <Select 
+                          value={indivisionData.origineIndivision} 
+                          onValueChange={(value) => setIndivisionData({...indivisionData, origineIndivision: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="succession">Succession</SelectItem>
+                            <SelectItem value="achat_commun">Achat en commun</SelectItem>
+                            <SelectItem value="investissement">Investissement commun</SelectItem>
+                            <SelectItem value="donation">Donation</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {indivisionData.origineIndivision === "autre" && (
+                        <div className="space-y-2">
+                          <Label>Préciser l'origine</Label>
+                          <Input 
+                            value={indivisionData.origineIndivisionAutre} 
+                            onChange={(e) => setIndivisionData({...indivisionData, origineIndivisionAutre: e.target.value})} 
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Objet de la convention</Label>
+                        <Textarea 
+                          value={indivisionData.objetConvention} 
+                          onChange={(e) => setIndivisionData({...indivisionData, objetConvention: e.target.value})} 
+                          placeholder="Ex: Gestion du bien, répartition des droits, désignation d'un gérant..."
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Indivisaires - À continuer... */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">👥 Indivisaires</h3>
+                    <p className="text-sm text-muted-foreground">Section des indivisaires en cours de développement...</p>
+                  </div>
+
                 </div>
               </>
             )}
