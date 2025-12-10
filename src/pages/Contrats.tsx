@@ -1835,6 +1835,162 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
     }
   };
 
+  const handleBailCommercialSubmit = async () => {
+    try {
+      if (!user) {
+        toast.error('Utilisateur non connecté');
+        return;
+      }
+
+      if (!bailCommercialData.statutBailleur || !bailCommercialData.adresseLocal || !bailCommercialData.loyerMensuelHT) {
+        toast.error('Veuillez remplir les champs obligatoires (statut bailleur, adresse local, loyer)');
+        return;
+      }
+
+      const descriptionData = `
+TYPE DE CONTRAT: Bail commercial
+
+═══════════════════════════════════════════════════════════════
+BAILLEUR
+═══════════════════════════════════════════════════════════════
+- Statut: ${bailCommercialData.statutBailleur === "physique" ? "Personne physique" : "Personne morale (société)"}
+${bailCommercialData.statutBailleur === "physique" ? `- Nom: ${bailCommercialData.bailleurNom} ${bailCommercialData.bailleurPrenom}` : `- Dénomination: ${bailCommercialData.bailleurDenomination}
+- Forme juridique: ${bailCommercialData.bailleurFormeJuridique}
+- SIREN: ${bailCommercialData.bailleurSiren}
+- SIRET: ${bailCommercialData.bailleurSiret}`}
+- Adresse: ${bailCommercialData.bailleurAdresse}
+
+═══════════════════════════════════════════════════════════════
+LOCAL COMMERCIAL
+═══════════════════════════════════════════════════════════════
+- Adresse: ${bailCommercialData.adresseLocal}
+- Nature: ${bailCommercialData.natureLocal}
+- Surface totale: ${bailCommercialData.surfaceTotale} m²
+
+═══════════════════════════════════════════════════════════════
+ACTIVITÉ
+═══════════════════════════════════════════════════════════════
+- Activité principale autorisée: ${bailCommercialData.activitePrincipale}
+
+═══════════════════════════════════════════════════════════════
+CONDITIONS FINANCIÈRES
+═══════════════════════════════════════════════════════════════
+- Loyer mensuel HT: ${bailCommercialData.loyerMensuelHT} €
+- Charges mensuelles: ${bailCommercialData.chargesMensuelles} €
+
+═══════════════════════════════════════════════════════════════
+DURÉE DU BAIL
+═══════════════════════════════════════════════════════════════
+- Type de bail: ${bailCommercialData.typeBail}
+- Date de prise d'effet: ${bailCommercialData.datePriseEffet}
+      `.trim();
+
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Bail commercial - ${bailCommercialData.adresseLocal}`,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: descriptionData,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success("Bail commercial créé avec succès");
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire
+      setBailCommercialData({
+        statutBailleur: "",
+        bailleurNom: "",
+        bailleurPrenom: "",
+        bailleurDenomination: "",
+        bailleurFormeJuridique: "",
+        bailleurAdresse: "",
+        bailleurSiren: "",
+        bailleurSiret: "",
+        bailleurRepresentant: "",
+        bailleurQualiteRepresentant: "",
+        statutLocataire: "",
+        locataireNom: "",
+        locatairePrenom: "",
+        locataireAdresse: "",
+        locataireImmatriculation: "",
+        locataireDenomination: "",
+        locataireFormeJuridique: "",
+        locataireSiege: "",
+        locataireSiren: "",
+        locataireSiret: "",
+        locataireCapital: "",
+        locataireRepresentant: "",
+        locataireQualiteRepresentant: "",
+        activitePrincipale: "",
+        activitesAnnexes: "",
+        destinationBail: "",
+        clauseExclusivite: "",
+        clauseNonConcurrence: "",
+        adresseLocal: "",
+        natureLocal: "",
+        surfaceTotale: "",
+        lotsCopropriete: "",
+        etageNumero: "",
+        partiesPrivatives: [],
+        longueurVitrine: "",
+        accesLivraison: "",
+        etatGeneral: "",
+        travauxBailleur: "",
+        travauxLocataire: "",
+        etatLocalRemise: "",
+        diagnosticAmiante: "",
+        typeBail: "",
+        datePriseEffet: "",
+        dureeTotale: "",
+        renouvellementAuto: "",
+        loyerAnnuelHT: "",
+        loyerMensuelHT: "",
+        modalitePaiement: "",
+        typeIndexation: "",
+        chargesMensuelles: "",
+        typeCharges: "",
+        depotGarantie: "",
+        modePaiementLoyer: "",
+        ibanBailleur: "",
+        chargesLocataire: [],
+        chargesBailleur: [],
+        compteursIndividuels: "",
+        cautionPersonnelle: "",
+        garantieBancaire: "",
+        montantGaranti: "",
+        dureeGarantie: "",
+        diagnosticDPE: "",
+        diagnosticAmianteDTA: "",
+        diagnosticERP: "",
+        diagnosticElectricite: "",
+        diagnosticGaz: "",
+        diagnosticTermites: "",
+        attestationConformiteERP: "",
+        cedabilite: "",
+        conditionsCession: "",
+        droitPreemptionCommune: "",
+        derogationUsageLocal: "",
+        clauseRecettes: "",
+        clauseNonAffectation: "",
+        clauseNonConcurrenceDetails: "",
+        presenceCompteurs: "",
+        releveCompteurs: "",
+      });
+
+      loadContrats();
+    } catch (err) {
+      console.error('Erreur création bail commercial:', err);
+      toast.error('Erreur lors de la création du bail commercial');
+    }
+  };
+
   const handleDelete = async (contrat: ContratRow) => {
     if (!user) return;
     if (!confirm(`Supprimer "${contrat.name}" ?`)) return;
@@ -6255,7 +6411,7 @@ ${bailHabitationData.informationsComplementaires || 'Aucune'}
                 } else if (pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") {
                   handleBailHabitationSubmit();
                 } else if (pendingContractType === "Bail commercial") {
-                  toast.info("Le formulaire bail commercial est en cours de développement");
+                  handleBailCommercialSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
