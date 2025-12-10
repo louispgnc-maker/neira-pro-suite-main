@@ -1347,7 +1347,10 @@ export default function Contrats() {
     const type = params.get('type');
     const category = params.get('category');
     
+    console.log('🔍 URL Params:', { shouldCreate, type, category });
+    
     if (shouldCreate && type && category) {
+      console.log('✅ Ouverture dialogue pour type:', type);
       setPendingContractType(type);
       setPendingCategory(category);
       setShowQuestionDialog(true);
@@ -8459,7 +8462,10 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
             )}
 
             {/* Formulaire spécifique pour Convention d'indivision */}
-            {pendingContractType === "Convention d'indivision" && (
+            {(() => {
+              console.log('🔍 Vérification Convention d\'indivision - pendingContractType:', pendingContractType);
+              return pendingContractType === "Convention d'indivision";
+            })() && (
               <>
                 <div className="space-y-6">
                   {/* 1. Informations générales */}
