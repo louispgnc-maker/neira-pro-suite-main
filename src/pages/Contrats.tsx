@@ -8658,15 +8658,26 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                       console.log('📋 situation_familiale:', selectedClient.situation_familiale);
                                       console.log('📄 id_doc_path:', selectedClient.id_doc_path);
                                       
-                                      // Extraire le régime matrimonial de l'objet situation_familiale si c'est un objet
+                                      // Extraire la situation familiale et le régime matrimonial de l'objet situation_familiale si c'est un objet
+                                      let situationFamiliale = "";
                                       let regimeMatrimonial = "";
+                                      
                                       if (selectedClient.situation_familiale) {
                                         if (typeof selectedClient.situation_familiale === 'string') {
-                                          regimeMatrimonial = selectedClient.situation_familiale;
+                                          situationFamiliale = selectedClient.situation_familiale;
                                         } else if (typeof selectedClient.situation_familiale === 'object') {
-                                          regimeMatrimonial = (selectedClient.situation_familiale as any).regime_matrimonial || "";
+                                          const sitFam = selectedClient.situation_familiale as any;
+                                          situationFamiliale = sitFam.situation_familiale || "";
+                                          regimeMatrimonial = sitFam.regime_matrimonial || "";
                                         }
                                       }
+                                      
+                                      // Fallback sur situation_matrimoniale si situation_familiale est vide
+                                      if (!situationFamiliale && selectedClient.situation_matrimoniale) {
+                                        situationFamiliale = selectedClient.situation_matrimoniale;
+                                      }
+                                      
+                                      console.log('📋 situationFamiliale extraite:', situationFamiliale);
                                       console.log('📋 regimeMatrimonial extrait:', regimeMatrimonial);
                                       
                                       newIndivisaires[idx] = {
@@ -8680,7 +8691,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                         lieuNaissance: selectedClient.lieu_naissance || "",
                                         nationalite: selectedClient.nationalite || "",
                                         profession: selectedClient.profession || "",
-                                        situationFamiliale: selectedClient.situation_matrimoniale || "",
+                                        situationFamiliale: situationFamiliale,
                                         regimeMatrimonial: regimeMatrimonial,
                                         typeIdentite: selectedClient.type_identite || "",
                                         numeroIdentite: selectedClient.numero_identite || "",
