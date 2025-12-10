@@ -9266,7 +9266,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               onChange={(e) => {
                                 const files = Array.from(e.target.files || []);
                                 if (files.length > 0) {
-                                  setTitreProprietFiles(files);
+                                  setIndivisionTitreProprietFiles(files);
                                   toast.success(`${files.length} fichier(s) ajouté(s)`);
                                 }
                                 e.target.value = '';
@@ -9284,9 +9284,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               </div>
                             </label>
                           </div>
-                          {titreProprietFiles.length > 0 && (
+                          {indivisionTitreProprietFiles.length > 0 && (
                             <div className="space-y-2 mt-2">
-                              {titreProprietFiles.map((file, idx) => (
+                              {indivisionTitreProprietFiles.map((file, idx) => (
                                 <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                   <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -9298,7 +9298,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                     size="sm"
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                     onClick={() => {
-                                      setTitreProprietFiles(titreProprietFiles.filter((_, i) => i !== idx));
+                                      setIndivisionTitreProprietFiles(indivisionTitreProprietFiles.filter((_, i) => i !== idx));
                                       toast.success('Fichier supprimé');
                                     }}
                                   >
@@ -9322,7 +9322,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               onChange={(e) => {
                                 const files = Array.from(e.target.files || []);
                                 if (files.length > 0) {
-                                  setEvaluationFiles(files);
+                                  setIndivisionEvaluationFiles(files);
                                   toast.success(`${files.length} fichier(s) ajouté(s)`);
                                 }
                                 e.target.value = '';
@@ -9340,9 +9340,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               </div>
                             </label>
                           </div>
-                          {evaluationFiles.length > 0 && (
+                          {indivisionEvaluationFiles.length > 0 && (
                             <div className="space-y-2 mt-2">
-                              {evaluationFiles.map((file, idx) => (
+                              {indivisionEvaluationFiles.map((file, idx) => (
                                 <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                   <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -9354,7 +9354,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                     size="sm"
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                     onClick={() => {
-                                      setEvaluationFiles(evaluationFiles.filter((_, i) => i !== idx));
+                                      setIndivisionEvaluationFiles(indivisionEvaluationFiles.filter((_, i) => i !== idx));
                                       toast.success('Fichier supprimé');
                                     }}
                                   >
@@ -9378,7 +9378,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               onChange={(e) => {
                                 const files = Array.from(e.target.files || []);
                                 if (files.length > 0) {
-                                  setCadastreFiles(files);
+                                  setIndivisionCadastreFiles(files);
                                   toast.success(`${files.length} fichier(s) ajouté(s)`);
                                 }
                                 e.target.value = '';
@@ -9396,9 +9396,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               </div>
                             </label>
                           </div>
-                          {cadastreFiles.length > 0 && (
+                          {indivisionCadastreFiles.length > 0 && (
                             <div className="space-y-2 mt-2">
-                              {cadastreFiles.map((file, idx) => (
+                              {indivisionCadastreFiles.map((file, idx) => (
                                 <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                   <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -9410,7 +9410,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                     size="sm"
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                     onClick={() => {
-                                      setCadastreFiles(cadastreFiles.filter((_, i) => i !== idx));
+                                      setIndivisionCadastreFiles(indivisionCadastreFiles.filter((_, i) => i !== idx));
                                       toast.success('Fichier supprimé');
                                     }}
                                   >
@@ -9434,7 +9434,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               onChange={(e) => {
                                 const files = Array.from(e.target.files || []);
                                 if (files.length > 0) {
-                                  setDiagnosticsFiles(files);
+                                  setIndivisionDiagnosticsFiles(files);
                                   toast.success(`${files.length} fichier(s) ajouté(s)`);
                                 }
                                 e.target.value = '';
@@ -9452,9 +9452,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               </div>
                             </label>
                           </div>
-                          {diagnosticsFiles.length > 0 && (
+                          {indivisionDiagnosticsFiles.length > 0 && (
                             <div className="space-y-2 mt-2">
-                              {diagnosticsFiles.map((file, idx) => (
+                              {indivisionDiagnosticsFiles.map((file, idx) => (
                                 <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                   <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -9466,7 +9466,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                     size="sm"
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                     onClick={() => {
-                                      setDiagnosticsFiles(diagnosticsFiles.filter((_, i) => i !== idx));
+                                      setIndivisionDiagnosticsFiles(indivisionDiagnosticsFiles.filter((_, i) => i !== idx));
                                       toast.success('Fichier supprimé');
                                     }}
                                   >
@@ -9491,7 +9491,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                 onChange={(e) => {
                                   const files = Array.from(e.target.files || []);
                                   if (files.length > 0) {
-                                    setBailFiles(files);
+                                    setIndivisionBailFiles(files);
                                     toast.success(`${files.length} fichier(s) ajouté(s)`);
                                   }
                                   e.target.value = '';
@@ -9509,9 +9509,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                 </div>
                               </label>
                             </div>
-                            {bailFiles.length > 0 && (
+                            {indivisionBailFiles.length > 0 && (
                               <div className="space-y-2 mt-2">
-                                {bailFiles.map((file, idx) => (
+                                {indivisionBailFiles.map((file, idx) => (
                                   <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                     <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -9523,7 +9523,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                       size="sm"
                                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                       onClick={() => {
-                                        setBailFiles(bailFiles.filter((_, i) => i !== idx));
+                                        setIndivisionBailFiles(indivisionBailFiles.filter((_, i) => i !== idx));
                                         toast.success('Fichier supprimé');
                                       }}
                                     >
@@ -9799,7 +9799,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               onChange={(e) => {
                                 const files = Array.from(e.target.files || []);
                                 if (files.length > 0) {
-                                  setMandatGerantFiles(files);
+                                  setIndivisionMandatGerantFiles(files);
                                   toast.success(`${files.length} fichier(s) ajouté(s)`);
                                 }
                                 e.target.value = '';
@@ -9817,9 +9817,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                               </div>
                             </label>
                           </div>
-                          {mandatGerantFiles.length > 0 && (
+                          {indivisionMandatGerantFiles.length > 0 && (
                             <div className="space-y-2 mt-2">
-                              {mandatGerantFiles.map((file, idx) => (
+                              {indivisionMandatGerantFiles.map((file, idx) => (
                                 <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                   <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -9831,7 +9831,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                     size="sm"
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                     onClick={() => {
-                                      setMandatGerantFiles(mandatGerantFiles.filter((_, i) => i !== idx));
+                                      setIndivisionMandatGerantFiles(indivisionMandatGerantFiles.filter((_, i) => i !== idx));
                                       toast.success('Fichier supprimé');
                                     }}
                                   >
@@ -10365,7 +10365,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                             onChange={(e) => {
                               const files = Array.from(e.target.files || []);
                               if (files.length > 0) {
-                                setProcurationFiles(files);
+                                setIndivisionProcurationFiles(files);
                                 toast.success(`${files.length} fichier(s) ajouté(s)`);
                               }
                               e.target.value = '';
@@ -10383,9 +10383,9 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                             </div>
                           </label>
                         </div>
-                        {procurationFiles.length > 0 && (
+                        {indivisionProcurationFiles.length > 0 && (
                           <div className="space-y-2 mt-2">
-                            {procurationFiles.map((file, idx) => (
+                            {indivisionProcurationFiles.map((file, idx) => (
                               <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                                 <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -10397,7 +10397,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                                   size="sm"
                                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                   onClick={() => {
-                                    setProcurationFiles(procurationFiles.filter((_, i) => i !== idx));
+                                    setIndivisionProcurationFiles(indivisionProcurationFiles.filter((_, i) => i !== idx));
                                     toast.success('Fichier supprimé');
                                   }}
                                 >
