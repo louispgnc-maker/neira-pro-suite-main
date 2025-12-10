@@ -6399,25 +6399,17 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
-                              let regimeText = "";
+                              let situationFamilialeText = "";
                               
                               // Gérer les différents formats de situation_matrimoniale
                               if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
-                                  // Cas 1: Objet JSON avec situation_familiale et regime_matrimonial
+                                  // Cas 1: Objet JSON - extraire situation_familiale
                                   const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  const regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
-                                  
-                                  const situationLower = situationFamiliale.toLowerCase();
-                                  if (['celibataire', 'célibataire', 'divorce', 'divorcé', 'veuf', 'veuve'].includes(situationLower)) {
-                                    regimeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
-                                  } else if (['marie', 'marié', 'mariée', 'pacse', 'pacsé'].includes(situationLower)) {
-                                    const regime = regimeMatrimonial.replace(/_/g, ' ');
-                                    regimeText = regimeMatrimonial ? `Marié(e) sous le régime de ${regime}` : 'Marié(e)';
-                                  }
+                                  situationFamilialeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
-                                  regimeText = selectedClient.situation_matrimoniale;
+                                  situationFamilialeText = selectedClient.situation_matrimoniale;
                                 }
                               }
                               
@@ -6432,7 +6424,7 @@ DURÉE DU BAIL
                                 bailleurDateNaissance: selectedClient.date_naissance || "",
                                 bailleurLieuNaissance: selectedClient.lieu_naissance || "",
                                 bailleurNationalite: selectedClient.nationalite || "",
-                                bailleurRegimeMatrimonial: regimeText,
+                                bailleurRegimeMatrimonial: situationFamilialeText,
                                 bailleurProfession: selectedClient.profession || "",
                               });
                             }
@@ -6646,25 +6638,17 @@ DURÉE DU BAIL
                           onValueChange={(value) => {
                             const selectedClient = clients.find(c => c.id === value);
                             if (selectedClient) {
-                              let regimeText = "";
+                              let situationFamilialeText = "";
                               
                               // Gérer les différents formats de situation_matrimoniale
                               if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
-                                  // Cas 1: Objet JSON avec situation_familiale et regime_matrimonial
+                                  // Cas 1: Objet JSON - extraire situation_familiale
                                   const situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  const regimeMatrimonial = selectedClient.situation_matrimoniale.regime_matrimonial || '';
-                                  
-                                  const situationLower = situationFamiliale.toLowerCase();
-                                  if (['celibataire', 'célibataire', 'divorce', 'divorcé', 'veuf', 'veuve'].includes(situationLower)) {
-                                    regimeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
-                                  } else if (['marie', 'marié', 'mariée', 'pacse', 'pacsé'].includes(situationLower)) {
-                                    const regime = regimeMatrimonial.replace(/_/g, ' ');
-                                    regimeText = regimeMatrimonial ? `Marié(e) sous le régime de ${regime}` : 'Marié(e)';
-                                  }
+                                  situationFamilialeText = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   // Cas 2: Simple chaîne de texte
-                                  regimeText = selectedClient.situation_matrimoniale;
+                                  situationFamilialeText = selectedClient.situation_matrimoniale;
                                 }
                               }
                               
@@ -6679,7 +6663,7 @@ DURÉE DU BAIL
                                 locataireDateNaissance: selectedClient.date_naissance || "",
                                 locataireLieuNaissance: selectedClient.lieu_naissance || "",
                                 locataireNationalite: selectedClient.nationalite || "",
-                                locataireRegimeMatrimonial: regimeText,
+                                locataireRegimeMatrimonial: situationFamilialeText,
                                 locataireProfession: selectedClient.profession || "",
                                 locataireTelephone: selectedClient.telephone || "",
                                 locataireEmail: selectedClient.email || "",
