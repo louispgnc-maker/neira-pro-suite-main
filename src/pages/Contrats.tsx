@@ -8469,7 +8469,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
             {/* Formulaire spécifique pour Convention d'indivision */}
             {pendingContractType === "Convention d'indivision" && (
               <>
-                <div className="space-y-6">
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
                   {/* 1. Informations générales */}
                   <div className="space-y-4">
                     <h3 className="font-semibold text-lg border-b pb-2">📋 Informations générales sur l'indivision</h3>
