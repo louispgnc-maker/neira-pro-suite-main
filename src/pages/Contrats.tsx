@@ -96,6 +96,7 @@ export default function Contrats() {
   const [acteClientIdentiteUrl, setActeClientIdentiteUrl] = useState<string | null>(null); // URL du document du client acte
   const [bailClientIdentiteUrl, setBailClientIdentiteUrl] = useState<string | null>(null); // URL du document du client bail
   const [bailCommercialBailleurClientIdentiteUrl, setBailCommercialBailleurClientIdentiteUrl] = useState<string | null>(null); // URL du document du bailleur bail commercial
+  const [bailCommercialPreneurClientIdentiteUrl, setBailCommercialPreneurClientIdentiteUrl] = useState<string | null>(null); // URL du document du preneur bail commercial
   const [acteAutrePartieFiles, setActeAutrePartieFiles] = useState<File[]>([]); // Fichiers de l'autre partie acte
   const [acteVendeurFiles, setActeVendeurFiles] = useState<File[]>([]); // Fichiers supplémentaires vendeur
   const [acteAcheteurFiles, setActeAcheteurFiles] = useState<File[]>([]); // Fichiers supplémentaires acheteur
@@ -1010,6 +1011,71 @@ export default function Contrats() {
       }
     } else {
       setBailCommercialBailleurClientIdentiteUrl(null);
+    }
+  }, [bailCommercialData.clientId, bailCommercialData.clientRole, clients]);
+
+  // Auto-load carte d'identité preneur bail commercial
+  useEffect(() => {
+    if (bailCommercialData.clientRole === "preneur" && bailCommercialData.clientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === bailCommercialData.clientId) as any;
+      console.log('📋 Client preneur bail commercial sélectionné:', selectedClient?.nom, selectedClient?.prenom);
+      console.log('📄 id_doc_path bail commercial preneur:', selectedClient?.id_doc_path);
+      
+      if (selectedClient?.id_doc_path) {
+        console.log('✅ Chargement document preneur bail commercial depuis id_doc_path:', selectedClient.id_doc_path);
+        supabase.storage
+          .from('documents')
+          .createSignedUrl(selectedClient.id_doc_path, 3600)
+          .then(({ data, error }) => {
+            if (error) {
+              console.error('❌ Erreur chargement document preneur bail commercial:', error);
+              setBailCommercialPreneurClientIdentiteUrl(null);
+            } else if (data?.signedUrl) {
+              console.log('✅ Document preneur bail commercial chargé avec succès');
+              setBailCommercialPreneurClientIdentiteUrl(data.signedUrl);
+            }
+          });
+      } else {
+        // Chercher dans client_documents si pas de id_doc_path
+        console.log('🔍 Recherche dans client_documents pour preneur (bail commercial):', selectedClient?.id);
+        if (selectedClient?.id) {
+          supabase
+            .from('client_documents')
+            .select('file_path, file_name, document_type')
+            .eq('client_id', selectedClient.id)
+            .order('uploaded_at', { ascending: false })
+            .limit(5)
+            .then(({ data: docs, error: docsError }) => {
+              if (docsError) {
+                console.error('❌ Erreur recherche documents preneur (bail commercial):', docsError);
+                setBailCommercialPreneurClientIdentiteUrl(null);
+              } else if (docs && docs.length > 0) {
+                console.log(`📄 ${docs.length} document(s) preneur bail commercial trouvé(s) pour ce client`);
+                const idDoc = docs.find(d => d.document_type === 'piece_identite') || docs[0];
+                console.log('📄 Document preneur bail commercial sélectionné:', idDoc.file_name, '(type:', idDoc.document_type, ')');
+                supabase.storage
+                  .from('documents')
+                  .createSignedUrl(idDoc.file_path, 3600)
+                  .then(({ data, error }) => {
+                    if (error) {
+                      console.error('❌ Erreur chargement document preneur bail commercial:', error);
+                      setBailCommercialPreneurClientIdentiteUrl(null);
+                    } else if (data?.signedUrl) {
+                      console.log('✅ Document preneur bail commercial client_documents chargé avec succès');
+                      setBailCommercialPreneurClientIdentiteUrl(data.signedUrl);
+                    }
+                  });
+              } else {
+                console.log('⚠️ Aucun document preneur bail commercial trouvé dans client_documents');
+                setBailCommercialPreneurClientIdentiteUrl(null);
+              }
+            });
+        } else {
+          setBailCommercialPreneurClientIdentiteUrl(null);
+        }
+      }
+    } else {
+      setBailCommercialPreneurClientIdentiteUrl(null);
     }
   }, [bailCommercialData.clientId, bailCommercialData.clientRole, clients]);
 
@@ -6674,6 +6740,27 @@ DURÉE DU BAIL
                       </div>
                     )}
 
+                    {/* Upload carte identité pour l'autre partie (preneur qui n'est pas client) */}
+                    {bailCommercialData.clientRole === "bailleur" && bailCommercialData.statutLocataire === "physique" && (
+                      <div className="space-y-2 mt-4">
+                        <Label>📎 Carte d'identité du preneur (à uploader)</Label>
+                        <Input 
+                          type="file" 
+                          accept="image/*,application/pdf"
+                          multiple
+                          onChange={(e) => {
+                            if (e.target.files) {
+                              setBailCommercialLocataireFiles(Array.from(e.target.files));
+                            }
+                          }}
+                        />
+                        {bailCommercialLocataireFiles.length > 0 && (
+                          <p className="text-sm text-green-600">✓ {bailCommercialLocataireFiles.length} fichier(s) sélectionné(s)</p>
+                        )}
+                        <p className="text-xs text-muted-foreground">CNI, passeport - PDF ou images</p>
+                      </div>
+                    )}
+
                     {/* Champs personne morale */}
                     {bailCommercialData.statutBailleur === "morale" && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -6987,6 +7074,58 @@ DURÉE DU BAIL
                             </SelectContent>
                           </Select>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Pièce d'identité du preneur (si client sélectionné) */}
+                    {bailCommercialData.clientRole === "preneur" && bailCommercialData.clientId && bailCommercialData.statutLocataire === "physique" && (
+                      <div className="space-y-2 mt-4">
+                        <Label>📎 Pièce d'identité du preneur</Label>
+                        {bailCommercialPreneurClientIdentiteUrl ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => window.open(bailCommercialPreneurClientIdentiteUrl, '_blank')}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Upload carte identité pour l'autre partie (bailleur qui n'est pas client) */}
+                    {bailCommercialData.clientRole === "preneur" && bailCommercialData.statutBailleur === "physique" && (
+                      <div className="space-y-2 mt-4">
+                        <Label>📎 Carte d'identité du bailleur (à uploader)</Label>
+                        <Input 
+                          type="file" 
+                          accept="image/*,application/pdf"
+                          multiple
+                          onChange={(e) => {
+                            if (e.target.files) {
+                              setBailCommercialBailleurFiles(Array.from(e.target.files));
+                            }
+                          }}
+                        />
+                        {bailCommercialBailleurFiles.length > 0 && (
+                          <p className="text-sm text-green-600">✓ {bailCommercialBailleurFiles.length} fichier(s) sélectionné(s)</p>
+                        )}
+                        <p className="text-xs text-muted-foreground">CNI, passeport - PDF ou images</p>
                       </div>
                     )}
 
