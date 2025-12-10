@@ -6411,14 +6411,24 @@ DURÉE DU BAIL
                                 bailleurLieuNaissance: selectedClient.lieu_naissance || "",
                                 bailleurNationalite: selectedClient.nationalite || "",
                                 bailleurRegimeMatrimonial: (() => {
-                                  const matrimonial = typeof selectedClient.situation_matrimoniale === 'string' 
-                                    ? selectedClient.situation_matrimoniale 
-                                    : (selectedClient.situation_matrimoniale?.value || selectedClient.situation_matrimoniale?.label || "");
-                                  const familial = typeof selectedClient.situation_familiale === 'string'
-                                    ? selectedClient.situation_familiale
-                                    : (selectedClient.situation_familiale?.value || selectedClient.situation_familiale?.label || "");
-                                  if (matrimonial && familial) return `${matrimonial} - ${familial}`;
-                                  return matrimonial || familial || "";
+                                  const situationMatrimoniale = String(selectedClient.situation_matrimoniale || "");
+                                  const situationFamiliale = String(selectedClient.situation_familiale || "");
+                                  
+                                  // Si célibataire, divorcé ou veuf, afficher juste le statut
+                                  if (situationMatrimoniale.toLowerCase().includes('celibataire') ||
+                                      situationMatrimoniale.toLowerCase().includes('divorce') ||
+                                      situationMatrimoniale.toLowerCase().includes('veuf')) {
+                                    return situationMatrimoniale.charAt(0).toUpperCase() + situationMatrimoniale.slice(1);
+                                  }
+                                  
+                                  // Si marié ou pacsé, afficher le statut + régime
+                                  if (situationMatrimoniale && situationFamiliale) {
+                                    const statut = situationMatrimoniale.charAt(0).toUpperCase() + situationMatrimoniale.slice(1);
+                                    const regime = situationFamiliale.replace('_', ' ');
+                                    return `${statut} - ${regime}`;
+                                  }
+                                  
+                                  return situationMatrimoniale || situationFamiliale || "";
                                 })(),
                                 bailleurProfession: selectedClient.profession || "",
                               });
@@ -6645,14 +6655,24 @@ DURÉE DU BAIL
                                 locataireLieuNaissance: selectedClient.lieu_naissance || "",
                                 locataireNationalite: selectedClient.nationalite || "",
                                 locataireRegimeMatrimonial: (() => {
-                                  const matrimonial = typeof selectedClient.situation_matrimoniale === 'string' 
-                                    ? selectedClient.situation_matrimoniale 
-                                    : (selectedClient.situation_matrimoniale?.value || selectedClient.situation_matrimoniale?.label || "");
-                                  const familial = typeof selectedClient.situation_familiale === 'string'
-                                    ? selectedClient.situation_familiale
-                                    : (selectedClient.situation_familiale?.value || selectedClient.situation_familiale?.label || "");
-                                  if (matrimonial && familial) return `${matrimonial} - ${familial}`;
-                                  return matrimonial || familial || "";
+                                  const situationMatrimoniale = String(selectedClient.situation_matrimoniale || "");
+                                  const situationFamiliale = String(selectedClient.situation_familiale || "");
+                                  
+                                  // Si célibataire, divorcé ou veuf, afficher juste le statut
+                                  if (situationMatrimoniale.toLowerCase().includes('celibataire') ||
+                                      situationMatrimoniale.toLowerCase().includes('divorce') ||
+                                      situationMatrimoniale.toLowerCase().includes('veuf')) {
+                                    return situationMatrimoniale.charAt(0).toUpperCase() + situationMatrimoniale.slice(1);
+                                  }
+                                  
+                                  // Si marié ou pacsé, afficher le statut + régime
+                                  if (situationMatrimoniale && situationFamiliale) {
+                                    const statut = situationMatrimoniale.charAt(0).toUpperCase() + situationMatrimoniale.slice(1);
+                                    const regime = situationFamiliale.replace('_', ' ');
+                                    return `${statut} - ${regime}`;
+                                  }
+                                  
+                                  return situationMatrimoniale || situationFamiliale || "";
                                 })(),
                                 locataireProfession: selectedClient.profession || "",
                                 locataireTelephone: selectedClient.telephone || "",
