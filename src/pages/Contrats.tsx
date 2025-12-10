@@ -1057,13 +1057,38 @@ export default function Contrats() {
     // Consentement enfants majeurs (si changement)
     consentementEnfantsMajeursRequis: "non",
     
-    // Biens communs actuels (si changement depuis régime communautaire)
+    // Liquidation du régime actuel (si changement depuis régime communautaire)
+    liquidationRegimeActuel: "non", // oui / non
     biensCommuns: [{
       id: 1,
       description: "",
       valeurEstimee: "",
-      repartitionEnvisagee: "",
+      dettesAttachees: "",
+      affectationPrevue: "", // epoux1 / epoux2 / vente / indivision
+      repartitionEnvisagee: "", // conservé pour compatibilité
     }],
+    passifCommun: [{
+      id: 1,
+      description: "",
+      montant: "",
+      modeRepartition: "", // epoux1 / epoux2 / 50_50
+    }],
+    soulte: {
+      soulteDue: "non",
+      montantSoulte: "",
+      epouxDebiteur: "",
+      modalitesPaiement: "", // comptant / echelonne
+      dateLimitePaiement: "",
+    },
+    actifsFinanciers: [{
+      id: 1,
+      natureCompte: "",
+      etablissement: "",
+      solde: "",
+      modePartage: "", // epoux1 / epoux2 / personnalise
+      partagePersonnalise: "",
+    }],
+    observationsLiquidation: "",
     
     // Choix de la loi applicable (cas internationaux)
     choixLoiApplicable: "loi_francaise", // loi_francaise / loi_residence / loi_nationalite / autre
@@ -3318,12 +3343,37 @@ DÉCLARATIONS DES ÉPOUX
         accordEnfantsMajeurs: "",
         accordCreancier: "",
         consentementEnfantsMajeursRequis: "non",
+        liquidationRegimeActuel: "non",
         biensCommuns: [{
           id: 1,
           description: "",
           valeurEstimee: "",
+          dettesAttachees: "",
+          affectationPrevue: "",
           repartitionEnvisagee: "",
         }],
+        passifCommun: [{
+          id: 1,
+          description: "",
+          montant: "",
+          modeRepartition: "",
+        }],
+        soulte: {
+          soulteDue: "non",
+          montantSoulte: "",
+          epouxDebiteur: "",
+          modalitesPaiement: "",
+          dateLimitePaiement: "",
+        },
+        actifsFinanciers: [{
+          id: 1,
+          natureCompte: "",
+          etablissement: "",
+          solde: "",
+          modePartage: "",
+          partagePersonnalise: "",
+        }],
+        observationsLiquidation: "",
         choixLoiApplicable: "loi_francaise",
         choixLoiApplicableAutre: "",
         accordJugeRequis: "non",
@@ -14279,6 +14329,411 @@ DÉCLARATIONS DES ÉPOUX
                       </div>
                     </div>
                   </div>
+
+                  {/* 4bis. Liquidation du régime matrimonial actuel */}
+                  {contratMariageData.typeContrat === "changement_regime" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">📦 Liquidation du régime matrimonial actuel</h3>
+                      <p className="text-sm text-muted-foreground">Obligatoire si vous quittez un régime communautaire</p>
+                      
+                      <div className="space-y-4">
+                        {/* Question principale */}
+                        <div className="space-y-2">
+                          <Label>Liquidation du régime actuel prévue dans l'acte ? *</Label>
+                          <RadioGroup
+                            value={contratMariageData.liquidationRegimeActuel}
+                            onValueChange={(value) => setContratMariageData({...contratMariageData, liquidationRegimeActuel: value})}
+                          >
+                            <div className="flex gap-4">
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="oui" id="liquid_oui" />
+                                <Label htmlFor="liquid_oui" className="cursor-pointer">Oui</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="non" id="liquid_non" />
+                                <Label htmlFor="liquid_non" className="cursor-pointer">Non</Label>
+                              </div>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {contratMariageData.liquidationRegimeActuel === "oui" && (
+                          <>
+                            {/* Biens communs existants */}
+                            <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+                              <h4 className="font-medium">🏠 Biens communs existants (avant le changement)</h4>
+                              <p className="text-xs text-muted-foreground">Lister les biens appartenant aux deux époux en communauté</p>
+                              
+                              {contratMariageData.biensCommuns.map((bien, idx) => (
+                                <div key={bien.id} className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 border rounded bg-background">
+                                  <div className="space-y-2 md:col-span-2">
+                                    <Label>Bien #{idx + 1} - Description</Label>
+                                    <Input
+                                      placeholder="Ex: Appartement 3 pièces Paris 15e"
+                                      value={bien.description}
+                                      onChange={(e) => {
+                                        const newBiens = [...contratMariageData.biensCommuns];
+                                        newBiens[idx] = {...newBiens[idx], description: e.target.value};
+                                        setContratMariageData({...contratMariageData, biensCommuns: newBiens});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Valeur estimée (€)</Label>
+                                    <Input
+                                      type="number"
+                                      placeholder="250000"
+                                      value={bien.valeurEstimee}
+                                      onChange={(e) => {
+                                        const newBiens = [...contratMariageData.biensCommuns];
+                                        newBiens[idx] = {...newBiens[idx], valeurEstimee: e.target.value};
+                                        setContratMariageData({...contratMariageData, biensCommuns: newBiens});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Dettes attachées au bien</Label>
+                                    <Input
+                                      type="number"
+                                      placeholder="150000"
+                                      value={bien.dettesAttachees}
+                                      onChange={(e) => {
+                                        const newBiens = [...contratMariageData.biensCommuns];
+                                        newBiens[idx] = {...newBiens[idx], dettesAttachees: e.target.value};
+                                        setContratMariageData({...contratMariageData, biensCommuns: newBiens});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2 md:col-span-2">
+                                    <Label>Affectation prévue</Label>
+                                    <Select 
+                                      value={bien.affectationPrevue} 
+                                      onValueChange={(value) => {
+                                        const newBiens = [...contratMariageData.biensCommuns];
+                                        newBiens[idx] = {...newBiens[idx], affectationPrevue: value};
+                                        setContratMariageData({...contratMariageData, biensCommuns: newBiens});
+                                      }}
+                                    >
+                                      <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="epoux1">Attribué à Époux 1</SelectItem>
+                                        <SelectItem value="epoux2">Attribué à Époux 2</SelectItem>
+                                        <SelectItem value="vente">Vente du bien</SelectItem>
+                                        <SelectItem value="indivision">Maintien en indivision</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
+                                onClick={() => {
+                                  const newId = Math.max(...contratMariageData.biensCommuns.map(b => b.id), 0) + 1;
+                                  setContratMariageData({
+                                    ...contratMariageData,
+                                    biensCommuns: [...contratMariageData.biensCommuns, {
+                                      id: newId,
+                                      description: "",
+                                      valeurEstimee: "",
+                                      dettesAttachees: "",
+                                      affectationPrevue: "",
+                                      repartitionEnvisagee: "",
+                                    }]
+                                  });
+                                }}
+                              >
+                                + Ajouter un bien commun
+                              </Button>
+                            </div>
+
+                            {/* Passif commun */}
+                            <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+                              <h4 className="font-medium">💳 Passif commun à répartir</h4>
+                              <p className="text-xs text-muted-foreground">Crédits, dettes ménagères, prêts en cours, comptes courants</p>
+                              
+                              {contratMariageData.passifCommun.map((dette, idx) => (
+                                <div key={dette.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 border rounded bg-background">
+                                  <div className="space-y-2">
+                                    <Label>Dette #{idx + 1} - Description</Label>
+                                    <Input
+                                      placeholder="Ex: Crédit auto"
+                                      value={dette.description}
+                                      onChange={(e) => {
+                                        const newDettes = [...contratMariageData.passifCommun];
+                                        newDettes[idx] = {...newDettes[idx], description: e.target.value};
+                                        setContratMariageData({...contratMariageData, passifCommun: newDettes});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Montant (€)</Label>
+                                    <Input
+                                      type="number"
+                                      placeholder="15000"
+                                      value={dette.montant}
+                                      onChange={(e) => {
+                                        const newDettes = [...contratMariageData.passifCommun];
+                                        newDettes[idx] = {...newDettes[idx], montant: e.target.value};
+                                        setContratMariageData({...contratMariageData, passifCommun: newDettes});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Mode de répartition</Label>
+                                    <Select 
+                                      value={dette.modeRepartition} 
+                                      onValueChange={(value) => {
+                                        const newDettes = [...contratMariageData.passifCommun];
+                                        newDettes[idx] = {...newDettes[idx], modeRepartition: value};
+                                        setContratMariageData({...contratMariageData, passifCommun: newDettes});
+                                      }}
+                                    >
+                                      <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="epoux1">Pris en charge par Époux 1</SelectItem>
+                                        <SelectItem value="epoux2">Pris en charge par Époux 2</SelectItem>
+                                        <SelectItem value="50_50">Répartition 50/50</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
+                                onClick={() => {
+                                  const newId = Math.max(...contratMariageData.passifCommun.map(d => d.id), 0) + 1;
+                                  setContratMariageData({
+                                    ...contratMariageData,
+                                    passifCommun: [...contratMariageData.passifCommun, {
+                                      id: newId,
+                                      description: "",
+                                      montant: "",
+                                      modeRepartition: "",
+                                    }]
+                                  });
+                                }}
+                              >
+                                + Ajouter une dette
+                              </Button>
+                            </div>
+
+                            {/* Soulte */}
+                            <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+                              <h4 className="font-medium">💰 Soulte éventuelle</h4>
+                              <p className="text-xs text-muted-foreground">Si l'un reçoit plus de biens que l'autre</p>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="space-y-2 md:col-span-2">
+                                  <Label>Soulte due ?</Label>
+                                  <RadioGroup
+                                    value={contratMariageData.soulte.soulteDue}
+                                    onValueChange={(value) => setContratMariageData({
+                                      ...contratMariageData,
+                                      soulte: {...contratMariageData.soulte, soulteDue: value}
+                                    })}
+                                  >
+                                    <div className="flex gap-4">
+                                      <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="oui" id="soulte_oui" />
+                                        <Label htmlFor="soulte_oui" className="cursor-pointer">Oui</Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="non" id="soulte_non" />
+                                        <Label htmlFor="soulte_non" className="cursor-pointer">Non</Label>
+                                      </div>
+                                    </div>
+                                  </RadioGroup>
+                                </div>
+
+                                {contratMariageData.soulte.soulteDue === "oui" && (
+                                  <>
+                                    <div className="space-y-2">
+                                      <Label>Montant de la soulte (€)</Label>
+                                      <Input
+                                        type="number"
+                                        value={contratMariageData.soulte.montantSoulte}
+                                        onChange={(e) => setContratMariageData({
+                                          ...contratMariageData,
+                                          soulte: {...contratMariageData.soulte, montantSoulte: e.target.value}
+                                        })}
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Époux débiteur</Label>
+                                      <Select 
+                                        value={contratMariageData.soulte.epouxDebiteur} 
+                                        onValueChange={(value) => setContratMariageData({
+                                          ...contratMariageData,
+                                          soulte: {...contratMariageData.soulte, epouxDebiteur: value}
+                                        })}
+                                      >
+                                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="epoux1">Époux 1</SelectItem>
+                                          <SelectItem value="epoux2">Époux 2</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Modalités de paiement</Label>
+                                      <RadioGroup
+                                        value={contratMariageData.soulte.modalitesPaiement}
+                                        onValueChange={(value) => setContratMariageData({
+                                          ...contratMariageData,
+                                          soulte: {...contratMariageData.soulte, modalitesPaiement: value}
+                                        })}
+                                      >
+                                        <div className="flex gap-4">
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="comptant" id="paiement_comptant" />
+                                            <Label htmlFor="paiement_comptant" className="cursor-pointer">Comptant</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="echelonne" id="paiement_echelonne" />
+                                            <Label htmlFor="paiement_echelonne" className="cursor-pointer">Paiement échelonné</Label>
+                                          </div>
+                                        </div>
+                                      </RadioGroup>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Date limite de paiement</Label>
+                                      <Input
+                                        type="date"
+                                        value={contratMariageData.soulte.dateLimitePaiement}
+                                        onChange={(e) => setContratMariageData({
+                                          ...contratMariageData,
+                                          soulte: {...contratMariageData.soulte, dateLimitePaiement: e.target.value}
+                                        })}
+                                      />
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Actifs financiers */}
+                            <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+                              <h4 className="font-medium">🏦 Actifs financiers communs</h4>
+                              <p className="text-xs text-muted-foreground">Comptes bancaires, placements, livrets, assurances-vie si communs</p>
+                              
+                              {contratMariageData.actifsFinanciers.map((actif, idx) => (
+                                <div key={actif.id} className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 border rounded bg-background">
+                                  <div className="space-y-2">
+                                    <Label>Nature du compte</Label>
+                                    <Input
+                                      placeholder="Ex: Compte joint, Livret A"
+                                      value={actif.natureCompte}
+                                      onChange={(e) => {
+                                        const newActifs = [...contratMariageData.actifsFinanciers];
+                                        newActifs[idx] = {...newActifs[idx], natureCompte: e.target.value};
+                                        setContratMariageData({...contratMariageData, actifsFinanciers: newActifs});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Établissement bancaire</Label>
+                                    <Input
+                                      placeholder="Ex: Crédit Agricole"
+                                      value={actif.etablissement}
+                                      onChange={(e) => {
+                                        const newActifs = [...contratMariageData.actifsFinanciers];
+                                        newActifs[idx] = {...newActifs[idx], etablissement: e.target.value};
+                                        setContratMariageData({...contratMariageData, actifsFinanciers: newActifs});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Solde (€)</Label>
+                                    <Input
+                                      type="number"
+                                      placeholder="25000"
+                                      value={actif.solde}
+                                      onChange={(e) => {
+                                        const newActifs = [...contratMariageData.actifsFinanciers];
+                                        newActifs[idx] = {...newActifs[idx], solde: e.target.value};
+                                        setContratMariageData({...contratMariageData, actifsFinanciers: newActifs});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Mode de partage</Label>
+                                    <Select 
+                                      value={actif.modePartage} 
+                                      onValueChange={(value) => {
+                                        const newActifs = [...contratMariageData.actifsFinanciers];
+                                        newActifs[idx] = {...newActifs[idx], modePartage: value};
+                                        setContratMariageData({...contratMariageData, actifsFinanciers: newActifs});
+                                      }}
+                                    >
+                                      <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="epoux1">Attribué à Époux 1</SelectItem>
+                                        <SelectItem value="epoux2">Attribué à Époux 2</SelectItem>
+                                        <SelectItem value="personnalise">Répartition personnalisée</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  {actif.modePartage === "personnalise" && (
+                                    <div className="space-y-2 md:col-span-2">
+                                      <Label>Préciser la répartition</Label>
+                                      <Input
+                                        placeholder="Ex: 60% Époux 1, 40% Époux 2"
+                                        value={actif.partagePersonnalise}
+                                        onChange={(e) => {
+                                          const newActifs = [...contratMariageData.actifsFinanciers];
+                                          newActifs[idx] = {...newActifs[idx], partagePersonnalise: e.target.value};
+                                          setContratMariageData({...contratMariageData, actifsFinanciers: newActifs});
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-300"
+                                onClick={() => {
+                                  const newId = Math.max(...contratMariageData.actifsFinanciers.map(a => a.id), 0) + 1;
+                                  setContratMariageData({
+                                    ...contratMariageData,
+                                    actifsFinanciers: [...contratMariageData.actifsFinanciers, {
+                                      id: newId,
+                                      natureCompte: "",
+                                      etablissement: "",
+                                      solde: "",
+                                      modePartage: "",
+                                      partagePersonnalise: "",
+                                    }]
+                                  });
+                                }}
+                              >
+                                + Ajouter un actif financier
+                              </Button>
+                            </div>
+
+                            {/* Observations */}
+                            <div className="space-y-2">
+                              <Label>📝 Observations complémentaires</Label>
+                              <Textarea
+                                rows={4}
+                                value={contratMariageData.observationsLiquidation}
+                                onChange={(e) => setContratMariageData({...contratMariageData, observationsLiquidation: e.target.value})}
+                                placeholder="Avantage matrimonial antérieur, biens indivis post-liquidation, modalités particulières..."
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* 5. Clauses selon le régime choisi */}
                   {contratMariageData.typeRegime === "separation_biens" && (
