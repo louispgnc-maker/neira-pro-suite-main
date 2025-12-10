@@ -1347,10 +1347,7 @@ export default function Contrats() {
     const type = params.get('type');
     const category = params.get('category');
     
-    console.log('🔍 URL Params:', { shouldCreate, type, category });
-    
     if (shouldCreate && type && category) {
-      console.log('✅ Ouverture dialogue pour type:', type);
       setPendingContractType(type);
       setPendingCategory(category);
       setShowQuestionDialog(true);
@@ -8470,10 +8467,7 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
             )}
 
             {/* Formulaire spécifique pour Convention d'indivision */}
-            {(() => {
-              console.log('🔍 Vérification Convention d\'indivision - pendingContractType:', pendingContractType);
-              return pendingContractType === "Convention d'indivision";
-            })() && (
+            {pendingContractType === "Convention d'indivision" && (
               <>
                 <div className="space-y-6">
                   {/* 1. Informations générales */}
@@ -8540,10 +8534,1293 @@ indivisionData.typeBien === "mobilier" ? `- Description: ${indivisionData.descri
                     </div>
                   </div>
 
-                  {/* 2. Indivisaires - À continuer... */}
+                  {/* 2. Indivisaires */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">👥 Indivisaires</h3>
-                    <p className="text-sm text-muted-foreground">Section des indivisaires en cours de développement...</p>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-lg border-b pb-2 flex-1">👥 Indivisaires</h3>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="text-primary"
+                        onClick={() => {
+                          const newId = Math.max(...indivisionData.indivisaires.map(i => i.id), 0) + 1;
+                          setIndivisionData({
+                            ...indivisionData,
+                            indivisaires: [...indivisionData.indivisaires, {
+                              id: newId,
+                              isClient: false,
+                              clientId: "",
+                              nom: "",
+                              prenom: "",
+                              adresse: "",
+                              dateNaissance: "",
+                              lieuNaissance: "",
+                              nationalite: "",
+                              profession: "",
+                              statutMatrimonial: "",
+                              regimeMatrimonial: "",
+                              typeIdentite: "",
+                              numeroIdentite: "",
+                              email: "",
+                              telephone: "",
+                              quotePart: "",
+                              origineQuotePart: "",
+                            }]
+                          });
+                        }}
+                      >
+                        + Ajouter un indivisaire
+                      </Button>
+                    </div>
+
+                    {indivisionData.indivisaires.map((indivisaire, index) => (
+                      <div key={indivisaire.id} className="border rounded-lg p-4 space-y-4 bg-muted/30">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium">Indivisaire {index + 1}</h4>
+                          {indivisionData.indivisaires.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                setIndivisionData({
+                                  ...indivisionData,
+                                  indivisaires: indivisionData.indivisaires.filter(i => i.id !== indivisaire.id)
+                                });
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Client ou non */}
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Cet indivisaire est-il votre client ? *</Label>
+                            <RadioGroup
+                              value={indivisaire.isClient ? "oui" : "non"}
+                              onValueChange={(value) => {
+                                const newIndivisaires = [...indivisionData.indivisaires];
+                                const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                newIndivisaires[idx] = {
+                                  ...newIndivisaires[idx],
+                                  isClient: value === "oui",
+                                  clientId: value === "oui" ? newIndivisaires[idx].clientId : "",
+                                };
+                                setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                              }}
+                            >
+                              <div className="flex gap-4">
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="oui" id={`indiv_${indivisaire.id}_client_oui`} />
+                                  <Label htmlFor={`indiv_${indivisaire.id}_client_oui`} className="cursor-pointer">Oui (client)</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="non" id={`indiv_${indivisaire.id}_client_non`} />
+                                  <Label htmlFor={`indiv_${indivisaire.id}_client_non`} className="cursor-pointer">Non (autre partie)</Label>
+                                </div>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          {/* Si c'est un client */}
+                          {indivisaire.isClient ? (
+                            <>
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Sélectionner le client *</Label>
+                                <Select
+                                  value={indivisaire.clientId}
+                                  onValueChange={(value) => {
+                                    const selectedClient = clients.find(c => c.id === value);
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    if (selectedClient) {
+                                      newIndivisaires[idx] = {
+                                        ...newIndivisaires[idx],
+                                        clientId: value,
+                                        nom: selectedClient.nom || "",
+                                        prenom: selectedClient.prenom || "",
+                                        adresse: selectedClient.adresse || "",
+                                        dateNaissance: selectedClient.date_naissance || "",
+                                        lieuNaissance: selectedClient.lieu_naissance || "",
+                                        nationalite: selectedClient.nationalite || "",
+                                        profession: selectedClient.profession || "",
+                                        typeIdentite: selectedClient.type_identite || "",
+                                        numeroIdentite: selectedClient.numero_identite || "",
+                                        email: selectedClient.email || "",
+                                        telephone: selectedClient.telephone || "",
+                                      };
+                                    }
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                                  <SelectContent>
+                                    {clients.map((client) => (
+                                      <SelectItem key={client.id} value={client.id}>
+                                        {client.nom} {client.prenom}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {/* Affichage des infos du client */}
+                              {indivisaire.clientId && (
+                                <div className="md:col-span-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                  <p className="text-sm font-medium text-green-800">✓ Informations chargées depuis la fiche client</p>
+                                  <p className="text-sm text-green-700 mt-1">{indivisaire.nom} {indivisaire.prenom} - {indivisaire.adresse}</p>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {/* Saisie manuelle pour non-client */}
+                              <div className="space-y-2">
+                                <Label>Nom *</Label>
+                                <Input
+                                  value={indivisaire.nom}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], nom: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Prénom *</Label>
+                                <Input
+                                  value={indivisaire.prenom}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], prenom: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Adresse *</Label>
+                                <Input
+                                  value={indivisaire.adresse}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], adresse: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Date de naissance</Label>
+                                <Input
+                                  type="date"
+                                  value={indivisaire.dateNaissance}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], dateNaissance: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Lieu de naissance</Label>
+                                <Input
+                                  value={indivisaire.lieuNaissance}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], lieuNaissance: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Nationalité</Label>
+                                <Input
+                                  value={indivisaire.nationalite}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], nationalite: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Profession</Label>
+                                <Input
+                                  value={indivisaire.profession}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], profession: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Email</Label>
+                                <Input
+                                  type="email"
+                                  value={indivisaire.email}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], email: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Téléphone</Label>
+                                <Input
+                                  value={indivisaire.telephone}
+                                  onChange={(e) => {
+                                    const newIndivisaires = [...indivisionData.indivisaires];
+                                    const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                    newIndivisaires[idx] = {...newIndivisaires[idx], telephone: e.target.value};
+                                    setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                  }}
+                                />
+                              </div>
+                            </>
+                          )}
+
+                          {/* Statut matrimonial */}
+                          <div className="space-y-2">
+                            <Label>Statut matrimonial</Label>
+                            <Select
+                              value={indivisaire.statutMatrimonial}
+                              onValueChange={(value) => {
+                                const newIndivisaires = [...indivisionData.indivisaires];
+                                const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                newIndivisaires[idx] = {...newIndivisaires[idx], statutMatrimonial: value};
+                                setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="celibataire">Célibataire</SelectItem>
+                                <SelectItem value="marie">Marié(e)</SelectItem>
+                                <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                                <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                                <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {indivisaire.statutMatrimonial === "marie" && (
+                            <div className="space-y-2">
+                              <Label>Régime matrimonial</Label>
+                              <Select
+                                value={indivisaire.regimeMatrimonial}
+                                onValueChange={(value) => {
+                                  const newIndivisaires = [...indivisionData.indivisaires];
+                                  const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                  newIndivisaires[idx] = {...newIndivisaires[idx], regimeMatrimonial: value};
+                                  setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="communaute">Communauté</SelectItem>
+                                  <SelectItem value="separation">Séparation de biens</SelectItem>
+                                  <SelectItem value="participation">Participation aux acquêts</SelectItem>
+                                  <SelectItem value="autre">Autre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+
+                          {/* Quote-part */}
+                          <div className="space-y-2">
+                            <Label>Quote-part (%) *</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={indivisaire.quotePart}
+                              onChange={(e) => {
+                                const newIndivisaires = [...indivisionData.indivisaires];
+                                const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                newIndivisaires[idx] = {...newIndivisaires[idx], quotePart: e.target.value};
+                                setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                              }}
+                              placeholder="Ex: 50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Origine de la quote-part</Label>
+                            <Input
+                              value={indivisaire.origineQuotePart}
+                              onChange={(e) => {
+                                const newIndivisaires = [...indivisionData.indivisaires];
+                                const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
+                                newIndivisaires[idx] = {...newIndivisaires[idx], origineQuotePart: e.target.value};
+                                setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
+                              }}
+                              placeholder="Ex: Héritage, achat..."
+                            />
+                          </div>
+
+                          {/* Upload pièces jointes pour cet indivisaire */}
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>📎 Pièce d'identité</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf,image/*"
+                                multiple
+                                className="hidden"
+                                id={`indiv_${indivisaire.id}_id_upload`}
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length > 0) {
+                                    setIndivisairesIdentiteFiles(prev => ({...prev, [indivisaire.id]: files}));
+                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                  }
+                                  e.target.value = '';
+                                }}
+                              />
+                              <label htmlFor={`indiv_${indivisaire.id}_id_upload`} className="cursor-pointer flex items-center gap-3">
+                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">Joindre la pièce d'identité</p>
+                                  <p className="text-xs text-muted-foreground">PDF ou images</p>
+                                </div>
+                              </label>
+                            </div>
+                            {indivisairesIdentiteFiles[indivisaire.id]?.length > 0 && (
+                              <div className="space-y-2 mt-2">
+                                {indivisairesIdentiteFiles[indivisaire.id].map((file, idx) => (
+                                  <div key={idx} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate">{file.name}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      onClick={() => {
+                                        setIndivisairesIdentiteFiles(prev => ({
+                                          ...prev,
+                                          [indivisaire.id]: prev[indivisaire.id].filter((_, i) => i !== idx)
+                                        }));
+                                        toast.success('Fichier supprimé');
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 3. Description du bien */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🏠 Description du bien indivis</h3>
+                    
+                    {indivisionData.description.typeBien === "immobilier" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse complète *</Label>
+                          <Input
+                            value={indivisionData.description.immobilier.adresse}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                immobilier: {...indivisionData.description.immobilier, adresse: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nature du bien *</Label>
+                          <Select
+                            value={indivisionData.description.immobilier.nature}
+                            onValueChange={(value) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                immobilier: {...indivisionData.description.immobilier, nature: value}
+                              }
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="maison">Maison</SelectItem>
+                              <SelectItem value="appartement">Appartement</SelectItem>
+                              <SelectItem value="terrain">Terrain</SelectItem>
+                              <SelectItem value="immeuble">Immeuble</SelectItem>
+                              <SelectItem value="local_commercial">Local commercial</SelectItem>
+                              <SelectItem value="autre">Autre</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Surface (m²)</Label>
+                          <Input
+                            type="number"
+                            value={indivisionData.description.immobilier.surface}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                immobilier: {...indivisionData.description.immobilier, surface: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Description détaillée</Label>
+                          <Textarea
+                            rows={3}
+                            value={indivisionData.description.immobilier.description}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                immobilier: {...indivisionData.description.immobilier, description: e.target.value}
+                              }
+                            })}
+                            placeholder="Description du bien..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>État locatif</Label>
+                          <Select
+                            value={indivisionData.description.immobilier.etatLocatif}
+                            onValueChange={(value) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                immobilier: {...indivisionData.description.immobilier, etatLocatif: value}
+                              }
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="libre">Libre</SelectItem>
+                              <SelectItem value="loue">Loué</SelectItem>
+                              <SelectItem value="occupe">Occupé par un indivisaire</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {indivisionData.description.immobilier.etatLocatif === "loue" && (
+                          <div className="space-y-2">
+                            <Label>Loyer mensuel (€)</Label>
+                            <Input
+                              type="number"
+                              value={indivisionData.description.immobilier.loyer}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                description: {
+                                  ...indivisionData.description,
+                                  immobilier: {...indivisionData.description.immobilier, loyer: e.target.value}
+                                }
+                              })}
+                            />
+                          </div>
+                        )}
+                        <div className="space-y-2">
+                          <Label>Valeur vénale estimée (€)</Label>
+                          <Input
+                            type="number"
+                            value={indivisionData.description.immobilier.valeurVenale}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                immobilier: {...indivisionData.description.immobilier, valeurVenale: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Références cadastrales</Label>
+                          <Input
+                            value={indivisionData.description.immobilier.cadastre}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                immobilier: {...indivisionData.description.immobilier, cadastre: e.target.value}
+                              }
+                            })}
+                            placeholder="Ex: Section AB n° 123"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {indivisionData.description.typeBien === "mobilier" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Description des biens mobiliers *</Label>
+                          <Textarea
+                            rows={4}
+                            value={indivisionData.description.mobilier.description}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                mobilier: {...indivisionData.description.mobilier, description: e.target.value}
+                              }
+                            })}
+                            placeholder="Description détaillée des biens mobiliers..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Valeur estimée (€)</Label>
+                          <Input
+                            type="number"
+                            value={indivisionData.description.mobilier.valeurEstimee}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                mobilier: {...indivisionData.description.mobilier, valeurEstimee: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Numéros de série / identifiants</Label>
+                          <Input
+                            value={indivisionData.description.mobilier.numerosIdentification}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              description: {
+                                ...indivisionData.description,
+                                mobilier: {...indivisionData.description.mobilier, numerosIdentification: e.target.value}
+                              }
+                            })}
+                            placeholder="Si applicable"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 4. Durée de la convention */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">⏱️ Durée de la convention</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Type de durée *</Label>
+                        <RadioGroup
+                          value={indivisionData.duree.type}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            duree: {...indivisionData.duree, type: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="indeterminee" id="duree_indeterminee" />
+                              <Label htmlFor="duree_indeterminee" className="cursor-pointer">Indéterminée</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="determinee" id="duree_determinee" />
+                              <Label htmlFor="duree_determinee" className="cursor-pointer">Déterminée (max 5 ans)</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {indivisionData.duree.type === "determinee" && (
+                        <div className="space-y-2">
+                          <Label>Durée (en années) *</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="5"
+                            value={indivisionData.duree.annees}
+                            onChange={(e) => setIndivisionData({
+                              ...indivisionData,
+                              duree: {...indivisionData.duree, annees: e.target.value}
+                            })}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Conditions de renouvellement</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.duree.conditionsRenouvellement}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            duree: {...indivisionData.duree, conditionsRenouvellement: e.target.value}
+                          })}
+                          placeholder="Préciser les conditions..."
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Conditions de sortie anticipée</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.duree.conditionsSortie}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            duree: {...indivisionData.duree, conditionsSortie: e.target.value}
+                          })}
+                          placeholder="Préciser les conditions..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5. Gestion de l'indivision */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">⚙️ Gestion de l'indivision</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Gérant désigné</Label>
+                        <Input
+                          value={indivisionData.gestion.gerant}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            gestion: {...indivisionData.gestion, gerant: e.target.value}
+                          })}
+                          placeholder="Nom du gérant (peut être un indivisaire ou une personne externe)"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Pouvoirs du gérant</Label>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="pouvoir_gestion"
+                              checked={indivisionData.gestion.pouvoirs.gestion_courante}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                gestion: {
+                                  ...indivisionData.gestion,
+                                  pouvoirs: {...indivisionData.gestion.pouvoirs, gestion_courante: e.target.checked}
+                                }
+                              })}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="pouvoir_gestion" className="cursor-pointer">Gestion courante</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="pouvoir_travaux"
+                              checked={indivisionData.gestion.pouvoirs.travaux}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                gestion: {
+                                  ...indivisionData.gestion,
+                                  pouvoirs: {...indivisionData.gestion.pouvoirs, travaux: e.target.checked}
+                                }
+                              })}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="pouvoir_travaux" className="cursor-pointer">Autorisation des travaux</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="pouvoir_representation"
+                              checked={indivisionData.gestion.pouvoirs.representation}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                gestion: {
+                                  ...indivisionData.gestion,
+                                  pouvoirs: {...indivisionData.gestion.pouvoirs, representation: e.target.checked}
+                                }
+                              })}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="pouvoir_representation" className="cursor-pointer">Représentation de l'indivision</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="pouvoir_signature"
+                              checked={indivisionData.gestion.pouvoirs.signature_actes}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                gestion: {
+                                  ...indivisionData.gestion,
+                                  pouvoirs: {...indivisionData.gestion.pouvoirs, signature_actes: e.target.checked}
+                                }
+                              })}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="pouvoir_signature" className="cursor-pointer">Signature d'actes au nom de l'indivision</Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Type de décisions *</Label>
+                        <Select
+                          value={indivisionData.gestion.decisions}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            gestion: {...indivisionData.gestion, decisions: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unanimite">Unanimité</SelectItem>
+                            <SelectItem value="majorite_2_3">Majorité des 2/3</SelectItem>
+                            <SelectItem value="majorite_simple">Majorité simple</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Répartition des charges</Label>
+                        <Input
+                          value={indivisionData.gestion.charges}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            gestion: {...indivisionData.gestion, charges: e.target.value}
+                          })}
+                          placeholder="Ex: Proportionnellement aux quote-parts"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Compte bancaire dédié</Label>
+                        <Input
+                          value={indivisionData.gestion.compteBancaire}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            gestion: {...indivisionData.gestion, compteBancaire: e.target.value}
+                          })}
+                          placeholder="Coordonnées du compte (IBAN, nom de la banque...)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6. Utilisation du bien */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔑 Utilisation du bien</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Utilisation par les indivisaires</Label>
+                        <RadioGroup
+                          value={indivisionData.utilisation.utilisationParIndivisaires}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            utilisation: {...indivisionData.utilisation, utilisationParIndivisaires: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="oui" id="util_oui" />
+                              <Label htmlFor="util_oui" className="cursor-pointer">Autorisée</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="non" id="util_non" />
+                              <Label htmlFor="util_non" className="cursor-pointer">Non autorisée</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {indivisionData.utilisation.utilisationParIndivisaires === "oui" && (
+                        <>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Conditions d'utilisation</Label>
+                            <Textarea
+                              rows={2}
+                              value={indivisionData.utilisation.conditionsUtilisation}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                utilisation: {...indivisionData.utilisation, conditionsUtilisation: e.target.value}
+                              })}
+                              placeholder="Préciser les conditions..."
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Indemnité d'occupation (€)</Label>
+                            <Input
+                              type="number"
+                              value={indivisionData.utilisation.indemniteMontant}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                utilisation: {...indivisionData.utilisation, indemniteMontant: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Fréquence de l'indemnité</Label>
+                            <Select
+                              value={indivisionData.utilisation.indemniteFrequence}
+                              onValueChange={(value) => setIndivisionData({
+                                ...indivisionData,
+                                utilisation: {...indivisionData.utilisation, indemniteFrequence: value}
+                              })}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="mensuelle">Mensuelle</SelectItem>
+                                <SelectItem value="trimestrielle">Trimestrielle</SelectItem>
+                                <SelectItem value="annuelle">Annuelle</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Location autorisée</Label>
+                        <RadioGroup
+                          value={indivisionData.utilisation.locationAutorisee}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            utilisation: {...indivisionData.utilisation, locationAutorisee: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="oui" id="location_oui" />
+                              <Label htmlFor="location_oui" className="cursor-pointer">Oui</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="non" id="location_non" />
+                              <Label htmlFor="location_non" className="cursor-pointer">Non</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {indivisionData.utilisation.locationAutorisee === "oui" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Mandataire pour la location</Label>
+                            <Input
+                              value={indivisionData.utilisation.mandataireLocation}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                utilisation: {...indivisionData.utilisation, mandataireLocation: e.target.value}
+                              })}
+                              placeholder="Nom du mandataire"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Répartition des loyers</Label>
+                            <Input
+                              value={indivisionData.utilisation.repartitionLoyers}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                utilisation: {...indivisionData.utilisation, repartitionLoyers: e.target.value}
+                              })}
+                              placeholder="Ex: Proportionnellement aux quote-parts"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 7. Travaux et améliorations */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔨 Travaux et améliorations</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Types de travaux autorisés</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.travaux.typesAutorises}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            travaux: {...indivisionData.travaux, typesAutorises: e.target.value}
+                          })}
+                          placeholder="Préciser les types de travaux..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Décision requise *</Label>
+                        <Select
+                          value={indivisionData.travaux.decisionRequise}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            travaux: {...indivisionData.travaux, decisionRequise: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unanimite">Unanimité</SelectItem>
+                            <SelectItem value="majorite_2_3">Majorité des 2/3</SelectItem>
+                            <SelectItem value="majorite_simple">Majorité simple</SelectItem>
+                            <SelectItem value="gerant">Décision du gérant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Répartition des coûts</Label>
+                        <Input
+                          value={indivisionData.travaux.repartitionCouts}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            travaux: {...indivisionData.travaux, repartitionCouts: e.target.value}
+                          })}
+                          placeholder="Ex: Proportionnellement aux quote-parts"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Travaux urgents (procédure)</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.travaux.travauxUrgents}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            travaux: {...indivisionData.travaux, travauxUrgents: e.target.value}
+                          })}
+                          placeholder="Procédure en cas de travaux urgents..."
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Exigences de documentation</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.travaux.documentation}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            travaux: {...indivisionData.travaux, documentation: e.target.value}
+                          })}
+                          placeholder="Préciser les documents requis (devis, factures, autorisations...)..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8. Sortie d'un indivisaire */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🚪 Sortie d'un indivisaire</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Modalités de vente de la part *</Label>
+                        <RadioGroup
+                          value={indivisionData.sortie.venteLibre}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            sortie: {...indivisionData.sortie, venteLibre: value}
+                          })}
+                        >
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="libre" id="vente_libre" />
+                              <Label htmlFor="vente_libre" className="cursor-pointer">Vente libre</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="droit_preemption" id="vente_preemption" />
+                              <Label htmlFor="vente_preemption" className="cursor-pointer">Droit de préemption des autres indivisaires</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Évaluation de la part *</Label>
+                        <Select
+                          value={indivisionData.sortie.evaluationPart}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            sortie: {...indivisionData.sortie, evaluationPart: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="gerant">Par le gérant</SelectItem>
+                            <SelectItem value="accord_indivisaires">Accord des indivisaires</SelectItem>
+                            <SelectItem value="expert">Expert indépendant</SelectItem>
+                            <SelectItem value="juge">Décision du juge</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Délai de rachat (jours)</Label>
+                        <Input
+                          type="number"
+                          value={indivisionData.sortie.delaiRachat}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            sortie: {...indivisionData.sortie, delaiRachat: e.target.value}
+                          })}
+                          placeholder="Ex: 60"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Modalités de paiement</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.sortie.modalitesPaiement}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            sortie: {...indivisionData.sortie, modalitesPaiement: e.target.value}
+                          })}
+                          placeholder="Préciser les conditions de paiement..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 9. Vente du bien */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">💰 Vente du bien</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Conditions de mise en vente</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.vente.conditionsMiseEnVente}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            vente: {...indivisionData.vente, conditionsMiseEnVente: e.target.value}
+                          })}
+                          placeholder="Préciser les conditions..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Décision requise *</Label>
+                        <Select
+                          value={indivisionData.vente.decisionRequise}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            vente: {...indivisionData.vente, decisionRequise: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unanimite">Unanimité</SelectItem>
+                            <SelectItem value="majorite_2_3">Majorité des 2/3</SelectItem>
+                            <SelectItem value="majorite_simple">Majorité simple</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Mandataire pour la vente</Label>
+                        <Input
+                          value={indivisionData.vente.mandataire}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            vente: {...indivisionData.vente, mandataire: e.target.value}
+                          })}
+                          placeholder="Nom du mandataire"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Répartition du prix de vente</Label>
+                        <Input
+                          value={indivisionData.vente.repartitionPrix}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            vente: {...indivisionData.vente, repartitionPrix: e.target.value}
+                          })}
+                          placeholder="Ex: Proportionnellement aux quote-parts"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Gestion des plus-values</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.vente.gestionPlusValues}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            vente: {...indivisionData.vente, gestionPlusValues: e.target.value}
+                          })}
+                          placeholder="Préciser la gestion fiscale et la répartition..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 10. Comptabilité */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">📊 Comptabilité</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Tenue d'un registre des dépenses</Label>
+                        <RadioGroup
+                          value={indivisionData.comptabilite.registreDepenses}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            comptabilite: {...indivisionData.comptabilite, registreDepenses: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="oui" id="registre_oui" />
+                              <Label htmlFor="registre_oui" className="cursor-pointer">Oui</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="non" id="registre_non" />
+                              <Label htmlFor="registre_non" className="cursor-pointer">Non</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Archivage des factures et justificatifs</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.comptabilite.archivageFactures}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            comptabilite: {...indivisionData.comptabilite, archivageFactures: e.target.value}
+                          })}
+                          placeholder="Modalités d'archivage..."
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Modalités de remboursement des avances</Label>
+                        <Textarea
+                          rows={2}
+                          value={indivisionData.comptabilite.remboursementAvances}
+                          onChange={(e) => setIndivisionData({
+                            ...indivisionData,
+                            comptabilite: {...indivisionData.comptabilite, remboursementAvances: e.target.value}
+                          })}
+                          placeholder="Préciser les conditions..."
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Rapport annuel de gestion</Label>
+                        <RadioGroup
+                          value={indivisionData.comptabilite.rapportAnnuel}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            comptabilite: {...indivisionData.comptabilite, rapportAnnuel: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="oui" id="rapport_oui" />
+                              <Label htmlFor="rapport_oui" className="cursor-pointer">Oui</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="non" id="rapport_non" />
+                              <Label htmlFor="rapport_non" className="cursor-pointer">Non</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 11. Litiges */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">⚖️ Règlement des litiges</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Modes de résolution des litiges</Label>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="litige_mediation"
+                              checked={indivisionData.litiges.modesResolution.mediation}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                litiges: {
+                                  ...indivisionData.litiges,
+                                  modesResolution: {...indivisionData.litiges.modesResolution, mediation: e.target.checked}
+                                }
+                              })}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="litige_mediation" className="cursor-pointer">Médiation</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="litige_arbitrage"
+                              checked={indivisionData.litiges.modesResolution.arbitrage}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                litiges: {
+                                  ...indivisionData.litiges,
+                                  modesResolution: {...indivisionData.litiges.modesResolution, arbitrage: e.target.checked}
+                                }
+                              })}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="litige_arbitrage" className="cursor-pointer">Arbitrage</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="litige_tribunal"
+                              checked={indivisionData.litiges.modesResolution.tribunal}
+                              onChange={(e) => setIndivisionData({
+                                ...indivisionData,
+                                litiges: {
+                                  ...indivisionData.litiges,
+                                  modesResolution: {...indivisionData.litiges.modesResolution, tribunal: e.target.checked}
+                                }
+                              })}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="litige_tribunal" className="cursor-pointer">Tribunal compétent</Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Clause de solidarité pour les dettes</Label>
+                        <RadioGroup
+                          value={indivisionData.litiges.solidariteDettes}
+                          onValueChange={(value) => setIndivisionData({
+                            ...indivisionData,
+                            litiges: {...indivisionData.litiges, solidariteDettes: value}
+                          })}
+                        >
+                          <div className="flex gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="oui" id="solidarite_oui" />
+                              <Label htmlFor="solidarite_oui" className="cursor-pointer">Oui (indivisaires solidaires)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="non" id="solidarite_non" />
+                              <Label htmlFor="solidarite_non" className="cursor-pointer">Non (chacun à hauteur de sa quote-part)</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                    </div>
                   </div>
 
                 </div>
