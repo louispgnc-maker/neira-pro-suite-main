@@ -6710,21 +6710,58 @@ DURÉE DU BAIL
                         {/* Upload carte identité bailleur si le client est preneur (avant la fin de la grid) */}
                         {bailCommercialData.clientRole === "preneur" && (
                           <div className="space-y-2 md:col-span-2">
-                            <Label>📎 Carte d'identité du bailleur (à uploader)</Label>
-                            <Input 
-                              type="file" 
-                              accept="image/*,application/pdf"
-                              multiple
-                              onChange={(e) => {
-                                if (e.target.files) {
-                                  setBailCommercialBailleurFiles(Array.from(e.target.files));
-                                }
-                              }}
-                            />
+                            <Label>📎 Pièce d'identité du bailleur</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf,image/*"
+                                multiple
+                                className="hidden"
+                                id="bail-commercial-bailleur-upload"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length > 0) {
+                                    setBailCommercialBailleurFiles(files);
+                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                  }
+                                  e.target.value = '';
+                                }}
+                              />
+                              <label htmlFor="bail-commercial-bailleur-upload" className="cursor-pointer flex items-center gap-3">
+                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">Joindre la pièce d'identité</p>
+                                  <p className="text-xs text-muted-foreground">PDF ou images</p>
+                                </div>
+                              </label>
+                            </div>
                             {bailCommercialBailleurFiles.length > 0 && (
-                              <p className="text-sm text-green-600">✓ {bailCommercialBailleurFiles.length} fichier(s) sélectionné(s)</p>
+                              <div className="space-y-2 mt-2">
+                                {bailCommercialBailleurFiles.map((file, index) => (
+                                  <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate">{file.name}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        setBailCommercialBailleurFiles(prev => prev.filter((_, i) => i !== index));
+                                        toast.success('Fichier supprimé');
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
                             )}
-                            <p className="text-xs text-muted-foreground">CNI, passeport - PDF ou images</p>
                           </div>
                         )}
                       </div>
@@ -7043,21 +7080,58 @@ DURÉE DU BAIL
                         {/* Upload carte identité preneur si le client est bailleur (avant Email) */}
                         {bailCommercialData.clientRole === "bailleur" && (
                           <div className="space-y-2 md:col-span-2">
-                            <Label>📎 Carte d'identité du preneur (à uploader)</Label>
-                            <Input 
-                              type="file" 
-                              accept="image/*,application/pdf"
-                              multiple
-                              onChange={(e) => {
-                                if (e.target.files) {
-                                  setBailCommercialLocataireFiles(Array.from(e.target.files));
-                                }
-                              }}
-                            />
+                            <Label>📎 Pièce d'identité du preneur</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 hover:border-muted-foreground/50 transition-colors">
+                              <input
+                                type="file"
+                                accept="application/pdf,image/*"
+                                multiple
+                                className="hidden"
+                                id="bail-commercial-preneur-upload"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length > 0) {
+                                    setBailCommercialLocataireFiles(files);
+                                    toast.success(`${files.length} fichier(s) ajouté(s)`);
+                                  }
+                                  e.target.value = '';
+                                }}
+                              />
+                              <label htmlFor="bail-commercial-preneur-upload" className="cursor-pointer flex items-center gap-3">
+                                <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">Joindre la pièce d'identité</p>
+                                  <p className="text-xs text-muted-foreground">PDF ou images</p>
+                                </div>
+                              </label>
+                            </div>
                             {bailCommercialLocataireFiles.length > 0 && (
-                              <p className="text-sm text-green-600">✓ {bailCommercialLocataireFiles.length} fichier(s) sélectionné(s)</p>
+                              <div className="space-y-2 mt-2">
+                                {bailCommercialLocataireFiles.map((file, index) => (
+                                  <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                                    <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm flex-1 truncate">{file.name}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        setBailCommercialLocataireFiles(prev => prev.filter((_, i) => i !== index));
+                                        toast.success('Fichier supprimé');
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
                             )}
-                            <p className="text-xs text-muted-foreground">CNI, passeport - PDF ou images</p>
                           </div>
                         )}
 
