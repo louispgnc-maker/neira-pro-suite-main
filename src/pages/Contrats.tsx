@@ -6410,24 +6410,24 @@ DURÉE DU BAIL
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="bailleur" id="bc_role_bailleur" />
                               <Label htmlFor="bc_role_bailleur" className="cursor-pointer">Bailleur (propriétaire)</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="preneur" id="bc_role_preneur" />
-                              <Label htmlFor="bc_role_preneur" className="cursor-pointer">Preneur (locataire)</Label>
-                            </div>
-                          </RadioGroup>
                         </div>
-                      </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="preneur" id="bc_role_preneur" />
+                          <Label htmlFor="bc_role_preneur" className="cursor-pointer">Preneur (locataire)</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
 
-                      {/* Bailleur */}
-                      <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">
-                          {bailCommercialData.clientRole === "bailleur" ? "🏢 Bailleur (votre client)" : "🏢 Bailleur"}
-                        </h3>
-                        
-                        {/* Sélection du client si bailleur */}
-                        {bailCommercialData.clientRole === "bailleur" && (
-                          <div className="space-y-2">
+                  {/* Bailleur */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">
+                      {bailCommercialData.clientRole === "bailleur" ? "🏢 Bailleur (votre client)" : "🏢 Bailleur"}
+                    </h3>
+                    
+                    {/* Sélection du client si bailleur */}
+                    {bailCommercialData.clientRole === "bailleur" && (
+                      <div className="space-y-2">
                         <Label>Sélectionner le client bailleur *</Label>
                         <Select 
                           value={bailCommercialData.clientId} 
@@ -6965,6 +6965,8 @@ DURÉE DU BAIL
                       </div>
                     </div>
                   </div>
+                    </>
+                  )}
                 </div>
               </>
             )}
