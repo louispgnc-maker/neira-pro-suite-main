@@ -131,6 +131,17 @@ export default function Contrats() {
   const [indivisionMandatGerantFiles, setIndivisionMandatGerantFiles] = useState<File[]>([]); // Mandat du gérant
   const [indivisionAssuranceFiles, setIndivisionAssuranceFiles] = useState<File[]>([]); // Attestation d'assurance
   
+  // States pour mainlevée d'hypothèque
+  const [mainleveeCreancierMandatFiles, setMainleveeCreancierMandatFiles] = useState<File[]>([]); // Mandat représentant
+  const [mainleveeCreancierKbisFiles, setMainleveeCreancierKbisFiles] = useState<File[]>([]); // KBIS
+  const [mainleveeCreancierDelegationFiles, setMainleveeCreancierDelegationFiles] = useState<File[]>([]); // Délégation de pouvoir
+  const [mainleveeCreancierIdentiteFiles, setMainleveeCreancierIdentiteFiles] = useState<File[]>([]); // Identité représentant
+  const [mainleveeDebiteursIdentiteFiles, setMainleveeDebiteursIdentiteFiles] = useState<Record<number, File[]>>({}); // Identités débiteurs
+  const [mainleveeDebiteursJustifDomicileFiles, setMainleveeDebiteursJustifDomicileFiles] = useState<Record<number, File[]>>({}); // Justif domicile
+  const [mainleveeActeConstitutifFiles, setMainleveeActeConstitutifFiles] = useState<File[]>([]); // Acte constitutif
+  const [mainleveeInscriptionHypothequeFiles, setMainleveeInscriptionHypothequeFiles] = useState<File[]>([]); // Inscription hypothécaire
+  const [mainleveeAttestationRemboursementFiles, setMainleveeAttestationRemboursementFiles] = useState<File[]>([]); // Attestation remboursement
+  
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
     // Sélection du client et son rôle
@@ -883,6 +894,128 @@ export default function Contrats() {
       numeroPolice: "",
       repartitionPrime: "",
       dateEcheance: "",
+    },
+  });
+
+  // State pour la mainlevée d'hypothèque
+  const [mainleveeData, setMainleveeData] = useState({
+    // 1. Informations générales
+    typeMainlevee: "totale", // totale / partielle / renonciation / substitution
+    precisionPartielle: "",
+    natureInscription: "hypotheque_conventionnelle", // hypotheque_conventionnelle / hypotheque_legale / hypotheque_judiciaire / privilege_ppd
+    numeroInscription: "",
+    dateInscription: "",
+    volumeNumero: "",
+    referencePartenaire: "",
+
+    // 2. Créancier
+    creancierType: "banque", // banque / personne_physique
+    creancierBanque: {
+      denominationSociale: "",
+      formeJuridique: "",
+      capitalSocial: "",
+      adresseSiege: "",
+      rcs: "",
+      siren: "",
+      representantNom: "",
+      representantPrenom: "",
+      representantFonction: "",
+      pouvoirsType: "", // mandat / delegation / pv
+    },
+    creancierPersonne: {
+      nom: "",
+      prenom: "",
+      adresse: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      statutMatrimonial: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+    },
+
+    // 3. Débiteurs (tableau)
+    debiteurs: [{
+      id: 1,
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      adresse: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      situationFamiliale: "",
+      regimeMatrimonial: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      qualite: "emprunteur", // emprunteur / cofinanceur / caution_hypothecaire
+    }],
+
+    // 4. Acte constitutif
+    acteOrigine: {
+      dateSignature: "",
+      natureActe: "acte_notarie", // acte_notarie / acte_sous_seing_prive
+      notaireAuteur: "",
+      datePublication: "",
+      numeroPublication: "",
+    },
+    conditionsPret: {
+      montantInitial: "",
+      tauxInteret: "",
+      dureePret: "",
+      numeroContrat: "",
+      etablissementPreteur: "",
+      numeroDossier: "",
+    },
+
+    // 5. Bien hypothéqué (tableau pour gérer plusieurs biens)
+    biens: [{
+      id: 1,
+      adresse: "",
+      descriptionBien: "",
+      typeBien: "", // maison / appartement / terrain / locaux / dependances
+      cadastreSection: "",
+      cadastreParcelle: "",
+      cadastreContenance: "",
+      estCopropriete: "non",
+      numeroLot: "",
+      quotePart: "",
+    }],
+
+    // 6. Déclaration du créancier
+    declaration: {
+      creancePayee: true,
+      aucuneDette: true,
+      consentMainlevee: true,
+      renonciation: true,
+      demandeRadiation: true,
+    },
+
+    // 7. Mandat/Procuration
+    mandataire: {
+      existe: "non",
+      nom: "",
+      prenom: "",
+      fonction: "",
+      pouvoirSigner: false,
+      pouvoirDeposer: false,
+    },
+
+    // 8. Consentement débiteur
+    consentementDebiteur: {
+      requis: "non",
+      accordRadiation: false,
+      declarationsComplementaires: "",
+    },
+
+    // 10. Frais
+    frais: {
+      fraisRadiation: "",
+      honoraires: "",
+      timbresFiscaux: "",
     },
   });
 
