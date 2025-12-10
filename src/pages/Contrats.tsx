@@ -977,6 +977,9 @@ export default function Contrats() {
       adresse: "",
       descriptionBien: "",
       typeBien: "", // maison / appartement / terrain / locaux / dependances
+      modeDetention: "", // propriete_exclusive / indivision / communaute_acquets / separation_biens / autre
+      quotepartsIndivision: "", // Si indivision
+      autreRegime: "", // Si autre
       cadastreSection: "",
       cadastreParcelle: "",
       cadastreContenance: "",
@@ -2795,6 +2798,7 @@ Bien ${idx + 1}:
 - Adresse: ${bien.adresse}
 - Type: ${bien.typeBien}
 - Description: ${bien.descriptionBien}
+- Mode de détention: ${bien.modeDetention === "propriete_exclusive" ? "Propriété exclusive" : bien.modeDetention === "indivision" ? `Indivision (${bien.quotepartsIndivision})` : bien.modeDetention === "communaute_acquets" ? "Communauté réduite aux acquêts" : bien.modeDetention === "separation_biens" ? "Séparation de biens" : bien.modeDetention === "autre" ? `Autre: ${bien.autreRegime}` : "Non précisé"}
 - Cadastre: Section ${bien.cadastreSection}, Parcelle ${bien.cadastreParcelle}
 - Contenance: ${bien.cadastreContenance}
 ${bien.estCopropriete === "oui" ? `- Copropriété: Lot n°${bien.numeroLot}, Quote-part: ${bien.quotePart}` : ""}
@@ -2924,6 +2928,9 @@ FRAIS
           adresse: "",
           descriptionBien: "",
           typeBien: "",
+          modeDetention: "",
+          quotepartsIndivision: "",
+          autreRegime: "",
           cadastreSection: "",
           cadastreParcelle: "",
           cadastreContenance: "",
@@ -12285,6 +12292,60 @@ FRAIS
                             />
                           </div>
 
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Mode de détention du bien *</Label>
+                            <Select 
+                              value={bien.modeDetention} 
+                              onValueChange={(value) => {
+                                const newBiens = [...mainleveeData.biens];
+                                const idx = newBiens.findIndex(b => b.id === bien.id);
+                                newBiens[idx] = {...newBiens[idx], modeDetention: value};
+                                setMainleveeData({...mainleveeData, biens: newBiens});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="propriete_exclusive">Propriété exclusive</SelectItem>
+                                <SelectItem value="indivision">Indivision</SelectItem>
+                                <SelectItem value="communaute_acquets">Communauté réduite aux acquêts</SelectItem>
+                                <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                                <SelectItem value="autre">Autre régime (préciser)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {bien.modeDetention === "indivision" && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Quote-parts en indivision</Label>
+                              <Input
+                                value={bien.quotepartsIndivision}
+                                onChange={(e) => {
+                                  const newBiens = [...mainleveeData.biens];
+                                  const idx = newBiens.findIndex(b => b.id === bien.id);
+                                  newBiens[idx] = {...newBiens[idx], quotepartsIndivision: e.target.value};
+                                  setMainleveeData({...mainleveeData, biens: newBiens});
+                                }}
+                                placeholder="Ex: 1/2, 1/3-2/3, etc."
+                              />
+                            </div>
+                          )}
+
+                          {bien.modeDetention === "autre" && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Préciser le régime</Label>
+                              <Input
+                                value={bien.autreRegime}
+                                onChange={(e) => {
+                                  const newBiens = [...mainleveeData.biens];
+                                  const idx = newBiens.findIndex(b => b.id === bien.id);
+                                  newBiens[idx] = {...newBiens[idx], autreRegime: e.target.value};
+                                  setMainleveeData({...mainleveeData, biens: newBiens});
+                                }}
+                                placeholder="Ex: Communauté universelle, participation aux acquêts..."
+                              />
+                            </div>
+                          )}
+
                           <div className="space-y-2">
                             <Label>Section cadastrale</Label>
                             <Input
@@ -12396,6 +12457,9 @@ FRAIS
                             adresse: "",
                             descriptionBien: "",
                             typeBien: "",
+                            modeDetention: "",
+                            quotepartsIndivision: "",
+                            autreRegime: "",
                             cadastreSection: "",
                             cadastreParcelle: "",
                             cadastreContenance: "",
