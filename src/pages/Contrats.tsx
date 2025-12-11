@@ -378,17 +378,18 @@ export default function Contrats() {
   });
 
   // State pour Testament (fichiers)
-  const [testamentTestrateurIdentiteFiles, setTestamentTestrateurIdentiteFiles] = useState<File[]>([]);
-  const [testamentTestrateurLivretFamilleFiles, setTestamentTestrateurLivretFamilleFiles] = useState<File[]>([]);
-  const [testamentJugementTutelleFiles, setTestamentJugementTutelleFiles] = useState<File[]>([]);
-  const [testamentTemoin1IdentiteFiles, setTestamentTemoin1IdentiteFiles] = useState<File[]>([]);
-  const [testamentTemoin2IdentiteFiles, setTestamentTemoin2IdentiteFiles] = useState<File[]>([]);
-  const [testamentTitresProperieteFiles, setTestamentTitresProperieteFiles] = useState<File[]>([]);
-  const [testamentDiagnosticsFiles, setTestamentDiagnosticsFiles] = useState<File[]>([]);
-  const [testamentRelevesComptesFiles, setTestamentRelevesComptesFiles] = useState<File[]>([]);
-  const [testamentStatutsSocieteFiles, setTestamentStatutsSocieteFiles] = useState<File[]>([]);
-  const [testamentContratMariageFiles, setTestamentContratMariageFiles] = useState<File[]>([]);
-  const [testamentTestamentMystiqueFiles, setTestamentTestamentMystiqueFiles] = useState<File[]>([]); // Le testament cacheté lui-même
+  const [testamentIdentiteTestateur, setTestamentIdentiteTestateur] = useState<File | null>(null);
+  const [testamentLivretFamille, setTestamentLivretFamille] = useState<File | null>(null);
+  const [testamentCapaciteJuridique, setTestamentCapaciteJuridique] = useState<File | null>(null);
+  const [testamentIdentiteTemoins, setTestamentIdentiteTemoins] = useState<File | null>(null);
+  const [testamentDomicileTemoins, setTestamentDomicileTemoins] = useState<File | null>(null);
+  const [testamentAttestationsTemoins, setTestamentAttestationsTemoins] = useState<File | null>(null);
+  const [testamentCasiersTemoins, setTestamentCasiersTemoins] = useState<File | null>(null);
+  const [testamentTitresPropriete, setTestamentTitresPropriete] = useState<File | null>(null);
+  const [testamentRelevesBancaires, setTestamentRelevesBancaires] = useState<File | null>(null);
+  const [testamentContratMariage, setTestamentContratMariage] = useState<File | null>(null);
+  const [testamentAutresJustificatifs, setTestamentAutresJustificatifs] = useState<File | null>(null);
+  const [testamentTestamentMystique, setTestamentTestamentMystique] = useState<File | null>(null); // Le testament cacheté lui-même
 
   // State pour Testament
   const [testamentData, setTestamentData] = useState({
