@@ -24523,9 +24523,266 @@ FIN DE LA CONVENTION
                     ))}
                   </div>
 
-                  {/* Placeholder pour sections 5-11 */}
+                  {/* 5. Dispositions testamentaires - PARTIE 1 */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Dispositions testamentaires</h3>
+                    
+                    {/* 5.1 Legs universel */}
+                    <div className="p-4 border rounded-lg space-y-3 bg-green-50/40">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="legs_universel"
+                          checked={testamentData.dispositionsTestamentaires.legsUniversel.actif}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            dispositionsTestamentaires: {
+                              ...testamentData.dispositionsTestamentaires,
+                              legsUniversel: {...testamentData.dispositionsTestamentaires.legsUniversel, actif: e.target.checked}
+                            }
+                          })}
+                        />
+                        <label htmlFor="legs_universel" className="font-medium cursor-pointer">
+                          Legs universel (totalité du patrimoine)
+                        </label>
+                      </div>
+
+                      {testamentData.dispositionsTestamentaires.legsUniversel.actif && (
+                        <div className="ml-6 space-y-3 p-3 bg-white rounded-lg">
+                          <div className="space-y-2">
+                            <Label>Légataire universel (nom et prénom)</Label>
+                            <Input
+                              value={testamentData.dispositionsTestamentaires.legsUniversel.legataire}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                dispositionsTestamentaires: {
+                                  ...testamentData.dispositionsTestamentaires,
+                                  legsUniversel: {...testamentData.dispositionsTestamentaires.legsUniversel, legataire: e.target.value}
+                                }
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Description / précisions</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={testamentData.dispositionsTestamentaires.legsUniversel.description}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                dispositionsTestamentaires: {
+                                  ...testamentData.dispositionsTestamentaires,
+                                  legsUniversel: {...testamentData.dispositionsTestamentaires.legsUniversel, description: e.target.value}
+                                }
+                              })}
+                              placeholder="Détails sur le legs universel..."
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 5.2 Legs à titre universel */}
+                    <div className="p-4 border rounded-lg space-y-3 bg-blue-50/40">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="legs_titre_universel"
+                          checked={testamentData.dispositionsTestamentaires.legsTitreUniversel.actif}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            dispositionsTestamentaires: {
+                              ...testamentData.dispositionsTestamentaires,
+                              legsTitreUniversel: {...testamentData.dispositionsTestamentaires.legsTitreUniversel, actif: e.target.checked}
+                            }
+                          })}
+                        />
+                        <label htmlFor="legs_titre_universel" className="font-medium cursor-pointer">
+                          Legs à titre universel (quote-part ou catégorie de biens)
+                        </label>
+                      </div>
+
+                      {testamentData.dispositionsTestamentaires.legsTitreUniversel.actif && (
+                        <div className="ml-6 space-y-3 p-3 bg-white rounded-lg">
+                          <div className="space-y-2">
+                            <Label>Légataire</Label>
+                            <Input
+                              value={testamentData.dispositionsTestamentaires.legsTitreUniversel.legataire}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                dispositionsTestamentaires: {
+                                  ...testamentData.dispositionsTestamentaires,
+                                  legsTitreUniversel: {...testamentData.dispositionsTestamentaires.legsTitreUniversel, legataire: e.target.value}
+                                }
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Quotité ou catégorie de biens</Label>
+                            <Input
+                              value={testamentData.dispositionsTestamentaires.legsTitreUniversel.quotite}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                dispositionsTestamentaires: {
+                                  ...testamentData.dispositionsTestamentaires,
+                                  legsTitreUniversel: {...testamentData.dispositionsTestamentaires.legsTitreUniversel, quotite: e.target.value}
+                                }
+                              })}
+                              placeholder="Ex: 1/4 du patrimoine, tous les biens immobiliers..."
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Description / précisions</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={testamentData.dispositionsTestamentaires.legsTitreUniversel.description}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                dispositionsTestamentaires: {
+                                  ...testamentData.dispositionsTestamentaires,
+                                  legsTitreUniversel: {...testamentData.dispositionsTestamentaires.legsTitreUniversel, description: e.target.value}
+                                }
+                              })}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 5.3 Legs particuliers */}
+                    <div className="p-4 border rounded-lg space-y-3 bg-purple-50/40">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Legs particuliers (biens déterminés)</h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setTestamentData({
+                            ...testamentData,
+                            dispositionsTestamentaires: {
+                              ...testamentData.dispositionsTestamentaires,
+                              legsParticuliers: [...testamentData.dispositionsTestamentaires.legsParticuliers, {
+                                legataire: "", bienDesigne: "", description: ""
+                              }]
+                            }
+                          })}
+                        >
+                          + Ajouter un legs particulier
+                        </Button>
+                      </div>
+
+                      {testamentData.dispositionsTestamentaires.legsParticuliers.map((legs, idx) => (
+                        <div key={idx} className="ml-6 space-y-3 p-3 bg-white rounded-lg border">
+                          <div className="flex justify-between">
+                            <h5 className="text-sm font-medium">Legs particulier {idx + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const newLegs = testamentData.dispositionsTestamentaires.legsParticuliers.filter((_, i) => i !== idx);
+                                setTestamentData({
+                                  ...testamentData,
+                                  dispositionsTestamentaires: {...testamentData.dispositionsTestamentaires, legsParticuliers: newLegs}
+                                });
+                              }}
+                            >
+                              🗑️
+                            </Button>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Légataire</Label>
+                            <Input
+                              value={legs.legataire}
+                              onChange={(e) => {
+                                const newLegs = [...testamentData.dispositionsTestamentaires.legsParticuliers];
+                                newLegs[idx].legataire = e.target.value;
+                                setTestamentData({
+                                  ...testamentData,
+                                  dispositionsTestamentaires: {...testamentData.dispositionsTestamentaires, legsParticuliers: newLegs}
+                                });
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Bien désigné</Label>
+                            <Input
+                              value={legs.bienDesigne}
+                              onChange={(e) => {
+                                const newLegs = [...testamentData.dispositionsTestamentaires.legsParticuliers];
+                                newLegs[idx].bienDesigne = e.target.value;
+                                setTestamentData({
+                                  ...testamentData,
+                                  dispositionsTestamentaires: {...testamentData.dispositionsTestamentaires, legsParticuliers: newLegs}
+                                });
+                              }}
+                              placeholder="Ex: appartement rue Victor Hugo, tableau, bijou..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Description / précisions</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={legs.description}
+                              onChange={(e) => {
+                                const newLegs = [...testamentData.dispositionsTestamentaires.legsParticuliers];
+                                newLegs[idx].description = e.target.value;
+                                setTestamentData({
+                                  ...testamentData,
+                                  dispositionsTestamentaires: {...testamentData.dispositionsTestamentaires, legsParticuliers: newLegs}
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* 5.4 Charges grevant les legs */}
+                    <div className="p-4 border rounded-lg space-y-3 bg-amber-50/40">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="charges_legs"
+                          checked={testamentData.dispositionsTestamentaires.chargesLegs.actif}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            dispositionsTestamentaires: {
+                              ...testamentData.dispositionsTestamentaires,
+                              chargesLegs: {...testamentData.dispositionsTestamentaires.chargesLegs, actif: e.target.checked}
+                            }
+                          })}
+                        />
+                        <label htmlFor="charges_legs" className="font-medium cursor-pointer">
+                          Charges et conditions
+                        </label>
+                      </div>
+
+                      {testamentData.dispositionsTestamentaires.chargesLegs.actif && (
+                        <div className="ml-6 space-y-2 p-3 bg-white rounded-lg">
+                          <Label>Description des charges et conditions</Label>
+                          <textarea
+                            className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                            value={testamentData.dispositionsTestamentaires.chargesLegs.description}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                chargesLegs: {...testamentData.dispositionsTestamentaires.chargesLegs, description: e.target.value}
+                              }
+                            })}
+                            placeholder="Ex: obligation d'entretenir un animal, verser une pension, entretenir un bien..."
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Placeholder pour sections 5.5-11 */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 5 à 11 à venir (dispositions testamentaires, patrimoine, formalités, documents)
+                    ⚠️ Sections 5.5 à 11 à venir (usufruit, exécuteur, patrimoine, formalités, documents)
                   </div>
 
                 </div>
