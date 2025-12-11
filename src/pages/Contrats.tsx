@@ -398,6 +398,7 @@ export default function Contrats() {
     caractereTestament: "", // initial / revocation / modification_codicille
     dateSouhaiteeRedaction: "",
     langueComprise: "", // Langue comprise par le testateur
+    autreLangue: "", // Précision si langue = "autre"
     interpreteNecessaire: false,
     interpreteNom: "",
     interpretePrenom: "",
@@ -23479,6 +23480,17 @@ FIN DE LA CONVENTION
                         </Select>
                       </div>
 
+                      {testamentData.langueComprise === "autre" && (
+                        <div className="space-y-2">
+                          <Label>Préciser la langue <span className="text-red-500">*</span></Label>
+                          <Input
+                            value={testamentData.autreLangue || ""}
+                            onChange={(e) => setTestamentData({...testamentData, autreLangue: e.target.value})}
+                            placeholder="Indiquer la langue..."
+                          />
+                        </div>
+                      )}
+
                       <div className="space-y-2 md:col-span-2">
                         <div className="flex items-center space-x-2">
                           <input
@@ -23857,8 +23869,8 @@ FIN DE LA CONVENTION
                         <h4 className="font-medium">Enfants du testateur</h4>
                         <Button
                           type="button"
-                          variant="outline"
                           size="sm"
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
                           onClick={() => setTestamentData({
                             ...testamentData,
                             heritiersReservataires: {
@@ -23988,8 +24000,8 @@ FIN DE LA CONVENTION
                         <h4 className="font-medium">Descendants (petits-enfants, arrière-petits-enfants...)</h4>
                         <Button
                           type="button"
-                          variant="outline"
                           size="sm"
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
                           onClick={() => setTestamentData({
                             ...testamentData,
                             heritiersReservataires: {
@@ -24230,8 +24242,8 @@ FIN DE LA CONVENTION
                       <p className="text-sm text-muted-foreground">Personnes ou entités désignées pour recevoir des biens</p>
                       <Button
                         type="button"
-                        variant="outline"
                         size="sm"
+                        className="bg-orange-600 hover:bg-orange-700 text-white"
                         onClick={() => setTestamentData({
                           ...testamentData,
                           legataires: [...testamentData.legataires, {
@@ -24636,8 +24648,8 @@ FIN DE LA CONVENTION
                         <h4 className="font-medium">Legs particuliers (biens déterminés)</h4>
                         <Button
                           type="button"
-                          variant="outline"
                           size="sm"
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
                           onClick={() => setTestamentData({
                             ...testamentData,
                             dispositionsTestamentaires: {
@@ -25029,8 +25041,8 @@ FIN DE LA CONVENTION
                         <h4 className="font-medium">Biens immobiliers</h4>
                         <Button
                           type="button"
-                          variant="outline"
                           size="sm"
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
                           onClick={() => setTestamentData({
                             ...testamentData,
                             patrimoine: {
@@ -25138,8 +25150,8 @@ FIN DE LA CONVENTION
                         <h4 className="font-medium">Avoirs financiers (comptes, placements)</h4>
                         <Button
                           type="button"
-                          variant="outline"
                           size="sm"
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
                           onClick={() => setTestamentData({
                             ...testamentData,
                             patrimoine: {
@@ -25232,8 +25244,8 @@ FIN DE LA CONVENTION
                         <h4 className="font-medium">Biens meubles (véhicules, œuvres d'art, bijoux...)</h4>
                         <Button
                           type="button"
-                          variant="outline"
                           size="sm"
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
                           onClick={() => setTestamentData({
                             ...testamentData,
                             patrimoine: {
@@ -25310,8 +25322,8 @@ FIN DE LA CONVENTION
                         <h4 className="font-medium">Parts sociales / actions</h4>
                         <Button
                           type="button"
-                          variant="outline"
                           size="sm"
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
                           onClick={() => setTestamentData({
                             ...testamentData,
                             patrimoine: {
