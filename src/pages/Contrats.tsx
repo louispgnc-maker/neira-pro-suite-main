@@ -16080,7 +16080,7 @@ Bien ${idx + 1}:
 
                   {/* 4. Identité des partenaires */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Identité des partenaires</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Identité complète des partenaires</h3>
                     
                     {pacsData.partenaires.map((partenaire, index) => (
                       <div key={partenaire.id} className="p-4 border rounded-lg space-y-4 bg-muted/20">
