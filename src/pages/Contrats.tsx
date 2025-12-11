@@ -16128,13 +16128,14 @@ Bien ${idx + 1}:
                                     newPartenaires[index].typeIdentite = client.type_identite || "";
                                     newPartenaires[index].numeroIdentite = client.numero_identite || "";
                                     
-                                    let situationFamiliale = client.situation_matrimoniale || "";
-                                    if (!situationFamiliale && client.situation_familiale) {
-                                      if (typeof client.situation_familiale === 'string') {
-                                        situationFamiliale = client.situation_familiale;
-                                      }
+                                    // Extraire la situation familiale de l'objet JSON
+                                    let situationFamiliale = "";
+                                    if (typeof client.situation_familiale === 'object' && client.situation_familiale !== null) {
+                                      situationFamiliale = client.situation_familiale.situation_familiale || "";
+                                    } else if (typeof client.situation_familiale === 'string') {
+                                      situationFamiliale = client.situation_familiale;
                                     }
-                                    newPartenaires[index].situationFamiliale = situationFamiliale;
+                                    newPartenaires[index].situationFamiliale = situationFamiliale || client.situation_matrimoniale || "";
                                   }
                                 }
                                 setPacsData({...pacsData, partenaires: newPartenaires});
