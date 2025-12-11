@@ -177,6 +177,25 @@ export default function Contrats() {
   const [pacsPartenaire1TraductionsFiles, setPacsPartenaire1TraductionsFiles] = useState<File[]>([]); // Traductions certifiées partenaire 1
   const [pacsPartenaire2TraductionsFiles, setPacsPartenaire2TraductionsFiles] = useState<File[]>([]); // Traductions certifiées partenaire 2
   
+  // State pour Donation entre époux - Pièces justificatives
+  const [donationEpoux1IdentiteFiles, setDonationEpoux1IdentiteFiles] = useState<File[]>([]); // Identité époux 1
+  const [donationEpoux2IdentiteFiles, setDonationEpoux2IdentiteFiles] = useState<File[]>([]); // Identité époux 2
+  const [donationEpoux1LivretFamilleFiles, setDonationEpoux1LivretFamilleFiles] = useState<File[]>([]); // Livret famille (époux 1 peut uploader)
+  const [donationEpoux2LivretFamilleFiles, setDonationEpoux2LivretFamilleFiles] = useState<File[]>([]); // Livret famille (époux 2 peut uploader)
+  const [donationEpoux1ActeMariageFiles, setDonationEpoux1ActeMariageFiles] = useState<File[]>([]); // Acte mariage
+  const [donationEpoux2ActeMariageFiles, setDonationEpoux2ActeMariageFiles] = useState<File[]>([]); // Acte mariage (doublon pour symétrie)
+  const [donationEpoux1ContratMariageFiles, setDonationEpoux1ContratMariageFiles] = useState<File[]>([]); // Contrat mariage si existant
+  const [donationEpoux2ContratMariageFiles, setDonationEpoux2ContratMariageFiles] = useState<File[]>([]); // Contrat mariage
+  const [donationEpoux1DomicileFiles, setDonationEpoux1DomicileFiles] = useState<File[]>([]); // Justificatif domicile époux 1
+  const [donationEpoux2DomicileFiles, setDonationEpoux2DomicileFiles] = useState<File[]>([]); // Justificatif domicile époux 2
+  const [donationTitresProprieteBiensFiles, setDonationTitresProprieteBiensFiles] = useState<File[]>([]); // Titres propriété biens immobiliers
+  const [donationEstimationBiensFiles, setDonationEstimationBiensFiles] = useState<File[]>([]); // Estimations / évaluations
+  const [donationHypothequesFiles, setDonationHypothequesFiles] = useState<File[]>([]); // Hypothèques
+  const [donationSituationLocativeFiles, setDonationSituationLocativeFiles] = useState<File[]>([]); // Situation locative
+  const [donationRIBFiles, setDonationRIBFiles] = useState<File[]>([]); // RIB pour donation financière
+  const [donationCarteGriseFiles, setDonationCarteGriseFiles] = useState<File[]>([]); // Carte grise véhicule
+  const [donationAutresDocumentsFiles, setDonationAutresDocumentsFiles] = useState<File[]>([]); // Autres documents
+  
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
     // Sélection du client et son rôle
@@ -1399,6 +1418,188 @@ export default function Contrats() {
     }],
   });
 
+  // State pour Donation entre époux
+  const [donationEntreEpouxData, setDonationEntreEpouxData] = useState({
+    // 1. Informations générales sur la donation
+    typeDonation: "au_dernier_vivant", // au_dernier_vivant / biens_presents / mixte
+    objetDonation: [], // protection_conjoint / transmission_bien / partage_inegal / renforcement_droits
+    datePrevueSignature: "",
+    
+    // 2. Identité complète des époux
+    epoux: [
+      {
+        id: 1,
+        isClient: false,
+        clientId: "",
+        // Informations civiles
+        nom: "",
+        prenom: "",
+        nomNaissance: "",
+        adresseComplete: "",
+        telephone: "",
+        email: "",
+        dateNaissance: "",
+        lieuNaissance: "",
+        nationalite: "",
+        profession: "",
+        situationMatrimoniale: "marie",
+        // Régime matrimonial
+        regimeMatrimonial: "", // communaute_legale / communaute_universelle / separation_biens / participation_acquets / autre
+        regimeMatrimonialAutre: "",
+        dateMariage: "",
+        lieuMariage: "",
+        existenceContratMariage: "non", // oui / non
+        // Pièce d'identité
+        typeIdentite: "",
+        numeroIdentite: "",
+        autoriteDelivrance: "",
+        dateExpiration: "",
+      },
+      {
+        id: 2,
+        isClient: false,
+        clientId: "",
+        nom: "",
+        prenom: "",
+        nomNaissance: "",
+        adresseComplete: "",
+        telephone: "",
+        email: "",
+        dateNaissance: "",
+        lieuNaissance: "",
+        nationalite: "",
+        profession: "",
+        situationMatrimoniale: "marie",
+        regimeMatrimonial: "",
+        regimeMatrimonialAutre: "",
+        dateMariage: "",
+        lieuMariage: "",
+        existenceContratMariage: "non",
+        typeIdentite: "",
+        numeroIdentite: "",
+        autoriteDelivrance: "",
+        dateExpiration: "",
+      }
+    ],
+    
+    // 3. Enfants et héritiers potentiels
+    enfantsCommuns: [{
+      id: 1,
+      nom: "",
+      prenom: "",
+      dateNaissance: "",
+    }],
+    enfantsNonCommuns: [{
+      id: 1,
+      epoux: "1", // 1 ou 2
+      nom: "",
+      prenom: "",
+      dateNaissance: "",
+    }],
+    parentsVivants: {
+      epoux1: "non", // oui / non
+      epoux2: "non",
+    },
+    autresHeritiers: "",
+    
+    // 4. Patrimoine des époux
+    biensPropresEpoux1: [{
+      id: 1,
+      type: "", // immobilier / meuble / financier / autre
+      description: "",
+      valeur: "",
+      origine: "", // heritage / donation / achat
+    }],
+    biensPropresEpoux2: [{
+      id: 1,
+      type: "",
+      description: "",
+      valeur: "",
+      origine: "",
+    }],
+    biensCommuns: [{
+      id: 1,
+      description: "",
+      valeur: "",
+      partEpoux1: "",
+      partEpoux2: "",
+    }],
+    droitsParticuliers: {
+      nueProprieteBiens: "",
+      usufruitBiens: "",
+      biensIndivis: "",
+      biensHypotheques: "",
+    },
+    
+    // 5. Clauses de donation - Donation au dernier vivant
+    donationDernierVivant: {
+      // Options successorales
+      optionsSuccessorales: [], // pleine_propriete_quotite / usufruit_universel / quart_pleine_3quarts_usufruit / choix_multiple / attribution_biens_specifiques
+      biensSpecifiques: "",
+      // Clause d'attribution préférentielle
+      attributionPreferentielle: {
+        active: false,
+        logementFamilial: false,
+        mobilier: false,
+        bienProfessionnel: false,
+        vehicule: false,
+        autresBiens: "",
+      },
+      // Clause de préciput
+      clausePreciput: {
+        active: false,
+        descriptionBien: "",
+        effet: "", // hors_part / valorise_part
+      },
+      // Clause de cantonnement
+      clauseCantonnement: false,
+      // Clause d'exclusion
+      clauseExclusion: {
+        active: false,
+        biensExclus: "",
+        casParticuliers: "",
+      },
+    },
+    
+    // 5B. Clauses - Donation de biens présents
+    donationBiensPresents: {
+      biensDonnes: [{
+        id: 1,
+        nature: "", // immobilier / financier / meuble / entreprise / autre
+        description: "",
+        valeur: "",
+        regimePropriete: "", // propre / commun / indivis
+      }],
+      irrevocabilite: "oui", // oui / non
+      clauseRetourPredeces: "non", // oui / non
+      reserveUsufruit: {
+        active: false,
+        conditions: "",
+      },
+    },
+    
+    // 6. Clauses communes
+    clausesCommunes: {
+      administrationGestion: "",
+      conditionSuspensiveResolutoire: "",
+      acceptationBeneficiaire: false,
+      renonciationDroitsSuccessorauxStandards: false,
+      clauseNonRevocation: false,
+    },
+    
+    // 7. Mentions légales (pré-remplies mais éditables)
+    mentionsLegales: {
+      articlesCodeCivil: true,
+      effetsDonation: true,
+      quotiteDisponible: true,
+      limitesReserveHereditaire: true,
+      declarationCapaciteJuridique: true,
+      consentementEclaire: true,
+      lectureActe: true,
+      signaturesElectroniques: true,
+    },
+  });
+
   const navigate = useNavigate();
 
   // debounce
@@ -1997,6 +2198,14 @@ export default function Contrats() {
     
     // Si c'est un PACS, ouvrir le questionnaire spécifique
     if (contractType === "PACS (convention + enregistrement)" && categoryKey === "Famille & Patrimoine") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est une donation entre époux, ouvrir le questionnaire spécifique
+    if (contractType === "Donation entre époux" && categoryKey === "Famille & Patrimoine") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -3991,6 +4200,296 @@ Bien ${idx + 1}:
     } catch (err) {
       console.error('Erreur création PACS:', err);
       toast.error('Erreur lors de la création de la convention de PACS');
+    }
+  };
+
+  const handleDonationEntreEpouxSubmit = async () => {
+    try {
+      if (!user) {
+        toast.error('Utilisateur non connecté');
+        return;
+      }
+
+      // Validations obligatoires
+      if (!donationEntreEpouxData.typeDonation) {
+        toast.error('Veuillez sélectionner un type de donation');
+        return;
+      }
+
+      if (donationEntreEpouxData.objetDonation.length === 0) {
+        toast.error('Veuillez sélectionner au moins un objet de donation');
+        return;
+      }
+
+      if (!donationEntreEpouxData.epoux[0].regimeMatrimonial || !donationEntreEpouxData.epoux[1].regimeMatrimonial) {
+        toast.error('Veuillez renseigner le régime matrimonial des deux époux');
+        return;
+      }
+
+      const typeLabels: Record<string, string> = {
+        au_dernier_vivant: "Donation entre époux au dernier vivant (effets au décès)",
+        biens_presents: "Donation de biens présents (effets immédiats)",
+        mixte: "Donation mixte"
+      };
+
+      const regimeLabels: Record<string, string> = {
+        communaute_legale: "Communauté légale",
+        communaute_universelle: "Communauté universelle",
+        separation_biens: "Séparation de biens",
+        participation_acquets: "Participation aux acquêts",
+        autre: "Autre régime"
+      };
+
+      const descriptionData = `
+TYPE DE CONTRAT: DONATION ENTRE ÉPOUX
+
+═══════════════════════════════════════════════════════════════
+INFORMATIONS GÉNÉRALES
+═══════════════════════════════════════════════════════════════
+- Type de donation: ${typeLabels[donationEntreEpouxData.typeDonation] || donationEntreEpouxData.typeDonation}
+- Objet(s) de la donation: ${donationEntreEpouxData.objetDonation.map(o => {
+  const labels: Record<string, string> = {
+    protection_conjoint: "Protection du conjoint survivant",
+    transmission_bien: "Transmission d'un bien particulier",
+    partage_inegal: "Partage inégal",
+    renforcement_droits: "Renforcement des droits successoraux"
+  };
+  return labels[o] || o;
+}).join(', ')}
+- Date prévue de signature: ${donationEntreEpouxData.datePrevueSignature || "Non renseignée"}
+
+═══════════════════════════════════════════════════════════════
+IDENTITÉ DES ÉPOUX
+═══════════════════════════════════════════════════════════════
+${donationEntreEpouxData.epoux.map((e, idx) => `
+Époux ${idx + 1}:
+- Nom: ${e.nom} ${e.prenom}
+- Nom de naissance: ${e.nomNaissance || e.nom}
+- Date de naissance: ${e.dateNaissance || "Non renseignée"}
+- Lieu de naissance: ${e.lieuNaissance || "Non renseigné"}
+- Nationalité: ${e.nationalite || "Non renseignée"}
+- Profession: ${e.profession || "Non renseignée"}
+- Adresse: ${e.adresseComplete || "Non renseignée"}
+- Téléphone: ${e.telephone || "Non renseigné"}
+- Email: ${e.email || "Non renseigné"}
+- Régime matrimonial: ${regimeLabels[e.regimeMatrimonial] || e.regimeMatrimonialAutre || "Non renseigné"}
+- Date du mariage: ${e.dateMariage || "Non renseignée"}
+- Lieu du mariage: ${e.lieuMariage || "Non renseigné"}
+- Contrat de mariage: ${e.existenceContratMariage === "oui" ? "Oui (copie à joindre)" : "Non"}
+- Pièce d'identité: ${e.typeIdentite || "Non renseigné"} n°${e.numeroIdentite || "Non renseigné"}
+  Autorité: ${e.autoriteDelivrance || "Non renseigné"}, Expiration: ${e.dateExpiration || "Non renseignée"}
+`).join('\n')}
+
+═══════════════════════════════════════════════════════════════
+ENFANTS ET HÉRITIERS RÉSERVATAIRES
+═══════════════════════════════════════════════════════════════
+A. ENFANTS COMMUNS (${donationEntreEpouxData.enfantsCommuns.length || 0})
+${donationEntreEpouxData.enfantsCommuns.filter(e => e.nom).map(e => `- ${e.nom} ${e.prenom}, né(e) le ${e.dateNaissance || "Non renseigné"}`).join('\n') || "Aucun enfant commun déclaré"}
+
+B. ENFANTS NON COMMUNS (${donationEntreEpouxData.enfantsNonCommuns.filter(e => e.nom).length || 0})
+${donationEntreEpouxData.enfantsNonCommuns.filter(e => e.nom).map(e => `- ${e.nom} ${e.prenom} (époux ${e.epoux}), né(e) le ${e.dateNaissance || "Non renseigné"}`).join('\n') || "Aucun enfant non commun déclaré"}
+
+C. PARENTS VIVANTS
+- Parents époux 1: ${donationEntreEpouxData.parentsVivants.epoux1 === "oui" ? "Oui" : "Non"}
+- Parents époux 2: ${donationEntreEpouxData.parentsVivants.epoux2 === "oui" ? "Oui" : "Non"}
+
+D. AUTRES HÉRITIERS
+${donationEntreEpouxData.autresHeritiers || "Aucun autre héritier déclaré"}
+
+═══════════════════════════════════════════════════════════════
+PATRIMOINE DES ÉPOUX
+═══════════════════════════════════════════════════════════════
+A. BIENS PROPRES ÉPOUX 1 (${donationEntreEpouxData.biensPropresEpoux1.filter(b => b.description).length})
+${donationEntreEpouxData.biensPropresEpoux1.filter(b => b.description).map(b => 
+  `- ${b.type}: ${b.description}, valeur: ${b.valeur || "Non estimée"}, origine: ${b.origine || "Non précisée"}`
+).join('\n') || "Aucun bien propre déclaré"}
+
+B. BIENS PROPRES ÉPOUX 2 (${donationEntreEpouxData.biensPropresEpoux2.filter(b => b.description).length})
+${donationEntreEpouxData.biensPropresEpoux2.filter(b => b.description).map(b => 
+  `- ${b.type}: ${b.description}, valeur: ${b.valeur || "Non estimée"}, origine: ${b.origine || "Non précisée"}`
+).join('\n') || "Aucun bien propre déclaré"}
+
+C. BIENS COMMUNS (${donationEntreEpouxData.biensCommuns.filter(b => b.description).length})
+${donationEntreEpouxData.biensCommuns.filter(b => b.description).map(b => 
+  `- ${b.description}, valeur: ${b.valeur || "Non estimée"}, parts: ${b.partEpoux1 || "50"}% / ${b.partEpoux2 || "50"}%`
+).join('\n') || "Aucun bien commun déclaré"}
+
+D. DROITS PARTICULIERS
+${donationEntreEpouxData.droitsParticuliers.nueProprieteBiens ? `- Nue-propriété: ${donationEntreEpouxData.droitsParticuliers.nueProprieteBiens}` : ""}
+${donationEntreEpouxData.droitsParticuliers.usufruitBiens ? `- Usufruit: ${donationEntreEpouxData.droitsParticuliers.usufruitBiens}` : ""}
+${donationEntreEpouxData.droitsParticuliers.biensIndivis ? `- Biens indivis: ${donationEntreEpouxData.droitsParticuliers.biensIndivis}` : ""}
+${donationEntreEpouxData.droitsParticuliers.biensHypotheques ? `- Hypothèques: ${donationEntreEpouxData.droitsParticuliers.biensHypotheques}` : ""}
+
+═══════════════════════════════════════════════════════════════
+CLAUSES DE LA DONATION
+═══════════════════════════════════════════════════════════════
+${donationEntreEpouxData.typeDonation === "au_dernier_vivant" || donationEntreEpouxData.typeDonation === "mixte" ? `
+A. DONATION AU DERNIER VIVANT
+Options successorales choisies:
+${donationEntreEpouxData.donationDernierVivant.optionsSuccessorales.map(o => {
+  const labels: Record<string, string> = {
+    pleine_propriete_quotite: "- Pleine propriété de la quotité disponible",
+    usufruit_universel: "- Usufruit universel de la succession",
+    quart_pleine_3quarts_usufruit: "- 1/4 en pleine propriété + 3/4 en usufruit",
+    choix_multiple: "- Choix entre plusieurs options au décès",
+    attribution_biens_specifiques: "- Attribution de biens spécifiques"
+  };
+  return labels[o] || o;
+}).join('\n') || "Aucune option sélectionnée"}
+${donationEntreEpouxData.donationDernierVivant.biensSpecifiques ? `Biens spécifiques: ${donationEntreEpouxData.donationDernierVivant.biensSpecifiques}` : ""}
+
+Attribution préférentielle:
+${donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.active ? `
+- Logement familial: ${donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.logementFamilial ? "Oui" : "Non"}
+- Mobilier: ${donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.mobilier ? "Oui" : "Non"}
+- Bien professionnel: ${donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.bienProfessionnel ? "Oui" : "Non"}
+- Véhicule: ${donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.vehicule ? "Oui" : "Non"}
+${donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.autresBiens ? `- Autres biens: ${donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.autresBiens}` : ""}
+` : "Non activée"}
+
+Clause de préciput: ${donationEntreEpouxData.donationDernierVivant.clausePreciput.active ? `
+- Bien: ${donationEntreEpouxData.donationDernierVivant.clausePreciput.descriptionBien || "Non précisé"}
+- Effet: ${donationEntreEpouxData.donationDernierVivant.clausePreciput.effet === "hors_part" ? "Hors part successorale" : "Valorisé dans la part"}
+` : "Non activée"}
+
+Clause de cantonnement: ${donationEntreEpouxData.donationDernierVivant.clauseCantonnement ? "Oui (optimisation fiscale)" : "Non"}
+
+Clause d'exclusion: ${donationEntreEpouxData.donationDernierVivant.clauseExclusion.active ? `
+- Biens exclus: ${donationEntreEpouxData.donationDernierVivant.clauseExclusion.biensExclus || "Non précisé"}
+- Cas particuliers: ${donationEntreEpouxData.donationDernierVivant.clauseExclusion.casParticuliers || "Non précisé"}
+` : "Non activée"}
+` : ""}
+
+${donationEntreEpouxData.typeDonation === "biens_presents" || donationEntreEpouxData.typeDonation === "mixte" ? `
+B. DONATION DE BIENS PRÉSENTS
+Biens donnés immédiatement (${donationEntreEpouxData.donationBiensPresents.biensDonnes.filter(b => b.description).length}):
+${donationEntreEpouxData.donationBiensPresents.biensDonnes.filter(b => b.description).map(b => 
+  `- ${b.nature}: ${b.description}, valeur: ${b.valeur || "Non estimée"}, régime: ${b.regimePropriete || "Non précisé"}`
+).join('\n') || "Aucun bien donné"}
+
+Irrévocabilité: ${donationEntreEpouxData.donationBiensPresents.irrevocabilite === "oui" ? "Oui (donation irrévocable)" : "Non"}
+Clause de retour en cas de prédécès: ${donationEntreEpouxData.donationBiensPresents.clauseRetourPredeces === "oui" ? "Oui" : "Non"}
+Réserve d'usufruit: ${donationEntreEpouxData.donationBiensPresents.reserveUsufruit.active ? `Oui - ${donationEntreEpouxData.donationBiensPresents.reserveUsufruit.conditions || "Conditions non précisées"}` : "Non"}
+` : ""}
+
+C. CLAUSES COMMUNES
+${donationEntreEpouxData.clausesCommunes.administrationGestion ? `- Administration et gestion: ${donationEntreEpouxData.clausesCommunes.administrationGestion}` : ""}
+${donationEntreEpouxData.clausesCommunes.conditionSuspensiveResolutoire ? `- Condition suspensive/résolutoire: ${donationEntreEpouxData.clausesCommunes.conditionSuspensiveResolutoire}` : ""}
+- Acceptation du bénéficiaire: ${donationEntreEpouxData.clausesCommunes.acceptationBeneficiaire ? "Oui (obligatoire)" : "En attente"}
+- Renonciation droits successoraux standards: ${donationEntreEpouxData.clausesCommunes.renonciationDroitsSuccessorauxStandards ? "Oui" : "Non"}
+- Clause de non-révocation: ${donationEntreEpouxData.clausesCommunes.clauseNonRevocation ? "Oui" : "Non"}
+
+═══════════════════════════════════════════════════════════════
+MENTIONS LÉGALES OBLIGATOIRES
+═══════════════════════════════════════════════════════════════
+✓ Articles du Code civil applicables
+✓ Effets de la donation entre époux
+✓ Quotité disponible spéciale entre époux
+✓ Limites de la réserve héréditaire
+✓ Déclaration de capacité juridique
+✓ Consentement éclairé des deux époux
+✓ Lecture de l'acte
+✓ Signatures électroniques
+
+═══════════════════════════════════════════════════════════════
+FIN DE LA CONVENTION
+═══════════════════════════════════════════════════════════════
+`;
+
+      await supabase.from('contrats').insert({
+        name: `Donation entre époux - ${donationEntreEpouxData.epoux[0].nom} ${donationEntreEpouxData.epoux[0].prenom} & ${donationEntreEpouxData.epoux[1].nom} ${donationEntreEpouxData.epoux[1].prenom}`,
+        user_id: user.id,
+        status: 'draft',
+        type: 'Donation entre époux',
+        description: descriptionData,
+      });
+
+      toast.success('Donation entre époux créée avec succès');
+      setShowQuestionDialog(false);
+
+      // Reset form
+      setDonationEntreEpouxData({
+        typeDonation: "au_dernier_vivant",
+        objetDonation: [],
+        datePrevueSignature: "",
+        epoux: [
+          {
+            id: 1, isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", adresseComplete: "",
+            telephone: "", email: "", dateNaissance: "", lieuNaissance: "", nationalite: "", profession: "",
+            situationMatrimoniale: "marie", regimeMatrimonial: "", regimeMatrimonialAutre: "",
+            dateMariage: "", lieuMariage: "", existenceContratMariage: "non",
+            typeIdentite: "", numeroIdentite: "", autoriteDelivrance: "", dateExpiration: "",
+          },
+          {
+            id: 2, isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", adresseComplete: "",
+            telephone: "", email: "", dateNaissance: "", lieuNaissance: "", nationalite: "", profession: "",
+            situationMatrimoniale: "marie", regimeMatrimonial: "", regimeMatrimonialAutre: "",
+            dateMariage: "", lieuMariage: "", existenceContratMariage: "non",
+            typeIdentite: "", numeroIdentite: "", autoriteDelivrance: "", dateExpiration: "",
+          }
+        ],
+        enfantsCommuns: [{ id: 1, nom: "", prenom: "", dateNaissance: "" }],
+        enfantsNonCommuns: [{ id: 1, epoux: "1", nom: "", prenom: "", dateNaissance: "" }],
+        parentsVivants: { epoux1: "non", epoux2: "non" },
+        autresHeritiers: "",
+        biensPropresEpoux1: [{ id: 1, type: "", description: "", valeur: "", origine: "" }],
+        biensPropresEpoux2: [{ id: 1, type: "", description: "", valeur: "", origine: "" }],
+        biensCommuns: [{ id: 1, description: "", valeur: "", partEpoux1: "", partEpoux2: "" }],
+        droitsParticuliers: { nueProprieteBiens: "", usufruitBiens: "", biensIndivis: "", biensHypotheques: "" },
+        donationDernierVivant: {
+          optionsSuccessorales: [],
+          biensSpecifiques: "",
+          attributionPreferentielle: {
+            active: false, logementFamilial: false, mobilier: false, bienProfessionnel: false,
+            vehicule: false, autresBiens: "",
+          },
+          clausePreciput: { active: false, descriptionBien: "", effet: "" },
+          clauseCantonnement: false,
+          clauseExclusion: { active: false, biensExclus: "", casParticuliers: "" },
+        },
+        donationBiensPresents: {
+          biensDonnes: [{ id: 1, nature: "", description: "", valeur: "", regimePropriete: "" }],
+          irrevocabilite: "oui",
+          clauseRetourPredeces: "non",
+          reserveUsufruit: { active: false, conditions: "" },
+        },
+        clausesCommunes: {
+          administrationGestion: "",
+          conditionSuspensiveResolutoire: "",
+          acceptationBeneficiaire: false,
+          renonciationDroitsSuccessorauxStandards: false,
+          clauseNonRevocation: false,
+        },
+        mentionsLegales: {
+          articlesCodeCivil: true, effetsDonation: true, quotiteDisponible: true,
+          limitesReserveHereditaire: true, declarationCapaciteJuridique: true,
+          consentementEclaire: true, lectureActe: true, signaturesElectroniques: true,
+        },
+      });
+
+      // Reset file states
+      setDonationEpoux1IdentiteFiles([]);
+      setDonationEpoux2IdentiteFiles([]);
+      setDonationEpoux1LivretFamilleFiles([]);
+      setDonationEpoux2LivretFamilleFiles([]);
+      setDonationEpoux1ActeMariageFiles([]);
+      setDonationEpoux2ActeMariageFiles([]);
+      setDonationEpoux1ContratMariageFiles([]);
+      setDonationEpoux2ContratMariageFiles([]);
+      setDonationEpoux1DomicileFiles([]);
+      setDonationEpoux2DomicileFiles([]);
+      setDonationTitresProprieteBiensFiles([]);
+      setDonationEstimationBiensFiles([]);
+      setDonationHypothequesFiles([]);
+      setDonationSituationLocativeFiles([]);
+      setDonationRIBFiles([]);
+      setDonationCarteGriseFiles([]);
+      setDonationAutresDocumentsFiles([]);
+
+      refreshContrats();
+    } catch (err) {
+      console.error('Erreur création donation entre époux:', err);
+      toast.error('Erreur lors de la création de la donation entre époux');
     }
   };
 
@@ -17465,6 +17964,423 @@ Bien ${idx + 1}:
                         )}
                       </div>
                     </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
+            {/* Formulaire spécifique pour Donation entre époux */}
+            {pendingContractType === "Donation entre époux" && (
+              <>
+                <div className="space-y-6">
+                  <div className="bg-muted/30 p-4 rounded-lg">
+                    <h3 className="font-semibold text-lg mb-4">📜 Donation entre époux</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Complétez les informations nécessaires pour la rédaction de la donation entre époux.
+                    </p>
+                  </div>
+
+                  {/* 1. Informations générales sur la donation */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Informations générales sur la donation</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Type de donation */}
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          Type de donation choisie <span className="text-red-500">*</span>
+                        </Label>
+                        <Select 
+                          value={donationEntreEpouxData.typeDonation}
+                          onValueChange={(value) => setDonationEntreEpouxData({...donationEntreEpouxData, typeDonation: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="au_dernier_vivant">Donation entre époux au dernier vivant (effets au décès)</SelectItem>
+                            <SelectItem value="biens_presents">Donation de biens présents (effets immédiats – très réglementée)</SelectItem>
+                            <SelectItem value="mixte">Donation mixte (rare)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Date prévue de signature */}
+                      <div className="space-y-2">
+                        <Label>Date prévue de signature de l'acte</Label>
+                        <Input
+                          type="date"
+                          value={donationEntreEpouxData.datePrevueSignature}
+                          onChange={(e) => setDonationEntreEpouxData({...donationEntreEpouxData, datePrevueSignature: e.target.value})}
+                        />
+                      </div>
+
+                      {/* Objet de la donation */}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label className="flex items-center gap-2">
+                          Objet de la donation <span className="text-red-500">*</span>
+                        </Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {[
+                            { value: "protection_conjoint", label: "Protection du conjoint survivant" },
+                            { value: "transmission_bien", label: "Transmission d'un bien particulier" },
+                            { value: "partage_inegal", label: "Partage inégal" },
+                            { value: "renforcement_droits", label: "Renforcement des droits successoraux" }
+                          ].map(obj => (
+                            <div key={obj.value} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`objet_${obj.value}`}
+                                checked={donationEntreEpouxData.objetDonation.includes(obj.value)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      objetDonation: [...donationEntreEpouxData.objetDonation, obj.value]
+                                    });
+                                  } else {
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      objetDonation: donationEntreEpouxData.objetDonation.filter(o => o !== obj.value)
+                                    });
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`objet_${obj.value}`} className="text-sm cursor-pointer">
+                                {obj.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Identité complète des époux */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète des époux</h3>
+                    
+                    {donationEntreEpouxData.epoux.map((epoux, index) => (
+                      <div key={epoux.id} className="p-4 border rounded-lg space-y-4 bg-muted/20">
+                        <h4 className="font-medium text-base">Époux #{index + 1}</h4>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Sélection client */}
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Sélectionner un client (optionnel)</Label>
+                            <Select 
+                              value={epoux.clientId} 
+                              onValueChange={async (value) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index] = {...newEpoux[index], clientId: value, isClient: !!value};
+                                
+                                if (value) {
+                                  const client = clients.find(c => c.id === value);
+                                  if (client) {
+                                    newEpoux[index].nom = client.nom || "";
+                                    newEpoux[index].prenom = client.prenom || "";
+                                    newEpoux[index].nomNaissance = client.nom || "";
+                                    newEpoux[index].adresseComplete = client.adresse || "";
+                                    newEpoux[index].dateNaissance = client.date_naissance || "";
+                                    newEpoux[index].lieuNaissance = client.lieu_naissance || "";
+                                    newEpoux[index].nationalite = client.nationalite || "";
+                                    newEpoux[index].profession = client.profession || "";
+                                    newEpoux[index].telephone = client.telephone || "";
+                                    newEpoux[index].email = client.email || "";
+                                    newEpoux[index].typeIdentite = client.type_identite || "";
+                                    newEpoux[index].numeroIdentite = client.numero_identite || "";
+                                    
+                                    // Extraire la situation familiale et régime matrimonial
+                                    let situationFamiliale = "";
+                                    if (typeof client.situation_familiale === 'object' && client.situation_familiale !== null) {
+                                      situationFamiliale = client.situation_familiale.situation_familiale || "";
+                                    } else if (typeof client.situation_familiale === 'string') {
+                                      situationFamiliale = client.situation_familiale;
+                                    }
+                                    newEpoux[index].situationMatrimoniale = situationFamiliale || client.situation_matrimoniale || "marie";
+                                    newEpoux[index].regimeMatrimonial = client.regime_matrimonial || "";
+                                    newEpoux[index].dateMariage = client.date_mariage || "";
+                                  }
+                                }
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                              <SelectContent>
+                                {clients.map((c) => (
+                                  <SelectItem key={c.id} value={c.id}>
+                                    {c.nom} {c.prenom}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Informations civiles */}
+                          <div className="space-y-2">
+                            <Label>Nom <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={epoux.nom}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].nom = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Prénom <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={epoux.prenom}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].prenom = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nom de naissance</Label>
+                            <Input
+                              value={epoux.nomNaissance}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].nomNaissance = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="date"
+                              value={epoux.dateNaissance}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].dateNaissance = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Lieu de naissance</Label>
+                            <Input
+                              value={epoux.lieuNaissance}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].lieuNaissance = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nationalité</Label>
+                            <Input
+                              value={epoux.nationalite}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].nationalite = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Profession</Label>
+                            <Input
+                              value={epoux.profession}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].profession = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={epoux.adresseComplete}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].adresseComplete = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Téléphone</Label>
+                            <Input
+                              value={epoux.telephone}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].telephone = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input
+                              type="email"
+                              value={epoux.email}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].email = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          {/* Régime matrimonial */}
+                          <div className="space-y-2">
+                            <Label>Régime matrimonial <span className="text-red-500">*</span></Label>
+                            <Select 
+                              value={epoux.regimeMatrimonial}
+                              onValueChange={(value) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].regimeMatrimonial = value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                                <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                                <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                                <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                                <SelectItem value="autre">Autre (préciser)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {epoux.regimeMatrimonial === "autre" && (
+                            <div className="space-y-2">
+                              <Label>Préciser le régime</Label>
+                              <Input
+                                value={epoux.regimeMatrimonialAutre}
+                                onChange={(e) => {
+                                  const newEpoux = [...donationEntreEpouxData.epoux];
+                                  newEpoux[index].regimeMatrimonialAutre = e.target.value;
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                                }}
+                              />
+                            </div>
+                          )}
+
+                          <div className="space-y-2">
+                            <Label>Date du mariage <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="date"
+                              value={epoux.dateMariage}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].dateMariage = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Lieu du mariage</Label>
+                            <Input
+                              value={epoux.lieuMariage}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].lieuMariage = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Existence d'un contrat de mariage</Label>
+                            <Select 
+                              value={epoux.existenceContratMariage}
+                              onValueChange={(value) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].existenceContratMariage = value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui (joindre copie)</SelectItem>
+                                <SelectItem value="non">Non</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Pièce d'identité */}
+                          <div className="space-y-2">
+                            <Label>Type de pièce d'identité</Label>
+                            <Select 
+                              value={epoux.typeIdentite}
+                              onValueChange={(value) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].typeIdentite = value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="CNI">Carte Nationale d'Identité</SelectItem>
+                                <SelectItem value="Passeport">Passeport</SelectItem>
+                                <SelectItem value="Titre de séjour">Titre de séjour</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro d'identité</Label>
+                            <Input
+                              value={epoux.numeroIdentite}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].numeroIdentite = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Autorité de délivrance</Label>
+                            <Input
+                              value={epoux.autoriteDelivrance}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].autoriteDelivrance = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date d'expiration</Label>
+                            <Input
+                              type="date"
+                              value={epoux.dateExpiration}
+                              onChange={(e) => {
+                                const newEpoux = [...donationEntreEpouxData.epoux];
+                                newEpoux[index].dateExpiration = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Suite du formulaire à continuer... */}
+                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+                    ⚠️ Formulaire en cours de développement - Sections 3 à 8 à venir
                   </div>
 
                 </div>
