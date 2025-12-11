@@ -18378,9 +18378,230 @@ FIN DE LA CONVENTION
                     ))}
                   </div>
 
-                  {/* Suite du formulaire à continuer... */}
+                  {/* 3. Enfants et héritiers potentiels */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Enfants et héritiers potentiels</h3>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-blue-800">
+                        ℹ️ Ces informations sont obligatoires pour déterminer les limites juridiques de la donation (réserve héréditaire)
+                      </p>
+                    </div>
+
+                    {/* A. Enfants communs */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="font-medium">A. Enfants communs</Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const newId = Math.max(...donationEntreEpouxData.enfantsCommuns.map(e => e.id), 0) + 1;
+                            setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              enfantsCommuns: [...donationEntreEpouxData.enfantsCommuns, { id: newId, nom: "", prenom: "", dateNaissance: "" }]
+                            });
+                          }}
+                        >
+                          + Ajouter enfant commun
+                        </Button>
+                      </div>
+
+                      {donationEntreEpouxData.enfantsCommuns.map((enfant, index) => (
+                        <div key={enfant.id} className="p-3 border rounded-lg bg-muted/10">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <Input
+                              placeholder="Nom"
+                              value={enfant.nom}
+                              onChange={(e) => {
+                                const newEnfants = [...donationEntreEpouxData.enfantsCommuns];
+                                newEnfants[index].nom = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, enfantsCommuns: newEnfants});
+                              }}
+                            />
+                            <Input
+                              placeholder="Prénom"
+                              value={enfant.prenom}
+                              onChange={(e) => {
+                                const newEnfants = [...donationEntreEpouxData.enfantsCommuns];
+                                newEnfants[index].prenom = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, enfantsCommuns: newEnfants});
+                              }}
+                            />
+                            <div className="flex gap-2">
+                              <Input
+                                type="date"
+                                placeholder="Date de naissance"
+                                value={enfant.dateNaissance}
+                                onChange={(e) => {
+                                  const newEnfants = [...donationEntreEpouxData.enfantsCommuns];
+                                  newEnfants[index].dateNaissance = e.target.value;
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, enfantsCommuns: newEnfants});
+                                }}
+                              />
+                              {donationEntreEpouxData.enfantsCommuns.length > 1 && (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => {
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      enfantsCommuns: donationEntreEpouxData.enfantsCommuns.filter((_, i) => i !== index)
+                                    });
+                                  }}
+                                >
+                                  ✕
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* B. Enfants non communs */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="font-medium">B. Enfants non communs (importante limitation de quotité disponible)</Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const newId = Math.max(...donationEntreEpouxData.enfantsNonCommuns.map(e => e.id), 0) + 1;
+                            setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              enfantsNonCommuns: [...donationEntreEpouxData.enfantsNonCommuns, { id: newId, epoux: "1", nom: "", prenom: "", dateNaissance: "" }]
+                            });
+                          }}
+                        >
+                          + Ajouter enfant non commun
+                        </Button>
+                      </div>
+
+                      {donationEntreEpouxData.enfantsNonCommuns.map((enfant, index) => (
+                        <div key={enfant.id} className="p-3 border rounded-lg bg-muted/10">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <Select
+                              value={enfant.epoux}
+                              onValueChange={(value) => {
+                                const newEnfants = [...donationEntreEpouxData.enfantsNonCommuns];
+                                newEnfants[index].epoux = value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, enfantsNonCommuns: newEnfants});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Époux..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1">Époux 1</SelectItem>
+                                <SelectItem value="2">Époux 2</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              placeholder="Nom"
+                              value={enfant.nom}
+                              onChange={(e) => {
+                                const newEnfants = [...donationEntreEpouxData.enfantsNonCommuns];
+                                newEnfants[index].nom = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, enfantsNonCommuns: newEnfants});
+                              }}
+                            />
+                            <Input
+                              placeholder="Prénom"
+                              value={enfant.prenom}
+                              onChange={(e) => {
+                                const newEnfants = [...donationEntreEpouxData.enfantsNonCommuns];
+                                newEnfants[index].prenom = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, enfantsNonCommuns: newEnfants});
+                              }}
+                            />
+                            <div className="flex gap-2">
+                              <Input
+                                type="date"
+                                placeholder="Date de naissance"
+                                value={enfant.dateNaissance}
+                                onChange={(e) => {
+                                  const newEnfants = [...donationEntreEpouxData.enfantsNonCommuns];
+                                  newEnfants[index].dateNaissance = e.target.value;
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, enfantsNonCommuns: newEnfants});
+                                }}
+                              />
+                              {donationEntreEpouxData.enfantsNonCommuns.length > 1 && (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => {
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      enfantsNonCommuns: donationEntreEpouxData.enfantsNonCommuns.filter((_, i) => i !== index)
+                                    });
+                                  }}
+                                >
+                                  ✕
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* C. Parents vivants */}
+                    <div className="space-y-3">
+                      <Label className="font-medium">C. Présence d'autres héritiers réservataires</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Parents du défunt (époux 1) vivants ?</Label>
+                          <Select 
+                            value={donationEntreEpouxData.parentsVivants.epoux1}
+                            onValueChange={(value) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              parentsVivants: {...donationEntreEpouxData.parentsVivants, epoux1: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Parents du défunt (époux 2) vivants ?</Label>
+                          <Select 
+                            value={donationEntreEpouxData.parentsVivants.epoux2}
+                            onValueChange={(value) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              parentsVivants: {...donationEntreEpouxData.parentsVivants, epoux2: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* D. Autres héritiers */}
+                    <div className="space-y-2">
+                      <Label>D. Autres héritiers (frères/sœurs, etc.)</Label>
+                      <textarea
+                        className="w-full min-h-[80px] p-2 border rounded-md"
+                        value={donationEntreEpouxData.autresHeritiers}
+                        onChange={(e) => setDonationEntreEpouxData({...donationEntreEpouxData, autresHeritiers: e.target.value})}
+                        placeholder="Préciser les autres héritiers potentiels..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Suite sections 4-8 à venir... */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Formulaire en cours de développement - Sections 3 à 8 à venir
+                    ⚠️ Sections 4 à 8 à venir
                   </div>
 
                 </div>
