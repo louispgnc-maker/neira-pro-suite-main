@@ -26400,74 +26400,116 @@ FIN DE LA CONVENTION
                       
                       <div className="space-y-2">
                         <Label>Pièce d'identité du testateur (CNI, passeport)</Label>
+                        {testamentIdentiteTestateur ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentIdentiteTestateur.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentIdentiteTestateur(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentIdentiteTestateur')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentIdentiteTestateur"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentIdentiteTestateur(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentIdentiteTestateur && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentIdentiteTestateur.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentIdentiteTestateur(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label>Livret de famille</Label>
+                        {testamentLivretFamille ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentLivretFamille.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentLivretFamille(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentLivretFamille')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentLivretFamille"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentLivretFamille(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentLivretFamille && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentLivretFamille.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentLivretFamille(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label>Certificat de capacité juridique / jugement tutelle-curatelle (si applicable)</Label>
+                        {testamentCapaciteJuridique ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentCapaciteJuridique.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentCapaciteJuridique(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentCapaciteJuridique')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentCapaciteJuridique"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentCapaciteJuridique(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentCapaciteJuridique && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentCapaciteJuridique.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentCapaciteJuridique(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </div>
 
@@ -26477,98 +26519,154 @@ FIN DE LA CONVENTION
                       
                       <div className="space-y-2">
                         <Label>Pièces d'identité des témoins</Label>
+                        {testamentIdentiteTemoins ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentIdentiteTemoins.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentIdentiteTemoins(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentIdentiteTemoins')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentIdentiteTemoins"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentIdentiteTemoins(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentIdentiteTemoins && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentIdentiteTemoins.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentIdentiteTemoins(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label>Justificatifs de domicile des témoins</Label>
+                        {testamentDomicileTemoins ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentDomicileTemoins.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentDomicileTemoins(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentDomicileTemoins')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentDomicileTemoins"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentDomicileTemoins(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentDomicileTemoins && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentDomicileTemoins.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentDomicileTemoins(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label>Attestations sur l'honneur capacité témoins</Label>
+                        {testamentAttestationsTemoins ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentAttestationsTemoins.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentAttestationsTemoins(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentAttestationsTemoins')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentAttestationsTemoins"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentAttestationsTemoins(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentAttestationsTemoins && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentAttestationsTemoins.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentAttestationsTemoins(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label>Casiers judiciaires des témoins (extrait n°3)</Label>
+                        {testamentCasiersTemoins ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentCasiersTemoins.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentCasiersTemoins(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentCasiersTemoins')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentCasiersTemoins"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentCasiersTemoins(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentCasiersTemoins && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentCasiersTemoins.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentCasiersTemoins(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </div>
 
@@ -26578,98 +26676,154 @@ FIN DE LA CONVENTION
                       
                       <div className="space-y-2">
                         <Label>Titres de propriété immobiliers</Label>
+                        {testamentTitresPropriete ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentTitresPropriete.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentTitresPropriete(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentTitresPropriete')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentTitresPropriete"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentTitresPropriete(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentTitresPropriete && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentTitresPropriete.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentTitresPropriete(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label>Relevés bancaires et comptes</Label>
+                        {testamentRelevesBancaires ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentRelevesBancaires.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentRelevesBancaires(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentRelevesBancaires')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentRelevesBancaires"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentRelevesBancaires(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentRelevesBancaires && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentRelevesBancaires.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentRelevesBancaires(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label>Contrat de mariage / régime matrimonial</Label>
+                        {testamentContratMariage ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentContratMariage.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentContratMariage(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentContratMariage')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentContratMariage"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentContratMariage(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentContratMariage && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentContratMariage.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentContratMariage(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label>Autres justificatifs patrimoniaux</Label>
+                        {testamentAutresJustificatifs ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">✓ {testamentAutresJustificatifs.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => setTestamentAutresJustificatifs(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentAutresJustificatifs')?.click()}>
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </div>
+                        )}
                         <Input
+                          id="testamentAutresJustificatifs"
                           type="file"
+                          className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setTestamentAutresJustificatifs(e.target.files[0]);
                             }
                           }}
                         />
-                        {testamentAutresJustificatifs && (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span>✓ {testamentAutresJustificatifs.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTestamentAutresJustificatifs(null)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
