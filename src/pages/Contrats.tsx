@@ -16844,6 +16844,628 @@ Bien ${idx + 1}:
                     </div>
                   </div>
 
+                  {/* 10. Pièces justificatives */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Pièces justificatives (obligatoires pour l'enregistrement)</h3>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-blue-800">
+                        📌 <strong>Documents obligatoires pour chaque partenaire :</strong> pièce d'identité, justificatif de domicile, acte de naissance intégral, 
+                        + jugement de divorce (si divorcé) ou acte de décès (si veuf)
+                      </p>
+                    </div>
+
+                    {/* Documents Partenaire 1 */}
+                    <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
+                      <h4 className="font-medium text-base">📄 Documents Partenaire 1</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Pièce d'identité P1 */}
+                        <div className="space-y-2">
+                          <Label>Pièce d'identité (recto-verso) <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="pacs_p1_identite"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire1IdentiteFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p1_identite" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {pacsPartenaire1IdentiteFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire1IdentiteFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire1IdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Justificatif domicile P1 */}
+                        <div className="space-y-2">
+                          <Label>Justificatif de domicile (&lt; 3 mois) <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="pacs_p1_domicile"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire1DomicileFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p1_domicile" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {pacsPartenaire1DomicileFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire1DomicileFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire1DomicileFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Acte naissance P1 */}
+                        <div className="space-y-2">
+                          <Label>Acte de naissance intégral <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="pacs_p1_naissance"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire1ActeNaissanceFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p1_naissance" className="cursor-pointer text-sm text-muted-foreground">
+                              &lt; 3 mois (France) ou &lt; 6 mois (étranger)
+                            </label>
+                            {pacsPartenaire1ActeNaissanceFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire1ActeNaissanceFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire1ActeNaissanceFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Jugement divorce P1 */}
+                        <div className="space-y-2">
+                          <Label>Jugement de divorce (si applicable)</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="pacs_p1_divorce"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire1DivorceFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p1_divorce" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {pacsPartenaire1DivorceFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire1DivorceFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire1DivorceFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Acte décès P1 */}
+                        <div className="space-y-2">
+                          <Label>Acte de décès conjoint précédent (si veuf/ve)</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="pacs_p1_deces"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire1DecesFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p1_deces" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {pacsPartenaire1DecesFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire1DecesFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire1DecesFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Documents étranger P1 */}
+                        {pacsData.partenaires[0]?.estEtranger && (
+                          <>
+                            <div className="space-y-2">
+                              <Label>Certificat de coutume</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="pacs_p1_coutume"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setPacsPartenaire1CertificatCoutumeFiles(prev => [...prev, ...files]);
+                                  }}
+                                />
+                                <label htmlFor="pacs_p1_coutume" className="cursor-pointer text-sm text-muted-foreground">
+                                  Cliquez pour joindre
+                                </label>
+                                {pacsPartenaire1CertificatCoutumeFiles.length > 0 && (
+                                  <div className="mt-2 space-y-1">
+                                    {pacsPartenaire1CertificatCoutumeFiles.map((file, idx) => (
+                                      <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                        <span className="truncate">{file.name}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => setPacsPartenaire1CertificatCoutumeFiles(prev => prev.filter((_, i) => i !== idx))}
+                                          className="text-red-600 ml-2"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Certificat de non-PACS du pays d'origine</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="pacs_p1_nonpacs"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setPacsPartenaire1CertificatNonPacsFiles(prev => [...prev, ...files]);
+                                  }}
+                                />
+                                <label htmlFor="pacs_p1_nonpacs" className="cursor-pointer text-sm text-muted-foreground">
+                                  Cliquez pour joindre
+                                </label>
+                                {pacsPartenaire1CertificatNonPacsFiles.length > 0 && (
+                                  <div className="mt-2 space-y-1">
+                                    {pacsPartenaire1CertificatNonPacsFiles.map((file, idx) => (
+                                      <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                        <span className="truncate">{file.name}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => setPacsPartenaire1CertificatNonPacsFiles(prev => prev.filter((_, i) => i !== idx))}
+                                          className="text-red-600 ml-2"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Traductions certifiées</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="pacs_p1_traductions"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setPacsPartenaire1TraductionsFiles(prev => [...prev, ...files]);
+                                  }}
+                                />
+                                <label htmlFor="pacs_p1_traductions" className="cursor-pointer text-sm text-muted-foreground">
+                                  Cliquez pour joindre
+                                </label>
+                                {pacsPartenaire1TraductionsFiles.length > 0 && (
+                                  <div className="mt-2 space-y-1">
+                                    {pacsPartenaire1TraductionsFiles.map((file, idx) => (
+                                      <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                        <span className="truncate">{file.name}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => setPacsPartenaire1TraductionsFiles(prev => prev.filter((_, i) => i !== idx))}
+                                          className="text-red-600 ml-2"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Documents Partenaire 2 */}
+                    <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
+                      <h4 className="font-medium text-base">📄 Documents Partenaire 2</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Pièce d'identité P2 */}
+                        <div className="space-y-2">
+                          <Label>Pièce d'identité (recto-verso) <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="pacs_p2_identite"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire2IdentiteFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p2_identite" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {pacsPartenaire2IdentiteFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire2IdentiteFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire2IdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Justificatif domicile P2 */}
+                        <div className="space-y-2">
+                          <Label>Justificatif de domicile (&lt; 3 mois) <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="pacs_p2_domicile"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire2DomicileFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p2_domicile" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {pacsPartenaire2DomicileFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire2DomicileFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire2DomicileFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Acte naissance P2 */}
+                        <div className="space-y-2">
+                          <Label>Acte de naissance intégral <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="pacs_p2_naissance"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire2ActeNaissanceFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p2_naissance" className="cursor-pointer text-sm text-muted-foreground">
+                              &lt; 3 mois (France) ou &lt; 6 mois (étranger)
+                            </label>
+                            {pacsPartenaire2ActeNaissanceFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire2ActeNaissanceFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire2ActeNaissanceFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Jugement divorce P2 */}
+                        <div className="space-y-2">
+                          <Label>Jugement de divorce (si applicable)</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="pacs_p2_divorce"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire2DivorceFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p2_divorce" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {pacsPartenaire2DivorceFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire2DivorceFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire2DivorceFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Acte décès P2 */}
+                        <div className="space-y-2">
+                          <Label>Acte de décès conjoint précédent (si veuf/ve)</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="pacs_p2_deces"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setPacsPartenaire2DecesFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="pacs_p2_deces" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {pacsPartenaire2DecesFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {pacsPartenaire2DecesFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPacsPartenaire2DecesFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Documents étranger P2 */}
+                        {pacsData.partenaires[1]?.estEtranger && (
+                          <>
+                            <div className="space-y-2">
+                              <Label>Certificat de coutume</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="pacs_p2_coutume"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setPacsPartenaire2CertificatCoutumeFiles(prev => [...prev, ...files]);
+                                  }}
+                                />
+                                <label htmlFor="pacs_p2_coutume" className="cursor-pointer text-sm text-muted-foreground">
+                                  Cliquez pour joindre
+                                </label>
+                                {pacsPartenaire2CertificatCoutumeFiles.length > 0 && (
+                                  <div className="mt-2 space-y-1">
+                                    {pacsPartenaire2CertificatCoutumeFiles.map((file, idx) => (
+                                      <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                        <span className="truncate">{file.name}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => setPacsPartenaire2CertificatCoutumeFiles(prev => prev.filter((_, i) => i !== idx))}
+                                          className="text-red-600 ml-2"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Certificat de non-PACS du pays d'origine</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="pacs_p2_nonpacs"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setPacsPartenaire2CertificatNonPacsFiles(prev => [...prev, ...files]);
+                                  }}
+                                />
+                                <label htmlFor="pacs_p2_nonpacs" className="cursor-pointer text-sm text-muted-foreground">
+                                  Cliquez pour joindre
+                                </label>
+                                {pacsPartenaire2CertificatNonPacsFiles.length > 0 && (
+                                  <div className="mt-2 space-y-1">
+                                    {pacsPartenaire2CertificatNonPacsFiles.map((file, idx) => (
+                                      <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                        <span className="truncate">{file.name}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => setPacsPartenaire2CertificatNonPacsFiles(prev => prev.filter((_, i) => i !== idx))}
+                                          className="text-red-600 ml-2"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Traductions certifiées</Label>
+                              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="pacs_p2_traductions"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setPacsPartenaire2TraductionsFiles(prev => [...prev, ...files]);
+                                  }}
+                                />
+                                <label htmlFor="pacs_p2_traductions" className="cursor-pointer text-sm text-muted-foreground">
+                                  Cliquez pour joindre
+                                </label>
+                                {pacsPartenaire2TraductionsFiles.length > 0 && (
+                                  <div className="mt-2 space-y-1">
+                                    {pacsPartenaire2TraductionsFiles.map((file, idx) => (
+                                      <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                        <span className="truncate">{file.name}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => setPacsPartenaire2TraductionsFiles(prev => prev.filter((_, i) => i !== idx))}
+                                          className="text-red-600 ml-2"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </>
             )}
