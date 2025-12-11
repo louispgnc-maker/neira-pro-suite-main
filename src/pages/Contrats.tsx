@@ -1585,6 +1585,22 @@ export default function Contrats() {
       acceptationBeneficiaire: false,
       renonciationDroitsSuccessorauxStandards: false,
       clauseNonRevocation: false,
+      // Révocabilité de la donation
+      revocabilite: "revocable", // revocable / irrevocable
+      // Mandataire éventuel
+      signatureMandataire: "non", // oui / non
+      mandataireEpoux1: {
+        nom: "",
+        prenom: "",
+        typeProcuration: "", // generale / speciale
+      },
+      mandataireEpoux2: {
+        nom: "",
+        prenom: "",
+        typeProcuration: "",
+      },
+      // Information successorale obligatoire
+      informationEffetsSuccessoraux: false,
     },
     
     // 7. Mentions légales (pré-remplies mais éditables)
@@ -19490,6 +19506,189 @@ FIN DE LA CONVENTION
                           Clause de non-révocation (selon type de donation)
                         </label>
                       </div>
+
+                      {/* Révocabilité */}
+                      <div className="space-y-2 pt-2">
+                        <Label>Révocabilité de la donation</Label>
+                        <Select
+                          value={donationEntreEpouxData.clausesCommunes.revocabilite}
+                          onValueChange={(value) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            clausesCommunes: {...donationEntreEpouxData.clausesCommunes, revocabilite: value}
+                          })}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="revocable">Révocable (par défaut)</SelectItem>
+                            <SelectItem value="irrevocable">Irrévocable (rare)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Les donations entre époux sont par défaut révocables, sauf clause contraire
+                        </p>
+                      </div>
+
+                      {/* Signature par mandataire */}
+                      <div className="space-y-3 pt-2 border-t">
+                        <Label>Signature par mandataire ?</Label>
+                        <Select
+                          value={donationEntreEpouxData.clausesCommunes.signatureMandataire}
+                          onValueChange={(value) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            clausesCommunes: {...donationEntreEpouxData.clausesCommunes, signatureMandataire: value}
+                          })}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui (hospitalisation, impossibilité)</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        {donationEntreEpouxData.clausesCommunes.signatureMandataire === "oui" && (
+                          <div className="space-y-4 bg-muted/30 p-4 rounded-lg">
+                            <div className="space-y-3">
+                              <h4 className="font-medium text-sm">Mandataire pour Époux 1</h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Nom du mandataire</Label>
+                                  <Input
+                                    value={donationEntreEpouxData.clausesCommunes.mandataireEpoux1.nom}
+                                    onChange={(e) => setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      clausesCommunes: {
+                                        ...donationEntreEpouxData.clausesCommunes,
+                                        mandataireEpoux1: {...donationEntreEpouxData.clausesCommunes.mandataireEpoux1, nom: e.target.value}
+                                      }
+                                    })}
+                                    placeholder="Nom"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Prénom</Label>
+                                  <Input
+                                    value={donationEntreEpouxData.clausesCommunes.mandataireEpoux1.prenom}
+                                    onChange={(e) => setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      clausesCommunes: {
+                                        ...donationEntreEpouxData.clausesCommunes,
+                                        mandataireEpoux1: {...donationEntreEpouxData.clausesCommunes.mandataireEpoux1, prenom: e.target.value}
+                                      }
+                                    })}
+                                    placeholder="Prénom"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-xs">Type de procuration</Label>
+                                <Select
+                                  value={donationEntreEpouxData.clausesCommunes.mandataireEpoux1.typeProcuration}
+                                  onValueChange={(value) => setDonationEntreEpouxData({
+                                    ...donationEntreEpouxData,
+                                    clausesCommunes: {
+                                      ...donationEntreEpouxData.clausesCommunes,
+                                      mandataireEpoux1: {...donationEntreEpouxData.clausesCommunes.mandataireEpoux1, typeProcuration: value}
+                                    }
+                                  })}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="generale">Procuration générale</SelectItem>
+                                    <SelectItem value="speciale">Procuration spéciale</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            <div className="space-y-3">
+                              <h4 className="font-medium text-sm">Mandataire pour Époux 2</h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Nom du mandataire</Label>
+                                  <Input
+                                    value={donationEntreEpouxData.clausesCommunes.mandataireEpoux2.nom}
+                                    onChange={(e) => setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      clausesCommunes: {
+                                        ...donationEntreEpouxData.clausesCommunes,
+                                        mandataireEpoux2: {...donationEntreEpouxData.clausesCommunes.mandataireEpoux2, nom: e.target.value}
+                                      }
+                                    })}
+                                    placeholder="Nom"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Prénom</Label>
+                                  <Input
+                                    value={donationEntreEpouxData.clausesCommunes.mandataireEpoux2.prenom}
+                                    onChange={(e) => setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      clausesCommunes: {
+                                        ...donationEntreEpouxData.clausesCommunes,
+                                        mandataireEpoux2: {...donationEntreEpouxData.clausesCommunes.mandataireEpoux2, prenom: e.target.value}
+                                      }
+                                    })}
+                                    placeholder="Prénom"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-xs">Type de procuration</Label>
+                                <Select
+                                  value={donationEntreEpouxData.clausesCommunes.mandataireEpoux2.typeProcuration}
+                                  onValueChange={(value) => setDonationEntreEpouxData({
+                                    ...donationEntreEpouxData,
+                                    clausesCommunes: {
+                                      ...donationEntreEpouxData.clausesCommunes,
+                                      mandataireEpoux2: {...donationEntreEpouxData.clausesCommunes.mandataireEpoux2, typeProcuration: value}
+                                    }
+                                  })}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="generale">Procuration générale</SelectItem>
+                                    <SelectItem value="speciale">Procuration spéciale</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Information sur les effets successoraux (OBLIGATOIRE) */}
+                      <div className="p-4 bg-amber-50 border-2 border-amber-300 rounded-lg space-y-3 mt-4">
+                        <h4 className="font-medium text-sm text-amber-900">⚖️ Information sur les effets successoraux</h4>
+                        <p className="text-xs text-amber-800">
+                          Les époux doivent être informés des limites légales de la donation, notamment en présence d'enfants non communs, 
+                          de la réserve héréditaire, et des cas de réduction possibles.
+                        </p>
+                        <div className="flex items-start space-x-2">
+                          <input
+                            type="checkbox"
+                            id="information_effets"
+                            checked={donationEntreEpouxData.clausesCommunes.informationEffetsSuccessoraux}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              clausesCommunes: {...donationEntreEpouxData.clausesCommunes, informationEffetsSuccessoraux: e.target.checked}
+                            })}
+                            className="mt-1"
+                          />
+                          <label htmlFor="information_effets" className="text-sm cursor-pointer">
+                            <span className="text-red-500 font-bold">*</span> Les époux reconnaissent avoir été pleinement informés des effets successoraux 
+                            de cette donation, des limites légales, de la réserve des enfants non communs, et de l'impact sur la succession 
+                            <span className="block mt-1 text-xs text-amber-700 font-medium">(Déclaration obligatoire)</span>
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -20156,6 +20355,59 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
                     </div>
+
+                    {/* Documents procuration (si mandataire) */}
+                    {donationEntreEpouxData.clausesCommunes.signatureMandataire === "oui" && (
+                      <div className="p-4 border-2 border-amber-300 bg-amber-50 rounded-lg space-y-4">
+                        <h4 className="font-medium text-base text-amber-900">📄 Procurations</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Procuration Époux 1 */}
+                          {donationEntreEpouxData.clausesCommunes.mandataireEpoux1.nom && (
+                            <div className="space-y-2">
+                              <Label>Procuration Époux 1 <span className="text-red-500">*</span></Label>
+                              <div className="border-2 border-dashed border-amber-400 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="donation_procuration_e1"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setDonationEpoux1IdentiteFiles(prev => [...prev, ...files]);
+                                  }}
+                                />
+                                <label htmlFor="donation_procuration_e1" className="cursor-pointer text-sm text-amber-800">
+                                  Cliquez pour joindre la procuration
+                                </label>
+                              </div>
+                            </div>
+                          )}
+                          {/* Procuration Époux 2 */}
+                          {donationEntreEpouxData.clausesCommunes.mandataireEpoux2.nom && (
+                            <div className="space-y-2">
+                              <Label>Procuration Époux 2 <span className="text-red-500">*</span></Label>
+                              <div className="border-2 border-dashed border-amber-400 rounded-lg p-3">
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  multiple
+                                  className="hidden"
+                                  id="donation_procuration_e2"
+                                  onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    setDonationEpoux2IdentiteFiles(prev => [...prev, ...files]);
+                                  }}
+                                />
+                                <label htmlFor="donation_procuration_e2" className="cursor-pointer text-sm text-amber-800">
+                                  Cliquez pour joindre la procuration
+                                </label>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                 </div>
