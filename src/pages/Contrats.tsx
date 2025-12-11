@@ -5238,10 +5238,9 @@ FIN DE LA CONVENTION
         description += `Régime matrimonial : ${testamentData.regimeMatrimonial.nature}\n`;
       }
       description += `Pièce d'identité : ${testamentData.testateurPieceType} n°${testamentData.testateurPieceNumero}\n`;
-      description += `Capacité juridique confirmée : ${testamentData.testateur.capaciteJuridiqueConfirmee ? "Oui" : "Non"}\n`;
-      if (testamentData.testateur.sousTutelleCuratelle) {
-        description += `⚠️ Sous tutelle/curatelle : ${testamentData.testateur.detailsTutelleCuratelle}\n`;
-        description += `Tuteur/Curateur : ${testamentData.testateur.coordonneesTuteurCurateur}\n`;
+      description += `Capacité juridique confirmée : ${testamentData.capaciteJuridiqueConfirmee ? "Oui" : "Non"}\n`;
+      if (testamentData.sousTutelleCuratelle) {
+        description += `⚠️ Sous tutelle/curatelle\n`;
       }
       description += `\n`;
       
@@ -5253,9 +5252,7 @@ FIN DE LA CONVENTION
         description += `\nENFANTS (${testamentData.heritiersReservataires.enfants.filter(e => e.nom).length}) :\n`;
         testamentData.heritiersReservataires.enfants.forEach((enfant, idx) => {
           if (enfant.nom) {
-            description += `${idx + 1}. ${enfant.prenom} ${enfant.nom}, né(e) le ${enfant.dateNaissance}`;
-            if (enfant.lienParente) description += ` (${enfant.lienParente})`;
-            description += `\n`;
+            description += `${idx + 1}. ${enfant.prenom} ${enfant.nom}, né(e) le ${enfant.dateNaissance}\n`;
           }
         });
       }
@@ -5264,18 +5261,18 @@ FIN DE LA CONVENTION
         description += `\nDESCENDANTS (petits-enfants) :\n`;
         testamentData.heritiersReservataires.descendants.forEach((desc, idx) => {
           if (desc.nom) {
-            description += `${idx + 1}. ${desc.prenom} ${desc.nom} - ${desc.lienParente}\n`;
+            description += `${idx + 1}. ${desc.prenom} ${desc.nom} - ${desc.lien}\n`;
           }
         });
       }
       
-      if (testamentData.heritiersReservataires.parentsVivantPere === "oui" || testamentData.heritiersReservataires.parentsVivantMere === "oui") {
+      if (testamentData.heritiersReservataires.pereVivant === "oui" || testamentData.heritiersReservataires.mereVivante === "oui") {
         description += `\nPARENTS VIVANTS :\n`;
-        if (testamentData.heritiersReservataires.parentsVivantPere === "oui") {
-          description += `Père : ${testamentData.heritiersReservataires.parentsNomPrenomPere}\n`;
+        if (testamentData.heritiersReservataires.pereVivant === "oui") {
+          description += `Père : ${testamentData.heritiersReservataires.nomPrenomPere}\n`;
         }
-        if (testamentData.heritiersReservataires.parentsVivantMere === "oui") {
-          description += `Mère : ${testamentData.heritiersReservataires.parentsNomPrenomMere}\n`;
+        if (testamentData.heritiersReservataires.mereVivante === "oui") {
+          description += `Mère : ${testamentData.heritiersReservataires.nomPrenomMere}\n`;
         }
       }
       
