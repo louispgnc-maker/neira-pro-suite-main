@@ -4754,6 +4754,10 @@ FIN DE LA CONVENTION
                 ? "Informations pour la mainlevée d'hypothèque"
                 : pendingContractType === "Contrat de mariage (régimes matrimoniaux)"
                 ? "Informations pour le contrat de mariage"
+                : pendingContractType === "PACS (convention + enregistrement)"
+                ? "Informations pour le PACS"
+                : pendingContractType === "Donation entre époux"
+                ? "Informations pour la donation entre époux"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
