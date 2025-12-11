@@ -18936,9 +18936,484 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Suite sections 5-8 à venir... */}
+                  {/* 5. Clauses de donation - Donation au dernier vivant */}
+                  {(donationEntreEpouxData.typeDonation === "au_dernier_vivant" || donationEntreEpouxData.typeDonation === "mixte") && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Clauses de donation au dernier vivant</h3>
+                      
+                      {/* Options successorales */}
+                      <div className="space-y-3">
+                        <Label className="font-medium">Options successorales offertes au conjoint survivant</Label>
+                        <div className="grid grid-cols-1 gap-2">
+                          {[
+                            { value: "pleine_propriete_quotite", label: "Pleine propriété de la quotité disponible" },
+                            { value: "usufruit_universel", label: "Usufruit universel de la succession" },
+                            { value: "quart_pleine_3quarts_usufruit", label: "1/4 en pleine propriété + 3/4 en usufruit" },
+                            { value: "choix_multiple", label: "Choix entre plusieurs options au décès" },
+                            { value: "attribution_biens_specifiques", label: "Attribution de biens spécifiques" }
+                          ].map(opt => (
+                            <div key={opt.value} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`opt_${opt.value}`}
+                                checked={donationEntreEpouxData.donationDernierVivant.optionsSuccessorales.includes(opt.value)}
+                                onChange={(e) => {
+                                  const current = donationEntreEpouxData.donationDernierVivant.optionsSuccessorales;
+                                  const newOpts = e.target.checked 
+                                    ? [...current, opt.value]
+                                    : current.filter(o => o !== opt.value);
+                                  setDonationEntreEpouxData({
+                                    ...donationEntreEpouxData,
+                                    donationDernierVivant: {...donationEntreEpouxData.donationDernierVivant, optionsSuccessorales: newOpts}
+                                  });
+                                }}
+                              />
+                              <label htmlFor={`opt_${opt.value}`} className="text-sm cursor-pointer">{opt.label}</label>
+                            </div>
+                          ))}
+                        </div>
+                        {donationEntreEpouxData.donationDernierVivant.optionsSuccessorales.includes("attribution_biens_specifiques") && (
+                          <div className="space-y-2 mt-3">
+                            <Label>Préciser les biens spécifiques</Label>
+                            <textarea
+                              className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                              value={donationEntreEpouxData.donationDernierVivant.biensSpecifiques}
+                              onChange={(e) => setDonationEntreEpouxData({
+                                ...donationEntreEpouxData,
+                                donationDernierVivant: {...donationEntreEpouxData.donationDernierVivant, biensSpecifiques: e.target.value}
+                              })}
+                              placeholder="Ex: logement familial situé à..."
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Clause d'attribution préférentielle */}
+                      <div className="space-y-3 p-4 border rounded-lg bg-muted/10">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="attr_pref_active"
+                            checked={donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.active}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              donationDernierVivant: {
+                                ...donationEntreEpouxData.donationDernierVivant,
+                                attributionPreferentielle: {...donationEntreEpouxData.donationDernierVivant.attributionPreferentielle, active: e.target.checked}
+                              }
+                            })}
+                          />
+                          <Label htmlFor="attr_pref_active" className="font-medium cursor-pointer">Clause d'attribution préférentielle</Label>
+                        </div>
+                        {donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.active && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 ml-6">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="attr_logement"
+                                checked={donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.logementFamilial}
+                                onChange={(e) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    attributionPreferentielle: {...donationEntreEpouxData.donationDernierVivant.attributionPreferentielle, logementFamilial: e.target.checked}
+                                  }
+                                })}
+                              />
+                              <label htmlFor="attr_logement" className="text-sm cursor-pointer">Logement familial</label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="attr_mobilier"
+                                checked={donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.mobilier}
+                                onChange={(e) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    attributionPreferentielle: {...donationEntreEpouxData.donationDernierVivant.attributionPreferentielle, mobilier: e.target.checked}
+                                  }
+                                })}
+                              />
+                              <label htmlFor="attr_mobilier" className="text-sm cursor-pointer">Mobilier</label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="attr_professionnel"
+                                checked={donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.bienProfessionnel}
+                                onChange={(e) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    attributionPreferentielle: {...donationEntreEpouxData.donationDernierVivant.attributionPreferentielle, bienProfessionnel: e.target.checked}
+                                  }
+                                })}
+                              />
+                              <label htmlFor="attr_professionnel" className="text-sm cursor-pointer">Bien professionnel</label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="attr_vehicule"
+                                checked={donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.vehicule}
+                                onChange={(e) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    attributionPreferentielle: {...donationEntreEpouxData.donationDernierVivant.attributionPreferentielle, vehicule: e.target.checked}
+                                  }
+                                })}
+                              />
+                              <label htmlFor="attr_vehicule" className="text-sm cursor-pointer">Véhicule</label>
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Autres biens</Label>
+                              <Input
+                                placeholder="Préciser..."
+                                value={donationEntreEpouxData.donationDernierVivant.attributionPreferentielle.autresBiens}
+                                onChange={(e) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    attributionPreferentielle: {...donationEntreEpouxData.donationDernierVivant.attributionPreferentielle, autresBiens: e.target.value}
+                                  }
+                                })}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Clause de préciput */}
+                      <div className="space-y-3 p-4 border rounded-lg bg-muted/10">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="preciput_active"
+                            checked={donationEntreEpouxData.donationDernierVivant.clausePreciput.active}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              donationDernierVivant: {
+                                ...donationEntreEpouxData.donationDernierVivant,
+                                clausePreciput: {...donationEntreEpouxData.donationDernierVivant.clausePreciput, active: e.target.checked}
+                              }
+                            })}
+                          />
+                          <Label htmlFor="preciput_active" className="font-medium cursor-pointer">Clause de préciput (prendre un bien avant tout partage)</Label>
+                        </div>
+                        {donationEntreEpouxData.donationDernierVivant.clausePreciput.active && (
+                          <div className="space-y-3 ml-6">
+                            <div className="space-y-2">
+                              <Label>Description du bien</Label>
+                              <textarea
+                                className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                                value={donationEntreEpouxData.donationDernierVivant.clausePreciput.descriptionBien}
+                                onChange={(e) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    clausePreciput: {...donationEntreEpouxData.donationDernierVivant.clausePreciput, descriptionBien: e.target.value}
+                                  }
+                                })}
+                                placeholder="Décrire le bien concerné..."
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Effet</Label>
+                              <Select
+                                value={donationEntreEpouxData.donationDernierVivant.clausePreciput.effet}
+                                onValueChange={(value) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    clausePreciput: {...donationEntreEpouxData.donationDernierVivant.clausePreciput, effet: value}
+                                  }
+                                })}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="hors_part">Hors part successorale</SelectItem>
+                                  <SelectItem value="valorise_part">Valorisé dans la part</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Clause de cantonnement */}
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="cantonnement"
+                          checked={donationEntreEpouxData.donationDernierVivant.clauseCantonnement}
+                          onChange={(e) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            donationDernierVivant: {...donationEntreEpouxData.donationDernierVivant, clauseCantonnement: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="cantonnement" className="text-sm cursor-pointer">
+                          Clause de cantonnement (permet au survivant de renoncer à une partie pour optimiser la fiscalité)
+                        </label>
+                      </div>
+
+                      {/* Clause d'exclusion */}
+                      <div className="space-y-3 p-4 border rounded-lg bg-muted/10">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="exclusion_active"
+                            checked={donationEntreEpouxData.donationDernierVivant.clauseExclusion.active}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              donationDernierVivant: {
+                                ...donationEntreEpouxData.donationDernierVivant,
+                                clauseExclusion: {...donationEntreEpouxData.donationDernierVivant.clauseExclusion, active: e.target.checked}
+                              }
+                            })}
+                          />
+                          <Label htmlFor="exclusion_active" className="font-medium cursor-pointer">Clause d'exclusion / exception</Label>
+                        </div>
+                        {donationEntreEpouxData.donationDernierVivant.clauseExclusion.active && (
+                          <div className="space-y-3 ml-6">
+                            <div className="space-y-2">
+                              <Label>Biens exclus du champ de la donation</Label>
+                              <textarea
+                                className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                                value={donationEntreEpouxData.donationDernierVivant.clauseExclusion.biensExclus}
+                                onChange={(e) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    clauseExclusion: {...donationEntreEpouxData.donationDernierVivant.clauseExclusion, biensExclus: e.target.value}
+                                  }
+                                })}
+                                placeholder="Liste des biens exclus..."
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Cas particuliers (biens professionnels, héritages...)</Label>
+                              <textarea
+                                className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                                value={donationEntreEpouxData.donationDernierVivant.clauseExclusion.casParticuliers}
+                                onChange={(e) => setDonationEntreEpouxData({
+                                  ...donationEntreEpouxData,
+                                  donationDernierVivant: {
+                                    ...donationEntreEpouxData.donationDernierVivant,
+                                    clauseExclusion: {...donationEntreEpouxData.donationDernierVivant.clauseExclusion, casParticuliers: e.target.value}
+                                  }
+                                })}
+                                placeholder="Précisions..."
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 6. Clauses de donation - Donation de biens présents */}
+                  {(donationEntreEpouxData.typeDonation === "biens_presents" || donationEntreEpouxData.typeDonation === "mixte") && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Clauses de donation de biens présents</h3>
+                      
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+                        <p className="text-sm text-orange-800">
+                          ⚠️ Prend effet immédiatement - Plus rare et très encadrée juridiquement
+                        </p>
+                      </div>
+
+                      {/* Biens donnés */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <Label className="font-medium">Biens donnés immédiatement</Label>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const newId = Math.max(...donationEntreEpouxData.donationBiensPresents.biensDonnes.map(b => b.id), 0) + 1;
+                              setDonationEntreEpouxData({
+                                ...donationEntreEpouxData,
+                                donationBiensPresents: {
+                                  ...donationEntreEpouxData.donationBiensPresents,
+                                  biensDonnes: [...donationEntreEpouxData.donationBiensPresents.biensDonnes, { id: newId, nature: "", description: "", valeur: "", regimePropriete: "" }]
+                                }
+                              });
+                            }}
+                          >
+                            + Ajouter bien
+                          </Button>
+                        </div>
+
+                        {donationEntreEpouxData.donationBiensPresents.biensDonnes.map((bien, index) => (
+                          <div key={bien.id} className="p-3 border rounded-lg bg-muted/10">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                              <Select
+                                value={bien.nature}
+                                onValueChange={(value) => {
+                                  const newBiens = [...donationEntreEpouxData.donationBiensPresents.biensDonnes];
+                                  newBiens[index].nature = value;
+                                  setDonationEntreEpouxData({
+                                    ...donationEntreEpouxData,
+                                    donationBiensPresents: {...donationEntreEpouxData.donationBiensPresents, biensDonnes: newBiens}
+                                  });
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Nature..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="immobilier">Immobilier</SelectItem>
+                                  <SelectItem value="financier">Financier</SelectItem>
+                                  <SelectItem value="meuble">Meuble</SelectItem>
+                                  <SelectItem value="entreprise">Entreprise</SelectItem>
+                                  <SelectItem value="autre">Autre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Input
+                                placeholder="Description complète"
+                                value={bien.description}
+                                onChange={(e) => {
+                                  const newBiens = [...donationEntreEpouxData.donationBiensPresents.biensDonnes];
+                                  newBiens[index].description = e.target.value;
+                                  setDonationEntreEpouxData({
+                                    ...donationEntreEpouxData,
+                                    donationBiensPresents: {...donationEntreEpouxData.donationBiensPresents, biensDonnes: newBiens}
+                                  });
+                                }}
+                              />
+                              <Input
+                                placeholder="Valeur (€)"
+                                value={bien.valeur}
+                                onChange={(e) => {
+                                  const newBiens = [...donationEntreEpouxData.donationBiensPresents.biensDonnes];
+                                  newBiens[index].valeur = e.target.value;
+                                  setDonationEntreEpouxData({
+                                    ...donationEntreEpouxData,
+                                    donationBiensPresents: {...donationEntreEpouxData.donationBiensPresents, biensDonnes: newBiens}
+                                  });
+                                }}
+                              />
+                              <div className="flex gap-2">
+                                <Select
+                                  value={bien.regimePropriete}
+                                  onValueChange={(value) => {
+                                    const newBiens = [...donationEntreEpouxData.donationBiensPresents.biensDonnes];
+                                    newBiens[index].regimePropriete = value;
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      donationBiensPresents: {...donationEntreEpouxData.donationBiensPresents, biensDonnes: newBiens}
+                                    });
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Régime..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="propre">Propre</SelectItem>
+                                    <SelectItem value="commun">Commun</SelectItem>
+                                    <SelectItem value="indivis">Indivis</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                {donationEntreEpouxData.donationBiensPresents.biensDonnes.length > 1 && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => {
+                                      setDonationEntreEpouxData({
+                                        ...donationEntreEpouxData,
+                                        donationBiensPresents: {
+                                          ...donationEntreEpouxData.donationBiensPresents,
+                                          biensDonnes: donationEntreEpouxData.donationBiensPresents.biensDonnes.filter((_, i) => i !== index)
+                                        }
+                                      });
+                                    }}
+                                  >
+                                    ✕
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Irrévocabilité */}
+                      <div className="space-y-2">
+                        <Label>Déclaration d'irrévocabilité</Label>
+                        <Select
+                          value={donationEntreEpouxData.donationBiensPresents.irrevocabilite}
+                          onValueChange={(value) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            donationBiensPresents: {...donationEntreEpouxData.donationBiensPresents, irrevocabilite: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (donation irrévocable)</SelectItem>
+                            <SelectItem value="non">Non (sauf clauses spécifiques)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Clause de retour */}
+                      <div className="space-y-2">
+                        <Label>Clause de retour en cas de prédécès</Label>
+                        <Select
+                          value={donationEntreEpouxData.donationBiensPresents.clauseRetourPredeces}
+                          onValueChange={(value) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            donationBiensPresents: {...donationEntreEpouxData.donationBiensPresents, clauseRetourPredeces: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (retour automatique)</SelectItem>
+                            <SelectItem value="non">Non (pas de retour)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Réserve d'usufruit */}
+                      <div className="space-y-3 p-4 border rounded-lg bg-muted/10">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="usufruit_active"
+                            checked={donationEntreEpouxData.donationBiensPresents.reserveUsufruit.active}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              donationBiensPresents: {
+                                ...donationEntreEpouxData.donationBiensPresents,
+                                reserveUsufruit: {...donationEntreEpouxData.donationBiensPresents.reserveUsufruit, active: e.target.checked}
+                              }
+                            })}
+                          />
+                          <Label htmlFor="usufruit_active" className="font-medium cursor-pointer">Réserve d'usufruit</Label>
+                        </div>
+                        {donationEntreEpouxData.donationBiensPresents.reserveUsufruit.active && (
+                          <div className="space-y-2 ml-6">
+                            <Label>Conditions</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={donationEntreEpouxData.donationBiensPresents.reserveUsufruit.conditions}
+                              onChange={(e) => setDonationEntreEpouxData({
+                                ...donationEntreEpouxData,
+                                donationBiensPresents: {
+                                  ...donationEntreEpouxData.donationBiensPresents,
+                                  reserveUsufruit: {...donationEntreEpouxData.donationBiensPresents.reserveUsufruit, conditions: e.target.value}
+                                }
+                              })}
+                              placeholder="Préciser les conditions de l'usufruit réservé..."
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Suite sections 7-8 à venir... */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 5 à 8 à venir
+                    ⚠️ Sections 7 et 8 à venir
                   </div>
 
                 </div>
