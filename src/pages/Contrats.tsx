@@ -376,6 +376,284 @@ export default function Contrats() {
       documentRemis: "", // carte_grise / certificat / facture / cle / autre
     },
   });
+
+  // State pour Testament (fichiers)
+  const [testamentTestrateurIdentiteFiles, setTestamentTestrateurIdentiteFiles] = useState<File[]>([]);
+  const [testamentTestrateurLivretFamilleFiles, setTestamentTestrateurLivretFamilleFiles] = useState<File[]>([]);
+  const [testamentJugementTutelleFiles, setTestamentJugementTutelleFiles] = useState<File[]>([]);
+  const [testamentTemoin1IdentiteFiles, setTestamentTemoin1IdentiteFiles] = useState<File[]>([]);
+  const [testamentTemoin2IdentiteFiles, setTestamentTemoin2IdentiteFiles] = useState<File[]>([]);
+  const [testamentTitresProperieteFiles, setTestamentTitresProperieteFiles] = useState<File[]>([]);
+  const [testamentDiagnosticsFiles, setTestamentDiagnosticsFiles] = useState<File[]>([]);
+  const [testamentRelevesComptesFiles, setTestamentRelevesComptesFiles] = useState<File[]>([]);
+  const [testamentStatutsSocieteFiles, setTestamentStatutsSocieteFiles] = useState<File[]>([]);
+  const [testamentContratMariageFiles, setTestamentContratMariageFiles] = useState<File[]>([]);
+  const [testamentTestamentMystiqueFiles, setTestamentTestamentMystiqueFiles] = useState<File[]>([]); // Le testament cacheté lui-même
+
+  // State pour Testament
+  const [testamentData, setTestamentData] = useState({
+    // 1. Informations générales
+    typeTestament: "", // authentique / mystique
+    caractereTestament: "", // initial / revocation / modification_codicille
+    dateSouhaiteeRedaction: "",
+    
+    // 2. Identité testateur
+    testateur: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      adresseComplete: "",
+      email: "",
+      telephone: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      situationFamiliale: "",
+      regimeMatrimonial: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      autoriteDelivrance: "",
+      dateExpiration: "",
+      capaciteJuridiqueConfirmee: true,
+      sousTutelleCuratelle: false,
+      detailsTutelleCuratelle: "",
+      coordonneesTuteurCurateur: "",
+    },
+    
+    // 3. Héritiers réservataires
+    heritiers: {
+      enfants: [{
+        id: 1,
+        nom: "",
+        prenom: "",
+        dateNaissance: "",
+        lienParente: "enfant",
+        autreUnion: false,
+      }],
+      descendants: [{
+        id: 1,
+        nom: "",
+        prenom: "",
+        dateNaissance: "",
+        lienParente: "", // petit-enfant de [parent]
+      }],
+      parents: {
+        pere: { vivant: false, nom: "", prenom: "" },
+        mere: { vivant: false, nom: "", prenom: "" },
+      },
+      conjoint: {
+        existe: false,
+        nom: "",
+        prenom: "",
+        dateNaissance: "",
+        regimeMatrimonial: "",
+      },
+    },
+    
+    // 4. Légataires
+    legataires: [{
+      id: 1,
+      type: "", // personne_physique / personne_morale / association
+      nom: "",
+      denomination: "",
+      adresse: "",
+      nationalite: "",
+      lienTestateur: "",
+      capaciteRecevoir: true,
+      precisionCapacite: "",
+    }],
+    
+    // 5. Dispositions testamentaires
+    dispositions: {
+      // A. Legs universel
+      legsUniversel: {
+        active: false,
+        legataire: "",
+        conditions: "",
+      },
+      
+      // B. Legs à titre universel
+      legsTitreUniversel: [{
+        id: 1,
+        type: "", // quotite_disponible / moitie / tiers / categorie_biens
+        precisionType: "",
+        legataire: "",
+        conditions: "",
+      }],
+      
+      // C. Legs particuliers
+      legsParticuliers: [{
+        id: 1,
+        typeBien: "", // immobilier / mobilier / argent / parts_sociales
+        legataire: "",
+        
+        // Si immobilier
+        bienImmobilier: {
+          adresse: "",
+          description: "",
+          cadastre: "",
+          lots: "",
+          situationLocative: "",
+          valeur: "",
+        },
+        
+        // Si mobilier
+        bienMobilier: {
+          description: "",
+          numeroSerie: "",
+          valeur: "",
+        },
+        
+        // Si argent
+        sommesArgent: {
+          montant: "",
+          provenance: "",
+        },
+        
+        // Si parts sociales
+        partsSociales: {
+          societe: "",
+          nombreParts: "",
+          pourcentage: "",
+          conditionsParticulieres: "",
+        },
+      }],
+      
+      // D. Legs avec charge
+      legsAvecCharge: [{
+        id: 1,
+        description: "",
+        obligationFaire: "",
+        obligationNePasFaire: "",
+        renteMontant: "",
+        obligationEntretien: "",
+        clauseAffectation: "",
+      }],
+      
+      // E. Legs usufruit/nue-propriété
+      legsUsufruitNuePropriete: [{
+        id: 1,
+        bien: "",
+        typeUsufruit: "", // viager / temporaire
+        duree: "",
+        droitRetour: false,
+        repartitionCharges: "",
+      }],
+      
+      // F. Clause droit de retour
+      clauseDroitRetour: {
+        active: false,
+        porteeRetour: "",
+        conditionsExercice: "",
+      },
+      
+      // G. Exhérédation (bloquée pour réservataires)
+      exheredation: {
+        active: false,
+        personneExhereditee: "",
+        motif: "",
+      },
+      
+      // H. Exécuteur testamentaire
+      executeurTestamentaire: {
+        designe: false,
+        nom: "",
+        prenom: "",
+        adresse: "",
+        telephone: "",
+        email: "",
+        etendueMission: "",
+        acceptation: false,
+      },
+    },
+    
+    // 6. Situation patrimoniale
+    patrimoine: {
+      biensImmobiliers: [{
+        id: 1,
+        adresse: "",
+        description: "",
+        valeur: "",
+        hypotheques: "",
+      }],
+      biensFinanciers: {
+        comptsBancaires: "",
+        assuranceVie: "",
+        portefeuilleTitres: "",
+      },
+      biensMeubles: [{
+        id: 1,
+        description: "",
+        valeur: "",
+      }],
+      partsSociales: [{
+        id: 1,
+        societe: "",
+        nombreParts: "",
+        valeur: "",
+        pactesExistants: "",
+      }],
+    },
+    
+    // 7. Régime matrimonial
+    regimeMatrimonialInfo: {
+      nature: "",
+      contratMariageExiste: false,
+      biensPropres: "",
+      biensCommuns: "",
+      clausePreciputAnterieure: false,
+    },
+    
+    // 8. Testament authentique spécifique
+    testamentAuthentique: {
+      notaireRedacteur: "",
+      presenceDeuxiemeNotaire: false,
+      deuxiemeNotaire: "",
+      presenceTemons: false,
+      temoins: [{
+        id: 1,
+        nom: "",
+        prenom: "",
+        adresse: "",
+        nationalite: "",
+        capaciteJuridique: true,
+        nonParente: true,
+      }],
+      declarationDictee: true,
+      lectureNotaire: true,
+      acceptationTestateur: true,
+    },
+    
+    // 9. Testament mystique spécifique
+    testamentMystique: {
+      testamentEcrit: false,
+      typeEcriture: "", // manuscrit / dactylographie
+      enveloppeCachetee: false,
+      declarationPresentation: "",
+      temoinsObligatoires: [{
+        id: 1,
+        nom: "",
+        prenom: "",
+        adresse: "",
+        capacite: true,
+        absenceLienParente: true,
+      }],
+      declarationNotaireReception: "",
+      mentionEtatEnveloppe: "",
+    },
+    
+    // 10. Mentions légales
+    mentionsLegales: {
+      rappelArticlesCodeCivil: true,
+      capaciteVolonteLibre: true,
+      absencePressionContrainte: true,
+      revocabilite: true,
+      dateLieu: "",
+    },
+  });
   
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
@@ -2412,6 +2690,14 @@ export default function Contrats() {
     
     // Si c'est une donation simple, ouvrir le questionnaire spécifique
     if (contractType === "Donation simple (parent → enfant, etc.)" && categoryKey === "Famille & Patrimoine") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est un testament, ouvrir le questionnaire spécifique
+    if (contractType === "Testament authentique ou mystique" && categoryKey === "Famille & Patrimoine") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -5209,6 +5495,8 @@ FIN DE LA CONVENTION
                 ? "Informations pour la donation entre époux"
                 : pendingContractType === "Donation simple (parent → enfant, etc.)"
                 ? "Informations pour la donation simple"
+                : pendingContractType === "Testament authentique ou mystique"
+                ? "Informations pour le testament"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
