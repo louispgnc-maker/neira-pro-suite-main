@@ -21219,28 +21219,21 @@ FIN DE LA CONVENTION
                             ...donationSimpleData,
                             donateur: {...donationSimpleData.donateur, situationFamiliale: e.target.value}
                           })}
-                          placeholder="Rempli automatiquement depuis la fiche client"
                           className="bg-muted/30"
                         />
                       </div>
 
-                      {donationSimpleData.donateur.situationFamiliale === "marie" && (
+                      {(donationSimpleData.donateur.situationFamiliale === "marie" || donationSimpleData.donateur.situationFamiliale === "Marié" || donationSimpleData.donateur.situationFamiliale === "marié" || donationSimpleData.donateur.situationFamiliale === "mariée" || donationSimpleData.donateur.situationFamiliale === "Mariée") && (
                         <div className="space-y-2">
                           <Label>Régime matrimonial</Label>
-                          <Select
+                          <Input
                             value={donationSimpleData.donateur.regimeMatrimonial}
-                            onValueChange={(value) => setDonationSimpleData({
+                            onChange={(e) => setDonationSimpleData({
                               ...donationSimpleData,
-                              donateur: {...donationSimpleData.donateur, regimeMatrimonial: value}
+                              donateur: {...donationSimpleData.donateur, regimeMatrimonial: e.target.value}
                             })}
-                          >
-                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="communaute">Communauté</SelectItem>
-                              <SelectItem value="separation">Séparation de biens</SelectItem>
-                              <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
-                            </SelectContent>
-                          </Select>
+                            className="bg-muted/30"
+                          />
                         </div>
                       )}
 
