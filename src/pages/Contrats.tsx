@@ -15920,9 +15920,25 @@ Bien ${idx + 1}:
                 <div className="space-y-6">
                   <div className="bg-muted/30 p-4 rounded-lg">
                     <h3 className="font-semibold text-lg mb-4">📋 Convention de PACS</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground mb-3">
                       Complétez les informations nécessaires pour la rédaction de la convention de PACS.
                     </p>
+                    <div className="bg-blue-100 border border-blue-300 rounded p-3 text-xs">
+                      <p className="font-medium text-blue-900 mb-1">📑 Sections du formulaire :</p>
+                      <div className="grid grid-cols-2 gap-1 text-blue-800">
+                        <span>1️⃣ Informations générales</span>
+                        <span>6️⃣ Clauses facultatives</span>
+                        <span>2️⃣ Adresse commune</span>
+                        <span>7️⃣ Enfants en commun</span>
+                        <span>3️⃣ Déclarations</span>
+                        <span>8️⃣ Biens préexistants</span>
+                        <span>4️⃣ Identité partenaires</span>
+                        <span>9️⃣ Droit applicable</span>
+                        <span>5️⃣ Modification PACS</span>
+                        <span className="font-bold">🔟 Uploads de documents</span>
+                      </div>
+                      <p className="mt-2 text-blue-700 font-medium">⬇️ Scrollez jusqu'en bas pour joindre les pièces justificatives</p>
+                    </div>
                   </div>
 
                   {/* 1. Informations générales */}
