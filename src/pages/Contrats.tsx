@@ -25037,9 +25037,481 @@ FIN DE LA CONVENTION
                     )}
                   </div>
 
-                  {/* Placeholder pour sections 6-11 */}
+                  {/* 6. Description du patrimoine */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Description du patrimoine du testateur</h3>
+                    
+                    {/* Biens immobiliers */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Biens immobiliers</h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setTestamentData({
+                            ...testamentData,
+                            patrimoine: {
+                              ...testamentData.patrimoine,
+                              biensImmobiliers: [...testamentData.patrimoine.biensImmobiliers, {
+                                typeBien: "", adresse: "", valeurEstimative: "", detailsProprietaire: ""
+                              }]
+                            }
+                          })}
+                        >
+                          + Ajouter un bien immobilier
+                        </Button>
+                      </div>
+
+                      {testamentData.patrimoine.biensImmobiliers.map((bien, idx) => (
+                        <div key={idx} className="p-4 border rounded-lg space-y-3 bg-orange-50/30">
+                          <div className="flex justify-between">
+                            <h5 className="font-medium">Bien immobilier {idx + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const newBiens = testamentData.patrimoine.biensImmobiliers.filter((_, i) => i !== idx);
+                                setTestamentData({
+                                  ...testamentData,
+                                  patrimoine: {...testamentData.patrimoine, biensImmobiliers: newBiens}
+                                });
+                              }}
+                            >
+                              🗑️ Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Type de bien</Label>
+                              <Input
+                                value={bien.typeBien}
+                                onChange={(e) => {
+                                  const newBiens = [...testamentData.patrimoine.biensImmobiliers];
+                                  newBiens[idx].typeBien = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                                placeholder="Appartement, maison, terrain..."
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Adresse complète</Label>
+                              <Input
+                                value={bien.adresse}
+                                onChange={(e) => {
+                                  const newBiens = [...testamentData.patrimoine.biensImmobiliers];
+                                  newBiens[idx].adresse = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Valeur estimative (€)</Label>
+                              <Input
+                                value={bien.valeurEstimative}
+                                onChange={(e) => {
+                                  const newBiens = [...testamentData.patrimoine.biensImmobiliers];
+                                  newBiens[idx].valeurEstimative = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Détails propriétaire</Label>
+                              <Input
+                                value={bien.detailsProprietaire}
+                                onChange={(e) => {
+                                  const newBiens = [...testamentData.patrimoine.biensImmobiliers];
+                                  newBiens[idx].detailsProprietaire = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                                placeholder="Propriétaire seul, indivision..."
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Avoirs financiers */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Avoirs financiers (comptes, placements)</h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setTestamentData({
+                            ...testamentData,
+                            patrimoine: {
+                              ...testamentData.patrimoine,
+                              avoirsFinanciers: [...testamentData.patrimoine.avoirsFinanciers, {
+                                typeAvoir: "", etablissement: "", montantEstimatif: ""
+                              }]
+                            }
+                          })}
+                        >
+                          + Ajouter un avoir financier
+                        </Button>
+                      </div>
+
+                      {testamentData.patrimoine.avoirsFinanciers.map((avoir, idx) => (
+                        <div key={idx} className="p-4 border rounded-lg space-y-3 bg-green-50/30">
+                          <div className="flex justify-between">
+                            <h5 className="font-medium">Avoir financier {idx + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const newAvoirs = testamentData.patrimoine.avoirsFinanciers.filter((_, i) => i !== idx);
+                                setTestamentData({
+                                  ...testamentData,
+                                  patrimoine: {...testamentData.patrimoine, avoirsFinanciers: newAvoirs}
+                                });
+                              }}
+                            >
+                              🗑️ Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                              <Label>Type d'avoir</Label>
+                              <Input
+                                value={avoir.typeAvoir}
+                                onChange={(e) => {
+                                  const newAvoirs = [...testamentData.patrimoine.avoirsFinanciers];
+                                  newAvoirs[idx].typeAvoir = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, avoirsFinanciers: newAvoirs}
+                                  });
+                                }}
+                                placeholder="Compte courant, livret, assurance-vie..."
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Établissement</Label>
+                              <Input
+                                value={avoir.etablissement}
+                                onChange={(e) => {
+                                  const newAvoirs = [...testamentData.patrimoine.avoirsFinanciers];
+                                  newAvoirs[idx].etablissement = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, avoirsFinanciers: newAvoirs}
+                                  });
+                                }}
+                                placeholder="Banque..."
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Montant estimatif (€)</Label>
+                              <Input
+                                value={avoir.montantEstimatif}
+                                onChange={(e) => {
+                                  const newAvoirs = [...testamentData.patrimoine.avoirsFinanciers];
+                                  newAvoirs[idx].montantEstimatif = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, avoirsFinanciers: newAvoirs}
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Biens meubles */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Biens meubles (véhicules, œuvres d'art, bijoux...)</h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setTestamentData({
+                            ...testamentData,
+                            patrimoine: {
+                              ...testamentData.patrimoine,
+                              biensMeubles: [...testamentData.patrimoine.biensMeubles, {
+                                description: "", valeurEstimative: ""
+                              }]
+                            }
+                          })}
+                        >
+                          + Ajouter un bien meuble
+                        </Button>
+                      </div>
+
+                      {testamentData.patrimoine.biensMeubles.map((bien, idx) => (
+                        <div key={idx} className="p-4 border rounded-lg space-y-3 bg-blue-50/30">
+                          <div className="flex justify-between">
+                            <h5 className="font-medium">Bien meuble {idx + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const newBiens = testamentData.patrimoine.biensMeubles.filter((_, i) => i !== idx);
+                                setTestamentData({
+                                  ...testamentData,
+                                  patrimoine: {...testamentData.patrimoine, biensMeubles: newBiens}
+                                });
+                              }}
+                            >
+                              🗑️ Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Description du bien</Label>
+                              <Input
+                                value={bien.description}
+                                onChange={(e) => {
+                                  const newBiens = [...testamentData.patrimoine.biensMeubles];
+                                  newBiens[idx].description = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, biensMeubles: newBiens}
+                                  });
+                                }}
+                                placeholder="Véhicule, tableau, bijou..."
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Valeur estimative (€)</Label>
+                              <Input
+                                value={bien.valeurEstimative}
+                                onChange={(e) => {
+                                  const newBiens = [...testamentData.patrimoine.biensMeubles];
+                                  newBiens[idx].valeurEstimative = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, biensMeubles: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Parts sociales */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Parts sociales / actions</h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setTestamentData({
+                            ...testamentData,
+                            patrimoine: {
+                              ...testamentData.patrimoine,
+                              partsSociales: [...testamentData.patrimoine.partsSociales, {
+                                societe: "", nombreParts: "", valeurEstimative: ""
+                              }]
+                            }
+                          })}
+                        >
+                          + Ajouter des parts sociales
+                        </Button>
+                      </div>
+
+                      {testamentData.patrimoine.partsSociales.map((parts, idx) => (
+                        <div key={idx} className="p-4 border rounded-lg space-y-3 bg-purple-50/30">
+                          <div className="flex justify-between">
+                            <h5 className="font-medium">Parts sociales {idx + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const newParts = testamentData.patrimoine.partsSociales.filter((_, i) => i !== idx);
+                                setTestamentData({
+                                  ...testamentData,
+                                  patrimoine: {...testamentData.patrimoine, partsSociales: newParts}
+                                });
+                              }}
+                            >
+                              🗑️ Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                              <Label>Société</Label>
+                              <Input
+                                value={parts.societe}
+                                onChange={(e) => {
+                                  const newParts = [...testamentData.patrimoine.partsSociales];
+                                  newParts[idx].societe = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, partsSociales: newParts}
+                                  });
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Nombre de parts</Label>
+                              <Input
+                                value={parts.nombreParts}
+                                onChange={(e) => {
+                                  const newParts = [...testamentData.patrimoine.partsSociales];
+                                  newParts[idx].nombreParts = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, partsSociales: newParts}
+                                  });
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Valeur estimative totale (€)</Label>
+                              <Input
+                                value={parts.valeurEstimative}
+                                onChange={(e) => {
+                                  const newParts = [...testamentData.patrimoine.partsSociales];
+                                  newParts[idx].valeurEstimative = e.target.value;
+                                  setTestamentData({
+                                    ...testamentData,
+                                    patrimoine: {...testamentData.patrimoine, partsSociales: newParts}
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 7. Régime matrimonial */}
+                  {testamentData.testateur.situationFamiliale.toLowerCase().includes("mari") && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Régime matrimonial et biens matrimoniaux</h3>
+                      
+                      <div className="p-4 border rounded-lg space-y-4 bg-pink-50/40">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Régime matrimonial</Label>
+                            <Input
+                              value={testamentData.regimeMatrimonial.nature}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                regimeMatrimonial: {...testamentData.regimeMatrimonial, nature: e.target.value}
+                              })}
+                              placeholder="Communauté réduite, séparation de biens..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Contrat de mariage</Label>
+                            <Select
+                              value={testamentData.regimeMatrimonial.contratMariage}
+                              onValueChange={(value) => setTestamentData({
+                                ...testamentData,
+                                regimeMatrimonial: {...testamentData.regimeMatrimonial, contratMariage: value}
+                              })}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui (contrat établi)</SelectItem>
+                                <SelectItem value="non">Non (régime légal)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Biens propres du testateur</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={testamentData.regimeMatrimonial.biensPropres}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                regimeMatrimonial: {...testamentData.regimeMatrimonial, biensPropres: e.target.value}
+                              })}
+                              placeholder="Énumération des biens propres..."
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Biens communs (si applicable)</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={testamentData.regimeMatrimonial.biensCommuns}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                regimeMatrimonial: {...testamentData.regimeMatrimonial, biensCommuns: e.target.value}
+                              })}
+                              placeholder="Énumération des biens communs..."
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="preciput"
+                                checked={testamentData.regimeMatrimonial.preciput}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  regimeMatrimonial: {...testamentData.regimeMatrimonial, preciput: e.target.checked}
+                                })}
+                              />
+                              <label htmlFor="preciput" className="text-sm cursor-pointer">
+                                Clause de préciput
+                              </label>
+                            </div>
+                            {testamentData.regimeMatrimonial.preciput && (
+                              <Input
+                                value={testamentData.regimeMatrimonial.detailsPreciput}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  regimeMatrimonial: {...testamentData.regimeMatrimonial, detailsPreciput: e.target.value}
+                                })}
+                                placeholder="Détails de la clause de préciput..."
+                                className="ml-6"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Placeholder pour sections 8-11 */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 6 à 11 à venir (patrimoine, régime matrimonial, formalités, documents)
+                    ⚠️ Sections 8 à 11 à venir (formalités authentique/mystique, mentions légales, documents)
                   </div>
 
                 </div>
