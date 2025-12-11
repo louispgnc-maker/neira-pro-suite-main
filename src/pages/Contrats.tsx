@@ -19411,9 +19411,747 @@ FIN DE LA CONVENTION
                     </div>
                   )}
 
-                  {/* Suite sections 7-8 à venir... */}
-                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 7 et 8 à venir
+                  {/* 7. Clauses communes aux deux types de donation */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Clauses communes</h3>
+                    
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <Label>Administration et gestion</Label>
+                        <textarea
+                          className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                          value={donationEntreEpouxData.clausesCommunes.administrationGestion}
+                          onChange={(e) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            clausesCommunes: {...donationEntreEpouxData.clausesCommunes, administrationGestion: e.target.value}
+                          })}
+                          placeholder="Qui gère les biens ? Usufruit, nue-propriété, pleine propriété..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Condition suspensive ou résolutoire (très rare mais nécessaire dans certains cas)</Label>
+                        <textarea
+                          className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                          value={donationEntreEpouxData.clausesCommunes.conditionSuspensiveResolutoire}
+                          onChange={(e) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            clausesCommunes: {...donationEntreEpouxData.clausesCommunes, conditionSuspensiveResolutoire: e.target.value}
+                          })}
+                          placeholder="Préciser la condition..."
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="acceptation_beneficiaire"
+                          checked={donationEntreEpouxData.clausesCommunes.acceptationBeneficiaire}
+                          onChange={(e) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            clausesCommunes: {...donationEntreEpouxData.clausesCommunes, acceptationBeneficiaire: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="acceptation_beneficiaire" className="text-sm cursor-pointer">
+                          Acceptation claire et non équivoque de l'époux bénéficiaire <span className="text-red-500">*</span> (obligatoire pour la validité)
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="renonciation_droits"
+                          checked={donationEntreEpouxData.clausesCommunes.renonciationDroitsSuccessorauxStandards}
+                          onChange={(e) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            clausesCommunes: {...donationEntreEpouxData.clausesCommunes, renonciationDroitsSuccessorauxStandards: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="renonciation_droits" className="text-sm cursor-pointer">
+                          Renonciation aux droits successoraux standards
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="non_revocation"
+                          checked={donationEntreEpouxData.clausesCommunes.clauseNonRevocation}
+                          onChange={(e) => setDonationEntreEpouxData({
+                            ...donationEntreEpouxData,
+                            clausesCommunes: {...donationEntreEpouxData.clausesCommunes, clauseNonRevocation: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="non_revocation" className="text-sm cursor-pointer">
+                          Clause de non-révocation (selon type de donation)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8. Documents à joindre / à collecter */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Documents à joindre / à collecter</h3>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-blue-800">
+                        📌 <strong>Documents obligatoires :</strong> pièces d'identité, livret de famille, acte de mariage, contrat de mariage (si existant), justificatifs de domicile
+                      </p>
+                    </div>
+
+                    {/* Documents Époux 1 */}
+                    <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
+                      <h4 className="font-medium text-base">📄 Documents Époux 1</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Pièce d'identité E1 */}
+                        <div className="space-y-2">
+                          <Label>Pièce d'identité (recto-verso) <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_e1_identite"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEpoux1IdentiteFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_e1_identite" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEpoux1IdentiteFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEpoux1IdentiteFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEpoux1IdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Livret famille E1 */}
+                        <div className="space-y-2">
+                          <Label>Livret de famille <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_e1_livret"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEpoux1LivretFamilleFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_e1_livret" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEpoux1LivretFamilleFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEpoux1LivretFamilleFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEpoux1LivretFamilleFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Acte mariage E1 */}
+                        <div className="space-y-2">
+                          <Label>Acte de mariage <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="donation_e1_mariage"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEpoux1ActeMariageFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_e1_mariage" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEpoux1ActeMariageFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEpoux1ActeMariageFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEpoux1ActeMariageFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Contrat mariage E1 */}
+                        {donationEntreEpouxData.epoux[0].existenceContratMariage === "oui" && (
+                          <div className="space-y-2">
+                            <Label>Contrat de mariage</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="donation_e1_contrat"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  setDonationEpoux1ContratMariageFiles(prev => [...prev, ...files]);
+                                }}
+                              />
+                              <label htmlFor="donation_e1_contrat" className="cursor-pointer text-sm text-muted-foreground">
+                                Cliquez pour joindre
+                              </label>
+                              {donationEpoux1ContratMariageFiles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {donationEpoux1ContratMariageFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                      <span className="truncate">{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setDonationEpoux1ContratMariageFiles(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-600 ml-2"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Justificatif domicile E1 */}
+                        <div className="space-y-2">
+                          <Label>Justificatif de domicile (&lt; 3 mois) <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_e1_domicile"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEpoux1DomicileFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_e1_domicile" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEpoux1DomicileFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEpoux1DomicileFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEpoux1DomicileFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Documents Époux 2 */}
+                    <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
+                      <h4 className="font-medium text-base">📄 Documents Époux 2</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Pièce d'identité E2 */}
+                        <div className="space-y-2">
+                          <Label>Pièce d'identité (recto-verso) <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_e2_identite"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEpoux2IdentiteFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_e2_identite" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEpoux2IdentiteFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEpoux2IdentiteFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEpoux2IdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Livret famille E2 */}
+                        <div className="space-y-2">
+                          <Label>Livret de famille <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_e2_livret"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEpoux2LivretFamilleFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_e2_livret" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEpoux2LivretFamilleFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEpoux2LivretFamilleFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEpoux2LivretFamilleFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Acte mariage E2 */}
+                        <div className="space-y-2">
+                          <Label>Acte de mariage <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="donation_e2_mariage"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEpoux2ActeMariageFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_e2_mariage" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEpoux2ActeMariageFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEpoux2ActeMariageFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEpoux2ActeMariageFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Contrat mariage E2 */}
+                        {donationEntreEpouxData.epoux[1].existenceContratMariage === "oui" && (
+                          <div className="space-y-2">
+                            <Label>Contrat de mariage</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="donation_e2_contrat"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  setDonationEpoux2ContratMariageFiles(prev => [...prev, ...files]);
+                                }}
+                              />
+                              <label htmlFor="donation_e2_contrat" className="cursor-pointer text-sm text-muted-foreground">
+                                Cliquez pour joindre
+                              </label>
+                              {donationEpoux2ContratMariageFiles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {donationEpoux2ContratMariageFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                      <span className="truncate">{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setDonationEpoux2ContratMariageFiles(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-600 ml-2"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Justificatif domicile E2 */}
+                        <div className="space-y-2">
+                          <Label>Justificatif de domicile (&lt; 3 mois) <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_e2_domicile"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEpoux2DomicileFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_e2_domicile" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEpoux2DomicileFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEpoux2DomicileFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEpoux2DomicileFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Documents pour biens immobiliers / financiers */}
+                    <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
+                      <h4 className="font-medium text-base">📄 Documents pour les biens</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Titres propriété */}
+                        <div className="space-y-2">
+                          <Label>Titres de propriété (biens immobiliers)</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="donation_titres"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationTitresProprieteBiensFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_titres" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationTitresProprieteBiensFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationTitresProprieteBiensFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationTitresProprieteBiensFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Estimations */}
+                        <div className="space-y-2">
+                          <Label>Estimations / évaluations</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="donation_estimation"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationEstimationBiensFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_estimation" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationEstimationBiensFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationEstimationBiensFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationEstimationBiensFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Hypothèques */}
+                        <div className="space-y-2">
+                          <Label>Hypothèques</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="donation_hypotheques"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationHypothequesFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_hypotheques" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationHypothequesFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationHypothequesFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationHypothequesFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Situation locative */}
+                        <div className="space-y-2">
+                          <Label>Situation locative</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="donation_locative"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationSituationLocativeFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_locative" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationSituationLocativeFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationSituationLocativeFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationSituationLocativeFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* RIB */}
+                        <div className="space-y-2">
+                          <Label>RIB (si donation financière)</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_rib"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationRIBFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_rib" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationRIBFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationRIBFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationRIBFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Carte grise */}
+                        <div className="space-y-2">
+                          <Label>Carte grise véhicule</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_carte_grise"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationCarteGriseFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_carte_grise" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationCarteGriseFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationCarteGriseFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationCarteGriseFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Autres documents */}
+                        <div className="space-y-2">
+                          <Label>Autres documents</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_autres"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationAutresDocumentsFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_autres" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationAutresDocumentsFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationAutresDocumentsFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationAutresDocumentsFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                 </div>
