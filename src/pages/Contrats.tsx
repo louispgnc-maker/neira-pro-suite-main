@@ -23493,6 +23493,387 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {/* Formulaire Testament */}
+            {pendingContractType === "Testament authentique ou mystique" && (
+              <>
+                <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                  
+                  {/* 1. Informations générales */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Informations générales sur le testament</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de testament <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={testamentData.typeTestament}
+                          onValueChange={(value) => setTestamentData({...testamentData, typeTestament: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="authentique">Testament authentique (dicté au notaire)</SelectItem>
+                            <SelectItem value="mystique">Testament mystique (cacheté et remis au notaire)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Caractère du testament <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={testamentData.caractereTestament}
+                          onValueChange={(value) => setTestamentData({...testamentData, caractereTestament: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="initial">Testament initial</SelectItem>
+                            <SelectItem value="revocation">Révocation d'un testament antérieur</SelectItem>
+                            <SelectItem value="modification_codicille">Modification / Codicille</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date souhaitée de rédaction</Label>
+                        <Input
+                          type="date"
+                          value={testamentData.dateSouhaiteeRedaction}
+                          onChange={(e) => setTestamentData({...testamentData, dateSouhaiteeRedaction: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Identité testateur */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du testateur</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Sélectionner un client (optionnel)</Label>
+                      <Select
+                        value={testamentData.testateur.clientId}
+                        onValueChange={(value) => {
+                          const client = clients.find(c => c.id === value);
+                          if (client) {
+                            // Extraire situation familiale
+                            let situationFam = "";
+                            if (typeof client.situation_familiale === "string") {
+                              situationFam = client.situation_familiale;
+                            } else if (typeof client.situation_matrimoniale === "string") {
+                              situationFam = client.situation_matrimoniale;
+                            } else if (client.situation_familiale && typeof client.situation_familiale === "object") {
+                              const sitFam = client.situation_familiale;
+                              situationFam = sitFam.situation_matrimoniale || sitFam.situation_familiale || sitFam.etat_civil || "";
+                            }
+                            
+                            // Extraire régime matrimonial
+                            let regimeMat = "";
+                            if (client.situation_familiale && typeof client.situation_familiale === "object") {
+                              regimeMat = client.situation_familiale.regime_matrimonial || "";
+                            }
+                            
+                            setTestamentData({
+                              ...testamentData,
+                              testateur: {
+                                ...testamentData.testateur,
+                                isClient: true,
+                                clientId: value,
+                                nom: client.nom || "",
+                                prenom: client.prenom || "",
+                                nomNaissance: client.nom || "",
+                                adresseComplete: client.adresse || "",
+                                telephone: client.telephone || "",
+                                email: client.email || "",
+                                dateNaissance: client.date_naissance || "",
+                                lieuNaissance: client.lieu_naissance || "",
+                                nationalite: client.nationalite || "",
+                                profession: client.profession || "",
+                                situationFamiliale: situationFam,
+                                regimeMatrimonial: regimeMat,
+                                typeIdentite: client.type_identite || "",
+                                numeroIdentite: client.numero_identite || "",
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>{c.nom} {c.prenom}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={testamentData.testateur.nom}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, nom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={testamentData.testateur.prenom}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, prenom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nom de naissance</Label>
+                        <Input
+                          value={testamentData.testateur.nomNaissance}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, nomNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={testamentData.testateur.dateNaissance}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance</Label>
+                        <Input
+                          value={testamentData.testateur.lieuNaissance}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, lieuNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nationalité</Label>
+                        <Input
+                          value={testamentData.testateur.nationalite}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, nationalite: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input
+                          value={testamentData.testateur.profession}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Situation familiale <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={testamentData.testateur.situationFamiliale}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, situationFamiliale: e.target.value}
+                          })}
+                          className="bg-muted/30"
+                        />
+                      </div>
+
+                      {(testamentData.testateur.situationFamiliale.toLowerCase().includes("mari")) && (
+                        <div className="space-y-2">
+                          <Label>Régime matrimonial</Label>
+                          <Input
+                            value={testamentData.testateur.regimeMatrimonial}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              testateur: {...testamentData.testateur, regimeMatrimonial: e.target.value}
+                            })}
+                            className="bg-muted/30"
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={testamentData.testateur.adresseComplete}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, adresseComplete: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input
+                          value={testamentData.testateur.telephone}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, telephone: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input
+                          type="email"
+                          value={testamentData.testateur.email}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, email: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Pièce d'identité */}
+                    <div className="p-4 border rounded-lg space-y-3 bg-blue-50/30">
+                      <h4 className="font-medium">Pièce d'identité</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Type</Label>
+                          <Select
+                            value={testamentData.testateur.typeIdentite}
+                            onValueChange={(value) => setTestamentData({
+                              ...testamentData,
+                              testateur: {...testamentData.testateur, typeIdentite: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="CNI">Carte Nationale d'Identité</SelectItem>
+                              <SelectItem value="Passeport">Passeport</SelectItem>
+                              <SelectItem value="Titre_sejour">Titre de séjour</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Numéro</Label>
+                          <Input
+                            value={testamentData.testateur.numeroIdentite}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              testateur: {...testamentData.testateur, numeroIdentite: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Autorité de délivrance</Label>
+                          <Input
+                            value={testamentData.testateur.autoriteDelivrance}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              testateur: {...testamentData.testateur, autoriteDelivrance: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Date d'expiration</Label>
+                          <Input
+                            type="date"
+                            value={testamentData.testateur.dateExpiration}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              testateur: {...testamentData.testateur, dateExpiration: e.target.value}
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Capacité juridique */}
+                    <div className="p-4 border rounded-lg space-y-3 bg-amber-50 border-amber-200">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="capacite_juridique"
+                          checked={testamentData.testateur.capaciteJuridiqueConfirmee}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, capaciteJuridiqueConfirmee: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="capacite_juridique" className="text-sm cursor-pointer">
+                          <span className="text-red-500 font-bold">*</span> Capacité juridique confirmée
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="tutelle_curatelle"
+                          checked={testamentData.testateur.sousTutelleCuratelle}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            testateur: {...testamentData.testateur, sousTutelleCuratelle: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="tutelle_curatelle" className="text-sm cursor-pointer">
+                          Sous tutelle / curatelle
+                        </label>
+                      </div>
+
+                      {testamentData.testateur.sousTutelleCuratelle && (
+                        <div className="space-y-3 ml-6 p-3 bg-white rounded-lg">
+                          <div className="space-y-2">
+                            <Label>Détails tutelle/curatelle <span className="text-red-500">*</span></Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={testamentData.testateur.detailsTutelleCuratelle}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                testateur: {...testamentData.testateur, detailsTutelleCuratelle: e.target.value}
+                              })}
+                              placeholder="Détails du jugement..."
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Coordonnées tuteur/curateur <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={testamentData.testateur.coordonneesTuteurCurateur}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                testateur: {...testamentData.testateur, coordonneesTuteurCurateur: e.target.value}
+                              })}
+                              placeholder="Nom, adresse, téléphone..."
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Placeholder pour sections 3-11 */}
+                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+                    ⚠️ Sections 3 à 11 à venir (héritiers, légataires, dispositions, patrimoine, formalités, documents)
+                  </div>
+
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
