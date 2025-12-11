@@ -1587,12 +1587,13 @@ export default function Contrats() {
       clauseNonRevocation: false,
       // Révocabilité de la donation
       revocabilite: "revocable", // revocable / irrevocable
+      motifsRevocation: [], // survenance_enfants / ingratitude / non_execution / revocation_libre
       // Mandataire éventuel
       signatureMandataire: "non", // oui / non
       mandataireEpoux1: {
         nom: "",
         prenom: "",
-        typeProcuration: "", // generale / speciale
+        typeProcuration: "", // sous_seing_prive / acte_notarie
       },
       mandataireEpoux2: {
         nom: "",
@@ -19507,31 +19508,128 @@ FIN DE LA CONVENTION
                         </label>
                       </div>
 
-                      {/* Révocabilité */}
-                      <div className="space-y-2 pt-2">
-                        <Label>Révocabilité de la donation</Label>
-                        <Select
-                          value={donationEntreEpouxData.clausesCommunes.revocabilite}
-                          onValueChange={(value) => setDonationEntreEpouxData({
-                            ...donationEntreEpouxData,
-                            clausesCommunes: {...donationEntreEpouxData.clausesCommunes, revocabilite: value}
-                          })}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Sélectionner" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="revocable">Révocable (par défaut)</SelectItem>
-                            <SelectItem value="irrevocable">Irrévocable (rare)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <p className="text-xs text-muted-foreground">
-                          Les donations entre époux sont par défaut révocables, sauf clause contraire
+                      {/* Révocabilité - Section complète obligatoire */}
+                      <div className="space-y-3 pt-3 mt-3 border-t-2 border-blue-200 bg-blue-50/30 p-4 rounded-lg">
+                        <h4 className="font-medium text-base text-blue-900">🔄 Régime de révocabilité de la donation</h4>
+                        <p className="text-xs text-blue-700">
+                          La donation entre époux est toujours révocable par défaut, sauf clause contraire explicite.
                         </p>
+                        
+                        <div className="space-y-2">
+                          <Label>Révocabilité <span className="text-red-500">*</span></Label>
+                          <Select
+                            value={donationEntreEpouxData.clausesCommunes.revocabilite}
+                            onValueChange={(value) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              clausesCommunes: {...donationEntreEpouxData.clausesCommunes, revocabilite: value}
+                            })}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="revocable">Donation révocable (règle légale par défaut)</SelectItem>
+                              <SelectItem value="irrevocable">Donation irrévocable (exceptionnelle – nécessite accord explicite)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {donationEntreEpouxData.clausesCommunes.revocabilite === "revocable" && (
+                          <div className="space-y-2 bg-white p-3 rounded border">
+                            <Label className="text-sm font-medium">Motifs de révocation possibles</Label>
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="motif_survenance"
+                                  checked={donationEntreEpouxData.clausesCommunes.motifsRevocation?.includes("survenance_enfants")}
+                                  onChange={(e) => {
+                                    const current = donationEntreEpouxData.clausesCommunes.motifsRevocation || [];
+                                    const updated = e.target.checked 
+                                      ? [...current, "survenance_enfants"]
+                                      : current.filter(m => m !== "survenance_enfants");
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      clausesCommunes: {...donationEntreEpouxData.clausesCommunes, motifsRevocation: updated}
+                                    });
+                                  }}
+                                />
+                                <label htmlFor="motif_survenance" className="text-sm cursor-pointer">
+                                  Survenance d'enfants
+                                </label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="motif_ingratitude"
+                                  checked={donationEntreEpouxData.clausesCommunes.motifsRevocation?.includes("ingratitude")}
+                                  onChange={(e) => {
+                                    const current = donationEntreEpouxData.clausesCommunes.motifsRevocation || [];
+                                    const updated = e.target.checked 
+                                      ? [...current, "ingratitude"]
+                                      : current.filter(m => m !== "ingratitude");
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      clausesCommunes: {...donationEntreEpouxData.clausesCommunes, motifsRevocation: updated}
+                                    });
+                                  }}
+                                />
+                                <label htmlFor="motif_ingratitude" className="text-sm cursor-pointer">
+                                  Ingratitude
+                                </label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="motif_non_execution"
+                                  checked={donationEntreEpouxData.clausesCommunes.motifsRevocation?.includes("non_execution")}
+                                  onChange={(e) => {
+                                    const current = donationEntreEpouxData.clausesCommunes.motifsRevocation || [];
+                                    const updated = e.target.checked 
+                                      ? [...current, "non_execution"]
+                                      : current.filter(m => m !== "non_execution");
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      clausesCommunes: {...donationEntreEpouxData.clausesCommunes, motifsRevocation: updated}
+                                    });
+                                  }}
+                                />
+                                <label htmlFor="motif_non_execution" className="text-sm cursor-pointer">
+                                  Non-exécution des obligations
+                                </label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="motif_revocation_libre"
+                                  checked={donationEntreEpouxData.clausesCommunes.motifsRevocation?.includes("revocation_libre")}
+                                  onChange={(e) => {
+                                    const current = donationEntreEpouxData.clausesCommunes.motifsRevocation || [];
+                                    const updated = e.target.checked 
+                                      ? [...current, "revocation_libre"]
+                                      : current.filter(m => m !== "revocation_libre");
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      clausesCommunes: {...donationEntreEpouxData.clausesCommunes, motifsRevocation: updated}
+                                    });
+                                  }}
+                                />
+                                <label htmlFor="motif_revocation_libre" className="text-sm cursor-pointer">
+                                  Révocation libre (selon option)
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Signature par mandataire */}
-                      <div className="space-y-3 pt-2 border-t">
+                      <div className="space-y-3 pt-3 mt-3 border-t-2 border-purple-200 bg-purple-50/30 p-4 rounded-lg">
+                        <h4 className="font-medium text-base text-purple-900">👤 Signature par mandataire</h4>
+                        <p className="text-xs text-purple-700">
+                          Si l'un des époux ne peut pas signer physiquement (hospitalisation, impossibilité de déplacement).
+                        </p>
+                        
                         <Label>Signature par mandataire ?</Label>
                         <Select
                           value={donationEntreEpouxData.clausesCommunes.signatureMandataire}
@@ -19584,7 +19682,7 @@ FIN DE LA CONVENTION
                                 </div>
                               </div>
                               <div className="space-y-2">
-                                <Label className="text-xs">Type de procuration</Label>
+                                <Label className="text-xs">Type de procuration <span className="text-red-500">*</span></Label>
                                 <Select
                                   value={donationEntreEpouxData.clausesCommunes.mandataireEpoux1.typeProcuration}
                                   onValueChange={(value) => setDonationEntreEpouxData({
@@ -19599,8 +19697,8 @@ FIN DE LA CONVENTION
                                     <SelectValue placeholder="Sélectionner" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="generale">Procuration générale</SelectItem>
-                                    <SelectItem value="speciale">Procuration spéciale</SelectItem>
+                                    <SelectItem value="sous_seing_prive">Procuration sous seing privé</SelectItem>
+                                    <SelectItem value="acte_notarie">Acte notarié</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -19639,7 +19737,7 @@ FIN DE LA CONVENTION
                                 </div>
                               </div>
                               <div className="space-y-2">
-                                <Label className="text-xs">Type de procuration</Label>
+                                <Label className="text-xs">Type de procuration <span className="text-red-500">*</span></Label>
                                 <Select
                                   value={donationEntreEpouxData.clausesCommunes.mandataireEpoux2.typeProcuration}
                                   onValueChange={(value) => setDonationEntreEpouxData({
@@ -19654,8 +19752,8 @@ FIN DE LA CONVENTION
                                     <SelectValue placeholder="Sélectionner" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="generale">Procuration générale</SelectItem>
-                                    <SelectItem value="speciale">Procuration spéciale</SelectItem>
+                                    <SelectItem value="sous_seing_prive">Procuration sous seing privé</SelectItem>
+                                    <SelectItem value="acte_notarie">Acte notarié</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
