@@ -454,7 +454,7 @@ export default function Contrats() {
         conditions: "",
       },
       legsParticuliers: [],
-      charges: {
+      chargesLegs: {
         actif: false,
         description: "",
       },
@@ -482,21 +482,6 @@ export default function Contrats() {
         mission: "",
       },
     },
-      legsUsufruitNuePropriete: [{
-        id: 1,
-        bien: "",
-        typeUsufruit: "", // viager / temporaire
-        duree: "",
-        droitRetour: false,
-        repartitionCharges: "",
-      }],
-      
-      // F. Clause droit de retour
-      clauseDroitRetour: {
-        active: false,
-        porteeRetour: "",
-        conditionsExercice: "",
-      },
     
     // 6. Situation patrimoniale
     patrimoine: {
