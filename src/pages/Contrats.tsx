@@ -25597,50 +25597,6 @@ FIN DE LA CONVENTION
                           </div>
                         </div>
 
-                        {/* 2e notaire */}
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="second_notaire"
-                            checked={testamentData.testamentAuthentique.presenceSecondNotaire}
-                            onChange={(e) => setTestamentData({
-                              ...testamentData,
-                              testamentAuthentique: {...testamentData.testamentAuthentique, presenceSecondNotaire: e.target.checked}
-                            })}
-                          />
-                          <label htmlFor="second_notaire" className="text-sm cursor-pointer">
-                            Présence d'un second notaire (si testateur ne peut signer)
-                          </label>
-                        </div>
-
-                        {testamentData.testamentAuthentique.presenceSecondNotaire && (
-                          <div className="ml-6 p-3 bg-white rounded-lg space-y-3">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>Nom du 2e notaire <span className="text-red-500">*</span></Label>
-                                <Input
-                                  value={testamentData.testamentAuthentique.secondNotaireNom}
-                                  onChange={(e) => setTestamentData({
-                                    ...testamentData,
-                                    testamentAuthentique: {...testamentData.testamentAuthentique, secondNotaireNom: e.target.value}
-                                  })}
-                                />
-                              </div>
-
-                              <div className="space-y-2">
-                                <Label>Office notarial <span className="text-red-500">*</span></Label>
-                                <Input
-                                  value={testamentData.testamentAuthentique.secondNotaireOffice}
-                                  onChange={(e) => setTestamentData({
-                                    ...testamentData,
-                                    testamentAuthentique: {...testamentData.testamentAuthentique, secondNotaireOffice: e.target.value}
-                                  })}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
                         {/* Modalités réception - DOIT ÊTRE EN PREMIER */}
                         <div className="space-y-3 p-3 bg-yellow-50 rounded-lg border border-yellow-300">
                           <h4 className="font-medium">Mode de réception du testament <span className="text-red-500">*</span></h4>
