@@ -2394,7 +2394,7 @@ export default function Contrats() {
     }
     
     // Si c'est une donation simple, ouvrir le questionnaire spécifique
-    if (contractType === "Donation simple" && categoryKey === "Famille & Patrimoine") {
+    if (contractType === "Donation simple (parent → enfant, etc.)" && categoryKey === "Famille & Patrimoine") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -5190,7 +5190,7 @@ FIN DE LA CONVENTION
                 ? "Informations pour le PACS"
                 : pendingContractType === "Donation entre époux"
                 ? "Informations pour la donation entre époux"
-                : pendingContractType === "Donation simple"
+                : pendingContractType === "Donation simple (parent → enfant, etc.)"
                 ? "Informations pour la donation simple"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
@@ -20952,7 +20952,7 @@ FIN DE LA CONVENTION
             )}
 
             {/* Formulaire Donation Simple */}
-            {pendingContractType === "Donation simple" && (
+            {pendingContractType === "Donation simple (parent → enfant, etc.)" && (
               <>
                 <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
                   
@@ -22758,7 +22758,7 @@ FIN DE LA CONVENTION
                   handlePacsSubmit();
                 } else if (pendingContractType === "Donation entre époux") {
                   handleDonationEntreEpouxSubmit();
-                } else if (pendingContractType === "Donation simple") {
+                } else if (pendingContractType === "Donation simple (parent → enfant, etc.)") {
                   handleDonationSimpleSubmit();
                 } else {
                   handleQuestionnaireSubmit();
