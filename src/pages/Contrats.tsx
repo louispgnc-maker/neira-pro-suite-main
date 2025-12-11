@@ -22027,9 +22027,702 @@ FIN DE LA CONVENTION
                     )}
                   </div>
 
-                  {/* Placeholder sections 6-8 */}
-                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 6 à 8 à venir (clauses optionnelles, mentions légales, documents)
+                  {/* 6. Clauses optionnelles */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Clauses optionnelles de donation</h3>
+                    
+                    {/* A. Réserve d'usufruit */}
+                    <div className="p-3 border rounded-lg space-y-3 bg-blue-50/30">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="reserve_usufruit"
+                          checked={donationSimpleData.clausesOptionnelles.reserveUsufruit}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, reserveUsufruit: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="reserve_usufruit" className="font-medium cursor-pointer">
+                          A. Réserve d'usufruit
+                        </label>
+                      </div>
+                      {donationSimpleData.clausesOptionnelles.reserveUsufruit && (
+                        <div className="space-y-2 ml-6">
+                          <div className="space-y-2">
+                            <Label>Étendue de l'usufruit</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={donationSimpleData.clausesOptionnelles.etendueUsufruit}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, etendueUsufruit: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="droit_usage_habitation"
+                              checked={donationSimpleData.clausesOptionnelles.droitUsageHabitation}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, droitUsageHabitation: e.target.checked}
+                              })}
+                            />
+                            <label htmlFor="droit_usage_habitation" className="text-sm cursor-pointer">
+                              Droit d'usage / habitation
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* B. Droit de retour conventionnel */}
+                    <div className="p-3 border rounded-lg space-y-3 bg-green-50/30">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="droit_retour_clause"
+                          checked={donationSimpleData.clausesOptionnelles.droitRetour}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, droitRetour: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="droit_retour_clause" className="font-medium cursor-pointer">
+                          B. Droit de retour conventionnel
+                        </label>
+                      </div>
+                      <p className="text-xs text-muted-foreground ml-6">
+                        Permet au donateur de récupérer le bien si le donataire décède avant lui
+                      </p>
+                      {donationSimpleData.clausesOptionnelles.droitRetour && (
+                        <div className="space-y-2 ml-6">
+                          <Label>Étendue du droit de retour</Label>
+                          <Select
+                            value={donationSimpleData.clausesOptionnelles.etendueRetour}
+                            onValueChange={(value) => setDonationSimpleData({
+                              ...donationSimpleData,
+                              clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, etendueRetour: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="totalite">Sur totalité du bien</SelectItem>
+                              <SelectItem value="part_recue">Sur part reçue seulement</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* C. Charge imposée */}
+                    <div className="p-3 border rounded-lg space-y-3 bg-orange-50/30">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="charge_imposee"
+                          checked={donationSimpleData.clausesOptionnelles.chargeImposee}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, chargeImposee: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="charge_imposee" className="font-medium cursor-pointer">
+                          C. Charge imposée au donataire
+                        </label>
+                      </div>
+                      {donationSimpleData.clausesOptionnelles.chargeImposee && (
+                        <div className="space-y-2 ml-6">
+                          <div className="space-y-2">
+                            <Label>Description complète de la charge</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={donationSimpleData.clausesOptionnelles.descriptionCharge}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, descriptionCharge: e.target.value}
+                              })}
+                              placeholder="Ex: Payer des frais, entretenir un bien, laisser l'usage au donateur..."
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Montant ou nature</Label>
+                            <Input
+                              value={donationSimpleData.clausesOptionnelles.montantNatureCharge}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, montantNatureCharge: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Conditions d'exécution</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={donationSimpleData.clausesOptionnelles.conditionsExecution}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, conditionsExecution: e.target.value}
+                              })}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* D. Affectation particulière */}
+                    <div className="p-3 border rounded-lg space-y-2 bg-purple-50/30">
+                      <label className="font-medium">D. Affectation particulière</label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="usage_professionnel"
+                          checked={donationSimpleData.clausesOptionnelles.usageProfessionnel}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, usageProfessionnel: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="usage_professionnel" className="text-sm cursor-pointer">
+                          Bien donné pour usage professionnel
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="exclusion_communaute"
+                          checked={donationSimpleData.clausesOptionnelles.exclusionCommunaute}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, exclusionCommunaute: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="exclusion_communaute" className="text-sm cursor-pointer">
+                          Exclusion de la communauté en cas de mariage du donataire
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* E. Donation rapportable */}
+                    <div className="p-3 border rounded-lg space-y-2 bg-teal-50/30">
+                      <label className="font-medium">E. Donation rapportable ou non</label>
+                      <Select
+                        value={donationSimpleData.clausesOptionnelles.donationRapportable}
+                        onValueChange={(value) => setDonationSimpleData({
+                          ...donationSimpleData,
+                          clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, donationRapportable: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="avancement_hoirie">Donation en avancement d'hoirie (rapportable)</SelectItem>
+                          <SelectItem value="hors_part">Donation hors part successorale (non rapportable)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* F. Clause d'inaliénabilité */}
+                    <div className="p-3 border rounded-lg space-y-3 bg-red-50/30">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="clause_inalienabilite"
+                          checked={donationSimpleData.clausesOptionnelles.clauseInalienabilite}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, clauseInalienabilite: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="clause_inalienabilite" className="font-medium cursor-pointer">
+                          F. Clause d'inaliénabilité (rare et encadrée)
+                        </label>
+                      </div>
+                      {donationSimpleData.clausesOptionnelles.clauseInalienabilite && (
+                        <div className="space-y-2 ml-6">
+                          <div className="space-y-2">
+                            <Label>Durée</Label>
+                            <Input
+                              value={donationSimpleData.clausesOptionnelles.dureeInalienabilite}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, dureeInalienabilite: e.target.value}
+                              })}
+                              placeholder="Ex: 10 ans"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Motif légitime <span className="text-red-500">*</span></Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={donationSimpleData.clausesOptionnelles.motifLegitime}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, motifLegitime: e.target.value}
+                              })}
+                              placeholder="Requis par la loi"
+                            />
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="autorisation_requise"
+                              checked={donationSimpleData.clausesOptionnelles.autorisationRequise}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                clausesOptionnelles: {...donationSimpleData.clausesOptionnelles, autorisationRequise: e.target.checked}
+                              })}
+                            />
+                            <label htmlFor="autorisation_requise" className="text-sm cursor-pointer">
+                              Autorisation du donateur requise pour vendre
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 7. Mentions légales obligatoires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Mentions légales obligatoires</h3>
+                    <p className="text-sm text-muted-foreground">L'acte doit impérativement contenir :</p>
+                    
+                    <div className="space-y-2 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="acceptation_expresse"
+                          checked={donationSimpleData.mentionsLegales.acceptationExpresse}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            mentionsLegales: {...donationSimpleData.mentionsLegales, acceptationExpresse: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="acceptation_expresse" className="text-sm cursor-pointer">
+                          <span className="text-red-500 font-bold">*</span> Acceptation expresse du donataire (obligatoire)
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="consentement_eclaire"
+                          checked={donationSimpleData.mentionsLegales.consentementEclaire}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            mentionsLegales: {...donationSimpleData.mentionsLegales, consentementEclaire: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="consentement_eclaire" className="text-sm cursor-pointer">
+                          <span className="text-red-500 font-bold">*</span> Consentement éclairé du donateur (obligatoire)
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="caractere_present"
+                          checked={donationSimpleData.mentionsLegales.caracterePresentIrrevocable}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            mentionsLegales: {...donationSimpleData.mentionsLegales, caracterePresentIrrevocable: e.target.checked}
+                          })}
+                          disabled
+                        />
+                        <label htmlFor="caractere_present" className="text-sm cursor-pointer text-muted-foreground">
+                          Caractère présent et irrévocable de la donation
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mention_reserve"
+                          checked={donationSimpleData.mentionsLegales.mentionReserveHereditaire}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            mentionsLegales: {...donationSimpleData.mentionsLegales, mentionReserveHereditaire: e.target.checked}
+                          })}
+                          disabled
+                        />
+                        <label htmlFor="mention_reserve" className="text-sm cursor-pointer text-muted-foreground">
+                          Mention du non-respect possible de la réserve héréditaire
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="modalites_transfert"
+                          checked={donationSimpleData.mentionsLegales.modalitesTransfertPropriete}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            mentionsLegales: {...donationSimpleData.mentionsLegales, modalitesTransfertPropriete: e.target.checked}
+                          })}
+                          disabled
+                        />
+                        <label htmlFor="modalites_transfert" className="text-sm cursor-pointer text-muted-foreground">
+                          Modalités de transfert de propriété
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="rappel_articles"
+                          checked={donationSimpleData.mentionsLegales.rappelArticlesCodeCivil}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            mentionsLegales: {...donationSimpleData.mentionsLegales, rappelArticlesCodeCivil: e.target.checked}
+                          })}
+                          disabled
+                        />
+                        <label htmlFor="rappel_articles" className="text-sm cursor-pointer text-muted-foreground">
+                          Rappel des articles du Code civil
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="obligations_fiscales"
+                          checked={donationSimpleData.mentionsLegales.obligationsFiscales}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            mentionsLegales: {...donationSimpleData.mentionsLegales, obligationsFiscales: e.target.checked}
+                          })}
+                          disabled
+                        />
+                        <label htmlFor="obligations_fiscales" className="text-sm cursor-pointer text-muted-foreground">
+                          Obligations fiscales (déclaration de don manuel ou IFI)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8. Documents obligatoires à collecter */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Documents obligatoires à collecter</h3>
+                    
+                    {/* Documents donateur */}
+                    <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
+                      <h4 className="font-medium text-base">📄 Pour le donateur</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Carte identité donateur */}
+                        <div className="space-y-2">
+                          <Label>Carte d'identité <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_simple_donateur_identite"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationSimpleDonateurIdentiteFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_simple_donateur_identite" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationSimpleDonateurIdentiteFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationSimpleDonateurIdentiteFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationSimpleDonateurIdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Livret famille */}
+                        <div className="space-y-2">
+                          <Label>Livret de famille</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_simple_donateur_livret"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationSimpleDonateurLivretFamilleFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_simple_donateur_livret" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationSimpleDonateurLivretFamilleFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationSimpleDonateurLivretFamilleFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationSimpleDonateurLivretFamilleFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Justificatif domicile donateur */}
+                        <div className="space-y-2">
+                          <Label>Justificatif de domicile <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_simple_donateur_domicile"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationSimpleDonateurDomicileFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_simple_donateur_domicile" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationSimpleDonateurDomicileFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationSimpleDonateurDomicileFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationSimpleDonateurDomicileFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Documents donataire */}
+                    <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
+                      <h4 className="font-medium text-base">📄 Pour le donataire</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Pièce identité donataire */}
+                        <div className="space-y-2">
+                          <Label>Pièce d'identité <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_simple_donataire_identite"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationSimpleDonatairePieceIdentiteFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_simple_donataire_identite" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationSimpleDonatairePieceIdentiteFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationSimpleDonatairePieceIdentiteFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationSimpleDonatairePieceIdentiteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Justificatif domicile donataire */}
+                        <div className="space-y-2">
+                          <Label>Justificatif de domicile <span className="text-red-500">*</span></Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_simple_donataire_domicile"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationSimpleDonataireDomicileFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_simple_donataire_domicile" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationSimpleDonataireDomicileFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationSimpleDonataireDomicileFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationSimpleDonataireDomicileFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Documents selon type de bien */}
+                    <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
+                      <h4 className="font-medium text-base">📄 Documents selon le type de bien</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Titre propriété */}
+                        {donationSimpleData.typeDonation === "biens_immobiliers" && (
+                          <div className="space-y-2">
+                            <Label>Titre de propriété</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                className="hidden"
+                                id="donation_simple_titre_propriete"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  setDonationSimpleTitreProprieteFiles(prev => [...prev, ...files]);
+                                }}
+                              />
+                              <label htmlFor="donation_simple_titre_propriete" className="cursor-pointer text-sm text-muted-foreground">
+                                Cliquez pour joindre
+                              </label>
+                              {donationSimpleTitreProprieteFiles.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {donationSimpleTitreProprieteFiles.map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                      <span className="truncate">{file.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setDonationSimpleTitreProprieteFiles(prev => prev.filter((_, i) => i !== idx))}
+                                        className="text-red-600 ml-2"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Évaluation bien */}
+                        <div className="space-y-2">
+                          <Label>Évaluation du bien</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              multiple
+                              className="hidden"
+                              id="donation_simple_evaluation"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationSimpleEvaluationBienFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_simple_evaluation" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre
+                            </label>
+                            {donationSimpleEvaluationBienFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationSimpleEvaluationBienFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationSimpleEvaluationBienFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Autres documents */}
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Autres documents</Label>
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+                            <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              id="donation_simple_autres"
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setDonationSimpleAutresDocumentsFiles(prev => [...prev, ...files]);
+                              }}
+                            />
+                            <label htmlFor="donation_simple_autres" className="cursor-pointer text-sm text-muted-foreground">
+                              Cliquez pour joindre (statuts société, RIB, diagnostics, etc.)
+                            </label>
+                            {donationSimpleAutresDocumentsFiles.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {donationSimpleAutresDocumentsFiles.map((file, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                                    <span className="truncate">{file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setDonationSimpleAutresDocumentsFiles(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-red-600 ml-2"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                 </div>
