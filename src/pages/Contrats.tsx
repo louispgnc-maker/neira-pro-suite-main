@@ -26047,9 +26047,400 @@ FIN DE LA CONVENTION
                     </div>
                   )}
 
-                  {/* Placeholder pour sections 10-11 */}
-                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 10 et 11 à venir (mentions légales, documents à collecter)
+                  {/* 10. Mentions légales obligatoires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Mentions légales et rappels</h3>
+                    
+                    <div className="p-4 border rounded-lg space-y-3 bg-gray-50/50">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mention_reserve"
+                          checked={testamentData.mentionsLegales.rappelReserveHereditaire}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            mentionsLegales: {...testamentData.mentionsLegales, rappelReserveHereditaire: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="mention_reserve" className="text-sm cursor-pointer">
+                          <span className="text-red-500 font-bold">*</span> Rappel de la réserve héréditaire (art. 912-916 Code civil)
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mention_quotite"
+                          checked={testamentData.mentionsLegales.rappelQuotiteDisponible}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            mentionsLegales: {...testamentData.mentionsLegales, rappelQuotiteDisponible: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="mention_quotite" className="text-sm cursor-pointer">
+                          <span className="text-red-500 font-bold">*</span> Rappel de la quotité disponible
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mention_revocabilite"
+                          checked={testamentData.mentionsLegales.revocabilite}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            mentionsLegales: {...testamentData.mentionsLegales, revocabilite: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="mention_revocabilite" className="text-sm cursor-pointer">
+                          <span className="text-red-500 font-bold">*</span> Testament révocable à tout moment (art. 895 Code civil)
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mention_indignite"
+                          checked={testamentData.mentionsLegales.indigniteSuccessorale}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            mentionsLegales: {...testamentData.mentionsLegales, indigniteSuccessorale: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="mention_indignite" className="text-sm cursor-pointer">
+                          Mention des cas d'indignité successorale (art. 726-728 Code civil)
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mention_capacite"
+                          checked={testamentData.mentionsLegales.capaciteLegataires}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            mentionsLegales: {...testamentData.mentionsLegales, capaciteLegataires: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="mention_capacite" className="text-sm cursor-pointer">
+                          Vérification capacité des légataires à recevoir
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mention_reduction"
+                          checked={testamentData.mentionsLegales.droitsReduction}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            mentionsLegales: {...testamentData.mentionsLegales, droitsReduction: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="mention_reduction" className="text-sm cursor-pointer">
+                          Mention des droits de réduction (art. 920-930 Code civil)
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mention_fiscal"
+                          checked={testamentData.mentionsLegales.regimeFiscal}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            mentionsLegales: {...testamentData.mentionsLegales, regimeFiscal: e.target.checked}
+                          })}
+                        />
+                        <label htmlFor="mention_fiscal" className="text-sm cursor-pointer">
+                          Information sur le régime fiscal des successions
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 11. Documents à collecter */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Documents obligatoires à collecter</h3>
+                    
+                    {/* Testateur */}
+                    <div className="space-y-3 p-4 border rounded-lg bg-blue-50/30">
+                      <h4 className="font-medium">Documents du testateur</h4>
+                      
+                      <div className="space-y-2">
+                        <Label>Pièce d'identité du testateur (CNI, passeport)</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentIdentiteTestateur(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentIdentiteTestateur && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentIdentiteTestateur.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentIdentiteTestateur(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Livret de famille</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentLivretFamille(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentLivretFamille && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentLivretFamille.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentLivretFamille(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Certificat de capacité juridique / jugement tutelle-curatelle (si applicable)</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentCapaciteJuridique(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentCapaciteJuridique && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentCapaciteJuridique.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentCapaciteJuridique(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Témoins */}
+                    <div className="space-y-3 p-4 border rounded-lg bg-purple-50/30">
+                      <h4 className="font-medium">Documents des témoins</h4>
+                      
+                      <div className="space-y-2">
+                        <Label>Pièces d'identité des témoins</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentIdentiteTemoins(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentIdentiteTemoins && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentIdentiteTemoins.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentIdentiteTemoins(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Justificatifs de domicile des témoins</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentDomicileTemoins(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentDomicileTemoins && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentDomicileTemoins.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentDomicileTemoins(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Attestations sur l'honneur capacité témoins</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentAttestationsTemoins(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentAttestationsTemoins && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentAttestationsTemoins.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentAttestationsTemoins(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Casiers judiciaires des témoins (extrait n°3)</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentCasiersTemoins(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentCasiersTemoins && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentCasiersTemoins.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentCasiersTemoins(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Patrimoine */}
+                    <div className="space-y-3 p-4 border rounded-lg bg-orange-50/30">
+                      <h4 className="font-medium">Documents patrimoniaux</h4>
+                      
+                      <div className="space-y-2">
+                        <Label>Titres de propriété immobiliers</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentTitresPropriete(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentTitresPropriete && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentTitresPropriete.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentTitresPropriete(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Relevés bancaires et comptes</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentRelevesBancaires(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentRelevesBancaires && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentRelevesBancaires.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentRelevesBancaires(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Contrat de mariage / régime matrimonial</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentContratMariage(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentContratMariage && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentContratMariage.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentContratMariage(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Autres justificatifs patrimoniaux</Label>
+                        <Input
+                          type="file"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setTestamentAutresJustificatifs(e.target.files[0]);
+                            }
+                          }}
+                        />
+                        {testamentAutresJustificatifs && (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <span>✓ {testamentAutresJustificatifs.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTestamentAutresJustificatifs(null)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                 </div>
