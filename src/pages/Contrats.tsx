@@ -424,116 +424,64 @@ export default function Contrats() {
     },
     
     // 3. Héritiers réservataires
-    heritiers: {
-      enfants: [{
-        id: 1,
-        nom: "",
-        prenom: "",
-        dateNaissance: "",
-        lienParente: "enfant",
-        autreUnion: false,
-      }],
-      descendants: [{
-        id: 1,
-        nom: "",
-        prenom: "",
-        dateNaissance: "",
-        lienParente: "", // petit-enfant de [parent]
-      }],
-      parents: {
-        pere: { vivant: false, nom: "", prenom: "" },
-        mere: { vivant: false, nom: "", prenom: "" },
-      },
-      conjoint: {
-        existe: false,
-        nom: "",
-        prenom: "",
-        dateNaissance: "",
-        regimeMatrimonial: "",
-      },
+    heritiersReservataires: {
+      enfants: [],
+      descendants: [],
+      parentsNomPrenomPere: "",
+      parentsNomPrenomMere: "",
+      parentsVivantPere: "",
+      parentsVivantMere: "",
+      conjointNom: "",
+      conjointPrenom: "",
+      conjointDateNaissance: "",
+      conjointDateMariage: "",
     },
     
     // 4. Légataires
-    legataires: [{
-      id: 1,
-      type: "", // personne_physique / personne_morale / association
-      nom: "",
-      denomination: "",
-      adresse: "",
-      nationalite: "",
-      lienTestateur: "",
-      capaciteRecevoir: true,
-      precisionCapacite: "",
-    }],
+    legataires: [],
     
     // 5. Dispositions testamentaires
-    dispositions: {
-      // A. Legs universel
+    dispositionsTestamentaires: {
       legsUniversel: {
-        active: false,
-        legataire: "",
+        actif: false,
+        beneficiaire: "",
         conditions: "",
       },
-      
-      // B. Legs à titre universel
-      legsTitreUniversel: [{
-        id: 1,
-        type: "", // quotite_disponible / moitie / tiers / categorie_biens
-        precisionType: "",
-        legataire: "",
+      legsTitreUniversel: {
+        actif: false,
+        quotite: "",
+        beneficiaire: "",
         conditions: "",
-      }],
-      
-      // C. Legs particuliers
-      legsParticuliers: [{
-        id: 1,
-        typeBien: "", // immobilier / mobilier / argent / parts_sociales
-        legataire: "",
-        
-        // Si immobilier
-        bienImmobilier: {
-          adresse: "",
-          description: "",
-          cadastre: "",
-          lots: "",
-          situationLocative: "",
-          valeur: "",
-        },
-        
-        // Si mobilier
-        bienMobilier: {
-          description: "",
-          numeroSerie: "",
-          valeur: "",
-        },
-        
-        // Si argent
-        sommesArgent: {
-          montant: "",
-          provenance: "",
-        },
-        
-        // Si parts sociales
-        partsSociales: {
-          societe: "",
-          nombreParts: "",
-          pourcentage: "",
-          conditionsParticulieres: "",
-        },
-      }],
-      
-      // D. Legs avec charge
-      legsAvecCharge: [{
-        id: 1,
+      },
+      legsParticuliers: [],
+      charges: {
+        actif: false,
         description: "",
-        obligationFaire: "",
-        obligationNePasFaire: "",
-        renteMontant: "",
-        obligationEntretien: "",
-        clauseAffectation: "",
-      }],
-      
-      // E. Legs usufruit/nue-propriété
+      },
+      usufruit: {
+        actif: false,
+        usufruitier: "",
+        nuProprietaire: "",
+        biensConcernes: "",
+        dureeModalites: "",
+      },
+      droitRetour: {
+        actif: false,
+        description: "",
+      },
+      exheredation: {
+        actif: false,
+        personne: "",
+        motifs: "",
+      },
+      executeurTestamentaire: {
+        actif: false,
+        nom: "",
+        prenom: "",
+        adresse: "",
+        mission: "",
+      },
+    },
       legsUsufruitNuePropriete: [{
         id: 1,
         bien: "",
@@ -549,110 +497,66 @@ export default function Contrats() {
         porteeRetour: "",
         conditionsExercice: "",
       },
-      
-      // G. Exhérédation (bloquée pour réservataires)
-      exheredation: {
-        active: false,
-        personneExhereditee: "",
-        motif: "",
-      },
-      
-      // H. Exécuteur testamentaire
-      executeurTestamentaire: {
-        designe: false,
-        nom: "",
-        prenom: "",
-        adresse: "",
-        telephone: "",
-        email: "",
-        etendueMission: "",
-        acceptation: false,
-      },
-    },
     
     // 6. Situation patrimoniale
     patrimoine: {
-      biensImmobiliers: [{
-        id: 1,
-        adresse: "",
-        description: "",
-        valeur: "",
-        hypotheques: "",
-      }],
-      biensFinanciers: {
-        comptsBancaires: "",
-        assuranceVie: "",
-        portefeuilleTitres: "",
-      },
-      biensMeubles: [{
-        id: 1,
-        description: "",
-        valeur: "",
-      }],
-      partsSociales: [{
-        id: 1,
-        societe: "",
-        nombreParts: "",
-        valeur: "",
-        pactesExistants: "",
-      }],
+      biensImmobiliers: [],
+      avoirsFinanciers: [],
+      biensMeubles: [],
+      partsSociales: [],
     },
     
     // 7. Régime matrimonial
-    regimeMatrimonialInfo: {
+    regimeMatrimonial: {
       nature: "",
-      contratMariageExiste: false,
+      contratMariage: "",
       biensPropres: "",
       biensCommuns: "",
-      clausePreciputAnterieure: false,
+      preciput: false,
+      detailsPreciput: "",
     },
     
     // 8. Testament authentique spécifique
     testamentAuthentique: {
-      notaireRedacteur: "",
-      presenceDeuxiemeNotaire: false,
-      deuxiemeNotaire: "",
-      presenceTemons: false,
-      temoins: [{
-        id: 1,
-        nom: "",
-        prenom: "",
-        adresse: "",
-        nationalite: "",
-        capaciteJuridique: true,
-        nonParente: true,
-      }],
-      declarationDictee: true,
-      lectureNotaire: true,
-      acceptationTestateur: true,
+      notaireNom: "",
+      notaireOffice: "",
+      notaireAdresse: "",
+      presenceSecondNotaire: false,
+      secondNotaireNom: "",
+      secondNotaireOffice: "",
+      temoins: [],
+      formaliteDicte: false,
+      formaliteRelu: false,
+      formaliteSigne: false,
+      formaliteRegistre: false,
     },
     
     // 9. Testament mystique spécifique
     testamentMystique: {
-      testamentEcrit: false,
-      typeEcriture: "", // manuscrit / dactylographie
-      enveloppeCachetee: false,
-      declarationPresentation: "",
-      temoinsObligatoires: [{
-        id: 1,
-        nom: "",
-        prenom: "",
-        adresse: "",
-        capacite: true,
-        absenceLienParente: true,
-      }],
-      declarationNotaireReception: "",
-      mentionEtatEnveloppe: "",
+      typeEcriture: "",
+      identiteRedacteur: "",
+      cachete: false,
+      notaireNom: "",
+      notaireOffice: "",
+      notaireAdresse: "",
+      temoins: [],
+      suscription: "",
+      inscriptionFCDDV: false,
     },
     
     // 10. Mentions légales
     mentionsLegales: {
-      rappelArticlesCodeCivil: true,
-      capaciteVolonteLibre: true,
-      absencePressionContrainte: true,
-      revocabilite: true,
-      dateLieu: "",
+      rappelReserveHereditaire: false,
+      rappelQuotiteDisponible: false,
+      revocabilite: false,
+      indigniteSuccessorale: false,
+      capaciteLegataires: false,
+      droitsReduction: false,
+      regimeFiscal: false,
     },
+      presenceDeuxiemeNotaire: false,
+      deuxiemeNotaire: "",
+      presenceTemons: false,
   });
   
   // State pour l'acte de vente
