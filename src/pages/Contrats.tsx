@@ -24240,9 +24240,292 @@ FIN DE LA CONVENTION
                     )}
                   </div>
 
-                  {/* Placeholder pour sections 4-11 */}
+                  {/* 4. Légataires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Légataires (bénéficiaires du testament)</h3>
+                    
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-muted-foreground">Personnes ou entités désignées pour recevoir des biens</p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setTestamentData({
+                          ...testamentData,
+                          legataires: [...testamentData.legataires, {
+                            typeLegataire: "personne_physique",
+                            nom: "",
+                            prenom: "",
+                            dateNaissance: "",
+                            adresse: "",
+                            lienAvecTestateur: "",
+                            denominationSociale: "",
+                            siegeSocial: "",
+                            numeroSiret: "",
+                            typeAssociation: "",
+                            objetSocial: "",
+                            capaciteJuridiqueConfirmee: false
+                          }]
+                        })}
+                      >
+                        + Ajouter un légataire
+                      </Button>
+                    </div>
+
+                    {testamentData.legataires.map((legataire, idx) => (
+                      <div key={idx} className="p-4 border-2 rounded-lg space-y-4 bg-indigo-50/40">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium text-lg">Légataire {idx + 1}</h4>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setTestamentData({
+                              ...testamentData,
+                              legataires: testamentData.legataires.filter((_, i) => i !== idx)
+                            })}
+                          >
+                            🗑️ Supprimer
+                          </Button>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Type de légataire <span className="text-red-500">*</span></Label>
+                          <Select
+                            value={legataire.typeLegataire}
+                            onValueChange={(value) => {
+                              const newLegataires = [...testamentData.legataires];
+                              newLegataires[idx].typeLegataire = value;
+                              setTestamentData({...testamentData, legataires: newLegataires});
+                            }}
+                          >
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="personne_physique">Personne physique</SelectItem>
+                              <SelectItem value="personne_morale">Personne morale (société)</SelectItem>
+                              <SelectItem value="association_fondation">Association ou fondation</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Personne physique */}
+                        {legataire.typeLegataire === "personne_physique" && (
+                          <div className="space-y-3 p-3 bg-white rounded-lg">
+                            <h5 className="font-medium text-sm">Identité de la personne physique</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Nom <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={legataire.nom}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].nom = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Prénom <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={legataire.prenom}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].prenom = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Date de naissance</Label>
+                                <Input
+                                  type="date"
+                                  value={legataire.dateNaissance}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].dateNaissance = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Lien avec le testateur</Label>
+                                <Input
+                                  value={legataire.lienAvecTestateur}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].lienAvecTestateur = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                  placeholder="Ex: ami, neveu, voisin..."
+                                />
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={legataire.adresse}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].adresse = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    id={`capacite_legataire_${idx}`}
+                                    checked={legataire.capaciteJuridiqueConfirmee}
+                                    onChange={(e) => {
+                                      const newLegataires = [...testamentData.legataires];
+                                      newLegataires[idx].capaciteJuridiqueConfirmee = e.target.checked;
+                                      setTestamentData({...testamentData, legataires: newLegataires});
+                                    }}
+                                  />
+                                  <label htmlFor={`capacite_legataire_${idx}`} className="text-sm cursor-pointer">
+                                    <span className="text-red-500 font-bold">*</span> Capacité juridique à recevoir confirmée
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Personne morale */}
+                        {legataire.typeLegataire === "personne_morale" && (
+                          <div className="space-y-3 p-3 bg-white rounded-lg">
+                            <h5 className="font-medium text-sm">Identité de la personne morale (société)</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Dénomination sociale <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={legataire.denominationSociale}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].denominationSociale = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Numéro SIRET</Label>
+                                <Input
+                                  value={legataire.numeroSiret}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].numeroSiret = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Siège social <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={legataire.siegeSocial}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].siegeSocial = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Objet social</Label>
+                                <textarea
+                                  className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                                  value={legataire.objetSocial}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].objetSocial = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                  placeholder="Description de l'activité..."
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Association / Fondation */}
+                        {legataire.typeLegataire === "association_fondation" && (
+                          <div className="space-y-3 p-3 bg-white rounded-lg">
+                            <h5 className="font-medium text-sm">Identité de l'association ou fondation</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Type <span className="text-red-500">*</span></Label>
+                                <Select
+                                  value={legataire.typeAssociation}
+                                  onValueChange={(value) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].typeAssociation = value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="association_loi_1901">Association loi 1901</SelectItem>
+                                    <SelectItem value="association_reconnue_utilite_publique">Association reconnue d'utilité publique</SelectItem>
+                                    <SelectItem value="fondation">Fondation</SelectItem>
+                                    <SelectItem value="fondation_reconnue_utilite_publique">Fondation reconnue d'utilité publique</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Dénomination <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={legataire.denominationSociale}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].denominationSociale = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Siège social <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={legataire.siegeSocial}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].siegeSocial = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Objet social</Label>
+                                <textarea
+                                  className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                                  value={legataire.objetSocial}
+                                  onChange={(e) => {
+                                    const newLegataires = [...testamentData.legataires];
+                                    newLegataires[idx].objetSocial = e.target.value;
+                                    setTestamentData({...testamentData, legataires: newLegataires});
+                                  }}
+                                  placeholder="Mission et actions de l'association/fondation..."
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Placeholder pour sections 5-11 */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 4 à 11 à venir (légataires, dispositions, patrimoine, formalités, documents)
+                    ⚠️ Sections 5 à 11 à venir (dispositions testamentaires, patrimoine, formalités, documents)
                   </div>
 
                 </div>
