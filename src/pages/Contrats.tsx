@@ -397,6 +397,11 @@ export default function Contrats() {
     typeTestament: "", // authentique / mystique
     caractereTestament: "", // initial / revocation / modification_codicille
     dateSouhaiteeRedaction: "",
+    langueComprise: "", // Langue comprise par le testateur
+    interpreteNecessaire: false,
+    interpreteNom: "",
+    interpretePrenom: "",
+    interpreteQualification: "",
     
     // 2. Identité testateur
     testateur: {
@@ -504,30 +509,73 @@ export default function Contrats() {
     
     // 8. Testament authentique spécifique
     testamentAuthentique: {
+      // Modalités de réception
+      modaliteReception: "", // "1notaire_2temoins" ou "2notaires"
+      lieuReception: "",
+      dateReception: "",
+      
+      // Notaire(s)
       notaireNom: "",
       notaireOffice: "",
       notaireAdresse: "",
       presenceSecondNotaire: false,
       secondNotaireNom: "",
       secondNotaireOffice: "",
+      secondNotaireAdresse: "",
+      
+      // Témoins (qualification complète)
       temoins: [],
+      // Pour chaque témoin: nom, prenom, dateNaissance, adresse, profession,
+      // + qualificationJuridique (non héritier, non légataire, capacité, langue, degré parenté)
+      
+      // Formalités légales
       formaliteDicte: false,
       formaliteRelu: false,
       formaliteSigne: false,
       formaliteRegistre: false,
+      declarationApprobation: false,
+      impossibiliteSigner: false,
+      motifImpossibilite: "",
+      
+      // Inscription FCDDV
+      inscriptionFCDDV: false,
+      dateInscriptionFCDDV: "",
+      notaireDepositaire: "",
     },
     
     // 9. Testament mystique spécifique
     testamentMystique: {
-      typeEcriture: "",
-      identiteRedacteur: "",
+      // Rédaction du testament
+      redactionPar: "", // "testateur" ou "tiers"
+      nomRedacteur: "", // Si rédigé par un tiers
+      typeEcriture: "", // "manuscrit" ou "dactylographie"
+      langueTestament: "",
+      nombrePages: "",
+      
+      // Présentation sous pli fermé
       cachete: false,
+      descriptionScelle: "",
+      lieuPresentation: "",
+      datePresentation: "",
+      
+      // Notaire
       notaireNom: "",
       notaireOffice: "",
       notaireAdresse: "",
+      
+      // Témoins (2 obligatoires)
       temoins: [],
-      suscription: "",
+      
+      // Acte de suscription
+      suscription: "", // Déclaration que le pli contient le testament
+      declarationContenuTestament: false,
+      dateSuscription: "",
+      lieuSuscription: "",
+      
+      // Inscription FCDDV
       inscriptionFCDDV: false,
+      dateInscriptionFCDDV: "",
+      notaireDepositaire: "",
     },
     
     // 10. Mentions légales
@@ -23410,6 +23458,70 @@ FIN DE LA CONVENTION
                           onChange={(e) => setTestamentData({...testamentData, dateSouhaiteeRedaction: e.target.value})}
                         />
                       </div>
+
+                      <div className="space-y-2">
+                        <Label>Langue comprise par le testateur <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={testamentData.langueComprise}
+                          onValueChange={(value) => setTestamentData({...testamentData, langueComprise: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="francais">Français</SelectItem>
+                            <SelectItem value="anglais">Anglais</SelectItem>
+                            <SelectItem value="espagnol">Espagnol</SelectItem>
+                            <SelectItem value="allemand">Allemand</SelectItem>
+                            <SelectItem value="italien">Italien</SelectItem>
+                            <SelectItem value="portugais">Portugais</SelectItem>
+                            <SelectItem value="arabe">Arabe</SelectItem>
+                            <SelectItem value="autre">Autre langue</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="interpreteNecessaire"
+                            checked={testamentData.interpreteNecessaire}
+                            onChange={(e) => setTestamentData({...testamentData, interpreteNecessaire: e.target.checked})}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="interpreteNecessaire" className="cursor-pointer">Recours à un interprète nécessaire</Label>
+                        </div>
+                      </div>
+
+                      {testamentData.interpreteNecessaire && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Nom de l'interprète <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={testamentData.interpreteNom}
+                              onChange={(e) => setTestamentData({...testamentData, interpreteNom: e.target.value})}
+                              placeholder="Nom"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Prénom de l'interprète <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={testamentData.interpretePrenom}
+                              onChange={(e) => setTestamentData({...testamentData, interpretePrenom: e.target.value})}
+                              placeholder="Prénom"
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Qualification de l'interprète <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={testamentData.interpreteQualification}
+                              onChange={(e) => setTestamentData({...testamentData, interpreteQualification: e.target.value})}
+                              placeholder="Ex: Interprète assermenté auprès de la Cour d'Appel de Paris"
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
