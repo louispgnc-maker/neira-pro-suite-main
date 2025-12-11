@@ -25639,7 +25639,55 @@ FIN DE LA CONVENTION
                               </div>
                             </div>
                           </div>
-                        )}
+                        </div>
+
+                        {/* Modalités réception - DOIT ÊTRE EN PREMIER */}
+                        <div className="space-y-3 p-3 bg-yellow-50 rounded-lg border border-yellow-300">
+                          <h4 className="font-medium">Mode de réception du testament <span className="text-red-500">*</span></h4>
+                          <p className="text-sm text-gray-600 mb-2">Choisissez la modalité de réception (ce choix conditionne le reste du formulaire)</p>
+                          <div className="space-y-2">
+                            <Label>Testament reçu par <span className="text-red-500">*</span></Label>
+                            <Select
+                              value={testamentData.testamentAuthentique.modaliteReception}
+                              onValueChange={(value) => setTestamentData({
+                                ...testamentData,
+                                testamentAuthentique: {...testamentData.testamentAuthentique, modaliteReception: value}
+                              })}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner le mode de réception..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1notaire_2temoins">1 notaire + 2 témoins</SelectItem>
+                                <SelectItem value="2notaires">2 notaires (sans témoins)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                            <div className="space-y-2">
+                              <Label>Lieu de réception <span className="text-red-500">*</span></Label>
+                              <Input
+                                value={testamentData.testamentAuthentique.lieuReception}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentAuthentique: {...testamentData.testamentAuthentique, lieuReception: e.target.value}
+                                })}
+                                placeholder="Ex: Office notarial, domicile du testateur..."
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Date de réception</Label>
+                              <Input
+                                type="date"
+                                value={testamentData.testamentAuthentique.dateReception}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentAuthentique: {...testamentData.testamentAuthentique, dateReception: e.target.value}
+                                })}
+                              />
+                            </div>
+                          </div>
+                        </div>
 
                         {/* Témoins (conditionnels selon modalité) */}
                         {testamentData.testamentAuthentique.modaliteReception === "1notaire_2temoins" && (
@@ -25930,65 +25978,51 @@ FIN DE LA CONVENTION
                             ))}
                           </div>
                         )}
-                                          });
-                                        }}
-                                        className="w-4 h-4"
-                                      />
-                                      <Label htmlFor={`t${idx}_langue`} className="cursor-pointer text-sm">Comprend la langue de l'acte</Label>
-                                    </div>
-                                  </div>
-                                </div>
+
+                        {/* Second notaire (conditionnel si modalité = 2 notaires) */}
+                        {testamentData.testamentAuthentique.modaliteReception === "2notaires" && (
+                          <div className="space-y-3 p-3 bg-blue-100 rounded-lg border border-blue-300">
+                            <h4 className="font-medium">Second notaire <span className="text-red-500">*</span></h4>
+                            <p className="text-sm text-gray-600">Obligatoire pour la modalité "2 notaires"</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Nom du 2ᵉ notaire <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={testamentData.testamentAuthentique.secondNotaireNom}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentAuthentique: {...testamentData.testamentAuthentique, secondNotaireNom: e.target.value}
+                                  })}
+                                  placeholder="M./Mme Nom Prénom"
+                                />
                               </div>
-                            ))}
+
+                              <div className="space-y-2">
+                                <Label>Office notarial <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={testamentData.testamentAuthentique.secondNotaireOffice}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentAuthentique: {...testamentData.testamentAuthentique, secondNotaireOffice: e.target.value}
+                                  })}
+                                  placeholder="Nom de l'office"
+                                />
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Adresse de l'office</Label>
+                                <Input
+                                  value={testamentData.testamentAuthentique.secondNotaireAdresse}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentAuthentique: {...testamentData.testamentAuthentique, secondNotaireAdresse: e.target.value}
+                                  })}
+                                  placeholder="Adresse complète"
+                                />
+                              </div>
+                            </div>
                           </div>
                         )}
-
-                        {/* Modalités réception */}
-                        <div className="space-y-3 p-3 bg-yellow-50 rounded-lg border border-yellow-300">
-                          <h4 className="font-medium">Modalités de réception <span className="text-red-500">*</span></h4>
-                          <div className="space-y-2">
-                            <Label>Mode de réception <span className="text-red-500">*</span></Label>
-                            <Select
-                              value={testamentData.testamentAuthentique.modaliteReception}
-                              onValueChange={(value) => setTestamentData({
-                                ...testamentData,
-                                testamentAuthentique: {...testamentData.testamentAuthentique, modaliteReception: value}
-                              })}
-                            >
-                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="1notaire_2temoins">1 notaire + 2 témoins</SelectItem>
-                                <SelectItem value="2notaires">2 notaires (sans témoins)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Lieu de réception <span className="text-red-500">*</span></Label>
-                              <Input
-                                value={testamentData.testamentAuthentique.lieuReception}
-                                onChange={(e) => setTestamentData({
-                                  ...testamentData,
-                                  testamentAuthentique: {...testamentData.testamentAuthentique, lieuReception: e.target.value}
-                                })}
-                                placeholder="Ex: Office notarial, domicile du testateur..."
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label>Date de réception</Label>
-                              <Input
-                                type="date"
-                                value={testamentData.testamentAuthentique.dateReception}
-                                onChange={(e) => setTestamentData({
-                                  ...testamentData,
-                                  testamentAuthentique: {...testamentData.testamentAuthentique, dateReception: e.target.value}
-                                })}
-                              />
-                            </div>
-                          </div>
-                        </div>
 
                         {/* Formalités légales */}
                         <div className="space-y-3 p-3 bg-red-50 rounded-lg border border-red-300">
