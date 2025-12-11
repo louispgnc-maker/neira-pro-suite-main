@@ -5202,7 +5202,7 @@ FIN DE LA CONVENTION
       return;
     }
     
-    if (!testamentData.testateur.nom || !testamentData.testateur.prenom) {
+    if (!testamentData.testateurNom || !testamentData.testateurPrenom) {
       toast.error("Veuillez renseigner l'identité complète du testateur");
       return;
     }
@@ -5225,19 +5225,19 @@ FIN DE LA CONVENTION
       description += `═══════════════════════════════════════════════════════════════\n`;
       description += `TESTATEUR\n`;
       description += `═══════════════════════════════════════════════════════════════\n`;
-      description += `${testamentData.testateur.prenom} ${testamentData.testateur.nom}\n`;
-      if (testamentData.testateur.nomNaissance) description += `Nom de naissance : ${testamentData.testateur.nomNaissance}\n`;
-      description += `Né(e) le ${testamentData.testateur.dateNaissance} à ${testamentData.testateur.lieuNaissance}\n`;
-      description += `Adresse : ${testamentData.testateur.adresseComplete}\n`;
-      description += `Téléphone : ${testamentData.testateur.telephone}\n`;
-      description += `Email : ${testamentData.testateur.email}\n`;
-      description += `Nationalité : ${testamentData.testateur.nationalite}\n`;
-      description += `Profession : ${testamentData.testateur.profession}\n`;
-      description += `Situation familiale : ${testamentData.testateur.situationFamiliale}\n`;
-      if (testamentData.testateur.regimeMatrimonial) {
-        description += `Régime matrimonial : ${testamentData.testateur.regimeMatrimonial}\n`;
+      description += `${testamentData.testateurPrenom} ${testamentData.testateurNom}\n`;
+      if (testamentData.testateurNomNaissance) description += `Nom de naissance : ${testamentData.testateurNomNaissance}\n`;
+      description += `Né(e) le ${testamentData.testateurDateNaissance} à ${testamentData.testateurLieuNaissance}\n`;
+      description += `Adresse : ${testamentData.testateurAdresse}\n`;
+      description += `Téléphone : ${testamentData.testateurTelephone}\n`;
+      description += `Email : ${testamentData.testateurEmail}\n`;
+      description += `Nationalité : ${testamentData.testateurNationalite}\n`;
+      description += `Profession : ${testamentData.testateurProfession}\n`;
+      description += `Situation familiale : ${testamentData.testateurSituationFamiliale}\n`;
+      if (testamentData.regimeMatrimonial.nature) {
+        description += `Régime matrimonial : ${testamentData.regimeMatrimonial.nature}\n`;
       }
-      description += `Pièce d'identité : ${testamentData.testateur.typeIdentite} n°${testamentData.testateur.numeroIdentite}\n`;
+      description += `Pièce d'identité : ${testamentData.testateurPieceType} n°${testamentData.testateurPieceNumero}\n`;
       description += `Capacité juridique confirmée : ${testamentData.testateur.capaciteJuridiqueConfirmee ? "Oui" : "Non"}\n`;
       if (testamentData.testateur.sousTutelleCuratelle) {
         description += `⚠️ Sous tutelle/curatelle : ${testamentData.testateur.detailsTutelleCuratelle}\n`;
