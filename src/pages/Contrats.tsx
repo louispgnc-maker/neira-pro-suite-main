@@ -196,6 +196,170 @@ export default function Contrats() {
   const [donationCarteGriseFiles, setDonationCarteGriseFiles] = useState<File[]>([]); // Carte grise véhicule
   const [donationAutresDocumentsFiles, setDonationAutresDocumentsFiles] = useState<File[]>([]); // Autres documents
   
+  // State pour Donation Simple (8 file types)
+  const [donationSimpleDonateurIdentiteFiles, setDonationSimpleDonateurIdentiteFiles] = useState<File[]>([]);
+  const [donationSimpleDonateurLivretFamilleFiles, setDonationSimpleDonateurLivretFamilleFiles] = useState<File[]>([]);
+  const [donationSimpleDonateurDomicileFiles, setDonationSimpleDonateurDomicileFiles] = useState<File[]>([]);
+  const [donationSimpleDonatairePieceIdentiteFiles, setDonationSimpleDonatairePieceIdentiteFiles] = useState<File[]>([]);
+  const [donationSimpleDonataireDomicileFiles, setDonationSimpleDonataireDomicileFiles] = useState<File[]>([]);
+  const [donationSimpleTitreProprieteFiles, setDonationSimpleTitreProprieteFiles] = useState<File[]>([]);
+  const [donationSimpleEvaluationBienFiles, setDonationSimpleEvaluationBienFiles] = useState<File[]>([]);
+  const [donationSimpleAutresDocumentsFiles, setDonationSimpleAutresDocumentsFiles] = useState<File[]>([]);
+
+  // State pour Donation Simple
+  const [donationSimpleData, setDonationSimpleData] = useState({
+    // 1. Type de donation
+    typeDonation: "", // biens_meubles / biens_immobiliers / sommes_argent / nue_propriete / usufruit / parts_sociales / manuelle / mixte
+    donationAvecCharges: false,
+    descriptionCharges: "",
+    donationAvecReserveUsufruit: false,
+    donationAvecDroitRetour: false,
+    donationEffetImmediat: true,
+    donationPresenteIrrevocable: true,
+    
+    // 2. Identité donateur
+    donateur: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      adresseComplete: "",
+      telephone: "",
+      email: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      etatCivil: "", // celibataire / marie / divorce / veuf
+      regimeMatrimonial: "", // communaute / separation / participation_acquets
+      situationFiscale: "",
+    },
+    
+    // 3. Identité donataire
+    donataire: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      adresseComplete: "",
+      telephone: "",
+      email: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      lienDonateur: "", // enfant / parent / frere_soeur / neveu_niece / cousin / ami / conjoint_pacse / autre
+    },
+    
+    // 4. Enfants / héritiers du donateur
+    nombreEnfants: "",
+    enfants: [{
+      id: 1,
+      nom: "",
+      prenom: "",
+      dateNaissance: "",
+    }],
+    donationHorsPartSuccessorale: false,
+    donationAvancementPart: false,
+    
+    // 5. Description des biens
+    // A. Bien immobilier
+    bienImmobilier: {
+      adresseComplete: "",
+      natureBien: "", // maison / appartement / terrain / dependances
+      designationCadastrale: "",
+      sectionCadastrale: "",
+      numeroCadastral: "",
+      contenance: "",
+      descriptionDetaille: "",
+      situationLocative: "", // libre / loue
+      valeurVenale: "",
+      existenceHypotheques: false,
+      montantHypotheques: "",
+      repartitionUsufruit: "",
+      repartitionNuePropriete: "",
+    },
+    
+    // B. Bien mobilier corporel
+    bienMobilier: {
+      descriptionPrecise: "",
+      numeroSerie: "",
+      valeurEstimee: "",
+      factureExistante: false,
+    },
+    
+    // C. Somme d'argent
+    sommesArgent: {
+      montantExact: "",
+      provenanceFonds: "",
+      modalite: "", // virement / cheque / especes
+      dateTransfert: "",
+    },
+    
+    // D. Parts sociales / actions
+    partsSociales: {
+      typeSociete: "",
+      nombreParts: "",
+      valeurUnitaire: "",
+      pourcentageCapital: "",
+      agrementObligatoire: false,
+      clausesSpecifiques: "",
+    },
+    
+    // E. Nue-propriété / Usufruit
+    nueProprieteUsufruit: {
+      valeurNuePropriete: "",
+      valeurUsufruit: "",
+      duree: "", // temporaire / viager
+      repartitionCharges: "",
+      usufruitSimultaneConjoint: false,
+    },
+    
+    // 6. Clauses optionnelles
+    clausesOptionnelles: {
+      // A. Réserve d'usufruit
+      reserveUsufruit: false,
+      etendueUsufruit: "",
+      droitUsageHabitation: false,
+      
+      // B. Droit de retour conventionnel
+      droitRetour: false,
+      etendueRetour: "", // totalite / part_recue
+      
+      // C. Charge imposée
+      chargeImposee: false,
+      descriptionCharge: "",
+      montantNatureCharge: "",
+      conditionsExecution: "",
+      
+      // D. Affectation particulière
+      usageProfessionnel: false,
+      exclusionCommunaute: false,
+      
+      // E. Donation rapportable
+      donationRapportable: "", // avancement_hoirie / hors_part
+      
+      // F. Clause d'inaliénabilité
+      clauseInalienabilite: false,
+      dureeInalienabilite: "",
+      motifLegitime: "",
+      autorisationRequise: false,
+    },
+    
+    // 7. Mentions légales
+    mentionsLegales: {
+      caracterePresentIrrevocable: true,
+      acceptationExpresse: false,
+      consentementEclaire: false,
+      mentionReserveHereditaire: true,
+      modalitesTransfertPropriete: true,
+      rappelArticlesCodeCivil: true,
+      obligationsFiscales: true,
+    },
+  });
+  
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
     // Sélection du client et son rôle
@@ -2223,6 +2387,14 @@ export default function Contrats() {
     
     // Si c'est une donation entre époux, ouvrir le questionnaire spécifique
     if (contractType === "Donation entre époux" && categoryKey === "Famille & Patrimoine") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est une donation simple, ouvrir le questionnaire spécifique
+    if (contractType === "Donation simple" && categoryKey === "Famille & Patrimoine") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -4510,6 +4682,249 @@ FIN DE LA CONVENTION
     }
   };
 
+  const handleDonationSimpleSubmit = async () => {
+    if (!user) return;
+    
+    // Validation
+    if (!donationSimpleData.typeDonation) {
+      toast.error("Veuillez sélectionner un type de donation");
+      return;
+    }
+    if (!donationSimpleData.donateur.nom || !donationSimpleData.donateur.prenom) {
+      toast.error("Veuillez renseigner le donateur");
+      return;
+    }
+    if (!donationSimpleData.donataire.nom || !donationSimpleData.donataire.prenom) {
+      toast.error("Veuillez renseigner le donataire");
+      return;
+    }
+    if (!donationSimpleData.mentionsLegales.acceptationExpresse) {
+      toast.error("L'acceptation expresse du donataire est obligatoire");
+      return;
+    }
+    if (!donationSimpleData.mentionsLegales.consentementEclaire) {
+      toast.error("Le consentement éclairé du donateur est obligatoire");
+      return;
+    }
+    
+    try {
+      // Construction de la description détaillée
+      let description = `DONATION SIMPLE\n\n`;
+      
+      // Type de donation
+      const typesLibelles: Record<string, string> = {
+        biens_meubles: "Donation simple de biens meubles",
+        biens_immobiliers: "Donation simple de biens immobiliers",
+        sommes_argent: "Donation de sommes d'argent",
+        nue_propriete: "Donation de nue-propriété",
+        usufruit: "Donation d'usufruit",
+        parts_sociales: "Donation de parts sociales / actions",
+        manuelle: "Donation manuelle",
+        mixte: "Donation mixte",
+      };
+      description += `Type : ${typesLibelles[donationSimpleData.typeDonation] || donationSimpleData.typeDonation}\n`;
+      description += `Avec charges : ${donationSimpleData.donationAvecCharges ? "Oui" : "Non"}\n`;
+      if (donationSimpleData.donationAvecCharges) {
+        description += `Charges : ${donationSimpleData.descriptionCharges}\n`;
+      }
+      description += `Avec réserve d'usufruit : ${donationSimpleData.donationAvecReserveUsufruit ? "Oui" : "Non"}\n`;
+      description += `Avec droit de retour : ${donationSimpleData.donationAvecDroitRetour ? "Oui" : "Non"}\n\n`;
+      
+      // Donateur
+      description += `DONATEUR :\n`;
+      description += `${donationSimpleData.donateur.prenom} ${donationSimpleData.donateur.nom}\n`;
+      if (donationSimpleData.donateur.nomNaissance) description += `Nom de naissance : ${donationSimpleData.donateur.nomNaissance}\n`;
+      description += `Né(e) le ${donationSimpleData.donateur.dateNaissance} à ${donationSimpleData.donateur.lieuNaissance}\n`;
+      description += `Adresse : ${donationSimpleData.donateur.adresseComplete}\n`;
+      description += `Téléphone : ${donationSimpleData.donateur.telephone}\n`;
+      description += `Email : ${donationSimpleData.donateur.email}\n`;
+      description += `Nationalité : ${donationSimpleData.donateur.nationalite}\n`;
+      description += `Profession : ${donationSimpleData.donateur.profession}\n`;
+      description += `État civil : ${donationSimpleData.donateur.etatCivil}\n`;
+      if (donationSimpleData.donateur.etatCivil === "marie") {
+        description += `Régime matrimonial : ${donationSimpleData.donateur.regimeMatrimonial}\n`;
+      }
+      if (donationSimpleData.donateur.situationFiscale) {
+        description += `Situation fiscale : ${donationSimpleData.donateur.situationFiscale}\n`;
+      }
+      description += `\n`;
+      
+      // Donataire
+      description += `DONATAIRE :\n`;
+      description += `${donationSimpleData.donataire.prenom} ${donationSimpleData.donataire.nom}\n`;
+      if (donationSimpleData.donataire.nomNaissance) description += `Nom de naissance : ${donationSimpleData.donataire.nomNaissance}\n`;
+      description += `Né(e) le ${donationSimpleData.donataire.dateNaissance} à ${donationSimpleData.donataire.lieuNaissance}\n`;
+      description += `Adresse : ${donationSimpleData.donataire.adresseComplete}\n`;
+      description += `Téléphone : ${donationSimpleData.donataire.telephone}\n`;
+      description += `Email : ${donationSimpleData.donataire.email}\n`;
+      description += `Nationalité : ${donationSimpleData.donataire.nationalite}\n`;
+      description += `Profession : ${donationSimpleData.donataire.profession}\n`;
+      description += `Lien avec le donateur : ${donationSimpleData.donataire.lienDonateur}\n`;
+      description += `\n`;
+      
+      // Enfants / héritiers
+      if (donationSimpleData.nombreEnfants) {
+        description += `ENFANTS DU DONATEUR :\n`;
+        description += `Nombre : ${donationSimpleData.nombreEnfants}\n`;
+        donationSimpleData.enfants.forEach((enfant, idx) => {
+          if (enfant.nom) {
+            description += `- ${enfant.prenom} ${enfant.nom}, né(e) le ${enfant.dateNaissance}\n`;
+          }
+        });
+        description += `Type de donation : ${donationSimpleData.donationHorsPartSuccessorale ? "Hors part successorale" : ""}${donationSimpleData.donationAvancementPart ? "En avancement de part successorale" : ""}\n`;
+        description += `\n`;
+      }
+      
+      // Description des biens selon type
+      description += `BIEN(S) DONNÉ(S) :\n`;
+      if (donationSimpleData.typeDonation === "biens_immobiliers" && donationSimpleData.bienImmobilier.adresseComplete) {
+        description += `Bien immobilier :\n`;
+        description += `Adresse : ${donationSimpleData.bienImmobilier.adresseComplete}\n`;
+        description += `Nature : ${donationSimpleData.bienImmobilier.natureBien}\n`;
+        description += `Désignation cadastrale : Section ${donationSimpleData.bienImmobilier.sectionCadastrale}, N° ${donationSimpleData.bienImmobilier.numeroCadastral}\n`;
+        description += `Contenance : ${donationSimpleData.bienImmobilier.contenance}\n`;
+        description += `Description : ${donationSimpleData.bienImmobilier.descriptionDetaille}\n`;
+        description += `Situation locative : ${donationSimpleData.bienImmobilier.situationLocative}\n`;
+        description += `Valeur vénale : ${donationSimpleData.bienImmobilier.valeurVenale} €\n`;
+        if (donationSimpleData.bienImmobilier.existenceHypotheques) {
+          description += `Hypothèques : ${donationSimpleData.bienImmobilier.montantHypotheques} €\n`;
+        }
+        if (donationSimpleData.bienImmobilier.repartitionUsufruit) {
+          description += `Usufruit : ${donationSimpleData.bienImmobilier.repartitionUsufruit}\n`;
+          description += `Nue-propriété : ${donationSimpleData.bienImmobilier.repartitionNuePropriete}\n`;
+        }
+      }
+      
+      if (donationSimpleData.typeDonation === "biens_meubles" && donationSimpleData.bienMobilier.descriptionPrecise) {
+        description += `Bien mobilier :\n`;
+        description += `Description : ${donationSimpleData.bienMobilier.descriptionPrecise}\n`;
+        if (donationSimpleData.bienMobilier.numeroSerie) description += `N° série : ${donationSimpleData.bienMobilier.numeroSerie}\n`;
+        description += `Valeur estimée : ${donationSimpleData.bienMobilier.valeurEstimee} €\n`;
+      }
+      
+      if (donationSimpleData.typeDonation === "sommes_argent" && donationSimpleData.sommesArgent.montantExact) {
+        description += `Somme d'argent :\n`;
+        description += `Montant : ${donationSimpleData.sommesArgent.montantExact} €\n`;
+        description += `Provenance : ${donationSimpleData.sommesArgent.provenanceFonds}\n`;
+        description += `Modalité : ${donationSimpleData.sommesArgent.modalite}\n`;
+        description += `Date transfert : ${donationSimpleData.sommesArgent.dateTransfert}\n`;
+      }
+      
+      if (donationSimpleData.typeDonation === "parts_sociales" && donationSimpleData.partsSociales.typeSociete) {
+        description += `Parts sociales / Actions :\n`;
+        description += `Type société : ${donationSimpleData.partsSociales.typeSociete}\n`;
+        description += `Nombre de parts : ${donationSimpleData.partsSociales.nombreParts}\n`;
+        description += `Valeur unitaire : ${donationSimpleData.partsSociales.valeurUnitaire} €\n`;
+        description += `Pourcentage du capital : ${donationSimpleData.partsSociales.pourcentageCapital}%\n`;
+        description += `Agrément obligatoire : ${donationSimpleData.partsSociales.agrementObligatoire ? "Oui" : "Non"}\n`;
+        if (donationSimpleData.partsSociales.clausesSpecifiques) {
+          description += `Clauses spécifiques : ${donationSimpleData.partsSociales.clausesSpecifiques}\n`;
+        }
+      }
+      
+      if ((donationSimpleData.typeDonation === "nue_propriete" || donationSimpleData.typeDonation === "usufruit") && donationSimpleData.nueProprieteUsufruit.valeurNuePropriete) {
+        description += `Nue-propriété / Usufruit :\n`;
+        description += `Valeur nue-propriété : ${donationSimpleData.nueProprieteUsufruit.valeurNuePropriete} €\n`;
+        description += `Valeur usufruit : ${donationSimpleData.nueProprieteUsufruit.valeurUsufruit} €\n`;
+        description += `Durée : ${donationSimpleData.nueProprieteUsufruit.duree}\n`;
+        description += `Répartition charges : ${donationSimpleData.nueProprieteUsufruit.repartitionCharges}\n`;
+      }
+      description += `\n`;
+      
+      // Clauses optionnelles
+      if (donationSimpleData.clausesOptionnelles.reserveUsufruit) {
+        description += `RÉSERVE D'USUFRUIT :\n`;
+        description += `Étendue : ${donationSimpleData.clausesOptionnelles.etendueUsufruit}\n`;
+        description += `Droit usage/habitation : ${donationSimpleData.clausesOptionnelles.droitUsageHabitation ? "Oui" : "Non"}\n\n`;
+      }
+      
+      if (donationSimpleData.clausesOptionnelles.droitRetour) {
+        description += `DROIT DE RETOUR CONVENTIONNEL :\n`;
+        description += `Étendue : ${donationSimpleData.clausesOptionnelles.etendueRetour}\n\n`;
+      }
+      
+      if (donationSimpleData.clausesOptionnelles.chargeImposee) {
+        description += `CHARGE IMPOSÉE AU DONATAIRE :\n`;
+        description += `Description : ${donationSimpleData.clausesOptionnelles.descriptionCharge}\n`;
+        description += `Montant/Nature : ${donationSimpleData.clausesOptionnelles.montantNatureCharge}\n`;
+        description += `Conditions : ${donationSimpleData.clausesOptionnelles.conditionsExecution}\n\n`;
+      }
+      
+      if (donationSimpleData.clausesOptionnelles.usageProfessionnel) {
+        description += `Bien donné pour usage professionnel\n`;
+      }
+      if (donationSimpleData.clausesOptionnelles.exclusionCommunaute) {
+        description += `Exclusion de la communauté en cas de mariage du donataire\n`;
+      }
+      if (donationSimpleData.clausesOptionnelles.donationRapportable) {
+        description += `Type de donation : ${donationSimpleData.clausesOptionnelles.donationRapportable === "avancement_hoirie" ? "En avancement d'hoirie (rapportable)" : "Hors part successorale (non rapportable)"}\n`;
+      }
+      
+      if (donationSimpleData.clausesOptionnelles.clauseInalienabilite) {
+        description += `CLAUSE D'INALIÉNABILITÉ :\n`;
+        description += `Durée : ${donationSimpleData.clausesOptionnelles.dureeInalienabilite}\n`;
+        description += `Motif légitime : ${donationSimpleData.clausesOptionnelles.motifLegitime}\n`;
+        description += `Autorisation requise : ${donationSimpleData.clausesOptionnelles.autorisationRequise ? "Oui" : "Non"}\n`;
+      }
+      
+      // Créer le contrat
+      const { data: contrat, error: contratError } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Donation simple - ${donationSimpleData.donateur.nom} → ${donationSimpleData.donataire.nom}`,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          questionnaire_data: donationSimpleData,
+        })
+        .select()
+        .single();
+      
+      if (contratError) throw contratError;
+      
+      // Upload des fichiers
+      const uploadTasks: Promise<void>[] = [];
+      
+      const uploadFiles = async (files: File[], folder: string) => {
+        for (const file of files) {
+          const uniqueName = `${Date.now()}_${file.name}`;
+          const filePath = `contrats/${contrat.id}/${folder}/${uniqueName}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('contrat-documents')
+            .upload(filePath, file);
+          
+          if (uploadError) {
+            console.error(`Erreur upload ${folder}:`, uploadError);
+          }
+        }
+      };
+      
+      if (donationSimpleDonateurIdentiteFiles.length > 0) uploadTasks.push(uploadFiles(donationSimpleDonateurIdentiteFiles, 'donateur_identite'));
+      if (donationSimpleDonateurLivretFamilleFiles.length > 0) uploadTasks.push(uploadFiles(donationSimpleDonateurLivretFamilleFiles, 'donateur_livret_famille'));
+      if (donationSimpleDonateurDomicileFiles.length > 0) uploadTasks.push(uploadFiles(donationSimpleDonateurDomicileFiles, 'donateur_domicile'));
+      if (donationSimpleDonatairePieceIdentiteFiles.length > 0) uploadTasks.push(uploadFiles(donationSimpleDonatairePieceIdentiteFiles, 'donataire_identite'));
+      if (donationSimpleDonataireDomicileFiles.length > 0) uploadTasks.push(uploadFiles(donationSimpleDonataireDomicileFiles, 'donataire_domicile'));
+      if (donationSimpleTitreProprieteFiles.length > 0) uploadTasks.push(uploadFiles(donationSimpleTitreProprieteFiles, 'titre_propriete'));
+      if (donationSimpleEvaluationBienFiles.length > 0) uploadTasks.push(uploadFiles(donationSimpleEvaluationBienFiles, 'evaluation_bien'));
+      if (donationSimpleAutresDocumentsFiles.length > 0) uploadTasks.push(uploadFiles(donationSimpleAutresDocumentsFiles, 'autres_documents'));
+      
+      await Promise.all(uploadTasks);
+      
+      // Rafraîchir la liste
+      setContrats((prev) => [contrat, ...prev]);
+      setShowQuestionDialog(false);
+      toast.success('Donation simple créée avec succès');
+      navigate(role === 'notaire' ? '/notaires/contracts' : '/avocats/contracts');
+      
+    } catch (err: unknown) {
+      console.error('Erreur création donation simple:', err);
+      toast.error('Erreur lors de la création de la donation simple');
+    }
+  };
+
   const handleDelete = async (contrat: ContratRow) => {
     if (!user) return;
     if (!confirm(`Supprimer "${contrat.name}" ?`)) return;
@@ -4775,6 +5190,8 @@ FIN DE LA CONVENTION
                 ? "Informations pour le PACS"
                 : pendingContractType === "Donation entre époux"
                 ? "Informations pour la donation entre époux"
+                : pendingContractType === "Donation simple"
+                ? "Informations pour la donation simple"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
@@ -20563,6 +20980,8 @@ FIN DE LA CONVENTION
                   handlePacsSubmit();
                 } else if (pendingContractType === "Donation entre époux") {
                   handleDonationEntreEpouxSubmit();
+                } else if (pendingContractType === "Donation simple") {
+                  handleDonationSimpleSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
