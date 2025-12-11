@@ -18599,9 +18599,346 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Suite sections 4-8 à venir... */}
+                  {/* 4. Patrimoine des époux */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Patrimoine des époux</h3>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-blue-800">
+                        ℹ️ Indispensable pour savoir ce qui peut être donné selon le régime matrimonial
+                      </p>
+                    </div>
+
+                    {/* A. Biens propres époux 1 */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="font-medium">A. Biens propres Époux 1</Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const newId = Math.max(...donationEntreEpouxData.biensPropresEpoux1.map(b => b.id), 0) + 1;
+                            setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              biensPropresEpoux1: [...donationEntreEpouxData.biensPropresEpoux1, { id: newId, type: "", description: "", valeur: "", origine: "" }]
+                            });
+                          }}
+                        >
+                          + Ajouter bien
+                        </Button>
+                      </div>
+
+                      {donationEntreEpouxData.biensPropresEpoux1.map((bien, index) => (
+                        <div key={bien.id} className="p-3 border rounded-lg bg-muted/10">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <Select
+                              value={bien.type}
+                              onValueChange={(value) => {
+                                const newBiens = [...donationEntreEpouxData.biensPropresEpoux1];
+                                newBiens[index].type = value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, biensPropresEpoux1: newBiens});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Type..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="immobilier">Immobilier</SelectItem>
+                                <SelectItem value="meuble">Meuble</SelectItem>
+                                <SelectItem value="financier">Financier</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              placeholder="Description"
+                              value={bien.description}
+                              onChange={(e) => {
+                                const newBiens = [...donationEntreEpouxData.biensPropresEpoux1];
+                                newBiens[index].description = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, biensPropresEpoux1: newBiens});
+                              }}
+                            />
+                            <Input
+                              placeholder="Valeur (€)"
+                              value={bien.valeur}
+                              onChange={(e) => {
+                                const newBiens = [...donationEntreEpouxData.biensPropresEpoux1];
+                                newBiens[index].valeur = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, biensPropresEpoux1: newBiens});
+                              }}
+                            />
+                            <div className="flex gap-2">
+                              <Select
+                                value={bien.origine}
+                                onValueChange={(value) => {
+                                  const newBiens = [...donationEntreEpouxData.biensPropresEpoux1];
+                                  newBiens[index].origine = value;
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, biensPropresEpoux1: newBiens});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Origine..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="heritage">Héritage</SelectItem>
+                                  <SelectItem value="donation">Donation</SelectItem>
+                                  <SelectItem value="achat">Achat</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {donationEntreEpouxData.biensPropresEpoux1.length > 1 && (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => {
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      biensPropresEpoux1: donationEntreEpouxData.biensPropresEpoux1.filter((_, i) => i !== index)
+                                    });
+                                  }}
+                                >
+                                  ✕
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* B. Biens propres époux 2 */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="font-medium">B. Biens propres Époux 2</Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const newId = Math.max(...donationEntreEpouxData.biensPropresEpoux2.map(b => b.id), 0) + 1;
+                            setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              biensPropresEpoux2: [...donationEntreEpouxData.biensPropresEpoux2, { id: newId, type: "", description: "", valeur: "", origine: "" }]
+                            });
+                          }}
+                        >
+                          + Ajouter bien
+                        </Button>
+                      </div>
+
+                      {donationEntreEpouxData.biensPropresEpoux2.map((bien, index) => (
+                        <div key={bien.id} className="p-3 border rounded-lg bg-muted/10">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <Select
+                              value={bien.type}
+                              onValueChange={(value) => {
+                                const newBiens = [...donationEntreEpouxData.biensPropresEpoux2];
+                                newBiens[index].type = value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, biensPropresEpoux2: newBiens});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Type..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="immobilier">Immobilier</SelectItem>
+                                <SelectItem value="meuble">Meuble</SelectItem>
+                                <SelectItem value="financier">Financier</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              placeholder="Description"
+                              value={bien.description}
+                              onChange={(e) => {
+                                const newBiens = [...donationEntreEpouxData.biensPropresEpoux2];
+                                newBiens[index].description = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, biensPropresEpoux2: newBiens});
+                              }}
+                            />
+                            <Input
+                              placeholder="Valeur (€)"
+                              value={bien.valeur}
+                              onChange={(e) => {
+                                const newBiens = [...donationEntreEpouxData.biensPropresEpoux2];
+                                newBiens[index].valeur = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, biensPropresEpoux2: newBiens});
+                              }}
+                            />
+                            <div className="flex gap-2">
+                              <Select
+                                value={bien.origine}
+                                onValueChange={(value) => {
+                                  const newBiens = [...donationEntreEpouxData.biensPropresEpoux2];
+                                  newBiens[index].origine = value;
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, biensPropresEpoux2: newBiens});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Origine..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="heritage">Héritage</SelectItem>
+                                  <SelectItem value="donation">Donation</SelectItem>
+                                  <SelectItem value="achat">Achat</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {donationEntreEpouxData.biensPropresEpoux2.length > 1 && (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => {
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      biensPropresEpoux2: donationEntreEpouxData.biensPropresEpoux2.filter((_, i) => i !== index)
+                                    });
+                                  }}
+                                >
+                                  ✕
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* C. Biens communs */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="font-medium">C. Biens communs (si régime communautaire)</Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const newId = Math.max(...donationEntreEpouxData.biensCommuns.map(b => b.id), 0) + 1;
+                            setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              biensCommuns: [...donationEntreEpouxData.biensCommuns, { id: newId, description: "", valeur: "", partEpoux1: "50", partEpoux2: "50" }]
+                            });
+                          }}
+                        >
+                          + Ajouter bien commun
+                        </Button>
+                      </div>
+
+                      {donationEntreEpouxData.biensCommuns.map((bien, index) => (
+                        <div key={bien.id} className="p-3 border rounded-lg bg-muted/10">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <Input
+                              placeholder="Description"
+                              className="md:col-span-2"
+                              value={bien.description}
+                              onChange={(e) => {
+                                const newBiens = [...donationEntreEpouxData.biensCommuns];
+                                newBiens[index].description = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, biensCommuns: newBiens});
+                              }}
+                            />
+                            <Input
+                              placeholder="Valeur (€)"
+                              value={bien.valeur}
+                              onChange={(e) => {
+                                const newBiens = [...donationEntreEpouxData.biensCommuns];
+                                newBiens[index].valeur = e.target.value;
+                                setDonationEntreEpouxData({...donationEntreEpouxData, biensCommuns: newBiens});
+                              }}
+                            />
+                            <div className="flex gap-2 items-center">
+                              <Input
+                                placeholder="Part E1 %"
+                                value={bien.partEpoux1}
+                                onChange={(e) => {
+                                  const newBiens = [...donationEntreEpouxData.biensCommuns];
+                                  newBiens[index].partEpoux1 = e.target.value;
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, biensCommuns: newBiens});
+                                }}
+                              />
+                              <span className="text-sm">/</span>
+                              <Input
+                                placeholder="Part E2 %"
+                                value={bien.partEpoux2}
+                                onChange={(e) => {
+                                  const newBiens = [...donationEntreEpouxData.biensCommuns];
+                                  newBiens[index].partEpoux2 = e.target.value;
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, biensCommuns: newBiens});
+                                }}
+                              />
+                              {donationEntreEpouxData.biensCommuns.length > 1 && (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => {
+                                    setDonationEntreEpouxData({
+                                      ...donationEntreEpouxData,
+                                      biensCommuns: donationEntreEpouxData.biensCommuns.filter((_, i) => i !== index)
+                                    });
+                                  }}
+                                >
+                                  ✕
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* D. Droits particuliers */}
+                    <div className="space-y-3">
+                      <Label className="font-medium">D. Droits éventuels sur des biens</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nue-propriété / usufruit</Label>
+                          <textarea
+                            className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                            value={donationEntreEpouxData.droitsParticuliers.nueProprieteBiens}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              droitsParticuliers: {...donationEntreEpouxData.droitsParticuliers, nueProprieteBiens: e.target.value}
+                            })}
+                            placeholder="Détails..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Usufruit sur biens</Label>
+                          <textarea
+                            className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                            value={donationEntreEpouxData.droitsParticuliers.usufruitBiens}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              droitsParticuliers: {...donationEntreEpouxData.droitsParticuliers, usufruitBiens: e.target.value}
+                            })}
+                            placeholder="Détails..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Biens indivis</Label>
+                          <textarea
+                            className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                            value={donationEntreEpouxData.droitsParticuliers.biensIndivis}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              droitsParticuliers: {...donationEntreEpouxData.droitsParticuliers, biensIndivis: e.target.value}
+                            })}
+                            placeholder="Détails..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Biens grevés d'hypothèques</Label>
+                          <textarea
+                            className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                            value={donationEntreEpouxData.droitsParticuliers.biensHypotheques}
+                            onChange={(e) => setDonationEntreEpouxData({
+                              ...donationEntreEpouxData,
+                              droitsParticuliers: {...donationEntreEpouxData.droitsParticuliers, biensHypotheques: e.target.value}
+                            })}
+                            placeholder="Détails..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Suite sections 5-8 à venir... */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 4 à 8 à venir
+                    ⚠️ Sections 5 à 8 à venir
                   </div>
 
                 </div>
