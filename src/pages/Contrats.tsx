@@ -231,7 +231,7 @@ export default function Contrats() {
       lieuNaissance: "",
       nationalite: "",
       profession: "",
-      etatCivil: "", // celibataire / marie / divorce / veuf
+      situationFamiliale: "", // celibataire / marie / divorce / veuf / pacse
       regimeMatrimonial: "", // communaute / separation / participation_acquets
       situationFiscale: "",
     },
@@ -251,6 +251,7 @@ export default function Contrats() {
       nationalite: "",
       profession: "",
       lienDonateur: "", // enfant / parent / frere_soeur / neveu_niece / cousin / ami / conjoint_pacse / autre
+      lienDonateurAutrePrecision: "", // Si lienDonateur === "autre"
     },
     
     // 4. Enfants / héritiers du donateur
@@ -357,6 +358,22 @@ export default function Contrats() {
       modalitesTransfertPropriete: true,
       rappelArticlesCodeCivil: true,
       obligationsFiscales: true,
+    },
+    
+    // 8. Acceptation du donataire
+    acceptationDonataire: {
+      dansActe: true, // true = dans l'acte, false = acte séparé
+      dateAcceptation: "",
+      lieuAcceptation: "",
+    },
+    
+    // 9. Modalités de remise du bien
+    modalitesRemise: {
+      modeRemise: "", // immediate / differee / don_manuel_deja_realise / symbolique
+      lieuRemise: "",
+      dateRemise: "",
+      personneResponsable: "",
+      documentRemis: "", // carte_grise / certificat / facture / cle / autre
     },
   });
   
@@ -4740,8 +4757,8 @@ FIN DE LA CONVENTION
       description += `Email : ${donationSimpleData.donateur.email}\n`;
       description += `Nationalité : ${donationSimpleData.donateur.nationalite}\n`;
       description += `Profession : ${donationSimpleData.donateur.profession}\n`;
-      description += `État civil : ${donationSimpleData.donateur.etatCivil}\n`;
-      if (donationSimpleData.donateur.etatCivil === "marie") {
+      description += `Situation familiale : ${donationSimpleData.donateur.situationFamiliale}\n`;
+      if (donationSimpleData.donateur.situationFamiliale === "marie") {
         description += `Régime matrimonial : ${donationSimpleData.donateur.regimeMatrimonial}\n`;
       }
       if (donationSimpleData.donateur.situationFiscale) {
@@ -21068,6 +21085,21 @@ FIN DE LA CONVENTION
                         onValueChange={(value) => {
                           const client = clients.find(c => c.id === value);
                           if (client) {
+                            // Extraire situation familiale depuis situation_familiale
+                            let situationFam = "";
+                            if (typeof client.situation_familiale === "string") {
+                              situationFam = client.situation_familiale;
+                            } else if (client.situation_familiale && typeof client.situation_familiale === "object") {
+                              // Si c'est un objet, prendre le champ principal
+                              situationFam = client.situation_matrimoniale || "";
+                            }
+                            
+                            // Extraire régime matrimonial si marié
+                            let regimeMat = "";
+                            if (client.situation_familiale && typeof client.situation_familiale === "object" && client.situation_familiale.regime_matrimonial) {
+                              regimeMat = client.situation_familiale.regime_matrimonial;
+                            }
+                            
                             setDonationSimpleData({
                               ...donationSimpleData,
                               donateur: {
@@ -21084,6 +21116,8 @@ FIN DE LA CONVENTION
                                 lieuNaissance: client.lieu_naissance || "",
                                 nationalite: client.nationalite || "",
                                 profession: client.profession || "",
+                                situationFamiliale: situationFam,
+                                regimeMatrimonial: regimeMat,
                               }
                             });
                           }
@@ -21178,25 +21212,26 @@ FIN DE LA CONVENTION
                       </div>
 
                       <div className="space-y-2">
-                        <Label>État civil <span className="text-red-500">*</span></Label>
+                        <Label>Situation familiale <span className="text-red-500">*</span></Label>
                         <Select
-                          value={donationSimpleData.donateur.etatCivil}
+                          value={donationSimpleData.donateur.situationFamiliale}
                           onValueChange={(value) => setDonationSimpleData({
                             ...donationSimpleData,
-                            donateur: {...donationSimpleData.donateur, etatCivil: value}
+                            donateur: {...donationSimpleData.donateur, situationFamiliale: value}
                           })}
                         >
                           <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="celibataire">Célibataire</SelectItem>
-                            <SelectItem value="marie">Marié</SelectItem>
-                            <SelectItem value="divorce">Divorcé</SelectItem>
-                            <SelectItem value="veuf">Veuf</SelectItem>
+                            <SelectItem value="marie">Marié(e)</SelectItem>
+                            <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                            <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                            <SelectItem value="veuf">Veuf/Veuve</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
-                      {donationSimpleData.donateur.etatCivil === "marie" && (
+                      {donationSimpleData.donateur.situationFamiliale === "marie" && (
                         <div className="space-y-2">
                           <Label>Régime matrimonial</Label>
                           <Select
@@ -21407,6 +21442,20 @@ FIN DE LA CONVENTION
                           </SelectContent>
                         </Select>
                       </div>
+
+                      {donationSimpleData.donataire.lienDonateur === "autre" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Précisez le lien <span className="text-red-500">*</span></Label>
+                          <Input
+                            value={donationSimpleData.donataire.lienDonateurAutrePrecision}
+                            onChange={(e) => setDonationSimpleData({
+                              ...donationSimpleData,
+                              donataire: {...donationSimpleData.donataire, lienDonateurAutrePrecision: e.target.value}
+                            })}
+                            placeholder="Ex: beau-fils, concubin, petit-neveu, etc."
+                          />
+                        </div>
+                      )}
 
                       <div className="space-y-2 md:col-span-2">
                         <Label>Adresse complète <span className="text-red-500">*</span></Label>
@@ -22283,9 +22332,176 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 7. Mentions légales obligatoires */}
+                  {/* 7. Acceptation du donataire */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Mentions légales obligatoires</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Acceptation du donataire</h3>
+                    <p className="text-sm text-muted-foreground">La donation n'existe légalement que si l'acceptation est expresse</p>
+                    
+                    <div className="p-4 border rounded-lg space-y-4 bg-blue-50/30">
+                      <div className="space-y-3">
+                        <Label className="font-medium">Le donataire accepte-t-il la donation dans cet acte ?</Label>
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="acceptation_dans_acte"
+                              checked={donationSimpleData.acceptationDonataire.dansActe === true}
+                              onChange={() => setDonationSimpleData({
+                                ...donationSimpleData,
+                                acceptationDonataire: {...donationSimpleData.acceptationDonataire, dansActe: true}
+                              })}
+                            />
+                            <label htmlFor="acceptation_dans_acte" className="text-sm cursor-pointer">Oui, dans cet acte</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="acceptation_acte_separe"
+                              checked={donationSimpleData.acceptationDonataire.dansActe === false}
+                              onChange={() => setDonationSimpleData({
+                                ...donationSimpleData,
+                                acceptationDonataire: {...donationSimpleData.acceptationDonataire, dansActe: false}
+                              })}
+                            />
+                            <label htmlFor="acceptation_acte_separe" className="text-sm cursor-pointer">Non, acceptation dans un acte séparé</label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {!donationSimpleData.acceptationDonataire.dansActe && (
+                        <div className="space-y-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                          <p className="text-sm font-medium text-amber-800">⚠️ Informations sur l'acte d'acceptation séparé</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Date de l'acte d'acceptation <span className="text-red-500">*</span></Label>
+                              <Input
+                                type="date"
+                                value={donationSimpleData.acceptationDonataire.dateAcceptation}
+                                onChange={(e) => setDonationSimpleData({
+                                  ...donationSimpleData,
+                                  acceptationDonataire: {...donationSimpleData.acceptationDonataire, dateAcceptation: e.target.value}
+                                })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Lieu de signature <span className="text-red-500">*</span></Label>
+                              <Input
+                                value={donationSimpleData.acceptationDonataire.lieuAcceptation}
+                                onChange={(e) => setDonationSimpleData({
+                                  ...donationSimpleData,
+                                  acceptationDonataire: {...donationSimpleData.acceptationDonataire, lieuAcceptation: e.target.value}
+                                })}
+                                placeholder="Ville"
+                              />
+                            </div>
+                          </div>
+                          <p className="text-xs text-amber-700">📎 N'oubliez pas de joindre l'acte d'acceptation dans la section Documents</p>
+                        </div>
+                      )}
+
+                      {donationSimpleData.acceptationDonataire.dansActe && (
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <p className="text-sm text-green-800">✓ L'acceptation sera formalisée dans l'acte de donation lui-même</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 8. Modalités de remise du bien */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Modalités de remise / transfert du bien</h3>
+                    <p className="text-sm text-muted-foreground">Le Code civil exige de préciser quand et comment le donataire reçoit réellement la chose</p>
+                    
+                    <div className="p-4 border rounded-lg space-y-4 bg-purple-50/30">
+                      <div className="space-y-2">
+                        <Label>Mode de remise <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={donationSimpleData.modalitesRemise.modeRemise}
+                          onValueChange={(value) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            modalitesRemise: {...donationSimpleData.modalitesRemise, modeRemise: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="immediate">Remise matérielle immédiate</SelectItem>
+                            <SelectItem value="differee">Remise différée</SelectItem>
+                            <SelectItem value="don_manuel_deja_realise">Don manuel déjà réalisé (donation postérieure)</SelectItem>
+                            <SelectItem value="symbolique">Remise symbolique (clé, document, certificat...)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Lieu de remise</Label>
+                          <Input
+                            value={donationSimpleData.modalitesRemise.lieuRemise}
+                            onChange={(e) => setDonationSimpleData({
+                              ...donationSimpleData,
+                              modalitesRemise: {...donationSimpleData.modalitesRemise, lieuRemise: e.target.value}
+                            })}
+                            placeholder="Adresse ou lieu"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date prévue de remise</Label>
+                          <Input
+                            type="date"
+                            value={donationSimpleData.modalitesRemise.dateRemise}
+                            onChange={(e) => setDonationSimpleData({
+                              ...donationSimpleData,
+                              modalitesRemise: {...donationSimpleData.modalitesRemise, dateRemise: e.target.value}
+                            })}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Personne responsable de la remise</Label>
+                        <Input
+                          value={donationSimpleData.modalitesRemise.personneResponsable}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            modalitesRemise: {...donationSimpleData.modalitesRemise, personneResponsable: e.target.value}
+                          })}
+                          placeholder="Nom de la personne"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Document remis avec le bien</Label>
+                        <Select
+                          value={donationSimpleData.modalitesRemise.documentRemis}
+                          onValueChange={(value) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            modalitesRemise: {...donationSimpleData.modalitesRemise, documentRemis: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="carte_grise">Carte grise</SelectItem>
+                            <SelectItem value="certificat">Certificat</SelectItem>
+                            <SelectItem value="facture">Facture</SelectItem>
+                            <SelectItem value="cle">Clé</SelectItem>
+                            <SelectItem value="titre_propriete">Titre de propriété</SelectItem>
+                            <SelectItem value="autre">Autre document</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-xs text-blue-800">
+                          💡 <strong>Exemple de clause générée :</strong><br/>
+                          "La propriété est transférée immédiatement, et la remise matérielle du bien interviendra le [date] à [lieu], avec remise de [document]."
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 9. Mentions légales obligatoires */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Mentions légales obligatoires</h3>
                     <p className="text-sm text-muted-foreground">L'acte doit impérativement contenir :</p>
                     
                     <div className="space-y-2 p-4 bg-amber-50 border border-amber-200 rounded-lg">
@@ -22401,9 +22617,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 8. Documents obligatoires à collecter */}
+                  {/* 10. Documents obligatoires à collecter */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Documents obligatoires à collecter</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Documents obligatoires à collecter</h3>
                     
                     {/* Documents donateur */}
                     <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
