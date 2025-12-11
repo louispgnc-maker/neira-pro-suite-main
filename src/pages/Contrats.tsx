@@ -5173,56 +5173,56 @@ FIN DE LA CONVENTION
       description += `═══════════════════════════════════════════════════════════════\n`;
       description += `HÉRITIERS RÉSERVATAIRES\n`;
       description += `═══════════════════════════════════════════════════════════════\n`;
-      if (testamentData.heritiers.enfants.length > 0 && testamentData.heritiers.enfants[0].nom) {
-        description += `\nENFANTS (${testamentData.heritiers.enfants.filter(e => e.nom).length}) :\n`;
-        testamentData.heritiers.enfants.forEach((enfant, idx) => {
+      if (testamentData.heritiersReservataires.enfants.length > 0 && testamentData.heritiersReservataires.enfants[0]?.nom) {
+        description += `\nENFANTS (${testamentData.heritiersReservataires.enfants.filter(e => e.nom).length}) :\n`;
+        testamentData.heritiersReservataires.enfants.forEach((enfant, idx) => {
           if (enfant.nom) {
             description += `${idx + 1}. ${enfant.prenom} ${enfant.nom}, né(e) le ${enfant.dateNaissance}`;
-            if (enfant.autreUnion) description += ` (issu d'autre union)`;
+            if (enfant.lienParente) description += ` (${enfant.lienParente})`;
             description += `\n`;
           }
         });
       }
       
-      if (testamentData.heritiers.descendants.length > 0 && testamentData.heritiers.descendants[0].nom) {
+      if (testamentData.heritiersReservataires.descendants.length > 0 && testamentData.heritiersReservataires.descendants[0]?.nom) {
         description += `\nDESCENDANTS (petits-enfants) :\n`;
-        testamentData.heritiers.descendants.forEach((desc, idx) => {
+        testamentData.heritiersReservataires.descendants.forEach((desc, idx) => {
           if (desc.nom) {
             description += `${idx + 1}. ${desc.prenom} ${desc.nom} - ${desc.lienParente}\n`;
           }
         });
       }
       
-      if (testamentData.heritiers.parents.pere.vivant || testamentData.heritiers.parents.mere.vivant) {
+      if (testamentData.heritiersReservataires.parentsVivantPere === "oui" || testamentData.heritiersReservataires.parentsVivantMere === "oui") {
         description += `\nPARENTS VIVANTS :\n`;
-        if (testamentData.heritiers.parents.pere.vivant) {
-          description += `Père : ${testamentData.heritiers.parents.pere.prenom} ${testamentData.heritiers.parents.pere.nom}\n`;
+        if (testamentData.heritiersReservataires.parentsVivantPere === "oui") {
+          description += `Père : ${testamentData.heritiersReservataires.parentsNomPrenomPere}\n`;
         }
-        if (testamentData.heritiers.parents.mere.vivant) {
-          description += `Mère : ${testamentData.heritiers.parents.mere.prenom} ${testamentData.heritiers.parents.mere.nom}\n`;
+        if (testamentData.heritiersReservataires.parentsVivantMere === "oui") {
+          description += `Mère : ${testamentData.heritiersReservataires.parentsNomPrenomMere}\n`;
         }
       }
       
-      if (testamentData.heritiers.conjoint.existe) {
+      if (testamentData.heritiersReservataires.conjointNom) {
         description += `\nCONJOINT SURVIVANT :\n`;
-        description += `${testamentData.heritiers.conjoint.prenom} ${testamentData.heritiers.conjoint.nom}\n`;
-        description += `Régime : ${testamentData.heritiers.conjoint.regimeMatrimonial}\n`;
+        description += `${testamentData.heritiersReservataires.conjointPrenom} ${testamentData.heritiersReservataires.conjointNom}\n`;
+        description += `Mariage le : ${testamentData.heritiersReservataires.conjointDateMariage}\n`;
       }
       description += `\n`;
       
       // Légataires
-      if (testamentData.legataires.length > 0 && testamentData.legataires[0].nom) {
+      if (testamentData.legataires.length > 0 && testamentData.legataires[0]?.nom) {
         description += `═══════════════════════════════════════════════════════════════\n`;
         description += `LÉGATAIRES\n`;
         description += `═══════════════════════════════════════════════════════════════\n`;
         testamentData.legataires.forEach((leg, idx) => {
-          if (leg.nom || leg.denomination) {
-            description += `${idx + 1}. ${leg.nom || leg.denomination}\n`;
-            description += `   Type : ${leg.type}\n`;
-            description += `   Adresse : ${leg.adresse}\n`;
-            description += `   Lien : ${leg.lienTestateur}\n`;
-            if (!leg.capaciteRecevoir) {
-              description += `   ⚠️ Capacité à recevoir : ${leg.precisionCapacite}\n`;
+          if (leg.nom || leg.denominationSociale) {
+            description += `${idx + 1}. ${leg.nom || leg.denominationSociale}\n`;
+            description += `   Type : ${leg.typeLegataire}\n`;
+            description += `   Adresse : ${leg.adresse || leg.siegeSocial}\n`;
+            description += `   Lien : ${leg.lienAvecTestateur}\n`;
+            if (!leg.capaciteJuridiqueConfirmee) {
+              description += `   ⚠️ Capacité à recevoir à vérifier\n`;
             }
           }
         });
@@ -5234,71 +5234,48 @@ FIN DE LA CONVENTION
       description += `DISPOSITIONS TESTAMENTAIRES\n`;
       description += `═══════════════════════════════════════════════════════════════\n`;
       
-      if (testamentData.dispositions.legsUniversel.active) {
+      if (testamentData.dispositionsTestamentaires.legsUniversel.actif) {
         description += `\n✓ LEGS UNIVERSEL\n`;
-        description += `Légataire : ${testamentData.dispositions.legsUniversel.legataire}\n`;
-        if (testamentData.dispositions.legsUniversel.conditions) {
-          description += `Conditions : ${testamentData.dispositions.legsUniversel.conditions}\n`;
+        description += `Bénéficiaire : ${testamentData.dispositionsTestamentaires.legsUniversel.beneficiaire}\n`;
+        if (testamentData.dispositionsTestamentaires.legsUniversel.conditions) {
+          description += `Conditions : ${testamentData.dispositionsTestamentaires.legsUniversel.conditions}\n`;
         }
       }
       
-      if (testamentData.dispositions.legsTitreUniversel.length > 0 && testamentData.dispositions.legsTitreUniversel[0].legataire) {
+      if (testamentData.dispositionsTestamentaires.legsTitreUniversel.actif) {
         description += `\n✓ LEGS À TITRE UNIVERSEL\n`;
-        testamentData.dispositions.legsTitreUniversel.forEach((leg, idx) => {
-          if (leg.legataire) {
-            description += `${idx + 1}. ${leg.type} → ${leg.legataire}\n`;
-            if (leg.precisionType) description += `   ${leg.precisionType}\n`;
-            if (leg.conditions) description += `   Conditions : ${leg.conditions}\n`;
+        description += `Quotité : ${testamentData.dispositionsTestamentaires.legsTitreUniversel.quotite}\n`;
+        description += `Bénéficiaire : ${testamentData.dispositionsTestamentaires.legsTitreUniversel.beneficiaire}\n`;
+        if (testamentData.dispositionsTestamentaires.legsTitreUniversel.conditions) {
+          description += `Conditions : ${testamentData.dispositionsTestamentaires.legsTitreUniversel.conditions}\n`;
+        }
+      }
+      
+      if (testamentData.dispositionsTestamentaires.legsParticuliers.length > 0 && testamentData.dispositionsTestamentaires.legsParticuliers[0]?.beneficiaire) {
+        description += `\n✓ LEGS PARTICULIERS (${testamentData.dispositionsTestamentaires.legsParticuliers.length})\n`;
+        testamentData.dispositionsTestamentaires.legsParticuliers.forEach((leg, idx) => {
+          if (leg.beneficiaire) {
+            description += `${idx + 1}. ${leg.description} → ${leg.beneficiaire}\n`;
           }
         });
       }
       
-      if (testamentData.dispositions.legsParticuliers.length > 0 && testamentData.dispositions.legsParticuliers[0].legataire) {
-        description += `\n✓ LEGS PARTICULIERS\n`;
-        testamentData.dispositions.legsParticuliers.forEach((leg, idx) => {
-          if (leg.legataire) {
-            description += `${idx + 1}. ${leg.typeBien} → ${leg.legataire}\n`;
-            
-            if (leg.typeBien === "immobilier" && leg.bienImmobilier.adresse) {
-              description += `   Adresse : ${leg.bienImmobilier.adresse}\n`;
-              description += `   Description : ${leg.bienImmobilier.description}\n`;
-              if (leg.bienImmobilier.valeur) description += `   Valeur : ${leg.bienImmobilier.valeur}\n`;
-            }
-            
-            if (leg.typeBien === "mobilier" && leg.bienMobilier.description) {
-              description += `   Description : ${leg.bienMobilier.description}\n`;
-              if (leg.bienMobilier.valeur) description += `   Valeur : ${leg.bienMobilier.valeur}\n`;
-            }
-            
-            if (leg.typeBien === "argent" && leg.sommesArgent.montant) {
-              description += `   Montant : ${leg.sommesArgent.montant}€\n`;
-            }
-            
-            if (leg.typeBien === "parts_sociales" && leg.partsSociales.societe) {
-              description += `   Société : ${leg.partsSociales.societe}\n`;
-              description += `   Nombre de parts : ${leg.partsSociales.nombreParts}\n`;
-            }
-          }
-        });
-      }
-      
-      if (testamentData.dispositions.executeurTestamentaire.designe) {
+      if (testamentData.dispositionsTestamentaires.executeurTestamentaire.actif) {
         description += `\n✓ EXÉCUTEUR TESTAMENTAIRE\n`;
-        description += `${testamentData.dispositions.executeurTestamentaire.prenom} ${testamentData.dispositions.executeurTestamentaire.nom}\n`;
-        description += `Mission : ${testamentData.dispositions.executeurTestamentaire.etendueMission}\n`;
-        description += `Acceptation : ${testamentData.dispositions.executeurTestamentaire.acceptation ? "Oui" : "En attente"}\n`;
+        description += `${testamentData.dispositionsTestamentaires.executeurTestamentaire.prenom} ${testamentData.dispositionsTestamentaires.executeurTestamentaire.nom}\n`;
+        description += `Mission : ${testamentData.dispositionsTestamentaires.executeurTestamentaire.mission}\n`;
       }
       description += `\n`;
       
       // Patrimoine
-      if (testamentData.patrimoine.biensImmobiliers.length > 0 && testamentData.patrimoine.biensImmobiliers[0].adresse) {
+      if (testamentData.patrimoine.biensImmobiliers.length > 0 && testamentData.patrimoine.biensImmobiliers[0]?.adresse) {
         description += `═══════════════════════════════════════════════════════════════\n`;
         description += `PATRIMOINE\n`;
         description += `═══════════════════════════════════════════════════════════════\n`;
         description += `\nBIENS IMMOBILIERS :\n`;
         testamentData.patrimoine.biensImmobiliers.forEach((bien, idx) => {
           if (bien.adresse) {
-            description += `${idx + 1}. ${bien.adresse} - ${bien.valeur}\n`;
+            description += `${idx + 1}. ${bien.typeBien} - ${bien.adresse} (${bien.valeurEstimative}€)\n`;
           }
         });
       }
@@ -5308,13 +5285,14 @@ FIN DE LA CONVENTION
         description += `\n═══════════════════════════════════════════════════════════════\n`;
         description += `TESTAMENT AUTHENTIQUE - FORMALITÉS\n`;
         description += `═══════════════════════════════════════════════════════════════\n`;
-        description += `Notaire rédacteur : ${testamentData.testamentAuthentique.notaireRedacteur}\n`;
+        description += `Notaire : ${testamentData.testamentAuthentique.notaireNom}\n`;
+        description += `Office : ${testamentData.testamentAuthentique.notaireOffice}\n`;
         
-        if (testamentData.testamentAuthentique.presenceDeuxiemeNotaire) {
-          description += `Deuxième notaire : ${testamentData.testamentAuthentique.deuxiemeNotaire}\n`;
+        if (testamentData.testamentAuthentique.presenceSecondNotaire) {
+          description += `Deuxième notaire : ${testamentData.testamentAuthentique.secondNotaireNom}\n`;
         }
         
-        if (testamentData.testamentAuthentique.presenceTemons && testamentData.testamentAuthentique.temoins.length > 0) {
+        if (testamentData.testamentAuthentique.temoins.length > 0 && testamentData.testamentAuthentique.temoins[0]?.nom) {
           description += `\nTÉMOINS :\n`;
           testamentData.testamentAuthentique.temoins.forEach((temoin, idx) => {
             if (temoin.nom) {
@@ -5324,9 +5302,10 @@ FIN DE LA CONVENTION
         }
         
         description += `\nFormalités accomplies :\n`;
-        description += `- Déclaration dictée : ${testamentData.testamentAuthentique.declarationDictee ? "✓" : "✗"}\n`;
-        description += `- Lecture par notaire : ${testamentData.testamentAuthentique.lectureNotaire ? "✓" : "✗"}\n`;
-        description += `- Acceptation testateur : ${testamentData.testamentAuthentique.acceptationTestateur ? "✓" : "✗"}\n`;
+        description += `- Testament dicté : ${testamentData.testamentAuthentique.formaliteDicte ? "✓" : "✗"}\n`;
+        description += `- Testament relu : ${testamentData.testamentAuthentique.formaliteRelu ? "✓" : "✗"}\n`;
+        description += `- Testament signé : ${testamentData.testamentAuthentique.formaliteSigne ? "✓" : "✗"}\n`;
+        description += `- Inscription FCDDV : ${testamentData.testamentAuthentique.formaliteRegistre ? "✓" : "✗"}\n`;
       }
       
       // Testament mystique spécifique
@@ -5335,19 +5314,20 @@ FIN DE LA CONVENTION
         description += `TESTAMENT MYSTIQUE - FORMALITÉS\n`;
         description += `═══════════════════════════════════════════════════════════════\n`;
         description += `Type d'écriture : ${testamentData.testamentMystique.typeEcriture}\n`;
-        description += `Enveloppe cachetée : ${testamentData.testamentMystique.enveloppeCachetee ? "Oui" : "Non"}\n`;
-        if (testamentData.testamentMystique.declarationPresentation) {
-          description += `Déclaration : ${testamentData.testamentMystique.declarationPresentation}\n`;
+        description += `Enveloppe cachetée : ${testamentData.testamentMystique.cachete ? "Oui" : "Non"}\n`;
+        if (testamentData.testamentMystique.suscription) {
+          description += `Suscription : ${testamentData.testamentMystique.suscription}\n`;
         }
         
-        if (testamentData.testamentMystique.temoinsObligatoires.length > 0 && testamentData.testamentMystique.temoinsObligatoires[0].nom) {
+        if (testamentData.testamentMystique.temoins.length > 0 && testamentData.testamentMystique.temoins[0]?.nom) {
           description += `\nTÉMOINS OBLIGATOIRES :\n`;
-          testamentData.testamentMystique.temoinsObligatoires.forEach((temoin, idx) => {
+          testamentData.testamentMystique.temoins.forEach((temoin, idx) => {
             if (temoin.nom) {
               description += `${idx + 1}. ${temoin.prenom} ${temoin.nom}\n`;
             }
           });
         }
+        description += `Inscription FCDDV : ${testamentData.testamentMystique.inscriptionFCDDV ? "Oui" : "Non"}\n`;
       }
 
       // Créer le contrat
