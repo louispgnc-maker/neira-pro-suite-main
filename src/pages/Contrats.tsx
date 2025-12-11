@@ -25580,132 +25580,276 @@ FIN DE LA CONVENTION
                           </div>
                         )}
 
-                        {/* Témoins */}
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-medium">Témoins (2 témoins obligatoires) <span className="text-red-500">*</span></h4>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setTestamentData({
+                        {/* Témoins (conditionnels selon modalité) */}
+                        {testamentData.testamentAuthentique.modaliteReception === "1notaire_2temoins" && (
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <h4 className="font-medium">Témoins (2 témoins obligatoires) <span className="text-red-500">*</span></h4>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setTestamentData({
+                                  ...testamentData,
+                                  testamentAuthentique: {
+                                    ...testamentData.testamentAuthentique,
+                                    temoins: [...testamentData.testamentAuthentique.temoins, {
+                                      nom: "", prenom: "", dateNaissance: "", lieuNaissance: "", adresse: "", profession: "",
+                                      nonHeritier: false, nonLegataire: false, nonParentJusque4eDegre: false, 
+                                      capaciteJuridique: false, comprendLangue: false
+                                    }]
+                                  }
+                                })}
+                              >
+                                + Ajouter un témoin
+                              </Button>
+                            </div>
+
+                            {testamentData.testamentAuthentique.temoins.map((temoin, idx) => (
+                              <div key={idx} className="p-4 bg-white rounded-lg space-y-3 border-2 border-blue-200">
+                                <div className="flex justify-between">
+                                  <h5 className="text-sm font-medium">Témoin {idx + 1}</h5>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      const newTemoins = testamentData.testamentAuthentique.temoins.filter((_, i) => i !== idx);
+                                      setTestamentData({
+                                        ...testamentData,
+                                        testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                      });
+                                    }}
+                                  >
+                                    🗑️
+                                  </Button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  <div className="space-y-2">
+                                    <Label>Nom <span className="text-red-500">*</span></Label>
+                                    <Input
+                                      value={temoin.nom}
+                                      onChange={(e) => {
+                                        const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                        newTemoins[idx].nom = e.target.value;
+                                        setTestamentData({
+                                          ...testamentData,
+                                          testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                        });
+                                      }}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Prénom <span className="text-red-500">*</span></Label>
+                                    <Input
+                                      value={temoin.prenom}
+                                      onChange={(e) => {
+                                        const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                        newTemoins[idx].prenom = e.target.value;
+                                        setTestamentData({
+                                          ...testamentData,
+                                          testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                        });
+                                      }}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                                    <Input
+                                      type="date"
+                                      value={temoin.dateNaissance}
+                                      onChange={(e) => {
+                                        const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                        newTemoins[idx].dateNaissance = e.target.value;
+                                        setTestamentData({
+                                          ...testamentData,
+                                          testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                        });
+                                      }}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Lieu de naissance</Label>
+                                    <Input
+                                      value={temoin.lieuNaissance}
+                                      onChange={(e) => {
+                                        const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                        newTemoins[idx].lieuNaissance = e.target.value;
+                                        setTestamentData({
+                                          ...testamentData,
+                                          testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                        });
+                                      }}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Profession</Label>
+                                    <Input
+                                      value={temoin.profession}
+                                      onChange={(e) => {
+                                        const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                        newTemoins[idx].profession = e.target.value;
+                                        setTestamentData({
+                                          ...testamentData,
+                                          testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                        });
+                                      }}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2 md:col-span-2">
+                                    <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                                    <Input
+                                      value={temoin.adresse}
+                                      onChange={(e) => {
+                                        const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                        newTemoins[idx].adresse = e.target.value;
+                                        setTestamentData({
+                                          ...testamentData,
+                                          testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Qualification juridique */}
+                                <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                  <p className="text-sm font-medium mb-2">Qualification juridique <span className="text-red-500">*</span></p>
+                                  <div className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                      <input
+                                        type="checkbox"
+                                        id={`t${idx}_nonHeritier`}
+                                        checked={temoin.nonHeritier}
+                                        onChange={(e) => {
+                                          const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                          newTemoins[idx].nonHeritier = e.target.checked;
+                                          setTestamentData({
+                                            ...testamentData,
+                                            testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                          });
+                                        }}
+                                        className="w-4 h-4"
+                                      />
+                                      <Label htmlFor={`t${idx}_nonHeritier`} className="cursor-pointer text-sm">N'est ni héritier ni légataire</Label>
+                                    </div>
+
+                                    <div className="flex items-center space-x-2">
+                                      <input
+                                        type="checkbox"
+                                        id={`t${idx}_nonParent`}
+                                        checked={temoin.nonParentJusque4eDegre}
+                                        onChange={(e) => {
+                                          const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                          newTemoins[idx].nonParentJusque4eDegre = e.target.checked;
+                                          setTestamentData({
+                                            ...testamentData,
+                                            testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                          });
+                                        }}
+                                        className="w-4 h-4"
+                                      />
+                                      <Label htmlFor={`t${idx}_nonParent`} className="cursor-pointer text-sm">N'est pas parent jusqu'au 4ᵉ degré</Label>
+                                    </div>
+
+                                    <div className="flex items-center space-x-2">
+                                      <input
+                                        type="checkbox"
+                                        id={`t${idx}_capacite`}
+                                        checked={temoin.capaciteJuridique}
+                                        onChange={(e) => {
+                                          const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                          newTemoins[idx].capaciteJuridique = e.target.checked;
+                                          setTestamentData({
+                                            ...testamentData,
+                                            testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                          });
+                                        }}
+                                        className="w-4 h-4"
+                                      />
+                                      <Label htmlFor={`t${idx}_capacite`} className="cursor-pointer text-sm">A la capacité juridique</Label>
+                                    </div>
+
+                                    <div className="flex items-center space-x-2">
+                                      <input
+                                        type="checkbox"
+                                        id={`t${idx}_langue`}
+                                        checked={temoin.comprendLangue}
+                                        onChange={(e) => {
+                                          const newTemoins = [...testamentData.testamentAuthentique.temoins];
+                                          newTemoins[idx].comprendLangue = e.target.checked;
+                                          setTestamentData({
+                                            ...testamentData,
+                                            testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
+                                          });
+                                        }}
+                                        className="w-4 h-4"
+                                      />
+                                      <Label htmlFor={`t${idx}_langue`} className="cursor-pointer text-sm">Comprend la langue de l'acte</Label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Modalités réception */}
+                        <div className="space-y-3 p-3 bg-yellow-50 rounded-lg border border-yellow-300">
+                          <h4 className="font-medium">Modalités de réception <span className="text-red-500">*</span></h4>
+                          <div className="space-y-2">
+                            <Label>Mode de réception <span className="text-red-500">*</span></Label>
+                            <Select
+                              value={testamentData.testamentAuthentique.modaliteReception}
+                              onValueChange={(value) => setTestamentData({
                                 ...testamentData,
-                                testamentAuthentique: {
-                                  ...testamentData.testamentAuthentique,
-                                  temoins: [...testamentData.testamentAuthentique.temoins, {
-                                    nom: "", prenom: "", dateNaissance: "", adresse: "", profession: ""
-                                  }]
-                                }
+                                testamentAuthentique: {...testamentData.testamentAuthentique, modaliteReception: value}
                               })}
                             >
-                              + Ajouter un témoin
-                            </Button>
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1notaire_2temoins">1 notaire + 2 témoins</SelectItem>
+                                <SelectItem value="2notaires">2 notaires (sans témoins)</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
 
-                          {testamentData.testamentAuthentique.temoins.map((temoin, idx) => (
-                            <div key={idx} className="p-3 bg-white rounded-lg space-y-3 border">
-                              <div className="flex justify-between">
-                                <h5 className="text-sm font-medium">Témoin {idx + 1}</h5>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const newTemoins = testamentData.testamentAuthentique.temoins.filter((_, i) => i !== idx);
-                                    setTestamentData({
-                                      ...testamentData,
-                                      testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
-                                    });
-                                  }}
-                                >
-                                  🗑️
-                                </Button>
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div className="space-y-2">
-                                  <Label>Nom <span className="text-red-500">*</span></Label>
-                                  <Input
-                                    value={temoin.nom}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentAuthentique.temoins];
-                                      newTemoins[idx].nom = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label>Prénom <span className="text-red-500">*</span></Label>
-                                  <Input
-                                    value={temoin.prenom}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentAuthentique.temoins];
-                                      newTemoins[idx].prenom = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label>Date de naissance</Label>
-                                  <Input
-                                    type="date"
-                                    value={temoin.dateNaissance}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentAuthentique.temoins];
-                                      newTemoins[idx].dateNaissance = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label>Profession</Label>
-                                  <Input
-                                    value={temoin.profession}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentAuthentique.temoins];
-                                      newTemoins[idx].profession = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="space-y-2 md:col-span-2">
-                                  <Label>Adresse complète <span className="text-red-500">*</span></Label>
-                                  <Input
-                                    value={temoin.adresse}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentAuthentique.temoins];
-                                      newTemoins[idx].adresse = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentAuthentique: {...testamentData.testamentAuthentique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-                              </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Lieu de réception <span className="text-red-500">*</span></Label>
+                              <Input
+                                value={testamentData.testamentAuthentique.lieuReception}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentAuthentique: {...testamentData.testamentAuthentique, lieuReception: e.target.value}
+                                })}
+                                placeholder="Ex: Office notarial, domicile du testateur..."
+                              />
                             </div>
-                          ))}
+
+                            <div className="space-y-2">
+                              <Label>Date de réception</Label>
+                              <Input
+                                type="date"
+                                value={testamentData.testamentAuthentique.dateReception}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentAuthentique: {...testamentData.testamentAuthentique, dateReception: e.target.value}
+                                })}
+                              />
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Formalités */}
-                        <div className="space-y-3 p-3 bg-white rounded-lg">
-                          <h4 className="font-medium text-sm">Formalités accomplies</h4>
+                        {/* Formalités légales */}
+                        <div className="space-y-3 p-3 bg-red-50 rounded-lg border border-red-300">
+                          <h4 className="font-medium">Formalités légales <span className="text-red-500">*</span></h4>
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2">
                               <input
@@ -25716,10 +25860,9 @@ FIN DE LA CONVENTION
                                   ...testamentData,
                                   testamentAuthentique: {...testamentData.testamentAuthentique, formaliteDicte: e.target.checked}
                                 })}
+                                className="w-4 h-4"
                               />
-                              <label htmlFor="dicte" className="text-sm cursor-pointer">
-                                Testament dicté au notaire par le testateur
-                              </label>
+                              <Label htmlFor="dicte" className="cursor-pointer">Testament dicté par le testateur au notaire</Label>
                             </div>
 
                             <div className="flex items-center space-x-2">
@@ -25731,10 +25874,23 @@ FIN DE LA CONVENTION
                                   ...testamentData,
                                   testamentAuthentique: {...testamentData.testamentAuthentique, formaliteRelu: e.target.checked}
                                 })}
+                                className="w-4 h-4"
                               />
-                              <label htmlFor="relu" className="text-sm cursor-pointer">
-                                Testament relu au testateur
-                              </label>
+                              <Label htmlFor="relu" className="cursor-pointer">Lecture intégrale par le notaire au testateur</Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="approbation"
+                                checked={testamentData.testamentAuthentique.declarationApprobation}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentAuthentique: {...testamentData.testamentAuthentique, declarationApprobation: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="approbation" className="cursor-pointer">Déclaration d'approbation expresse du testateur</Label>
                             </div>
 
                             <div className="flex items-center space-x-2">
@@ -25746,27 +25902,85 @@ FIN DE LA CONVENTION
                                   ...testamentData,
                                   testamentAuthentique: {...testamentData.testamentAuthentique, formaliteSigne: e.target.checked}
                                 })}
+                                className="w-4 h-4"
                               />
-                              <label htmlFor="signe" className="text-sm cursor-pointer">
-                                Testament signé par le testateur, les témoins et le(s) notaire(s)
-                              </label>
+                              <Label htmlFor="signe" className="cursor-pointer">Signatures : testateur + notaire(s) + témoins (le cas échéant)</Label>
                             </div>
 
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 ml-6">
                               <input
                                 type="checkbox"
-                                id="registre"
-                                checked={testamentData.testamentAuthentique.formaliteRegistre}
+                                id="impossibilite"
+                                checked={testamentData.testamentAuthentique.impossibiliteSigner}
                                 onChange={(e) => setTestamentData({
                                   ...testamentData,
-                                  testamentAuthentique: {...testamentData.testamentAuthentique, formaliteRegistre: e.target.checked}
+                                  testamentAuthentique: {...testamentData.testamentAuthentique, impossibiliteSigner: e.target.checked}
                                 })}
+                                className="w-4 h-4"
                               />
-                              <label htmlFor="registre" className="text-sm cursor-pointer">
-                                Inscription au Fichier Central des Dispositions de Dernières Volontés (FCDDV)
-                              </label>
+                              <Label htmlFor="impossibilite" className="cursor-pointer text-sm">Impossibilité de signer (mention requise)</Label>
                             </div>
+
+                            {testamentData.testamentAuthentique.impossibiliteSigner && (
+                              <div className="ml-6 space-y-2">
+                                <Label>Motif de l'impossibilité <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={testamentData.testamentAuthentique.motifImpossibilite}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentAuthentique: {...testamentData.testamentAuthentique, motifImpossibilite: e.target.value}
+                                  })}
+                                  placeholder="Ex: Impossibilité physique, handicap..."
+                                />
+                              </div>
+                            )}
                           </div>
+                        </div>
+
+                        {/* Inscription FCDDV */}
+                        <div className="space-y-3 p-3 bg-green-50 rounded-lg border border-green-300">
+                          <h4 className="font-medium">Inscription au FCDDV</h4>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="fcddv"
+                              checked={testamentData.testamentAuthentique.inscriptionFCDDV}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                testamentAuthentique: {...testamentData.testamentAuthentique, inscriptionFCDDV: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="fcddv" className="cursor-pointer">Procéder à l'inscription au FCDDV</Label>
+                          </div>
+
+                          {testamentData.testamentAuthentique.inscriptionFCDDV && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Date d'inscription</Label>
+                                <Input
+                                  type="date"
+                                  value={testamentData.testamentAuthentique.dateInscriptionFCDDV}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentAuthentique: {...testamentData.testamentAuthentique, dateInscriptionFCDDV: e.target.value}
+                                  })}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Notaire dépositaire</Label>
+                                <Input
+                                  value={testamentData.testamentAuthentique.notaireDepositaire}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentAuthentique: {...testamentData.testamentAuthentique, notaireDepositaire: e.target.value}
+                                  })}
+                                  placeholder="Nom du notaire dépositaire"
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -25778,10 +25992,41 @@ FIN DE LA CONVENTION
                       <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Formalités spécifiques - Testament mystique</h3>
                       
                       <div className="p-4 border-2 rounded-lg space-y-4 bg-purple-50/50 border-purple-300">
-                        {/* Écrit */}
-                        <div className="space-y-3 p-3 bg-white rounded-lg">
-                          <h4 className="font-medium">Modalités de rédaction</h4>
+                        {/* Rédaction */}
+                        <div className="space-y-3 p-3 bg-white rounded-lg border border-purple-200">
+                          <h4 className="font-medium">Mode de rédaction du testament <span className="text-red-500">*</span></h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Rédigé par <span className="text-red-500">*</span></Label>
+                              <Select
+                                value={testamentData.testamentMystique.redactionPar}
+                                onValueChange={(value) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, redactionPar: value}
+                                })}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="testateur">Le testateur lui-même</SelectItem>
+                                  <SelectItem value="tiers">Un tiers</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {testamentData.testamentMystique.redactionPar === "tiers" && (
+                              <div className="space-y-2">
+                                <Label>Nom du rédacteur <span className="text-red-500">*</span></Label>
+                                <Input
+                                  value={testamentData.testamentMystique.nomRedacteur}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentMystique: {...testamentData.testamentMystique, nomRedacteur: e.target.value}
+                                  })}
+                                  placeholder="Nom et prénom du rédacteur"
+                                />
+                              </div>
+                            )}
+
                             <div className="space-y-2">
                               <Label>Type d'écriture <span className="text-red-500">*</span></Label>
                               <Select
@@ -25793,32 +26038,47 @@ FIN DE LA CONVENTION
                               >
                                 <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="manuscrit">Écrit à la main par le testateur</SelectItem>
-                                  <SelectItem value="par_autrui">Écrit par un tiers (testateur ne peut écrire)</SelectItem>
-                                  <SelectItem value="mecanique">Écrit mécanique (dactylographié)</SelectItem>
+                                  <SelectItem value="manuscrit">Manuscrit (à la main)</SelectItem>
+                                  <SelectItem value="dactylographie">Dactylographié</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
 
-                            {testamentData.testamentMystique.typeEcriture === "par_autrui" && (
-                              <div className="space-y-2">
-                                <Label>Identité du rédacteur <span className="text-red-500">*</span></Label>
-                                <Input
-                                  value={testamentData.testamentMystique.identiteRedacteur}
-                                  onChange={(e) => setTestamentData({
-                                    ...testamentData,
-                                    testamentMystique: {...testamentData.testamentMystique, identiteRedacteur: e.target.value}
-                                  })}
-                                  placeholder="Nom et prénom du rédacteur"
-                                />
-                              </div>
-                            )}
+                            <div className="space-y-2">
+                              <Label>Langue du testament <span className="text-red-500">*</span></Label>
+                              <Select
+                                value={testamentData.testamentMystique.langueTestament}
+                                onValueChange={(value) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, langueTestament: value}
+                                })}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="francais">Français</SelectItem>
+                                  <SelectItem value="autre">Autre langue</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Nombre de pages</Label>
+                              <Input
+                                type="number"
+                                value={testamentData.testamentMystique.nombrePages}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, nombrePages: e.target.value}
+                                })}
+                                placeholder="Nombre de pages"
+                              />
+                            </div>
                           </div>
                         </div>
 
-                        {/* Enveloppe */}
-                        <div className="space-y-3 p-3 bg-white rounded-lg">
-                          <h4 className="font-medium">Enveloppe cachetée</h4>
+                        {/* Présentation sous pli fermé */}
+                        <div className="space-y-3 p-3 bg-yellow-50 rounded-lg border border-yellow-300">
+                          <h4 className="font-medium">Présentation sous pli fermé et scellé <span className="text-red-500">*</span></h4>
                           <div className="flex items-center space-x-2">
                             <input
                               type="checkbox"
@@ -25828,16 +26088,53 @@ FIN DE LA CONVENTION
                                 ...testamentData,
                                 testamentMystique: {...testamentData.testamentMystique, cachete: e.target.checked}
                               })}
+                              className="w-4 h-4"
                             />
-                            <label htmlFor="cachete" className="text-sm cursor-pointer">
-                              <span className="text-red-500 font-bold">*</span> Testament placé dans une enveloppe cachetée
-                            </label>
+                            <Label htmlFor="cachete" className="cursor-pointer">Pli fermé, cacheté et scellé</Label>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Description du scellé <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={testamentData.testamentMystique.descriptionScelle}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                testamentMystique: {...testamentData.testamentMystique, descriptionScelle: e.target.value}
+                              })}
+                              placeholder="Ex: Enveloppe cachetée avec cire rouge..."
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Lieu de présentation <span className="text-red-500">*</span></Label>
+                              <Input
+                                value={testamentData.testamentMystique.lieuPresentation}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, lieuPresentation: e.target.value}
+                                })}
+                                placeholder="Ex: Office notarial..."
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Date de présentation</Label>
+                              <Input
+                                type="date"
+                                value={testamentData.testamentMystique.datePresentation}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, datePresentation: e.target.value}
+                                })}
+                              />
+                            </div>
                           </div>
                         </div>
 
-                        {/* Déclaration */}
-                        <div className="space-y-3 p-3 bg-white rounded-lg">
-                          <h4 className="font-medium">Déclaration devant notaire</h4>
+                        {/* Notaire */}
+                        <div className="space-y-3 p-3 bg-white rounded-lg border border-purple-200">
+                          <h4 className="font-medium">Notaire récepteur <span className="text-red-500">*</span></h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <Label>Nom du notaire <span className="text-red-500">*</span></Label>
@@ -25847,6 +26144,7 @@ FIN DE LA CONVENTION
                                   ...testamentData,
                                   testamentMystique: {...testamentData.testamentMystique, notaireNom: e.target.value}
                                 })}
+                                placeholder="M./Mme Nom Prénom"
                               />
                             </div>
 
@@ -25858,6 +26156,7 @@ FIN DE LA CONVENTION
                                   ...testamentData,
                                   testamentMystique: {...testamentData.testamentMystique, notaireOffice: e.target.value}
                                 })}
+                                placeholder="Nom de l'office"
                               />
                             </div>
 
@@ -25874,156 +26173,106 @@ FIN DE LA CONVENTION
                           </div>
                         </div>
 
-                        {/* Témoins */}
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-medium">Témoins (2 témoins obligatoires) <span className="text-red-500">*</span></h4>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setTestamentData({
+                        {/* Acte de suscription */}
+                        <div className="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-300">
+                          <h4 className="font-medium">Acte de suscription <span className="text-red-500">*</span></h4>
+                          <div className="flex items-center space-x-2 mb-3">
+                            <input
+                              type="checkbox"
+                              id="declarationContenu"
+                              checked={testamentData.testamentMystique.declarationContenuTestament}
+                              onChange={(e) => setTestamentData({
                                 ...testamentData,
-                                testamentMystique: {
-                                  ...testamentData.testamentMystique,
-                                  temoins: [...testamentData.testamentMystique.temoins, {
-                                    nom: "", prenom: "", dateNaissance: "", adresse: "", profession: ""
-                                  }]
-                                }
+                                testamentMystique: {...testamentData.testamentMystique, declarationContenuTestament: e.target.checked}
                               })}
-                            >
-                              + Ajouter un témoin
-                            </Button>
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="declarationContenu" className="cursor-pointer">Déclaration que le pli contient le testament</Label>
                           </div>
 
-                          {testamentData.testamentMystique.temoins.map((temoin, idx) => (
-                            <div key={idx} className="p-3 bg-white rounded-lg space-y-3 border">
-                              <div className="flex justify-between">
-                                <h5 className="text-sm font-medium">Témoin {idx + 1}</h5>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const newTemoins = testamentData.testamentMystique.temoins.filter((_, i) => i !== idx);
-                                    setTestamentData({
-                                      ...testamentData,
-                                      testamentMystique: {...testamentData.testamentMystique, temoins: newTemoins}
-                                    });
-                                  }}
-                                >
-                                  🗑️
-                                </Button>
+                          <div className="space-y-2">
+                            <Label>Texte de la suscription</Label>
+                            <textarea
+                              className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                              value={testamentData.testamentMystique.suscription}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                testamentMystique: {...testamentData.testamentMystique, suscription: e.target.value}
+                              })}
+                              placeholder="Texte de l'acte de suscription..."
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Lieu de suscription</Label>
+                              <Input
+                                value={testamentData.testamentMystique.lieuSuscription}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, lieuSuscription: e.target.value}
+                                })}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Date de suscription</Label>
+                              <Input
+                                type="date"
+                                value={testamentData.testamentMystique.dateSuscription}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, dateSuscription: e.target.value}
+                                })}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Inscription FCDDV */}
+                        <div className="space-y-3 p-3 bg-green-50 rounded-lg border border-green-300">
+                          <h4 className="font-medium">Inscription au FCDDV</h4>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="fcddv_mystique"
+                              checked={testamentData.testamentMystique.inscriptionFCDDV}
+                              onChange={(e) => setTestamentData({
+                                ...testamentData,
+                                testamentMystique: {...testamentData.testamentMystique, inscriptionFCDDV: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="fcddv_mystique" className="cursor-pointer">Procéder à l'inscription au FCDDV</Label>
+                          </div>
+
+                          {testamentData.testamentMystique.inscriptionFCDDV && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Date d'inscription</Label>
+                                <Input
+                                  type="date"
+                                  value={testamentData.testamentMystique.dateInscriptionFCDDV}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentMystique: {...testamentData.testamentMystique, dateInscriptionFCDDV: e.target.value}
+                                  })}
+                                />
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div className="space-y-2">
-                                  <Label>Nom <span className="text-red-500">*</span></Label>
-                                  <Input
-                                    value={temoin.nom}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentMystique.temoins];
-                                      newTemoins[idx].nom = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentMystique: {...testamentData.testamentMystique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label>Prénom <span className="text-red-500">*</span></Label>
-                                  <Input
-                                    value={temoin.prenom}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentMystique.temoins];
-                                      newTemoins[idx].prenom = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentMystique: {...testamentData.testamentMystique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label>Date de naissance</Label>
-                                  <Input
-                                    type="date"
-                                    value={temoin.dateNaissance}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentMystique.temoins];
-                                      newTemoins[idx].dateNaissance = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentMystique: {...testamentData.testamentMystique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label>Profession</Label>
-                                  <Input
-                                    value={temoin.profession}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentMystique.temoins];
-                                      newTemoins[idx].profession = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentMystique: {...testamentData.testamentMystique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="space-y-2 md:col-span-2">
-                                  <Label>Adresse complète <span className="text-red-500">*</span></Label>
-                                  <Input
-                                    value={temoin.adresse}
-                                    onChange={(e) => {
-                                      const newTemoins = [...testamentData.testamentMystique.temoins];
-                                      newTemoins[idx].adresse = e.target.value;
-                                      setTestamentData({
-                                        ...testamentData,
-                                        testamentMystique: {...testamentData.testamentMystique, temoins: newTemoins}
-                                      });
-                                    }}
-                                  />
-                                </div>
+                              <div className="space-y-2">
+                                <Label>Notaire dépositaire</Label>
+                                <Input
+                                  value={testamentData.testamentMystique.notaireDepositaire}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    testamentMystique: {...testamentData.testamentMystique, notaireDepositaire: e.target.value}
+                                  })}
+                                  placeholder="Nom du notaire dépositaire"
+                                />
                               </div>
                             </div>
-                          ))}
-                        </div>
-
-                        {/* Suscription */}
-                        <div className="space-y-2 p-3 bg-white rounded-lg">
-                          <Label>Suscription sur l'enveloppe</Label>
-                          <textarea
-                            className="w-full min-h-[60px] p-2 border rounded-md text-sm"
-                            value={testamentData.testamentMystique.suscription}
-                            onChange={(e) => setTestamentData({
-                              ...testamentData,
-                              testamentMystique: {...testamentData.testamentMystique, suscription: e.target.value}
-                            })}
-                            placeholder="Mention portée sur l'enveloppe..."
-                          />
-                        </div>
-
-                        <div className="flex items-center space-x-2 p-3 bg-white rounded-lg">
-                          <input
-                            type="checkbox"
-                            id="fcddv_mystique"
-                            checked={testamentData.testamentMystique.inscriptionFCDDV}
-                            onChange={(e) => setTestamentData({
-                              ...testamentData,
-                              testamentMystique: {...testamentData.testamentMystique, inscriptionFCDDV: e.target.checked}
-                            })}
-                          />
-                          <label htmlFor="fcddv_mystique" className="text-sm cursor-pointer">
-                            Inscription au Fichier Central des Dispositions de Dernières Volontés (FCDDV)
-                          </label>
+                          )}
                         </div>
                       </div>
                     </div>
