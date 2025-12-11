@@ -21085,19 +21085,22 @@ FIN DE LA CONVENTION
                         onValueChange={(value) => {
                           const client = clients.find(c => c.id === value);
                           if (client) {
-                            // Extraire situation familiale depuis situation_familiale
+                            // Extraire situation familiale depuis situation_familiale ou situation_matrimoniale
                             let situationFam = "";
                             if (typeof client.situation_familiale === "string") {
                               situationFam = client.situation_familiale;
+                            } else if (typeof client.situation_matrimoniale === "string") {
+                              situationFam = client.situation_matrimoniale;
                             } else if (client.situation_familiale && typeof client.situation_familiale === "object") {
-                              // Si c'est un objet, prendre le champ principal
-                              situationFam = client.situation_matrimoniale || "";
+                              // Si c'est un objet JSON, essayer d'extraire les données
+                              const sitFam = client.situation_familiale;
+                              situationFam = sitFam.situation_matrimoniale || sitFam.etat_civil || "";
                             }
                             
                             // Extraire régime matrimonial si marié
                             let regimeMat = "";
-                            if (client.situation_familiale && typeof client.situation_familiale === "object" && client.situation_familiale.regime_matrimonial) {
-                              regimeMat = client.situation_familiale.regime_matrimonial;
+                            if (client.situation_familiale && typeof client.situation_familiale === "object") {
+                              regimeMat = client.situation_familiale.regime_matrimonial || "";
                             }
                             
                             setDonationSimpleData({
