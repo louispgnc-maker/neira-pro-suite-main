@@ -18112,13 +18112,35 @@ FIN DE LA CONVENTION
                                     
                                     // Extraire la situation familiale et régime matrimonial
                                     let situationFamiliale = "";
-                                    if (typeof client.situation_familiale === 'object' && client.situation_familiale !== null) {
-                                      situationFamiliale = client.situation_familiale.situation_familiale || "";
-                                    } else if (typeof client.situation_familiale === 'string') {
-                                      situationFamiliale = client.situation_familiale;
+                                    let regimeMatrimonial = "";
+                                    
+                                    // Essayer d'abord situation_matrimoniale
+                                    if (client.situation_matrimoniale) {
+                                      if (typeof client.situation_matrimoniale === 'object' && client.situation_matrimoniale !== null) {
+                                        situationFamiliale = client.situation_matrimoniale.situation_familiale || "";
+                                        regimeMatrimonial = client.situation_matrimoniale.regime_matrimonial || "";
+                                      } else if (typeof client.situation_matrimoniale === 'string') {
+                                        situationFamiliale = client.situation_matrimoniale;
+                                      }
                                     }
-                                    newEpoux[index].situationMatrimoniale = situationFamiliale || client.situation_matrimoniale || "marie";
-                                    newEpoux[index].regimeMatrimonial = client.regime_matrimonial || "";
+                                    
+                                    // Si pas trouvé, essayer situation_familiale
+                                    if (!situationFamiliale && client.situation_familiale) {
+                                      if (typeof client.situation_familiale === 'object' && client.situation_familiale !== null) {
+                                        situationFamiliale = client.situation_familiale.situation_familiale || "";
+                                        regimeMatrimonial = client.situation_familiale.regime_matrimonial || "";
+                                      } else if (typeof client.situation_familiale === 'string') {
+                                        situationFamiliale = client.situation_familiale;
+                                      }
+                                    }
+                                    
+                                    // Si pas trouvé dans les objets, essayer le champ direct
+                                    if (!regimeMatrimonial && client.regime_matrimonial) {
+                                      regimeMatrimonial = client.regime_matrimonial;
+                                    }
+                                    
+                                    newEpoux[index].situationMatrimoniale = situationFamiliale || "marie";
+                                    newEpoux[index].regimeMatrimonial = regimeMatrimonial || "";
                                     newEpoux[index].dateMariage = client.date_mariage || "";
                                   }
                                 }
