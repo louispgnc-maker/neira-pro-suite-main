@@ -21264,9 +21264,313 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Placeholder pour sections 3-8 */}
+                  {/* 3. Identité du donataire */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité complète du donataire</h3>
+                    <p className="text-sm text-muted-foreground">Personne qui reçoit la donation</p>
+                    
+                    <div className="space-y-2">
+                      <Label>Sélectionner un client (optionnel)</Label>
+                      <Select
+                        value={donationSimpleData.donataire.clientId}
+                        onValueChange={(value) => {
+                          const client = clients.find(c => c.id === value);
+                          if (client) {
+                            setDonationSimpleData({
+                              ...donationSimpleData,
+                              donataire: {
+                                ...donationSimpleData.donataire,
+                                isClient: true,
+                                clientId: value,
+                                nom: client.nom || "",
+                                prenom: client.prenom || "",
+                                nomNaissance: client.nom || "",
+                                adresseComplete: client.adresse || "",
+                                telephone: client.telephone || "",
+                                email: client.email || "",
+                                dateNaissance: client.date_naissance || "",
+                                lieuNaissance: client.lieu_naissance || "",
+                                nationalite: client.nationalite || "",
+                                profession: client.profession || "",
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>{c.nom} {c.prenom}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={donationSimpleData.donataire.nom}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, nom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={donationSimpleData.donataire.prenom}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, prenom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nom de naissance</Label>
+                        <Input
+                          value={donationSimpleData.donataire.nomNaissance}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, nomNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={donationSimpleData.donataire.dateNaissance}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance</Label>
+                        <Input
+                          value={donationSimpleData.donataire.lieuNaissance}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, lieuNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nationalité</Label>
+                        <Input
+                          value={donationSimpleData.donataire.nationalite}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, nationalite: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input
+                          value={donationSimpleData.donataire.profession}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lien avec le donateur <span className="text-red-500">*</span> (important fiscalement)</Label>
+                        <Select
+                          value={donationSimpleData.donataire.lienDonateur}
+                          onValueChange={(value) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, lienDonateur: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="enfant">Enfant</SelectItem>
+                            <SelectItem value="parent">Parent</SelectItem>
+                            <SelectItem value="frere_soeur">Frère / Sœur</SelectItem>
+                            <SelectItem value="neveu_niece">Neveu / Nièce</SelectItem>
+                            <SelectItem value="cousin">Cousin</SelectItem>
+                            <SelectItem value="ami">Ami</SelectItem>
+                            <SelectItem value="conjoint_pacse">Conjoint pacsé</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={donationSimpleData.donataire.adresseComplete}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, adresseComplete: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input
+                          value={donationSimpleData.donataire.telephone}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, telephone: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input
+                          type="email"
+                          value={donationSimpleData.donataire.email}
+                          onChange={(e) => setDonationSimpleData({
+                            ...donationSimpleData,
+                            donataire: {...donationSimpleData.donataire, email: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4. Enfants / héritiers du donateur */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Enfants / héritiers du donateur</h3>
+                    <p className="text-sm text-muted-foreground">Obligatoire pour vérifier qu'on n'empiète pas sur la réserve héréditaire</p>
+                    
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <Label>Nombre d'enfants</Label>
+                        <Input
+                          type="number"
+                          value={donationSimpleData.nombreEnfants}
+                          onChange={(e) => setDonationSimpleData({...donationSimpleData, nombreEnfants: e.target.value})}
+                          placeholder="0"
+                        />
+                      </div>
+
+                      {donationSimpleData.nombreEnfants && parseInt(donationSimpleData.nombreEnfants) > 0 && (
+                        <div className="space-y-3">
+                          <Label>Identité des enfants</Label>
+                          {donationSimpleData.enfants.map((enfant, idx) => (
+                            <div key={enfant.id} className="p-3 border rounded-lg space-y-2 bg-muted/10">
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">Enfant #{idx + 1}</span>
+                                {donationSimpleData.enfants.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newEnfants = donationSimpleData.enfants.filter((_, i) => i !== idx);
+                                      setDonationSimpleData({...donationSimpleData, enfants: newEnfants});
+                                    }}
+                                    className="text-red-600 text-xs"
+                                  >
+                                    Supprimer
+                                  </button>
+                                )}
+                              </div>
+                              <div className="grid grid-cols-3 gap-2">
+                                <Input
+                                  placeholder="Nom"
+                                  value={enfant.nom}
+                                  onChange={(e) => {
+                                    const newEnfants = [...donationSimpleData.enfants];
+                                    newEnfants[idx].nom = e.target.value;
+                                    setDonationSimpleData({...donationSimpleData, enfants: newEnfants});
+                                  }}
+                                />
+                                <Input
+                                  placeholder="Prénom"
+                                  value={enfant.prenom}
+                                  onChange={(e) => {
+                                    const newEnfants = [...donationSimpleData.enfants];
+                                    newEnfants[idx].prenom = e.target.value;
+                                    setDonationSimpleData({...donationSimpleData, enfants: newEnfants});
+                                  }}
+                                />
+                                <Input
+                                  type="date"
+                                  placeholder="Date naissance"
+                                  value={enfant.dateNaissance}
+                                  onChange={(e) => {
+                                    const newEnfants = [...donationSimpleData.enfants];
+                                    newEnfants[idx].dateNaissance = e.target.value;
+                                    setDonationSimpleData({...donationSimpleData, enfants: newEnfants});
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDonationSimpleData({
+                                ...donationSimpleData,
+                                enfants: [...donationSimpleData.enfants, {
+                                  id: Date.now(),
+                                  nom: "",
+                                  prenom: "",
+                                  dateNaissance: "",
+                                }]
+                              });
+                            }}
+                            className="text-sm text-blue-600 hover:underline"
+                          >
+                            + Ajouter un enfant
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="space-y-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <Label className="text-sm font-medium">Type de donation (impact sur succession)</Label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="hors_part"
+                            checked={donationSimpleData.donationHorsPartSuccessorale}
+                            onChange={(e) => setDonationSimpleData({
+                              ...donationSimpleData,
+                              donationHorsPartSuccessorale: e.target.checked,
+                              donationAvancementPart: e.target.checked ? false : donationSimpleData.donationAvancementPart
+                            })}
+                          />
+                          <label htmlFor="hors_part" className="text-sm cursor-pointer">
+                            Donation hors part successorale (non rapportable)
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="avancement_part"
+                            checked={donationSimpleData.donationAvancementPart}
+                            onChange={(e) => setDonationSimpleData({
+                              ...donationSimpleData,
+                              donationAvancementPart: e.target.checked,
+                              donationHorsPartSuccessorale: e.target.checked ? false : donationSimpleData.donationHorsPartSuccessorale
+                            })}
+                          />
+                          <label htmlFor="avancement_part" className="text-sm cursor-pointer">
+                            Donation en avancement de part successorale (rapportable)
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Placeholder sections 5-8 */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 3 à 8 à venir (donataire, enfants, biens, clauses, documents)
+                    ⚠️ Sections 5 à 8 à venir (description biens, clauses optionnelles, mentions légales, documents)
                   </div>
 
                 </div>
