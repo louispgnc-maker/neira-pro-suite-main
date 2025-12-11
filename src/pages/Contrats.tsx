@@ -21085,16 +21085,20 @@ FIN DE LA CONVENTION
                         onValueChange={(value) => {
                           const client = clients.find(c => c.id === value);
                           if (client) {
-                            // Extraire situation familiale depuis situation_familiale ou situation_matrimoniale
+                            // Extraire situation familiale
                             let situationFam = "";
+                            // D'abord vérifier si c'est directement une string dans situation_familiale
                             if (typeof client.situation_familiale === "string") {
                               situationFam = client.situation_familiale;
-                            } else if (typeof client.situation_matrimoniale === "string") {
+                            }
+                            // Sinon vérifier situation_matrimoniale
+                            else if (typeof client.situation_matrimoniale === "string") {
                               situationFam = client.situation_matrimoniale;
-                            } else if (client.situation_familiale && typeof client.situation_familiale === "object") {
-                              // Si c'est un objet JSON, essayer d'extraire les données
+                            }
+                            // Sinon si c'est un objet, extraire les données
+                            else if (client.situation_familiale && typeof client.situation_familiale === "object") {
                               const sitFam = client.situation_familiale;
-                              situationFam = sitFam.situation_matrimoniale || sitFam.etat_civil || "";
+                              situationFam = sitFam.situation_matrimoniale || sitFam.situation_familiale || sitFam.etat_civil || "";
                             }
                             
                             // Extraire régime matrimonial si marié
@@ -21102,6 +21106,10 @@ FIN DE LA CONVENTION
                             if (client.situation_familiale && typeof client.situation_familiale === "object") {
                               regimeMat = client.situation_familiale.regime_matrimonial || "";
                             }
+                            
+                            console.log('Client sélectionné:', client);
+                            console.log('Situation familiale extraite:', situationFam);
+                            console.log('Régime matrimonial extrait:', regimeMat);
                             
                             setDonationSimpleData({
                               ...donationSimpleData,
