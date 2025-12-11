@@ -21568,9 +21568,468 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Placeholder sections 5-8 */}
+                  {/* 5. Description complète du ou des biens donnés */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Description complète du ou des biens donnés</h3>
+                    
+                    {/* A. Bien immobilier */}
+                    {donationSimpleData.typeDonation === "biens_immobiliers" && (
+                      <div className="p-4 border rounded-lg space-y-3 bg-muted/10">
+                        <h4 className="font-medium">🏠 Bien immobilier</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={donationSimpleData.bienImmobilier.adresseComplete}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, adresseComplete: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nature du bien</Label>
+                            <Select
+                              value={donationSimpleData.bienImmobilier.natureBien}
+                              onValueChange={(value) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, natureBien: value}
+                              })}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="maison">Maison</SelectItem>
+                                <SelectItem value="appartement">Appartement</SelectItem>
+                                <SelectItem value="terrain">Terrain</SelectItem>
+                                <SelectItem value="dependances">Dépendances</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Situation locative</Label>
+                            <Select
+                              value={donationSimpleData.bienImmobilier.situationLocative}
+                              onValueChange={(value) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, situationLocative: value}
+                              })}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="libre">Libre</SelectItem>
+                                <SelectItem value="loue">Loué</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Section cadastrale</Label>
+                            <Input
+                              value={donationSimpleData.bienImmobilier.sectionCadastrale}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, sectionCadastrale: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro cadastral</Label>
+                            <Input
+                              value={donationSimpleData.bienImmobilier.numeroCadastral}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, numeroCadastral: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Contenance</Label>
+                            <Input
+                              value={donationSimpleData.bienImmobilier.contenance}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, contenance: e.target.value}
+                              })}
+                              placeholder="Ex: 500m²"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Valeur vénale <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="number"
+                              value={donationSimpleData.bienImmobilier.valeurVenale}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, valeurVenale: e.target.value}
+                              })}
+                              placeholder="€"
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Description détaillée</Label>
+                            <textarea
+                              className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                              value={donationSimpleData.bienImmobilier.descriptionDetaille}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, descriptionDetaille: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="flex items-center space-x-2 md:col-span-2">
+                            <input
+                              type="checkbox"
+                              id="existence_hypotheques"
+                              checked={donationSimpleData.bienImmobilier.existenceHypotheques}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, existenceHypotheques: e.target.checked}
+                              })}
+                            />
+                            <label htmlFor="existence_hypotheques" className="text-sm cursor-pointer">
+                              Existence d'hypothèques
+                            </label>
+                          </div>
+
+                          {donationSimpleData.bienImmobilier.existenceHypotheques && (
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Montant des hypothèques</Label>
+                              <Input
+                                type="number"
+                                value={donationSimpleData.bienImmobilier.montantHypotheques}
+                                onChange={(e) => setDonationSimpleData({
+                                  ...donationSimpleData,
+                                  bienImmobilier: {...donationSimpleData.bienImmobilier, montantHypotheques: e.target.value}
+                                })}
+                                placeholder="€"
+                              />
+                            </div>
+                          )}
+
+                          <div className="space-y-2">
+                            <Label>Répartition usufruit</Label>
+                            <Input
+                              value={donationSimpleData.bienImmobilier.repartitionUsufruit}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, repartitionUsufruit: e.target.value}
+                              })}
+                              placeholder="Ex: 40%"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Répartition nue-propriété</Label>
+                            <Input
+                              value={donationSimpleData.bienImmobilier.repartitionNuePropriete}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienImmobilier: {...donationSimpleData.bienImmobilier, repartitionNuePropriete: e.target.value}
+                              })}
+                              placeholder="Ex: 60%"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* B. Bien mobilier corporel */}
+                    {donationSimpleData.typeDonation === "biens_meubles" && (
+                      <div className="p-4 border rounded-lg space-y-3 bg-muted/10">
+                        <h4 className="font-medium">🚗 Bien mobilier corporel</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Description précise du bien <span className="text-red-500">*</span></Label>
+                            <textarea
+                              className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                              value={donationSimpleData.bienMobilier.descriptionPrecise}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienMobilier: {...donationSimpleData.bienMobilier, descriptionPrecise: e.target.value}
+                              })}
+                              placeholder="Voiture, bijoux, œuvre d'art, mobilier, matériel..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro de série (si véhicule ou matériel)</Label>
+                            <Input
+                              value={donationSimpleData.bienMobilier.numeroSerie}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienMobilier: {...donationSimpleData.bienMobilier, numeroSerie: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Valeur estimée <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="number"
+                              value={donationSimpleData.bienMobilier.valeurEstimee}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienMobilier: {...donationSimpleData.bienMobilier, valeurEstimee: e.target.value}
+                              })}
+                              placeholder="€"
+                            />
+                          </div>
+
+                          <div className="flex items-center space-x-2 md:col-span-2">
+                            <input
+                              type="checkbox"
+                              id="facture_existante"
+                              checked={donationSimpleData.bienMobilier.factureExistante}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                bienMobilier: {...donationSimpleData.bienMobilier, factureExistante: e.target.checked}
+                              })}
+                            />
+                            <label htmlFor="facture_existante" className="text-sm cursor-pointer">
+                              Facture existante
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* C. Somme d'argent */}
+                    {donationSimpleData.typeDonation === "sommes_argent" && (
+                      <div className="p-4 border rounded-lg space-y-3 bg-muted/10">
+                        <h4 className="font-medium">💰 Somme d'argent</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Montant exact <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="number"
+                              value={donationSimpleData.sommesArgent.montantExact}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                sommesArgent: {...donationSimpleData.sommesArgent, montantExact: e.target.value}
+                              })}
+                              placeholder="€"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Provenance du fonds</Label>
+                            <Input
+                              value={donationSimpleData.sommesArgent.provenanceFonds}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                sommesArgent: {...donationSimpleData.sommesArgent, provenanceFonds: e.target.value}
+                              })}
+                              placeholder="Ex: Épargne, vente bien, héritage..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Modalité <span className="text-red-500">*</span></Label>
+                            <Select
+                              value={donationSimpleData.sommesArgent.modalite}
+                              onValueChange={(value) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                sommesArgent: {...donationSimpleData.sommesArgent, modalite: value}
+                              })}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="virement">Virement</SelectItem>
+                                <SelectItem value="cheque">Chèque</SelectItem>
+                                <SelectItem value="especes">Espèces</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Date du transfert</Label>
+                            <Input
+                              type="date"
+                              value={donationSimpleData.sommesArgent.dateTransfert}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                sommesArgent: {...donationSimpleData.sommesArgent, dateTransfert: e.target.value}
+                              })}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* D. Parts sociales / actions */}
+                    {donationSimpleData.typeDonation === "parts_sociales" && (
+                      <div className="p-4 border rounded-lg space-y-3 bg-muted/10">
+                        <h4 className="font-medium">📈 Parts sociales / Actions</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Type de société <span className="text-red-500">*</span></Label>
+                            <Input
+                              value={donationSimpleData.partsSociales.typeSociete}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                partsSociales: {...donationSimpleData.partsSociales, typeSociete: e.target.value}
+                              })}
+                              placeholder="Ex: SARL, SAS, SA..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Nombre de parts/actions <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="number"
+                              value={donationSimpleData.partsSociales.nombreParts}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                partsSociales: {...donationSimpleData.partsSociales, nombreParts: e.target.value}
+                              })}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Valeur unitaire <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="number"
+                              value={donationSimpleData.partsSociales.valeurUnitaire}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                partsSociales: {...donationSimpleData.partsSociales, valeurUnitaire: e.target.value}
+                              })}
+                              placeholder="€"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Pourcentage du capital</Label>
+                            <Input
+                              type="number"
+                              value={donationSimpleData.partsSociales.pourcentageCapital}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                partsSociales: {...donationSimpleData.partsSociales, pourcentageCapital: e.target.value}
+                              })}
+                              placeholder="%"
+                            />
+                          </div>
+
+                          <div className="flex items-center space-x-2 md:col-span-2">
+                            <input
+                              type="checkbox"
+                              id="agrement_obligatoire"
+                              checked={donationSimpleData.partsSociales.agrementObligatoire}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                partsSociales: {...donationSimpleData.partsSociales, agrementObligatoire: e.target.checked}
+                              })}
+                            />
+                            <label htmlFor="agrement_obligatoire" className="text-sm cursor-pointer">
+                              Agrément obligatoire
+                            </label>
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Clauses spécifiques (inaliénabilité...)</Label>
+                            <textarea
+                              className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                              value={donationSimpleData.partsSociales.clausesSpecifiques}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                partsSociales: {...donationSimpleData.partsSociales, clausesSpecifiques: e.target.value}
+                              })}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* E. Nue-propriété / Usufruit */}
+                    {(donationSimpleData.typeDonation === "nue_propriete" || donationSimpleData.typeDonation === "usufruit") && (
+                      <div className="p-4 border rounded-lg space-y-3 bg-muted/10">
+                        <h4 className="font-medium">🔓 Nue-propriété / Usufruit</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Valeur de la nue-propriété <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="number"
+                              value={donationSimpleData.nueProprieteUsufruit.valeurNuePropriete}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                nueProprieteUsufruit: {...donationSimpleData.nueProprieteUsufruit, valeurNuePropriete: e.target.value}
+                              })}
+                              placeholder="€"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Valeur de l'usufruit <span className="text-red-500">*</span></Label>
+                            <Input
+                              type="number"
+                              value={donationSimpleData.nueProprieteUsufruit.valeurUsufruit}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                nueProprieteUsufruit: {...donationSimpleData.nueProprieteUsufruit, valeurUsufruit: e.target.value}
+                              })}
+                              placeholder="€"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Durée</Label>
+                            <Select
+                              value={donationSimpleData.nueProprieteUsufruit.duree}
+                              onValueChange={(value) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                nueProprieteUsufruit: {...donationSimpleData.nueProprieteUsufruit, duree: value}
+                              })}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="temporaire">Temporaire</SelectItem>
+                                <SelectItem value="viager">Viager</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Répartition des charges</Label>
+                            <Input
+                              value={donationSimpleData.nueProprieteUsufruit.repartitionCharges}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                nueProprieteUsufruit: {...donationSimpleData.nueProprieteUsufruit, repartitionCharges: e.target.value}
+                              })}
+                              placeholder="Ex: Charges courantes / grosses réparations..."
+                            />
+                          </div>
+
+                          <div className="flex items-center space-x-2 md:col-span-2">
+                            <input
+                              type="checkbox"
+                              id="usufruit_simultane"
+                              checked={donationSimpleData.nueProprieteUsufruit.usufruitSimultaneConjoint}
+                              onChange={(e) => setDonationSimpleData({
+                                ...donationSimpleData,
+                                nueProprieteUsufruit: {...donationSimpleData.nueProprieteUsufruit, usufruitSimultaneConjoint: e.target.checked}
+                              })}
+                            />
+                            <label htmlFor="usufruit_simultane" className="text-sm cursor-pointer">
+                              Usufruit simultané du conjoint (rare)
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Placeholder sections 6-8 */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 5 à 8 à venir (description biens, clauses optionnelles, mentions légales, documents)
+                    ⚠️ Sections 6 à 8 à venir (clauses optionnelles, mentions légales, documents)
                   </div>
 
                 </div>
