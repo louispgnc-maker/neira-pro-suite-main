@@ -24780,9 +24780,266 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Placeholder pour sections 5.5-11 */}
+                  {/* 5.5 Dispositions d'usufruit */}
+                  <div className="p-4 border rounded-lg space-y-3 bg-pink-50/40">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="usufruit"
+                        checked={testamentData.dispositionsTestamentaires.usufruit.actif}
+                        onChange={(e) => setTestamentData({
+                          ...testamentData,
+                          dispositionsTestamentaires: {
+                            ...testamentData.dispositionsTestamentaires,
+                            usufruit: {...testamentData.dispositionsTestamentaires.usufruit, actif: e.target.checked}
+                          }
+                        })}
+                      />
+                      <label htmlFor="usufruit" className="font-medium cursor-pointer">
+                        Démembrement de propriété (usufruit / nue-propriété)
+                      </label>
+                    </div>
+
+                    {testamentData.dispositionsTestamentaires.usufruit.actif && (
+                      <div className="ml-6 space-y-3 p-3 bg-white rounded-lg">
+                        <div className="space-y-2">
+                          <Label>Usufruitier (nom et prénom)</Label>
+                          <Input
+                            value={testamentData.dispositionsTestamentaires.usufruit.usufruitier}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                usufruit: {...testamentData.dispositionsTestamentaires.usufruit, usufruitier: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nu-propriétaire (nom et prénom)</Label>
+                          <Input
+                            value={testamentData.dispositionsTestamentaires.usufruit.nuProprietaire}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                usufruit: {...testamentData.dispositionsTestamentaires.usufruit, nuProprietaire: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Biens concernés</Label>
+                          <textarea
+                            className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                            value={testamentData.dispositionsTestamentaires.usufruit.biensConcernes}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                usufruit: {...testamentData.dispositionsTestamentaires.usufruit, biensConcernes: e.target.value}
+                              }
+                            })}
+                            placeholder="Préciser les biens concernés par le démembrement..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Durée / modalités</Label>
+                          <Input
+                            value={testamentData.dispositionsTestamentaires.usufruit.dureeModalites}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                usufruit: {...testamentData.dispositionsTestamentaires.usufruit, dureeModalites: e.target.value}
+                              }
+                            })}
+                            placeholder="Ex: jusqu'au décès de l'usufruitier, pendant 10 ans..."
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 5.6 Droit de retour */}
+                  <div className="p-4 border rounded-lg space-y-3 bg-cyan-50/40">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="droit_retour"
+                        checked={testamentData.dispositionsTestamentaires.droitRetour.actif}
+                        onChange={(e) => setTestamentData({
+                          ...testamentData,
+                          dispositionsTestamentaires: {
+                            ...testamentData.dispositionsTestamentaires,
+                            droitRetour: {...testamentData.dispositionsTestamentaires.droitRetour, actif: e.target.checked}
+                          }
+                        })}
+                      />
+                      <label htmlFor="droit_retour" className="font-medium cursor-pointer">
+                        Clause de droit de retour
+                      </label>
+                    </div>
+
+                    {testamentData.dispositionsTestamentaires.droitRetour.actif && (
+                      <div className="ml-6 space-y-2 p-3 bg-white rounded-lg">
+                        <Label>Description du droit de retour</Label>
+                        <textarea
+                          className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                          value={testamentData.dispositionsTestamentaires.droitRetour.description}
+                          onChange={(e) => setTestamentData({
+                            ...testamentData,
+                            dispositionsTestamentaires: {
+                              ...testamentData.dispositionsTestamentaires,
+                              droitRetour: {...testamentData.dispositionsTestamentaires.droitRetour, description: e.target.value}
+                            }
+                          })}
+                          placeholder="Conditions de retour des biens si le légataire décède avant le testateur..."
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 5.7 Exhérédation */}
+                  <div className="p-4 border rounded-lg space-y-3 bg-red-50/40 border-red-200">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="exheredation"
+                        checked={testamentData.dispositionsTestamentaires.exheredation.actif}
+                        onChange={(e) => setTestamentData({
+                          ...testamentData,
+                          dispositionsTestamentaires: {
+                            ...testamentData.dispositionsTestamentaires,
+                            exheredation: {...testamentData.dispositionsTestamentaires.exheredation, actif: e.target.checked}
+                          }
+                        })}
+                      />
+                      <label htmlFor="exheredation" className="font-medium cursor-pointer">
+                        Exhérédation (dans la limite de la quotité disponible)
+                      </label>
+                    </div>
+
+                    {testamentData.dispositionsTestamentaires.exheredation.actif && (
+                      <div className="ml-6 space-y-3 p-3 bg-white rounded-lg">
+                        <div className="space-y-2">
+                          <Label>Personne exhérédée (nom et prénom)</Label>
+                          <Input
+                            value={testamentData.dispositionsTestamentaires.exheredation.personne}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                exheredation: {...testamentData.dispositionsTestamentaires.exheredation, personne: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Motifs / justification</Label>
+                          <textarea
+                            className="w-full min-h-[80px] p-2 border rounded-md text-sm"
+                            value={testamentData.dispositionsTestamentaires.exheredation.motifs}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                exheredation: {...testamentData.dispositionsTestamentaires.exheredation, motifs: e.target.value}
+                              }
+                            })}
+                            placeholder="Indiquer les raisons légales de l'exhérédation..."
+                          />
+                        </div>
+                        <p className="text-xs text-red-600 italic">
+                          ⚠️ Rappel : la réserve héréditaire est toujours protégée par la loi
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 5.8 Exécuteur testamentaire */}
+                  <div className="p-4 border rounded-lg space-y-3 bg-teal-50/40">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="executeur"
+                        checked={testamentData.dispositionsTestamentaires.executeurTestamentaire.actif}
+                        onChange={(e) => setTestamentData({
+                          ...testamentData,
+                          dispositionsTestamentaires: {
+                            ...testamentData.dispositionsTestamentaires,
+                            executeurTestamentaire: {...testamentData.dispositionsTestamentaires.executeurTestamentaire, actif: e.target.checked}
+                          }
+                        })}
+                      />
+                      <label htmlFor="executeur" className="font-medium cursor-pointer">
+                        Désignation d'un exécuteur testamentaire
+                      </label>
+                    </div>
+
+                    {testamentData.dispositionsTestamentaires.executeurTestamentaire.actif && (
+                      <div className="ml-6 space-y-3 p-3 bg-white rounded-lg">
+                        <div className="space-y-2">
+                          <Label>Nom de l'exécuteur <span className="text-red-500">*</span></Label>
+                          <Input
+                            value={testamentData.dispositionsTestamentaires.executeurTestamentaire.nom}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                executeurTestamentaire: {...testamentData.dispositionsTestamentaires.executeurTestamentaire, nom: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom de l'exécuteur <span className="text-red-500">*</span></Label>
+                          <Input
+                            value={testamentData.dispositionsTestamentaires.executeurTestamentaire.prenom}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                executeurTestamentaire: {...testamentData.dispositionsTestamentaires.executeurTestamentaire, prenom: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                          <Input
+                            value={testamentData.dispositionsTestamentaires.executeurTestamentaire.adresse}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                executeurTestamentaire: {...testamentData.dispositionsTestamentaires.executeurTestamentaire, adresse: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Mission confiée</Label>
+                          <textarea
+                            className="w-full min-h-[60px] p-2 border rounded-md text-sm"
+                            value={testamentData.dispositionsTestamentaires.executeurTestamentaire.mission}
+                            onChange={(e) => setTestamentData({
+                              ...testamentData,
+                              dispositionsTestamentaires: {
+                                ...testamentData.dispositionsTestamentaires,
+                                executeurTestamentaire: {...testamentData.dispositionsTestamentaires.executeurTestamentaire, mission: e.target.value}
+                              }
+                            })}
+                            placeholder="Décrire les pouvoirs et missions de l'exécuteur testamentaire..."
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Placeholder pour sections 6-11 */}
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-                    ⚠️ Sections 5.5 à 11 à venir (usufruit, exécuteur, patrimoine, formalités, documents)
+                    ⚠️ Sections 6 à 11 à venir (patrimoine, régime matrimonial, formalités, documents)
                   </div>
 
                 </div>
