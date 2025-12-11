@@ -21213,22 +21213,15 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Situation familiale <span className="text-red-500">*</span></Label>
-                        <Select
+                        <Input
                           value={donationSimpleData.donateur.situationFamiliale}
-                          onValueChange={(value) => setDonationSimpleData({
+                          onChange={(e) => setDonationSimpleData({
                             ...donationSimpleData,
-                            donateur: {...donationSimpleData.donateur, situationFamiliale: value}
+                            donateur: {...donationSimpleData.donateur, situationFamiliale: e.target.value}
                           })}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="celibataire">Célibataire</SelectItem>
-                            <SelectItem value="marie">Marié(e)</SelectItem>
-                            <SelectItem value="pacse">Pacsé(e)</SelectItem>
-                            <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                            <SelectItem value="veuf">Veuf/Veuve</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          placeholder="Rempli automatiquement depuis la fiche client"
+                          className="bg-muted/30"
+                        />
                       </div>
 
                       {donationSimpleData.donateur.situationFamiliale === "marie" && (
