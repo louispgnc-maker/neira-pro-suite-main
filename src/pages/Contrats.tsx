@@ -20185,6 +20185,8 @@ FIN DE LA CONVENTION
                   handleContratMariageSubmit();
                 } else if (pendingContractType === "PACS (convention + enregistrement)") {
                   handlePacsSubmit();
+                } else if (pendingContractType === "Donation entre époux") {
+                  handleDonationEntreEpouxSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
