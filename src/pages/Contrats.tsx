@@ -473,11 +473,18 @@ export default function Contrats() {
     regimeMatrimonial: {
       nature: "",
       contratMariage: "",
+      notaireContrat: "",
       biensPropres: "",
       biensCommuns: "",
       preciput: false,
       detailsPreciput: "",
     },
+    
+    // Testament antérieur
+    testamentAnterieur: false, // true / false
+    testamentAnterieurDate: "",
+    testamentAnterieurType: "", // authentique / mystique / olographe
+    testamentAnterieurNotaire: "",
     
     // 8. Testament authentique spécifique
     testamentAuthentique: {
@@ -23544,6 +23551,70 @@ FIN DE LA CONVENTION
                             )}
                           </div>
 
+                          {/* Testament antérieur */}
+                          <div className="border-t pt-4 space-y-3">
+                            <h4 className="font-medium">Testament antérieur existant ?</h4>
+                            <div className="flex items-center space-x-4">
+                              <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="testamentAnterieur"
+                                  checked={testamentData.testamentAnterieur === true}
+                                  onChange={() => setTestamentData({...testamentData, testamentAnterieur: true})}
+                                  className="w-4 h-4"
+                                />
+                                <span>Oui</span>
+                              </label>
+                              <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="testamentAnterieur"
+                                  checked={testamentData.testamentAnterieur === false}
+                                  onChange={() => setTestamentData({...testamentData, testamentAnterieur: false})}
+                                  className="w-4 h-4"
+                                />
+                                <span>Non</span>
+                              </label>
+                            </div>
+
+                            {testamentData.testamentAnterieur && (
+                              <div className="ml-6 p-3 bg-yellow-50 rounded-lg border border-yellow-300 space-y-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <Label>Date du précédent testament</Label>
+                                    <Input
+                                      type="date"
+                                      value={testamentData.testamentAnterieurDate}
+                                      onChange={(e) => setTestamentData({...testamentData, testamentAnterieurDate: e.target.value})}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Type du précédent testament</Label>
+                                    <Select
+                                      value={testamentData.testamentAnterieurType || undefined}
+                                      onValueChange={(value) => setTestamentData({...testamentData, testamentAnterieurType: value})}
+                                    >
+                                      <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="authentique">Testament authentique</SelectItem>
+                                        <SelectItem value="mystique">Testament mystique</SelectItem>
+                                        <SelectItem value="olographe">Testament olographe</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="space-y-2 md:col-span-2">
+                                    <Label>Notaire dépositaire (si connu)</Label>
+                                    <Input
+                                      value={testamentData.testamentAnterieurNotaire}
+                                      onChange={(e) => setTestamentData({...testamentData, testamentAnterieurNotaire: e.target.value})}
+                                      placeholder="Nom et adresse du notaire"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
                           <div className="flex items-center space-x-2">
                             <input
                               type="checkbox"
@@ -24661,6 +24732,120 @@ FIN DE LA CONVENTION
                             >
                               + Ajouter des parts sociales
                             </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 7️⃣ Régime matrimonial détaillé */}
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Régime matrimonial du testateur</h3>
+                        <div className="p-4 border-2 rounded-lg space-y-4 bg-purple-50/50 border-purple-300">
+                          <p className="text-sm text-gray-600">Informations sur le régime matrimonial (utile pour l'automatisation et le contrôle notarial)</p>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Nature du régime matrimonial</Label>
+                              <Select
+                                value={testamentData.regimeMatrimonial.nature || undefined}
+                                onValueChange={(value) => setTestamentData({
+                                  ...testamentData,
+                                  regimeMatrimonial: {...testamentData.regimeMatrimonial, nature: value}
+                                })}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="legal">Régime légal (communauté réduite aux acquêts)</SelectItem>
+                                  <SelectItem value="separation">Séparation de biens</SelectItem>
+                                  <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                                  <SelectItem value="participation">Participation aux acquêts</SelectItem>
+                                  <SelectItem value="autre">Autre régime</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Date du contrat de mariage</Label>
+                              <Input
+                                type="date"
+                                value={testamentData.regimeMatrimonial.contratMariage}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  regimeMatrimonial: {...testamentData.regimeMatrimonial, contratMariage: e.target.value}
+                                })}
+                              />
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Notaire ayant reçu le contrat</Label>
+                              <Input
+                                value={testamentData.regimeMatrimonial.notaireContrat}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  regimeMatrimonial: {...testamentData.regimeMatrimonial, notaireContrat: e.target.value}
+                                })}
+                                placeholder="Nom et office du notaire"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Biens propres (description sommaire)</Label>
+                              <textarea
+                                className="w-full p-2 border rounded-md"
+                                rows={2}
+                                value={testamentData.regimeMatrimonial.biensPropres}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  regimeMatrimonial: {...testamentData.regimeMatrimonial, biensPropres: e.target.value}
+                                })}
+                                placeholder="Ex: Biens acquis avant mariage, donations, successions..."
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Biens communs (description sommaire)</Label>
+                              <textarea
+                                className="w-full p-2 border rounded-md"
+                                rows={2}
+                                value={testamentData.regimeMatrimonial.biensCommuns}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  regimeMatrimonial: {...testamentData.regimeMatrimonial, biensCommuns: e.target.value}
+                                })}
+                                placeholder="Ex: Résidence principale, comptes joints..."
+                              />
+                            </div>
+                          </div>
+
+                          <div className="border-t pt-3">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="preciput"
+                                checked={testamentData.regimeMatrimonial.preciput}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  regimeMatrimonial: {...testamentData.regimeMatrimonial, preciput: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="preciput" className="cursor-pointer">Clause de préciput présente dans le contrat</Label>
+                            </div>
+
+                            {testamentData.regimeMatrimonial.preciput && (
+                              <div className="ml-6 mt-3">
+                                <Label>Détails du préciput</Label>
+                                <textarea
+                                  className="w-full p-2 border rounded-md mt-2"
+                                  rows={2}
+                                  value={testamentData.regimeMatrimonial.detailsPreciput}
+                                  onChange={(e) => setTestamentData({
+                                    ...testamentData,
+                                    regimeMatrimonial: {...testamentData.regimeMatrimonial, detailsPreciput: e.target.value}
+                                  })}
+                                  placeholder="Préciser les biens concernés par le préciput..."
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
