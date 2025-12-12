@@ -17390,7 +17390,7 @@ FIN DE LA CONVENTION
 
                   {/* 1. Informations générales */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Informations générales sur le PACS</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Informations générales sur le PACS</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Objet du PACS */}
@@ -17468,7 +17468,7 @@ FIN DE LA CONVENTION
 
                   {/* 2. Adresse commune */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Adresse commune (obligatoire)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Adresse commune (obligatoire)</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2 md:col-span-2">
                         <Label className="flex items-center gap-2">
@@ -17494,7 +17494,7 @@ FIN DE LA CONVENTION
 
                   {/* 3. Déclarations obligatoires */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Déclarations sur l'honneur (obligatoires)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Déclarations sur l'honneur (obligatoires)</h3>
                     <div className="space-y-3 p-4 border rounded-lg">
                       <div className="flex items-center space-x-2">
                         <input
@@ -17543,7 +17543,7 @@ FIN DE LA CONVENTION
 
                   {/* 4. Identité des partenaires */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Identité complète des partenaires</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète des partenaires</h3>
                     
                     {pacsData.partenaires.map((partenaire, index) => (
                       <div key={partenaire.id} className="p-4 border rounded-lg space-y-4 bg-muted/20">
@@ -17873,7 +17873,7 @@ FIN DE LA CONVENTION
                   {/* 5. Modification de PACS (si applicable) */}
                   {pacsData.objetPacs === "modification" && (
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Référence du PACS initial</h3>
+                      <h3 className="font-semibold text-lg border-b pb-2">Référence du PACS initial</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Date du PACS initial</Label>
@@ -17912,7 +17912,7 @@ FIN DE LA CONVENTION
 
                   {/* 6. Clauses du PACS */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Clauses du PACS</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Clauses du PACS</h3>
                     
                     {/* A. Contribution aux charges */}
                     <div className="space-y-3 p-4 border rounded-lg">
@@ -18067,7 +18067,7 @@ FIN DE LA CONVENTION
 
                   {/* 7. Enfants en commun */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Enfant(s) en commun (optionnel)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Enfant(s) en commun (optionnel)</h3>
                     <div className="space-y-2">
                       <Label>Avez-vous un ou plusieurs enfants en commun ?</Label>
                       <Select 
@@ -18175,7 +18175,7 @@ FIN DE LA CONVENTION
 
                   {/* 8. Biens préexistants */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Biens déjà acquis ensemble</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Biens déjà acquis ensemble</h3>
                     <div className="space-y-2">
                       <Label>Avez-vous déjà des biens acquis ensemble ?</Label>
                       <Select 
@@ -18285,7 +18285,7 @@ FIN DE LA CONVENTION
 
                   {/* 9. Droit applicable */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Droit applicable</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Droit applicable</h3>
                     <div className="space-y-2">
                       <Label>Droit applicable au PACS</Label>
                       <Select 
@@ -18310,7 +18310,7 @@ FIN DE LA CONVENTION
 
                   {/* 10. Pièces justificatives */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Pièces justificatives (obligatoires pour l'enregistrement)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Pièces justificatives (obligatoires pour l'enregistrement)</h3>
                     
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                       <p className="text-sm text-blue-800">
@@ -18947,7 +18947,7 @@ FIN DE LA CONVENTION
 
                   {/* 1. Informations générales sur la donation */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Informations générales sur la donation</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Informations générales sur la donation</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Type de donation */}
@@ -19021,7 +19021,7 @@ FIN DE LA CONVENTION
 
                   {/* 2. Identité complète des époux */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète des époux</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète des époux</h3>
                     
                     {donationEntreEpouxData.epoux.map((epoux, index) => (
                       <div key={epoux.id} className="p-4 border rounded-lg space-y-4 bg-muted/20">
@@ -19366,7 +19366,7 @@ FIN DE LA CONVENTION
 
                   {/* 3. Enfants et héritiers potentiels */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Enfants et héritiers potentiels</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Enfants et héritiers potentiels</h3>
                     
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                       <p className="text-sm text-blue-800">
@@ -19587,7 +19587,7 @@ FIN DE LA CONVENTION
 
                   {/* 4. Patrimoine des époux */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Patrimoine des époux</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Patrimoine des époux</h3>
                     
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                       <p className="text-sm text-blue-800">
@@ -19925,7 +19925,7 @@ FIN DE LA CONVENTION
                   {/* 5. Clauses de donation - Donation au dernier vivant */}
                   {(donationEntreEpouxData.typeDonation === "au_dernier_vivant" || donationEntreEpouxData.typeDonation === "mixte") && (
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Clauses de donation au dernier vivant</h3>
+                      <h3 className="font-semibold text-lg border-b pb-2">Clauses de donation au dernier vivant</h3>
                       
                       {/* Options successorales */}
                       <div className="space-y-3">
@@ -20202,7 +20202,7 @@ FIN DE LA CONVENTION
                   {/* 6. Clauses de donation - Donation de biens présents */}
                   {(donationEntreEpouxData.typeDonation === "biens_presents" || donationEntreEpouxData.typeDonation === "mixte") && (
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Clauses de donation de biens présents</h3>
+                      <h3 className="font-semibold text-lg border-b pb-2">Clauses de donation de biens présents</h3>
                       
                       <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
                         <p className="text-sm text-orange-800">
@@ -20399,7 +20399,7 @@ FIN DE LA CONVENTION
 
                   {/* 7. Clauses communes aux deux types de donation */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Clauses communes</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Clauses communes</h3>
                     
                     <div className="space-y-3">
                       <div className="space-y-2">
@@ -20757,7 +20757,7 @@ FIN DE LA CONVENTION
 
                   {/* 8. Documents à joindre / à collecter */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Documents à joindre / à collecter</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Documents à joindre / à collecter</h3>
                     
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                       <p className="text-sm text-blue-800">
@@ -21484,7 +21484,7 @@ FIN DE LA CONVENTION
                   
                   {/* 1. Type de donation */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Type de donation</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Type de donation</h3>
                     
                     <div className="space-y-3">
                       <Label>Type de donation <span className="text-red-500">*</span></Label>
@@ -21585,7 +21585,7 @@ FIN DE LA CONVENTION
 
                   {/* 2. Identité du donateur */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du donateur</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète du donateur</h3>
                     
                     <div className="space-y-2">
                       <Label>Sélectionner un client (optionnel)</Label>
@@ -21807,7 +21807,7 @@ FIN DE LA CONVENTION
 
                   {/* 3. Identité du donataire */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité complète du donataire</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète du donataire</h3>
                     <p className="text-sm text-muted-foreground">Personne qui reçoit la donation</p>
                     
                     <div className="space-y-2">
@@ -22001,7 +22001,7 @@ FIN DE LA CONVENTION
 
                   {/* 4. Enfants / héritiers du donateur */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Enfants / héritiers du donateur</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Enfants / héritiers du donateur</h3>
                     <p className="text-sm text-muted-foreground">Obligatoire pour vérifier qu'on n'empiète pas sur la réserve héréditaire</p>
                     
                     <div className="space-y-3">
@@ -22125,7 +22125,7 @@ FIN DE LA CONVENTION
 
                   {/* 5. Description complète du ou des biens donnés */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Description complète du ou des biens donnés</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Description complète du ou des biens donnés</h3>
                     
                     {/* A. Bien immobilier */}
                     {donationSimpleData.typeDonation === "biens_immobiliers" && (
@@ -22584,7 +22584,7 @@ FIN DE LA CONVENTION
 
                   {/* 6. Clauses optionnelles */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Clauses optionnelles de donation</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Clauses optionnelles de donation</h3>
                     
                     {/* A. Réserve d'usufruit */}
                     <div className="p-3 border rounded-lg space-y-3 bg-blue-50/30">
@@ -22840,7 +22840,7 @@ FIN DE LA CONVENTION
 
                   {/* 7. Acceptation du donataire */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Acceptation du donataire</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Acceptation du donataire</h3>
                     <p className="text-sm text-muted-foreground">La donation n'existe légalement que si l'acceptation est expresse</p>
                     
                     <div className="p-4 border rounded-lg space-y-4 bg-blue-50/30">
@@ -22915,7 +22915,7 @@ FIN DE LA CONVENTION
 
                   {/* 8. Modalités de remise du bien */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Modalités de remise / transfert du bien</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Modalités de remise / transfert du bien</h3>
                     <p className="text-sm text-muted-foreground">Le Code civil exige de préciser quand et comment le donataire reçoit réellement la chose</p>
                     
                     <div className="p-4 border rounded-lg space-y-4 bg-purple-50/30">
@@ -23007,7 +23007,7 @@ FIN DE LA CONVENTION
 
                   {/* 9. Mentions légales obligatoires */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Mentions légales obligatoires</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Mentions légales obligatoires</h3>
                     <p className="text-sm text-muted-foreground">L'acte doit impérativement contenir :</p>
                     
                     <div className="space-y-2 p-4 bg-amber-50 border border-amber-200 rounded-lg">
@@ -23125,7 +23125,7 @@ FIN DE LA CONVENTION
 
                   {/* 10. Documents obligatoires à collecter */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Documents obligatoires à collecter</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Documents obligatoires à collecter</h3>
                     
                     {/* Documents donateur */}
                     <div className="p-4 border rounded-lg space-y-4 bg-muted/10">
@@ -23479,9 +23479,9 @@ FIN DE LA CONVENTION
                   {testamentData.typeTestament === "authentique" && (
                     <div className="space-y-6">
                       
-                      {/* 1️⃣ Informations générales */}
+                      {/* Informations générales */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Informations générales sur le testament</h3>
+                        <h3 className="font-semibold text-lg border-b pb-2">Informations générales sur le testament</h3>
                         <div className="p-4 border-2 rounded-lg space-y-4 bg-gray-50/50 border-gray-300">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -23667,9 +23667,9 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
 
-                      {/* 2️⃣ Identité testateur */}
+                      {/* Identité testateur */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du testateur</h3>
+                        <h3 className="font-semibold text-lg border-b pb-2">Identité complète du testateur</h3>
                         <div className="p-4 border-2 rounded-lg space-y-4 bg-blue-50/50 border-blue-300">
                           <div className="space-y-2">
                             <Label>Sélectionner un client (optionnel)</Label>
@@ -23853,9 +23853,9 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
 
-                      {/* 3️⃣ Héritiers réservataires */}
+                      {/* Héritiers réservataires */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Héritiers réservataires (personnes protégées par la loi)</h3>
+                        <h3 className="font-semibold text-lg border-b pb-2">Héritiers réservataires (personnes protégées par la loi)</h3>
                         <div className="p-4 border-2 rounded-lg space-y-4 bg-green-50/50 border-green-300">
                           
                           {/* Enfants */}
@@ -24074,9 +24074,9 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
 
-                      {/* 4️⃣ Légataires */}
+                      {/* Légataires */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Légataires (bénéficiaires du testament)</h3>
+                        <h3 className="font-semibold text-lg border-b pb-2">Légataires (bénéficiaires du testament)</h3>
                         <div className="p-4 border-2 rounded-lg space-y-4 bg-purple-50/50 border-purple-300">
                           <p className="text-sm text-gray-600">Personnes ou entités désignées pour recevoir des biens</p>
                           
@@ -24149,9 +24149,9 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
 
-                      {/* 5️⃣ Dispositions testamentaires */}
+                      {/* Dispositions testamentaires */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Dispositions testamentaires</h3>
+                        <h3 className="font-semibold text-lg border-b pb-2">Dispositions testamentaires</h3>
                         <div className="p-4 border-2 rounded-lg space-y-4 bg-yellow-50/50 border-yellow-300">
                           
                           <div className="flex items-center space-x-2">
@@ -24445,9 +24445,9 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
 
-                      {/* 6️⃣ Patrimoine */}
+                      {/* Patrimoine */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Description du patrimoine du testateur</h3>
+                        <h3 className="font-semibold text-lg border-b pb-2">Description du patrimoine du testateur</h3>
                         <div className="p-4 border-2 rounded-lg space-y-4 bg-orange-50/50 border-orange-300">
                           
                           {/* Biens immobiliers */}
@@ -24736,9 +24736,9 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
 
-                      {/* 7️⃣ Régime matrimonial détaillé */}
+                      {/* Régime matrimonial détaillé */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Régime matrimonial du testateur</h3>
+                        <h3 className="font-semibold text-lg border-b pb-2">Régime matrimonial du testateur</h3>
                         <div className="p-4 border-2 rounded-lg space-y-4 bg-purple-50/50 border-purple-300">
                           <p className="text-sm text-gray-600">Informations sur le régime matrimonial (utile pour l'automatisation et le contrôle notarial)</p>
                           
@@ -24850,9 +24850,9 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
 
-                      {/* 8️⃣ Formalités spécifiques */}
+                      {/* Formalités spécifiques */}
                       <div className="space-y-4">
-                        <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Formalités spécifiques - Testament authentique</h3>
+                        <h3 className="font-semibold text-lg border-b pb-2">Formalités spécifiques - Testament authentique</h3>
                         <div className="p-4 border-2 rounded-lg space-y-4 bg-blue-50/50 border-blue-300">
                         {/* Notaire */}
                         <div className="space-y-3">
@@ -25414,9 +25414,9 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
 
-                    {/* 🔟 Mentions légales */}
+                    {/* Mentions légales */}
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-lg border-b pb-2">🔟 Mentions légales et rappels</h3>
+                      <h3 className="font-semibold text-lg border-b pb-2">Mentions légales et rappels</h3>
                       <div className="p-4 border-2 rounded-lg space-y-3 bg-red-50/50 border-red-300">
                         
                         <div className="flex items-center space-x-2">
@@ -25533,9 +25533,9 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
 
-                    {/* 1️⃣1️⃣ Documents obligatoires */}
+                    {/* Documents obligatoires */}
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Documents obligatoires à collecter</h3>
+                      <h3 className="font-semibold text-lg border-b pb-2">Documents obligatoires à collecter</h3>
                       <div className="p-4 border-2 rounded-lg space-y-5 bg-indigo-50/50 border-indigo-300">
                         
                         {/* Documents du testateur */}
@@ -25843,7 +25843,7 @@ FIN DE LA CONVENTION
                   {/* 9. Testament mystique spécifique */}
                   {testamentData.typeTestament === "mystique" && (
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Formalités spécifiques - Testament mystique</h3>
+                      <h3 className="font-semibold text-lg border-b pb-2">Formalités spécifiques - Testament mystique</h3>
                       
                       <div className="p-4 border-2 rounded-lg space-y-4 bg-purple-50/50 border-purple-300">
                         {/* Rédaction */}
@@ -26501,7 +26501,7 @@ FIN DE LA CONVENTION
 
                   {/* 10. Mentions légales obligatoires */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Mentions légales et rappels</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Mentions légales et rappels</h3>
                     
                     <div className="p-4 border rounded-lg space-y-3 bg-gray-50/50">
                       <div className="flex items-center space-x-2">
@@ -26613,7 +26613,7 @@ FIN DE LA CONVENTION
 
                   {/* 11. Documents à collecter */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Documents obligatoires à collecter</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Documents obligatoires à collecter</h3>
                     
                     {/* Testateur */}
                     <div className="space-y-3 p-4 border rounded-lg bg-blue-50/30">
