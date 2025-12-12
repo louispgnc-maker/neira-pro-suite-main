@@ -6864,7 +6864,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Extrait Kbis</Label>
                         <button
                           type="button"
-                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
                           onClick={() => document.getElementById('kbis-vendeur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -6930,7 +6930,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Joindre le mandat (PDF)</Label>
                         <button
                           type="button"
-                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
                           onClick={() => document.getElementById('mandat-vendeur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7411,7 +7411,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Extrait Kbis</Label>
                         <button
                           type="button"
-                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
                           onClick={() => document.getElementById('kbis-acheteur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7477,7 +7477,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Joindre le mandat (PDF)</Label>
                         <button
                           type="button"
-                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
                           onClick={() => document.getElementById('mandat-acheteur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7919,7 +7919,7 @@ FIN DE LA CONVENTION
                           <Label>📎 Bail locatif (PDF)</Label>
                           <button
                             type="button"
-                            className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                            className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
                             onClick={() => document.getElementById('bail-locatif')?.click()}
                           >
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26870,7 +26870,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentIdentiteTestateur')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentIdentiteTestateur')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -26908,7 +26908,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentLivretFamille')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentLivretFamille')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -26946,7 +26946,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentCapaciteJuridique')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentCapaciteJuridique')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -26989,7 +26989,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentIdentiteTemoins')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentIdentiteTemoins')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27027,7 +27027,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentDomicileTemoins')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentDomicileTemoins')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27065,7 +27065,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentAttestationsTemoins')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentAttestationsTemoins')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27103,7 +27103,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentCasiersTemoins')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentCasiersTemoins')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27146,7 +27146,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentTitresPropriete')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentTitresPropriete')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27184,7 +27184,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentRelevesBancaires')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentRelevesBancaires')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27222,7 +27222,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentContratMariage')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentContratMariage')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27260,7 +27260,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentAutresJustificatifs')?.click()}>
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer" onClick={() => document.getElementById('testamentAutresJustificatifs')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
