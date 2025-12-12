@@ -23608,7 +23608,6 @@ FIN DE LA CONVENTION
                             >
                               <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">Aucun client sélectionné</SelectItem>
                                 {/* Ici on mappera les clients réels */}
                               </SelectContent>
                             </Select>
