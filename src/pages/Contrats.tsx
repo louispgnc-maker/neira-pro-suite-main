@@ -2951,6 +2951,14 @@ export default function Contrats() {
       return;
     }
     
+    // Si c'est un changement de régime matrimonial, ouvrir le questionnaire spécifique
+    if (contractType === "Changement de régime matrimonial" && categoryKey === "Famille & Patrimoine") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
     // Sinon, créer directement le contrat
     try {
       const { data, error } = await supabase
