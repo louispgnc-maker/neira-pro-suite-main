@@ -23485,7 +23485,7 @@ FIN DE LA CONVENTION
                             <div className="space-y-2">
                               <Label>Caractère du testament <span className="text-red-500">*</span></Label>
                               <Select
-                                value={testamentData.testamentAuthentique.caractere}
+                                value={testamentData.testamentAuthentique.caractere || undefined}
                                 onValueChange={(value) => setTestamentData({
                                   ...testamentData,
                                   testamentAuthentique: {...testamentData.testamentAuthentique, caractere: value}
@@ -23515,7 +23515,7 @@ FIN DE LA CONVENTION
                             <div className="space-y-2">
                               <Label>Langue comprise par le testateur <span className="text-red-500">*</span></Label>
                               <Select
-                                value={testamentData.langueTestateur}
+                                value={testamentData.langueTestateur || undefined}
                                 onValueChange={(value) => setTestamentData({...testamentData, langueTestateur: value})}
                               >
                                 <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
@@ -23603,7 +23603,7 @@ FIN DE LA CONVENTION
                           <div className="space-y-2">
                             <Label>Sélectionner un client (optionnel)</Label>
                             <Select
-                              value={testamentData.clientId || ""}
+                              value={testamentData.clientId || undefined}
                               onValueChange={(value) => setTestamentData({...testamentData, clientId: value})}
                             >
                               <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
@@ -23668,7 +23668,7 @@ FIN DE LA CONVENTION
                             <div className="space-y-2">
                               <Label>Situation familiale <span className="text-red-500">*</span></Label>
                               <Select
-                                value={testamentData.testateurSituationFamiliale}
+                                value={testamentData.testateurSituationFamiliale || undefined}
                                 onValueChange={(value) => setTestamentData({...testamentData, testateurSituationFamiliale: value})}
                               >
                                 <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
@@ -23718,7 +23718,7 @@ FIN DE LA CONVENTION
                               <div className="space-y-2">
                                 <Label>Type</Label>
                                 <Select
-                                  value={testamentData.testateurPieceType}
+                                  value={testamentData.testateurPieceType || undefined}
                                   onValueChange={(value) => setTestamentData({...testamentData, testateurPieceType: value})}
                                 >
                                   <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
@@ -24716,7 +24716,7 @@ FIN DE LA CONVENTION
                           <div className="space-y-2">
                             <Label>Testament reçu par <span className="text-red-500">*</span></Label>
                             <Select
-                              value={testamentData.testamentAuthentique.modaliteReception}
+                              value={testamentData.testamentAuthentique.modaliteReception || undefined}
                               onValueChange={(value) => setTestamentData({
                                 ...testamentData,
                                 testamentAuthentique: {...testamentData.testamentAuthentique, modaliteReception: value}
@@ -25669,7 +25669,7 @@ FIN DE LA CONVENTION
                             <div className="space-y-2">
                               <Label>Rédigé par <span className="text-red-500">*</span></Label>
                               <Select
-                                value={testamentData.testamentMystique.redactionPar}
+                                value={testamentData.testamentMystique.redactionPar || undefined}
                                 onValueChange={(value) => setTestamentData({
                                   ...testamentData,
                                   testamentMystique: {...testamentData.testamentMystique, redactionPar: value}
@@ -25700,7 +25700,7 @@ FIN DE LA CONVENTION
                             <div className="space-y-2">
                               <Label>Type d'écriture <span className="text-red-500">*</span></Label>
                               <Select
-                                value={testamentData.testamentMystique.typeEcriture}
+                                value={testamentData.testamentMystique.typeEcriture || undefined}
                                 onValueChange={(value) => setTestamentData({
                                   ...testamentData,
                                   testamentMystique: {...testamentData.testamentMystique, typeEcriture: value}
@@ -25717,7 +25717,7 @@ FIN DE LA CONVENTION
                             <div className="space-y-2">
                               <Label>Langue du testament <span className="text-red-500">*</span></Label>
                               <Select
-                                value={testamentData.testamentMystique.langueTestament}
+                                value={testamentData.testamentMystique.langueTestament || undefined}
                                 onValueChange={(value) => setTestamentData({
                                   ...testamentData,
                                   testamentMystique: {...testamentData.testamentMystique, langueTestament: value}
