@@ -720,10 +720,10 @@ export default function Contrats() {
       consentement: string;
     }>,
     parentsVivants: {
-      pereEpoux1: boolean,
-      mereEpoux1: boolean,
-      pereEpoux2: boolean,
-      mereEpoux2: boolean,
+      pereEpoux1: false,
+      mereEpoux1: false,
+      pereEpoux2: false,
+      mereEpoux2: false,
     },
     
     // 5. Consentements et notifications
