@@ -637,6 +637,253 @@ export default function Contrats() {
     },
   });
   
+  // State pour Changement de Régime Matrimonial (fichiers)
+  const [changementRegimeEpouxIdentite1, setChangementRegimeEpouxIdentite1] = useState<File | null>(null);
+  const [changementRegimeEpouxIdentite2, setChangementRegimeEpouxIdentite2] = useState<File | null>(null);
+  const [changementRegimeLivretFamille, setChangementRegimeLivretFamille] = useState<File | null>(null);
+  const [changementRegimeActeMariage, setChangementRegimeActeMariage] = useState<File | null>(null);
+  const [changementRegimeContratMariageInitial, setChangementRegimeContratMariageInitial] = useState<File | null>(null);
+  const [changementRegimeJustifDomicile1, setChangementRegimeJustifDomicile1] = useState<File | null>(null);
+  const [changementRegimeJustifDomicile2, setChangementRegimeJustifDomicile2] = useState<File | null>(null);
+  const [changementRegimeEnfantsAccords, setChangementRegimeEnfantsAccords] = useState<File | null>(null);
+  const [changementRegimeTitresPropriete, setChangementRegimeTitresPropriete] = useState<File | null>(null);
+  const [changementRegimeRelevesComptes, setChangementRegimeRelevesComptes] = useState<File | null>(null);
+  const [changementRegimeStatutsSocietes, setChangementRegimeStatutsSocietes] = useState<File | null>(null);
+  const [changementRegimeActesPrets, setChangementRegimeActesPrets] = useState<File | null>(null);
+  const [changementRegimeEstimationsBiens, setChangementRegimeEstimationsBiens] = useState<File | null>(null);
+  const [changementRegimeJugementTutelle, setChangementRegimeJugementTutelle] = useState<File | null>(null);
+
+  // State pour Changement de Régime Matrimonial
+  const [changementRegimeData, setChangementRegimeData] = useState({
+    // 1. Informations générales
+    typeModification: "", // separation_biens / communaute_reduite / communaute_universelle / participation_acquets / modification_actuel / ajout_clauses / adoption_contrat
+    regimeActuel: "", // communaute_legale / communaute_universelle / separation_biens / participation_acquets / autre
+    regimeActuelAutre: "",
+    dateMariage: "",
+    lieuMariage: "",
+    contratMariageInitial: false,
+    
+    // 2. Époux 1
+    epoux1: {
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      adresse: "",
+      profession: "",
+      telephone: "",
+      email: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      validiteIdentite: "",
+      sousTutelleCuratelle: false,
+      changementAnterieur: false,
+    },
+    
+    // 3. Époux 2
+    epoux2: {
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      adresse: "",
+      profession: "",
+      telephone: "",
+      email: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      validiteIdentite: "",
+      sousTutelleCuratelle: false,
+      changementAnterieur: false,
+    },
+    
+    // 4. Enfants et héritiers
+    enfantsCommuns: [] as Array<{
+      nom: string;
+      prenom: string;
+      dateNaissance: string;
+      majeur: boolean;
+      consentement: string; // accord / opposition / pas_reponse
+    }>,
+    enfantsPrecedenteUnion: [] as Array<{
+      nom: string;
+      prenom: string;
+      dateNaissance: string;
+      majeur: boolean;
+      parent: string; // epoux1 / epoux2
+      consentement: string;
+    }>,
+    parentsVivants: {
+      pereEpoux1: boolean,
+      mereEpoux1: boolean,
+      pereEpoux2: boolean,
+      mereEpoux2: boolean,
+    },
+    
+    // 5. Consentements et notifications
+    consentements: {
+      enfantsMajeursInformes: false,
+      creancierAccord: false,
+      creancierNom: "",
+      creancierNatureDette: "",
+      autorisationJuge: false,
+      dateAutorisationJuge: "",
+      motifAutorisationJuge: "",
+    },
+    
+    // 6. Patrimoine actuel
+    patrimoine: {
+      // Biens propres époux 1
+      biensPropreEpoux1: [] as Array<{
+        description: string;
+        valeur: string;
+        origine: string;
+        dettes: string;
+      }>,
+      // Biens propres époux 2
+      biensPropreEpoux2: [] as Array<{
+        description: string;
+        valeur: string;
+        origine: string;
+        dettes: string;
+      }>,
+      // Biens communs
+      biensCommuns: [] as Array<{
+        description: string;
+        valeur: string;
+        hypotheques: string;
+        affectationPro: boolean;
+      }>,
+      // Biens indivis
+      biensIndivis: [] as Array<{
+        description: string;
+        quotePart: string;
+        provenance: string;
+      }>,
+      // Entreprises
+      entreprises: [] as Array<{
+        nom: string;
+        forme: string;
+        valeur: string;
+        droitsTransmis: string;
+      }>,
+      // Comptes financiers
+      comptes: [] as Array<{
+        banque: string;
+        type: string;
+        titulaire: string;
+        solde: string;
+      }>,
+    },
+    
+    // 7. Nouveau régime choisi
+    nouveauRegime: {
+      type: "", // communaute_universelle / communaute_reduite / separation_biens / participation_acquets
+      
+      // Communauté universelle
+      communauteUniverselle: {
+        biensPresents: true,
+        biensFuturs: true,
+        clauseAttributionIntegrale: false,
+        clausePreciput: false,
+        detailsPreciput: "",
+        exclusionBiens: [] as Array<{description: string; motif: string}>,
+      },
+      
+      // Communauté réduite aux acquêts
+      communauteReduite: {
+        biensPropreDefinition: "",
+        biensCommunsDefinition: "",
+        repartitionDettes: "",
+        clauseReprise: false,
+        detailsClauseReprise: "",
+        clausesFiscales: "",
+      },
+      
+      // Séparation de biens
+      separationBiens: {
+        attributionBiensPropres: "",
+        repartitionBiensCommuns: "",
+        gestionCommuneBien: false,
+        detailsGestionCommune: "",
+        contributionCharges: "",
+      },
+      
+      // Participation aux acquêts
+      participationAcquets: {
+        masseDepart: "",
+        masseFin: "",
+        modalitesCalcul: "",
+      },
+      
+      // Clauses facultatives (tous régimes)
+      clausesFacultatives: {
+        preciput: false,
+        detailsPreciput: "",
+        administrationSeparee: false,
+        detailsAdministrationSeparee: "",
+        inalienabilite: false,
+        motifInalienabilite: "",
+        donationEntreEpoux: false,
+        detailsDonation: "",
+        protectionConjointSurvivant: false,
+        detailsProtection: "",
+        attributionPreferentielle: false,
+        detailsAttributionPreferentielle: "",
+        gestionSepareePro: false,
+        detailsGestionPro: "",
+      },
+    },
+    
+    // 8. Liquidation régime précédent
+    liquidation: {
+      necessaire: false, // true si on quitte communautaire
+      actifCommunaute: [] as Array<{
+        description: string;
+        valeur: string;
+        repartition: string;
+      }>,
+      passifCommunaute: [] as Array<{
+        description: string;
+        montant: string;
+        repartition: string;
+      }>,
+      acceptationLiquidation: false,
+      cleRepartition: "50-50", // 50-50 / autre
+      autreRepartition: "",
+    },
+    
+    // 9. Mentions légales
+    mentionsLegales: {
+      rappelArticlesCodeCivil: false,
+      rappelLiberteContractuelle: false,
+      interetFamille: false,
+      declarationLibreConsent: false,
+      detailsAttestations: "",
+      publicationBODACCInformee: false,
+      depotGreffe: false,
+      effetChangement: "", // 3_mois / immediat
+    },
+    
+    // 10. Publicité et formalités
+    formalites: {
+      depotGreffe: false,
+      coordonneesTribunal: "",
+      dateDepot: "",
+      publicationBODACCFaite: false,
+      datePublicationBODACC: "",
+      notificationCreanciers: false,
+      delaisNotification: "",
+      preuvesReception: "",
+    },
+  });
+
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
     // Sélection du client et son rôle
@@ -27256,6 +27503,855 @@ FIN DE LA CONVENTION
                           }}
                         />
                       </div>
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
+            {/* Formulaire Changement de Régime Matrimonial */}
+            {pendingContractType === "Changement de régime matrimonial" && (
+              <>
+                <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                  
+                  {/* Section 1: Informations générales */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">Informations générales sur l'opération</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Type de modification souhaitée <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={changementRegimeData.typeModification || undefined}
+                        onValueChange={(value) => setChangementRegimeData({...changementRegimeData, typeModification: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner le type..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="separation_biens">Passage à la séparation de biens</SelectItem>
+                          <SelectItem value="communaute_reduite">Passage à la communauté réduite aux acquêts</SelectItem>
+                          <SelectItem value="communaute_universelle">Passage à la communauté universelle</SelectItem>
+                          <SelectItem value="participation_acquets">Passage à la participation aux acquêts</SelectItem>
+                          <SelectItem value="modification_actuel">Modification / aménagement du régime actuel</SelectItem>
+                          <SelectItem value="ajout_clauses">Clauses ajoutées au régime actuel</SelectItem>
+                          <SelectItem value="adoption_contrat">Adoption d'un contrat de mariage pour la première fois</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Régime matrimonial actuel <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={changementRegimeData.regimeActuel || undefined}
+                        onValueChange={(value) => setChangementRegimeData({...changementRegimeData, regimeActuel: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner le régime actuel..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                          <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                          <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                          <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                          <SelectItem value="autre">Autre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {changementRegimeData.regimeActuel === "autre" && (
+                      <div className="space-y-2">
+                        <Label>Préciser le régime actuel</Label>
+                        <Input
+                          value={changementRegimeData.regimeActuelAutre}
+                          onChange={(e) => setChangementRegimeData({...changementRegimeData, regimeActuelAutre: e.target.value})}
+                          placeholder="Précisez..."
+                        />
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Date du mariage <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={changementRegimeData.dateMariage}
+                          onChange={(e) => setChangementRegimeData({...changementRegimeData, dateMariage: e.target.value})}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu du mariage <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={changementRegimeData.lieuMariage}
+                          onChange={(e) => setChangementRegimeData({...changementRegimeData, lieuMariage: e.target.value})}
+                          placeholder="Ville, pays..."
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="contratMariageInitial"
+                          checked={changementRegimeData.contratMariageInitial}
+                          onChange={(e) => setChangementRegimeData({...changementRegimeData, contratMariageInitial: e.target.checked})}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="contratMariageInitial">Existence d'un contrat de mariage initial (joindre copie si oui)</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: Époux 1 */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète de l'époux 1</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Sélectionner le client (Époux 1)</Label>
+                      <Select
+                        value={changementRegimeData.epoux1.clientId || undefined}
+                        onValueChange={(value) => {
+                          const client = clients.find(c => c.id === value);
+                          if (client) {
+                            setChangementRegimeData({
+                              ...changementRegimeData,
+                              epoux1: {
+                                ...changementRegimeData.epoux1,
+                                clientId: value,
+                                nom: client.nom,
+                                prenom: client.prenom,
+                                dateNaissance: client.date_naissance || "",
+                                lieuNaissance: client.lieu_naissance || "",
+                                nationalite: client.nationalite || "",
+                                adresse: client.adresse || "",
+                                profession: client.profession || "",
+                                telephone: client.telephone || "",
+                                email: client.email || "",
+                                typeIdentite: client.type_identite || "",
+                                numeroIdentite: client.numero_identite || "",
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner un client..." /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={changementRegimeData.epoux1.nom}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, nom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={changementRegimeData.epoux1.prenom}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, prenom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nom de naissance</Label>
+                        <Input
+                          value={changementRegimeData.epoux1.nomNaissance}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, nomNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={changementRegimeData.epoux1.dateNaissance}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance</Label>
+                        <Input
+                          value={changementRegimeData.epoux1.lieuNaissance}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, lieuNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nationalité</Label>
+                        <Input
+                          value={changementRegimeData.epoux1.nationalite}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, nationalite: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse actuelle</Label>
+                        <Input
+                          value={changementRegimeData.epoux1.adresse}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, adresse: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input
+                          value={changementRegimeData.epoux1.profession}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input
+                          value={changementRegimeData.epoux1.telephone}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, telephone: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input
+                          type="email"
+                          value={changementRegimeData.epoux1.email}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, email: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="epoux1Tutelle"
+                          checked={changementRegimeData.epoux1.sousTutelleCuratelle}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {...changementRegimeData.epoux1, sousTutelleCuratelle: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="epoux1Tutelle">Sous tutelle ou curatelle (joindre jugement si oui)</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 3: Époux 2 */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète de l'époux 2</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Sélectionner le client (Époux 2)</Label>
+                      <Select
+                        value={changementRegimeData.epoux2.clientId || undefined}
+                        onValueChange={(value) => {
+                          const client = clients.find(c => c.id === value);
+                          if (client) {
+                            setChangementRegimeData({
+                              ...changementRegimeData,
+                              epoux2: {
+                                ...changementRegimeData.epoux2,
+                                clientId: value,
+                                nom: client.nom,
+                                prenom: client.prenom,
+                                dateNaissance: client.date_naissance || "",
+                                lieuNaissance: client.lieu_naissance || "",
+                                nationalite: client.nationalite || "",
+                                adresse: client.adresse || "",
+                                profession: client.profession || "",
+                                telephone: client.telephone || "",
+                                email: client.email || "",
+                                typeIdentite: client.type_identite || "",
+                                numeroIdentite: client.numero_identite || "",
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner un client..." /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={changementRegimeData.epoux2.nom}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, nom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={changementRegimeData.epoux2.prenom}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, prenom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nom de naissance</Label>
+                        <Input
+                          value={changementRegimeData.epoux2.nomNaissance}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, nomNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={changementRegimeData.epoux2.dateNaissance}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance</Label>
+                        <Input
+                          value={changementRegimeData.epoux2.lieuNaissance}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, lieuNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nationalité</Label>
+                        <Input
+                          value={changementRegimeData.epoux2.nationalite}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, nationalite: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse actuelle</Label>
+                        <Input
+                          value={changementRegimeData.epoux2.adresse}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, adresse: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input
+                          value={changementRegimeData.epoux2.profession}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input
+                          value={changementRegimeData.epoux2.telephone}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, telephone: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input
+                          type="email"
+                          value={changementRegimeData.epoux2.email}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, email: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="epoux2Tutelle"
+                          checked={changementRegimeData.epoux2.sousTutelleCuratelle}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {...changementRegimeData.epoux2, sousTutelleCuratelle: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="epoux2Tutelle">Sous tutelle ou curatelle (joindre jugement si oui)</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 4: Documents à collecter */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Pièces justificatives à collecter</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Pièce d'identité époux 1 (CNI, passeport)</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeEpouxIdentite1')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeEpouxIdentite1 ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeEpouxIdentite1 ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeEpouxIdentite1 ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeEpouxIdentite1 ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeEpouxIdentite1?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeEpouxIdentite1"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeEpouxIdentite1(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Pièce d'identité époux 2 (CNI, passeport)</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeEpouxIdentite2')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeEpouxIdentite2 ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeEpouxIdentite2 ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeEpouxIdentite2 ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeEpouxIdentite2 ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeEpouxIdentite2?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeEpouxIdentite2"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeEpouxIdentite2(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Livret de famille</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeLivretFamille')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeLivretFamille ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeLivretFamille ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeLivretFamille ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeLivretFamille ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeLivretFamille?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeLivretFamille"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeLivretFamille(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Acte de mariage</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeActeMariage')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeActeMariage ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeActeMariage ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeActeMariage ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeActeMariage ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeActeMariage?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeActeMariage"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeActeMariage(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      {changementRegimeData.contratMariageInitial && (
+                        <div className="space-y-2">
+                          <Label>Contrat de mariage initial</Label>
+                          <button
+                            type="button"
+                            onClick={() => document.getElementById('changementRegimeContratMariageInitial')?.click()}
+                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                            style={{
+                              borderColor: changementRegimeContratMariageInitial ? "#22c55e" : "#fb923c",
+                              backgroundColor: changementRegimeContratMariageInitial ? "#f0fdf4" : "white"
+                            }}
+                          >
+                            {changementRegimeContratMariageInitial ? (
+                              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                            <span className={changementRegimeContratMariageInitial ? "text-green-700 font-medium" : "text-orange-700"}>
+                              {changementRegimeContratMariageInitial?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                            </span>
+                          </button>
+                          <Input
+                            id="changementRegimeContratMariageInitial"
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                setChangementRegimeContratMariageInitial(e.target.files[0]);
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Titres de propriété (biens immobiliers)</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeTitresPropriete')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeTitresPropriete ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeTitresPropriete ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeTitresPropriete ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeTitresPropriete ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeTitresPropriete?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeTitresPropriete"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeTitresPropriete(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Relevés de comptes bancaires</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeRelevesComptes')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeRelevesComptes ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeRelevesComptes ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeRelevesComptes ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeRelevesComptes ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeRelevesComptes?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeRelevesComptes"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeRelevesComptes(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Statuts de sociétés / Pactes d'associés</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeStatutsSocietes')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeStatutsSocietes ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeStatutsSocietes ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeStatutsSocietes ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeStatutsSocietes ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeStatutsSocietes?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeStatutsSocietes"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeStatutsSocietes(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Actes de prêts en cours</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeActesPrets')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeActesPrets ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeActesPrets ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeActesPrets ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeActesPrets ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeActesPrets?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeActesPrets"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeActesPrets(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Valeurs estimées des biens</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('changementRegimeEstimationsBiens')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: changementRegimeEstimationsBiens ? "#22c55e" : "#fb923c",
+                            backgroundColor: changementRegimeEstimationsBiens ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {changementRegimeEstimationsBiens ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={changementRegimeEstimationsBiens ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {changementRegimeEstimationsBiens?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="changementRegimeEstimationsBiens"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setChangementRegimeEstimationsBiens(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      {(changementRegimeData.epoux1.sousTutelleCuratelle || changementRegimeData.epoux2.sousTutelleCuratelle) && (
+                        <div className="space-y-2">
+                          <Label>Jugement de tutelle/curatelle</Label>
+                          <button
+                            type="button"
+                            onClick={() => document.getElementById('changementRegimeJugementTutelle')?.click()}
+                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                            style={{
+                              borderColor: changementRegimeJugementTutelle ? "#22c55e" : "#fb923c",
+                              backgroundColor: changementRegimeJugementTutelle ? "#f0fdf4" : "white"
+                            }}
+                          >
+                            {changementRegimeJugementTutelle ? (
+                              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                            <span className={changementRegimeJugementTutelle ? "text-green-700 font-medium" : "text-orange-700"}>
+                              {changementRegimeJugementTutelle?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                            </span>
+                          </button>
+                          <Input
+                            id="changementRegimeJugementTutelle"
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                setChangementRegimeJugementTutelle(e.target.files[0]);
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 
