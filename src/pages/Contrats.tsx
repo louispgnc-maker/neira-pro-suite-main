@@ -5276,11 +5276,6 @@ FIN DE LA CONVENTION
         }
       }
       
-      if (testamentData.heritiersReservataires.conjointNom) {
-        description += `\nCONJOINT SURVIVANT :\n`;
-        description += `${testamentData.heritiersReservataires.conjointPrenom} ${testamentData.heritiersReservataires.conjointNom}\n`;
-        description += `Mariage le : ${testamentData.heritiersReservataires.conjointDateMariage}\n`;
-      }
       description += `\n`;
       
       // Légataires
@@ -5289,14 +5284,10 @@ FIN DE LA CONVENTION
         description += `LÉGATAIRES\n`;
         description += `═══════════════════════════════════════════════════════════════\n`;
         testamentData.legataires.forEach((leg, idx) => {
-          if (leg.nom || leg.denominationSociale) {
-            description += `${idx + 1}. ${leg.nom || leg.denominationSociale}\n`;
-            description += `   Type : ${leg.typeLegataire}\n`;
-            description += `   Adresse : ${leg.adresse || leg.siegeSocial}\n`;
-            description += `   Lien : ${leg.lienAvecTestateur}\n`;
-            if (!leg.capaciteJuridiqueConfirmee) {
-              description += `   ⚠️ Capacité à recevoir à vérifier\n`;
-            }
+          if (leg.nom) {
+            description += `${idx + 1}. ${leg.prenom} ${leg.nom}\n`;
+            description += `   Adresse : ${leg.adresse}\n`;
+            description += `   Lien : ${leg.lien}\n`;
           }
         });
         description += `\n`;
