@@ -23431,39 +23431,24 @@ FIN DE LA CONVENTION
               <>
                 <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
                   
-                  {/* 1. Informations générales */}
+                  {/* Sélecteur de type de testament */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Informations générales sur le testament</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Quel type de testament souhaitez-vous rédiger ?</h3>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Type de testament <span className="text-red-500">*</span></Label>
-                        <Select
-                          value={testamentData.typeTestament}
-                          onValueChange={(value) => setTestamentData({...testamentData, typeTestament: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="authentique">Testament authentique (dicté au notaire)</SelectItem>
-                            <SelectItem value="mystique">Testament mystique (cacheté et remis au notaire)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Caractère du testament <span className="text-red-500">*</span></Label>
-                        <Select
-                          value={testamentData.caractereTestament}
-                          onValueChange={(value) => setTestamentData({...testamentData, caractereTestament: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="initial">Testament initial</SelectItem>
-                            <SelectItem value="revocation">Révocation d'un testament antérieur</SelectItem>
-                            <SelectItem value="modification_codicille">Modification / Codicille</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    <div className="space-y-2">
+                      <Label>Type de testament <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={testamentData.typeTestament}
+                        onValueChange={(value) => setTestamentData({...testamentData, typeTestament: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner le type de testament..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="authentique">Testament authentique (dicté au notaire)</SelectItem>
+                          <SelectItem value="mystique">Testament mystique (cacheté et remis au notaire)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
 
                       <div className="space-y-2">
                         <Label>Date souhaitée de rédaction</Label>
