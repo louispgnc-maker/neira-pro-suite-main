@@ -6864,7 +6864,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Extrait Kbis</Label>
                         <button
                           type="button"
-                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                           onClick={() => document.getElementById('kbis-vendeur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -6930,7 +6930,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Joindre le mandat (PDF)</Label>
                         <button
                           type="button"
-                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                           onClick={() => document.getElementById('mandat-vendeur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7411,7 +7411,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Extrait Kbis</Label>
                         <button
                           type="button"
-                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                           onClick={() => document.getElementById('kbis-acheteur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7477,7 +7477,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Joindre le mandat (PDF)</Label>
                         <button
                           type="button"
-                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                           onClick={() => document.getElementById('mandat-acheteur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7919,7 +7919,7 @@ FIN DE LA CONVENTION
                           <Label>📎 Bail locatif (PDF)</Label>
                           <button
                             type="button"
-                            className="w-full flex items-center gap-2 p-2 bg-orange-50 border-2 border-dashed border-orange-300 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                             onClick={() => document.getElementById('bail-locatif')?.click()}
                           >
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
