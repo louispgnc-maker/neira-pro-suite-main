@@ -662,6 +662,58 @@ export default function Contrats() {
     dateMariage: "",
     lieuMariage: "",
     contratMariageInitial: false,
+    nouveauRegimeSouhaite: "", // communaute_reduite / separation_biens / communaute_universelle / participation_acquets
+    dateEffetSouhaitee: "",
+    motifChangement: "", // protection_conjoint / activite_professionnelle / anticipation_successorale / simplification_patrimoniale / autre
+    motifChangementAutre: "",
+    
+    // 1bis. Présence d'enfants
+    presenceEnfants: {
+      enfantsCommuns: false,
+      enfantsAutreUnion: false,
+      enfantsMineurs: false,
+      enfantsMajeursInformes: false,
+      nombreEnfantsCommuns: "",
+      nombreEnfantsAutreUnion: "",
+    },
+    
+    // 1ter. Opposition possible des tiers
+    oppositionTiers: {
+      creanciersConnus: false,
+      risqueOpposition: false,
+      detailsCreanciers: "",
+      natureRisque: "",
+    },
+    
+    // 1quater. Liquidation du régime
+    liquidationRegime: {
+      necessaire: "", // oui / non
+      justificationAbsence: "",
+      repartitionBiens: "", // 50-50 / autre
+      autreRepartition: "",
+      recompensesCreances: false,
+      detailsRecompenses: "",
+    },
+    
+    // 1quinquies. Homologation judiciaire
+    homologation: {
+      requise: false,
+      motif: "", // enfants_mineurs / opposition_tiers / protection_epoux / autre
+      autreMotif: "",
+      tribunalCompetent: "",
+    },
+    
+    // 1sexies. Clauses spécifiques
+    clausesSpecifiques: {
+      attributionIntegrale: false,
+      detailsAttribution: "",
+      preciput: false,
+      detailsPreciput: "",
+      exclusionBiens: false,
+      biensExclus: "",
+      amenagements: false,
+      detailsAmenagements: "",
+    },
     
     // 2. Époux 1
     epoux1: {
@@ -27606,6 +27658,534 @@ FIN DE LA CONVENTION
                         <Label htmlFor="contratMariageInitial">Existence d'un contrat de mariage initial (joindre copie si oui)</Label>
                       </div>
                     </div>
+
+                    <div className="space-y-2">
+                      <Label>Nouveau régime matrimonial souhaité <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={changementRegimeData.nouveauRegimeSouhaite || undefined}
+                        onValueChange={(value) => setChangementRegimeData({...changementRegimeData, nouveauRegimeSouhaite: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner le nouveau régime..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="communaute_reduite">Communauté réduite aux acquêts</SelectItem>
+                          <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                          <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                          <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Date d'effet souhaitée</Label>
+                      <Input
+                        type="date"
+                        value={changementRegimeData.dateEffetSouhaitee}
+                        onChange={(e) => setChangementRegimeData({...changementRegimeData, dateEffetSouhaitee: e.target.value})}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Motif principal du changement <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={changementRegimeData.motifChangement || undefined}
+                        onValueChange={(value) => setChangementRegimeData({...changementRegimeData, motifChangement: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner le motif..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="protection_conjoint">Protection du conjoint</SelectItem>
+                          <SelectItem value="activite_professionnelle">Activité professionnelle</SelectItem>
+                          <SelectItem value="anticipation_successorale">Anticipation successorale</SelectItem>
+                          <SelectItem value="simplification_patrimoniale">Simplification patrimoniale</SelectItem>
+                          <SelectItem value="autre">Autre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {changementRegimeData.motifChangement === "autre" && (
+                      <div className="space-y-2">
+                        <Label>Préciser le motif</Label>
+                        <Input
+                          value={changementRegimeData.motifChangementAutre}
+                          onChange={(e) => setChangementRegimeData({...changementRegimeData, motifChangementAutre: e.target.value})}
+                          placeholder="Précisez le motif du changement..."
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Section 1bis: Présence d'enfants */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-yellow-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Présence d'enfants</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="enfantsCommuns"
+                            checked={changementRegimeData.presenceEnfants.enfantsCommuns}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              presenceEnfants: {...changementRegimeData.presenceEnfants, enfantsCommuns: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="enfantsCommuns">Enfants communs</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="enfantsAutreUnion"
+                            checked={changementRegimeData.presenceEnfants.enfantsAutreUnion}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              presenceEnfants: {...changementRegimeData.presenceEnfants, enfantsAutreUnion: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="enfantsAutreUnion">Enfants d'une autre union</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="enfantsMineurs"
+                            checked={changementRegimeData.presenceEnfants.enfantsMineurs}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              presenceEnfants: {...changementRegimeData.presenceEnfants, enfantsMineurs: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="enfantsMineurs">Présence d'enfants mineurs</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="enfantsMajeursInformes"
+                            checked={changementRegimeData.presenceEnfants.enfantsMajeursInformes}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              presenceEnfants: {...changementRegimeData.presenceEnfants, enfantsMajeursInformes: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="enfantsMajeursInformes">Enfants majeurs informés</Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {changementRegimeData.presenceEnfants.enfantsCommuns && (
+                      <div className="space-y-2">
+                        <Label>Nombre d'enfants communs</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={changementRegimeData.presenceEnfants.nombreEnfantsCommuns}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            presenceEnfants: {...changementRegimeData.presenceEnfants, nombreEnfantsCommuns: e.target.value}
+                          })}
+                        />
+                      </div>
+                    )}
+
+                    {changementRegimeData.presenceEnfants.enfantsAutreUnion && (
+                      <div className="space-y-2">
+                        <Label>Nombre d'enfants d'une autre union</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={changementRegimeData.presenceEnfants.nombreEnfantsAutreUnion}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            presenceEnfants: {...changementRegimeData.presenceEnfants, nombreEnfantsAutreUnion: e.target.value}
+                          })}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Section 1ter: Opposition possible des tiers */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-red-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Opposition possible des tiers</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="creanciersConnus"
+                            checked={changementRegimeData.oppositionTiers.creanciersConnus}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              oppositionTiers: {...changementRegimeData.oppositionTiers, creanciersConnus: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="creanciersConnus">Créanciers connus</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="risqueOpposition"
+                            checked={changementRegimeData.oppositionTiers.risqueOpposition}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              oppositionTiers: {...changementRegimeData.oppositionTiers, risqueOpposition: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="risqueOpposition">Risque d'opposition identifié</Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {changementRegimeData.oppositionTiers.creanciersConnus && (
+                      <div className="space-y-2">
+                        <Label>Détails des créanciers connus</Label>
+                        <textarea
+                          value={changementRegimeData.oppositionTiers.detailsCreanciers}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            oppositionTiers: {...changementRegimeData.oppositionTiers, detailsCreanciers: e.target.value}
+                          })}
+                          className="w-full min-h-[80px] p-2 border rounded-md"
+                          placeholder="Liste des créanciers et montants dus..."
+                        />
+                      </div>
+                    )}
+
+                    {changementRegimeData.oppositionTiers.risqueOpposition && (
+                      <div className="space-y-2">
+                        <Label>Nature du risque d'opposition</Label>
+                        <textarea
+                          value={changementRegimeData.oppositionTiers.natureRisque}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            oppositionTiers: {...changementRegimeData.oppositionTiers, natureRisque: e.target.value}
+                          })}
+                          className="w-full min-h-[80px] p-2 border rounded-md"
+                          placeholder="Précisez la nature et les raisons du risque..."
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Section 1quater: Liquidation du régime matrimonial */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-orange-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Liquidation du régime matrimonial précédent</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Liquidation nécessaire ? <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={changementRegimeData.liquidationRegime.necessaire || undefined}
+                        onValueChange={(value) => setChangementRegimeData({
+                          ...changementRegimeData,
+                          liquidationRegime: {...changementRegimeData.liquidationRegime, necessaire: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui - Liquidation nécessaire</SelectItem>
+                          <SelectItem value="non">Non - Pas de liquidation</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {changementRegimeData.liquidationRegime.necessaire === "non" && (
+                      <div className="space-y-2">
+                        <Label>Justification de l'absence de liquidation</Label>
+                        <textarea
+                          value={changementRegimeData.liquidationRegime.justificationAbsence}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            liquidationRegime: {...changementRegimeData.liquidationRegime, justificationAbsence: e.target.value}
+                          })}
+                          className="w-full min-h-[80px] p-2 border rounded-md"
+                          placeholder="Expliquez pourquoi aucune liquidation n'est nécessaire..."
+                        />
+                      </div>
+                    )}
+
+                    {changementRegimeData.liquidationRegime.necessaire === "oui" && (
+                      <>
+                        <div className="space-y-2">
+                          <Label>Répartition des biens communs</Label>
+                          <Select
+                            value={changementRegimeData.liquidationRegime.repartitionBiens || undefined}
+                            onValueChange={(value) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              liquidationRegime: {...changementRegimeData.liquidationRegime, repartitionBiens: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="50-50">50/50 (par moitié)</SelectItem>
+                              <SelectItem value="autre">Autre répartition</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {changementRegimeData.liquidationRegime.repartitionBiens === "autre" && (
+                          <div className="space-y-2">
+                            <Label>Préciser la répartition</Label>
+                            <Input
+                              value={changementRegimeData.liquidationRegime.autreRepartition}
+                              onChange={(e) => setChangementRegimeData({
+                                ...changementRegimeData,
+                                liquidationRegime: {...changementRegimeData.liquidationRegime, autreRepartition: e.target.value}
+                              })}
+                              placeholder="Ex: 60/40, ou selon accord..."
+                            />
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="recompensesCreances"
+                              checked={changementRegimeData.liquidationRegime.recompensesCreances}
+                              onChange={(e) => setChangementRegimeData({
+                                ...changementRegimeData,
+                                liquidationRegime: {...changementRegimeData.liquidationRegime, recompensesCreances: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="recompensesCreances">Existence de récompenses ou créances entre époux</Label>
+                          </div>
+                        </div>
+
+                        {changementRegimeData.liquidationRegime.recompensesCreances && (
+                          <div className="space-y-2">
+                            <Label>Détails des récompenses / créances</Label>
+                            <textarea
+                              value={changementRegimeData.liquidationRegime.detailsRecompenses}
+                              onChange={(e) => setChangementRegimeData({
+                                ...changementRegimeData,
+                                liquidationRegime: {...changementRegimeData.liquidationRegime, detailsRecompenses: e.target.value}
+                              })}
+                              className="w-full min-h-[100px] p-2 border rounded-md"
+                              placeholder="Liste des récompenses dues par chaque époux, créances, montants..."
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {/* Section 1quinquies: Homologation judiciaire */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Homologation judiciaire</h3>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="homologationRequise"
+                          checked={changementRegimeData.homologation.requise}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            homologation: {...changementRegimeData.homologation, requise: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="homologationRequise">Homologation judiciaire requise</Label>
+                      </div>
+                    </div>
+
+                    {changementRegimeData.homologation.requise && (
+                      <>
+                        <div className="space-y-2">
+                          <Label>Motif de l'homologation <span className="text-red-500">*</span></Label>
+                          <Select
+                            value={changementRegimeData.homologation.motif || undefined}
+                            onValueChange={(value) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              homologation: {...changementRegimeData.homologation, motif: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner le motif..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="enfants_mineurs">Présence d'enfants mineurs</SelectItem>
+                              <SelectItem value="opposition_tiers">Opposition d'un tiers</SelectItem>
+                              <SelectItem value="protection_epoux">Protection d'un époux</SelectItem>
+                              <SelectItem value="autre">Autre motif</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {changementRegimeData.homologation.motif === "autre" && (
+                          <div className="space-y-2">
+                            <Label>Préciser le motif</Label>
+                            <textarea
+                              value={changementRegimeData.homologation.autreMotif}
+                              onChange={(e) => setChangementRegimeData({
+                                ...changementRegimeData,
+                                homologation: {...changementRegimeData.homologation, autreMotif: e.target.value}
+                              })}
+                              className="w-full min-h-[80px] p-2 border rounded-md"
+                              placeholder="Précisez le motif de l'homologation judiciaire..."
+                            />
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          <Label>Tribunal compétent</Label>
+                          <Input
+                            value={changementRegimeData.homologation.tribunalCompetent}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              homologation: {...changementRegimeData.homologation, tribunalCompetent: e.target.value}
+                            })}
+                            placeholder="Ex: TJ de Paris..."
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Section 1sexies: Clauses spécifiques */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-indigo-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Clauses spécifiques à prévoir</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="clauseAttributionIntegrale"
+                            checked={changementRegimeData.clausesSpecifiques.attributionIntegrale}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              clausesSpecifiques: {...changementRegimeData.clausesSpecifiques, attributionIntegrale: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="clauseAttributionIntegrale">Clause d'attribution intégrale</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="clausePreciput"
+                            checked={changementRegimeData.clausesSpecifiques.preciput}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              clausesSpecifiques: {...changementRegimeData.clausesSpecifiques, preciput: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="clausePreciput">Clause de préciput</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="exclusionBiens"
+                            checked={changementRegimeData.clausesSpecifiques.exclusionBiens}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              clausesSpecifiques: {...changementRegimeData.clausesSpecifiques, exclusionBiens: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="exclusionBiens">Exclusion de certains biens</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="amenagements"
+                            checked={changementRegimeData.clausesSpecifiques.amenagements}
+                            onChange={(e) => setChangementRegimeData({
+                              ...changementRegimeData,
+                              clausesSpecifiques: {...changementRegimeData.clausesSpecifiques, amenagements: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="amenagements">Aménagements particuliers</Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {changementRegimeData.clausesSpecifiques.attributionIntegrale && (
+                      <div className="space-y-2">
+                        <Label>Détails de la clause d'attribution intégrale</Label>
+                        <textarea
+                          value={changementRegimeData.clausesSpecifiques.detailsAttribution}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            clausesSpecifiques: {...changementRegimeData.clausesSpecifiques, detailsAttribution: e.target.value}
+                          })}
+                          className="w-full min-h-[80px] p-2 border rounded-md"
+                          placeholder="Précisez les modalités de l'attribution intégrale..."
+                        />
+                      </div>
+                    )}
+
+                    {changementRegimeData.clausesSpecifiques.preciput && (
+                      <div className="space-y-2">
+                        <Label>Détails de la clause de préciput</Label>
+                        <textarea
+                          value={changementRegimeData.clausesSpecifiques.detailsPreciput}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            clausesSpecifiques: {...changementRegimeData.clausesSpecifiques, detailsPreciput: e.target.value}
+                          })}
+                          className="w-full min-h-[80px] p-2 border rounded-md"
+                          placeholder="Biens concernés par le préciput..."
+                        />
+                      </div>
+                    )}
+
+                    {changementRegimeData.clausesSpecifiques.exclusionBiens && (
+                      <div className="space-y-2">
+                        <Label>Biens exclus du nouveau régime</Label>
+                        <textarea
+                          value={changementRegimeData.clausesSpecifiques.biensExclus}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            clausesSpecifiques: {...changementRegimeData.clausesSpecifiques, biensExclus: e.target.value}
+                          })}
+                          className="w-full min-h-[80px] p-2 border rounded-md"
+                          placeholder="Liste des biens à exclure et raisons..."
+                        />
+                      </div>
+                    )}
+
+                    {changementRegimeData.clausesSpecifiques.amenagements && (
+                      <div className="space-y-2">
+                        <Label>Description des aménagements particuliers</Label>
+                        <textarea
+                          value={changementRegimeData.clausesSpecifiques.detailsAmenagements}
+                          onChange={(e) => setChangementRegimeData({
+                            ...changementRegimeData,
+                            clausesSpecifiques: {...changementRegimeData.clausesSpecifiques, detailsAmenagements: e.target.value}
+                          })}
+                          className="w-full min-h-[100px] p-2 border rounded-md"
+                          placeholder="Décrivez les aménagements particuliers souhaités..."
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Section 2: Époux 1 */}
