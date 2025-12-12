@@ -162,6 +162,27 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
       return;
     }
 
+    // Si c'est une "Donation entre époux", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Donation entre époux") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
+    // Si c'est une "Donation simple", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Donation simple (parent → enfant, etc.)") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
+    // Si c'est un "Testament", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Testament authentique ou mystique") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('contrats')
