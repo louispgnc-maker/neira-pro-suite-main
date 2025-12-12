@@ -23456,7 +23456,7 @@ FIN DE LA CONVENTION
                     <div className="space-y-2">
                       <Label>Type de testament <span className="text-red-500">*</span></Label>
                       <Select
-                        value={testamentData.typeTestament}
+                        value={testamentData.typeTestament || undefined}
                         onValueChange={(value) => setTestamentData({...testamentData, typeTestament: value})}
                       >
                         <SelectTrigger><SelectValue placeholder="Sélectionner le type de testament..." /></SelectTrigger>
