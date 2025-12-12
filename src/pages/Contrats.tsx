@@ -26853,30 +26853,28 @@ FIN DE LA CONVENTION
                       
                       <div className="space-y-2">
                         <Label>Pièce d'identité du testateur (CNI, passeport)</Label>
-                        {testamentIdentiteTestateur ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentIdentiteTestateur')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentIdentiteTestateur ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentIdentiteTestateur ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentIdentiteTestateur ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentIdentiteTestateur.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentIdentiteTestateur(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentIdentiteTestateur')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentIdentiteTestateur ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentIdentiteTestateur?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentIdentiteTestateur"
                           type="file"
@@ -26891,30 +26889,28 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Livret de famille</Label>
-                        {testamentLivretFamille ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentLivretFamille')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentLivretFamille ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentLivretFamille ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentLivretFamille ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentLivretFamille.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentLivretFamille(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentLivretFamille')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentLivretFamille ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentLivretFamille?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentLivretFamille"
                           type="file"
@@ -26929,30 +26925,28 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Certificat de capacité juridique / jugement tutelle-curatelle (si applicable)</Label>
-                        {testamentCapaciteJuridique ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentCapaciteJuridique')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentCapaciteJuridique ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentCapaciteJuridique ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentCapaciteJuridique ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentCapaciteJuridique.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentCapaciteJuridique(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentCapaciteJuridique')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentCapaciteJuridique ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentCapaciteJuridique?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentCapaciteJuridique"
                           type="file"
@@ -26972,30 +26966,28 @@ FIN DE LA CONVENTION
                       
                       <div className="space-y-2">
                         <Label>Pièces d'identité des témoins</Label>
-                        {testamentIdentiteTemoins ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentIdentiteTemoins')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentIdentiteTemoins ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentIdentiteTemoins ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentIdentiteTemoins ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentIdentiteTemoins.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentIdentiteTemoins(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentIdentiteTemoins')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentIdentiteTemoins ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentIdentiteTemoins?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentIdentiteTemoins"
                           type="file"
@@ -27010,30 +27002,28 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Justificatifs de domicile des témoins</Label>
-                        {testamentDomicileTemoins ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentDomicileTemoins')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentDomicileTemoins ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentDomicileTemoins ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentDomicileTemoins ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentDomicileTemoins.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentDomicileTemoins(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentDomicileTemoins')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentDomicileTemoins ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentDomicileTemoins?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentDomicileTemoins"
                           type="file"
@@ -27048,30 +27038,28 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Attestations sur l'honneur capacité témoins</Label>
-                        {testamentAttestationsTemoins ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentAttestationsTemoins')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentAttestationsTemoins ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentAttestationsTemoins ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentAttestationsTemoins ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentAttestationsTemoins.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentAttestationsTemoins(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentAttestationsTemoins')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentAttestationsTemoins ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentAttestationsTemoins?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentAttestationsTemoins"
                           type="file"
@@ -27086,30 +27074,28 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Casiers judiciaires des témoins (extrait n°3)</Label>
-                        {testamentCasiersTemoins ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentCasiersTemoins')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentCasiersTemoins ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentCasiersTemoins ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentCasiersTemoins ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentCasiersTemoins.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentCasiersTemoins(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentCasiersTemoins')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentCasiersTemoins ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentCasiersTemoins?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentCasiersTemoins"
                           type="file"
@@ -27129,30 +27115,28 @@ FIN DE LA CONVENTION
                       
                       <div className="space-y-2">
                         <Label>Titres de propriété immobiliers</Label>
-                        {testamentTitresPropriete ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentTitresPropriete')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentTitresPropriete ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentTitresPropriete ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentTitresPropriete ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentTitresPropriete.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentTitresPropriete(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentTitresPropriete')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentTitresPropriete ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentTitresPropriete?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentTitresPropriete"
                           type="file"
@@ -27167,30 +27151,28 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Relevés bancaires et comptes</Label>
-                        {testamentRelevesBancaires ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentRelevesBancaires')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentRelevesBancaires ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentRelevesBancaires ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentRelevesBancaires ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentRelevesBancaires.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentRelevesBancaires(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentRelevesBancaires')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentRelevesBancaires ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentRelevesBancaires?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentRelevesBancaires"
                           type="file"
@@ -27205,30 +27187,28 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Contrat de mariage / régime matrimonial</Label>
-                        {testamentContratMariage ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentContratMariage')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentContratMariage ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentContratMariage ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentContratMariage ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentContratMariage.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentContratMariage(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentContratMariage')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentContratMariage ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentContratMariage?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentContratMariage"
                           type="file"
@@ -27243,30 +27223,28 @@ FIN DE LA CONVENTION
 
                       <div className="space-y-2">
                         <Label>Autres justificatifs patrimoniaux</Label>
-                        {testamentAutresJustificatifs ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('testamentAutresJustificatifs')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: testamentAutresJustificatifs ? "#22c55e" : "#fb923c",
+                            backgroundColor: testamentAutresJustificatifs ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {testamentAutresJustificatifs ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm flex-1 text-green-700">✓ {testamentAutresJustificatifs.name}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => setTestamentAutresJustificatifs(null)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentAutresJustificatifs')?.click()}>
+                          ) : (
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                          </button>
-                        )}
+                          )}
+                          <span className={testamentAutresJustificatifs ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {testamentAutresJustificatifs?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
                         <Input
                           id="testamentAutresJustificatifs"
                           type="file"
