@@ -2049,6 +2049,24 @@ export default function Contrats() {
     return () => clearTimeout(t);
   }, [search]);
 
+  // Détecte les paramètres URL pour ouvrir automatiquement le formulaire
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const shouldCreate = params.get('create');
+    const contractType = params.get('type');
+    const category = params.get('category');
+    
+    if (shouldCreate === 'true' && contractType && category) {
+      // Ouvrir le dialog avec le type de contrat
+      setPendingContractType(contractType);
+      setPendingCategory(category);
+      setShowQuestionDialog(true);
+      
+      // Nettoyer les paramètres URL
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.search, location.pathname, navigate]);
+
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
