@@ -6864,7 +6864,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Extrait Kbis</Label>
                         <button
                           type="button"
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                          className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                           onClick={() => document.getElementById('kbis-vendeur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -6930,7 +6930,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Joindre le mandat (PDF)</Label>
                         <button
                           type="button"
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                          className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                           onClick={() => document.getElementById('mandat-vendeur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7411,7 +7411,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Extrait Kbis</Label>
                         <button
                           type="button"
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                          className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                           onClick={() => document.getElementById('kbis-acheteur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7477,7 +7477,7 @@ FIN DE LA CONVENTION
                         <Label>📎 Joindre le mandat (PDF)</Label>
                         <button
                           type="button"
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                          className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                           onClick={() => document.getElementById('mandat-acheteur')?.click()}
                         >
                           <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -7919,7 +7919,7 @@ FIN DE LA CONVENTION
                           <Label>📎 Bail locatif (PDF)</Label>
                           <button
                             type="button"
-                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                            className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                             onClick={() => document.getElementById('bail-locatif')?.click()}
                           >
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25606,7 +25606,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("pieceIdentiteTestateur")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.pieceIdentiteTestateur ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.pieceIdentiteTestateur ? "#f0fdf4" : "white"
@@ -25632,7 +25632,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("livretFamilleTestateur")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.livretFamilleTestateur ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.livretFamilleTestateur ? "#f0fdf4" : "white"
@@ -25658,7 +25658,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("certificatCapaciteTestateur")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.certificatCapaciteTestateur ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.certificatCapaciteTestateur ? "#f0fdf4" : "white"
@@ -25688,7 +25688,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("piecesIdentiteTemoins")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.piecesIdentiteTemoins ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.piecesIdentiteTemoins ? "#f0fdf4" : "white"
@@ -25714,7 +25714,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("justificatifsDomicileTemoins")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.justificatifsDomicileTemoins ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.justificatifsDomicileTemoins ? "#f0fdf4" : "white"
@@ -25740,7 +25740,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("attestationsCapaciteTemoins")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.attestationsCapaciteTemoins ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.attestationsCapaciteTemoins ? "#f0fdf4" : "white"
@@ -25766,7 +25766,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("casiersJudiciairesTemoins")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.casiersJudiciairesTemoins ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.casiersJudiciairesTemoins ? "#f0fdf4" : "white"
@@ -25796,7 +25796,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("titresPropriete")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.titresPropriete ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.titresPropriete ? "#f0fdf4" : "white"
@@ -25822,7 +25822,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("relevesBancaires")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.relevesBancaires ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.relevesBancaires ? "#f0fdf4" : "white"
@@ -25848,7 +25848,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("contratMariage")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.contratMariage ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.contratMariage ? "#f0fdf4" : "white"
@@ -25874,7 +25874,7 @@ FIN DE LA CONVENTION
                             <button
                               type="button"
                               onClick={() => handleFileClick("autresJustificatifs")}
-                              className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
                               style={{
                                 borderColor: testamentData.documentsAuthentique.autresJustificatifs ? "#22c55e" : "#fb923c",
                                 backgroundColor: testamentData.documentsAuthentique.autresJustificatifs ? "#f0fdf4" : "white"
@@ -26870,7 +26870,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentIdentiteTestateur')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentIdentiteTestateur')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -26908,7 +26908,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentLivretFamille')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentLivretFamille')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -26946,7 +26946,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentCapaciteJuridique')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentCapaciteJuridique')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -26989,7 +26989,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentIdentiteTemoins')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentIdentiteTemoins')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27027,7 +27027,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentDomicileTemoins')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentDomicileTemoins')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27065,7 +27065,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentAttestationsTemoins')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentAttestationsTemoins')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27103,7 +27103,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentCasiersTemoins')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentCasiersTemoins')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27146,7 +27146,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentTitresPropriete')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentTitresPropriete')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27184,7 +27184,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentRelevesBancaires')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentRelevesBancaires')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27222,7 +27222,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentContratMariage')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentContratMariage')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -27260,7 +27260,7 @@ FIN DE LA CONVENTION
                             </Button>
                           </div>
                         ) : (
-                          <button type="button" className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentAutresJustificatifs')?.click()}>
+                          <button type="button" className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors" onClick={() => document.getElementById('testamentAutresJustificatifs')?.click()}>
                             <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
