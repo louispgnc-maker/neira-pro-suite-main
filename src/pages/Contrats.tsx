@@ -6862,7 +6862,17 @@ FIN DE LA CONVENTION
                       </div>
                       <div className="space-y-2 md:col-span-2">
                         <Label>📎 Extrait Kbis</Label>
-                        <Input type="file" accept=".pdf" />
+                        <button
+                          type="button"
+                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          onClick={() => document.getElementById('kbis-vendeur')?.click()}
+                        >
+                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                        </button>
+                        <Input id="kbis-vendeur" type="file" accept=".pdf" className="hidden" />
                       </div>
                     </div>
                   )}
@@ -6918,7 +6928,17 @@ FIN DE LA CONVENTION
                       </div>
                       <div className="space-y-2 md:col-span-2">
                         <Label>📎 Joindre le mandat (PDF)</Label>
-                        <Input type="file" accept=".pdf" />
+                        <button
+                          type="button"
+                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          onClick={() => document.getElementById('mandat-vendeur')?.click()}
+                        >
+                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                        </button>
+                        <Input id="mandat-vendeur" type="file" accept=".pdf" className="hidden" />
                       </div>
                     </div>
                   )}
@@ -7389,7 +7409,17 @@ FIN DE LA CONVENTION
                       </div>
                       <div className="space-y-2 md:col-span-2">
                         <Label>📎 Extrait Kbis</Label>
-                        <Input type="file" accept=".pdf" />
+                        <button
+                          type="button"
+                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          onClick={() => document.getElementById('kbis-acheteur')?.click()}
+                        >
+                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                        </button>
+                        <Input id="kbis-acheteur" type="file" accept=".pdf" className="hidden" />
                       </div>
                     </div>
                   )}
@@ -7445,7 +7475,17 @@ FIN DE LA CONVENTION
                       </div>
                       <div className="space-y-2 md:col-span-2">
                         <Label>📎 Joindre le mandat (PDF)</Label>
-                        <Input type="file" accept=".pdf" />
+                        <button
+                          type="button"
+                          className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                          onClick={() => document.getElementById('mandat-acheteur')?.click()}
+                        >
+                          <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                        </button>
+                        <Input id="mandat-acheteur" type="file" accept=".pdf" className="hidden" />
                       </div>
                     </div>
                   )}
@@ -7877,7 +7917,17 @@ FIN DE LA CONVENTION
                         </div>
                         <div className="space-y-2 md:col-span-2">
                           <Label>📎 Bail locatif (PDF)</Label>
-                          <Input type="file" accept=".pdf" />
+                          <button
+                            type="button"
+                            className="w-full flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+                            onClick={() => document.getElementById('bail-locatif')?.click()}
+                          >
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                          </button>
+                          <Input id="bail-locatif" type="file" accept=".pdf" className="hidden" />
                         </div>
                       </div>
                     )}
