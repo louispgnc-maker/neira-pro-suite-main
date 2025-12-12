@@ -588,11 +588,21 @@ export default function Contrats() {
       lieuSuscription: "",
       presenceSimultanee: false, // Présence simultanée testateur/notaire/témoins
       
+      // Déclarations obligatoires art. 976 C. civ.
+      testateurSaitLireEcrire: false, // OBLIGATOIRE - art. 976
+      testateurReconnaitTestament: false, // OBLIGATOIRE - reconnaissance personnelle
+      pliNonOuvert: false, // OBLIGATOIRE - le pli n'a pas été ouvert par le notaire
+      
       // Signatures
       signatureTestateur: false,
       signatureNotaire: false,
       impossibiliteSignerTestateur: false,
       motifImpossibiliteSignature: "",
+      
+      // Conditions légales témoins (sécurisation)
+      temoinsMajeurs: false,
+      temoinsNonHeritiersLegataires: false,
+      temoinsSaventLireEcrire: false,
       
       // Inscription FCDDV
       inscriptionFCDDV: false,
@@ -25846,6 +25856,72 @@ FIN DE LA CONVENTION
                       <h3 className="font-semibold text-lg border-b pb-2">Formalités spécifiques - Testament mystique</h3>
                       
                       <div className="p-4 border-2 rounded-lg space-y-4 bg-purple-50/50 border-purple-300">
+                        
+                        {/* Testament antérieur (même section que pour authentique) */}
+                        <div className="space-y-3 p-3 bg-yellow-50 rounded-lg border border-yellow-300">
+                          <h4 className="font-medium">Testament antérieur existant ?</h4>
+                          <p className="text-sm text-gray-600">Bonne pratique notariale (non obligatoire)</p>
+                          <div className="flex items-center space-x-4">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="testamentAnterieurMystique"
+                                checked={testamentData.testamentAnterieur === true}
+                                onChange={() => setTestamentData({...testamentData, testamentAnterieur: true})}
+                                className="w-4 h-4"
+                              />
+                              <span>Oui</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="testamentAnterieurMystique"
+                                checked={testamentData.testamentAnterieur === false}
+                                onChange={() => setTestamentData({...testamentData, testamentAnterieur: false})}
+                                className="w-4 h-4"
+                              />
+                              <span>Non</span>
+                            </label>
+                          </div>
+
+                          {testamentData.testamentAnterieur && (
+                            <div className="ml-6 p-3 bg-white rounded-lg border border-yellow-300 space-y-3">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label>Date du précédent testament</Label>
+                                  <Input
+                                    type="date"
+                                    value={testamentData.testamentAnterieurDate}
+                                    onChange={(e) => setTestamentData({...testamentData, testamentAnterieurDate: e.target.value})}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Type du précédent testament</Label>
+                                  <Select
+                                    value={testamentData.testamentAnterieurType || undefined}
+                                    onValueChange={(value) => setTestamentData({...testamentData, testamentAnterieurType: value})}
+                                  >
+                                    <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="authentique">Testament authentique</SelectItem>
+                                      <SelectItem value="mystique">Testament mystique</SelectItem>
+                                      <SelectItem value="olographe">Testament olographe</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                  <Label>Notaire dépositaire (si connu)</Label>
+                                  <Input
+                                    value={testamentData.testamentAnterieurNotaire}
+                                    onChange={(e) => setTestamentData({...testamentData, testamentAnterieurNotaire: e.target.value})}
+                                    placeholder="Nom et adresse du notaire"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
                         {/* Rédaction */}
                         <div className="space-y-3 p-3 bg-white rounded-lg border border-purple-200">
                           <h4 className="font-medium">Mode de rédaction du testament <span className="text-red-500">*</span></h4>
@@ -26313,6 +26389,112 @@ FIN DE LA CONVENTION
                               </div>
                             </div>
                           ))}
+                        </div>
+
+                        {/* Déclarations obligatoires art. 976 C. civ. */}
+                        <div className="space-y-3 p-3 bg-red-50 rounded-lg border-2 border-red-400">
+                          <h4 className="font-medium text-red-700">🔴 Déclarations obligatoires (art. 976 C. civ.) <span className="text-red-500">*</span></h4>
+                          <p className="text-sm text-red-600 mb-3">Sans ces déclarations → Risque de nullité du testament</p>
+                          
+                          <div className="space-y-3">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="testateurSaitLireEcrire"
+                                checked={testamentData.testamentMystique.testateurSaitLireEcrire}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, testateurSaitLireEcrire: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="testateurSaitLireEcrire" className="cursor-pointer font-medium text-red-700">
+                                <span className="text-red-500">*</span> Le testateur déclare savoir lire et écrire (OBLIGATOIRE)
+                              </Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="testateurReconnaitTestament"
+                                checked={testamentData.testamentMystique.testateurReconnaitTestament}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, testateurReconnaitTestament: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="testateurReconnaitTestament" className="cursor-pointer font-medium text-red-700">
+                                <span className="text-red-500">*</span> Le testateur reconnaît que le testament contenu dans le pli est bien le sien
+                              </Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="pliNonOuvert"
+                                checked={testamentData.testamentMystique.pliNonOuvert}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, pliNonOuvert: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="pliNonOuvert" className="cursor-pointer font-medium text-red-700">
+                                <span className="text-red-500">*</span> Le pli n'a pas été ouvert par le notaire (le notaire ne connaît pas le contenu)
+                              </Label>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Conditions légales témoins (sécurisation) */}
+                        <div className="space-y-3 p-3 bg-yellow-50 rounded-lg border border-yellow-400">
+                          <h4 className="font-medium text-yellow-800">🟡 Conditions légales des témoins (ultra-sécurisant)</h4>
+                          <p className="text-sm text-yellow-700 mb-3">Recommandé pour sécurisation maximale</p>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="temoinsMajeurs"
+                                checked={testamentData.testamentMystique.temoinsMajeurs}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, temoinsMajeurs: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="temoinsMajeurs" className="cursor-pointer">☐ Témoins majeurs</Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="temoinsNonHeritiersLegataires"
+                                checked={testamentData.testamentMystique.temoinsNonHeritiersLegataires}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, temoinsNonHeritiersLegataires: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="temoinsNonHeritiersLegataires" className="cursor-pointer">☐ Témoins non héritiers, non légataires</Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="temoinsSaventLireEcrire"
+                                checked={testamentData.testamentMystique.temoinsSaventLireEcrire}
+                                onChange={(e) => setTestamentData({
+                                  ...testamentData,
+                                  testamentMystique: {...testamentData.testamentMystique, temoinsSaventLireEcrire: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="temoinsSaventLireEcrire" className="cursor-pointer">☐ Témoins sachant lire et écrire</Label>
+                            </div>
+                          </div>
                         </div>
 
                         {/* Acte de suscription */}
