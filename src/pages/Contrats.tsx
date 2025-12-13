@@ -29430,8 +29430,47 @@ FIN DE LA CONVENTION
 
                       {acteNotorieteData.heritiers.map((heritier, index) => (
                         <div key={heritier.id} className="p-4 border rounded-lg space-y-4 bg-gray-50">
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center gap-4">
                             <h4 className="font-medium">Héritier {index + 1}</h4>
+                            <div className="flex items-center gap-2 flex-1 max-w-md">
+                              <select
+                                id={`heritier_client_${heritier.id}`}
+                                value={heritier.clientId || ""}
+                                onChange={(e) => {
+                                  const clientId = e.target.value;
+                                  const newHeritiers = [...acteNotorieteData.heritiers];
+                                  
+                                  if (clientId) {
+                                    const selectedClient = clients.find(c => c.id === clientId);
+                                    if (selectedClient) {
+                                      newHeritiers[index] = {
+                                        ...heritier,
+                                        clientId: clientId,
+                                        nom: selectedClient.nom || "",
+                                        prenom: selectedClient.prenom || "",
+                                        dateNaissance: selectedClient.date_naissance || "",
+                                        lieuNaissance: selectedClient.lieu_naissance || "",
+                                        adresse: selectedClient.adresse || "",
+                                        nationalite: selectedClient.nationalite || "",
+                                        profession: selectedClient.profession || "",
+                                      };
+                                    }
+                                  } else {
+                                    newHeritiers[index] = {...heritier, clientId: ""};
+                                  }
+                                  
+                                  setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                }}
+                                className="flex-1 px-3 py-2 border rounded-md text-sm"
+                              >
+                                <option value="">-- Sélectionner un client --</option>
+                                {clients.map((client) => (
+                                  <option key={client.id} value={client.id}>
+                                    {client.prenom} {client.nom}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
                             <Button
                               type="button"
                               variant="destructive"
@@ -29446,48 +29485,6 @@ FIN DE LA CONVENTION
                             >
                               Supprimer
                             </Button>
-                          </div>
-
-                          {/* Sélection client ou saisie manuelle */}
-                          <div className="mb-4">
-                            <Label htmlFor={`heritier_client_${heritier.id}`}>Choisir un client existant (optionnel)</Label>
-                            <select
-                              id={`heritier_client_${heritier.id}`}
-                              value={heritier.clientId || ""}
-                              onChange={(e) => {
-                                const clientId = e.target.value;
-                                const newHeritiers = [...acteNotorieteData.heritiers];
-                                
-                                if (clientId) {
-                                  const selectedClient = clients.find(c => c.id === clientId);
-                                  if (selectedClient) {
-                                    newHeritiers[index] = {
-                                      ...heritier,
-                                      clientId: clientId,
-                                      nom: selectedClient.nom || "",
-                                      prenom: selectedClient.prenom || "",
-                                      dateNaissance: selectedClient.date_naissance || "",
-                                      lieuNaissance: selectedClient.lieu_naissance || "",
-                                      adresse: selectedClient.adresse || "",
-                                      nationalite: selectedClient.nationalite || "",
-                                      profession: selectedClient.profession || "",
-                                    };
-                                  }
-                                } else {
-                                  newHeritiers[index] = {...heritier, clientId: ""};
-                                }
-                                
-                                setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
-                              }}
-                              className="w-full px-3 py-2 border rounded-md"
-                            >
-                              <option value="">-- Saisie manuelle --</option>
-                              {clients.map((client) => (
-                                <option key={client.id} value={client.id}>
-                                  {client.prenom} {client.nom}
-                                </option>
-                              ))}
-                            </select>
                           </div>
 
                           {/* Informations civiles */}
@@ -30712,8 +30709,50 @@ FIN DE LA CONVENTION
 
                     {partageSuccessoralData.heritiers.map((heritier, index) => (
                       <div key={heritier.id} className="p-4 border rounded-lg space-y-4 bg-gray-50">
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center gap-4">
                           <h4 className="font-medium">Héritier {index + 1}</h4>
+                          <div className="flex items-center gap-2 flex-1 max-w-md">
+                            <select
+                              id={`heritier_client_${heritier.id}`}
+                              value={heritier.clientId || ""}
+                              onChange={(e) => {
+                                const clientId = e.target.value;
+                                const newHeritiers = [...partageSuccessoralData.heritiers];
+                                
+                                if (clientId) {
+                                  const selectedClient = clients.find(c => c.id === clientId);
+                                  if (selectedClient) {
+                                    newHeritiers[index] = {
+                                      ...heritier,
+                                      clientId: clientId,
+                                      nom: selectedClient.nom || "",
+                                      prenom: selectedClient.prenom || "",
+                                      nomNaissance: selectedClient.nom_naissance || "",
+                                      dateNaissance: selectedClient.date_naissance || "",
+                                      lieuNaissance: selectedClient.lieu_naissance || "",
+                                      nationalite: selectedClient.nationalite || "",
+                                      profession: selectedClient.profession || "",
+                                      adresse: selectedClient.adresse || "",
+                                      telephone: selectedClient.telephone || "",
+                                      email: selectedClient.email || "",
+                                    };
+                                  }
+                                } else {
+                                  newHeritiers[index] = {...heritier, clientId: ""};
+                                }
+                                
+                                setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                              }}
+                              className="flex-1 px-3 py-2 border rounded-md text-sm"
+                            >
+                              <option value="">-- Sélectionner un client --</option>
+                              {clients.map((client) => (
+                                <option key={client.id} value={client.id}>
+                                  {client.prenom} {client.nom}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                           <Button
                             type="button"
                             variant="destructive"
@@ -30728,51 +30767,6 @@ FIN DE LA CONVENTION
                           >
                             Supprimer
                           </Button>
-                        </div>
-
-                        {/* Sélection client ou saisie manuelle */}
-                        <div className="mb-4">
-                          <Label htmlFor={`heritier_client_${heritier.id}`}>Choisir un client existant (optionnel)</Label>
-                          <select
-                            id={`heritier_client_${heritier.id}`}
-                            value={heritier.clientId || ""}
-                            onChange={(e) => {
-                              const clientId = e.target.value;
-                              const newHeritiers = [...partageSuccessoralData.heritiers];
-                              
-                              if (clientId) {
-                                const selectedClient = clients.find(c => c.id === clientId);
-                                if (selectedClient) {
-                                  newHeritiers[index] = {
-                                    ...heritier,
-                                    clientId: clientId,
-                                    nom: selectedClient.nom || "",
-                                    prenom: selectedClient.prenom || "",
-                                    nomNaissance: selectedClient.nom_naissance || "",
-                                    dateNaissance: selectedClient.date_naissance || "",
-                                    lieuNaissance: selectedClient.lieu_naissance || "",
-                                    nationalite: selectedClient.nationalite || "",
-                                    profession: selectedClient.profession || "",
-                                    adresse: selectedClient.adresse || "",
-                                    telephone: selectedClient.telephone || "",
-                                    email: selectedClient.email || "",
-                                  };
-                                }
-                              } else {
-                                newHeritiers[index] = {...heritier, clientId: ""};
-                              }
-                              
-                              setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
-                            }}
-                            className="w-full px-3 py-2 border rounded-md"
-                          >
-                            <option value="">-- Saisie manuelle --</option>
-                            {clients.map((client) => (
-                              <option key={client.id} value={client.id}>
-                                {client.prenom} {client.nom}
-                              </option>
-                            ))}
-                          </select>
                         </div>
 
                         {/* Informations d'état civil */}
