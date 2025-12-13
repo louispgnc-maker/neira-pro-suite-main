@@ -6855,6 +6855,8 @@ FIN DE LA CONVENTION
                 ? "Informations pour la donation simple"
                 : pendingContractType === "Testament authentique ou mystique"
                 ? "Informations pour le testament"
+                : pendingContractType === "Acte de notoriété"
+                ? "Informations pour l'acte de notoriété"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
