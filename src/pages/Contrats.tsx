@@ -466,6 +466,183 @@ export default function Contrats() {
     },
   });
 
+  // State pour Acte de Notoriété - Fichiers
+  const [acteNotorieteDefuntActeDeces, setActeNotorieteDefuntActeDeces] = useState<File[]>([]);
+  const [acteNotorieteDefuntLivretFamille, setActeNotorieteDefuntLivretFamille] = useState<File[]>([]);
+  const [acteNotorieteDefuntTestaments, setActeNotorieteDefuntTestaments] = useState<File[]>([]);
+  const [acteNotorieteDefuntDonationsEntreEpoux, setActeNotorieteDefuntDonationsEntreEpoux] = useState<File[]>([]);
+  const [acteNotorieteDefuntContratMariage, setActeNotorieteDefuntContratMariage] = useState<File[]>([]);
+  const [acteNotorieteDefuntJugementDivorce, setActeNotorieteDefuntJugementDivorce] = useState<File[]>([]);
+  const [acteNotorieteDefuntActeDecesConjoint, setActeNotorieteDefuntActeDecesConjoint] = useState<File[]>([]);
+  const [acteNotorieteDefuntDonationsAnterieures, setActeNotorieteDefuntDonationsAnterieures] = useState<File[]>([]);
+  
+  // Fichiers héritiers (dynamiques par héritier)
+  const [acteNotorieteHeritiersIdentite, setActeNotorieteHeritiersIdentite] = useState<Record<number, File[]>>({});
+  const [acteNotorieteHeritiersActeNaissance, setActeNotorieteHeritiersActeNaissance] = useState<Record<number, File[]>>({});
+  const [acteNotorieteHeritiersJustifDomicile, setActeNotorieteHeritiersJustifDomicile] = useState<Record<number, File[]>>({});
+  const [acteNotorieteHeritiersJugementTutelle, setActeNotorieteHeritiersJugementTutelle] = useState<Record<number, File[]>>({});
+  const [acteNotorieteHeritiersActeDecesPredeced, setActeNotorieteHeritiersActeDecesPredeced] = useState<Record<number, File[]>>({});
+  
+  // Fichiers témoins (dynamiques par témoin)
+  const [acteNotorieteTemoinsIdentite, setActeNotorieteTemoinsIdentite] = useState<Record<number, File[]>>({});
+  const [acteNotorieteTemoinsAttestation, setActeNotorieteTemoinsAttestation] = useState<Record<number, File[]>>({});
+  
+  // Fichiers conjoint survivant
+  const [acteNotorieteConjointDonationEntreEpoux, setActeNotorieteConjointDonationEntreEpoux] = useState<File[]>([]);
+  const [acteNotorieteConjointContratMariage, setActeNotorieteConjointContratMariage] = useState<File[]>([]);
+  const [acteNotorieteConjointJustificatifs, setActeNotorieteConjointJustificatifs] = useState<File[]>([]);
+  
+  // Fichiers preuves filiation / possession d'état
+  const [acteNotorietePreuvesPhotos, setActeNotorietePreuvesPhotos] = useState<File[]>([]);
+  const [acteNotorietePreuvesCertificats, setActeNotorietePreuvesCertificats] = useState<File[]>([]);
+  const [acteNotorietePreuvesDocumentsScolaires, setActeNotorietePreuvesDocumentsScolaires] = useState<File[]>([]);
+  const [acteNotorietePreuvesCorrespondances, setActeNotorietePreuvesCorrespondances] = useState<File[]>([]);
+  const [acteNotorietePreuvesAutres, setActeNotorietePreuvesAutres] = useState<File[]>([]);
+
+  // State pour Acte de Notoriété - Data
+  const [acteNotorieteData, setActeNotorieteData] = useState({
+    // 1. Type d'acte de notoriété
+    typeActe: "", // succession / filiation / reconstitution_fait / qualite_hereditaire
+    
+    // 2. Informations sur le défunt (si succession)
+    defunt: {
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresseAuDeces: "",
+      dateDeces: "",
+      lieuDeces: "",
+      situationMatrimoniale: "", // celibataire / marie / divorce / veuf / pacse
+      regimeMatrimonial: "", // communaute / separation / participation_acquets / autre
+      regimeMatrimonialAutre: "",
+      dateMariage: "",
+      lieuMariage: "",
+      pacsExistant: false,
+      datePacs: "",
+      lieuPacs: "",
+      testamentsConnus: false,
+      donationsEntreEpoux: false,
+      donationsAnterieures: false,
+      listeDonations: "",
+    },
+    
+    // 3. Héritiers (array)
+    heritiers: [{
+      id: 1,
+      // A. Informations civiles
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresseComplete: "",
+      telephone: "",
+      email: "",
+      
+      // B. Lien de parenté
+      lienParente: "", // conjoint / enfant / parent / frere_soeur / autre
+      lienAutrePrecision: "",
+      
+      // C. Représentation (si prédécédé)
+      estPredeced: false,
+      enfantsPredeced: [{
+        id: 1,
+        nom: "",
+        prenom: "",
+        dateNaissance: "",
+        ordreRepresentation: "",
+      }],
+      
+      // D. Capacité juridique
+      estMineur: false,
+      estMajeurProtege: false,
+      typeProtection: "", // tutelle / curatelle / habilitation_familiale
+      tuteurNom: "",
+      tuteurPrenom: "",
+      tuteurAdresse: "",
+      
+      // E. Option successorale
+      optionSuccessorale: "", // acceptation_pure / acceptation_concurrence_actif / renonciation
+    }],
+    
+    // 4. Conjoint survivant (si applicable)
+    conjointSurvivant: {
+      existe: false,
+      donationEntreEpouxExiste: false,
+      electionOptionnelle: "", // usufruit / quart_pleine_propriete
+      droitLogementTemporaire: false,
+      droitLogementViager: false,
+      contratMariageExiste: false,
+      clausesParticulieres: false,
+      descriptionClausesParticulieres: "", // preciput / clause_attribution / autre
+    },
+    
+    // 5. Témoins (pour actes hors succession classique)
+    temoins: [{
+      id: 1,
+      nom: "",
+      prenom: "",
+      adresse: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      profession: "",
+      lienFamille: "", // ami_famille / voisin / collegue / autre (ne doit pas être héritier)
+      declarationEcrite: "",
+    }],
+    
+    // 6. Preuves (pour filiation / possession d'état)
+    preuvesFiliation: {
+      typesPreuves: [], // photos / certificats / documents_scolaires / correspondances / autres
+      descriptionPreuves: "",
+    },
+    
+    // 7. Contenu de l'acte
+    contenuActe: {
+      // A. Déclarations des héritiers
+      reconnaissanceQualiteHeritiers: true,
+      declarationAbsenceAutresHeritiers: true,
+      declarationTestament: "", // aucun / existe / inconnu
+      declarationDonations: "", // aucune / existent / inconnu
+      absenceLitigeQualiteHereditaire: true,
+      
+      // B. Ordre successoral
+      conjointSurvivantOrdre: false,
+      heritiers1erOrdre: false, // descendants
+      heritiers2eOrdre: false, // parents + freres/soeurs
+      heritiers3eOrdre: false, // ascendants autres
+      heritiers4eOrdre: false, // collatéraux éloignés
+      
+      // C. Parts héréditaires (calculées automatiquement)
+      partsHereditaires: [{
+        heritierId: 1,
+        partPleinePropriete: "",
+        partUsufruit: "",
+        partNuePropriete: "",
+      }],
+      
+      // D. Mentions légales
+      referenceCodeCivil: true,
+      responsabiliteDeclarants: true,
+      revocationPossibleFraude: true,
+      mentionLecture: true,
+    },
+    
+    // 8. Formalités
+    formalites: {
+      enregistrementFCDDV: false, // Fichier Central des Dispositions de Dernières Volontés
+      receptionPieces: false,
+      authentificationElectronique: false,
+      transmissionHeritiers: false,
+      transmissionBanques: false,
+    },
+  });
+
   // State pour Testament (fichiers)
   const [testamentIdentiteTestateur, setTestamentIdentiteTestateur] = useState<File[]>([]);
   const [testamentLivretFamille, setTestamentLivretFamille] = useState<File[]>([]);
@@ -3284,6 +3461,14 @@ export default function Contrats() {
     
     // Si c'est une déclaration de succession, ouvrir le questionnaire spécifique
     if (contractType === "Déclaration de succession" && categoryKey === "Succession") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est un acte de notoriété, ouvrir le questionnaire spécifique
+    if (contractType === "Acte de notoriété" && categoryKey === "Succession") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -6215,6 +6400,149 @@ FIN DE LA CONVENTION
     } catch (err: unknown) {
       console.error('Erreur création succession:', err);
       toast.error('Erreur lors de la création de la déclaration de succession');
+    }
+  };
+
+  const handleActeNotorieteSubmit = async () => {
+    if (!user) return;
+    
+    try {
+      // Générer la description structurée
+      let description = `ACTE DE NOTORIÉTÉ\n\n`;
+      description += `TYPE D'ACTE: ${acteNotorieteData.typeActe === "succession" ? "Succession (détermination des héritiers)" : 
+                                     acteNotorieteData.typeActe === "filiation" ? "Filiation / Possession d'état" :
+                                     acteNotorieteData.typeActe === "reconstitution_fait" ? "Reconstitution d'un fait juridique" :
+                                     "Qualité héréditaire particulière"}\n\n`;
+      
+      // Informations défunt (si succession)
+      if (acteNotorieteData.typeActe === "succession" && acteNotorieteData.defunt.nom) {
+        description += `--- DÉFUNT ---\n`;
+        description += `Nom : ${acteNotorieteData.defunt.nom}\n`;
+        description += `Prénom : ${acteNotorieteData.defunt.prenom}\n`;
+        description += `Nom de naissance : ${acteNotorieteData.defunt.nomNaissance}\n`;
+        description += `Date de naissance : ${acteNotorieteData.defunt.dateNaissance}\n`;
+        description += `Lieu de naissance : ${acteNotorieteData.defunt.lieuNaissance}\n`;
+        description += `Date de décès : ${acteNotorieteData.defunt.dateDeces}\n`;
+        description += `Lieu de décès : ${acteNotorieteData.defunt.lieuDeces}\n`;
+        description += `Situation matrimoniale : ${acteNotorieteData.defunt.situationMatrimoniale}\n`;
+        if (acteNotorieteData.defunt.regimeMatrimonial) {
+          description += `Régime matrimonial : ${acteNotorieteData.defunt.regimeMatrimonial}\n`;
+        }
+        description += `Testaments connus : ${acteNotorieteData.defunt.testamentsConnus ? "Oui" : "Non"}\n`;
+        description += `\n`;
+      }
+      
+      // Héritiers
+      if (acteNotorieteData.heritiers.length > 0) {
+        description += `--- HÉRITIERS (${acteNotorieteData.heritiers.length}) ---\n`;
+        acteNotorieteData.heritiers.forEach((heritier, index) => {
+          description += `\nHéritier ${index + 1}:\n`;
+          description += `Nom : ${heritier.nom} ${heritier.prenom}\n`;
+          description += `Lien de parenté : ${heritier.lienParente}\n`;
+          description += `Option successorale : ${heritier.optionSuccessorale}\n`;
+          if (heritier.estMajeurProtege) {
+            description += `Majeur protégé (${heritier.typeProtection}) - Tuteur : ${heritier.tuteurNom}\n`;
+          }
+        });
+        description += `\n`;
+      }
+      
+      // Témoins
+      if (acteNotorieteData.temoins.length > 0) {
+        description += `--- TÉMOINS (${acteNotorieteData.temoins.length}) ---\n`;
+        acteNotorieteData.temoins.forEach((temoin, index) => {
+          description += `Témoin ${index + 1}: ${temoin.nom} ${temoin.prenom} (${temoin.profession})\n`;
+        });
+        description += `\n`;
+      }
+      
+      // Conjoint survivant
+      if (acteNotorieteData.conjointSurvivant.existe) {
+        description += `--- CONJOINT SURVIVANT ---\n`;
+        description += `Donation entre époux existante : ${acteNotorieteData.conjointSurvivant.donationEntreEpouxExiste ? "Oui" : "Non"}\n`;
+        description += `Election optionnelle : ${acteNotorieteData.conjointSurvivant.electionOptionnelle}\n`;
+        description += `\n`;
+      }
+
+      // Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Acte de notoriété - ${acteNotorieteData.defunt.nom || "Non renseigné"}`,
+          type: "Acte de notoriété",
+          category: "Succession",
+          role: role,
+          description: description,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers avec await pour chaque fichier de chaque array
+      const uploadFile = async (files: File[], subfolder: string) => {
+        for (const file of files) {
+          const filePath = `contrats/${contrat.id}/${subfolder}/${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from('documents')
+            .upload(filePath, file);
+          if (uploadError) {
+            console.error(`Erreur upload ${file.name}:`, uploadError);
+          }
+        }
+      };
+
+      // Upload tous les fichiers
+      await Promise.all([
+        // Défunt
+        uploadFile(acteNotorieteDefuntActeDeces, 'defunt_acte_deces'),
+        uploadFile(acteNotorieteDefuntLivretFamille, 'defunt_livret_famille'),
+        uploadFile(acteNotorieteDefuntTestaments, 'defunt_testaments'),
+        uploadFile(acteNotorieteDefuntDonationsEntreEpoux, 'defunt_donations_entre_epoux'),
+        uploadFile(acteNotorieteDefuntContratMariage, 'defunt_contrat_mariage'),
+        uploadFile(acteNotorieteDefuntJugementDivorce, 'defunt_jugement_divorce'),
+        uploadFile(acteNotorieteDefuntActeDecesConjoint, 'defunt_acte_deces_conjoint'),
+        uploadFile(acteNotorieteDefuntDonationsAnterieures, 'defunt_donations_anterieures'),
+        
+        // Conjoint survivant
+        uploadFile(acteNotorieteConjointDonationEntreEpoux, 'conjoint_donation_entre_epoux'),
+        uploadFile(acteNotorieteConjointContratMariage, 'conjoint_contrat_mariage'),
+        uploadFile(acteNotorieteConjointJustificatifs, 'conjoint_justificatifs'),
+        
+        // Preuves filiation
+        uploadFile(acteNotorietePreuvesPhotos, 'preuves_photos'),
+        uploadFile(acteNotorietePreuvesCertificats, 'preuves_certificats'),
+        uploadFile(acteNotorietePreuvesDocumentsScolaires, 'preuves_documents_scolaires'),
+        uploadFile(acteNotorietePreuvesCorrespondances, 'preuves_correspondances'),
+        uploadFile(acteNotorietePreuvesAutres, 'preuves_autres'),
+      ]);
+      
+      // Upload des fichiers héritiers (dynamiques)
+      for (const heritierId of Object.keys(acteNotorieteHeritiersIdentite)) {
+        const id = Number(heritierId);
+        await uploadFile(acteNotorieteHeritiersIdentite[id] || [], `heritier_${id}_identite`);
+        await uploadFile(acteNotorieteHeritiersActeNaissance[id] || [], `heritier_${id}_acte_naissance`);
+        await uploadFile(acteNotorieteHeritiersJustifDomicile[id] || [], `heritier_${id}_justif_domicile`);
+        await uploadFile(acteNotorieteHeritiersJugementTutelle[id] || [], `heritier_${id}_jugement_tutelle`);
+        await uploadFile(acteNotorieteHeritiersActeDecesPredeced[id] || [], `heritier_${id}_acte_deces_predeced`);
+      }
+      
+      // Upload des fichiers témoins (dynamiques)
+      for (const temoinId of Object.keys(acteNotorieteTemoinsIdentite)) {
+        const id = Number(temoinId);
+        await uploadFile(acteNotorieteTemoinsIdentite[id] || [], `temoin_${id}_identite`);
+        await uploadFile(acteNotorieteTemoinsAttestation[id] || [], `temoin_${id}_attestation`);
+      }
+
+      setContrats((prev) => [contrat, ...prev]);
+      setShowQuestionDialog(false);
+      toast.success('Acte de notoriété créé avec succès');
+      navigate(role === 'notaire' ? `/notaires/contrats/${contrat.id}` : `/avocats/contrats/${contrat.id}`);
+      
+    } catch (err: unknown) {
+      console.error('Erreur création acte de notoriété:', err);
+      toast.error("Erreur lors de la création de l'acte de notoriété");
     }
   };
 
@@ -28354,6 +28682,1201 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {pendingContractType === "Acte de notoriété" && (
+              <>
+                <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                  
+                  {/* Section 1: Type d'acte */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1. Type d'acte de notoriété</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          id="typeSuccession"
+                          name="typeActe"
+                          value="succession"
+                          checked={acteNotorieteData.typeActe === "succession"}
+                          onChange={(e) => setActeNotorieteData({...acteNotorieteData, typeActe: e.target.value})}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="typeSuccession">Acte de notoriété pour succession (établir la dévolution successorale)</Label>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          id="typeFiliation"
+                          name="typeActe"
+                          value="filiation"
+                          checked={acteNotorieteData.typeActe === "filiation"}
+                          onChange={(e) => setActeNotorieteData({...acteNotorieteData, typeActe: e.target.value})}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="typeFiliation">Acte de notoriété pour établir une filiation</Label>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          id="typeReconstitution"
+                          name="typeActe"
+                          value="reconstitution"
+                          checked={acteNotorieteData.typeActe === "reconstitution"}
+                          onChange={(e) => setActeNotorieteData({...acteNotorieteData, typeActe: e.target.value})}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="typeReconstitution">Acte de notoriété pour reconstitution d'acte d'état civil</Label>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          id="typeQualite"
+                          name="typeActe"
+                          value="qualiteHereditaire"
+                          checked={acteNotorieteData.typeActe === "qualiteHereditaire"}
+                          onChange={(e) => setActeNotorieteData({...acteNotorieteData, typeActe: e.target.value})}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="typeQualite">Acte de notoriété pour constater la qualité d'héritier</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: Informations sur le défunt */}
+                  {(acteNotorieteData.typeActe === "succession" || acteNotorieteData.typeActe === "qualiteHereditaire") && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">2. Informations sur le défunt</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="defuntNom">Nom</Label>
+                          <Input
+                            id="defuntNom"
+                            value={acteNotorieteData.defunt.nom}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, nom: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="defuntPrenom">Prénom(s)</Label>
+                          <Input
+                            id="defuntPrenom"
+                            value={acteNotorieteData.defunt.prenom}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, prenom: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="defuntDateNaissance">Date de naissance</Label>
+                          <Input
+                            id="defuntDateNaissance"
+                            type="date"
+                            value={acteNotorieteData.defunt.dateNaissance}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, dateNaissance: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="defuntLieuNaissance">Lieu de naissance</Label>
+                          <Input
+                            id="defuntLieuNaissance"
+                            value={acteNotorieteData.defunt.lieuNaissance}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, lieuNaissance: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="defuntDateDeces">Date de décès</Label>
+                          <Input
+                            id="defuntDateDeces"
+                            type="date"
+                            value={acteNotorieteData.defunt.dateDeces}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, dateDeces: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="defuntLieuDeces">Lieu de décès</Label>
+                          <Input
+                            id="defuntLieuDeces"
+                            value={acteNotorieteData.defunt.lieuDeces}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, lieuDeces: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label htmlFor="defuntDernierDomicile">Dernier domicile</Label>
+                          <Input
+                            id="defuntDernierDomicile"
+                            value={acteNotorieteData.defunt.dernierDomicile}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, dernierDomicile: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="defuntNationalite">Nationalité</Label>
+                          <Input
+                            id="defuntNationalite"
+                            value={acteNotorieteData.defunt.nationalite}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, nationalite: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="defuntProfession">Profession</Label>
+                          <Input
+                            id="defuntProfession"
+                            value={acteNotorieteData.defunt.profession}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, profession: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="defuntSituationMatrimoniale">Situation matrimoniale</Label>
+                          <select
+                            id="defuntSituationMatrimoniale"
+                            value={acteNotorieteData.defunt.situationMatrimoniale}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, situationMatrimoniale: e.target.value}
+                            })}
+                            className="w-full px-3 py-2 border rounded-md"
+                          >
+                            <option value="">-- Sélectionner --</option>
+                            <option value="celibataire">Célibataire</option>
+                            <option value="marie">Marié(e)</option>
+                            <option value="pacse">Pacsé(e)</option>
+                            <option value="divorce">Divorcé(e)</option>
+                            <option value="veuf">Veuf/Veuve</option>
+                          </select>
+                        </div>
+                        {(acteNotorieteData.defunt.situationMatrimoniale === "marie" || acteNotorieteData.defunt.situationMatrimoniale === "veuf") && (
+                          <>
+                            <div>
+                              <Label htmlFor="defuntDateMariage">Date de mariage</Label>
+                              <Input
+                                id="defuntDateMariage"
+                                type="date"
+                                value={acteNotorieteData.defunt.dateMariage}
+                                onChange={(e) => setActeNotorieteData({
+                                  ...acteNotorieteData,
+                                  defunt: {...acteNotorieteData.defunt, dateMariage: e.target.value}
+                                })}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="defuntRegimeMatrimonial">Régime matrimonial</Label>
+                              <Input
+                                id="defuntRegimeMatrimonial"
+                                value={acteNotorieteData.defunt.regimeMatrimonial}
+                                onChange={(e) => setActeNotorieteData({
+                                  ...acteNotorieteData,
+                                  defunt: {...acteNotorieteData.defunt, regimeMatrimonial: e.target.value}
+                                })}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-3 mt-4">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="defuntTestamentExiste"
+                            checked={acteNotorieteData.defunt.testamentExiste}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, testamentExiste: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="defuntTestamentExiste">Testament existant</Label>
+                        </div>
+
+                        {acteNotorieteData.defunt.testamentExiste && (
+                          <div>
+                            <Label htmlFor="defuntTestamentDetails">Détails du testament</Label>
+                            <Textarea
+                              id="defuntTestamentDetails"
+                              value={acteNotorieteData.defunt.testamentDetails}
+                              onChange={(e) => setActeNotorieteData({
+                                ...acteNotorieteData,
+                                defunt: {...acteNotorieteData.defunt, testamentDetails: e.target.value}
+                              })}
+                              rows={3}
+                            />
+                          </div>
+                        )}
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="defuntDonationsAnterieures"
+                            checked={acteNotorieteData.defunt.donationsAnterieures}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              defunt: {...acteNotorieteData.defunt, donationsAnterieures: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="defuntDonationsAnterieures">Donations antérieures</Label>
+                        </div>
+
+                        {acteNotorieteData.defunt.donationsAnterieures && (
+                          <div>
+                            <Label htmlFor="defuntDonationsDetails">Détails des donations</Label>
+                            <Textarea
+                              id="defuntDonationsDetails"
+                              value={acteNotorieteData.defunt.donationsDetails}
+                              onChange={(e) => setActeNotorieteData({
+                                ...acteNotorieteData,
+                                defunt: {...acteNotorieteData.defunt, donationsDetails: e.target.value}
+                              })}
+                              rows={3}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Section 3: Héritiers */}
+                  {(acteNotorieteData.typeActe === "succession" || acteNotorieteData.typeActe === "qualiteHereditaire") && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-semibold text-lg border-b pb-2 flex-1">3. Héritiers</h3>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newId = Date.now();
+                            setActeNotorieteData({
+                              ...acteNotorieteData,
+                              heritiers: [...acteNotorieteData.heritiers, {
+                                id: newId,
+                                nom: "", prenom: "", dateNaissance: "", lieuNaissance: "",
+                                adresse: "", nationalite: "", profession: "",
+                                lienParente: "", degre: "", branche: "",
+                                representantDe: "", representeQui: "",
+                                majeurOuMineur: "majeur", regime: "",
+                                optionSuccessorale: "acceptePurSimple"
+                              }]
+                            });
+                            setActeNotorieteHeritierFiles({
+                              ...acteNotorieteHeritierFiles,
+                              [newId]: []
+                            });
+                          }}
+                          className="ml-2"
+                        >
+                          + Ajouter un héritier
+                        </Button>
+                      </div>
+
+                      {acteNotorieteData.heritiers.map((heritier, index) => (
+                        <div key={heritier.id} className="p-4 border rounded-lg space-y-4 bg-gray-50">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium">Héritier {index + 1}</h4>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                const newHeritiers = acteNotorieteData.heritiers.filter(h => h.id !== heritier.id);
+                                setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                const newFiles = {...acteNotorieteHeritierFiles};
+                                delete newFiles[heritier.id];
+                                setActeNotorieteHeritierFiles(newFiles);
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          </div>
+
+                          {/* Informations civiles */}
+                          <div>
+                            <h5 className="font-medium text-sm mb-2">Informations civiles</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <Label htmlFor={`heritier_nom_${heritier.id}`}>Nom</Label>
+                                <Input
+                                  id={`heritier_nom_${heritier.id}`}
+                                  value={heritier.nom}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, nom: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`heritier_prenom_${heritier.id}`}>Prénom(s)</Label>
+                                <Input
+                                  id={`heritier_prenom_${heritier.id}`}
+                                  value={heritier.prenom}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, prenom: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`heritier_dateNaissance_${heritier.id}`}>Date de naissance</Label>
+                                <Input
+                                  id={`heritier_dateNaissance_${heritier.id}`}
+                                  type="date"
+                                  value={heritier.dateNaissance}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, dateNaissance: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`heritier_lieuNaissance_${heritier.id}`}>Lieu de naissance</Label>
+                                <Input
+                                  id={`heritier_lieuNaissance_${heritier.id}`}
+                                  value={heritier.lieuNaissance}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, lieuNaissance: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label htmlFor={`heritier_adresse_${heritier.id}`}>Adresse</Label>
+                                <Input
+                                  id={`heritier_adresse_${heritier.id}`}
+                                  value={heritier.adresse}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, adresse: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`heritier_nationalite_${heritier.id}`}>Nationalité</Label>
+                                <Input
+                                  id={`heritier_nationalite_${heritier.id}`}
+                                  value={heritier.nationalite}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, nationalite: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`heritier_profession_${heritier.id}`}>Profession</Label>
+                                <Input
+                                  id={`heritier_profession_${heritier.id}`}
+                                  value={heritier.profession}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, profession: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Lien de parenté */}
+                          <div>
+                            <h5 className="font-medium text-sm mb-2">Lien de parenté</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <div>
+                                <Label htmlFor={`heritier_lienParente_${heritier.id}`}>Lien</Label>
+                                <Input
+                                  id={`heritier_lienParente_${heritier.id}`}
+                                  value={heritier.lienParente}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, lienParente: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                  placeholder="Ex: Fils, Fille, Conjoint..."
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`heritier_degre_${heritier.id}`}>Degré</Label>
+                                <Input
+                                  id={`heritier_degre_${heritier.id}`}
+                                  value={heritier.degre}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, degre: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                  placeholder="1er, 2e..."
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`heritier_branche_${heritier.id}`}>Branche</Label>
+                                <Input
+                                  id={`heritier_branche_${heritier.id}`}
+                                  value={heritier.branche}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, branche: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                  placeholder="Paternelle, Maternelle..."
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Représentation */}
+                          <div>
+                            <h5 className="font-medium text-sm mb-2">Représentation (si applicable)</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <Label htmlFor={`heritier_representantDe_${heritier.id}`}>Représentant de</Label>
+                                <Input
+                                  id={`heritier_representantDe_${heritier.id}`}
+                                  value={heritier.representantDe}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, representantDe: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                  placeholder="Nom du représenté"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`heritier_representeQui_${heritier.id}`}>Représente qui</Label>
+                                <Input
+                                  id={`heritier_representeQui_${heritier.id}`}
+                                  value={heritier.representeQui}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, representeQui: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                  placeholder="Lien avec le représenté"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Capacité */}
+                          <div>
+                            <h5 className="font-medium text-sm mb-2">Capacité</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <Label htmlFor={`heritier_majeurOuMineur_${heritier.id}`}>Statut</Label>
+                                <select
+                                  id={`heritier_majeurOuMineur_${heritier.id}`}
+                                  value={heritier.majeurOuMineur}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...acteNotorieteData.heritiers];
+                                    newHeritiers[index] = {...heritier, majeurOuMineur: e.target.value};
+                                    setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                  }}
+                                  className="w-full px-3 py-2 border rounded-md"
+                                >
+                                  <option value="majeur">Majeur</option>
+                                  <option value="mineur">Mineur</option>
+                                  <option value="protege">Majeur protégé</option>
+                                </select>
+                              </div>
+                              {heritier.majeurOuMineur !== "majeur" && (
+                                <div>
+                                  <Label htmlFor={`heritier_regime_${heritier.id}`}>Régime de protection</Label>
+                                  <Input
+                                    id={`heritier_regime_${heritier.id}`}
+                                    value={heritier.regime}
+                                    onChange={(e) => {
+                                      const newHeritiers = [...acteNotorieteData.heritiers];
+                                      newHeritiers[index] = {...heritier, regime: e.target.value};
+                                      setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                                    }}
+                                    placeholder="Tutelle, curatelle..."
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Option successorale */}
+                          <div>
+                            <h5 className="font-medium text-sm mb-2">Option successorale</h5>
+                            <select
+                              id={`heritier_option_${heritier.id}`}
+                              value={heritier.optionSuccessorale}
+                              onChange={(e) => {
+                                const newHeritiers = [...acteNotorieteData.heritiers];
+                                newHeritiers[index] = {...heritier, optionSuccessorale: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                              }}
+                              className="w-full px-3 py-2 border rounded-md"
+                            >
+                              <option value="acceptePurSimple">Accepte pur et simple</option>
+                              <option value="accepteBeneficeInventaire">Accepte à concurrence de l'actif net (bénéfice d'inventaire)</option>
+                              <option value="renonce">Renonce</option>
+                            </select>
+                          </div>
+
+                          {/* Documents de l'héritier */}
+                          <div>
+                            <h5 className="font-medium text-sm mb-2">Documents justificatifs de l'héritier</h5>
+                            <MultiFileUpload
+                              label="Pièces d'identité, actes de naissance, justificatifs de domicile"
+                              files={acteNotorieteHeritierFiles[heritier.id] || []}
+                              onFilesChange={(newFiles) => {
+                                setActeNotorieteHeritierFiles({
+                                  ...acteNotorieteHeritierFiles,
+                                  [heritier.id]: newFiles
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+
+                      {acteNotorieteData.heritiers.length === 0 && (
+                        <p className="text-sm text-gray-500 italic">Aucun héritier ajouté. Cliquez sur "Ajouter un héritier" pour commencer.</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Section 4: Conjoint survivant */}
+                  {(acteNotorieteData.typeActe === "succession" || acteNotorieteData.typeActe === "qualiteHereditaire") && 
+                   (acteNotorieteData.defunt.situationMatrimoniale === "marie" || acteNotorieteData.defunt.situationMatrimoniale === "veuf") && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">4. Conjoint survivant</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="conjointDonationsRecues"
+                            checked={acteNotorieteData.conjointSurvivant.donationsRecues}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              conjointSurvivant: {...acteNotorieteData.conjointSurvivant, donationsRecues: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="conjointDonationsRecues">Donations reçues du défunt</Label>
+                        </div>
+
+                        {acteNotorieteData.conjointSurvivant.donationsRecues && (
+                          <div>
+                            <Label htmlFor="conjointDonationsDetails">Détails des donations</Label>
+                            <Textarea
+                              id="conjointDonationsDetails"
+                              value={acteNotorieteData.conjointSurvivant.donationsDetails}
+                              onChange={(e) => setActeNotorieteData({
+                                ...acteNotorieteData,
+                                conjointSurvivant: {...acteNotorieteData.conjointSurvivant, donationsDetails: e.target.value}
+                              })}
+                              rows={2}
+                            />
+                          </div>
+                        )}
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="conjointElectionDroits"
+                            checked={acteNotorieteData.conjointSurvivant.electionDroits}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              conjointSurvivant: {...acteNotorieteData.conjointSurvivant, electionDroits: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="conjointElectionDroits">Élection de droits (usufruit / pleine propriété)</Label>
+                        </div>
+
+                        {acteNotorieteData.conjointSurvivant.electionDroits && (
+                          <div>
+                            <Label htmlFor="conjointElectionDetails">Choix du conjoint</Label>
+                            <Textarea
+                              id="conjointElectionDetails"
+                              value={acteNotorieteData.conjointSurvivant.electionDetails}
+                              onChange={(e) => setActeNotorieteData({
+                                ...acteNotorieteData,
+                                conjointSurvivant: {...acteNotorieteData.conjointSurvivant, electionDetails: e.target.value}
+                              })}
+                              rows={2}
+                            />
+                          </div>
+                        )}
+
+                        <div>
+                          <Label htmlFor="conjointDroitsSuccession">Droits dans la succession</Label>
+                          <Textarea
+                            id="conjointDroitsSuccession"
+                            value={acteNotorieteData.conjointSurvivant.droitsSuccession}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              conjointSurvivant: {...acteNotorieteData.conjointSurvivant, droitsSuccession: e.target.value}
+                            })}
+                            rows={2}
+                            placeholder="Décrire les droits du conjoint..."
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="conjointContratMariage">Contrat de mariage (si applicable)</Label>
+                          <Input
+                            id="conjointContratMariage"
+                            value={acteNotorieteData.conjointSurvivant.contratMariage}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              conjointSurvivant: {...acteNotorieteData.conjointSurvivant, contratMariage: e.target.value}
+                            })}
+                            placeholder="Détails du contrat..."
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="conjointClausesParticulieres">Clauses particulières</Label>
+                          <Textarea
+                            id="conjointClausesParticulieres"
+                            value={acteNotorieteData.conjointSurvivant.clausesParticulieres}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              conjointSurvivant: {...acteNotorieteData.conjointSurvivant, clausesParticulieres: e.target.value}
+                            })}
+                            rows={2}
+                            placeholder="Clauses spécifiques..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Section 5: Témoins */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-semibold text-lg border-b pb-2 flex-1">5. Témoins (minimum 2)</h3>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newId = Date.now();
+                          setActeNotorieteData({
+                            ...acteNotorieteData,
+                            temoins: [...acteNotorieteData.temoins, {
+                              id: newId,
+                              nom: "", prenom: "", dateNaissance: "", lieuNaissance: "",
+                              adresse: "", nationalite: "", profession: "",
+                              lienDefunt: ""
+                            }]
+                          });
+                          setActeNotorieteTemoinFiles({
+                            ...acteNotorieteTemoinFiles,
+                            [newId]: []
+                          });
+                        }}
+                        className="ml-2"
+                      >
+                        + Ajouter un témoin
+                      </Button>
+                    </div>
+
+                    {acteNotorieteData.temoins.map((temoin, index) => (
+                      <div key={temoin.id} className="p-4 border rounded-lg space-y-4 bg-blue-50">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium">Témoin {index + 1}</h4>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              const newTemoins = acteNotorieteData.temoins.filter(t => t.id !== temoin.id);
+                              setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              const newFiles = {...acteNotorieteTemoinFiles};
+                              delete newFiles[temoin.id];
+                              setActeNotorieteTemoinFiles(newFiles);
+                            }}
+                            disabled={acteNotorieteData.temoins.length <= 2}
+                          >
+                            Supprimer
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <Label htmlFor={`temoin_nom_${temoin.id}`}>Nom</Label>
+                            <Input
+                              id={`temoin_nom_${temoin.id}`}
+                              value={temoin.nom}
+                              onChange={(e) => {
+                                const newTemoins = [...acteNotorieteData.temoins];
+                                newTemoins[index] = {...temoin, nom: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`temoin_prenom_${temoin.id}`}>Prénom(s)</Label>
+                            <Input
+                              id={`temoin_prenom_${temoin.id}`}
+                              value={temoin.prenom}
+                              onChange={(e) => {
+                                const newTemoins = [...acteNotorieteData.temoins];
+                                newTemoins[index] = {...temoin, prenom: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`temoin_dateNaissance_${temoin.id}`}>Date de naissance</Label>
+                            <Input
+                              id={`temoin_dateNaissance_${temoin.id}`}
+                              type="date"
+                              value={temoin.dateNaissance}
+                              onChange={(e) => {
+                                const newTemoins = [...acteNotorieteData.temoins];
+                                newTemoins[index] = {...temoin, dateNaissance: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`temoin_lieuNaissance_${temoin.id}`}>Lieu de naissance</Label>
+                            <Input
+                              id={`temoin_lieuNaissance_${temoin.id}`}
+                              value={temoin.lieuNaissance}
+                              onChange={(e) => {
+                                const newTemoins = [...acteNotorieteData.temoins];
+                                newTemoins[index] = {...temoin, lieuNaissance: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              }}
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <Label htmlFor={`temoin_adresse_${temoin.id}`}>Adresse</Label>
+                            <Input
+                              id={`temoin_adresse_${temoin.id}`}
+                              value={temoin.adresse}
+                              onChange={(e) => {
+                                const newTemoins = [...acteNotorieteData.temoins];
+                                newTemoins[index] = {...temoin, adresse: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`temoin_nationalite_${temoin.id}`}>Nationalité</Label>
+                            <Input
+                              id={`temoin_nationalite_${temoin.id}`}
+                              value={temoin.nationalite}
+                              onChange={(e) => {
+                                const newTemoins = [...acteNotorieteData.temoins];
+                                newTemoins[index] = {...temoin, nationalite: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`temoin_profession_${temoin.id}`}>Profession</Label>
+                            <Input
+                              id={`temoin_profession_${temoin.id}`}
+                              value={temoin.profession}
+                              onChange={(e) => {
+                                const newTemoins = [...acteNotorieteData.temoins];
+                                newTemoins[index] = {...temoin, profession: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              }}
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <Label htmlFor={`temoin_lienDefunt_${temoin.id}`}>Lien avec le défunt</Label>
+                            <Input
+                              id={`temoin_lienDefunt_${temoin.id}`}
+                              value={temoin.lienDefunt}
+                              onChange={(e) => {
+                                const newTemoins = [...acteNotorieteData.temoins];
+                                newTemoins[index] = {...temoin, lienDefunt: e.target.value};
+                                setActeNotorieteData({...acteNotorieteData, temoins: newTemoins});
+                              }}
+                              placeholder="Ex: Ami proche, voisin, collègue..."
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label>Documents du témoin</Label>
+                          <MultiFileUpload
+                            label="Pièce d'identité, justificatif de domicile"
+                            files={acteNotorieteTemoinFiles[temoin.id] || []}
+                            onFilesChange={(newFiles) => {
+                              setActeNotorieteTemoinFiles({
+                                ...acteNotorieteTemoinFiles,
+                                [temoin.id]: newFiles
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+
+                    {acteNotorieteData.temoins.length < 2 && (
+                      <p className="text-sm text-orange-600 font-medium">⚠️ Au moins 2 témoins sont requis pour établir l'acte de notoriété.</p>
+                    )}
+                  </div>
+
+                  {/* Section 6: Preuves de la filiation */}
+                  {acteNotorieteData.typeActe === "filiation" && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">6. Preuves de la filiation</h3>
+                      <div className="space-y-3">
+                        <MultiFileUpload
+                          label="Photos de famille"
+                          files={acteNotorietePreuvePhotos}
+                          onFilesChange={setActeNotorietePreuvePhotos}
+                        />
+
+                        <MultiFileUpload
+                          label="Certificats médicaux"
+                          files={acteNotorietePreuveCertificats}
+                          onFilesChange={setActeNotorietePreuveCertificats}
+                        />
+
+                        <MultiFileUpload
+                          label="Documents scolaires"
+                          files={acteNotorietePreuveDocumentsScolaires}
+                          onFilesChange={setActeNotorietePreuveDocumentsScolaires}
+                        />
+
+                        <MultiFileUpload
+                          label="Correspondances"
+                          files={acteNotorietePreuveCorrespondances}
+                          onFilesChange={setActeNotorietePreuveCorrespondances}
+                        />
+
+                        <MultiFileUpload
+                          label="Autres preuves"
+                          files={acteNotorietePreuveAutres}
+                          onFilesChange={setActeNotorietePreuveAutres}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Section 7: Contenu de l'acte */}
+                  {(acteNotorieteData.typeActe === "succession" || acteNotorieteData.typeActe === "qualiteHereditaire") && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg border-b pb-2">7. Contenu de l'acte</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <Label htmlFor="contenuDeclarations">Déclarations des témoins</Label>
+                          <Textarea
+                            id="contenuDeclarations"
+                            value={acteNotorieteData.contenuActe.declarationsTemoins}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              contenuActe: {...acteNotorieteData.contenuActe, declarationsTemoins: e.target.value}
+                            })}
+                            rows={3}
+                            placeholder="Résumé des déclarations faites par les témoins..."
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="contenuOrdre">Ordre successoral</Label>
+                          <Textarea
+                            id="contenuOrdre"
+                            value={acteNotorieteData.contenuActe.ordreSuccessoral}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              contenuActe: {...acteNotorieteData.contenuActe, ordreSuccessoral: e.target.value}
+                            })}
+                            rows={3}
+                            placeholder="Ordre des héritiers selon la loi..."
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="contenuParts">Parts héréditaires</Label>
+                          <Textarea
+                            id="contenuParts"
+                            value={acteNotorieteData.contenuActe.partsHereditaires}
+                            onChange={(e) => setActeNotorieteData({
+                              ...acteNotorieteData,
+                              contenuActe: {...acteNotorieteData.contenuActe, partsHereditaires: e.target.value}
+                            })}
+                            rows={3}
+                            placeholder="Répartition des parts entre les héritiers..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Section 8: Formalités */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">8. Formalités</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="formaliteFCDDV"
+                          checked={acteNotorieteData.formalites.fichierCentralDesDispositionsDernieresVolontes}
+                          onChange={(e) => setActeNotorieteData({
+                            ...acteNotorieteData,
+                            formalites: {...acteNotorieteData.formalites, fichierCentralDesDispositionsDernieresVolontes: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="formaliteFCDDV">Consultation du Fichier Central des Dispositions de Dernières Volontés (FCDDV)</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="formaliteReception"
+                          checked={acteNotorieteData.formalites.receptionActeNotaire}
+                          onChange={(e) => setActeNotorieteData({
+                            ...acteNotorieteData,
+                            formalites: {...acteNotorieteData.formalites, receptionActeNotaire: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="formaliteReception">Réception de l'acte par le notaire</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="formaliteAuthentification"
+                          checked={acteNotorieteData.formalites.authentificationSignatures}
+                          onChange={(e) => setActeNotorieteData({
+                            ...acteNotorieteData,
+                            formalites: {...acteNotorieteData.formalites, authentificationSignatures: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="formaliteAuthentification">Authentification des signatures</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="formaliteTransmission"
+                          checked={acteNotorieteData.formalites.transmissionCopiesHeritiers}
+                          onChange={(e) => setActeNotorieteData({
+                            ...acteNotorieteData,
+                            formalites: {...acteNotorieteData.formalites, transmissionCopiesHeritiers: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="formaliteTransmission">Transmission de copies aux héritiers</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="formaliteInscription"
+                          checked={acteNotorieteData.formalites.inscriptionRegistres}
+                          onChange={(e) => setActeNotorieteData({
+                            ...acteNotorieteData,
+                            formalites: {...acteNotorieteData.formalites, inscriptionRegistres: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="formaliteInscription">Inscription dans les registres</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 9: Pièces justificatives */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">9. Pièces justificatives</h3>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Documents relatifs au défunt</h4>
+                      
+                      <MultiFileUpload
+                        label="Acte de décès"
+                        files={acteNotorieteDefuntActeDeces}
+                        onFilesChange={setActeNotorieteDefuntActeDeces}
+                      />
+
+                      <MultiFileUpload
+                        label="Acte de naissance du défunt"
+                        files={acteNotorieteDefuntActeNaissance}
+                        onFilesChange={setActeNotorieteDefuntActeNaissance}
+                      />
+
+                      <MultiFileUpload
+                        label="Livret de famille du défunt"
+                        files={acteNotorieteDefuntLivretFamille}
+                        onFilesChange={setActeNotorieteDefuntLivretFamille}
+                      />
+
+                      <MultiFileUpload
+                        label="Acte de mariage du défunt"
+                        files={acteNotorieteDefuntActeMariage}
+                        onFilesChange={setActeNotorieteDefuntActeMariage}
+                      />
+
+                      <MultiFileUpload
+                        label="Contrat de mariage"
+                        files={acteNotorieteDefuntContratMariage}
+                        onFilesChange={setActeNotorieteDefuntContratMariage}
+                      />
+
+                      <MultiFileUpload
+                        label="Jugement de divorce"
+                        files={acteNotorieteDefuntJugementDivorce}
+                        onFilesChange={setActeNotorieteDefuntJugementDivorce}
+                      />
+
+                      <MultiFileUpload
+                        label="Testament(s)"
+                        files={acteNotorieteDefuntTestament}
+                        onFilesChange={setActeNotorieteDefuntTestament}
+                      />
+
+                      <MultiFileUpload
+                        label="Donations antérieures"
+                        files={acteNotorieteDefuntDonations}
+                        onFilesChange={setActeNotorieteDefuntDonations}
+                      />
+
+                      <MultiFileUpload
+                        label="Justificatif de domicile du défunt"
+                        files={acteNotorieteDefuntJustifDomicile}
+                        onFilesChange={setActeNotorieteDefuntJustifDomicile}
+                      />
+
+                      <MultiFileUpload
+                        label="Pièce d'identité du défunt"
+                        files={acteNotorieteDefuntPieceIdentite}
+                        onFilesChange={setActeNotorieteDefuntPieceIdentite}
+                      />
+                    </div>
+
+                    <div className="space-y-3 mt-6">
+                      <h4 className="font-medium text-sm">Documents relatifs aux héritiers (collectifs)</h4>
+                      
+                      <MultiFileUpload
+                        label="Actes de naissance des héritiers"
+                        files={acteNotorieteHeritiersActesNaissance}
+                        onFilesChange={setActeNotorieteHeritiersActesNaissance}
+                      />
+
+                      <MultiFileUpload
+                        label="Pièces d'identité des héritiers"
+                        files={acteNotorieteHeritiersPiecesIdentite}
+                        onFilesChange={setActeNotorieteHeritiersPiecesIdentite}
+                      />
+
+                      <MultiFileUpload
+                        label="Justificatifs de domicile des héritiers"
+                        files={acteNotorieteHeritiersJustifsDomicile}
+                        onFilesChange={setActeNotorieteHeritiersJustifsDomicile}
+                      />
+
+                      <MultiFileUpload
+                        label="Livrets de famille des héritiers"
+                        files={acteNotorieteHeritiersLivretsFamille}
+                        onFilesChange={setActeNotorieteHeritiersLivretsFamille}
+                      />
+
+                      <MultiFileUpload
+                        label="Actes de notoriété antérieurs"
+                        files={acteNotorieteHeritiersActesNotoriete}
+                        onFilesChange={setActeNotorieteHeritiersActesNotoriete}
+                      />
+
+                      <MultiFileUpload
+                        label="Certificats d'hérédité"
+                        files={acteNotorieteHeritiersCertificatsHeredite}
+                        onFilesChange={setActeNotorieteHeritiersCertificatsHeredite}
+                      />
+
+                      <MultiFileUpload
+                        label="Documents de tutelle/curatelle (si applicable)"
+                        files={acteNotorieteHeritiersTutelleCuratelle}
+                        onFilesChange={setActeNotorieteHeritiersTutelleCuratelle}
+                      />
+                    </div>
+
+                    <div className="space-y-3 mt-6">
+                      <h4 className="font-medium text-sm">Documents relatifs aux témoins (collectifs)</h4>
+                      
+                      <MultiFileUpload
+                        label="Pièces d'identité des témoins"
+                        files={acteNotorieteTemoinsPiecesIdentite}
+                        onFilesChange={setActeNotorieteTemoinsPiecesIdentite}
+                      />
+
+                      <MultiFileUpload
+                        label="Justificatifs de domicile des témoins"
+                        files={acteNotorieteTemoinsJustifsDomicile}
+                        onFilesChange={setActeNotorieteTemoinsJustifsDomicile}
+                      />
+                    </div>
+
+                    <div className="space-y-3 mt-6">
+                      <h4 className="font-medium text-sm">Autres documents</h4>
+                      
+                      <MultiFileUpload
+                        label="Attestations diverses"
+                        files={acteNotorieteAutresAttestations}
+                        onFilesChange={setActeNotorieteAutresAttestations}
+                      />
+
+                      <MultiFileUpload
+                        label="Certificats médicaux"
+                        files={acteNotorieteAutresCertificatsMedicaux}
+                        onFilesChange={setActeNotorieteAutresCertificatsMedicaux}
+                      />
+
+                      <MultiFileUpload
+                        label="Correspondances"
+                        files={acteNotorieteAutresCorrespondances}
+                        onFilesChange={setActeNotorieteAutresCorrespondances}
+                      />
+
+                      <MultiFileUpload
+                        label="Autres documents"
+                        files={acteNotorieteAutresDocuments}
+                        onFilesChange={setActeNotorieteAutresDocuments}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      ℹ️ <strong>Note :</strong> L'acte de notoriété est un document officiel établi par un notaire qui certifie la qualité d'héritier ou établit une filiation. Il est requis pour débloquer les comptes bancaires, transférer les biens immobiliers, et effectuer toutes les démarches successorales. Assurez-vous de fournir tous les documents nécessaires pour faciliter le traitement par le notaire.
+                    </p>
+                  </div>
+
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -28391,6 +29914,8 @@ FIN DE LA CONVENTION
                   handleChangementRegimeSubmit();
                 } else if (pendingContractType === "Déclaration de succession") {
                   handleSuccessionSubmit();
+                } else if (pendingContractType === "Acte de notoriété") {
+                  handleActeNotorieteSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
