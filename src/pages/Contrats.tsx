@@ -29411,7 +29411,6 @@ FIN DE LA CONVENTION
                       <h3 className="font-semibold text-lg border-b pb-2 flex-1">5. Témoins (minimum 2)</h3>
                       <Button
                         type="button"
-                        variant="outline"
                         size="sm"
                         onClick={() => {
                           const newId = Date.now();
@@ -29429,7 +29428,7 @@ FIN DE LA CONVENTION
                             [newId]: []
                           });
                         }}
-                        className="ml-2"
+                        className={`ml-2 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
                       >
                         + Ajouter un témoin
                       </Button>
