@@ -31047,6 +31047,1072 @@ FIN DE LA CONVENTION
                     )}
                   </div>
 
+                  {/* Section 3: Inventaire complet de l'actif successoral */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">3. Inventaire complet de l'actif successoral</h3>
+                    
+                    {/* A. Biens immobiliers */}
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium text-md flex-1">A. Biens immobiliers</h4>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            const newId = Date.now();
+                            setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                biensImmobiliers: [...partageSuccessoralData.actif.biensImmobiliers, {
+                                  id: newId,
+                                  adresse: "", description: "", designationCadastrale: "",
+                                  valeurVenale: "", origineBien: "", quotePartDefunt: "",
+                                  etatLocatif: "", loyer: "", hypotheques: "",
+                                  copropriete: false, lots: "", chargesCopro: ""
+                                }]
+                              }
+                            });
+                            setPartageBienImmobilierFiles({
+                              ...partageBienImmobilierFiles,
+                              [newId]: []
+                            });
+                          }}
+                          className={`ml-2 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                        >
+                          + Ajouter un bien
+                        </Button>
+                      </div>
+
+                      {partageSuccessoralData.actif.biensImmobiliers.map((bien, index) => (
+                        <div key={bien.id} className="p-4 border rounded-lg space-y-3 bg-blue-50">
+                          <div className="flex justify-between items-center">
+                            <h5 className="font-medium">Bien immobilier {index + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                const newBiens = partageSuccessoralData.actif.biensImmobiliers.filter(b => b.id !== bien.id);
+                                setPartageSuccessoralData({
+                                  ...partageSuccessoralData,
+                                  actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                });
+                                const newFiles = {...partageBienImmobilierFiles};
+                                delete newFiles[bien.id];
+                                setPartageBienImmobilierFiles(newFiles);
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`bien_adresse_${bien.id}`}>Adresse</Label>
+                              <Input
+                                id={`bien_adresse_${bien.id}`}
+                                value={bien.adresse}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, adresse: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`bien_description_${bien.id}`}>Description complète</Label>
+                              <Textarea
+                                id={`bien_description_${bien.id}`}
+                                value={bien.description}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, description: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`bien_cadastre_${bien.id}`}>Désignation cadastrale</Label>
+                              <Input
+                                id={`bien_cadastre_${bien.id}`}
+                                value={bien.designationCadastrale}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, designationCadastrale: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`bien_valeur_${bien.id}`}>Valeur vénale (€)</Label>
+                              <Input
+                                id={`bien_valeur_${bien.id}`}
+                                type="number"
+                                value={bien.valeurVenale}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, valeurVenale: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`bien_origine_${bien.id}`}>Origine du bien</Label>
+                              <select
+                                id={`bien_origine_${bien.id}`}
+                                value={bien.origineBien}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, origineBien: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border rounded-md"
+                              >
+                                <option value="">-- Sélectionner --</option>
+                                <option value="propre">Propre du défunt</option>
+                                <option value="commun">Commun</option>
+                                <option value="indivis">Indivis</option>
+                              </select>
+                            </div>
+                            <div>
+                              <Label htmlFor={`bien_quotePart_${bien.id}`}>Quote-part du défunt</Label>
+                              <Input
+                                id={`bien_quotePart_${bien.id}`}
+                                value={bien.quotePartDefunt}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, quotePartDefunt: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                                placeholder="Ex: 100%, 50%, 1/3..."
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`bien_etatLocatif_${bien.id}`}>État locatif</Label>
+                              <Input
+                                id={`bien_etatLocatif_${bien.id}`}
+                                value={bien.etatLocatif}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, etatLocatif: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                                placeholder="Loué, vacant..."
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`bien_loyer_${bien.id}`}>Loyer (€/mois)</Label>
+                              <Input
+                                id={`bien_loyer_${bien.id}`}
+                                type="number"
+                                value={bien.loyer}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, loyer: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`bien_hypotheques_${bien.id}`}>Hypothèques</Label>
+                              <Textarea
+                                id={`bien_hypotheques_${bien.id}`}
+                                value={bien.hypotheques}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, hypotheques: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`bien_copropriete_${bien.id}`}
+                                checked={bien.copropriete}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                  newBiens[index] = {...bien, copropriete: e.target.checked};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                  });
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`bien_copropriete_${bien.id}`}>Copropriété</Label>
+                            </div>
+
+                            {bien.copropriete && (
+                              <>
+                                <div>
+                                  <Label htmlFor={`bien_lots_${bien.id}`}>Lots</Label>
+                                  <Input
+                                    id={`bien_lots_${bien.id}`}
+                                    value={bien.lots}
+                                    onChange={(e) => {
+                                      const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                      newBiens[index] = {...bien, lots: e.target.value};
+                                      setPartageSuccessoralData({
+                                        ...partageSuccessoralData,
+                                        actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                      });
+                                    }}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor={`bien_charges_${bien.id}`}>Charges (€/an)</Label>
+                                  <Input
+                                    id={`bien_charges_${bien.id}`}
+                                    type="number"
+                                    value={bien.chargesCopro}
+                                    onChange={(e) => {
+                                      const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
+                                      newBiens[index] = {...bien, chargesCopro: e.target.value};
+                                      setPartageSuccessoralData({
+                                        ...partageSuccessoralData,
+                                        actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
+                                      });
+                                    }}
+                                  />
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          <div>
+                            <Label>Documents du bien (titres, diagnostics...)</Label>
+                            <MultiFileUpload
+                              label="Titre de propriété, diagnostics, expertises..."
+                              files={partageBienImmobilierFiles[bien.id] || []}
+                              onFilesChange={(newFiles) => {
+                                setPartageBienImmobilierFiles({
+                                  ...partageBienImmobilierFiles,
+                                  [bien.id]: newFiles
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* B. Biens meubles corporels */}
+                    <div className="space-y-4 mt-6">
+                      <h4 className="font-medium text-md">B. Biens meubles corporels</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="mobilierForfait"
+                            checked={partageSuccessoralData.actif.biensMeubles.mobilierForfait5Pct}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                biensMeubles: {...partageSuccessoralData.actif.biensMeubles, mobilierForfait5Pct: e.target.checked}
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="mobilierForfait">Mobilier (forfait 5%)</Label>
+                        </div>
+
+                        {!partageSuccessoralData.actif.biensMeubles.mobilierForfait5Pct && (
+                          <div>
+                            <Label htmlFor="mobilierValeur">Valeur réelle du mobilier (€)</Label>
+                            <Input
+                              id="mobilierValeur"
+                              type="number"
+                              value={partageSuccessoralData.actif.biensMeubles.mobilierValeurReelle}
+                              onChange={(e) => setPartageSuccessoralData({
+                                ...partageSuccessoralData,
+                                actif: {
+                                  ...partageSuccessoralData.actif,
+                                  biensMeubles: {...partageSuccessoralData.actif.biensMeubles, mobilierValeurReelle: e.target.value}
+                                }
+                              })}
+                            />
+                          </div>
+                        )}
+
+                        <div className="md:col-span-2">
+                          <Label htmlFor="vehicules">Véhicules</Label>
+                          <Textarea
+                            id="vehicules"
+                            value={partageSuccessoralData.actif.biensMeubles.vehicules}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                biensMeubles: {...partageSuccessoralData.actif.biensMeubles, vehicules: e.target.value}
+                              }
+                            })}
+                            rows={2}
+                            placeholder="Marque, modèle, immatriculation, valeur..."
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="bijoux">Bijoux</Label>
+                          <Textarea
+                            id="bijoux"
+                            value={partageSuccessoralData.actif.biensMeubles.bijoux}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                biensMeubles: {...partageSuccessoralData.actif.biensMeubles, bijoux: e.target.value}
+                              }
+                            })}
+                            rows={2}
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="oeuvresArt">Œuvres d'art</Label>
+                          <Textarea
+                            id="oeuvresArt"
+                            value={partageSuccessoralData.actif.biensMeubles.oeuvresArt}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                biensMeubles: {...partageSuccessoralData.actif.biensMeubles, oeuvresArt: e.target.value}
+                              }
+                            })}
+                            rows={2}
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="collections">Collections</Label>
+                          <Textarea
+                            id="collections"
+                            value={partageSuccessoralData.actif.biensMeubles.collections}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                biensMeubles: {...partageSuccessoralData.actif.biensMeubles, collections: e.target.value}
+                              }
+                            })}
+                            rows={2}
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="materielPro">Matériel professionnel</Label>
+                          <Textarea
+                            id="materielPro"
+                            value={partageSuccessoralData.actif.biensMeubles.materielProfessionnel}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                biensMeubles: {...partageSuccessoralData.actif.biensMeubles, materielProfessionnel: e.target.value}
+                              }
+                            })}
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* C. Comptes bancaires et placements */}
+                    <div className="space-y-4 mt-6">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium text-md flex-1">C. Comptes bancaires et placements</h4>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                comptesBancaires: [...partageSuccessoralData.actif.comptesBancaires, {
+                                  id: Date.now(),
+                                  banque: "", typeCompte: "", numeroCompte: "",
+                                  soldeAuDeces: "", interetsCourus: ""
+                                }]
+                              }
+                            });
+                          }}
+                          className={`ml-2 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                        >
+                          + Ajouter un compte
+                        </Button>
+                      </div>
+
+                      {partageSuccessoralData.actif.comptesBancaires.map((compte, index) => (
+                        <div key={compte.id} className="p-4 border rounded-lg space-y-3 bg-green-50">
+                          <div className="flex justify-between items-center">
+                            <h5 className="font-medium">Compte {index + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                const newComptes = partageSuccessoralData.actif.comptesBancaires.filter(c => c.id !== compte.id);
+                                setPartageSuccessoralData({
+                                  ...partageSuccessoralData,
+                                  actif: {...partageSuccessoralData.actif, comptesBancaires: newComptes}
+                                });
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor={`compte_banque_${compte.id}`}>Banque</Label>
+                              <Input
+                                id={`compte_banque_${compte.id}`}
+                                value={compte.banque}
+                                onChange={(e) => {
+                                  const newComptes = [...partageSuccessoralData.actif.comptesBancaires];
+                                  newComptes[index] = {...compte, banque: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, comptesBancaires: newComptes}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`compte_type_${compte.id}`}>Type de compte</Label>
+                              <Input
+                                id={`compte_type_${compte.id}`}
+                                value={compte.typeCompte}
+                                onChange={(e) => {
+                                  const newComptes = [...partageSuccessoralData.actif.comptesBancaires];
+                                  newComptes[index] = {...compte, typeCompte: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, comptesBancaires: newComptes}
+                                  });
+                                }}
+                                placeholder="Courant, Livret A, PEL, LDD..."
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`compte_numero_${compte.id}`}>N° de compte</Label>
+                              <Input
+                                id={`compte_numero_${compte.id}`}
+                                value={compte.numeroCompte}
+                                onChange={(e) => {
+                                  const newComptes = [...partageSuccessoralData.actif.comptesBancaires];
+                                  newComptes[index] = {...compte, numeroCompte: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, comptesBancaires: newComptes}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`compte_solde_${compte.id}`}>Solde au décès (€)</Label>
+                              <Input
+                                id={`compte_solde_${compte.id}`}
+                                type="number"
+                                value={compte.soldeAuDeces}
+                                onChange={(e) => {
+                                  const newComptes = [...partageSuccessoralData.actif.comptesBancaires];
+                                  newComptes[index] = {...compte, soldeAuDeces: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, comptesBancaires: newComptes}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`compte_interets_${compte.id}`}>Intérêts courus (€)</Label>
+                              <Input
+                                id={`compte_interets_${compte.id}`}
+                                type="number"
+                                value={compte.interetsCourus}
+                                onChange={(e) => {
+                                  const newComptes = [...partageSuccessoralData.actif.comptesBancaires];
+                                  newComptes[index] = {...compte, interetsCourus: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, comptesBancaires: newComptes}
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* D. Assurance-vie */}
+                    <div className="space-y-4 mt-6">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium text-md flex-1">D. Assurance-vie / Contrats de capitalisation</h4>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                assurancesVie: [...partageSuccessoralData.actif.assurancesVie, {
+                                  id: Date.now(),
+                                  compagnie: "", numeroContrat: "", beneficiaires: "",
+                                  capitalVerse: "", primesAvant70Ans: "", primesApres70Ans: ""
+                                }]
+                              }
+                            });
+                          }}
+                          className={`ml-2 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                        >
+                          + Ajouter un contrat
+                        </Button>
+                      </div>
+
+                      <p className="text-sm text-gray-600 italic">
+                        ℹ️ Les assurances-vie ne rentrent pas dans le partage, mais doivent être mentionnées
+                      </p>
+
+                      {partageSuccessoralData.actif.assurancesVie.map((assurance, index) => (
+                        <div key={assurance.id} className="p-4 border rounded-lg space-y-3 bg-yellow-50">
+                          <div className="flex justify-between items-center">
+                            <h5 className="font-medium">Contrat {index + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                const newAssurances = partageSuccessoralData.actif.assurancesVie.filter(a => a.id !== assurance.id);
+                                setPartageSuccessoralData({
+                                  ...partageSuccessoralData,
+                                  actif: {...partageSuccessoralData.actif, assurancesVie: newAssurances}
+                                });
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor={`assurance_compagnie_${assurance.id}`}>Compagnie</Label>
+                              <Input
+                                id={`assurance_compagnie_${assurance.id}`}
+                                value={assurance.compagnie}
+                                onChange={(e) => {
+                                  const newAssurances = [...partageSuccessoralData.actif.assurancesVie];
+                                  newAssurances[index] = {...assurance, compagnie: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, assurancesVie: newAssurances}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`assurance_numero_${assurance.id}`}>N° de contrat</Label>
+                              <Input
+                                id={`assurance_numero_${assurance.id}`}
+                                value={assurance.numeroContrat}
+                                onChange={(e) => {
+                                  const newAssurances = [...partageSuccessoralData.actif.assurancesVie];
+                                  newAssurances[index] = {...assurance, numeroContrat: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, assurancesVie: newAssurances}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`assurance_beneficiaires_${assurance.id}`}>Bénéficiaires</Label>
+                              <Input
+                                id={`assurance_beneficiaires_${assurance.id}`}
+                                value={assurance.beneficiaires}
+                                onChange={(e) => {
+                                  const newAssurances = [...partageSuccessoralData.actif.assurancesVie];
+                                  newAssurances[index] = {...assurance, beneficiaires: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, assurancesVie: newAssurances}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`assurance_capital_${assurance.id}`}>Capital versé (€)</Label>
+                              <Input
+                                id={`assurance_capital_${assurance.id}`}
+                                type="number"
+                                value={assurance.capitalVerse}
+                                onChange={(e) => {
+                                  const newAssurances = [...partageSuccessoralData.actif.assurancesVie];
+                                  newAssurances[index] = {...assurance, capitalVerse: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, assurancesVie: newAssurances}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`assurance_primesAvant70_${assurance.id}`}>Primes avant 70 ans (€)</Label>
+                              <Input
+                                id={`assurance_primesAvant70_${assurance.id}`}
+                                type="number"
+                                value={assurance.primesAvant70Ans}
+                                onChange={(e) => {
+                                  const newAssurances = [...partageSuccessoralData.actif.assurancesVie];
+                                  newAssurances[index] = {...assurance, primesAvant70Ans: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, assurancesVie: newAssurances}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`assurance_primesApres70_${assurance.id}`}>Primes après 70 ans (€)</Label>
+                              <Input
+                                id={`assurance_primesApres70_${assurance.id}`}
+                                type="number"
+                                value={assurance.primesApres70Ans}
+                                onChange={(e) => {
+                                  const newAssurances = [...partageSuccessoralData.actif.assurancesVie];
+                                  newAssurances[index] = {...assurance, primesApres70Ans: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, assurancesVie: newAssurances}
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* E. Parts sociales / Entreprises */}
+                    <div className="space-y-4 mt-6">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium text-md flex-1">E. Parts sociales / Entreprises</h4>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                partsSociales: [...partageSuccessoralData.actif.partsSociales, {
+                                  id: Date.now(),
+                                  nature: "", nomEntite: "", nombreParts: "",
+                                  valeurEstimee: "", droitsAttaches: "", pacteDutreil: false
+                                }]
+                              }
+                            });
+                          }}
+                          className={`ml-2 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                        >
+                          + Ajouter une entité
+                        </Button>
+                      </div>
+
+                      {partageSuccessoralData.actif.partsSociales.map((parts, index) => (
+                        <div key={parts.id} className="p-4 border rounded-lg space-y-3 bg-purple-50">
+                          <div className="flex justify-between items-center">
+                            <h5 className="font-medium">Entité {index + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                const newParts = partageSuccessoralData.actif.partsSociales.filter(p => p.id !== parts.id);
+                                setPartageSuccessoralData({
+                                  ...partageSuccessoralData,
+                                  actif: {...partageSuccessoralData.actif, partsSociales: newParts}
+                                });
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor={`parts_nature_${parts.id}`}>Nature</Label>
+                              <select
+                                id={`parts_nature_${parts.id}`}
+                                value={parts.nature}
+                                onChange={(e) => {
+                                  const newParts = [...partageSuccessoralData.actif.partsSociales];
+                                  newParts[index] = {...parts, nature: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, partsSociales: newParts}
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border rounded-md"
+                              >
+                                <option value="">-- Sélectionner --</option>
+                                <option value="SARL">SARL</option>
+                                <option value="SAS">SAS</option>
+                                <option value="SCI">SCI</option>
+                                <option value="EI">Entreprise Individuelle</option>
+                                <option value="exploitation_agricole">Exploitation agricole</option>
+                              </select>
+                            </div>
+                            <div>
+                              <Label htmlFor={`parts_nom_${parts.id}`}>Nom de l'entité</Label>
+                              <Input
+                                id={`parts_nom_${parts.id}`}
+                                value={parts.nomEntite}
+                                onChange={(e) => {
+                                  const newParts = [...partageSuccessoralData.actif.partsSociales];
+                                  newParts[index] = {...parts, nomEntite: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, partsSociales: newParts}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`parts_nombre_${parts.id}`}>Nombre de parts</Label>
+                              <Input
+                                id={`parts_nombre_${parts.id}`}
+                                type="number"
+                                value={parts.nombreParts}
+                                onChange={(e) => {
+                                  const newParts = [...partageSuccessoralData.actif.partsSociales];
+                                  newParts[index] = {...parts, nombreParts: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, partsSociales: newParts}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`parts_valeur_${parts.id}`}>Valeur estimée (€)</Label>
+                              <Input
+                                id={`parts_valeur_${parts.id}`}
+                                type="number"
+                                value={parts.valeurEstimee}
+                                onChange={(e) => {
+                                  const newParts = [...partageSuccessoralData.actif.partsSociales];
+                                  newParts[index] = {...parts, valeurEstimee: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, partsSociales: newParts}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`parts_droits_${parts.id}`}>Droits attachés</Label>
+                              <Textarea
+                                id={`parts_droits_${parts.id}`}
+                                value={parts.droitsAttaches}
+                                onChange={(e) => {
+                                  const newParts = [...partageSuccessoralData.actif.partsSociales];
+                                  newParts[index] = {...parts, droitsAttaches: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, partsSociales: newParts}
+                                  });
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`parts_dutreil_${parts.id}`}
+                                checked={parts.pacteDutreil}
+                                onChange={(e) => {
+                                  const newParts = [...partageSuccessoralData.actif.partsSociales];
+                                  newParts[index] = {...parts, pacteDutreil: e.target.checked};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, partsSociales: newParts}
+                                  });
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`parts_dutreil_${parts.id}`}>Pacte Dutreil</Label>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* F. Biens à l'étranger */}
+                    <div className="space-y-4 mt-6">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium text-md flex-1">F. Biens à l'étranger</h4>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                biensEtranger: [...partageSuccessoralData.actif.biensEtranger, {
+                                  id: Date.now(),
+                                  pays: "", adresse: "", valeur: "", regimeFiscal: ""
+                                }]
+                              }
+                            });
+                          }}
+                          className={`ml-2 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                        >
+                          + Ajouter un bien
+                        </Button>
+                      </div>
+
+                      {partageSuccessoralData.actif.biensEtranger.map((bien, index) => (
+                        <div key={bien.id} className="p-4 border rounded-lg space-y-3 bg-red-50">
+                          <div className="flex justify-between items-center">
+                            <h5 className="font-medium">Bien à l'étranger {index + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                const newBiens = partageSuccessoralData.actif.biensEtranger.filter(b => b.id !== bien.id);
+                                setPartageSuccessoralData({
+                                  ...partageSuccessoralData,
+                                  actif: {...partageSuccessoralData.actif, biensEtranger: newBiens}
+                                });
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor={`bienEtranger_pays_${bien.id}`}>Pays</Label>
+                              <Input
+                                id={`bienEtranger_pays_${bien.id}`}
+                                value={bien.pays}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensEtranger];
+                                  newBiens[index] = {...bien, pays: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensEtranger: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`bienEtranger_valeur_${bien.id}`}>Valeur (€)</Label>
+                              <Input
+                                id={`bienEtranger_valeur_${bien.id}`}
+                                type="number"
+                                value={bien.valeur}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensEtranger];
+                                  newBiens[index] = {...bien, valeur: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensEtranger: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`bienEtranger_adresse_${bien.id}`}>Adresse</Label>
+                              <Input
+                                id={`bienEtranger_adresse_${bien.id}`}
+                                value={bien.adresse}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensEtranger];
+                                  newBiens[index] = {...bien, adresse: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensEtranger: newBiens}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`bienEtranger_regime_${bien.id}`}>Régime fiscal / Convention</Label>
+                              <Textarea
+                                id={`bienEtranger_regime_${bien.id}`}
+                                value={bien.regimeFiscal}
+                                onChange={(e) => {
+                                  const newBiens = [...partageSuccessoralData.actif.biensEtranger];
+                                  newBiens[index] = {...bien, regimeFiscal: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, biensEtranger: newBiens}
+                                  });
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* G. Usufruit / Nue-propriété */}
+                    <div className="space-y-4 mt-6">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium text-md flex-1">G. Usufruit / Nue-propriété</h4>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              actif: {
+                                ...partageSuccessoralData.actif,
+                                usufruitNuePropriete: [...partageSuccessoralData.actif.usufruitNuePropriete, {
+                                  id: Date.now(),
+                                  bienConcerne: "", valeurUsufruit: "",
+                                  valeurNuePropriete: "", baremeFiscal: ""
+                                }]
+                              }
+                            });
+                          }}
+                          className={`ml-2 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                        >
+                          + Ajouter un démembrement
+                        </Button>
+                      </div>
+
+                      {partageSuccessoralData.actif.usufruitNuePropriete.map((demembrement, index) => (
+                        <div key={demembrement.id} className="p-4 border rounded-lg space-y-3 bg-indigo-50">
+                          <div className="flex justify-between items-center">
+                            <h5 className="font-medium">Démembrement {index + 1}</h5>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                const newDemembrement = partageSuccessoralData.actif.usufruitNuePropriete.filter(d => d.id !== demembrement.id);
+                                setPartageSuccessoralData({
+                                  ...partageSuccessoralData,
+                                  actif: {...partageSuccessoralData.actif, usufruitNuePropriete: newDemembrement}
+                                });
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`demembrement_bien_${demembrement.id}`}>Bien concerné</Label>
+                              <Input
+                                id={`demembrement_bien_${demembrement.id}`}
+                                value={demembrement.bienConcerne}
+                                onChange={(e) => {
+                                  const newDemembrement = [...partageSuccessoralData.actif.usufruitNuePropriete];
+                                  newDemembrement[index] = {...demembrement, bienConcerne: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, usufruitNuePropriete: newDemembrement}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`demembrement_usufruit_${demembrement.id}`}>Valeur usufruit (€)</Label>
+                              <Input
+                                id={`demembrement_usufruit_${demembrement.id}`}
+                                type="number"
+                                value={demembrement.valeurUsufruit}
+                                onChange={(e) => {
+                                  const newDemembrement = [...partageSuccessoralData.actif.usufruitNuePropriete];
+                                  newDemembrement[index] = {...demembrement, valeurUsufruit: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, usufruitNuePropriete: newDemembrement}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`demembrement_nuePropriete_${demembrement.id}`}>Valeur nue-propriété (€)</Label>
+                              <Input
+                                id={`demembrement_nuePropriete_${demembrement.id}`}
+                                type="number"
+                                value={demembrement.valeurNuePropriete}
+                                onChange={(e) => {
+                                  const newDemembrement = [...partageSuccessoralData.actif.usufruitNuePropriete];
+                                  newDemembrement[index] = {...demembrement, valeurNuePropriete: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, usufruitNuePropriete: newDemembrement}
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`demembrement_bareme_${demembrement.id}`}>Barème fiscal selon âge</Label>
+                              <Input
+                                id={`demembrement_bareme_${demembrement.id}`}
+                                value={demembrement.baremeFiscal}
+                                onChange={(e) => {
+                                  const newDemembrement = [...partageSuccessoralData.actif.usufruitNuePropriete];
+                                  newDemembrement[index] = {...demembrement, baremeFiscal: e.target.value};
+                                  setPartageSuccessoralData({
+                                    ...partageSuccessoralData,
+                                    actif: {...partageSuccessoralData.actif, usufruitNuePropriete: newDemembrement}
+                                  });
+                                }}
+                                placeholder="Ex: 40% / 60% (selon âge)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                  </div>
+
                 </div>
               </>
             )}
