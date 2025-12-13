@@ -33178,41 +33178,134 @@ FIN DE LA CONVENTION
                       {/* Documents défunt */}
                       <div>
                         <Label className="text-md font-medium mb-2 block">Documents relatifs au défunt</Label>
-                        <MultiFileUpload
-                          files={partageDefuntFiles}
-                          onChange={setPartageDefuntFiles}
-                          label="Acte de décès, CNI/Passeport, Acte de naissance, Livret de famille, Contrat de mariage/PACS"
-                        />
-                      </div>
-
-                      {/* Documents héritiers */}
-                      <div>
-                        <Label className="text-md font-medium mb-2 block">Documents relatifs aux héritiers</Label>
-                        <MultiFileUpload
-                          files={partageHeritiersFiles}
-                          onChange={setPartageHeritiersFiles}
-                          label="CNI/Passeport, Actes de naissance, Justificatifs de domicile, RIB"
-                        />
+                        <div className="space-y-2">
+                          <div>
+                            <Label>Acte de décès</Label>
+                            <MultiFileUpload
+                              files={partageDefuntActeDeces}
+                              onChange={setPartageDefuntActeDeces}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Livret de famille</Label>
+                            <MultiFileUpload
+                              files={partageDefuntLivretFamille}
+                              onChange={setPartageDefuntLivretFamille}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Contrat de mariage / PACS</Label>
+                            <MultiFileUpload
+                              files={partageDefuntContratMariage}
+                              onChange={setPartageDefuntContratMariage}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Testaments</Label>
+                            <MultiFileUpload
+                              files={partageDefuntTestaments}
+                              onChange={setPartageDefuntTestaments}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Donations entre époux</Label>
+                            <MultiFileUpload
+                              files={partageDefuntDonationsEntreEpoux}
+                              onChange={setPartageDefuntDonationsEntreEpoux}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Donations antérieures</Label>
+                            <MultiFileUpload
+                              files={partageDefuntDonationsAnterieures}
+                              onChange={setPartageDefuntDonationsAnterieures}
+                              label=""
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Documents biens */}
                       <div>
                         <Label className="text-md font-medium mb-2 block">Documents relatifs aux biens</Label>
-                        <MultiFileUpload
-                          files={partageBiensFiles}
-                          onChange={setPartageBiensFiles}
-                          label="Titres de propriété, Relevés bancaires, Estimations, Assurances-vie, Factures véhicules/biens meubles"
-                        />
+                        <div className="space-y-2">
+                          <div>
+                            <Label>Titres de propriété</Label>
+                            <MultiFileUpload
+                              files={partageDefuntTitresPropriete}
+                              onChange={setPartageDefuntTitresPropriete}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Relevés bancaires</Label>
+                            <MultiFileUpload
+                              files={partageDefuntRelevesBancaires}
+                              onChange={setPartageDefuntRelevesBancaires}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Bilans entreprises / parts sociales</Label>
+                            <MultiFileUpload
+                              files={partageDefuntBilansEntreprises}
+                              onChange={setPartageDefuntBilansEntreprises}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Inventaire mobilier</Label>
+                            <MultiFileUpload
+                              files={partageDefuntInventaireMobilier}
+                              onChange={setPartageDefuntInventaireMobilier}
+                              label=""
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Autres documents */}
                       <div>
                         <Label className="text-md font-medium mb-2 block">Autres documents</Label>
-                        <MultiFileUpload
-                          files={partageAutresFiles}
-                          onChange={setPartageAutresFiles}
-                          label="Testament, Donations antérieures, Actes de prêt, Factures dettes, Déclaration de succession"
-                        />
+                        <div className="space-y-2">
+                          <div>
+                            <Label>Diagnostics immobiliers</Label>
+                            <MultiFileUpload
+                              files={partageAutresDiagnostics}
+                              onChange={setPartageAutresDiagnostics}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Évaluations / expertises</Label>
+                            <MultiFileUpload
+                              files={partageAutresEvaluations}
+                              onChange={setPartageAutresEvaluations}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Statuts de sociétés</Label>
+                            <MultiFileUpload
+                              files={partageAutresStatutsSocietes}
+                              onChange={setPartageAutresStatutsSocietes}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Autres documents</Label>
+                            <MultiFileUpload
+                              files={partageAutresDocuments}
+                              onChange={setPartageAutresDocuments}
+                              label=""
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
