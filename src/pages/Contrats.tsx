@@ -29285,22 +29285,24 @@ FIN DE LA CONVENTION
                         </div>
                         <div>
                           <Label htmlFor="defuntSituationMatrimoniale">Situation matrimoniale</Label>
-                          <select
-                            id="defuntSituationMatrimoniale"
+                          <Select
                             value={acteNotorieteData.defunt.situationMatrimoniale}
-                            onChange={(e) => setActeNotorieteData({
+                            onValueChange={(value) => setActeNotorieteData({
                               ...acteNotorieteData,
-                              defunt: {...acteNotorieteData.defunt, situationMatrimoniale: e.target.value}
+                              defunt: {...acteNotorieteData.defunt, situationMatrimoniale: value}
                             })}
-                            className="w-full px-3 py-2 border rounded-md"
                           >
-                            <option value="">-- Sélectionner --</option>
-                            <option value="celibataire">Célibataire</option>
-                            <option value="marie">Marié(e)</option>
-                            <option value="pacse">Pacsé(e)</option>
-                            <option value="divorce">Divorcé(e)</option>
-                            <option value="veuf">Veuf/Veuve</option>
-                          </select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="-- Sélectionner --" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="celibataire">Célibataire</SelectItem>
+                              <SelectItem value="marie">Marié(e)</SelectItem>
+                              <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                              <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         {(acteNotorieteData.defunt.situationMatrimoniale === "marie" || acteNotorieteData.defunt.situationMatrimoniale === "veuf") && (
                           <>
@@ -29663,20 +29665,23 @@ FIN DE LA CONVENTION
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
                                 <Label htmlFor={`heritier_majeurOuMineur_${heritier.id}`}>Statut</Label>
-                                <select
-                                  id={`heritier_majeurOuMineur_${heritier.id}`}
+                                <Select
                                   value={heritier.majeurOuMineur}
-                                  onChange={(e) => {
+                                  onValueChange={(value) => {
                                     const newHeritiers = [...acteNotorieteData.heritiers];
-                                    newHeritiers[index] = {...heritier, majeurOuMineur: e.target.value};
+                                    newHeritiers[index] = {...heritier, majeurOuMineur: value};
                                     setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
                                   }}
-                                  className="w-full px-3 py-2 border rounded-md"
                                 >
-                                  <option value="majeur">Majeur</option>
-                                  <option value="mineur">Mineur</option>
-                                  <option value="protege">Majeur protégé</option>
-                                </select>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="majeur">Majeur</SelectItem>
+                                    <SelectItem value="mineur">Mineur</SelectItem>
+                                    <SelectItem value="protege">Majeur protégé</SelectItem>
+                                  </SelectContent>
+                                </Select>
                               </div>
                               {heritier.majeurOuMineur !== "majeur" && (
                                 <div>
@@ -29696,26 +29701,27 @@ FIN DE LA CONVENTION
                             </div>
                           </div>
 
-                          {/* Option successorale */}
-                          <div>
-                            <h5 className="font-medium text-sm mb-2">Option successorale</h5>
-                            <select
-                              id={`heritier_option_${heritier.id}`}
-                              value={heritier.optionSuccessorale}
-                              onChange={(e) => {
-                                const newHeritiers = [...acteNotorieteData.heritiers];
-                                newHeritiers[index] = {...heritier, optionSuccessorale: e.target.value};
-                                setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
-                              }}
-                              className="w-full px-3 py-2 border rounded-md"
-                            >
-                              <option value="acceptePurSimple">Accepte pur et simple</option>
-                              <option value="accepteBeneficeInventaire">Accepte à concurrence de l'actif net (bénéfice d'inventaire)</option>
-                              <option value="renonce">Renonce</option>
-                            </select>
-                          </div>
-
-                          {/* Documents de l'héritier */}
+          {/* Option successorale */}
+          <div>
+            <h5 className="font-medium text-sm mb-2">Option successorale</h5>
+            <Select
+              value={heritier.optionSuccessorale}
+              onValueChange={(value) => {
+                const newHeritiers = [...acteNotorieteData.heritiers];
+                newHeritiers[index] = {...heritier, optionSuccessorale: value};
+                setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="acceptePurSimple">Accepte pur et simple</SelectItem>
+                <SelectItem value="accepteBeneficeInventaire">Accepte à concurrence de l'actif net (bénéfice d'inventaire)</SelectItem>
+                <SelectItem value="renonce">Renonce</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>                          {/* Documents de l'héritier */}
                           <div>
                             <h5 className="font-medium text-sm mb-2">Documents justificatifs de l'héritier</h5>
                             <MultiFileUpload
@@ -31004,43 +31010,44 @@ FIN DE LA CONVENTION
                               </div>
                             )}
 
-                            <div>
-                              <Label htmlFor={`heritier_acceptation_${heritier.id}`}>Acceptation / Renonciation</Label>
-                              <select
-                                id={`heritier_acceptation_${heritier.id}`}
-                                value={heritier.acceptationRenonciation}
-                                onChange={(e) => {
-                                  const newHeritiers = [...partageSuccessoralData.heritiers];
-                                  newHeritiers[index] = {...heritier, acceptationRenonciation: e.target.value};
-                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
-                                }}
-                                className="w-full px-3 py-2 border rounded-md"
-                              >
-                                <option value="">-- Sélectionner --</option>
-                                <option value="accepte">Accepte</option>
-                                <option value="renonce">Renonce</option>
-                                <option value="benefice_inventaire">À concurrence de l'actif net (bénéfice d'inventaire)</option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <Label htmlFor={`heritier_majeurMineur_${heritier.id}`}>Majeur / Mineur</Label>
-                              <select
-                                id={`heritier_majeurMineur_${heritier.id}`}
-                                value={heritier.majeurMineur}
-                                onChange={(e) => {
-                                  const newHeritiers = [...partageSuccessoralData.heritiers];
-                                  newHeritiers[index] = {...heritier, majeurMineur: e.target.value};
-                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
-                                }}
-                                className="w-full px-3 py-2 border rounded-md"
-                              >
-                                <option value="majeur">Majeur</option>
-                                <option value="mineur">Mineur</option>
-                              </select>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
+            <div>
+              <Label htmlFor={`heritier_acceptation_${heritier.id}`}>Acceptation / Renonciation</Label>
+              <Select
+                value={heritier.acceptationRenonciation}
+                onValueChange={(value) => {
+                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                  newHeritiers[index] = {...heritier, acceptationRenonciation: value};
+                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="-- Sélectionner --" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="accepte">Accepte</SelectItem>
+                  <SelectItem value="renonce">Renonce</SelectItem>
+                  <SelectItem value="benefice_inventaire">À concurrence de l'actif net (bénéfice d'inventaire)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>            <div>
+              <Label htmlFor={`heritier_majeurMineur_${heritier.id}`}>Majeur / Mineur</Label>
+              <Select
+                value={heritier.majeurMineur}
+                onValueChange={(value) => {
+                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                  newHeritiers[index] = {...heritier, majeurMineur: value};
+                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="majeur">Majeur</SelectItem>
+                  <SelectItem value="mineur">Mineur</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>                            <div className="flex items-center space-x-2">
                               <input
                                 type="checkbox"
                                 id={`heritier_tutelleCuratelle_${heritier.id}`}
@@ -31248,24 +31255,26 @@ FIN DE LA CONVENTION
                             </div>
                             <div>
                               <Label htmlFor={`bien_origine_${bien.id}`}>Origine du bien</Label>
-                              <select
-                                id={`bien_origine_${bien.id}`}
+                              <Select
                                 value={bien.origineBien}
-                                onChange={(e) => {
+                                onValueChange={(value) => {
                                   const newBiens = [...partageSuccessoralData.actif.biensImmobiliers];
-                                  newBiens[index] = {...bien, origineBien: e.target.value};
+                                  newBiens[index] = {...bien, origineBien: value};
                                   setPartageSuccessoralData({
                                     ...partageSuccessoralData,
                                     actif: {...partageSuccessoralData.actif, biensImmobiliers: newBiens}
                                   });
                                 }}
-                                className="w-full px-3 py-2 border rounded-md"
                               >
-                                <option value="">-- Sélectionner --</option>
-                                <option value="propre">Propre du défunt</option>
-                                <option value="commun">Commun</option>
-                                <option value="indivis">Indivis</option>
-                              </select>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="-- Sélectionner --" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="propre">Propre du défunt</SelectItem>
+                                  <SelectItem value="commun">Commun</SelectItem>
+                                  <SelectItem value="indivis">Indivis</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div>
                               <Label htmlFor={`bien_quotePart_${bien.id}`}>Quote-part du défunt</Label>
@@ -31853,26 +31862,28 @@ FIN DE LA CONVENTION
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                               <Label htmlFor={`parts_nature_${parts.id}`}>Nature</Label>
-                              <select
-                                id={`parts_nature_${parts.id}`}
+                              <Select
                                 value={parts.nature}
-                                onChange={(e) => {
+                                onValueChange={(value) => {
                                   const newParts = [...partageSuccessoralData.actif.partsSociales];
-                                  newParts[index] = {...parts, nature: e.target.value};
+                                  newParts[index] = {...parts, nature: value};
                                   setPartageSuccessoralData({
                                     ...partageSuccessoralData,
                                     actif: {...partageSuccessoralData.actif, partsSociales: newParts}
                                   });
                                 }}
-                                className="w-full px-3 py-2 border rounded-md"
                               >
-                                <option value="">-- Sélectionner --</option>
-                                <option value="SARL">SARL</option>
-                                <option value="SAS">SAS</option>
-                                <option value="SCI">SCI</option>
-                                <option value="EI">Entreprise Individuelle</option>
-                                <option value="exploitation_agricole">Exploitation agricole</option>
-                              </select>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="-- Sélectionner --" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="SARL">SARL</SelectItem>
+                                  <SelectItem value="SAS">SAS</SelectItem>
+                                  <SelectItem value="SCI">SCI</SelectItem>
+                                  <SelectItem value="EI">Entreprise Individuelle</SelectItem>
+                                  <SelectItem value="exploitation_agricole">Exploitation agricole</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div>
                               <Label htmlFor={`parts_nom_${parts.id}`}>Nom de l'entité</Label>
