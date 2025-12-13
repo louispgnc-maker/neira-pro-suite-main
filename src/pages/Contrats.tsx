@@ -556,6 +556,7 @@ export default function Contrats() {
     // 3. Héritiers (array)
     heritiers: [{
       id: 1,
+      clientId: "",
       // A. Informations civiles
       nom: "",
       prenom: "",
@@ -723,6 +724,7 @@ export default function Contrats() {
     // 2. Héritiers / Légataires
     heritiers: [{
       id: 1,
+      clientId: "",
       // Informations d'état civil
       nom: "",
       prenom: "",
@@ -29406,6 +29408,7 @@ FIN DE LA CONVENTION
                               ...acteNotorieteData,
                               heritiers: [...acteNotorieteData.heritiers, {
                                 id: newId,
+                                clientId: "",
                                 nom: "", prenom: "", dateNaissance: "", lieuNaissance: "",
                                 adresse: "", nationalite: "", profession: "",
                                 lienParente: "", degre: "", branche: "",
@@ -29443,6 +29446,48 @@ FIN DE LA CONVENTION
                             >
                               Supprimer
                             </Button>
+                          </div>
+
+                          {/* Sélection client ou saisie manuelle */}
+                          <div className="mb-4">
+                            <Label htmlFor={`heritier_client_${heritier.id}`}>Choisir un client existant (optionnel)</Label>
+                            <select
+                              id={`heritier_client_${heritier.id}`}
+                              value={heritier.clientId || ""}
+                              onChange={(e) => {
+                                const clientId = e.target.value;
+                                const newHeritiers = [...acteNotorieteData.heritiers];
+                                
+                                if (clientId) {
+                                  const selectedClient = clients.find(c => c.id === clientId);
+                                  if (selectedClient) {
+                                    newHeritiers[index] = {
+                                      ...heritier,
+                                      clientId: clientId,
+                                      nom: selectedClient.nom || "",
+                                      prenom: selectedClient.prenom || "",
+                                      dateNaissance: selectedClient.date_naissance || "",
+                                      lieuNaissance: selectedClient.lieu_naissance || "",
+                                      adresse: selectedClient.adresse || "",
+                                      nationalite: selectedClient.nationalite || "",
+                                      profession: selectedClient.profession || "",
+                                    };
+                                  }
+                                } else {
+                                  newHeritiers[index] = {...heritier, clientId: ""};
+                                }
+                                
+                                setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
+                              }}
+                              className="w-full px-3 py-2 border rounded-md"
+                            >
+                              <option value="">-- Saisie manuelle --</option>
+                              {clients.map((client) => (
+                                <option key={client.id} value={client.id}>
+                                  {client.prenom} {client.nom}
+                                </option>
+                              ))}
+                            </select>
                           </div>
 
                           {/* Informations civiles */}
@@ -30642,6 +30687,7 @@ FIN DE LA CONVENTION
                             ...partageSuccessoralData,
                             heritiers: [...partageSuccessoralData.heritiers, {
                               id: newId,
+                              clientId: "",
                               nom: "", prenom: "", nomNaissance: "", adresse: "",
                               dateNaissance: "", lieuNaissance: "", nationalite: "", profession: "",
                               telephone: "", email: "", lienDefunt: "",
@@ -30682,6 +30728,51 @@ FIN DE LA CONVENTION
                           >
                             Supprimer
                           </Button>
+                        </div>
+
+                        {/* Sélection client ou saisie manuelle */}
+                        <div className="mb-4">
+                          <Label htmlFor={`heritier_client_${heritier.id}`}>Choisir un client existant (optionnel)</Label>
+                          <select
+                            id={`heritier_client_${heritier.id}`}
+                            value={heritier.clientId || ""}
+                            onChange={(e) => {
+                              const clientId = e.target.value;
+                              const newHeritiers = [...partageSuccessoralData.heritiers];
+                              
+                              if (clientId) {
+                                const selectedClient = clients.find(c => c.id === clientId);
+                                if (selectedClient) {
+                                  newHeritiers[index] = {
+                                    ...heritier,
+                                    clientId: clientId,
+                                    nom: selectedClient.nom || "",
+                                    prenom: selectedClient.prenom || "",
+                                    nomNaissance: selectedClient.nom_naissance || "",
+                                    dateNaissance: selectedClient.date_naissance || "",
+                                    lieuNaissance: selectedClient.lieu_naissance || "",
+                                    nationalite: selectedClient.nationalite || "",
+                                    profession: selectedClient.profession || "",
+                                    adresse: selectedClient.adresse || "",
+                                    telephone: selectedClient.telephone || "",
+                                    email: selectedClient.email || "",
+                                  };
+                                }
+                              } else {
+                                newHeritiers[index] = {...heritier, clientId: ""};
+                              }
+                              
+                              setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                            }}
+                            className="w-full px-3 py-2 border rounded-md"
+                          >
+                            <option value="">-- Saisie manuelle --</option>
+                            {clients.map((client) => (
+                              <option key={client.id} value={client.id}>
+                                {client.prenom} {client.nom}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
                         {/* Informations d'état civil */}
