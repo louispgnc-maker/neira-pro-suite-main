@@ -936,6 +936,245 @@ export default function Contrats() {
     },
   });
 
+  // State pour Déclaration de Succession (fichiers)
+  const [successionActeDeces, setSuccessionActeDeces] = useState<File | null>(null);
+  const [successionLivretFamille, setSuccessionLivretFamille] = useState<File | null>(null);
+  const [successionContratMariage, setSuccessionContratMariage] = useState<File | null>(null);
+  const [successionTestament, setSuccessionTestament] = useState<File | null>(null);
+  const [successionDonationsAnterieures, setSuccessionDonationsAnterieures] = useState<File | null>(null);
+  const [successionTitresPropriete, setSuccessionTitresPropriete] = useState<File | null>(null);
+  const [successionAvisImposition, setSuccessionAvisImposition] = useState<File | null>(null);
+  const [successionRelevesBancaires, setSuccessionRelevesBancaires] = useState<File | null>(null);
+  const [successionAssuranceVie, setSuccessionAssuranceVie] = useState<File | null>(null);
+  const [successionStatutsSocietes, setSuccessionStatutsSocietes] = useState<File | null>(null);
+  const [successionJustifsDettes, setSuccessionJustifsDettes] = useState<File | null>(null);
+  const [successionFactureFuneraires, setSuccessionFactureFuneraires] = useState<File | null>(null);
+
+  // State pour Déclaration de Succession
+  const [successionData, setSuccessionData] = useState({
+    // 1. Informations générales
+    dateDeces: "",
+    lieuDeces: "",
+    communeDernierDomicile: "",
+    numeroActeDeces: "",
+    declarationDans6Mois: true,
+    decesEtranger: false,
+    
+    // 2. Identité du défunt
+    defunt: {
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresse: "",
+      situationMatrimoniale: "", // celibataire / marie / divorce / veuf / pacse
+      regimeMatrimonial: "", // communaute_legale / separation_biens / participation_acquets / communaute_universelle
+      contratMariageExiste: false,
+      testamentExiste: false,
+      typeTestament: "", // olographe / authentique / mystique
+      donationsAnterieuresExistent: false,
+      mandatProtectionFuture: false,
+      pacteSuccessoral: false,
+    },
+    
+    // 3. Héritiers/légataires
+    heritiers: [] as Array<{
+      id: number;
+      // A. Informations civiles
+      nom: string;
+      prenom: string;
+      nomNaissance: string;
+      lienDefunt: string;
+      dateNaissance: string;
+      lieuNaissance: string;
+      adresse: string;
+      email: string;
+      telephone: string;
+      nationalite: string;
+      profession: string;
+      situationMatrimoniale: string;
+      regimeMatrimonial: string;
+      // B. Rôle
+      heritierReservataire: boolean;
+      legataireUniversel: boolean;
+      legataireTitreUniversel: boolean;
+      legataireParticulier: boolean;
+      donataireAnterieur: boolean;
+      // C. Options
+      optionSuccessorale: string; // pure_simple / concurrence_actif / renonciation
+      // D. Représentation
+      representationSuccessorale: boolean;
+      representeQui: string;
+      // E. Protection
+      tuteurCurateur: boolean;
+      acteTutelle: string;
+    }>,
+    
+    // 4. Patrimoine - A. Biens immobiliers
+    biensImmobiliers: [] as Array<{
+      id: number;
+      adresse: string;
+      nature: string; // maison / appartement / terrain / immeuble_locatif / local_commercial
+      description: string;
+      surface: string;
+      nombrePieces: string;
+      dependances: string;
+      designationCadastrale: string;
+      titrePropriete: string;
+      quotePart: string;
+      valeurVenale: string;
+      modeEvaluation: string;
+      situationLocative: string; // libre / loue
+      montantLoyer: string;
+      hypotheques: string;
+      assurancePNO: string;
+      copropriete: boolean;
+      numeroLots: string;
+      chargesAnnuelles: string;
+    }>,
+    
+    // 4. Patrimoine - B. Biens meubles
+    biensMeubles: {
+      mobilierLogement: "",
+      bijoux: "",
+      oeuvresArt: "",
+      collections: "",
+      vehicules: [] as Array<{
+        description: string;
+        valeurArgus: string;
+      }>,
+      materielProfessionnel: "",
+    },
+    
+    // 4. Patrimoine - C. Comptes bancaires
+    comptesBancaires: [] as Array<{
+      id: number;
+      banque: string;
+      typeCompte: string; // courant / livret_a / ldd / pel / cel / compte_titres / pea
+      numero: string;
+      soldeJourDeces: string;
+      revenusEnCours: string;
+    }>,
+    
+    // 4. Patrimoine - D. Assurance-vie
+    assurancesVie: [] as Array<{
+      id: number;
+      compagnie: string;
+      numeroContrat: string;
+      beneficiairesDesignes: string;
+      capitalDeces: string;
+      primesApres70: string;
+      primesAvant70: string;
+      contratDenoue: boolean;
+    }>,
+    
+    // 4. Patrimoine - E. Entreprises
+    entreprises: [] as Array<{
+      id: number;
+      type: string; // sarl / sas / snc / sci / ei / exploitation_agricole
+      denomination: string;
+      nombreParts: string;
+      valeur: string;
+      actifPro: string;
+      dettesPro: string;
+    }>,
+    
+    // 4. Patrimoine - F. Biens à l'étranger
+    biensEtranger: [] as Array<{
+      id: number;
+      nature: string;
+      adresse: string;
+      pays: string;
+      valeur: string;
+      regimeFiscal: string;
+      conventionInternationale: string;
+      impotsPayes: string;
+    }>,
+    
+    // 4. Patrimoine - G. Biens démembrés
+    biensDemembrés: [] as Array<{
+      id: number;
+      description: string;
+      valeurUsufruit: string;
+      valeurNuePropriete: string;
+      identiteNuProprietaire: string;
+      origineDemembrement: string;
+    }>,
+    
+    // 4. Patrimoine - H. Biens exonérés
+    biensExoneres: {
+      pacteDutreil: false,
+      forets: false,
+      monumentsHistoriques: false,
+      oeuvresArtBail: false,
+      biensRurauxLongTerme: false,
+      details: "",
+    },
+    
+    // 5. Passif
+    passif: {
+      // Dettes personnelles
+      credits: [] as Array<{
+        description: string;
+        montant: string;
+        creancier: string;
+      }>,
+      dettesFamiliales: "",
+      impotsNonPayes: "",
+      facturesPro: "",
+      dettesAlimentaires: "",
+      decouvertsBancaires: "",
+      // Frais
+      fraisDernieresMaladies: "",
+      fraisFuneraires: "",
+      facturePompeFunebre: "",
+      // Obligations
+      pensionsDues: "",
+      jugementsExecutoires: "",
+    },
+    
+    // 6. Donations antérieures
+    donationsAnterieures: [] as Array<{
+      id: number;
+      type: string;
+      dateDonation: string;
+      donataire: string;
+      valeurJourDonation: string;
+      rapportable: boolean;
+      horsPartSuccessorale: boolean;
+      abattementsUtilises: string;
+    }>,
+    
+    // 7. Testament
+    testament: {
+      typeTestament: "",
+      legsParticuliers: false,
+      legsUniversel: false,
+      executeurTestamentaire: "",
+      chargesConditions: "",
+      affectationParticuliere: "",
+    },
+    
+    // 8. Options fiscales héritiers
+    optionsFiscales: {
+      notes: "",
+    },
+    
+    // 9. Régime matrimonial
+    regimeMatrimonial: {
+      biensPropreDefunt: "",
+      biensCommuns: "",
+      recompensesDues: "",
+      preciput: false,
+      attributionPreferentielle: false,
+      droitsConjointSurvivant: "", // usufruit_totalite / 1_4_pleine_propriete
+      donationDernierVivant: false,
+    },
+  });
+
   // State pour l'acte de vente
   const [acteVenteData, setActeVenteData] = useState({
     // Sélection du client et son rôle
@@ -3005,6 +3244,14 @@ export default function Contrats() {
     
     // Si c'est un changement de régime matrimonial, ouvrir le questionnaire spécifique
     if (contractType === "Changement de régime matrimonial" && categoryKey === "Famille & Patrimoine") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est une déclaration de succession, ouvrir le questionnaire spécifique
+    if (contractType === "Déclaration de succession" && categoryKey === "Succession") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -5764,6 +6011,185 @@ FIN DE LA CONVENTION
       console.error('Erreur création testament:', err);
       toast.error('Erreur lors de la création du testament');
     }
+  };
+
+  const handleSuccessionSubmit = async () => {
+    if (!user) return;
+    
+    // Validation des champs obligatoires
+    if (!successionData.dateDeces || !successionData.lieuDeces || !successionData.communeDernierDomicile) {
+      toast.error("Veuillez renseigner les informations générales sur le décès");
+      return;
+    }
+    
+    if (!successionData.defunt.nom || !successionData.defunt.prenom || !successionData.defunt.dateNaissance || !successionData.defunt.situationMatrimoniale) {
+      toast.error("Veuillez renseigner l'identité complète du défunt");
+      return;
+    }
+    
+    if (!successionActeDeces) {
+      toast.error("L'acte de décès est obligatoire");
+      return;
+    }
+
+    try {
+      // Générer la description détaillée
+      let description = `DÉCLARATION DE SUCCESSION\n\n`;
+      
+      description += `═══════════════════════════════════════════════════════════════\n`;
+      description += `INFORMATIONS GÉNÉRALES\n`;
+      description += `═══════════════════════════════════════════════════════════════\n`;
+      description += `Date du décès : ${successionData.dateDeces}\n`;
+      description += `Lieu du décès : ${successionData.lieuDeces}\n`;
+      description += `Commune du dernier domicile : ${successionData.communeDernierDomicile}\n`;
+      if (successionData.numeroActeDeces) {
+        description += `Numéro d'acte de décès : ${successionData.numeroActeDeces}\n`;
+      }
+      if (successionData.notaireCharge) {
+        description += `Notaire chargé : ${successionData.notaireCharge}\n`;
+      }
+      description += `Déclaration dans les 6 mois : ${successionData.declarationDans6Mois ? "Oui" : "Non"}\n`;
+      if (successionData.decesEtranger) {
+        description += `⚠️ Décès à l'étranger (délai 12 mois)\n`;
+      }
+      description += `\n`;
+      
+      // Identité du défunt
+      description += `═══════════════════════════════════════════════════════════════\n`;
+      description += `IDENTITÉ DU DÉFUNT\n`;
+      description += `═══════════════════════════════════════════════════════════════\n`;
+      description += `${successionData.defunt.prenom} ${successionData.defunt.nom}\n`;
+      if (successionData.defunt.nomNaissance) {
+        description += `Nom de naissance : ${successionData.defunt.nomNaissance}\n`;
+      }
+      description += `Né(e) le ${successionData.defunt.dateNaissance}`;
+      if (successionData.defunt.lieuNaissance) {
+        description += ` à ${successionData.defunt.lieuNaissance}`;
+      }
+      description += `\n`;
+      if (successionData.defunt.nationalite) {
+        description += `Nationalité : ${successionData.defunt.nationalite}\n`;
+      }
+      if (successionData.defunt.profession) {
+        description += `Profession : ${successionData.defunt.profession}\n`;
+      }
+      if (successionData.defunt.adresse) {
+        description += `Adresse : ${successionData.defunt.adresse}\n`;
+      }
+      description += `\n`;
+      
+      // Situation familiale
+      description += `SITUATION FAMILIALE\n`;
+      description += `Situation matrimoniale : ${successionData.defunt.situationMatrimoniale}\n`;
+      if (successionData.defunt.regimeMatrimonial) {
+        description += `Régime matrimonial : ${successionData.defunt.regimeMatrimonial}\n`;
+      }
+      if (successionData.defunt.contratMariageExiste) {
+        description += `✓ Contrat de mariage existant\n`;
+      }
+      if (successionData.defunt.testamentExiste) {
+        description += `✓ Testament existant`;
+        if (successionData.defunt.typeTestament) {
+          description += ` (${successionData.defunt.typeTestament})`;
+        }
+        description += `\n`;
+      }
+      if (successionData.defunt.donationsAnterieuresExistent) {
+        description += `✓ Donations antérieures\n`;
+      }
+      if (successionData.defunt.mandatProtectionFuture) {
+        description += `✓ Mandat de protection future\n`;
+      }
+      if (successionData.defunt.pacteSuccessoral) {
+        description += `✓ Pacte successoral\n`;
+      }
+      description += `\n`;
+      
+      // Pièces fournies
+      description += `═══════════════════════════════════════════════════════════════\n`;
+      description += `PIÈCES JUSTIFICATIVES FOURNIES\n`;
+      description += `═══════════════════════════════════════════════════════════════\n`;
+      if (successionActeDeces) description += `✓ Acte de décès\n`;
+      if (successionLivretFamille) description += `✓ Livret de famille\n`;
+      if (successionContratMariage) description += `✓ Contrat de mariage\n`;
+      if (successionTestament) description += `✓ Testament\n`;
+      if (successionTitresPropriete) description += `✓ Titres de propriété\n`;
+      if (successionAvisImposition) description += `✓ Avis d'imposition\n`;
+      if (successionRelevesBancaires) description += `✓ Relevés bancaires\n`;
+      if (successionAssuranceVie) description += `✓ Contrats d'assurance-vie\n`;
+      if (successionStatutsSocietes) description += `✓ Statuts de sociétés\n`;
+      if (successionJustifsDettes) description += `✓ Justificatifs des dettes\n`;
+      if (successionFactureFuneraires) description += `✓ Facture pompes funèbres\n`;
+      description += `\n`;
+      
+      description += `═══════════════════════════════════════════════════════════════\n`;
+      description += `NOTE\n`;
+      description += `═══════════════════════════════════════════════════════════════\n`;
+      description += `Les informations détaillées sur les héritiers, le patrimoine complet,\n`;
+      description += `le passif et les donations seront complétées par le notaire lors de\n`;
+      description += `l'instruction du dossier de succession.\n`;
+      description += `\nCes informations préliminaires permettent de démarrer la procédure.\n`;
+
+      // Créer le contrat
+      const { data: contrat, error: contratError } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Déclaration de succession - ${successionData.defunt.nom}`,
+          type: "Déclaration de succession",
+          category: pendingCategory,
+          role: role,
+          description: description,
+        })
+        .select()
+        .single();
+
+      if (contratError) throw contratError;
+
+      // Upload des fichiers
+      const uploadFile = async (file: File | null, fieldName: string) => {
+        if (!file) return;
+        
+        const filePath = `${user.id}/${contrat.id}/${fieldName}_${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, file);
+        
+        if (uploadError) {
+          console.error(`Erreur upload ${fieldName}:`, uploadError);
+        }
+      };
+
+      // Upload de tous les fichiers
+      await Promise.all([
+        uploadFile(successionActeDeces, 'acte_deces'),
+        uploadFile(successionLivretFamille, 'livret_famille'),
+        uploadFile(successionContratMariage, 'contrat_mariage'),
+        uploadFile(successionTestament, 'testament'),
+        uploadFile(successionTitresPropriete, 'titres_propriete'),
+        uploadFile(successionAvisImposition, 'avis_imposition'),
+        uploadFile(successionRelevesBancaires, 'releves_bancaires'),
+        uploadFile(successionAssuranceVie, 'assurance_vie'),
+        uploadFile(successionStatutsSocietes, 'statuts_societes'),
+        uploadFile(successionJustifsDettes, 'justifs_dettes'),
+        uploadFile(successionFactureFuneraires, 'facture_funeraires'),
+      ]);
+
+      setContrats((prev) => [contrat, ...prev]);
+      setShowQuestionDialog(false);
+      toast.success('Déclaration de succession créée avec succès');
+      navigate(role === 'notaire' ? `/notaires/contrats/${contrat.id}` : `/avocats/contrats/${contrat.id}`);
+      
+    } catch (err: unknown) {
+      console.error('Erreur création succession:', err);
+      toast.error('Erreur lors de la création de la déclaration de succession');
+    }
+  };
+
+  const handleChangementRegimeSubmit = async () => {
+    if (!user) return;
+    
+    toast.error("La fonction de création du changement de régime matrimonial n'est pas encore implémentée");
   };
 
   const handleDelete = async (contrat: ContratRow) => {
@@ -28947,6 +29373,736 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {/* Formulaire Déclaration de Succession */}
+            {pendingContractType === "Déclaration de succession" && (
+              <>
+                <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                  
+                  {/* Section 1: Informations générales sur la succession */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">Informations générales sur la succession</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Date du décès <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={successionData.dateDeces}
+                          onChange={(e) => setSuccessionData({...successionData, dateDeces: e.target.value})}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu du décès <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={successionData.lieuDeces}
+                          onChange={(e) => setSuccessionData({...successionData, lieuDeces: e.target.value})}
+                          placeholder="Ville, pays..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Commune du dernier domicile <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={successionData.communeDernierDomicile}
+                          onChange={(e) => setSuccessionData({...successionData, communeDernierDomicile: e.target.value})}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Numéro d'acte de décès</Label>
+                        <Input
+                          value={successionData.numeroActeDeces}
+                          onChange={(e) => setSuccessionData({...successionData, numeroActeDeces: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="decesEtranger"
+                            checked={successionData.decesEtranger}
+                            onChange={(e) => setSuccessionData({...successionData, decesEtranger: e.target.checked})}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="decesEtranger">Décès à l'étranger (délai 12 mois)</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="declarationDans6Mois"
+                            checked={successionData.declarationDans6Mois}
+                            onChange={(e) => setSuccessionData({...successionData, declarationDans6Mois: e.target.checked})}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="declarationDans6Mois">Déclaration dans les 6 mois</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: Identité complète du défunt */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-gray-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète du défunt</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={successionData.defunt.nom}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, nom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={successionData.defunt.prenom}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, prenom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nom de naissance</Label>
+                        <Input
+                          value={successionData.defunt.nomNaissance}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, nomNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={successionData.defunt.dateNaissance}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance</Label>
+                        <Input
+                          value={successionData.defunt.lieuNaissance}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, lieuNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nationalité</Label>
+                        <Input
+                          value={successionData.defunt.nationalite}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, nationalite: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input
+                          value={successionData.defunt.profession}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse complète</Label>
+                        <Input
+                          value={successionData.defunt.adresse}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, adresse: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Situation matrimoniale <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={successionData.defunt.situationMatrimoniale || undefined}
+                          onValueChange={(value) => setSuccessionData({
+                            ...successionData,
+                            defunt: {...successionData.defunt, situationMatrimoniale: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="celibataire">Célibataire</SelectItem>
+                            <SelectItem value="marie">Marié</SelectItem>
+                            <SelectItem value="divorce">Divorcé</SelectItem>
+                            <SelectItem value="veuf">Veuf</SelectItem>
+                            <SelectItem value="pacse">PACSé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {(successionData.defunt.situationMatrimoniale === "marie" || successionData.defunt.situationMatrimoniale === "divorce") && (
+                        <div className="space-y-2">
+                          <Label>Régime matrimonial</Label>
+                          <Select
+                            value={successionData.defunt.regimeMatrimonial || undefined}
+                            onValueChange={(value) => setSuccessionData({
+                              ...successionData,
+                              defunt: {...successionData.defunt, regimeMatrimonial: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                              <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                              <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                              <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="contratMariageExiste"
+                            checked={successionData.defunt.contratMariageExiste}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              defunt: {...successionData.defunt, contratMariageExiste: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="contratMariageExiste">Existence d'un contrat de mariage</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="testamentExiste"
+                            checked={successionData.defunt.testamentExiste}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              defunt: {...successionData.defunt, testamentExiste: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="testamentExiste">Existence d'un testament</Label>
+                        </div>
+                      </div>
+
+                      {successionData.defunt.testamentExiste && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Type de testament</Label>
+                          <Select
+                            value={successionData.defunt.typeTestament || undefined}
+                            onValueChange={(value) => setSuccessionData({
+                              ...successionData,
+                              defunt: {...successionData.defunt, typeTestament: value}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="olographe">Olographe</SelectItem>
+                              <SelectItem value="authentique">Authentique</SelectItem>
+                              <SelectItem value="mystique">Mystique</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="donationsAnterieuresExistent"
+                            checked={successionData.defunt.donationsAnterieuresExistent}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              defunt: {...successionData.defunt, donationsAnterieuresExistent: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="donationsAnterieuresExistent">Donations antérieures</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="mandatProtectionFuture"
+                            checked={successionData.defunt.mandatProtectionFuture}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              defunt: {...successionData.defunt, mandatProtectionFuture: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="mandatProtectionFuture">Mandat de protection future</Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="pacteSuccessoral"
+                            checked={successionData.defunt.pacteSuccessoral}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              defunt: {...successionData.defunt, pacteSuccessoral: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="pacteSuccessoral">Pacte successoral</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 3: Pièces justificatives essentielles */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Pièces justificatives à fournir</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Acte de décès <span className="text-red-500">*</span></Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionActeDeces')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionActeDeces ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionActeDeces ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionActeDeces ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionActeDeces ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionActeDeces?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionActeDeces"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionActeDeces(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Livret de famille</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionLivretFamille')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionLivretFamille ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionLivretFamille ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionLivretFamille ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionLivretFamille ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionLivretFamille?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionLivretFamille"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionLivretFamille(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      {successionData.defunt.contratMariageExiste && (
+                        <div className="space-y-2">
+                          <Label>Contrat de mariage</Label>
+                          <button
+                            type="button"
+                            onClick={() => document.getElementById('successionContratMariage')?.click()}
+                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                            style={{
+                              borderColor: successionContratMariage ? "#22c55e" : "#fb923c",
+                              backgroundColor: successionContratMariage ? "#f0fdf4" : "white"
+                            }}
+                          >
+                            {successionContratMariage ? (
+                              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                            <span className={successionContratMariage ? "text-green-700 font-medium" : "text-orange-700"}>
+                              {successionContratMariage?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                            </span>
+                          </button>
+                          <Input
+                            id="successionContratMariage"
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                setSuccessionContratMariage(e.target.files[0]);
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {successionData.defunt.testamentExiste && (
+                        <div className="space-y-2">
+                          <Label>Testament</Label>
+                          <button
+                            type="button"
+                            onClick={() => document.getElementById('successionTestament')?.click()}
+                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                            style={{
+                              borderColor: successionTestament ? "#22c55e" : "#fb923c",
+                              backgroundColor: successionTestament ? "#f0fdf4" : "white"
+                            }}
+                          >
+                            {successionTestament ? (
+                              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                            <span className={successionTestament ? "text-green-700 font-medium" : "text-orange-700"}>
+                              {successionTestament?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                            </span>
+                          </button>
+                          <Input
+                            id="successionTestament"
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                setSuccessionTestament(e.target.files[0]);
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Titres de propriété (biens immobiliers)</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionTitresPropriete')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionTitresPropriete ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionTitresPropriete ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionTitresPropriete ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionTitresPropriete ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionTitresPropriete?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionTitresPropriete"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionTitresPropriete(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Avis d'imposition / Relevé fiscal IFI</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionAvisImposition')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionAvisImposition ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionAvisImposition ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionAvisImposition ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionAvisImposition ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionAvisImposition?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionAvisImposition"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionAvisImposition(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Relevés bancaires / Comptes-titres</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionRelevesBancaires')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionRelevesBancaires ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionRelevesBancaires ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionRelevesBancaires ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionRelevesBancaires ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionRelevesBancaires?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionRelevesBancaires"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionRelevesBancaires(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Contrats d'assurance-vie</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionAssuranceVie')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionAssuranceVie ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionAssuranceVie ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionAssuranceVie ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionAssuranceVie ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionAssuranceVie?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionAssuranceVie"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionAssuranceVie(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Statuts de sociétés / Bilans</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionStatutsSocietes')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionStatutsSocietes ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionStatutsSocietes ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionStatutsSocietes ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionStatutsSocietes ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionStatutsSocietes?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionStatutsSocietes"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionStatutsSocietes(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Justificatifs des dettes</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionJustifsDettes')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionJustifsDettes ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionJustifsDettes ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionJustifsDettes ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionJustifsDettes ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionJustifsDettes?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionJustifsDettes"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionJustifsDettes(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Facture pompes funèbres</Label>
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('successionFactureFuneraires')?.click()}
+                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+                          style={{
+                            borderColor: successionFactureFuneraires ? "#22c55e" : "#fb923c",
+                            backgroundColor: successionFactureFuneraires ? "#f0fdf4" : "white"
+                          }}
+                        >
+                          {successionFactureFuneraires ? (
+                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          <span className={successionFactureFuneraires ? "text-green-700 font-medium" : "text-orange-700"}>
+                            {successionFactureFuneraires?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
+                          </span>
+                        </button>
+                        <Input
+                          id="successionFactureFuneraires"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setSuccessionFactureFuneraires(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <p className="text-sm text-orange-800">
+                        ℹ️ <strong>Note importante :</strong> Les sections détaillées sur les héritiers, le patrimoine complet, le passif et les donations seront complétées par le notaire lors de l'instruction du dossier. Ces informations préliminaires permettent de démarrer la procédure.
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -28980,6 +30136,10 @@ FIN DE LA CONVENTION
                   handleDonationSimpleSubmit();
                 } else if (pendingContractType === "Testament authentique ou mystique") {
                   handleTestamentSubmit();
+                } else if (pendingContractType === "Changement de régime matrimonial") {
+                  handleChangementRegimeSubmit();
+                } else if (pendingContractType === "Déclaration de succession") {
+                  handleSuccessionSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }

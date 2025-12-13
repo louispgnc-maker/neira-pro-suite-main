@@ -190,8 +190,15 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
       return;
     }
 
+    // Si c'est une "Déclaration de succession", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Déclaration de succession") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
     try {
-      const { data, error } = await supabase
+      const { data, error} = await supabase
         .from('contrats')
         .insert({
           owner_id: user.id,
