@@ -468,13 +468,15 @@ export default function Contrats() {
 
   // State pour Acte de Notoriété - Fichiers
   const [acteNotorieteDefuntActeDeces, setActeNotorieteDefuntActeDeces] = useState<File[]>([]);
+  const [acteNotorieteDefuntActeNaissance, setActeNotorieteDefuntActeNaissance] = useState<File[]>([]);
   const [acteNotorieteDefuntLivretFamille, setActeNotorieteDefuntLivretFamille] = useState<File[]>([]);
-  const [acteNotorieteDefuntTestaments, setActeNotorieteDefuntTestaments] = useState<File[]>([]);
-  const [acteNotorieteDefuntDonationsEntreEpoux, setActeNotorieteDefuntDonationsEntreEpoux] = useState<File[]>([]);
+  const [acteNotorieteDefuntActeMariage, setActeNotorieteDefuntActeMariage] = useState<File[]>([]);
   const [acteNotorieteDefuntContratMariage, setActeNotorieteDefuntContratMariage] = useState<File[]>([]);
   const [acteNotorieteDefuntJugementDivorce, setActeNotorieteDefuntJugementDivorce] = useState<File[]>([]);
-  const [acteNotorieteDefuntActeDecesConjoint, setActeNotorieteDefuntActeDecesConjoint] = useState<File[]>([]);
-  const [acteNotorieteDefuntDonationsAnterieures, setActeNotorieteDefuntDonationsAnterieures] = useState<File[]>([]);
+  const [acteNotorieteDefuntTestament, setActeNotorieteDefuntTestament] = useState<File[]>([]);
+  const [acteNotorieteDefuntDonations, setActeNotorieteDefuntDonations] = useState<File[]>([]);
+  const [acteNotorieteDefuntJustifDomicile, setActeNotorieteDefuntJustifDomicile] = useState<File[]>([]);
+  const [acteNotorieteDefuntPieceIdentite, setActeNotorieteDefuntPieceIdentite] = useState<File[]>([]);
   
   // Fichiers héritiers (dynamiques par héritier)
   const [acteNotorieteHeritiersIdentite, setActeNotorieteHeritiersIdentite] = useState<Record<number, File[]>>({});
@@ -482,10 +484,12 @@ export default function Contrats() {
   const [acteNotorieteHeritiersJustifDomicile, setActeNotorieteHeritiersJustifDomicile] = useState<Record<number, File[]>>({});
   const [acteNotorieteHeritiersJugementTutelle, setActeNotorieteHeritiersJugementTutelle] = useState<Record<number, File[]>>({});
   const [acteNotorieteHeritiersActeDecesPredeced, setActeNotorieteHeritiersActeDecesPredeced] = useState<Record<number, File[]>>({});
+  const [acteNotorieteHeritierFiles, setActeNotorieteHeritierFiles] = useState<Record<number, File[]>>({});
   
   // Fichiers témoins (dynamiques par témoin)
   const [acteNotorieteTemoinsIdentite, setActeNotorieteTemoinsIdentite] = useState<Record<number, File[]>>({});
   const [acteNotorieteTemoinsAttestation, setActeNotorieteTemoinsAttestation] = useState<Record<number, File[]>>({});
+  const [acteNotorieteTemoinFiles, setActeNotorieteTemoinFiles] = useState<Record<number, File[]>>({});
   
   // Fichiers conjoint survivant
   const [acteNotorieteConjointDonationEntreEpoux, setActeNotorieteConjointDonationEntreEpoux] = useState<File[]>([]);
@@ -493,11 +497,30 @@ export default function Contrats() {
   const [acteNotorieteConjointJustificatifs, setActeNotorieteConjointJustificatifs] = useState<File[]>([]);
   
   // Fichiers preuves filiation / possession d'état
-  const [acteNotorietePreuvesPhotos, setActeNotorietePreuvesPhotos] = useState<File[]>([]);
-  const [acteNotorietePreuvesCertificats, setActeNotorietePreuvesCertificats] = useState<File[]>([]);
-  const [acteNotorietePreuvesDocumentsScolaires, setActeNotorietePreuvesDocumentsScolaires] = useState<File[]>([]);
-  const [acteNotorietePreuvesCorrespondances, setActeNotorietePreuvesCorrespondances] = useState<File[]>([]);
-  const [acteNotorietePreuvesAutres, setActeNotorietePreuvesAutres] = useState<File[]>([]);
+  const [acteNotorietePreuvePhotos, setActeNotorietePreuvePhotos] = useState<File[]>([]);
+  const [acteNotorietePreuveCertificats, setActeNotorietePreuveCertificats] = useState<File[]>([]);
+  const [acteNotorietePreuveDocumentsScolaires, setActeNotorietePreuveDocumentsScolaires] = useState<File[]>([]);
+  const [acteNotorietePreuveCorrespondances, setActeNotorietePreuveCorrespondances] = useState<File[]>([]);
+  const [acteNotorietePreuveAutres, setActeNotorietePreuveAutres] = useState<File[]>([]);
+  
+  // Fichiers héritiers collectifs
+  const [acteNotorieteHeritiersActesNaissance, setActeNotorieteHeritiersActesNaissance] = useState<File[]>([]);
+  const [acteNotorieteHeritiersPiecesIdentite, setActeNotorieteHeritiersPiecesIdentite] = useState<File[]>([]);
+  const [acteNotorieteHeritiersJustifsDomicile, setActeNotorieteHeritiersJustifsDomicile] = useState<File[]>([]);
+  const [acteNotorieteHeritiersLivretsFamille, setActeNotorieteHeritiersLivretsFamille] = useState<File[]>([]);
+  const [acteNotorieteHeritiersActesNotoriete, setActeNotorieteHeritiersActesNotoriete] = useState<File[]>([]);
+  const [acteNotorieteHeritiersCertificatsHeredite, setActeNotorieteHeritiersCertificatsHeredite] = useState<File[]>([]);
+  const [acteNotorieteHeritiersTutelleCuratelle, setActeNotorieteHeritiersTutelleCuratelle] = useState<File[]>([]);
+  
+  // Fichiers témoins collectifs
+  const [acteNotorieteTemoinsPiecesIdentite, setActeNotorieteTemoinsPiecesIdentite] = useState<File[]>([]);
+  const [acteNotorieteTemoinsJustifsDomicile, setActeNotorieteTemoinsJustifsDomicile] = useState<File[]>([]);
+  
+  // Autres documents
+  const [acteNotorieteAutresAttestations, setActeNotorieteAutresAttestations] = useState<File[]>([]);
+  const [acteNotorieteAutresCertificatsMedicaux, setActeNotorieteAutresCertificatsMedicaux] = useState<File[]>([]);
+  const [acteNotorieteAutresCorrespondances, setActeNotorieteAutresCorrespondances] = useState<File[]>([]);
+  const [acteNotorieteAutresDocuments, setActeNotorieteAutresDocuments] = useState<File[]>([]);
 
   // State pour Acte de Notoriété - Data
   const [acteNotorieteData, setActeNotorieteData] = useState({
@@ -6497,42 +6520,53 @@ FIN DE LA CONVENTION
       await Promise.all([
         // Défunt
         uploadFile(acteNotorieteDefuntActeDeces, 'defunt_acte_deces'),
+        uploadFile(acteNotorieteDefuntActeNaissance, 'defunt_acte_naissance'),
         uploadFile(acteNotorieteDefuntLivretFamille, 'defunt_livret_famille'),
-        uploadFile(acteNotorieteDefuntTestaments, 'defunt_testaments'),
-        uploadFile(acteNotorieteDefuntDonationsEntreEpoux, 'defunt_donations_entre_epoux'),
+        uploadFile(acteNotorieteDefuntActeMariage, 'defunt_acte_mariage'),
         uploadFile(acteNotorieteDefuntContratMariage, 'defunt_contrat_mariage'),
         uploadFile(acteNotorieteDefuntJugementDivorce, 'defunt_jugement_divorce'),
-        uploadFile(acteNotorieteDefuntActeDecesConjoint, 'defunt_acte_deces_conjoint'),
-        uploadFile(acteNotorieteDefuntDonationsAnterieures, 'defunt_donations_anterieures'),
-        
-        // Conjoint survivant
-        uploadFile(acteNotorieteConjointDonationEntreEpoux, 'conjoint_donation_entre_epoux'),
-        uploadFile(acteNotorieteConjointContratMariage, 'conjoint_contrat_mariage'),
-        uploadFile(acteNotorieteConjointJustificatifs, 'conjoint_justificatifs'),
+        uploadFile(acteNotorieteDefuntTestament, 'defunt_testament'),
+        uploadFile(acteNotorieteDefuntDonations, 'defunt_donations'),
+        uploadFile(acteNotorieteDefuntJustifDomicile, 'defunt_justif_domicile'),
+        uploadFile(acteNotorieteDefuntPieceIdentite, 'defunt_piece_identite'),
         
         // Preuves filiation
-        uploadFile(acteNotorietePreuvesPhotos, 'preuves_photos'),
-        uploadFile(acteNotorietePreuvesCertificats, 'preuves_certificats'),
-        uploadFile(acteNotorietePreuvesDocumentsScolaires, 'preuves_documents_scolaires'),
-        uploadFile(acteNotorietePreuvesCorrespondances, 'preuves_correspondances'),
-        uploadFile(acteNotorietePreuvesAutres, 'preuves_autres'),
+        uploadFile(acteNotorietePreuvePhotos, 'preuves_photos'),
+        uploadFile(acteNotorietePreuveCertificats, 'preuves_certificats'),
+        uploadFile(acteNotorietePreuveDocumentsScolaires, 'preuves_documents_scolaires'),
+        uploadFile(acteNotorietePreuveCorrespondances, 'preuves_correspondances'),
+        uploadFile(acteNotorietePreuveAutres, 'preuves_autres'),
+        
+        // Héritiers collectifs
+        uploadFile(acteNotorieteHeritiersActesNaissance, 'heritiers_actes_naissance'),
+        uploadFile(acteNotorieteHeritiersPiecesIdentite, 'heritiers_pieces_identite'),
+        uploadFile(acteNotorieteHeritiersJustifsDomicile, 'heritiers_justifs_domicile'),
+        uploadFile(acteNotorieteHeritiersLivretsFamille, 'heritiers_livrets_famille'),
+        uploadFile(acteNotorieteHeritiersActesNotoriete, 'heritiers_actes_notoriete'),
+        uploadFile(acteNotorieteHeritiersCertificatsHeredite, 'heritiers_certificats_heredite'),
+        uploadFile(acteNotorieteHeritiersTutelleCuratelle, 'heritiers_tutelle_curatelle'),
+        
+        // Témoins collectifs
+        uploadFile(acteNotorieteTemoinsPiecesIdentite, 'temoins_pieces_identite'),
+        uploadFile(acteNotorieteTemoinsJustifsDomicile, 'temoins_justifs_domicile'),
+        
+        // Autres documents
+        uploadFile(acteNotorieteAutresAttestations, 'autres_attestations'),
+        uploadFile(acteNotorieteAutresCertificatsMedicaux, 'autres_certificats_medicaux'),
+        uploadFile(acteNotorieteAutresCorrespondances, 'autres_correspondances'),
+        uploadFile(acteNotorieteAutresDocuments, 'autres_documents'),
       ]);
       
-      // Upload des fichiers héritiers (dynamiques)
-      for (const heritierId of Object.keys(acteNotorieteHeritiersIdentite)) {
+      // Upload des fichiers héritiers individuels (dynamiques)
+      for (const heritierId of Object.keys(acteNotorieteHeritierFiles)) {
         const id = Number(heritierId);
-        await uploadFile(acteNotorieteHeritiersIdentite[id] || [], `heritier_${id}_identite`);
-        await uploadFile(acteNotorieteHeritiersActeNaissance[id] || [], `heritier_${id}_acte_naissance`);
-        await uploadFile(acteNotorieteHeritiersJustifDomicile[id] || [], `heritier_${id}_justif_domicile`);
-        await uploadFile(acteNotorieteHeritiersJugementTutelle[id] || [], `heritier_${id}_jugement_tutelle`);
-        await uploadFile(acteNotorieteHeritiersActeDecesPredeced[id] || [], `heritier_${id}_acte_deces_predeced`);
+        await uploadFile(acteNotorieteHeritierFiles[id] || [], `heritier_${id}_documents`);
       }
       
-      // Upload des fichiers témoins (dynamiques)
-      for (const temoinId of Object.keys(acteNotorieteTemoinsIdentite)) {
+      // Upload des fichiers témoins individuels (dynamiques)
+      for (const temoinId of Object.keys(acteNotorieteTemoinFiles)) {
         const id = Number(temoinId);
-        await uploadFile(acteNotorieteTemoinsIdentite[id] || [], `temoin_${id}_identite`);
-        await uploadFile(acteNotorieteTemoinsAttestation[id] || [], `temoin_${id}_attestation`);
+        await uploadFile(acteNotorieteTemoinFiles[id] || [], `temoin_${id}_documents`);
       }
 
       setContrats((prev) => [contrat, ...prev]);
