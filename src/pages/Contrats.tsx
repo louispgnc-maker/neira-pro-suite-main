@@ -3377,6 +3377,7 @@ export default function Contrats() {
         dateEmission: "",
         autorite: "",
       },
+      capaciteJuridique: "majeur",
       lienMandant: "",
       autreLien: "",
     },
@@ -3501,8 +3502,20 @@ export default function Contrats() {
       temoinsNecessaires: false,
       temoin1Nom: "",
       temoin1Prenom: "",
+      temoin1DateNaissance: "",
+      temoin1LieuNaissance: "",
+      temoin1Adresse: "",
+      temoin1Nationalite: "",
+      temoin1TypeIdentite: "",
+      temoin1NumeroIdentite: "",
       temoin2Nom: "",
       temoin2Prenom: "",
+      temoin2DateNaissance: "",
+      temoin2LieuNaissance: "",
+      temoin2Adresse: "",
+      temoin2Nationalite: "",
+      temoin2TypeIdentite: "",
+      temoin2NumeroIdentite: "",
       sousTutelleCuratelle: false,
       coSignatureCurateur: false,
       autorisationJuge: false,
@@ -3511,6 +3524,84 @@ export default function Contrats() {
       traductionCertifiee: false,
       notaireLocal: false,
       formalitesDiplomatiques: false,
+    },
+    
+    // 9. Date et lieu de réception
+    receptionActe: {
+      dateSignature: "",
+      lieuReception: "",
+      villeEtude: "",
+    },
+    
+    // 10. Authenticité notariale
+    authentification: {
+      nomNotaire: "",
+      villeNotaire: "",
+      lectureFaite: false,
+      consentementRecueilli: false,
+      signaturePresenceNotaire: false,
+    },
+    
+    // 11. Révocabilité
+    revocabilite: {
+      revocableAToutMoment: false,
+      modalitesRevocation: "",
+      notificationNotaire: false,
+    },
+    
+    // 12. Prise d'effet
+    priseEffet: {
+      typeEffet: "signature", // signature / date_determinee
+      dateEffet: "",
+    },
+    
+    // 13. Encaissement des fonds
+    encaissementFonds: {
+      pouvoirEncaisser: false,
+      encaisserPrixVente: false,
+      encaisserFondsSuccessoraux: false,
+      destinationFonds: "", // compte_notaire / compte_mandant
+    },
+    
+    // 14. Plafond financier
+    plafondFinancier: {
+      presencePlafond: false,
+      montantPlafond: "",
+      sansLimitation: false,
+    },
+    
+    // 15. Signature du mandant
+    signatureMandant: {
+      typeSignature: "", // manuscrite / electronique / empreinte
+      signatureRecueillie: false,
+    },
+    
+    // 16. Responsabilité du mandataire
+    responsabilite: {
+      obligationInteretMandant: false,
+      responsabiliteCivile: false,
+    },
+    
+    // 17. Conservation de l'acte
+    conservation: {
+      minuteConservee: false,
+      delivranceCopies: false,
+    },
+    
+    // 18. Langue et compréhension
+    langue: {
+      langueActe: "francais",
+      langueCompriseMandant: true,
+      interpreteNecessaire: false,
+      interpreteNom: "",
+      interpretePrenom: "",
+    },
+    
+    // 19. RGPD
+    rgpd: {
+      informationDonnees: false,
+      responsableTraitement: "Neira",
+      finaliteTraitement: "Gestion de la procuration authentique",
     },
   });
 
@@ -3525,6 +3616,8 @@ export default function Contrats() {
   const [procAuthAutresStatuts, setProcAuthAutresStatuts] = useState<File[]>([]);
   const [procAuthAutresBancaires, setProcAuthAutresBancaires] = useState<File[]>([]);
   const [procAuthAutresProjet, setProcAuthAutresProjet] = useState<File[]>([]);
+  const [procAuthTemoin1Identite, setProcAuthTemoin1Identite] = useState<File[]>([]);
+  const [procAuthTemoin2Identite, setProcAuthTemoin2Identite] = useState<File[]>([]);
   
   // URL pièce d'identité mandant procuration authentique
   const [procAuthMandantIdentiteUrl, setProcAuthMandantIdentiteUrl] = useState<string | null>(null);
@@ -7851,6 +7944,17 @@ FIN DE LA CONVENTION
             declarations: procurationAuthentiqueData.declarations,
             mentionsLegales: procurationAuthentiqueData.mentionsLegales,
             casParticuliers: procurationAuthentiqueData.casParticuliers,
+            receptionActe: procurationAuthentiqueData.receptionActe,
+            authentification: procurationAuthentiqueData.authentification,
+            revocabilite: procurationAuthentiqueData.revocabilite,
+            priseEffet: procurationAuthentiqueData.priseEffet,
+            encaissementFonds: procurationAuthentiqueData.encaissementFonds,
+            plafondFinancier: procurationAuthentiqueData.plafondFinancier,
+            signatureMandant: procurationAuthentiqueData.signatureMandant,
+            responsabilite: procurationAuthentiqueData.responsabilite,
+            conservation: procurationAuthentiqueData.conservation,
+            langue: procurationAuthentiqueData.langue,
+            rgpd: procurationAuthentiqueData.rgpd,
           }
         })
         .select()
@@ -7879,6 +7983,8 @@ FIN DE LA CONVENTION
       await uploadFile(procAuthAutresStatuts, 'autres_statuts');
       await uploadFile(procAuthAutresBancaires, 'autres_bancaires');
       await uploadFile(procAuthAutresProjet, 'autres_projet');
+      await uploadFile(procAuthTemoin1Identite, 'temoin1_identite');
+      await uploadFile(procAuthTemoin2Identite, 'temoin2_identite');
 
       setContrats((prev) => [contrat, ...prev]);
       setShowQuestionDialog(false);
@@ -36232,24 +36338,80 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 3: MANDATAIRE */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité du mandataire</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div><Label>Nom *</Label><Input value={procurationAuthentiqueData.mandataire.nom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, nom: e.target.value}})} /></div>
-                      <div><Label>Prénom *</Label><Input value={procurationAuthentiqueData.mandataire.prenom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, prenom: e.target.value}})} /></div>
-                      <div><Label>Téléphone</Label><Input value={procurationAuthentiqueData.mandataire.telephone} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, telephone: e.target.value}})} /></div>
-                      <div>
-                        <Label>Lien avec mandant</Label>
-                        <Select value={procurationAuthentiqueData.mandataire.lienMandant} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, lienMandant: val}})}>
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="conjoint">Conjoint</SelectItem>
-                            <SelectItem value="parent">Parent</SelectItem>
-                            <SelectItem value="enfant">Enfant</SelectItem>
-                            <SelectItem value="ami">Ami</SelectItem>
-                            <SelectItem value="avocat">Avocat</SelectItem>
-                            <SelectItem value="tiers">Tiers professionnel</SelectItem>
-                          </SelectContent>
-                        </Select>
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 3️⃣ Identité complète du mandataire (OBLIGATOIRE)</h3>
+                    
+                    {/* Identité civile */}
+                    <div className="p-4 border rounded-lg bg-orange-50">
+                      <h4 className="font-medium mb-3">État civil</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><Label>Nom *</Label><Input value={procurationAuthentiqueData.mandataire.nom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, nom: e.target.value}})} /></div>
+                        <div><Label>Prénom *</Label><Input value={procurationAuthentiqueData.mandataire.prenom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, prenom: e.target.value}})} /></div>
+                        <div><Label>Date de naissance *</Label><Input type="date" value={procurationAuthentiqueData.mandataire.dateNaissance} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, dateNaissance: e.target.value}})} /></div>
+                        <div><Label>Lieu de naissance *</Label><Input value={procurationAuthentiqueData.mandataire.lieuNaissance} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, lieuNaissance: e.target.value}})} /></div>
+                        <div><Label>Nationalité *</Label><Input value={procurationAuthentiqueData.mandataire.nationalite} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, nationalite: e.target.value}})} /></div>
+                        <div><Label>Téléphone</Label><Input value={procurationAuthentiqueData.mandataire.telephone} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, telephone: e.target.value}})} /></div>
+                      </div>
+                    </div>
+
+                    {/* Adresse */}
+                    <div className="p-4 border rounded-lg bg-orange-50">
+                      <h4 className="font-medium mb-3">Adresse complète</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2"><Label>Rue *</Label><Input value={procurationAuthentiqueData.mandataire.adresse} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, adresse: e.target.value}})} /></div>
+                        <div><Label>Code postal *</Label><Input value={procurationAuthentiqueData.mandataire.codePostal} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, codePostal: e.target.value}})} /></div>
+                        <div><Label>Ville *</Label><Input value={procurationAuthentiqueData.mandataire.ville} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, ville: e.target.value}})} /></div>
+                      </div>
+                    </div>
+
+                    {/* Pièce d'identité */}
+                    <div className="p-4 border rounded-lg bg-orange-50">
+                      <h4 className="font-medium mb-3">Pièce d'identité *</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Type de pièce *</Label>
+                          <Select value={procurationAuthentiqueData.mandataire.typePieceIdentite} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, typePieceIdentite: val}})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="cni">Carte Nationale d'Identité</SelectItem>
+                              <SelectItem value="passeport">Passeport</SelectItem>
+                              <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div><Label>Numéro de la pièce *</Label><Input value={procurationAuthentiqueData.mandataire.numeroPieceIdentite} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, numeroPieceIdentite: e.target.value}})} /></div>
+                        <div><Label>Date d'émission *</Label><Input type="date" value={procurationAuthentiqueData.mandataire.dateEmission} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, dateEmission: e.target.value}})} /></div>
+                        <div><Label>Autorité émettrice *</Label><Input value={procurationAuthentiqueData.mandataire.autorite} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, autorite: e.target.value}})} placeholder="Ex: Préfecture de Paris" /></div>
+                      </div>
+                    </div>
+
+                    {/* Capacité juridique et lien */}
+                    <div className="p-4 border rounded-lg bg-orange-50">
+                      <h4 className="font-medium mb-3">Capacité juridique et lien avec le mandant</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Capacité juridique *</Label>
+                          <Select value={procurationAuthentiqueData.mandataire.capaciteJuridique} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, capaciteJuridique: val}})}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="majeur">Majeur capable</SelectItem>
+                              <SelectItem value="protege">Majeur protégé</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Lien avec mandant</Label>
+                          <Select value={procurationAuthentiqueData.mandataire.lienMandant} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, lienMandant: val}})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="conjoint">Conjoint</SelectItem>
+                              <SelectItem value="parent">Parent</SelectItem>
+                              <SelectItem value="enfant">Enfant</SelectItem>
+                              <SelectItem value="ami">Ami</SelectItem>
+                              <SelectItem value="avocat">Avocat</SelectItem>
+                              <SelectItem value="tiers">Tiers professionnel</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -36404,13 +36566,82 @@ FIN DE LA CONVENTION
                       </div>
                       <div className="flex items-center space-x-2">
                         <input type="checkbox" checked={procurationAuthentiqueData.casParticuliers.neSaitPasSigner} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, neSaitPasSigner: e.target.checked}})} className="w-4 h-4" />
-                        <Label>Mandant ne sachant pas signer (2 témoins)</Label>
+                        <Label>🔴 Mandant ne sachant pas signer (2 témoins OBLIGATOIRES)</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <input type="checkbox" checked={procurationAuthentiqueData.casParticuliers.sousTutelleCuratelle} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, sousTutelleCuratelle: e.target.checked}})} className="w-4 h-4" />
                         <Label>Sous tutelle/curatelle</Label>
                       </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.casParticuliers.temoinsNecessaires} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoinsNecessaires: e.target.checked}})} className="w-4 h-4" />
+                        <Label>🔴 Présence de témoins (identité complète OBLIGATOIRE)</Label>
+                      </div>
                     </div>
+
+                    {/* 🔴 TÉMOINS DÉTAILLÉS (si cochés) */}
+                    {procurationAuthentiqueData.casParticuliers.temoinsNecessaires && (
+                      <div className="mt-4 p-4 border rounded-lg bg-red-50">
+                        <h4 className="font-semibold text-lg mb-4">🔴 9️⃣ Identité complète des témoins (OBLIGATOIRE)</h4>
+                        
+                        {/* Témoin 1 */}
+                        <div className="mb-6 p-4 border rounded-lg bg-white">
+                          <h5 className="font-medium mb-3">Témoin 1</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><Label>Nom *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin1Nom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin1Nom: e.target.value}})} /></div>
+                            <div><Label>Prénom *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin1Prenom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin1Prenom: e.target.value}})} /></div>
+                            <div><Label>Date de naissance *</Label><Input type="date" value={procurationAuthentiqueData.casParticuliers.temoin1DateNaissance} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin1DateNaissance: e.target.value}})} /></div>
+                            <div><Label>Lieu de naissance *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin1LieuNaissance} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin1LieuNaissance: e.target.value}})} /></div>
+                            <div className="md:col-span-2"><Label>Adresse complète *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin1Adresse} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin1Adresse: e.target.value}})} /></div>
+                            <div><Label>Nationalité *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin1Nationalite} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin1Nationalite: e.target.value}})} /></div>
+                            <div>
+                              <Label>Type pièce d'identité *</Label>
+                              <Select value={procurationAuthentiqueData.casParticuliers.temoin1TypeIdentite} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin1TypeIdentite: val}})}>
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="cni">CNI</SelectItem>
+                                  <SelectItem value="passeport">Passeport</SelectItem>
+                                  <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div><Label>Numéro pièce identité *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin1NumeroIdentite} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin1NumeroIdentite: e.target.value}})} /></div>
+                            <div className="md:col-span-2">
+                              <Label>Copie pièce d'identité *</Label>
+                              <MultiFileUpload label="" files={procAuthTemoin1Identite} onFilesChange={setProcAuthTemoin1Identite} accept="application/pdf,image/*" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Témoin 2 */}
+                        <div className="p-4 border rounded-lg bg-white">
+                          <h5 className="font-medium mb-3">Témoin 2</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><Label>Nom *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin2Nom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin2Nom: e.target.value}})} /></div>
+                            <div><Label>Prénom *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin2Prenom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin2Prenom: e.target.value}})} /></div>
+                            <div><Label>Date de naissance *</Label><Input type="date" value={procurationAuthentiqueData.casParticuliers.temoin2DateNaissance} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin2DateNaissance: e.target.value}})} /></div>
+                            <div><Label>Lieu de naissance *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin2LieuNaissance} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin2LieuNaissance: e.target.value}})} /></div>
+                            <div className="md:col-span-2"><Label>Adresse complète *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin2Adresse} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin2Adresse: e.target.value}})} /></div>
+                            <div><Label>Nationalité *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin2Nationalite} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin2Nationalite: e.target.value}})} /></div>
+                            <div>
+                              <Label>Type pièce d'identité *</Label>
+                              <Select value={procurationAuthentiqueData.casParticuliers.temoin2TypeIdentite} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin2TypeIdentite: val}})}>
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="cni">CNI</SelectItem>
+                                  <SelectItem value="passeport">Passeport</SelectItem>
+                                  <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div><Label>Numéro pièce identité *</Label><Input value={procurationAuthentiqueData.casParticuliers.temoin2NumeroIdentite} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, temoin2NumeroIdentite: e.target.value}})} /></div>
+                            <div className="md:col-span-2">
+                              <Label>Copie pièce d'identité *</Label>
+                              <MultiFileUpload label="" files={procAuthTemoin2Identite} onFilesChange={setProcAuthTemoin2Identite} accept="application/pdf,image/*" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* SECTION 8: PIÈCES JUSTIFICATIVES */}
@@ -36439,6 +36670,243 @@ FIN DE LA CONVENTION
                           <div><Label>Relevés bancaires</Label><MultiFileUpload label="" files={procAuthAutresBancaires} onFilesChange={setProcAuthAutresBancaires} accept="application/pdf,image/*" /></div>
                           <div><Label>Projet d'acte (compromis, partage...)</Label><MultiFileUpload label="" files={procAuthAutresProjet} onFilesChange={setProcAuthAutresProjet} accept="application/pdf" /></div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 9: DATE ET LIEU DE RÉCEPTION */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣0️⃣ Date et lieu de réception de l'acte (OBLIGATOIRE)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><Label>Date de signature *</Label><Input type="date" value={procurationAuthentiqueData.receptionActe.dateSignature} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, receptionActe: {...procurationAuthentiqueData.receptionActe, dateSignature: e.target.value}})} /></div>
+                      <div><Label>Lieu de réception *</Label><Input value={procurationAuthentiqueData.receptionActe.lieuReception} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, receptionActe: {...procurationAuthentiqueData.receptionActe, lieuReception: e.target.value}})} placeholder="Ex: Étude notariale" /></div>
+                      <div><Label>Ville (étude notariale) *</Label><Input value={procurationAuthentiqueData.receptionActe.villeEtude} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, receptionActe: {...procurationAuthentiqueData.receptionActe, villeEtude: e.target.value}})} /></div>
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 10: FORMULE D'AUTHENTICITÉ NOTARIALE */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣1️⃣ Formule d'authenticité notariale (OBLIGATOIRE)</h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><Label>Nom du notaire instrumentaire *</Label><Input value={procurationAuthentiqueData.authentification.nomNotaire} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, authentification: {...procurationAuthentiqueData.authentification, nomNotaire: e.target.value}})} /></div>
+                        <div><Label>Ville du notaire *</Label><Input value={procurationAuthentiqueData.authentification.villeNotaire} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, authentification: {...procurationAuthentiqueData.authentification, villeNotaire: e.target.value}})} /></div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.authentification.lectureFaite} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, authentification: {...procurationAuthentiqueData.authentification, lectureFaite: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Lecture faite de l'acte au mandant *</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.authentification.consentementRecueilli} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, authentification: {...procurationAuthentiqueData.authentification, consentementRecueilli: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Consentement recueilli du mandant *</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.authentification.signaturePresenceNotaire} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, authentification: {...procurationAuthentiqueData.authentification, signaturePresenceNotaire: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Signature en présence du notaire *</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 11: RÉVOCABILITÉ */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣2️⃣ Clause de révocabilité (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.revocabilite.revocableAToutMoment} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, revocabilite: {...procurationAuthentiqueData.revocabilite, revocableAToutMoment: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Procuration révocable à tout moment *</Label>
+                      </div>
+                      <div>
+                        <Label>Modalités de révocation *</Label>
+                        <textarea className="w-full p-2 border rounded-md min-h-[80px]" value={procurationAuthentiqueData.revocabilite.modalitesRevocation} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, revocabilite: {...procurationAuthentiqueData.revocabilite, modalitesRevocation: e.target.value}})} placeholder="Par lettre recommandée avec AR, acte notarié..."></textarea>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.revocabilite.notificationNotaire} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, revocabilite: {...procurationAuthentiqueData.revocabilite, notificationNotaire: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Notification au notaire en cas de révocation</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 12: DATE DE PRISE D'EFFET */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣3️⃣ Date de prise d'effet (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <Label>Type de prise d'effet *</Label>
+                        <Select value={procurationAuthentiqueData.priseEffet.typeEffet} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, priseEffet: {...procurationAuthentiqueData.priseEffet, typeEffet: val}})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="signature">Immédiatement dès signature</SelectItem>
+                            <SelectItem value="date_precise">À compter d'une date précise</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {procurationAuthentiqueData.priseEffet.typeEffet === "date_precise" && (
+                        <div>
+                          <Label>Date de prise d'effet *</Label>
+                          <Input type="date" value={procurationAuthentiqueData.priseEffet.dateEffet} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, priseEffet: {...procurationAuthentiqueData.priseEffet, dateEffet: e.target.value}})} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 13: POUVOIR D'ENCAISSEMENT DES FONDS */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣4️⃣ Pouvoir d'encaissement des fonds (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.encaissementFonds.pouvoirEncaisser} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, encaissementFonds: {...procurationAuthentiqueData.encaissementFonds, pouvoirEncaisser: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Le mandataire peut encaisser des fonds *</Label>
+                      </div>
+                      {procurationAuthentiqueData.encaissementFonds.pouvoirEncaisser && (
+                        <>
+                          <div className="flex items-center space-x-2 ml-6">
+                            <input type="checkbox" checked={procurationAuthentiqueData.encaissementFonds.encaisserPrixVente} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, encaissementFonds: {...procurationAuthentiqueData.encaissementFonds, encaisserPrixVente: e.target.checked}})} className="w-4 h-4" />
+                            <Label>Encaisser le prix de vente</Label>
+                          </div>
+                          <div className="flex items-center space-x-2 ml-6">
+                            <input type="checkbox" checked={procurationAuthentiqueData.encaissementFonds.encaisserFondsSuccessoraux} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, encaissementFonds: {...procurationAuthentiqueData.encaissementFonds, encaisserFondsSuccessoraux: e.target.checked}})} className="w-4 h-4" />
+                            <Label>Encaisser des fonds successoraux</Label>
+                          </div>
+                          <div>
+                            <Label>Destination des fonds *</Label>
+                            <Select value={procurationAuthentiqueData.encaissementFonds.destinationFonds} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, encaissementFonds: {...procurationAuthentiqueData.encaissementFonds, destinationFonds: val}})}>
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="compte_mandant">Versement au compte du mandant</SelectItem>
+                                <SelectItem value="compte_mandataire">Versement au compte du mandataire</SelectItem>
+                                <SelectItem value="compte_tiers">Versement à un tiers désigné</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 14: PLAFOND FINANCIER */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣5️⃣ Plafond financier (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <input type="radio" checked={procurationAuthentiqueData.plafondFinancier.presencePlafond} onChange={() => setProcurationAuthentiqueData({...procurationAuthentiqueData, plafondFinancier: {...procurationAuthentiqueData.plafondFinancier, presencePlafond: true, sansLimitation: false}})} className="w-4 h-4" />
+                          <Label>Avec plafond financier</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input type="radio" checked={procurationAuthentiqueData.plafondFinancier.sansLimitation} onChange={() => setProcurationAuthentiqueData({...procurationAuthentiqueData, plafondFinancier: {...procurationAuthentiqueData.plafondFinancier, presencePlafond: false, sansLimitation: true}})} className="w-4 h-4" />
+                          <Label>Sans limitation de montant</Label>
+                        </div>
+                      </div>
+                      {procurationAuthentiqueData.plafondFinancier.presencePlafond && (
+                        <div>
+                          <Label>Montant maximal autorisé (€) *</Label>
+                          <Input type="number" value={procurationAuthentiqueData.plafondFinancier.montantPlafond} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, plafondFinancier: {...procurationAuthentiqueData.plafondFinancier, montantPlafond: e.target.value}})} placeholder="Ex: 500000" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 15: SIGNATURE DU MANDANT */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣6️⃣ Signature du mandant (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <Label>Type de signature *</Label>
+                        <Select value={procurationAuthentiqueData.signatureMandant.typeSignature} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, signatureMandant: {...procurationAuthentiqueData.signatureMandant, typeSignature: val}})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="manuscrite">Signature manuscrite</SelectItem>
+                            <SelectItem value="electronique">Signature électronique</SelectItem>
+                            <SelectItem value="empreinte">Empreinte digitale (incapacité)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.signatureMandant.signatureRecueillie} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, signatureMandant: {...procurationAuthentiqueData.signatureMandant, signatureRecueillie: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Signature recueillie en présence du notaire *</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 16: CLAUSE DE RESPONSABILITÉ */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣7️⃣ Clause de responsabilité du mandataire (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.responsabilite.obligationInteretMandant} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, responsabilite: {...procurationAuthentiqueData.responsabilite, obligationInteretMandant: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Obligation d'agir dans l'intérêt du mandant *</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.responsabilite.responsabiliteCivile} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, responsabilite: {...procurationAuthentiqueData.responsabilite, responsabiliteCivile: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Engagement de responsabilité civile du mandataire *</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 17: CONSERVATION DE L'ACTE */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣8️⃣ Mention de conservation de l'acte (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.conservation.minuteConservee} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, conservation: {...procurationAuthentiqueData.conservation, minuteConservee: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Minute conservée par le notaire *</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.conservation.delivranceCopies} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, conservation: {...procurationAuthentiqueData.conservation, delivranceCopies: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Délivrance de copies certifiées conformes possible *</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 18: LANGUE DE L'ACTE */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 1️⃣9️⃣ Langue de l'acte / compréhension (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <Label>Langue de l'acte *</Label>
+                        <Select value={procurationAuthentiqueData.langue.langueActe} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, langue: {...procurationAuthentiqueData.langue, langueActe: val}})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="francais">Français</SelectItem>
+                            <SelectItem value="anglais">Anglais</SelectItem>
+                            <SelectItem value="espagnol">Espagnol</SelectItem>
+                            <SelectItem value="allemand">Allemand</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.langue.langueCompriseMandant} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, langue: {...procurationAuthentiqueData.langue, langueCompriseMandant: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Le mandant comprend et maîtrise la langue de l'acte *</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.langue.interpreteNecessaire} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, langue: {...procurationAuthentiqueData.langue, interpreteNecessaire: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Présence d'un interprète assermenté</Label>
+                      </div>
+                      {procurationAuthentiqueData.langue.interpreteNecessaire && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-6">
+                          <div><Label>Nom de l'interprète *</Label><Input value={procurationAuthentiqueData.langue.interpreteNom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, langue: {...procurationAuthentiqueData.langue, interpreteNom: e.target.value}})} /></div>
+                          <div><Label>Prénom de l'interprète *</Label><Input value={procurationAuthentiqueData.langue.interpretePrenom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, langue: {...procurationAuthentiqueData.langue, interpretePrenom: e.target.value}})} /></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 🔴 SECTION 19: MENTION RGPD */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔴 2️⃣0️⃣ Mention RGPD (OBLIGATOIRE)</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.rgpd.informationDonnees} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, rgpd: {...procurationAuthentiqueData.rgpd, informationDonnees: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Les parties ont été informées du traitement de leurs données personnelles *</Label>
+                      </div>
+                      <div className="p-3 bg-white rounded border">
+                        <Label className="font-medium">Responsable de traitement</Label>
+                        <p className="text-sm mt-1">{procurationAuthentiqueData.rgpd.responsableTraitement}</p>
+                      </div>
+                      <div className="p-3 bg-white rounded border">
+                        <Label className="font-medium">Finalité du traitement</Label>
+                        <p className="text-sm mt-1">{procurationAuthentiqueData.rgpd.finaliteTraitement}</p>
                       </div>
                     </div>
                   </div>
