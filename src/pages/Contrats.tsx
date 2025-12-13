@@ -3320,6 +3320,9 @@ export default function Contrats() {
   const [procurationSuccessionTestaments, setProcurationSuccessionTestaments] = useState<File[]>([]);
   const [procurationSuccessionDonations, setProcurationSuccessionDonations] = useState<File[]>([]);
   const [procurationSuccessionRIB, setProcurationSuccessionRIB] = useState<File[]>([]);
+  
+  // URL de la pièce d'identité du mandant (chargée depuis le client)
+  const [procurationMandantIdentiteUrl, setProcurationMandantIdentiteUrl] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -3821,6 +3824,101 @@ export default function Contrats() {
       }
     }
   }, [bailHabitationData.bailleurClientId, clients]);
+
+  // Auto-fill et charger la pièce d'identité du mandant (Procuration succession)
+  useEffect(() => {
+    if (procurationSuccessionData.mandant.clientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === procurationSuccessionData.mandant.clientId) as any;
+      console.log('📋 Client mandant procuration sélectionné:', selectedClient?.nom, selectedClient?.prenom);
+      console.log('📄 id_doc_path mandant:', selectedClient?.id_doc_path);
+      
+      if (selectedClient) {
+        // Pré-remplir les données du mandant
+        let situationFamiliale = "";
+        if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+          situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+        } else if (typeof selectedClient.situation_familiale === 'string') {
+          situationFamiliale = selectedClient.situation_familiale;
+        }
+
+        setProcurationSuccessionData(prev => ({
+          ...prev,
+          mandant: {
+            ...prev.mandant,
+            nom: selectedClient.nom || "",
+            prenom: selectedClient.prenom || "",
+            nomNaissance: selectedClient.nom_naissance || "",
+            dateNaissance: selectedClient.date_naissance || "",
+            lieuNaissance: selectedClient.lieu_naissance || "",
+            nationalite: selectedClient.nationalite || "",
+            profession: selectedClient.profession || "",
+            adresse: selectedClient.adresse || "",
+            telephone: selectedClient.telephone || "",
+            email: selectedClient.email || "",
+            situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
+            pieceIdentite: {
+              ...prev.mandant.pieceIdentite,
+              type: selectedClient.type_identite || "",
+              numero: selectedClient.numero_identite || "",
+            }
+          }
+        }));
+
+        // Charger la pièce d'identité
+        if (selectedClient.id_doc_path) {
+          console.log('✅ Chargement document mandant depuis id_doc_path:', selectedClient.id_doc_path);
+          supabase.storage
+            .from('documents')
+            .createSignedUrl(selectedClient.id_doc_path, 3600)
+            .then(({ data, error }) => {
+              if (error) {
+                console.error('❌ Erreur chargement document mandant:', error);
+                setProcurationMandantIdentiteUrl(null);
+              } else if (data?.signedUrl) {
+                console.log('✅ Document mandant chargé avec succès');
+                setProcurationMandantIdentiteUrl(data.signedUrl);
+              }
+            });
+        } else {
+          // Chercher dans client_documents si pas de id_doc_path
+          console.log('🔍 Recherche dans client_documents pour mandant:', selectedClient.id);
+          supabase
+            .from('client_documents')
+            .select('file_path, file_name, document_type')
+            .eq('client_id', selectedClient.id)
+            .order('uploaded_at', { ascending: false })
+            .limit(5)
+            .then(({ data: docs, error: docsError }) => {
+              if (docsError) {
+                console.error('❌ Erreur recherche documents mandant:', docsError);
+                setProcurationMandantIdentiteUrl(null);
+              } else if (docs && docs.length > 0) {
+                console.log(`📄 ${docs.length} document(s) mandant trouvé(s)`);
+                const idDoc = docs.find(d => d.document_type === 'piece_identite') || docs[0];
+                console.log('📄 Document mandant sélectionné:', idDoc.file_name);
+                supabase.storage
+                  .from('documents')
+                  .createSignedUrl(idDoc.file_path, 3600)
+                  .then(({ data, error }) => {
+                    if (error) {
+                      console.error('❌ Erreur chargement document mandant:', error);
+                      setProcurationMandantIdentiteUrl(null);
+                    } else if (data?.signedUrl) {
+                      console.log('✅ Document mandant client_documents chargé avec succès');
+                      setProcurationMandantIdentiteUrl(data.signedUrl);
+                    }
+                  });
+              } else {
+                console.log('⚠️ Aucun document mandant trouvé');
+                setProcurationMandantIdentiteUrl(null);
+              }
+            });
+        }
+      }
+    } else {
+      setProcurationMandantIdentiteUrl(null);
+    }
+  }, [procurationSuccessionData.mandant.clientId, clients]);
 
   // Détecter les paramètres URL pour ouvrir le questionnaire automatiquement
   useEffect(() => {
@@ -35479,6 +35577,23 @@ FIN DE LA CONVENTION
                       {/* Documents du mandant */}
                       <div>
                         <Label className="text-md font-medium mb-2 block">Pour le mandant</Label>
+                        
+                        {procurationMandantIdentiteUrl && (
+                          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <p className="text-sm text-green-800">
+                              ✅ <strong>Pièce d'identité chargée automatiquement</strong> depuis la fiche client
+                            </p>
+                          </div>
+                        )}
+                        
+                        {procurationSuccessionData.mandant.clientId && !procurationMandantIdentiteUrl && (
+                          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p className="text-sm text-blue-800">
+                              ℹ️ La pièce d'identité du client sera automatiquement ajoutée si disponible dans sa fiche
+                            </p>
+                          </div>
+                        )}
+                        
                         <div className="space-y-4">
                           <div>
                             <Label>Pièce d'identité *</Label>
