@@ -3324,6 +3324,211 @@ export default function Contrats() {
   // URL de la pièce d'identité du mandant (chargée depuis le client)
   const [procurationMandantIdentiteUrl, setProcurationMandantIdentiteUrl] = useState<string | null>(null);
 
+  // État pour Procuration authentique
+  const [procurationAuthentiqueData, setProcurationAuthentiqueData] = useState({
+    // 1. Type de procuration
+    typeProcuration: [], // Liste de checkboxes
+    
+    // 2. Identité du mandant
+    mandant: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      sexe: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresse: "",
+      telephone: "",
+      email: "",
+      situationMatrimoniale: "",
+      regimeMatrimonial: "",
+      conjointNom: "",
+      conjointPrenom: "",
+      pieceIdentite: {
+        type: "",
+        numero: "",
+        dateEmission: "",
+        autorite: "",
+      },
+      capaciteJuridique: "majeur",
+      tuteurNom: "",
+      tuteurPrenom: "",
+    },
+    
+    // 3. Identité du mandataire
+    mandataire: {
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      adresse: "",
+      profession: "",
+      nationalite: "",
+      telephone: "",
+      email: "",
+      pieceIdentite: {
+        type: "",
+        numero: "",
+        dateEmission: "",
+        autorite: "",
+      },
+      lienMandant: "",
+      autreLien: "",
+    },
+    
+    // 4. Objet exact - Pouvoirs
+    pouvoirs: {
+      // A. Actes immobiliers
+      actesImmobiliers: {
+        achatBien: false,
+        venteBien: false,
+        signatureCompromis: false,
+        signatureActeVente: false,
+        signatureActeAcquisition: false,
+        acceptationRenonciationServitude: false,
+        signatureBail: false,
+        remboursementPret: false,
+        constitutionHypotheque: false,
+        leveeHypotheque: false,
+      },
+      // B. Actes familiaux
+      actesFamiliaux: {
+        donation: false,
+        acceptationDonation: false,
+        donationEntreEpoux: false,
+        contratMariage: false,
+        changementRegime: false,
+        pacs: false,
+        adoptionSimple: false,
+        testamentAuthentique: false,
+      },
+      // C. Succession
+      succession: {
+        signerActeNotoriete: false,
+        declarationSuccession: false,
+        attestationImmobiliere: false,
+        partageSuccessoral: false,
+        acceptationRenonciation: false,
+        representationReunions: false,
+        signatureActesVente: false,
+      },
+      // D. Bancaire
+      bancaire: {
+        consultationComptes: false,
+        operationsRetraitDepot: false,
+        clotureComptes: false,
+        transfertEtudes: false,
+        paiementDettes: false,
+      },
+      // E. Sociétés
+      societes: {
+        signatureStatuts: false,
+        cessionParts: false,
+        depotGreffe: false,
+        decisionsAG: false,
+      },
+      // F. Fiscale
+      fiscale: {
+        declarationImpots: false,
+        negociationDGFiP: false,
+        paiementTaxes: false,
+        demarchesExonerations: false,
+      },
+      // G. Judiciaire
+      judiciaire: {
+        representerDevantJuge: false,
+        effectuerRecours: false,
+        signerActesSousSeingPrive: false,
+      },
+      // H. Pouvoirs généraux
+      pouvoirsGeneraux: {
+        quittancePaiements: false,
+        transactions: false,
+        representationDemarchesAdministratives: false,
+        representationGeneraleDevantTiers: false,
+      },
+    },
+    
+    // 5. Portée et limites
+    portee: {
+      etendue: "",
+      duree: "",
+      dateFinDeterminee: "",
+      revocable: false,
+      limites: {
+        interdictionVendreBien: false,
+        interdictionPercevoirFonds: false,
+        interdictionSignerActeDisposition: false,
+        limiteMontant: "",
+      },
+    },
+    
+    // 6. Déclarations obligatoires
+    declarations: {
+      consentementLibre: false,
+      capaciteJuridiqueConfirmee: false,
+      absencePressions: false,
+      comprehensionConsequences: false,
+      acceptationResponsabilite: false,
+      pouvoirRevoquer: false,
+      validationIdentite: false,
+      lectureCom prehension: false,
+    },
+    
+    // 7. Mentions légales
+    mentionsLegales: {
+      articlesCodeCivil: false,
+      pouvoirsSpecifiques: false,
+      limitesMandat: false,
+      validiteSignatureElectronique: false,
+      clausesSubstitution: false,
+      clauseIrrevocabilite: false,
+    },
+    
+    // 8. Cas particuliers
+    casParticuliers: {
+      mandantEtranger: false,
+      apostille: false,
+      legalisationConsulaire: false,
+      certificatCoutume: false,
+      neSaitPasSigner: false,
+      signatureParMarque: false,
+      temoinsNecessaires: false,
+      temoin1Nom: "",
+      temoin1Prenom: "",
+      temoin2Nom: "",
+      temoin2Prenom: "",
+      sousTutelleCuratelle: false,
+      coSignatureCurateur: false,
+      autorisationJuge: false,
+      signatureTuteur: false,
+      procurationInternationale: false,
+      traductionCertifiee: false,
+      notaireLocal: false,
+      formalitesDiplomatiques: false,
+    },
+  });
+
+  // Files pour Procuration authentique
+  const [procAuthMandantIdentite, setProcAuthMandantIdentite] = useState<File[]>([]);
+  const [procAuthMandantDomicile, setProcAuthMandantDomicile] = useState<File[]>([]);
+  const [procAuthMandantTutelle, setProcAuthMandantTutelle] = useState<File[]>([]);
+  const [procAuthMandantLivret, setProcAuthMandantLivret] = useState<File[]>([]);
+  const [procAuthMandataireIdentite, setProcAuthMandataireIdentite] = useState<File[]>([]);
+  const [procAuthMandataireDomicile, setProcAuthMandataireDomicile] = useState<File[]>([]);
+  const [procAuthAutresTitre, setProcAuthAutresTitre] = useState<File[]>([]);
+  const [procAuthAutresStatuts, setProcAuthAutresStatuts] = useState<File[]>([]);
+  const [procAuthAutresBancaires, setProcAuthAutresBancaires] = useState<File[]>([]);
+  const [procAuthAutresProjet, setProcAuthAutresProjet] = useState<File[]>([]);
+  
+  // URL pièce d'identité mandant procuration authentique
+  const [procAuthMandantIdentiteUrl, setProcAuthMandantIdentiteUrl] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
   // debounce
@@ -3920,6 +4125,83 @@ export default function Contrats() {
     }
   }, [procurationSuccessionData.mandant.clientId, clients]);
 
+  // Auto-fill et charger la pièce d'identité du mandant (Procuration authentique)
+  useEffect(() => {
+    if (procurationAuthentiqueData.mandant.clientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === procurationAuthentiqueData.mandant.clientId) as any;
+      console.log('📋 Client mandant procuration authentique sélectionné:', selectedClient?.nom, selectedClient?.prenom);
+      
+      if (selectedClient) {
+        // Pré-remplir les données du mandant
+        let situationFamiliale = "";
+        if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+          situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+        } else if (typeof selectedClient.situation_familiale === 'string') {
+          situationFamiliale = selectedClient.situation_familiale;
+        }
+
+        setProcurationAuthentiqueData(prev => ({
+          ...prev,
+          mandant: {
+            ...prev.mandant,
+            nom: selectedClient.nom || "",
+            prenom: selectedClient.prenom || "",
+            nomNaissance: selectedClient.nom_naissance || "",
+            dateNaissance: selectedClient.date_naissance || "",
+            lieuNaissance: selectedClient.lieu_naissance || "",
+            nationalite: selectedClient.nationalite || "",
+            profession: selectedClient.profession || "",
+            adresse: selectedClient.adresse || "",
+            telephone: selectedClient.telephone || "",
+            email: selectedClient.email || "",
+            situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
+            pieceIdentite: {
+              ...prev.mandant.pieceIdentite,
+              type: selectedClient.type_identite || "",
+              numero: selectedClient.numero_identite || "",
+            }
+          }
+        }));
+
+        // Charger la pièce d'identité
+        if (selectedClient.id_doc_path) {
+          supabase.storage
+            .from('documents')
+            .createSignedUrl(selectedClient.id_doc_path, 3600)
+            .then(({ data, error }) => {
+              if (error) {
+                setProcAuthMandantIdentiteUrl(null);
+              } else if (data?.signedUrl) {
+                setProcAuthMandantIdentiteUrl(data.signedUrl);
+              }
+            });
+        } else {
+          supabase
+            .from('client_documents')
+            .select('file_path, file_name, document_type')
+            .eq('client_id', selectedClient.id)
+            .order('uploaded_at', { ascending: false })
+            .limit(5)
+            .then(({ data: docs, error: docsError }) => {
+              if (!docsError && docs && docs.length > 0) {
+                const idDoc = docs.find(d => d.document_type === 'piece_identite') || docs[0];
+                supabase.storage
+                  .from('documents')
+                  .createSignedUrl(idDoc.file_path, 3600)
+                  .then(({ data, error }) => {
+                    if (!error && data?.signedUrl) {
+                      setProcAuthMandantIdentiteUrl(data.signedUrl);
+                    }
+                  });
+              }
+            });
+        }
+      }
+    } else {
+      setProcAuthMandantIdentiteUrl(null);
+    }
+  }, [procurationAuthentiqueData.mandant.clientId, clients]);
+
   // Détecter les paramètres URL pour ouvrir le questionnaire automatiquement
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -4099,6 +4381,14 @@ export default function Contrats() {
     
     // Si c'est une procuration notariée liée à la succession, ouvrir le questionnaire spécifique
     if (contractType === "Procuration notariée liée à la succession" && categoryKey === "Succession") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est une procuration authentique, ouvrir le questionnaire spécifique
+    if (contractType === "Procuration authentique" && categoryKey === "Procurations & Actes divers") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -7483,6 +7773,121 @@ FIN DE LA CONVENTION
     } catch (err: unknown) {
       console.error('Erreur création procuration succession:', err);
       toast.error("Erreur lors de la création de la procuration");
+    }
+  };
+
+  const handleProcurationAuthentiqueSubmit = async () => {
+    if (!user) return;
+    
+    try {
+      // Générer la description structurée
+      let description = `PROCURATION AUTHENTIQUE\n\n`;
+      
+      // Types de procuration
+      description += `--- TYPES DE PROCURATION ---\n`;
+      const typesLabels = {
+        generale: "Procuration générale",
+        speciale: "Procuration spéciale",
+        immobiliere: "Procuration immobilière",
+        bancaire: "Procuration bancaire",
+        fiscale: "Procuration fiscale",
+        sousSeingPrive: "Signature acte sous seing privé",
+        acteAuthentique: "Signature acte authentique",
+        internationale: "Procuration internationale (apostille/légalisation)"
+      };
+      procurationAuthentiqueData.typeProcuration.forEach(type => {
+        description += `- ${typesLabels[type] || type}\n`;
+      });
+      description += `\n`;
+      
+      // Mandant
+      description += `--- MANDANT (qui donne procuration) ---\n`;
+      description += `${procurationAuthentiqueData.mandant.prenom} ${procurationAuthentiqueData.mandant.nom}\n`;
+      description += `Né(e) le ${procurationAuthentiqueData.mandant.dateNaissance} à ${procurationAuthentiqueData.mandant.lieuNaissance}\n`;
+      description += `Adresse : ${procurationAuthentiqueData.mandant.adresse}\n`;
+      description += `Situation : ${procurationAuthentiqueData.mandant.situationMatrimoniale}\n`;
+      description += `Capacité : ${procurationAuthentiqueData.mandant.capaciteJuridique}\n`;
+      description += `\n`;
+      
+      // Mandataire
+      description += `--- MANDATAIRE (qui représente) ---\n`;
+      description += `${procurationAuthentiqueData.mandataire.prenom} ${procurationAuthentiqueData.mandataire.nom}\n`;
+      description += `Lien : ${procurationAuthentiqueData.mandataire.lienMandant}\n`;
+      description += `\n`;
+      
+      // Pouvoirs accordés
+      description += `--- POUVOIRS ACCORDÉS ---\n`;
+      let pouvoirsCount = 0;
+      
+      // Compter les pouvoirs
+      Object.values(procurationAuthentiqueData.pouvoirs).forEach(categorie => {
+        Object.values(categorie).forEach(val => { if (val) pouvoirsCount++; });
+      });
+      description += `Total : ${pouvoirsCount} pouvoirs spécifiques\n`;
+      description += `\n`;
+      
+      // Portée
+      description += `--- PORTÉE ---\n`;
+      description += `Étendue : ${procurationAuthentiqueData.portee.etendue}\n`;
+      description += `Durée : ${procurationAuthentiqueData.portee.duree}\n`;
+      description += `\n`;
+
+      // Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Procuration authentique - ${procurationAuthentiqueData.mandant.nom}`,
+          type: "Procuration authentique",
+          category: "Procurations & Actes divers",
+          role: role,
+          description: description,
+          data: {
+            typeProcuration: procurationAuthentiqueData.typeProcuration,
+            mandant: procurationAuthentiqueData.mandant,
+            mandataire: procurationAuthentiqueData.mandataire,
+            pouvoirs: procurationAuthentiqueData.pouvoirs,
+            portee: procurationAuthentiqueData.portee,
+            declarations: procurationAuthentiqueData.declarations,
+            mentionsLegales: procurationAuthentiqueData.mentionsLegales,
+            casParticuliers: procurationAuthentiqueData.casParticuliers,
+          }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers
+      async function uploadFile(files: File[], label: string) {
+        for (const file of files) {
+          const filePath = `${user.id}/${contrat.id}/${label}/${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from('documents')
+            .upload(filePath, file);
+          if (uploadError) console.error(`Erreur upload ${label}:`, uploadError);
+        }
+      }
+
+      await uploadFile(procAuthMandantIdentite, 'mandant_identite');
+      await uploadFile(procAuthMandantDomicile, 'mandant_domicile');
+      await uploadFile(procAuthMandantTutelle, 'mandant_tutelle');
+      await uploadFile(procAuthMandantLivret, 'mandant_livret');
+      await uploadFile(procAuthMandataireIdentite, 'mandataire_identite');
+      await uploadFile(procAuthMandataireDomicile, 'mandataire_domicile');
+      await uploadFile(procAuthAutresTitre, 'autres_titre');
+      await uploadFile(procAuthAutresStatuts, 'autres_statuts');
+      await uploadFile(procAuthAutresBancaires, 'autres_bancaires');
+      await uploadFile(procAuthAutresProjet, 'autres_projet');
+
+      setContrats((prev) => [contrat, ...prev]);
+      setShowQuestionDialog(false);
+      toast.success('Procuration authentique créée avec succès');
+      navigate(role === 'notaire' ? `/notaires/contrats/${contrat.id}` : `/avocats/contrats/${contrat.id}`);
+      
+    } catch (err: unknown) {
+      console.error('Erreur création procuration authentique:', err);
+      toast.error("Erreur lors de la création de la procuration authentique");
     }
   };
 
@@ -35726,6 +36131,322 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {pendingContractType === "Procuration authentique" && (
+              <>
+                <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                  
+                  {/* Note d'information */}
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      ℹ️ <strong>Procuration authentique :</strong> Acte notarié permettant de donner mandat à une personne pour représenter dans des démarches administratives, juridiques ou financières. Les pouvoirs doivent être précisément définis.
+                    </p>
+                  </div>
+
+                  {/* SECTION 1: TYPE DE PROCURATION */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Type de procuration à créer</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {[
+                        { key: "generale", label: "Procuration générale (tous les actes)" },
+                        { key: "speciale", label: "Procuration spéciale (acte précis)" },
+                        { key: "immobiliere", label: "Procuration immobilière" },
+                        { key: "bancaire", label: "Procuration bancaire" },
+                        { key: "fiscale", label: "Procuration fiscale" },
+                        { key: "sousSeingPrive", label: "Signature d'acte sous seing privé" },
+                        { key: "acteAuthentique", label: "Signature d'acte authentique" },
+                        { key: "internationale", label: "Procuration internationale (apostille/légalisation)" },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`typeProc_${item.key}`}
+                            checked={procurationAuthentiqueData.typeProcuration.includes(item.key)}
+                            onChange={(e) => {
+                              const newTypes = e.target.checked
+                                ? [...procurationAuthentiqueData.typeProcuration, item.key]
+                                : procurationAuthentiqueData.typeProcuration.filter(t => t !== item.key);
+                              setProcurationAuthentiqueData({...procurationAuthentiqueData, typeProcuration: newTypes});
+                            }}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor={`typeProc_${item.key}`}>{item.label}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* SECTION 2: MANDANT */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du mandant</h3>
+                    <p className="text-sm text-muted-foreground">(Personne qui donne procuration)</p>
+
+                    {/* Sélecteur client */}
+                    <div className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <Label className="text-sm font-medium whitespace-nowrap">Choisir un client existant :</Label>
+                      <Select
+                        value={procurationAuthentiqueData.mandant.clientId || ""}
+                        onValueChange={(clientId) => {
+                          setProcurationAuthentiqueData({
+                            ...procurationAuthentiqueData,
+                            mandant: {...procurationAuthentiqueData.mandant, isClient: !!clientId, clientId}
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="flex-1"><SelectValue placeholder="Choisir le client" /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>{client.prenom} {client.nom}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {procAuthMandantIdentiteUrl && (
+                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-sm text-green-800">✅ <strong>Pièce d'identité chargée</strong> depuis la fiche client</p>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Champs identité mandant - simplifié pour économiser l'espace */}
+                      <div><Label>Nom *</Label><Input value={procurationAuthentiqueData.mandant.nom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandant: {...procurationAuthentiqueData.mandant, nom: e.target.value}})} /></div>
+                      <div><Label>Prénom *</Label><Input value={procurationAuthentiqueData.mandant.prenom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandant: {...procurationAuthentiqueData.mandant, prenom: e.target.value}})} /></div>
+                      <div><Label>Date naissance</Label><Input type="date" value={procurationAuthentiqueData.mandant.dateNaissance} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandant: {...procurationAuthentiqueData.mandant, dateNaissance: e.target.value}})} /></div>
+                      <div><Label>Lieu naissance</Label><Input value={procurationAuthentiqueData.mandant.lieuNaissance} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandant: {...procurationAuthentiqueData.mandant, lieuNaissance: e.target.value}})} /></div>
+                      <div className="md:col-span-2"><Label>Adresse *</Label><Input value={procurationAuthentiqueData.mandant.adresse} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandant: {...procurationAuthentiqueData.mandant, adresse: e.target.value}})} /></div>
+                      <div><Label>Téléphone</Label><Input value={procurationAuthentiqueData.mandant.telephone} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandant: {...procurationAuthentiqueData.mandant, telephone: e.target.value}})} /></div>
+                      <div><Label>Email</Label><Input type="email" value={procurationAuthentiqueData.mandant.email} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandant: {...procurationAuthentiqueData.mandant, email: e.target.value}})} /></div>
+                      <div>
+                        <Label>Capacité juridique</Label>
+                        <Select value={procurationAuthentiqueData.mandant.capaciteJuridique} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandant: {...procurationAuthentiqueData.mandant, capaciteJuridique: val}})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="majeur">Majeur capable</SelectItem>
+                            <SelectItem value="curatelle">Sous curatelle</SelectItem>
+                            <SelectItem value="tutelle">Sous tutelle</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 3: MANDATAIRE */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité du mandataire</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><Label>Nom *</Label><Input value={procurationAuthentiqueData.mandataire.nom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, nom: e.target.value}})} /></div>
+                      <div><Label>Prénom *</Label><Input value={procurationAuthentiqueData.mandataire.prenom} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, prenom: e.target.value}})} /></div>
+                      <div><Label>Téléphone</Label><Input value={procurationAuthentiqueData.mandataire.telephone} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, telephone: e.target.value}})} /></div>
+                      <div>
+                        <Label>Lien avec mandant</Label>
+                        <Select value={procurationAuthentiqueData.mandataire.lienMandant} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, mandataire: {...procurationAuthentiqueData.mandataire, lienMandant: val}})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="conjoint">Conjoint</SelectItem>
+                            <SelectItem value="parent">Parent</SelectItem>
+                            <SelectItem value="enfant">Enfant</SelectItem>
+                            <SelectItem value="ami">Ami</SelectItem>
+                            <SelectItem value="avocat">Avocat</SelectItem>
+                            <SelectItem value="tiers">Tiers professionnel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 4: POUVOIRS (version condensée avec accordéons) */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Objet exact - Pouvoirs autorisés</h3>
+                    
+                    {/* A. Immobiliers */}
+                    <div className="p-4 border rounded-lg bg-purple-50">
+                      <h4 className="font-medium mb-3">A. Actes immobiliers</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[
+                          {key: "achatBien", label: "Achat d'un bien"},
+                          {key: "venteBien", label: "Vente d'un bien"},
+                          {key: "signatureCompromis", label: "Signature compromis"},
+                          {key: "signatureActeVente", label: "Signature acte vente"},
+                          {key: "signatureBail", label: "Signature bail locatif"},
+                          {key: "leveeHypotheque", label: "Mainlevée d'hypothèque"},
+                        ].map(p => (
+                          <div key={p.key} className="flex items-center space-x-2">
+                            <input type="checkbox" checked={procurationAuthentiqueData.pouvoirs.actesImmobiliers[p.key]} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, pouvoirs: {...procurationAuthentiqueData.pouvoirs, actesImmobiliers: {...procurationAuthentiqueData.pouvoirs.actesImmobiliers, [p.key]: e.target.checked}}})} className="w-4 h-4" />
+                            <Label className="text-sm">{p.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* B. Familiaux */}
+                    <div className="p-4 border rounded-lg bg-pink-50">
+                      <h4 className="font-medium mb-3">B. Actes familiaux</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[
+                          {key: "donation", label: "Donation"},
+                          {key: "contratMariage", label: "Contrat de mariage"},
+                          {key: "pacs", label: "PACS"},
+                        ].map(p => (
+                          <div key={p.key} className="flex items-center space-x-2">
+                            <input type="checkbox" checked={procurationAuthentiqueData.pouvoirs.actesFamiliaux[p.key]} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, pouvoirs: {...procurationAuthentiqueData.pouvoirs, actesFamiliaux: {...procurationAuthentiqueData.pouvoirs.actesFamiliaux, [p.key]: e.target.checked}}})} className="w-4 h-4" />
+                            <Label className="text-sm">{p.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* C. Succession */}
+                    <div className="p-4 border rounded-lg bg-amber-50">
+                      <h4 className="font-medium mb-3">C. Succession</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[
+                          {key: "declarationSuccession", label: "Déclaration de succession"},
+                          {key: "partageSuccessoral", label: "Partage successoral"},
+                          {key: "acceptationRenonciation", label: "Acceptation/Renonciation"},
+                        ].map(p => (
+                          <div key={p.key} className="flex items-center space-x-2">
+                            <input type="checkbox" checked={procurationAuthentiqueData.pouvoirs.succession[p.key]} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, pouvoirs: {...procurationAuthentiqueData.pouvoirs, succession: {...procurationAuthentiqueData.pouvoirs.succession, [p.key]: e.target.checked}}})} className="w-4 h-4" />
+                            <Label className="text-sm">{p.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* D. Bancaire */}
+                    <div className="p-4 border rounded-lg bg-green-50">
+                      <h4 className="font-medium mb-3">D. Procuration bancaire</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[
+                          {key: "consultationComptes", label: "Consultation des comptes"},
+                          {key: "clotureComptes", label: "Clôture des comptes"},
+                          {key: "paiementDettes", label: "Paiement de dettes"},
+                        ].map(p => (
+                          <div key={p.key} className="flex items-center space-x-2">
+                            <input type="checkbox" checked={procurationAuthentiqueData.pouvoirs.bancaire[p.key]} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, pouvoirs: {...procurationAuthentiqueData.pouvoirs, bancaire: {...procurationAuthentiqueData.pouvoirs.bancaire, [p.key]: e.target.checked}}})} className="w-4 h-4" />
+                            <Label className="text-sm">{p.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* E. Fiscale */}
+                    <div className="p-4 border rounded-lg bg-red-50">
+                      <h4 className="font-medium mb-3">E. Procuration fiscale</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[
+                          {key: "declarationImpots", label: "Déclaration d'impôts"},
+                          {key: "paiementTaxes", label: "Paiement des taxes"},
+                        ].map(p => (
+                          <div key={p.key} className="flex items-center space-x-2">
+                            <input type="checkbox" checked={procurationAuthentiqueData.pouvoirs.fiscale[p.key]} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, pouvoirs: {...procurationAuthentiqueData.pouvoirs, fiscale: {...procurationAuthentiqueData.pouvoirs.fiscale, [p.key]: e.target.checked}}})} className="w-4 h-4" />
+                            <Label className="text-sm">{p.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 5: PORTÉE */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Portée et limites</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Étendue</Label>
+                        <Select value={procurationAuthentiqueData.portee.etendue} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, portee: {...procurationAuthentiqueData.portee, etendue: val}})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="totale">Procuration totale</SelectItem>
+                            <SelectItem value="limitee">Procuration limitée</SelectItem>
+                            <SelectItem value="un_acte">Pour un seul acte</SelectItem>
+                            <SelectItem value="categorie">Pour une catégorie d'actes</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Durée</Label>
+                        <Select value={procurationAuthentiqueData.portee.duree} onValueChange={(val) => setProcurationAuthentiqueData({...procurationAuthentiqueData, portee: {...procurationAuthentiqueData.portee, duree: val}})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="realisation_acte">Jusqu'à réalisation d'un acte</SelectItem>
+                            <SelectItem value="determinee">Durée déterminée</SelectItem>
+                            <SelectItem value="indeterminee">Durée indéterminée</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 6: DÉCLARATIONS */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Déclarations obligatoires</h3>
+                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg space-y-2">
+                      {[
+                        {key: "consentementLibre", label: "Consentement libre et éclairé"},
+                        {key: "capaciteJuridiqueConfirmee", label: "Capacité juridique confirmée"},
+                        {key: "absencePressions", label: "Absence de pressions"},
+                        {key: "comprehensionConsequences", label: "Compréhension des conséquences"},
+                      ].map(d => (
+                        <div key={d.key} className="flex items-center space-x-2">
+                          <input type="checkbox" checked={procurationAuthentiqueData.declarations[d.key]} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, declarations: {...procurationAuthentiqueData.declarations, [d.key]: e.target.checked}})} className="w-4 h-4" />
+                          <Label>{d.label}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* SECTION 7: CAS PARTICULIERS */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Cas particuliers</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.casParticuliers.mandantEtranger} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, mandantEtranger: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Mandant à l'étranger (apostille/légalisation)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.casParticuliers.neSaitPasSigner} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, neSaitPasSigner: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Mandant ne sachant pas signer (2 témoins)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" checked={procurationAuthentiqueData.casParticuliers.sousTutelleCuratelle} onChange={(e) => setProcurationAuthentiqueData({...procurationAuthentiqueData, casParticuliers: {...procurationAuthentiqueData.casParticuliers, sousTutelleCuratelle: e.target.checked}})} className="w-4 h-4" />
+                        <Label>Sous tutelle/curatelle</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 8: PIÈCES JUSTIFICATIVES */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Pièces justificatives</h3>
+                    <div className="space-y-6">
+                      <div>
+                        <Label className="text-md font-medium mb-2 block">Pour le mandant</Label>
+                        <div className="space-y-4">
+                          <div><Label>Pièce d'identité *</Label><MultiFileUpload label="" files={procAuthMandantIdentite} onFilesChange={setProcAuthMandantIdentite} accept="application/pdf,image/*" /></div>
+                          <div><Label>Justificatif de domicile</Label><MultiFileUpload label="" files={procAuthMandantDomicile} onFilesChange={setProcAuthMandantDomicile} accept="application/pdf,image/*" /></div>
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-md font-medium mb-2 block">Pour le mandataire</Label>
+                        <div className="space-y-4">
+                          <div><Label>Pièce d'identité *</Label><MultiFileUpload label="" files={procAuthMandataireIdentite} onFilesChange={setProcAuthMandataireIdentite} accept="application/pdf,image/*" /></div>
+                          <div><Label>Justificatif domicile</Label><MultiFileUpload label="" files={procAuthMandataireDomicile} onFilesChange={setProcAuthMandataireDomicile} accept="application/pdf,image/*" /></div>
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-md font-medium mb-2 block">Autres documents</Label>
+                        <div className="space-y-4">
+                          <div><Label>Titre de propriété (si vente/achat)</Label><MultiFileUpload label="" files={procAuthAutresTitre} onFilesChange={setProcAuthAutresTitre} accept="application/pdf" /></div>
+                          <div><Label>Statuts société</Label><MultiFileUpload label="" files={procAuthAutresStatuts} onFilesChange={setProcAuthAutresStatuts} accept="application/pdf" /></div>
+                          <div><Label>Relevés bancaires</Label><MultiFileUpload label="" files={procAuthAutresBancaires} onFilesChange={setProcAuthAutresBancaires} accept="application/pdf,image/*" /></div>
+                          <div><Label>Projet d'acte (compromis, partage...)</Label><MultiFileUpload label="" files={procAuthAutresProjet} onFilesChange={setProcAuthAutresProjet} accept="application/pdf" /></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -35769,6 +36490,8 @@ FIN DE LA CONVENTION
                   handlePartageSuccessoralSubmit();
                 } else if (pendingContractType === "Procuration notariée liée à la succession") {
                   handleProcurationSuccessionSubmit();
+                } else if (pendingContractType === "Procuration authentique") {
+                  handleProcurationAuthentiqueSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
