@@ -4005,6 +4005,14 @@ export default function Contrats() {
       return;
     }
     
+    // Si c'est une procuration notariée liée à la succession, ouvrir le questionnaire spécifique
+    if (contractType === "Procuration notariée liée à la succession" && categoryKey === "Succession") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
     // Sinon, créer directement le contrat
     try {
       const { data, error } = await supabase
