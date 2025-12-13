@@ -3165,12 +3165,6 @@ export default function Contrats() {
         testamentsExistants: false,
         donationsAnterieures: false,
       },
-      notaire: {
-        nom: "",
-        etude: "",
-        email: "",
-        telephone: "",
-      },
     },
     
     // 5. Objet précis de la procuration
@@ -7278,8 +7272,6 @@ FIN DE LA CONVENTION
       description += `Défunt : ${procurationSuccessionData.succession.defunt.prenom} ${procurationSuccessionData.succession.defunt.nom}\n`;
       description += `Décédé(e) le ${procurationSuccessionData.succession.defunt.dateDeces} à ${procurationSuccessionData.succession.defunt.lieuDeces}\n`;
       description += `Dernière adresse : ${procurationSuccessionData.succession.defunt.derniereAdresse}\n`;
-      description += `Notaire : ${procurationSuccessionData.succession.notaire.nom} (${procurationSuccessionData.succession.notaire.etude})\n`;
-      description += `Contact notaire : ${procurationSuccessionData.succession.notaire.email} - ${procurationSuccessionData.succession.notaire.telephone}\n`;
       description += `\n`;
       
       // Pouvoirs
@@ -34680,73 +34672,6 @@ FIN DE LA CONVENTION
                           className="w-4 h-4"
                         />
                         <Label htmlFor="procurationDefuntDonations">Donations antérieures</Label>
-                      </div>
-                    </div>
-
-                    {/* Notaire */}
-                    <div className="space-y-4 mt-6">
-                      <h4 className="font-medium text-md">Notaire chargé de la succession</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="procurationNotaireNom">Nom du notaire *</Label>
-                          <Input
-                            id="procurationNotaireNom"
-                            value={procurationSuccessionData.succession.notaire.nom}
-                            onChange={(e) => setProcurationSuccessionData({
-                              ...procurationSuccessionData,
-                              succession: {
-                                ...procurationSuccessionData.succession,
-                                notaire: {...procurationSuccessionData.succession.notaire, nom: e.target.value}
-                              }
-                            })}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="procurationNotaireEtude">Étude notariale</Label>
-                          <Input
-                            id="procurationNotaireEtude"
-                            value={procurationSuccessionData.succession.notaire.etude}
-                            onChange={(e) => setProcurationSuccessionData({
-                              ...procurationSuccessionData,
-                              succession: {
-                                ...procurationSuccessionData.succession,
-                                notaire: {...procurationSuccessionData.succession.notaire, etude: e.target.value}
-                              }
-                            })}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="procurationNotaireEmail">Email *</Label>
-                          <Input
-                            id="procurationNotaireEmail"
-                            type="email"
-                            value={procurationSuccessionData.succession.notaire.email}
-                            onChange={(e) => setProcurationSuccessionData({
-                              ...procurationSuccessionData,
-                              succession: {
-                                ...procurationSuccessionData.succession,
-                                notaire: {...procurationSuccessionData.succession.notaire, email: e.target.value}
-                              }
-                            })}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="procurationNotaireTelephone">Téléphone *</Label>
-                          <Input
-                            id="procurationNotaireTelephone"
-                            value={procurationSuccessionData.succession.notaire.telephone}
-                            onChange={(e) => setProcurationSuccessionData({
-                              ...procurationSuccessionData,
-                              succession: {
-                                ...procurationSuccessionData.succession,
-                                notaire: {...procurationSuccessionData.succession.notaire, telephone: e.target.value}
-                              }
-                            })}
-                            required
-                          />
-                        </div>
                       </div>
                     </div>
                   </div>
