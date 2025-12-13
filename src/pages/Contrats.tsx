@@ -29433,6 +29433,7 @@ FIN DE LA CONVENTION
                           <div className="flex justify-between items-center gap-4">
                             <h4 className="font-medium">Héritier {index + 1}</h4>
                             <div className="flex items-center gap-2 flex-1 max-w-md">
+                              <Label htmlFor={`heritier_client_${heritier.id}`} className="whitespace-nowrap text-sm">Client :</Label>
                               <select
                                 id={`heritier_client_${heritier.id}`}
                                 value={heritier.clientId || ""}
@@ -29461,9 +29462,9 @@ FIN DE LA CONVENTION
                                   
                                   setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
                                 }}
-                                className="flex-1 px-3 py-2 border rounded-md text-sm"
+                                className="flex-1 h-9 px-3 py-1 text-sm bg-white border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                               >
-                                <option value="">-- Sélectionner un client --</option>
+                                <option value="">Saisie manuelle</option>
                                 {clients.map((client) => (
                                   <option key={client.id} value={client.id}>
                                     {client.prenom} {client.nom}
@@ -30712,6 +30713,7 @@ FIN DE LA CONVENTION
                         <div className="flex justify-between items-center gap-4">
                           <h4 className="font-medium">Héritier {index + 1}</h4>
                           <div className="flex items-center gap-2 flex-1 max-w-md">
+                            <Label htmlFor={`heritier_client_${heritier.id}`} className="whitespace-nowrap text-sm">Client :</Label>
                             <select
                               id={`heritier_client_${heritier.id}`}
                               value={heritier.clientId || ""}
@@ -30743,9 +30745,9 @@ FIN DE LA CONVENTION
                                 
                                 setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
                               }}
-                              className="flex-1 px-3 py-2 border rounded-md text-sm"
+                              className="flex-1 h-9 px-3 py-1 text-sm bg-white border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                             >
-                              <option value="">-- Sélectionner un client --</option>
+                              <option value="">Saisie manuelle</option>
                               {clients.map((client) => (
                                 <option key={client.id} value={client.id}>
                                   {client.prenom} {client.nom}
