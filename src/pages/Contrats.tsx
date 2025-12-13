@@ -3477,7 +3477,7 @@ export default function Contrats() {
       acceptationResponsabilite: false,
       pouvoirRevoquer: false,
       validationIdentite: false,
-      lectureCom prehension: false,
+      lectureComprehension: false,
     },
     
     // 7. Mentions légales
