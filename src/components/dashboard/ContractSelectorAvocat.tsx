@@ -16,7 +16,7 @@ import { FileText, Search } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Catégories spécifiques espace avocat (exportées pour réutilisation)
 export const AVOCAT_CONTRACT_CATEGORIES = [
@@ -93,6 +93,7 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
   const [search, setSearch] = useState("");
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';

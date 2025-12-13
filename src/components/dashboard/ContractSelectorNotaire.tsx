@@ -183,6 +183,13 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
       return;
     }
 
+    // Si c'est un "Changement de régime matrimonial", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Changement de régime matrimonial") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('contrats')
