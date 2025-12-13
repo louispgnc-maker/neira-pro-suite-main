@@ -28669,405 +28669,81 @@ FIN DE LA CONVENTION
                     <h3 className="font-semibold text-lg border-b pb-2">Pièces justificatives à collecter</h3>
                     
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label>Pièce d'identité époux 1 (CNI, passeport)</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeEpouxIdentite1')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeEpouxIdentite1 ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeEpouxIdentite1 ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeEpouxIdentite1 ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeEpouxIdentite1 ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeEpouxIdentite1?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeEpouxIdentite1"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeEpouxIdentite1(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Pièce d'identité époux 1 (CNI, passeport)"
+                        files={changementRegimeEpouxIdentite1}
+                        onFilesChange={setChangementRegimeEpouxIdentite1}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Pièce d'identité époux 2 (CNI, passeport)</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeEpouxIdentite2')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeEpouxIdentite2 ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeEpouxIdentite2 ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeEpouxIdentite2 ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeEpouxIdentite2 ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeEpouxIdentite2?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeEpouxIdentite2"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeEpouxIdentite2(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Pièce d'identité époux 2 (CNI, passeport)"
+                        files={changementRegimeEpouxIdentite2}
+                        onFilesChange={setChangementRegimeEpouxIdentite2}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Livret de famille</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeLivretFamille')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeLivretFamille ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeLivretFamille ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeLivretFamille ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeLivretFamille ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeLivretFamille?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeLivretFamille"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeLivretFamille(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Livret de famille"
+                        files={changementRegimeLivretFamille}
+                        onFilesChange={setChangementRegimeLivretFamille}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Acte de mariage</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeActeMariage')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeActeMariage ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeActeMariage ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeActeMariage ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeActeMariage ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeActeMariage?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeActeMariage"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeActeMariage(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Acte de mariage"
+                        files={changementRegimeActeMariage}
+                        onFilesChange={setChangementRegimeActeMariage}
+                      />
 
                       {changementRegimeData.contratMariageInitial && (
-                        <div className="space-y-2">
-                          <Label>Contrat de mariage initial</Label>
-                          <button
-                            type="button"
-                            onClick={() => document.getElementById('changementRegimeContratMariageInitial')?.click()}
-                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                            style={{
-                              borderColor: changementRegimeContratMariageInitial ? "#22c55e" : "#fb923c",
-                              backgroundColor: changementRegimeContratMariageInitial ? "#f0fdf4" : "white"
-                            }}
-                          >
-                            {changementRegimeContratMariageInitial ? (
-                              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                            <span className={changementRegimeContratMariageInitial ? "text-green-700 font-medium" : "text-orange-700"}>
-                              {changementRegimeContratMariageInitial?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                            </span>
-                          </button>
-                          <Input
-                            id="changementRegimeContratMariageInitial"
-                            type="file"
-                            className="hidden"
-                            onChange={(e) => {
-                              if (e.target.files?.[0]) {
-                                setChangementRegimeContratMariageInitial(e.target.files[0]);
-                              }
-                            }}
-                          />
-                        </div>
+                        <MultiFileUpload
+                          label="Contrat de mariage initial"
+                          files={changementRegimeContratMariageInitial}
+                          onFilesChange={setChangementRegimeContratMariageInitial}
+                        />
                       )}
 
-                      <div className="space-y-2">
-                        <Label>Titres de propriété (biens immobiliers)</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeTitresPropriete')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeTitresPropriete ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeTitresPropriete ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeTitresPropriete ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeTitresPropriete ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeTitresPropriete?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeTitresPropriete"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeTitresPropriete(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Titres de propriété (biens immobiliers)"
+                        files={changementRegimeTitresPropriete}
+                        onFilesChange={setChangementRegimeTitresPropriete}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Relevés de comptes bancaires</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeRelevesComptes')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeRelevesComptes ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeRelevesComptes ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeRelevesComptes ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeRelevesComptes ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeRelevesComptes?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeRelevesComptes"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeRelevesComptes(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Relevés de comptes bancaires"
+                        files={changementRegimeRelevesComptes}
+                        onFilesChange={setChangementRegimeRelevesComptes}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Statuts de sociétés / Pactes d'associés</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeStatutsSocietes')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeStatutsSocietes ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeStatutsSocietes ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeStatutsSocietes ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeStatutsSocietes ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeStatutsSocietes?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeStatutsSocietes"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeStatutsSocietes(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Statuts de sociétés / Pactes d'associés"
+                        files={changementRegimeStatutsSocietes}
+                        onFilesChange={setChangementRegimeStatutsSocietes}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Actes de prêts en cours</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeActesPrets')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeActesPrets ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeActesPrets ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeActesPrets ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeActesPrets ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeActesPrets?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeActesPrets"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeActesPrets(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Actes de prêts en cours"
+                        files={changementRegimeActesPrets}
+                        onFilesChange={setChangementRegimeActesPrets}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Valeurs estimées des biens</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('changementRegimeEstimationsBiens')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: changementRegimeEstimationsBiens ? "#22c55e" : "#fb923c",
-                            backgroundColor: changementRegimeEstimationsBiens ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {changementRegimeEstimationsBiens ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={changementRegimeEstimationsBiens ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {changementRegimeEstimationsBiens?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="changementRegimeEstimationsBiens"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setChangementRegimeEstimationsBiens(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Valeurs estimées des biens"
+                        files={changementRegimeEstimationsBiens}
+                        onFilesChange={setChangementRegimeEstimationsBiens}
+                      />
 
                       {(changementRegimeData.epoux1.sousTutelleCuratelle || changementRegimeData.epoux2.sousTutelleCuratelle) && (
-                        <div className="space-y-2">
-                          <Label>Jugement de tutelle/curatelle</Label>
-                          <button
-                            type="button"
-                            onClick={() => document.getElementById('changementRegimeJugementTutelle')?.click()}
-                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                            style={{
-                              borderColor: changementRegimeJugementTutelle ? "#22c55e" : "#fb923c",
-                              backgroundColor: changementRegimeJugementTutelle ? "#f0fdf4" : "white"
-                            }}
-                          >
-                            {changementRegimeJugementTutelle ? (
-                              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                            <span className={changementRegimeJugementTutelle ? "text-green-700 font-medium" : "text-orange-700"}>
-                              {changementRegimeJugementTutelle?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                            </span>
-                          </button>
-                          <Input
-                            id="changementRegimeJugementTutelle"
-                            type="file"
-                            className="hidden"
-                            onChange={(e) => {
-                              if (e.target.files?.[0]) {
-                                setChangementRegimeJugementTutelle(e.target.files[0]);
-                              }
-                            }}
-                          />
-                        </div>
+                        <MultiFileUpload
+                          label="Jugement de tutelle/curatelle"
+                          files={changementRegimeJugementTutelle}
+                          onFilesChange={setChangementRegimeJugementTutelle}
+                        />
                       )}
+
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-4">
+                        <p className="text-sm text-blue-800">
+                          💡 <strong>Astuce :</strong> Vous pouvez sélectionner plusieurs fichiers à la fois pour chaque catégorie. Les fichiers apparaîtront sous le bouton et pourront être supprimés individuellement.
+                        </p>
+                      </div>
                     </div>
                   </div>
 
