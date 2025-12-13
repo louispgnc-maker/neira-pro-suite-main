@@ -29433,12 +29433,9 @@ FIN DE LA CONVENTION
                           <div className="flex justify-between items-center gap-4">
                             <h4 className="font-medium">Héritier {index + 1}</h4>
                             <div className="flex items-center gap-2 flex-1 max-w-md">
-                              <Label htmlFor={`heritier_client_${heritier.id}`} className="whitespace-nowrap text-sm">Client :</Label>
-                              <select
-                                id={`heritier_client_${heritier.id}`}
+                              <Select
                                 value={heritier.clientId || ""}
-                                onChange={(e) => {
-                                  const clientId = e.target.value;
+                                onValueChange={(clientId) => {
                                   const newHeritiers = [...acteNotorieteData.heritiers];
                                   
                                   if (clientId) {
@@ -29456,21 +29453,22 @@ FIN DE LA CONVENTION
                                         profession: selectedClient.profession || "",
                                       };
                                     }
-                                  } else {
-                                    newHeritiers[index] = {...heritier, clientId: ""};
                                   }
                                   
                                   setActeNotorieteData({...acteNotorieteData, heritiers: newHeritiers});
                                 }}
-                                className="flex-1 h-9 px-3 py-1 text-sm bg-white border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                               >
-                                <option value="">Saisie manuelle</option>
-                                {clients.map((client) => (
-                                  <option key={client.id} value={client.id}>
-                                    {client.prenom} {client.nom}
-                                  </option>
-                                ))}
-                              </select>
+                                <SelectTrigger className="flex-1">
+                                  <SelectValue placeholder="Choisir le client" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {clients.map((client) => (
+                                    <SelectItem key={client.id} value={client.id}>
+                                      {client.prenom} {client.nom}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                             <Button
                               type="button"
@@ -30713,12 +30711,9 @@ FIN DE LA CONVENTION
                         <div className="flex justify-between items-center gap-4">
                           <h4 className="font-medium">Héritier {index + 1}</h4>
                           <div className="flex items-center gap-2 flex-1 max-w-md">
-                            <Label htmlFor={`heritier_client_${heritier.id}`} className="whitespace-nowrap text-sm">Client :</Label>
-                            <select
-                              id={`heritier_client_${heritier.id}`}
+                            <Select
                               value={heritier.clientId || ""}
-                              onChange={(e) => {
-                                const clientId = e.target.value;
+                              onValueChange={(clientId) => {
                                 const newHeritiers = [...partageSuccessoralData.heritiers];
                                 
                                 if (clientId) {
@@ -30739,21 +30734,22 @@ FIN DE LA CONVENTION
                                       email: selectedClient.email || "",
                                     };
                                   }
-                                } else {
-                                  newHeritiers[index] = {...heritier, clientId: ""};
                                 }
                                 
                                 setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
                               }}
-                              className="flex-1 h-9 px-3 py-1 text-sm bg-white border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                             >
-                              <option value="">Saisie manuelle</option>
-                              {clients.map((client) => (
-                                <option key={client.id} value={client.id}>
-                                  {client.prenom} {client.nom}
-                                </option>
-                              ))}
-                            </select>
+                              <SelectTrigger className="flex-1">
+                                <SelectValue placeholder="Choisir le client" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {clients.map((client) => (
+                                  <SelectItem key={client.id} value={client.id}>
+                                    {client.prenom} {client.nom}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                           <Button
                             type="button"
