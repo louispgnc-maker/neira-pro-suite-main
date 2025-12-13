@@ -666,6 +666,270 @@ export default function Contrats() {
     },
   });
 
+  // State pour Partage Successoral - Fichiers
+  const [partageDefuntActeDeces, setPartageDefuntActeDeces] = useState<File[]>([]);
+  const [partageDefuntLivretFamille, setPartageDefuntLivretFamille] = useState<File[]>([]);
+  const [partageDefuntContratMariage, setPartageDefuntContratMariage] = useState<File[]>([]);
+  const [partageDefuntTestaments, setPartageDefuntTestaments] = useState<File[]>([]);
+  const [partageDefuntDonationsEntreEpoux, setPartageDefuntDonationsEntreEpoux] = useState<File[]>([]);
+  const [partageDefuntDonationsAnterieures, setPartageDefuntDonationsAnterieures] = useState<File[]>([]);
+  const [partageDefuntTitresPropriete, setPartageDefuntTitresPropriete] = useState<File[]>([]);
+  const [partageDefuntRelevesBancaires, setPartageDefuntRelevesBancaires] = useState<File[]>([]);
+  const [partageDefuntBilansEntreprises, setPartageDefuntBilansEntreprises] = useState<File[]>([]);
+  const [partageDefuntInventaireMobilier, setPartageDefuntInventaireMobilier] = useState<File[]>([]);
+  
+  // Fichiers héritiers (dynamiques par héritier)
+  const [partageHeritierFiles, setPartageHeritierFiles] = useState<Record<number, File[]>>({});
+  
+  // Fichiers biens immobiliers (dynamiques par bien)
+  const [partageBienImmobilierFiles, setPartageBienImmobilierFiles] = useState<Record<number, File[]>>({});
+  
+  // Fichiers autres
+  const [partageAutresDiagnostics, setPartageAutresDiagnostics] = useState<File[]>([]);
+  const [partageAutresEvaluations, setPartageAutresEvaluations] = useState<File[]>([]);
+  const [partageAutresStatutsSocietes, setPartageAutresStatutsSocietes] = useState<File[]>([]);
+  const [partageAutresDocuments, setPartageAutresDocuments] = useState<File[]>([]);
+
+  // State pour Partage Successoral - Data
+  const [partageSuccessoralData, setPartageSuccessoralData] = useState({
+    // 1. Informations sur la succession
+    succession: {
+      defunt: {
+        nom: "",
+        prenom: "",
+        nomNaissance: "",
+        dateNaissance: "",
+        lieuNaissance: "",
+        dateDeces: "",
+        lieuDeces: "",
+        nationalite: "",
+        profession: "",
+        adresseAuDeces: "",
+        situationMatrimoniale: "",
+        regimeMatrimonial: "",
+        testamentsExistants: false,
+        donationsEntreEpoux: false,
+        donationsAnterieures: false,
+      },
+      notaire: {
+        nom: "",
+        etude: "",
+        adresse: "",
+        telephone: "",
+        email: "",
+      },
+    },
+    
+    // 2. Héritiers / Légataires
+    heritiers: [{
+      id: 1,
+      // Informations d'état civil
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      adresse: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      telephone: "",
+      email: "",
+      lienDefunt: "",
+      
+      // Situation juridique
+      heritierReservataire: false,
+      legataireUniversel: false,
+      legataireATitreUniversel: false,
+      legataireParticulier: false,
+      heritierParRepresentation: false,
+      representeQui: "",
+      acceptationRenonciation: "", // accepte / renonce / benefice_inventaire
+      majeurMineur: "majeur",
+      sousTutelleCuratelle: false,
+      typeProtection: "",
+      tuteurNom: "",
+      
+      // Quote-part
+      quotePart: "",
+    }],
+    
+    // 3. Inventaire de l'actif successoral
+    actif: {
+      // A. Biens immobiliers
+      biensImmobiliers: [{
+        id: 1,
+        adresse: "",
+        description: "",
+        designationCadastrale: "",
+        valeurVenale: "",
+        origineBien: "", // propre / commun / indivis
+        quotePartDefunt: "",
+        etatLocatif: "",
+        loyer: "",
+        hypotheques: "",
+        copropriete: false,
+        lots: "",
+        chargesCopro: "",
+      }],
+      
+      // B. Biens meubles
+      biensMeubles: {
+        mobilierForfait5Pct: true,
+        mobilierValeurReelle: "",
+        vehicules: "",
+        bijoux: "",
+        oeuvresArt: "",
+        collections: "",
+        materielProfessionnel: "",
+      },
+      
+      // C. Comptes bancaires
+      comptesBancaires: [{
+        id: 1,
+        banque: "",
+        typeCompte: "",
+        numeroCompte: "",
+        soldeAuDeces: "",
+        interetsCourus: "",
+      }],
+      
+      // D. Assurance-vie
+      assurancesVie: [{
+        id: 1,
+        compagnie: "",
+        numeroContrat: "",
+        beneficiaires: "",
+        capitalVerse: "",
+        primesAvant70Ans: "",
+        primesApres70Ans: "",
+      }],
+      
+      // E. Parts sociales
+      partsSociales: [{
+        id: 1,
+        nature: "", // SARL / SAS / SCI / EI / exploitation_agricole
+        nomEntite: "",
+        nombreParts: "",
+        valeurEstimee: "",
+        droitsAttaches: "",
+        pacteDutreil: false,
+      }],
+      
+      // F. Biens à l'étranger
+      biensEtranger: [{
+        id: 1,
+        pays: "",
+        adresse: "",
+        valeur: "",
+        regimeFiscal: "",
+      }],
+      
+      // G. Usufruit / Nue-propriété
+      usufruitNuePropriete: [{
+        id: 1,
+        bienConcerne: "",
+        valeurUsufruit: "",
+        valeurNuePropriete: "",
+        baremeFiscal: "",
+      }],
+    },
+    
+    // 4. Passif successoral
+    passif: {
+      dettes: [{
+        id: 1,
+        type: "", // credit / fiscale / facture / personnelle / professionnelle
+        description: "",
+        montant: "",
+      }],
+      fraisFuneraires: "",
+      fraisDerniereMaladie: "",
+      impots: {
+        ir: "",
+        ifi: "",
+        taxeFonciere: "",
+        taxeHabitation: "",
+      },
+    },
+    
+    // 5. Type de partage et création des lots
+    partage: {
+      typePartage: "", // total / partiel / attribution_preferentielle / amiable / judiciaire
+      
+      lots: [{
+        id: 1,
+        nomLot: "",
+        biensListe: "",
+        valeurTotale: "",
+        attributionHeritier: "",
+        quotePartTheorique: "",
+        ecart: "",
+        soulte: "",
+        modalitesPaiementSoulte: "",
+      }],
+      
+      attributionsPreferentielles: [{
+        id: 1,
+        typeBien: "", // logement_familial / vehicule / entreprise / fonds_commerce / parts_societe
+        description: "",
+        beneficiaire: "",
+        conditions: "", // indivision / pleine_propriete
+      }],
+      
+      donationsARapporter: [{
+        id: 1,
+        date: "",
+        montant: "",
+        beneficiaire: "",
+        rapportable: true,
+        evaluationAuJourPartage: "",
+        impactLots: "",
+      }],
+      
+      soultes: [{
+        id: 1,
+        montant: "",
+        quiVerse: "",
+        quiRecoit: "",
+        modalitesPaiement: "",
+        interets: "",
+        garantie: "",
+      }],
+    },
+    
+    // 6. Déclarations et clauses
+    declarations: {
+      reconnaissanceLots: true,
+      absenceReticenceFraude: true,
+      volonteLibre: true,
+      acceptationSoultes: true,
+      acceptationIndivisionResiduelle: false,
+      
+      clauseGarantieEviction: false,
+      clausePurgeHypotheques: false,
+      clauseRenonciationComplementPart: false,
+      clauseRepartitionFrais: false,
+      clauseRenonciationReduction: false,
+      
+      indivisionResiduelle: false,
+      dureeIndivision: "",
+      gestionIndivision: "",
+      quotePartIndivision: "",
+      pouvoirsIndivision: "",
+    },
+    
+    // 7. Formalités
+    formalites: {
+      enregistrementFiscal: false,
+      publicationSPF: false,
+      mutationCadastrale: false,
+      paiementDroitsPartage: false,
+      radiationHypotheque: false,
+      miseAJourBanques: false,
+      miseAJourAssurances: false,
+    },
+  });
+
   // State pour Testament (fichiers)
   const [testamentIdentiteTestateur, setTestamentIdentiteTestateur] = useState<File[]>([]);
   const [testamentLivretFamille, setTestamentLivretFamille] = useState<File[]>([]);
@@ -3492,6 +3756,14 @@ export default function Contrats() {
     
     // Si c'est un acte de notoriété, ouvrir le questionnaire spécifique
     if (contractType === "Acte de notoriété" && categoryKey === "Succession") {
+      setPendingContractType(contractType);
+      setPendingCategory(categoryKey);
+      setShowQuestionDialog(true);
+      return;
+    }
+    
+    // Si c'est un partage successoral, ouvrir le questionnaire spécifique
+    if (contractType === "Partage successoral" && categoryKey === "Succession") {
       setPendingContractType(contractType);
       setPendingCategory(categoryKey);
       setShowQuestionDialog(true);
@@ -6580,6 +6852,130 @@ FIN DE LA CONVENTION
     }
   };
 
+  const handlePartageSuccessoralSubmit = async () => {
+    if (!user) return;
+    
+    try {
+      // Générer la description structurée
+      let description = `PARTAGE SUCCESSORAL\n\n`;
+      
+      // Défunt
+      description += `--- DÉFUNT ---\n`;
+      description += `${partageSuccessoralData.succession.defunt.prenom} ${partageSuccessoralData.succession.defunt.nom}\n`;
+      description += `Né(e) le ${partageSuccessoralData.succession.defunt.dateNaissance} à ${partageSuccessoralData.succession.defunt.lieuNaissance}\n`;
+      description += `Décédé(e) le ${partageSuccessoralData.succession.defunt.dateDeces} à ${partageSuccessoralData.succession.defunt.lieuDeces}\n`;
+      description += `Régime matrimonial : ${partageSuccessoralData.succession.defunt.regimeMatrimonial}\n\n`;
+      
+      // Héritiers
+      description += `--- HÉRITIERS (${partageSuccessoralData.heritiers.length}) ---\n`;
+      partageSuccessoralData.heritiers.forEach((heritier, index) => {
+        description += `${index + 1}. ${heritier.prenom} ${heritier.nom} (${heritier.lienDefunt})\n`;
+        description += `   Quote-part : ${heritier.quotePart}\n`;
+        description += `   Statut : ${heritier.acceptationRenonciation || "Accepte"}\n`;
+      });
+      description += `\n`;
+      
+      // Type de partage
+      description += `--- TYPE DE PARTAGE ---\n`;
+      description += `${partageSuccessoralData.partage.typePartage === "total" ? "Partage total" :
+                       partageSuccessoralData.partage.typePartage === "partiel" ? "Partage partiel" :
+                       partageSuccessoralData.partage.typePartage === "attribution_preferentielle" ? "Attribution préférentielle" :
+                       partageSuccessoralData.partage.typePartage === "amiable" ? "Partage amiable" :
+                       "Partage judiciaire"}\n\n`;
+      
+      // Actif
+      if (partageSuccessoralData.actif.biensImmobiliers.length > 0) {
+        description += `--- BIENS IMMOBILIERS (${partageSuccessoralData.actif.biensImmobiliers.length}) ---\n`;
+        partageSuccessoralData.actif.biensImmobiliers.forEach((bien, index) => {
+          description += `${index + 1}. ${bien.adresse} - Valeur : ${bien.valeurVenale}€\n`;
+        });
+        description += `\n`;
+      }
+      
+      // Lots
+      if (partageSuccessoralData.partage.lots.length > 0) {
+        description += `--- LOTS DE PARTAGE (${partageSuccessoralData.partage.lots.length}) ---\n`;
+        partageSuccessoralData.partage.lots.forEach((lot, index) => {
+          description += `Lot ${index + 1} : ${lot.nomLot}\n`;
+          description += `   Valeur : ${lot.valeurTotale}€\n`;
+          description += `   Attribution : ${lot.attributionHeritier}\n`;
+          if (lot.soulte) description += `   Soulte : ${lot.soulte}€\n`;
+        });
+      }
+
+      // Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Partage successoral - ${partageSuccessoralData.succession.defunt.nom}`,
+          type: "Partage successoral",
+          category: "Succession",
+          role: role,
+          description: description,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers
+      const uploadFile = async (files: File[], subfolder: string) => {
+        for (const file of files) {
+          const filePath = `contrats/${contrat.id}/${subfolder}/${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from('documents')
+            .upload(filePath, file);
+          if (uploadError) {
+            console.error(`Erreur upload ${file.name}:`, uploadError);
+          }
+        }
+      };
+
+      // Upload tous les fichiers
+      await Promise.all([
+        // Défunt
+        uploadFile(partageDefuntActeDeces, 'defunt_acte_deces'),
+        uploadFile(partageDefuntLivretFamille, 'defunt_livret_famille'),
+        uploadFile(partageDefuntContratMariage, 'defunt_contrat_mariage'),
+        uploadFile(partageDefuntTestaments, 'defunt_testaments'),
+        uploadFile(partageDefuntDonationsEntreEpoux, 'defunt_donations_entre_epoux'),
+        uploadFile(partageDefuntDonationsAnterieures, 'defunt_donations_anterieures'),
+        uploadFile(partageDefuntTitresPropriete, 'defunt_titres_propriete'),
+        uploadFile(partageDefuntRelevesBancaires, 'defunt_releves_bancaires'),
+        uploadFile(partageDefuntBilansEntreprises, 'defunt_bilans_entreprises'),
+        uploadFile(partageDefuntInventaireMobilier, 'defunt_inventaire_mobilier'),
+        
+        // Autres documents
+        uploadFile(partageAutresDiagnostics, 'autres_diagnostics'),
+        uploadFile(partageAutresEvaluations, 'autres_evaluations'),
+        uploadFile(partageAutresStatutsSocietes, 'autres_statuts_societes'),
+        uploadFile(partageAutresDocuments, 'autres_documents'),
+      ]);
+      
+      // Upload des fichiers héritiers (dynamiques)
+      for (const heritierId of Object.keys(partageHeritierFiles)) {
+        const id = Number(heritierId);
+        await uploadFile(partageHeritierFiles[id] || [], `heritier_${id}_documents`);
+      }
+      
+      // Upload des fichiers biens immobiliers (dynamiques)
+      for (const bienId of Object.keys(partageBienImmobilierFiles)) {
+        const id = Number(bienId);
+        await uploadFile(partageBienImmobilierFiles[id] || [], `bien_immobilier_${id}_documents`);
+      }
+
+      setContrats((prev) => [contrat, ...prev]);
+      setShowQuestionDialog(false);
+      toast.success('Partage successoral créé avec succès');
+      navigate(role === 'notaire' ? `/notaires/contrats/${contrat.id}` : `/avocats/contrats/${contrat.id}`);
+      
+    } catch (err: unknown) {
+      console.error('Erreur création partage successoral:', err);
+      toast.error("Erreur lors de la création du partage successoral");
+    }
+  };
+
   const handleChangementRegimeSubmit = async () => {
     if (!user) return;
     
@@ -6857,6 +7253,8 @@ FIN DE LA CONVENTION
                 ? "Informations pour le testament"
                 : pendingContractType === "Acte de notoriété"
                 ? "Informations pour l'acte de notoriété"
+                : pendingContractType === "Partage successoral"
+                ? "Informations pour le partage successoral"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le compromis de vente"}
@@ -29912,6 +30310,747 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {pendingContractType === "Partage successoral" && (
+              <>
+                <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                  
+                  {/* Section 1: Informations sur la succession */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1. Informations sur la succession</h3>
+                    
+                    {/* A. Identité du défunt */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-md">A. Identité du défunt</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="partageDefuntNom">Nom</Label>
+                          <Input
+                            id="partageDefuntNom"
+                            value={partageSuccessoralData.succession.defunt.nom}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, nom: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntPrenom">Prénom</Label>
+                          <Input
+                            id="partageDefuntPrenom"
+                            value={partageSuccessoralData.succession.defunt.prenom}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, prenom: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntNomNaissance">Nom de naissance</Label>
+                          <Input
+                            id="partageDefuntNomNaissance"
+                            value={partageSuccessoralData.succession.defunt.nomNaissance}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, nomNaissance: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntDateNaissance">Date de naissance</Label>
+                          <Input
+                            id="partageDefuntDateNaissance"
+                            type="date"
+                            value={partageSuccessoralData.succession.defunt.dateNaissance}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, dateNaissance: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntLieuNaissance">Lieu de naissance</Label>
+                          <Input
+                            id="partageDefuntLieuNaissance"
+                            value={partageSuccessoralData.succession.defunt.lieuNaissance}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, lieuNaissance: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntDateDeces">Date du décès</Label>
+                          <Input
+                            id="partageDefuntDateDeces"
+                            type="date"
+                            value={partageSuccessoralData.succession.defunt.dateDeces}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, dateDeces: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntLieuDeces">Lieu du décès</Label>
+                          <Input
+                            id="partageDefuntLieuDeces"
+                            value={partageSuccessoralData.succession.defunt.lieuDeces}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, lieuDeces: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntNationalite">Nationalité</Label>
+                          <Input
+                            id="partageDefuntNationalite"
+                            value={partageSuccessoralData.succession.defunt.nationalite}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, nationalite: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntProfession">Profession</Label>
+                          <Input
+                            id="partageDefuntProfession"
+                            value={partageSuccessoralData.succession.defunt.profession}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, profession: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label htmlFor="partageDefuntAdresse">Adresse au jour du décès</Label>
+                          <Input
+                            id="partageDefuntAdresse"
+                            value={partageSuccessoralData.succession.defunt.adresseAuDeces}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, adresseAuDeces: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntSituationMatrimoniale">Situation matrimoniale</Label>
+                          <select
+                            id="partageDefuntSituationMatrimoniale"
+                            value={partageSuccessoralData.succession.defunt.situationMatrimoniale}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, situationMatrimoniale: e.target.value}
+                              }
+                            })}
+                            className="w-full px-3 py-2 border rounded-md"
+                          >
+                            <option value="">-- Sélectionner --</option>
+                            <option value="celibataire">Célibataire</option>
+                            <option value="marie">Marié(e)</option>
+                            <option value="pacse">Pacsé(e)</option>
+                            <option value="divorce">Divorcé(e)</option>
+                            <option value="veuf">Veuf/Veuve</option>
+                          </select>
+                        </div>
+                        <div>
+                          <Label htmlFor="partageDefuntRegime">Régime matrimonial</Label>
+                          <Input
+                            id="partageDefuntRegime"
+                            value={partageSuccessoralData.succession.defunt.regimeMatrimonial}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, regimeMatrimonial: e.target.value}
+                              }
+                            })}
+                            placeholder="Communauté, séparation de biens..."
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3 mt-4">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="partageDefuntTestaments"
+                            checked={partageSuccessoralData.succession.defunt.testamentsExistants}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, testamentsExistants: e.target.checked}
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="partageDefuntTestaments">Testaments existants</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="partageDefuntDonationsEntreEpoux"
+                            checked={partageSuccessoralData.succession.defunt.donationsEntreEpoux}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, donationsEntreEpoux: e.target.checked}
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="partageDefuntDonationsEntreEpoux">Donations entre époux</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="partageDefuntDonationsAnterieures"
+                            checked={partageSuccessoralData.succession.defunt.donationsAnterieures}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                defunt: {...partageSuccessoralData.succession.defunt, donationsAnterieures: e.target.checked}
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="partageDefuntDonationsAnterieures">Donations antérieures aux héritiers</Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* B. Notaire */}
+                    <div className="space-y-4 mt-6">
+                      <h4 className="font-medium text-md">B. Notaire chargé de la succession</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="partageNotaireNom">Nom</Label>
+                          <Input
+                            id="partageNotaireNom"
+                            value={partageSuccessoralData.succession.notaire.nom}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                notaire: {...partageSuccessoralData.succession.notaire, nom: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageNotaireEtude">Étude</Label>
+                          <Input
+                            id="partageNotaireEtude"
+                            value={partageSuccessoralData.succession.notaire.etude}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                notaire: {...partageSuccessoralData.succession.notaire, etude: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label htmlFor="partageNotaireAdresse">Adresse</Label>
+                          <Input
+                            id="partageNotaireAdresse"
+                            value={partageSuccessoralData.succession.notaire.adresse}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                notaire: {...partageSuccessoralData.succession.notaire, adresse: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageNotaireTelephone">Téléphone</Label>
+                          <Input
+                            id="partageNotaireTelephone"
+                            value={partageSuccessoralData.succession.notaire.telephone}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                notaire: {...partageSuccessoralData.succession.notaire, telephone: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="partageNotaireEmail">Email</Label>
+                          <Input
+                            id="partageNotaireEmail"
+                            type="email"
+                            value={partageSuccessoralData.succession.notaire.email}
+                            onChange={(e) => setPartageSuccessoralData({
+                              ...partageSuccessoralData,
+                              succession: {
+                                ...partageSuccessoralData.succession,
+                                notaire: {...partageSuccessoralData.succession.notaire, email: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: Héritiers / Légataires */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-semibold text-lg border-b pb-2 flex-1">2. Héritiers / Légataires</h3>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => {
+                          const newId = Date.now();
+                          setPartageSuccessoralData({
+                            ...partageSuccessoralData,
+                            heritiers: [...partageSuccessoralData.heritiers, {
+                              id: newId,
+                              nom: "", prenom: "", nomNaissance: "", adresse: "",
+                              dateNaissance: "", lieuNaissance: "", nationalite: "", profession: "",
+                              telephone: "", email: "", lienDefunt: "",
+                              heritierReservataire: false, legataireUniversel: false,
+                              legataireATitreUniversel: false, legataireParticulier: false,
+                              heritierParRepresentation: false, representeQui: "",
+                              acceptationRenonciation: "", majeurMineur: "majeur",
+                              sousTutelleCuratelle: false, typeProtection: "", tuteurNom: "",
+                              quotePart: ""
+                            }]
+                          });
+                          setPartageHeritierFiles({
+                            ...partageHeritierFiles,
+                            [newId]: []
+                          });
+                        }}
+                        className={`ml-2 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                      >
+                        + Ajouter un héritier
+                      </Button>
+                    </div>
+
+                    {partageSuccessoralData.heritiers.map((heritier, index) => (
+                      <div key={heritier.id} className="p-4 border rounded-lg space-y-4 bg-gray-50">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium">Héritier {index + 1}</h4>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              const newHeritiers = partageSuccessoralData.heritiers.filter(h => h.id !== heritier.id);
+                              setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                              const newFiles = {...partageHeritierFiles};
+                              delete newFiles[heritier.id];
+                              setPartageHeritierFiles(newFiles);
+                            }}
+                          >
+                            Supprimer
+                          </Button>
+                        </div>
+
+                        {/* Informations d'état civil */}
+                        <div>
+                          <h5 className="font-medium text-sm mb-2">A. Informations d'état civil</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor={`heritier_nom_${heritier.id}`}>Nom</Label>
+                              <Input
+                                id={`heritier_nom_${heritier.id}`}
+                                value={heritier.nom}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, nom: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_prenom_${heritier.id}`}>Prénom</Label>
+                              <Input
+                                id={`heritier_prenom_${heritier.id}`}
+                                value={heritier.prenom}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, prenom: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_nomNaissance_${heritier.id}`}>Nom de naissance</Label>
+                              <Input
+                                id={`heritier_nomNaissance_${heritier.id}`}
+                                value={heritier.nomNaissance}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, nomNaissance: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_dateNaissance_${heritier.id}`}>Date de naissance</Label>
+                              <Input
+                                id={`heritier_dateNaissance_${heritier.id}`}
+                                type="date"
+                                value={heritier.dateNaissance}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, dateNaissance: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_lieuNaissance_${heritier.id}`}>Lieu de naissance</Label>
+                              <Input
+                                id={`heritier_lieuNaissance_${heritier.id}`}
+                                value={heritier.lieuNaissance}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, lieuNaissance: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_nationalite_${heritier.id}`}>Nationalité</Label>
+                              <Input
+                                id={`heritier_nationalite_${heritier.id}`}
+                                value={heritier.nationalite}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, nationalite: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_profession_${heritier.id}`}>Profession</Label>
+                              <Input
+                                id={`heritier_profession_${heritier.id}`}
+                                value={heritier.profession}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, profession: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_telephone_${heritier.id}`}>Téléphone</Label>
+                              <Input
+                                id={`heritier_telephone_${heritier.id}`}
+                                value={heritier.telephone}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, telephone: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_email_${heritier.id}`}>Email</Label>
+                              <Input
+                                id={`heritier_email_${heritier.id}`}
+                                type="email"
+                                value={heritier.email}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, email: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Label htmlFor={`heritier_adresse_${heritier.id}`}>Adresse</Label>
+                              <Input
+                                id={`heritier_adresse_${heritier.id}`}
+                                value={heritier.adresse}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, adresse: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`heritier_lienDefunt_${heritier.id}`}>Lien avec le défunt</Label>
+                              <Input
+                                id={`heritier_lienDefunt_${heritier.id}`}
+                                value={heritier.lienDefunt}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, lienDefunt: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                placeholder="Ex: Fils, Fille, Conjoint..."
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Situation juridique */}
+                        <div>
+                          <h5 className="font-medium text-sm mb-2">B. Situation juridique</h5>
+                          <div className="space-y-3">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`heritier_reservataire_${heritier.id}`}
+                                checked={heritier.heritierReservataire}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, heritierReservataire: e.target.checked};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`heritier_reservataire_${heritier.id}`}>Héritier réservataire</Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`heritier_legataireUniversel_${heritier.id}`}
+                                checked={heritier.legataireUniversel}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, legataireUniversel: e.target.checked};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`heritier_legataireUniversel_${heritier.id}`}>Légataire universel</Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`heritier_legataireATitreUniversel_${heritier.id}`}
+                                checked={heritier.legataireATitreUniversel}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, legataireATitreUniversel: e.target.checked};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`heritier_legataireATitreUniversel_${heritier.id}`}>Légataire à titre universel</Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`heritier_legataireParticulier_${heritier.id}`}
+                                checked={heritier.legataireParticulier}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, legataireParticulier: e.target.checked};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`heritier_legataireParticulier_${heritier.id}`}>Légataire particulier</Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`heritier_representation_${heritier.id}`}
+                                checked={heritier.heritierParRepresentation}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, heritierParRepresentation: e.target.checked};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`heritier_representation_${heritier.id}`}>Héritier par représentation</Label>
+                            </div>
+
+                            {heritier.heritierParRepresentation && (
+                              <div>
+                                <Label htmlFor={`heritier_representeQui_${heritier.id}`}>Représente qui</Label>
+                                <Input
+                                  id={`heritier_representeQui_${heritier.id}`}
+                                  value={heritier.representeQui}
+                                  onChange={(e) => {
+                                    const newHeritiers = [...partageSuccessoralData.heritiers];
+                                    newHeritiers[index] = {...heritier, representeQui: e.target.value};
+                                    setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                  }}
+                                  placeholder="Nom du représenté"
+                                />
+                              </div>
+                            )}
+
+                            <div>
+                              <Label htmlFor={`heritier_acceptation_${heritier.id}`}>Acceptation / Renonciation</Label>
+                              <select
+                                id={`heritier_acceptation_${heritier.id}`}
+                                value={heritier.acceptationRenonciation}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, acceptationRenonciation: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                className="w-full px-3 py-2 border rounded-md"
+                              >
+                                <option value="">-- Sélectionner --</option>
+                                <option value="accepte">Accepte</option>
+                                <option value="renonce">Renonce</option>
+                                <option value="benefice_inventaire">À concurrence de l'actif net (bénéfice d'inventaire)</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <Label htmlFor={`heritier_majeurMineur_${heritier.id}`}>Majeur / Mineur</Label>
+                              <select
+                                id={`heritier_majeurMineur_${heritier.id}`}
+                                value={heritier.majeurMineur}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, majeurMineur: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                className="w-full px-3 py-2 border rounded-md"
+                              >
+                                <option value="majeur">Majeur</option>
+                                <option value="mineur">Mineur</option>
+                              </select>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`heritier_tutelleCuratelle_${heritier.id}`}
+                                checked={heritier.sousTutelleCuratelle}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, sousTutelleCuratelle: e.target.checked};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`heritier_tutelleCuratelle_${heritier.id}`}>Sous tutelle / curatelle</Label>
+                            </div>
+
+                            {heritier.sousTutelleCuratelle && (
+                              <>
+                                <div>
+                                  <Label htmlFor={`heritier_typeProtection_${heritier.id}`}>Type de protection</Label>
+                                  <Input
+                                    id={`heritier_typeProtection_${heritier.id}`}
+                                    value={heritier.typeProtection}
+                                    onChange={(e) => {
+                                      const newHeritiers = [...partageSuccessoralData.heritiers];
+                                      newHeritiers[index] = {...heritier, typeProtection: e.target.value};
+                                      setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                    }}
+                                    placeholder="Tutelle, curatelle..."
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor={`heritier_tuteur_${heritier.id}`}>Nom du tuteur/curateur</Label>
+                                  <Input
+                                    id={`heritier_tuteur_${heritier.id}`}
+                                    value={heritier.tuteurNom}
+                                    onChange={(e) => {
+                                      const newHeritiers = [...partageSuccessoralData.heritiers];
+                                      newHeritiers[index] = {...heritier, tuteurNom: e.target.value};
+                                      setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                    }}
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            <div>
+                              <Label htmlFor={`heritier_quotePart_${heritier.id}`}>Quote-part</Label>
+                              <Input
+                                id={`heritier_quotePart_${heritier.id}`}
+                                value={heritier.quotePart}
+                                onChange={(e) => {
+                                  const newHeritiers = [...partageSuccessoralData.heritiers];
+                                  newHeritiers[index] = {...heritier, quotePart: e.target.value};
+                                  setPartageSuccessoralData({...partageSuccessoralData, heritiers: newHeritiers});
+                                }}
+                                placeholder="Ex: 1/2, 1/3, 1/4..."
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Documents héritier */}
+                        <div>
+                          <h5 className="font-medium text-sm mb-2">Documents de l'héritier</h5>
+                          <MultiFileUpload
+                            label="Acte de naissance, pièce d'identité, justificatifs..."
+                            files={partageHeritierFiles[heritier.id] || []}
+                            onFilesChange={(newFiles) => {
+                              setPartageHeritierFiles({
+                                ...partageHeritierFiles,
+                                [heritier.id]: newFiles
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+
+                    {partageSuccessoralData.heritiers.length === 0 && (
+                      <p className="text-sm text-gray-500 italic">Aucun héritier ajouté. Cliquez sur "Ajouter un héritier" pour commencer.</p>
+                    )}
+                  </div>
+
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -29951,6 +31090,8 @@ FIN DE LA CONVENTION
                   handleSuccessionSubmit();
                 } else if (pendingContractType === "Acte de notoriété") {
                   handleActeNotorieteSubmit();
+                } else if (pendingContractType === "Partage successoral") {
+                  handlePartageSuccessoralSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
