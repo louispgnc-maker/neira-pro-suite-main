@@ -30466,7 +30466,7 @@ FIN DE LA CONVENTION
                         </div>
                         <div>
                           <Label htmlFor="partageDefuntSituationMatrimoniale">Situation matrimoniale</Label>
-                          <select
+                          <Input
                             id="partageDefuntSituationMatrimoniale"
                             value={partageSuccessoralData.succession.defunt.situationMatrimoniale}
                             onChange={(e) => setPartageSuccessoralData({
@@ -30476,15 +30476,8 @@ FIN DE LA CONVENTION
                                 defunt: {...partageSuccessoralData.succession.defunt, situationMatrimoniale: e.target.value}
                               }
                             })}
-                            className="w-full px-3 py-2 border rounded-md"
-                          >
-                            <option value="">-- Sélectionner --</option>
-                            <option value="celibataire">Célibataire</option>
-                            <option value="marie">Marié(e)</option>
-                            <option value="pacse">Pacsé(e)</option>
-                            <option value="divorce">Divorcé(e)</option>
-                            <option value="veuf">Veuf/Veuve</option>
-                          </select>
+                            placeholder="Célibataire, Marié(e), Pacsé(e), Divorcé(e), Veuf/Veuve"
+                          />
                         </div>
                         <div>
                           <Label htmlFor="partageDefuntRegime">Régime matrimonial</Label>
