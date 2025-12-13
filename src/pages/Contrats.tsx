@@ -74,6 +74,95 @@ const categoriesAvocat = [
   "Propriété intellectuelle & Numérique",
 ];
 
+// Composant réutilisable pour upload multiple de fichiers
+interface MultiFileUploadProps {
+  label: string;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
+  required?: boolean;
+  accept?: string;
+}
+
+function MultiFileUpload({ label, files, onFilesChange, required = false, accept }: MultiFileUploadProps) {
+  const inputId = `upload-${label.replace(/\s+/g, '-').toLowerCase()}`;
+  
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      onFilesChange([...files, ...newFiles]);
+    }
+  };
+  
+  const removeFile = (index: number) => {
+    onFilesChange(files.filter((_, i) => i !== index));
+  };
+  
+  return (
+    <div className="space-y-2">
+      <Label>
+        {label} {required && <span className="text-red-500">*</span>}
+      </Label>
+      <button
+        type="button"
+        onClick={() => document.getElementById(inputId)?.click()}
+        className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+        style={{
+          borderColor: files.length > 0 ? "#22c55e" : "#fb923c",
+          backgroundColor: files.length > 0 ? "#f0fdf4" : "white"
+        }}
+      >
+        {files.length > 0 ? (
+          <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+        ) : (
+          <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+        )}
+        <span className={files.length > 0 ? "text-green-700 font-medium" : "text-orange-700"}>
+          {files.length > 0 ? `${files.length} fichier(s) chargé(s) - Cliquer pour en ajouter` : "Aucune pièce chargée - Cliquer pour ajouter"}
+        </span>
+      </button>
+      <Input
+        id={inputId}
+        type="file"
+        className="hidden"
+        multiple
+        accept={accept}
+        onChange={handleFileSelect}
+      />
+      {files.length > 0 && (
+        <div className="mt-2 space-y-1">
+          {files.map((file, index) => (
+            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                </svg>
+                <span className="truncate" title={file.name}>{file.name}</span>
+                <span className="text-gray-400 text-xs flex-shrink-0">
+                  ({(file.size / 1024).toFixed(0)} KB)
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeFile(index)}
+                className="ml-2 p-1 text-red-600 hover:bg-red-50 rounded flex-shrink-0"
+                title="Supprimer"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Contrats() {
   const { user } = useAuth();
   const location = useLocation();
@@ -937,18 +1026,18 @@ export default function Contrats() {
   });
 
   // State pour Déclaration de Succession (fichiers)
-  const [successionActeDeces, setSuccessionActeDeces] = useState<File | null>(null);
-  const [successionLivretFamille, setSuccessionLivretFamille] = useState<File | null>(null);
-  const [successionContratMariage, setSuccessionContratMariage] = useState<File | null>(null);
-  const [successionTestament, setSuccessionTestament] = useState<File | null>(null);
-  const [successionDonationsAnterieures, setSuccessionDonationsAnterieures] = useState<File | null>(null);
-  const [successionTitresPropriete, setSuccessionTitresPropriete] = useState<File | null>(null);
-  const [successionAvisImposition, setSuccessionAvisImposition] = useState<File | null>(null);
-  const [successionRelevesBancaires, setSuccessionRelevesBancaires] = useState<File | null>(null);
-  const [successionAssuranceVie, setSuccessionAssuranceVie] = useState<File | null>(null);
-  const [successionStatutsSocietes, setSuccessionStatutsSocietes] = useState<File | null>(null);
-  const [successionJustifsDettes, setSuccessionJustifsDettes] = useState<File | null>(null);
-  const [successionFactureFuneraires, setSuccessionFactureFuneraires] = useState<File | null>(null);
+  const [successionActeDeces, setSuccessionActeDeces] = useState<File[]>([]);
+  const [successionLivretFamille, setSuccessionLivretFamille] = useState<File[]>([]);
+  const [successionContratMariage, setSuccessionContratMariage] = useState<File[]>([]);
+  const [successionTestament, setSuccessionTestament] = useState<File[]>([]);
+  const [successionDonationsAnterieures, setSuccessionDonationsAnterieures] = useState<File[]>([]);
+  const [successionTitresPropriete, setSuccessionTitresPropriete] = useState<File[]>([]);
+  const [successionAvisImposition, setSuccessionAvisImposition] = useState<File[]>([]);
+  const [successionRelevesBancaires, setSuccessionRelevesBancaires] = useState<File[]>([]);
+  const [successionAssuranceVie, setSuccessionAssuranceVie] = useState<File[]>([]);
+  const [successionStatutsSocietes, setSuccessionStatutsSocietes] = useState<File[]>([]);
+  const [successionJustifsDettes, setSuccessionJustifsDettes] = useState<File[]>([]);
+  const [successionFactureFuneraires, setSuccessionFactureFuneraires] = useState<File[]>([]);
 
   // State pour Déclaration de Succession
   const [successionData, setSuccessionData] = useState({
@@ -29634,405 +29723,82 @@ FIN DE LA CONVENTION
                     <h3 className="font-semibold text-lg border-b pb-2">Pièces justificatives à fournir</h3>
                     
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label>Acte de décès <span className="text-red-500">*</span></Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionActeDeces')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionActeDeces ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionActeDeces ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionActeDeces ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionActeDeces ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionActeDeces?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionActeDeces"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionActeDeces(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Acte de décès"
+                        files={successionActeDeces}
+                        onFilesChange={setSuccessionActeDeces}
+                        required
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Livret de famille</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionLivretFamille')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionLivretFamille ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionLivretFamille ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionLivretFamille ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionLivretFamille ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionLivretFamille?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionLivretFamille"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionLivretFamille(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Livret de famille"
+                        files={successionLivretFamille}
+                        onFilesChange={setSuccessionLivretFamille}
+                      />
 
                       {successionData.defunt.contratMariageExiste && (
-                        <div className="space-y-2">
-                          <Label>Contrat de mariage</Label>
-                          <button
-                            type="button"
-                            onClick={() => document.getElementById('successionContratMariage')?.click()}
-                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                            style={{
-                              borderColor: successionContratMariage ? "#22c55e" : "#fb923c",
-                              backgroundColor: successionContratMariage ? "#f0fdf4" : "white"
-                            }}
-                          >
-                            {successionContratMariage ? (
-                              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                            <span className={successionContratMariage ? "text-green-700 font-medium" : "text-orange-700"}>
-                              {successionContratMariage?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                            </span>
-                          </button>
-                          <Input
-                            id="successionContratMariage"
-                            type="file"
-                            className="hidden"
-                            onChange={(e) => {
-                              if (e.target.files?.[0]) {
-                                setSuccessionContratMariage(e.target.files[0]);
-                              }
-                            }}
-                          />
-                        </div>
+                        <MultiFileUpload
+                          label="Contrat de mariage"
+                          files={successionContratMariage}
+                          onFilesChange={setSuccessionContratMariage}
+                        />
                       )}
 
                       {successionData.defunt.testamentExiste && (
-                        <div className="space-y-2">
-                          <Label>Testament</Label>
-                          <button
-                            type="button"
-                            onClick={() => document.getElementById('successionTestament')?.click()}
-                            className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                            style={{
-                              borderColor: successionTestament ? "#22c55e" : "#fb923c",
-                              backgroundColor: successionTestament ? "#f0fdf4" : "white"
-                            }}
-                          >
-                            {successionTestament ? (
-                              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                            <span className={successionTestament ? "text-green-700 font-medium" : "text-orange-700"}>
-                              {successionTestament?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                            </span>
-                          </button>
-                          <Input
-                            id="successionTestament"
-                            type="file"
-                            className="hidden"
-                            onChange={(e) => {
-                              if (e.target.files?.[0]) {
-                                setSuccessionTestament(e.target.files[0]);
-                              }
-                            }}
-                          />
-                        </div>
+                        <MultiFileUpload
+                          label="Testament"
+                          files={successionTestament}
+                          onFilesChange={setSuccessionTestament}
+                        />
                       )}
 
-                      <div className="space-y-2">
-                        <Label>Titres de propriété (biens immobiliers)</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionTitresPropriete')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionTitresPropriete ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionTitresPropriete ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionTitresPropriete ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionTitresPropriete ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionTitresPropriete?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionTitresPropriete"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionTitresPropriete(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Titres de propriété (biens immobiliers)"
+                        files={successionTitresPropriete}
+                        onFilesChange={setSuccessionTitresPropriete}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Avis d'imposition / Relevé fiscal IFI</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionAvisImposition')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionAvisImposition ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionAvisImposition ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionAvisImposition ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionAvisImposition ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionAvisImposition?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionAvisImposition"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionAvisImposition(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Avis d'imposition / Relevé fiscal IFI"
+                        files={successionAvisImposition}
+                        onFilesChange={setSuccessionAvisImposition}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Relevés bancaires / Comptes-titres</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionRelevesBancaires')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionRelevesBancaires ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionRelevesBancaires ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionRelevesBancaires ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionRelevesBancaires ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionRelevesBancaires?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionRelevesBancaires"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionRelevesBancaires(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Relevés bancaires / Comptes-titres"
+                        files={successionRelevesBancaires}
+                        onFilesChange={setSuccessionRelevesBancaires}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Contrats d'assurance-vie</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionAssuranceVie')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionAssuranceVie ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionAssuranceVie ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionAssuranceVie ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionAssuranceVie ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionAssuranceVie?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionAssuranceVie"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionAssuranceVie(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Contrats d'assurance-vie"
+                        files={successionAssuranceVie}
+                        onFilesChange={setSuccessionAssuranceVie}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Statuts de sociétés / Bilans</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionStatutsSocietes')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionStatutsSocietes ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionStatutsSocietes ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionStatutsSocietes ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionStatutsSocietes ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionStatutsSocietes?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionStatutsSocietes"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionStatutsSocietes(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Statuts de sociétés / Bilans"
+                        files={successionStatutsSocietes}
+                        onFilesChange={setSuccessionStatutsSocietes}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Justificatifs des dettes</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionJustifsDettes')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionJustifsDettes ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionJustifsDettes ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionJustifsDettes ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionJustifsDettes ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionJustifsDettes?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionJustifsDettes"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionJustifsDettes(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Justificatifs des dettes"
+                        files={successionJustifsDettes}
+                        onFilesChange={setSuccessionJustifsDettes}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Facture pompes funèbres</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('successionFactureFuneraires')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: successionFactureFuneraires ? "#22c55e" : "#fb923c",
-                            backgroundColor: successionFactureFuneraires ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {successionFactureFuneraires ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={successionFactureFuneraires ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {successionFactureFuneraires?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="successionFactureFuneraires"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setSuccessionFactureFuneraires(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Facture pompes funèbres"
+                        files={successionFactureFuneraires}
+                        onFilesChange={setSuccessionFactureFuneraires}
+                      />
+                    </div>
+
+                    <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg mt-4">
+                      <p className="text-sm text-orange-800">
+                        💡 <strong>Astuce :</strong> Vous pouvez sélectionner plusieurs fichiers à la fois pour chaque catégorie. Les fichiers apparaîtront sous le bouton et pourront être supprimés individuellement.
+                      </p>
                     </div>
                   </div>
 
