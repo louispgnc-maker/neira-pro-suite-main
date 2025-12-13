@@ -980,198 +980,141 @@ export default function Contrats() {
       pacteSuccessoral: false,
     },
     
-    // 3. Héritiers/légataires
-    heritiers: [] as Array<{
-      id: number;
-      // A. Informations civiles
-      nom: string;
-      prenom: string;
-      nomNaissance: string;
-      lienDefunt: string;
-      dateNaissance: string;
-      lieuNaissance: string;
-      adresse: string;
-      email: string;
-      telephone: string;
-      nationalite: string;
-      profession: string;
-      situationMatrimoniale: string;
-      regimeMatrimonial: string;
-      // B. Rôle
-      heritierReservataire: boolean;
-      legataireUniversel: boolean;
-      legataireTitreUniversel: boolean;
-      legataireParticulier: boolean;
-      donataireAnterieur: boolean;
-      // C. Options
-      optionSuccessorale: string; // pure_simple / concurrence_actif / renonciation
-      // D. Représentation
-      representationSuccessorale: boolean;
-      representeQui: string;
-      // E. Protection
-      tuteurCurateur: boolean;
-      acteTutelle: string;
-    }>,
+    // Note: Les anciennes sections 3-6 (héritiers, patrimoine, passif, donations) ont été remplacées par les sections 7-19 plus détaillées
     
-    // 4. Patrimoine - A. Biens immobiliers
-    biensImmobiliers: [] as Array<{
-      id: number;
-      adresse: string;
-      nature: string; // maison / appartement / terrain / immeuble_locatif / local_commercial
-      description: string;
-      surface: string;
-      nombrePieces: string;
-      dependances: string;
-      designationCadastrale: string;
-      titrePropriete: string;
-      quotePart: string;
-      valeurVenale: string;
-      modeEvaluation: string;
-      situationLocative: string; // libre / loue
-      montantLoyer: string;
-      hypotheques: string;
-      assurancePNO: string;
-      copropriete: boolean;
-      numeroLots: string;
-      chargesAnnuelles: string;
-    }>,
-    
-    // 4. Patrimoine - B. Biens meubles
-    biensMeubles: {
-      mobilierLogement: "",
-      bijoux: "",
-      oeuvresArt: "",
-      collections: "",
-      vehicules: [] as Array<{
-        description: string;
-        valeurArgus: string;
-      }>,
-      materielProfessionnel: "",
+    // 7. Informations sur les héritiers
+    heritiers: {
+      conjointSurvivant: false,
+      conjointIdentite: { nom: "", prenom: "", dateNaissance: "", adresse: "", telephone: "", email: "", degreParente: "conjoint" },
+      enfantsExistent: false,
+      nombreEnfants: "",
+      enfants: [] as Array<{ id: number; nom: string; prenom: string; dateNaissance: string; adresse: string; telephone: string; email: string; degreParente: string }>,
+      autresHeritiersExistent: false,
+      autresHeritiers: [] as Array<{ id: number; nom: string; prenom: string; lien: string; dateNaissance: string; adresse: string; telephone: string; email: string; degreParente: string }>,
+      heritierMineurOuProtege: false,
+      renonciation: false,
+      acceptationConcurrenceActifNet: false,
     },
     
-    // 4. Patrimoine - C. Comptes bancaires
-    comptesBancaires: [] as Array<{
-      id: number;
-      banque: string;
-      typeCompte: string; // courant / livret_a / ldd / pel / cel / compte_titres / pea
-      numero: string;
-      soldeJourDeces: string;
-      revenusEnCours: string;
-    }>,
-    
-    // 4. Patrimoine - D. Assurance-vie
-    assurancesVie: [] as Array<{
-      id: number;
-      compagnie: string;
-      numeroContrat: string;
-      beneficiairesDesignes: string;
-      capitalDeces: string;
-      primesApres70: string;
-      primesAvant70: string;
-      contratDenoue: boolean;
-    }>,
-    
-    // 4. Patrimoine - E. Entreprises
-    entreprises: [] as Array<{
-      id: number;
-      type: string; // sarl / sas / snc / sci / ei / exploitation_agricole
-      denomination: string;
-      nombreParts: string;
-      valeur: string;
-      actifPro: string;
-      dettesPro: string;
-    }>,
-    
-    // 4. Patrimoine - F. Biens à l'étranger
-    biensEtranger: [] as Array<{
-      id: number;
-      nature: string;
-      adresse: string;
-      pays: string;
-      valeur: string;
-      regimeFiscal: string;
-      conventionInternationale: string;
-      impotsPayes: string;
-    }>,
-    
-    // 4. Patrimoine - G. Biens démembrés
-    biensDemembrés: [] as Array<{
-      id: number;
-      description: string;
-      valeurUsufruit: string;
-      valeurNuePropriete: string;
-      identiteNuProprietaire: string;
-      origineDemembrement: string;
-    }>,
-    
-    // 4. Patrimoine - H. Biens exonérés
-    biensExoneres: {
-      pacteDutreil: false,
-      forets: false,
-      monumentsHistoriques: false,
-      oeuvresArtBail: false,
-      biensRurauxLongTerme: false,
-      details: "",
+    // 8. État civil "preuve" du défunt
+    etatCivilPreuves: {
+      copieActeNaissance: false,
+      acteMariageDivorce: false,
+      contratMariageReferences: "",
+      testamentReferences: "",
+      rechercheFCDDV: false,
     },
     
-    // 5. Passif
-    passif: {
-      // Dettes personnelles
-      credits: [] as Array<{
-        description: string;
-        montant: string;
-        creancier: string;
-      }>,
-      dettesFamiliales: "",
-      impotsNonPayes: "",
-      facturesPro: "",
-      dettesAlimentaires: "",
-      decouvertsBancaires: "",
-      // Frais
-      fraisDernieresMaladies: "",
-      fraisFuneraires: "",
-      facturePompeFunebre: "",
-      // Obligations
-      pensionsDues: "",
-      jugementsExecutoires: "",
-    },
-    
-    // 6. Donations antérieures
-    donationsAnterieures: [] as Array<{
-      id: number;
-      type: string;
-      dateDonation: string;
-      donataire: string;
-      valeurJourDonation: string;
-      rapportable: boolean;
-      horsPartSuccessorale: boolean;
-      abattementsUtilises: string;
-    }>,
-    
-    // 7. Testament
-    testament: {
-      typeTestament: "",
-      legsParticuliers: false,
-      legsUniversel: false,
-      executeurTestamentaire: "",
-      chargesConditions: "",
-      affectationParticuliere: "",
-    },
-    
-    // 8. Options fiscales héritiers
-    optionsFiscales: {
-      notes: "",
-    },
-    
-    // 9. Régime matrimonial
-    regimeMatrimonial: {
-      biensPropreDefunt: "",
-      biensCommuns: "",
-      recompensesDues: "",
+    // 9. Régime matrimonial (liquidation)
+    regimeMatrimonialLiquidation: {
+      regimeExact: "",
+      dateMariage: "",
+      dateEffetRegime: "",
+      clausesParticulieres: false,
       preciput: false,
-      attributionPreferentielle: false,
-      droitsConjointSurvivant: "", // usufruit_totalite / 1_4_pleine_propriete
-      donationDernierVivant: false,
+      attributionIntegrale: false,
+      avantagesMatrimoniaux: false,
+      detailsClausesParticulieres: "",
+      precedenteLiquidation: false,
+      changementRegime: false,
+    },
+    
+    // 10. Donations et libéralités antérieures
+    donationsLiberalites: {
+      donationsFaitesParDefunt: [] as Array<{ id: number; beneficiaire: string; date: string; nature: string; valeur: string }>,
+      presentsUsageSignificatifs: false,
+      donationsRecuesDuConjoint: false,
+    },
+    
+    // 11. Patrimoine immobilier détaillé
+    patrimoineImmobilierDetail: [] as Array<{
+      id: number;
+      adresseComplete: string;
+      nature: string;
+      quotePart: string;
+      modeAcquisition: string;
+      dateAcquisition: string;
+      valeurEstimee: string;
+      referencesCadastrales: string;
+      creditRestantDu: string;
+    }>,
+    
+    // 12. Comptes bancaires et placements
+    comptesBancairesDetail: {
+      banquesConnues: "",
+      compteCourant: false,
+      livret: false,
+      pel: false,
+      comptesTitres: false,
+      pea: false,
+      listeComptes: [] as Array<{ id: number; banque: string; typeCompte: string; solde: string; iban: string }>,
+      coffreFort: false,
+      coffreBanque: "",
+      coffreContenu: "",
+    },
+    
+    // 13. Assurance-vie / capital décès
+    assuranceVieDetail: {
+      contratsExistent: false,
+      contrats: [] as Array<{ id: number; assureur: string; numeroContrat: string; dateSouscription: string; beneficiaires: string }>,
+      contratsObseques: false,
+      capitalDecesEmployeur: false,
+    },
+    
+    // 14. Entreprises / parts sociales
+    entreprisesDetail: {
+      societesDetenues: false,
+      societes: [] as Array<{ id: number; denomination: string; forme: string; siren: string; pourcentageDetention: string; valorisation: string }>,
+    },
+    
+    // 15. Véhicules et biens mobiliers de valeur
+    vehiculesMobiliers: {
+      vehicules: [] as Array<{ id: number; immatriculation: string; valeurEstimee: string }>,
+      bijoux: false,
+      oeuvresArt: false,
+      collections: false,
+      estimationBijoux: "",
+      forfait5Pourcent: false,
+      inventaireCommissairePriseur: false,
+    },
+    
+    // 16. Passif (dettes) et charges déductibles
+    passifDetail: {
+      emprunts: [] as Array<{ id: number; organisme: string; capitalRestantDu: string }>,
+      dettesPersonnelles: false,
+      detailsDettes: "",
+      impotsRestantDus: false,
+      detailsImpots: "",
+      fraisFuneraires: "",
+      fraisMedicaux: false,
+      facturesAttente: "",
+    },
+    
+    // 17. Fiscalité / résidence / délais
+    fiscaliteResidence: {
+      residenceFiscale: "France",
+      autrePays: "",
+      decesEtrangerPays: "",
+      existenceIFI: false,
+      detailsIFI: "",
+      sipCoordonnees: "",
+    },
+    
+    // 18. Mandats / représentation
+    mandatsRepresentation: {
+      heritierReferentNom: "",
+      heritierReferentRole: "",
+      procurationsExistent: false,
+      executeurTestamentaire: false,
+      executeurIdentite: "",
+    },
+    
+    // 19. Points juridiques sensibles
+    pointsJuridiquesSensibles: {
+      successionInternationale: false,
+      indivisionConflictuelle: false,
+      heritierIntrouvable: false,
+      acceptationBeneficeInventaire: false,
     },
   });
 
@@ -30091,12 +30034,576 @@ FIN DE LA CONVENTION
                         />
                       </div>
                     </div>
+                  </div>
 
-                    <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                      <p className="text-sm text-orange-800">
-                        ℹ️ <strong>Note importante :</strong> Les sections détaillées sur les héritiers, le patrimoine complet, le passif et les donations seront complétées par le notaire lors de l'instruction du dossier. Ces informations préliminaires permettent de démarrer la procédure.
-                      </p>
+                  {/* Section 4: Informations sur les héritiers */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Informations sur les héritiers</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="conjointSurvivant"
+                          checked={successionData.heritiers.conjointSurvivant}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            heritiers: {...successionData.heritiers, conjointSurvivant: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="conjointSurvivant">Conjoint survivant</Label>
+                      </div>
+
+                      {successionData.heritiers.conjointSurvivant && (
+                        <div className="ml-6 p-4 border rounded bg-white space-y-3">
+                          <h4 className="font-medium text-sm">Identité du conjoint survivant</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <Input
+                              placeholder="Nom"
+                              value={successionData.heritiers.conjointIdentite.nom}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                heritiers: {
+                                  ...successionData.heritiers,
+                                  conjointIdentite: {...successionData.heritiers.conjointIdentite, nom: e.target.value}
+                                }
+                              })}
+                            />
+                            <Input
+                              placeholder="Prénom"
+                              value={successionData.heritiers.conjointIdentite.prenom}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                heritiers: {
+                                  ...successionData.heritiers,
+                                  conjointIdentite: {...successionData.heritiers.conjointIdentite, prenom: e.target.value}
+                                }
+                              })}
+                            />
+                            <Input
+                              type="date"
+                              placeholder="Date de naissance"
+                              value={successionData.heritiers.conjointIdentite.dateNaissance}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                heritiers: {
+                                  ...successionData.heritiers,
+                                  conjointIdentite: {...successionData.heritiers.conjointIdentite, dateNaissance: e.target.value}
+                                }
+                              })}
+                            />
+                            <Input
+                              placeholder="Téléphone"
+                              value={successionData.heritiers.conjointIdentite.telephone}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                heritiers: {
+                                  ...successionData.heritiers,
+                                  conjointIdentite: {...successionData.heritiers.conjointIdentite, telephone: e.target.value}
+                                }
+                              })}
+                            />
+                            <Input
+                              placeholder="Email"
+                              value={successionData.heritiers.conjointIdentite.email}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                heritiers: {
+                                  ...successionData.heritiers,
+                                  conjointIdentite: {...successionData.heritiers.conjointIdentite, email: e.target.value}
+                                }
+                              })}
+                            />
+                            <Input
+                              placeholder="Adresse complète"
+                              className="md:col-span-2"
+                              value={successionData.heritiers.conjointIdentite.adresse}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                heritiers: {
+                                  ...successionData.heritiers,
+                                  conjointIdentite: {...successionData.heritiers.conjointIdentite, adresse: e.target.value}
+                                }
+                              })}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="enfantsExistent"
+                          checked={successionData.heritiers.enfantsExistent}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            heritiers: {...successionData.heritiers, enfantsExistent: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="enfantsExistent">Enfants</Label>
+                      </div>
+
+                      {successionData.heritiers.enfantsExistent && (
+                        <div className="ml-6 space-y-3">
+                          <Input
+                            placeholder="Nombre d'enfants"
+                            type="number"
+                            value={successionData.heritiers.nombreEnfants}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              heritiers: {...successionData.heritiers, nombreEnfants: e.target.value}
+                            })}
+                            className="w-32"
+                          />
+                          <p className="text-sm text-gray-600">Les identités complètes des enfants seront renseignées ultérieurement si nécessaire</p>
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="autresHeritiersExistent"
+                          checked={successionData.heritiers.autresHeritiersExistent}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            heritiers: {...successionData.heritiers, autresHeritiersExistent: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="autresHeritiersExistent">Autres héritiers (parents, frères/sœurs, neveux/nièces)</Label>
+                      </div>
+
+                      {successionData.heritiers.autresHeritiersExistent && (
+                        <div className="ml-6">
+                          <p className="text-sm text-gray-600">Les identités et degrés de parenté seront précisés ultérieurement</p>
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="heritierMineurOuProtege"
+                          checked={successionData.heritiers.heritierMineurOuProtege}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            heritiers: {...successionData.heritiers, heritierMineurOuProtege: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="heritierMineurOuProtege">Héritier(s) mineur(s) ou majeur protégé</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="renonciation"
+                          checked={successionData.heritiers.renonciation}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            heritiers: {...successionData.heritiers, renonciation: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="renonciation">Existence d'un renonçant</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="acceptationConcurrenceActifNet"
+                          checked={successionData.heritiers.acceptationConcurrenceActifNet}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            heritiers: {...successionData.heritiers, acceptationConcurrenceActifNet: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="acceptationConcurrenceActifNet">Acceptation à concurrence de l'actif net</Label>
+                      </div>
                     </div>
+                  </div>
+
+                  {/* Section 5: Régime matrimonial (liquidation) */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Régime matrimonial (liquidation)</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Régime matrimonial exact</Label>
+                        <Select
+                          value={successionData.regimeMatrimonialLiquidation.regimeExact}
+                          onValueChange={(value) => setSuccessionData({
+                            ...successionData,
+                            regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, regimeExact: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                            <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                            <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                            <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de mariage</Label>
+                        <Input
+                          type="date"
+                          value={successionData.regimeMatrimonialLiquidation.dateMariage}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, dateMariage: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date d'effet du régime / contrat</Label>
+                        <Input
+                          type="date"
+                          value={successionData.regimeMatrimonialLiquidation.dateEffetRegime}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, dateEffetRegime: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="clausesParticulieres"
+                          checked={successionData.regimeMatrimonialLiquidation.clausesParticulieres}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, clausesParticulieres: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="clausesParticulieres">Clauses particulières</Label>
+                      </div>
+
+                      {successionData.regimeMatrimonialLiquidation.clausesParticulieres && (
+                        <div className="ml-6 space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="preciput"
+                              checked={successionData.regimeMatrimonialLiquidation.preciput}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, preciput: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="preciput">Préciput</Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="attributionIntegrale"
+                              checked={successionData.regimeMatrimonialLiquidation.attributionIntegrale}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, attributionIntegrale: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="attributionIntegrale">Attribution intégrale</Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="avantagesMatrimoniaux"
+                              checked={successionData.regimeMatrimonialLiquidation.avantagesMatrimoniaux}
+                              onChange={(e) => setSuccessionData({
+                                ...successionData,
+                                regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, avantagesMatrimoniaux: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="avantagesMatrimoniaux">Avantages matrimoniaux</Label>
+                          </div>
+
+                          <Input
+                            placeholder="Détails des clauses particulières"
+                            value={successionData.regimeMatrimonialLiquidation.detailsClausesParticulieres}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, detailsClausesParticulieres: e.target.value}
+                            })}
+                          />
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="precedenteLiquidation"
+                          checked={successionData.regimeMatrimonialLiquidation.precedenteLiquidation}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, precedenteLiquidation: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="precedenteLiquidation">Existence d'une précédente liquidation</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="changementRegime"
+                          checked={successionData.regimeMatrimonialLiquidation.changementRegime}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            regimeMatrimonialLiquidation: {...successionData.regimeMatrimonialLiquidation, changementRegime: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="changementRegime">Changement de régime antérieur</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 6: Fiscalité / Résidence / Délais */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-yellow-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Fiscalité / Résidence / Délais</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Résidence fiscale du défunt</Label>
+                        <Select
+                          value={successionData.fiscaliteResidence.residenceFiscale}
+                          onValueChange={(value) => setSuccessionData({
+                            ...successionData,
+                            fiscaliteResidence: {...successionData.fiscaliteResidence, residenceFiscale: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="France">France</SelectItem>
+                            <SelectItem value="Autre">Autre pays</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {successionData.fiscaliteResidence.residenceFiscale === "Autre" && (
+                        <div className="space-y-2">
+                          <Label>Pays de résidence</Label>
+                          <Input
+                            value={successionData.fiscaliteResidence.autrePays}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              fiscaliteResidence: {...successionData.fiscaliteResidence, autrePays: e.target.value}
+                            })}
+                          />
+                        </div>
+                      )}
+
+                      {successionData.decesEtranger && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Pays du décès (si à l'étranger)</Label>
+                          <Input
+                            value={successionData.fiscaliteResidence.decesEtrangerPays}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              fiscaliteResidence: {...successionData.fiscaliteResidence, decesEtrangerPays: e.target.value}
+                            })}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="existenceIFI"
+                            checked={successionData.fiscaliteResidence.existenceIFI}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              fiscaliteResidence: {...successionData.fiscaliteResidence, existenceIFI: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="existenceIFI">Existence d'un IFI (Impôt sur la Fortune Immobilière)</Label>
+                        </div>
+
+                        {successionData.fiscaliteResidence.existenceIFI && (
+                          <Input
+                            placeholder="Détails IFI"
+                            value={successionData.fiscaliteResidence.detailsIFI}
+                            onChange={(e) => setSuccessionData({
+                              ...successionData,
+                              fiscaliteResidence: {...successionData.fiscaliteResidence, detailsIFI: e.target.value}
+                            })}
+                            className="ml-6"
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Coordonnées du Service des Impôts (SIP) - Facultatif</Label>
+                        <Input
+                          value={successionData.fiscaliteResidence.sipCoordonnees}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            fiscaliteResidence: {...successionData.fiscaliteResidence, sipCoordonnees: e.target.value}
+                          })}
+                          placeholder="Adresse, téléphone..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 7: Mandats / Représentation */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-indigo-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Mandats / Représentation</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Héritier référent (personne qui mandate le notaire)</Label>
+                        <Input
+                          value={successionData.mandatsRepresentation.heritierReferentNom}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            mandatsRepresentation: {...successionData.mandatsRepresentation, heritierReferentNom: e.target.value}
+                          })}
+                          placeholder="Nom et prénom"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Rôle</Label>
+                        <Input
+                          value={successionData.mandatsRepresentation.heritierReferentRole}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            mandatsRepresentation: {...successionData.mandatsRepresentation, heritierReferentRole: e.target.value}
+                          })}
+                          placeholder="Conjoint, enfant..."
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="procurationsExistent"
+                          checked={successionData.mandatsRepresentation.procurationsExistent}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            mandatsRepresentation: {...successionData.mandatsRepresentation, procurationsExistent: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="procurationsExistent">Procurations existantes</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="executeurTestamentaire"
+                          checked={successionData.mandatsRepresentation.executeurTestamentaire}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            mandatsRepresentation: {...successionData.mandatsRepresentation, executeurTestamentaire: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="executeurTestamentaire">Exécuteur testamentaire</Label>
+                      </div>
+
+                      {successionData.mandatsRepresentation.executeurTestamentaire && (
+                        <Input
+                          placeholder="Identité de l'exécuteur testamentaire"
+                          value={successionData.mandatsRepresentation.executeurIdentite}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            mandatsRepresentation: {...successionData.mandatsRepresentation, executeurIdentite: e.target.value}
+                          })}
+                          className="ml-6"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Section 8: Points juridiques sensibles */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-red-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">Points juridiques sensibles</h3>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="successionInternationale"
+                          checked={successionData.pointsJuridiquesSensibles.successionInternationale}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            pointsJuridiquesSensibles: {...successionData.pointsJuridiquesSensibles, successionInternationale: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="successionInternationale">Succession internationale (biens/héritiers à l'étranger)</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="indivisionConflictuelle"
+                          checked={successionData.pointsJuridiquesSensibles.indivisionConflictuelle}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            pointsJuridiquesSensibles: {...successionData.pointsJuridiquesSensibles, indivisionConflictuelle: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="indivisionConflictuelle">Indivision conflictuelle / contentieux prévisible</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="heritierIntrouvable"
+                          checked={successionData.pointsJuridiquesSensibles.heritierIntrouvable}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            pointsJuridiquesSensibles: {...successionData.pointsJuridiquesSensibles, heritierIntrouvable: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="heritierIntrouvable">Présence d'un héritier introuvable</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="acceptationBeneficeInventaire"
+                          checked={successionData.pointsJuridiquesSensibles.acceptationBeneficeInventaire}
+                          onChange={(e) => setSuccessionData({
+                            ...successionData,
+                            pointsJuridiquesSensibles: {...successionData.pointsJuridiquesSensibles, acceptationBeneficeInventaire: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="acceptationBeneficeInventaire">Acceptation sous bénéfice d'inventaire envisagée</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      ℹ️ <strong>Note :</strong> Les sections détaillées sur les donations antérieures, le patrimoine immobilier complet, les comptes bancaires, les assurances-vie, les entreprises, les véhicules, et le passif détaillé seront complétées par le notaire lors de l'instruction du dossier avec l'ensemble des pièces justificatives.
+                    </p>
                   </div>
 
                 </div>
