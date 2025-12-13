@@ -467,18 +467,18 @@ export default function Contrats() {
   });
 
   // State pour Testament (fichiers)
-  const [testamentIdentiteTestateur, setTestamentIdentiteTestateur] = useState<File | null>(null);
-  const [testamentLivretFamille, setTestamentLivretFamille] = useState<File | null>(null);
-  const [testamentCapaciteJuridique, setTestamentCapaciteJuridique] = useState<File | null>(null);
-  const [testamentIdentiteTemoins, setTestamentIdentiteTemoins] = useState<File | null>(null);
-  const [testamentDomicileTemoins, setTestamentDomicileTemoins] = useState<File | null>(null);
-  const [testamentAttestationsTemoins, setTestamentAttestationsTemoins] = useState<File | null>(null);
-  const [testamentCasiersTemoins, setTestamentCasiersTemoins] = useState<File | null>(null);
-  const [testamentTitresPropriete, setTestamentTitresPropriete] = useState<File | null>(null);
-  const [testamentRelevesBancaires, setTestamentRelevesBancaires] = useState<File | null>(null);
-  const [testamentContratMariage, setTestamentContratMariage] = useState<File | null>(null);
-  const [testamentAutresJustificatifs, setTestamentAutresJustificatifs] = useState<File | null>(null);
-  const [testamentTestamentMystique, setTestamentTestamentMystique] = useState<File | null>(null); // Le testament cacheté lui-même
+  const [testamentIdentiteTestateur, setTestamentIdentiteTestateur] = useState<File[]>([]);
+  const [testamentLivretFamille, setTestamentLivretFamille] = useState<File[]>([]);
+  const [testamentCapaciteJuridique, setTestamentCapaciteJuridique] = useState<File[]>([]);
+  const [testamentIdentiteTemoins, setTestamentIdentiteTemoins] = useState<File[]>([]);
+  const [testamentDomicileTemoins, setTestamentDomicileTemoins] = useState<File[]>([]);
+  const [testamentAttestationsTemoins, setTestamentAttestationsTemoins] = useState<File[]>([]);
+  const [testamentCasiersTemoins, setTestamentCasiersTemoins] = useState<File[]>([]);
+  const [testamentTitresPropriete, setTestamentTitresPropriete] = useState<File[]>([]);
+  const [testamentRelevesBancaires, setTestamentRelevesBancaires] = useState<File[]>([]);
+  const [testamentContratMariage, setTestamentContratMariage] = useState<File[]>([]);
+  const [testamentAutresJustificatifs, setTestamentAutresJustificatifs] = useState<File[]>([]);
+  const [testamentTestamentMystique, setTestamentTestamentMystique] = useState<File[]>([]); // Le testament cacheté lui-même
 
   // State pour Testament
   const [testamentData, setTestamentData] = useState({
@@ -727,20 +727,20 @@ export default function Contrats() {
   });
   
   // State pour Changement de Régime Matrimonial (fichiers)
-  const [changementRegimeEpouxIdentite1, setChangementRegimeEpouxIdentite1] = useState<File | null>(null);
-  const [changementRegimeEpouxIdentite2, setChangementRegimeEpouxIdentite2] = useState<File | null>(null);
-  const [changementRegimeLivretFamille, setChangementRegimeLivretFamille] = useState<File | null>(null);
-  const [changementRegimeActeMariage, setChangementRegimeActeMariage] = useState<File | null>(null);
-  const [changementRegimeContratMariageInitial, setChangementRegimeContratMariageInitial] = useState<File | null>(null);
-  const [changementRegimeJustifDomicile1, setChangementRegimeJustifDomicile1] = useState<File | null>(null);
-  const [changementRegimeJustifDomicile2, setChangementRegimeJustifDomicile2] = useState<File | null>(null);
-  const [changementRegimeEnfantsAccords, setChangementRegimeEnfantsAccords] = useState<File | null>(null);
-  const [changementRegimeTitresPropriete, setChangementRegimeTitresPropriete] = useState<File | null>(null);
-  const [changementRegimeRelevesComptes, setChangementRegimeRelevesComptes] = useState<File | null>(null);
-  const [changementRegimeStatutsSocietes, setChangementRegimeStatutsSocietes] = useState<File | null>(null);
-  const [changementRegimeActesPrets, setChangementRegimeActesPrets] = useState<File | null>(null);
-  const [changementRegimeEstimationsBiens, setChangementRegimeEstimationsBiens] = useState<File | null>(null);
-  const [changementRegimeJugementTutelle, setChangementRegimeJugementTutelle] = useState<File | null>(null);
+  const [changementRegimeEpouxIdentite1, setChangementRegimeEpouxIdentite1] = useState<File[]>([]);
+  const [changementRegimeEpouxIdentite2, setChangementRegimeEpouxIdentite2] = useState<File[]>([]);
+  const [changementRegimeLivretFamille, setChangementRegimeLivretFamille] = useState<File[]>([]);
+  const [changementRegimeActeMariage, setChangementRegimeActeMariage] = useState<File[]>([]);
+  const [changementRegimeContratMariageInitial, setChangementRegimeContratMariageInitial] = useState<File[]>([]);
+  const [changementRegimeJustifDomicile1, setChangementRegimeJustifDomicile1] = useState<File[]>([]);
+  const [changementRegimeJustifDomicile2, setChangementRegimeJustifDomicile2] = useState<File[]>([]);
+  const [changementRegimeEnfantsAccords, setChangementRegimeEnfantsAccords] = useState<File[]>([]);
+  const [changementRegimeTitresPropriete, setChangementRegimeTitresPropriete] = useState<File[]>([]);
+  const [changementRegimeRelevesComptes, setChangementRegimeRelevesComptes] = useState<File[]>([]);
+  const [changementRegimeStatutsSocietes, setChangementRegimeStatutsSocietes] = useState<File[]>([]);
+  const [changementRegimeActesPrets, setChangementRegimeActesPrets] = useState<File[]>([]);
+  const [changementRegimeEstimationsBiens, setChangementRegimeEstimationsBiens] = useState<File[]>([]);
+  const [changementRegimeJugementTutelle, setChangementRegimeJugementTutelle] = useState<File[]>([]);
 
   // State pour Changement de Régime Matrimonial
   const [changementRegimeData, setChangementRegimeData] = useState({
@@ -27616,411 +27616,81 @@ FIN DE LA CONVENTION
                     <div className="space-y-3 p-4 border rounded-lg bg-blue-50/30">
                       <h4 className="font-medium">Documents du testateur</h4>
                       
-                      <div className="space-y-2">
-                        <Label>Pièce d'identité du testateur (CNI, passeport)</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentIdentiteTestateur')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentIdentiteTestateur ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentIdentiteTestateur ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentIdentiteTestateur ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentIdentiteTestateur ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentIdentiteTestateur?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentIdentiteTestateur"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentIdentiteTestateur(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Pièce d'identité du testateur (CNI, passeport)"
+                        files={testamentIdentiteTestateur}
+                        onFilesChange={setTestamentIdentiteTestateur}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Livret de famille</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentLivretFamille')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentLivretFamille ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentLivretFamille ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentLivretFamille ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentLivretFamille ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentLivretFamille?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentLivretFamille"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentLivretFamille(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Livret de famille"
+                        files={testamentLivretFamille}
+                        onFilesChange={setTestamentLivretFamille}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Certificat de capacité juridique / jugement tutelle-curatelle (si applicable)</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentCapaciteJuridique')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentCapaciteJuridique ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentCapaciteJuridique ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentCapaciteJuridique ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentCapaciteJuridique ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentCapaciteJuridique?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentCapaciteJuridique"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentCapaciteJuridique(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Certificat de capacité juridique / jugement tutelle-curatelle (si applicable)"
+                        files={testamentCapaciteJuridique}
+                        onFilesChange={setTestamentCapaciteJuridique}
+                      />
                     </div>
 
                     {/* Témoins */}
                     <div className="space-y-3 p-4 border rounded-lg bg-purple-50/30">
                       <h4 className="font-medium">Documents des témoins</h4>
                       
-                      <div className="space-y-2">
-                        <Label>Pièces d'identité des témoins</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentIdentiteTemoins')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentIdentiteTemoins ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentIdentiteTemoins ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentIdentiteTemoins ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentIdentiteTemoins ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentIdentiteTemoins?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentIdentiteTemoins"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentIdentiteTemoins(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Pièces d'identité des témoins"
+                        files={testamentIdentiteTemoins}
+                        onFilesChange={setTestamentIdentiteTemoins}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Justificatifs de domicile des témoins</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentDomicileTemoins')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentDomicileTemoins ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentDomicileTemoins ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentDomicileTemoins ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentDomicileTemoins ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentDomicileTemoins?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentDomicileTemoins"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentDomicileTemoins(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Justificatifs de domicile des témoins"
+                        files={testamentDomicileTemoins}
+                        onFilesChange={setTestamentDomicileTemoins}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Attestations sur l'honneur capacité témoins</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentAttestationsTemoins')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentAttestationsTemoins ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentAttestationsTemoins ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentAttestationsTemoins ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentAttestationsTemoins ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentAttestationsTemoins?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentAttestationsTemoins"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentAttestationsTemoins(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Attestations sur l'honneur capacité témoins"
+                        files={testamentAttestationsTemoins}
+                        onFilesChange={setTestamentAttestationsTemoins}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Casiers judiciaires des témoins (extrait n°3)</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentCasiersTemoins')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentCasiersTemoins ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentCasiersTemoins ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentCasiersTemoins ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentCasiersTemoins ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentCasiersTemoins?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentCasiersTemoins"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentCasiersTemoins(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Casiers judiciaires des témoins (extrait n°3)"
+                        files={testamentCasiersTemoins}
+                        onFilesChange={setTestamentCasiersTemoins}
+                      />
                     </div>
 
                     {/* Patrimoine */}
                     <div className="space-y-3 p-4 border rounded-lg bg-orange-50/30">
                       <h4 className="font-medium">Documents patrimoniaux</h4>
                       
-                      <div className="space-y-2">
-                        <Label>Titres de propriété immobiliers</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentTitresPropriete')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentTitresPropriete ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentTitresPropriete ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentTitresPropriete ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentTitresPropriete ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentTitresPropriete?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentTitresPropriete"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentTitresPropriete(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Titres de propriété immobiliers"
+                        files={testamentTitresPropriete}
+                        onFilesChange={setTestamentTitresPropriete}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Relevés bancaires et comptes</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentRelevesBancaires')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentRelevesBancaires ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentRelevesBancaires ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentRelevesBancaires ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentRelevesBancaires ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentRelevesBancaires?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentRelevesBancaires"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentRelevesBancaires(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Relevés bancaires et comptes"
+                        files={testamentRelevesBancaires}
+                        onFilesChange={setTestamentRelevesBancaires}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Contrat de mariage / régime matrimonial</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentContratMariage')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentContratMariage ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentContratMariage ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentContratMariage ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentContratMariage ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentContratMariage?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentContratMariage"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentContratMariage(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Contrat de mariage / régime matrimonial"
+                        files={testamentContratMariage}
+                        onFilesChange={setTestamentContratMariage}
+                      />
 
-                      <div className="space-y-2">
-                        <Label>Autres justificatifs patrimoniaux</Label>
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById('testamentAutresJustificatifs')?.click()}
-                          className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
-                          style={{
-                            borderColor: testamentAutresJustificatifs ? "#22c55e" : "#fb923c",
-                            backgroundColor: testamentAutresJustificatifs ? "#f0fdf4" : "white"
-                          }}
-                        >
-                          {testamentAutresJustificatifs ? (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          <span className={testamentAutresJustificatifs ? "text-green-700 font-medium" : "text-orange-700"}>
-                            {testamentAutresJustificatifs?.name || "Aucune pièce chargée - Cliquer pour ajouter"}
-                          </span>
-                        </button>
-                        <Input
-                          id="testamentAutresJustificatifs"
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setTestamentAutresJustificatifs(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </div>
+                      <MultiFileUpload
+                        label="Autres justificatifs patrimoniaux"
+                        files={testamentAutresJustificatifs}
+                        onFilesChange={setTestamentAutresJustificatifs}
+                      />
                     </div>
                   </div>
 
