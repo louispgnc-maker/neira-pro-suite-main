@@ -3094,6 +3094,239 @@ export default function Contrats() {
     },
   });
 
+  // State pour Procuration notariée liée à la succession
+  const [procurationSuccessionData, setProcurationSuccessionData] = useState({
+    // 1. Type de procuration
+    typeProcuration: [], // Liste de cases à cocher
+    procurationSpecialePrecision: "", // Si "speciale" est coché
+    
+    // 2. Identité complète du mandant
+    mandant: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      sexe: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresse: "",
+      telephone: "",
+      email: "",
+      situationMatrimoniale: "",
+      regimeMatrimonial: "",
+      conjointNom: "",
+      conjointPrenom: "",
+      pieceIdentite: {
+        type: "",
+        numero: "",
+        dateEmission: "",
+        autorite: "",
+      },
+      capaciteJuridique: "majeur", // majeur / curatelle / tutelle
+      tuteurNom: "",
+      tuteurPrenom: "",
+    },
+    
+    // 3. Identité complète du mandataire
+    mandataire: {
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      adresse: "",
+      profession: "",
+      nationalite: "",
+      telephone: "",
+      email: "",
+      pieceIdentite: {
+        type: "",
+        numero: "",
+        dateEmission: "",
+        autorite: "",
+      },
+      lienMandant: "", // enfant / frere_soeur / conjoint / ami / avocat / autre
+      autreLien: "",
+    },
+    
+    // 4. Informations sur la succession
+    succession: {
+      defunt: {
+        nom: "",
+        prenom: "",
+        nomNaissance: "",
+        dateDeces: "",
+        lieuDeces: "",
+        derniereAdresse: "",
+        regimeMatrimonial: "",
+        testamentsExistants: false,
+        donationsAnterieures: false,
+      },
+      notaire: {
+        nom: "",
+        etude: "",
+        email: "",
+        telephone: "",
+      },
+    },
+    
+    // 5. Objet précis de la procuration
+    pouvoirs: {
+      // A. Actes déclaratifs
+      actesDeclaratifs: {
+        signerActeNotoriete: false,
+        representerRendezVous: false,
+        signerDeclarationSuccession: false,
+        deposerRetirerDocuments: false,
+        prendreConnaissancePatrimoine: false,
+        demanderRenseignements: false,
+      },
+      
+      // B. Décisions successorales
+      decisionsSuccessorales: {
+        accepterSuccession: false,
+        renoncerSuccession: false,
+        accepterConcurrenceActif: false,
+        representerDiscussions: false,
+        accordIndivisionConventionnelle: false,
+      },
+      
+      // C. Opérations immobilières
+      operationsImmobilieres: {
+        signerAttestationImmobiliere: false,
+        gererMiseEnVente: false,
+        signerCompromisVente: false,
+        signerActeVente: false,
+        fixerPrixConditions: false,
+        gererDiagnostics: false,
+        encaisserPrix: false,
+      },
+      
+      // D. Partage successoral
+      partageSuccessoral: {
+        accepterProjetPartage: false,
+        signerActePartage: false,
+        accepterVerserRecevoirSoulte: false,
+        accepterAttributionPreferentielle: false,
+        renoncerLot: false,
+        demanderPartagePartiel: false,
+      },
+      
+      // E. Procuration bancaire
+      procurationBancaire: {
+        obtenirInformationsComptes: false,
+        effectuerTransfertsNotaire: false,
+        cloturerComptes: false,
+        gererRemboursementCredits: false,
+      },
+      
+      // F. Procuration fiscale
+      procurationFiscale: {
+        representerFisc: false,
+        deposerDeclaration: false,
+        reglerDroits: false,
+        demanderDelaiPaiement: false,
+        contesterTaxation: false,
+      },
+      
+      // G. Procuration générale
+      procurationGenerale: false,
+    },
+    
+    // 6. Portée de la procuration
+    portee: {
+      // A. Durée
+      duree: "", // acte_specifique / cloture_succession / determinee / indeterminee
+      dateFinDeterminee: "",
+      acteSpecifiquePrecision: "",
+      
+      // B. Limites éventuelles
+      limites: {
+        interdictionVendreBien: false,
+        interdictionSignerPartage: false,
+        interdictionAccepterSoulte: false,
+        seulementActeNotarie: false,
+        limiteMontant: "",
+      },
+    },
+    
+    // 7. Déclarations obligatoires du mandant
+    declarations: {
+      procurationLibre: false,
+      comprendreConsequences: false,
+      sainEsprit: false,
+      sansInfluence: false,
+      exactitudeInformations: false,
+      assumerActesMandataire: false,
+      revocationPossible: false,
+      toleranceRatification: false,
+    },
+    
+    // 8. Mentions légales
+    mentionsLegales: {
+      articlesCodeCivil: false,
+      natureMandatRappel: false,
+      responsabiliteMandataire: false,
+      validiteSignatureElectronique: false,
+      pouvoirSpecialGeneral: false,
+      mentionsNotariees: false,
+    },
+    
+    // 9. Cas particuliers
+    casParticuliers: {
+      // Mandant résident à l'étranger
+      residentEtranger: false,
+      apostilleNecessaire: false,
+      certificatCoutume: false,
+      
+      // Mandant ne sachant pas signer
+      neSaitPasSigner: false,
+      signatureParMarque: false,
+      temoinsNecessaires: false,
+      temoin1Nom: "",
+      temoin1Prenom: "",
+      temoin2Nom: "",
+      temoin2Prenom: "",
+      
+      // Mandant sous tutelle/curatelle
+      sousTutelleCuratelle: false,
+      autorisationJuge: false,
+      interventionTuteur: false,
+      
+      // Succession avec mineurs
+      successionAvecMineurs: false,
+      representationLegale: false,
+      autorisationJugeMineurs: false,
+      
+      // Succession avec démembrement
+      successionDemembrement: false,
+      procurationSepareeUsufruit: false,
+      procurationSepareeNuePropriete: false,
+      
+      // Succession internationale
+      successionInternationale: false,
+      doubleDeclarationFiscale: false,
+      limitationsSelonEtat: "",
+    },
+  });
+
+  // Files pour Procuration succession
+  const [procurationMandantIdentite, setProcurationMandantIdentite] = useState<File[]>([]);
+  const [procurationMandantDomicile, setProcurationMandantDomicile] = useState<File[]>([]);
+  const [procurationMandantNaissance, setProcurationMandantNaissance] = useState<File[]>([]);
+  const [procurationMandantMariage, setProcurationMandantMariage] = useState<File[]>([]);
+  const [procurationMandantTutelle, setProcurationMandantTutelle] = useState<File[]>([]);
+  const [procurationMandataireIdentite, setProcurationMandataireIdentite] = useState<File[]>([]);
+  const [procurationMandataireDomicile, setProcurationMandataireDomicile] = useState<File[]>([]);
+  const [procurationSuccessionDeces, setProcurationSuccessionDeces] = useState<File[]>([]);
+  const [procurationSuccessionLivret, setProcurationSuccessionLivret] = useState<File[]>([]);
+  const [procurationSuccessionTestaments, setProcurationSuccessionTestaments] = useState<File[]>([]);
+  const [procurationSuccessionDonations, setProcurationSuccessionDonations] = useState<File[]>([]);
+  const [procurationSuccessionRIB, setProcurationSuccessionRIB] = useState<File[]>([]);
+
   const navigate = useNavigate();
 
   // debounce
@@ -6975,6 +7208,183 @@ FIN DE LA CONVENTION
     } catch (err: unknown) {
       console.error('Erreur création partage successoral:', err);
       toast.error("Erreur lors de la création du partage successoral");
+    }
+  };
+
+  const handleProcurationSuccessionSubmit = async () => {
+    if (!user) return;
+    
+    try {
+      // Générer la description structurée
+      let description = `PROCURATION NOTARIÉE LIÉE À LA SUCCESSION\n\n`;
+      
+      // Types de procuration
+      description += `--- TYPES DE PROCURATION ---\n`;
+      const typesLabels = {
+        acte_notoriete: "Acte de notoriété",
+        acceptation_renonciation: "Acceptation / Renonciation",
+        declaration_succession: "Déclaration de succession",
+        attestation_immobiliere: "Attestation immobilière",
+        partage_successoral: "Partage successoral",
+        vente_bien: "Vente bien successoral",
+        bancaire: "Bancaire",
+        fiscale: "Fiscale (DGFiP)",
+        generale: "Générale",
+        speciale: "Spéciale"
+      };
+      procurationSuccessionData.typeProcuration.forEach(type => {
+        description += `- ${typesLabels[type] || type}\n`;
+      });
+      if (procurationSuccessionData.typeProcuration.includes("speciale")) {
+        description += `  Précision : ${procurationSuccessionData.procurationSpecialePrecision}\n`;
+      }
+      description += `\n`;
+      
+      // Mandant
+      description += `--- MANDANT (qui donne procuration) ---\n`;
+      description += `${procurationSuccessionData.mandant.prenom} ${procurationSuccessionData.mandant.nom}\n`;
+      description += `Né(e) le ${procurationSuccessionData.mandant.dateNaissance} à ${procurationSuccessionData.mandant.lieuNaissance}\n`;
+      description += `Adresse : ${procurationSuccessionData.mandant.adresse}\n`;
+      description += `Téléphone : ${procurationSuccessionData.mandant.telephone}\n`;
+      description += `Situation matrimoniale : ${procurationSuccessionData.mandant.situationMatrimoniale}\n`;
+      description += `Capacité juridique : ${procurationSuccessionData.mandant.capaciteJuridique}\n`;
+      if (procurationSuccessionData.mandant.capaciteJuridique !== "majeur") {
+        description += `Tuteur/Curateur : ${procurationSuccessionData.mandant.tuteurPrenom} ${procurationSuccessionData.mandant.tuteurNom}\n`;
+      }
+      description += `\n`;
+      
+      // Mandataire
+      description += `--- MANDATAIRE (qui représente) ---\n`;
+      description += `${procurationSuccessionData.mandataire.prenom} ${procurationSuccessionData.mandataire.nom}\n`;
+      description += `Né(e) le ${procurationSuccessionData.mandataire.dateNaissance} à ${procurationSuccessionData.mandataire.lieuNaissance}\n`;
+      description += `Adresse : ${procurationSuccessionData.mandataire.adresse}\n`;
+      description += `Téléphone : ${procurationSuccessionData.mandataire.telephone}\n`;
+      description += `Lien avec le mandant : ${procurationSuccessionData.mandataire.lienMandant}\n`;
+      if (procurationSuccessionData.mandataire.lienMandant === "autre") {
+        description += `Précision : ${procurationSuccessionData.mandataire.autreLien}\n`;
+      }
+      description += `\n`;
+      
+      // Succession
+      description += `--- SUCCESSION CONCERNÉE ---\n`;
+      description += `Défunt : ${procurationSuccessionData.succession.defunt.prenom} ${procurationSuccessionData.succession.defunt.nom}\n`;
+      description += `Décédé(e) le ${procurationSuccessionData.succession.defunt.dateDeces} à ${procurationSuccessionData.succession.defunt.lieuDeces}\n`;
+      description += `Dernière adresse : ${procurationSuccessionData.succession.defunt.derniereAdresse}\n`;
+      description += `Notaire : ${procurationSuccessionData.succession.notaire.nom} (${procurationSuccessionData.succession.notaire.etude})\n`;
+      description += `Contact notaire : ${procurationSuccessionData.succession.notaire.email} - ${procurationSuccessionData.succession.notaire.telephone}\n`;
+      description += `\n`;
+      
+      // Pouvoirs
+      description += `--- POUVOIRS ACCORDÉS ---\n`;
+      let pouvoirsCount = 0;
+      
+      if (procurationSuccessionData.pouvoirs.procurationGenerale) {
+        description += `⚠️ PROCURATION GÉNÉRALE : Tous pouvoirs pour opérations successorales\n\n`;
+      } else {
+        // Actes déclaratifs
+        const actesDeclaratifs = Object.entries(procurationSuccessionData.pouvoirs.actesDeclaratifs)
+          .filter(([_, v]) => v).map(([k, _]) => k);
+        if (actesDeclaratifs.length > 0) {
+          description += `Actes déclaratifs (${actesDeclaratifs.length}) :\n`;
+          actesDeclaratifs.forEach(a => description += `- ${a}\n`);
+          pouvoirsCount += actesDeclaratifs.length;
+        }
+        
+        // Décisions successorales
+        const decisionsSuccessorales = Object.entries(procurationSuccessionData.pouvoirs.decisionsSuccessorales)
+          .filter(([_, v]) => v).map(([k, _]) => k);
+        if (decisionsSuccessorales.length > 0) {
+          description += `Décisions successorales (${decisionsSuccessorales.length}) :\n`;
+          decisionsSuccessorales.forEach(d => description += `- ${d}\n`);
+          pouvoirsCount += decisionsSuccessorales.length;
+        }
+        
+        // Opérations immobilières
+        const operationsImmobilieres = Object.entries(procurationSuccessionData.pouvoirs.operationsImmobilieres)
+          .filter(([_, v]) => v).map(([k, _]) => k);
+        if (operationsImmobilieres.length > 0) {
+          description += `Opérations immobilières (${operationsImmobilieres.length}) :\n`;
+          operationsImmobilieres.forEach(o => description += `- ${o}\n`);
+          pouvoirsCount += operationsImmobilieres.length;
+        }
+        
+        // Autres catégories de pouvoirs...
+        description += `\nTotal : ${pouvoirsCount} pouvoirs spécifiques accordés\n`;
+      }
+      description += `\n`;
+      
+      // Portée
+      description += `--- PORTÉE ---\n`;
+      description += `Durée : ${procurationSuccessionData.portee.duree}\n`;
+      if (procurationSuccessionData.portee.duree === "determinee") {
+        description += `Date de fin : ${procurationSuccessionData.portee.dateFinDeterminee}\n`;
+      }
+      if (procurationSuccessionData.portee.limites.limiteMontant) {
+        description += `Limite de montant : ${procurationSuccessionData.portee.limites.limiteMontant}\n`;
+      }
+      description += `\n`;
+
+      // Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: `Procuration succession - ${procurationSuccessionData.mandant.nom} pour ${procurationSuccessionData.succession.defunt.nom}`,
+          type: "Procuration notariée liée à la succession",
+          category: "Succession",
+          role: role,
+          description: description,
+          data: {
+            typeProcuration: procurationSuccessionData.typeProcuration,
+            procurationSpecialePrecision: procurationSuccessionData.procurationSpecialePrecision,
+            mandant: procurationSuccessionData.mandant,
+            mandataire: procurationSuccessionData.mandataire,
+            succession: procurationSuccessionData.succession,
+            pouvoirs: procurationSuccessionData.pouvoirs,
+            portee: procurationSuccessionData.portee,
+            declarations: procurationSuccessionData.declarations,
+            mentionsLegales: procurationSuccessionData.mentionsLegales,
+            casParticuliers: procurationSuccessionData.casParticuliers,
+          }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers dans Supabase Storage
+      async function uploadFile(files: File[], label: string) {
+        for (const file of files) {
+          const filePath = `${user.id}/${contrat.id}/${label}/${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from('documents')
+            .upload(filePath, file);
+          if (uploadError) console.error(`Erreur upload ${label}:`, uploadError);
+        }
+      }
+
+      // Upload tous les fichiers
+      await uploadFile(procurationMandantIdentite, 'mandant_identite');
+      await uploadFile(procurationMandantDomicile, 'mandant_domicile');
+      await uploadFile(procurationMandantNaissance, 'mandant_naissance');
+      await uploadFile(procurationMandantMariage, 'mandant_mariage');
+      await uploadFile(procurationMandantTutelle, 'mandant_tutelle');
+      await uploadFile(procurationMandataireIdentite, 'mandataire_identite');
+      await uploadFile(procurationMandataireDomicile, 'mandataire_domicile');
+      await uploadFile(procurationSuccessionDeces, 'succession_deces');
+      await uploadFile(procurationSuccessionLivret, 'succession_livret');
+      await uploadFile(procurationSuccessionTestaments, 'succession_testaments');
+      await uploadFile(procurationSuccessionDonations, 'succession_donations');
+      await uploadFile(procurationSuccessionRIB, 'succession_rib');
+
+      setContrats((prev) => [contrat, ...prev]);
+      setShowQuestionDialog(false);
+      toast.success('Procuration notariée créée avec succès');
+      navigate(role === 'notaire' ? `/notaires/contrats/${contrat.id}` : `/avocats/contrats/${contrat.id}`);
+      
+    } catch (err: unknown) {
+      console.error('Erreur création procuration succession:', err);
+      toast.error("Erreur lors de la création de la procuration");
     }
   };
 
@@ -33401,6 +33811,1873 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {/* Formulaire pour Procuration notariée liée à la succession */}
+            {pendingContractType === "Procuration notariée liée à la succession" && (
+              <>
+                <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                  
+                  {/* SECTION 1: TYPE DE PROCURATION */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Type de procuration</h3>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Sélectionnez le(s) type(s) de procuration *</Label>
+                      
+                      <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
+                        {[
+                          { value: "acte_notoriete", label: "Procuration pour acte de notoriété" },
+                          { value: "acceptation_renonciation", label: "Procuration pour acceptation / renonciation" },
+                          { value: "declaration_succession", label: "Procuration pour déclaration de succession" },
+                          { value: "attestation_immobiliere", label: "Procuration pour attestation immobilière" },
+                          { value: "partage_successoral", label: "Procuration pour partage successoral" },
+                          { value: "vente_bien", label: "Procuration pour vente d'un bien successoral" },
+                          { value: "bancaire", label: "Procuration bancaire (accès comptes du défunt)" },
+                          { value: "fiscale", label: "Procuration fiscale (DGFiP)" },
+                          { value: "generale", label: "Procuration générale pour toutes opérations successorales" },
+                          { value: "speciale", label: "Procuration spéciale (préciser l'acte unique)" }
+                        ].map((type) => (
+                          <div key={type.value} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`type_${type.value}`}
+                              checked={procurationSuccessionData.typeProcuration.includes(type.value)}
+                              onChange={(e) => {
+                                const newTypes = e.target.checked
+                                  ? [...procurationSuccessionData.typeProcuration, type.value]
+                                  : procurationSuccessionData.typeProcuration.filter(t => t !== type.value);
+                                setProcurationSuccessionData({
+                                  ...procurationSuccessionData,
+                                  typeProcuration: newTypes
+                                });
+                              }}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={`type_${type.value}`} className="cursor-pointer">{type.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+
+                      {procurationSuccessionData.typeProcuration.includes("speciale") && (
+                        <div className="mt-4">
+                          <Label htmlFor="procurationSpecialePrecision">Précisez l'acte unique concerné *</Label>
+                          <Textarea
+                            id="procurationSpecialePrecision"
+                            value={procurationSuccessionData.procurationSpecialePrecision}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              procurationSpecialePrecision: e.target.value
+                            })}
+                            rows={3}
+                            placeholder="Décrivez précisément l'acte pour lequel la procuration est donnée..."
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* SECTION 2: IDENTITÉ DU MANDANT */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du mandant</h3>
+                    <p className="text-sm text-muted-foreground">(Personne qui donne procuration)</p>
+
+                    {/* Sélecteur de client */}
+                    <div className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <Label className="text-sm font-medium whitespace-nowrap">Choisir un client existant :</Label>
+                      <Select
+                        value={procurationSuccessionData.mandant.clientId || ""}
+                        onValueChange={(clientId) => {
+                          const selectedClient = clients.find(c => c.id === clientId) as any;
+                          if (selectedClient) {
+                            setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandant: {
+                                ...procurationSuccessionData.mandant,
+                                isClient: true,
+                                clientId: selectedClient.id,
+                                nom: selectedClient.nom || "",
+                                prenom: selectedClient.prenom || "",
+                                adresse: selectedClient.adresse || "",
+                                telephone: selectedClient.telephone || "",
+                                email: selectedClient.email || "",
+                                dateNaissance: selectedClient.date_naissance || "",
+                                lieuNaissance: selectedClient.lieu_naissance || "",
+                                nationalite: selectedClient.nationalite || "",
+                                profession: selectedClient.profession || "",
+                                situationMatrimoniale: typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null
+                                  ? selectedClient.situation_familiale.situation_familiale || ""
+                                  : selectedClient.situation_matrimoniale || "",
+                                pieceIdentite: {
+                                  ...procurationSuccessionData.mandant.pieceIdentite,
+                                  type: selectedClient.type_identite || "",
+                                  numero: selectedClient.numero_identite || "",
+                                },
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Choisir le client" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {procurationSuccessionData.mandant.clientId && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {
+                              ...procurationSuccessionData.mandant,
+                              isClient: false,
+                              clientId: "",
+                            }
+                          })}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="mandantNom">Nom *</Label>
+                        <Input
+                          id="mandantNom"
+                          value={procurationSuccessionData.mandant.nom}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, nom: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandantPrenom">Prénom *</Label>
+                        <Input
+                          id="mandantPrenom"
+                          value={procurationSuccessionData.mandant.prenom}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, prenom: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandantNomNaissance">Nom de naissance</Label>
+                        <Input
+                          id="mandantNomNaissance"
+                          value={procurationSuccessionData.mandant.nomNaissance}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, nomNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandantSexe">Sexe *</Label>
+                        <Select
+                          value={procurationSuccessionData.mandant.sexe}
+                          onValueChange={(value) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, sexe: value}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="homme">Homme</SelectItem>
+                            <SelectItem value="femme">Femme</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="mandantDateNaissance">Date de naissance *</Label>
+                        <Input
+                          id="mandantDateNaissance"
+                          type="date"
+                          value={procurationSuccessionData.mandant.dateNaissance}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, dateNaissance: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandantLieuNaissance">Lieu de naissance *</Label>
+                        <Input
+                          id="mandantLieuNaissance"
+                          value={procurationSuccessionData.mandant.lieuNaissance}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, lieuNaissance: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandantNationalite">Nationalité *</Label>
+                        <Input
+                          id="mandantNationalite"
+                          value={procurationSuccessionData.mandant.nationalite}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, nationalite: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandantProfession">Profession</Label>
+                        <Input
+                          id="mandantProfession"
+                          value={procurationSuccessionData.mandant.profession}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="mandantAdresse">Adresse complète *</Label>
+                      <Textarea
+                        id="mandantAdresse"
+                        value={procurationSuccessionData.mandant.adresse}
+                        onChange={(e) => setProcurationSuccessionData({
+                          ...procurationSuccessionData,
+                          mandant: {...procurationSuccessionData.mandant, adresse: e.target.value}
+                        })}
+                        rows={2}
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="mandantTelephone">Téléphone *</Label>
+                        <Input
+                          id="mandantTelephone"
+                          value={procurationSuccessionData.mandant.telephone}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, telephone: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandantEmail">Email</Label>
+                        <Input
+                          id="mandantEmail"
+                          type="email"
+                          value={procurationSuccessionData.mandant.email}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandant: {...procurationSuccessionData.mandant, email: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Situation matrimoniale */}
+                    <div className="space-y-4 mt-4">
+                      <h4 className="font-medium text-sm">Situation matrimoniale</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="mandantSituationMatrimoniale">Situation *</Label>
+                          <Select
+                            value={procurationSuccessionData.mandant.situationMatrimoniale}
+                            onValueChange={(value) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandant: {...procurationSuccessionData.mandant, situationMatrimoniale: value}
+                            })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="celibataire">Célibataire</SelectItem>
+                              <SelectItem value="marie">Marié(e)</SelectItem>
+                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                              <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                              <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {(procurationSuccessionData.mandant.situationMatrimoniale === "marie" || procurationSuccessionData.mandant.situationMatrimoniale === "pacse") && (
+                          <>
+                            <div>
+                              <Label htmlFor="mandantRegimeMatrimonial">Régime matrimonial</Label>
+                              <Input
+                                id="mandantRegimeMatrimonial"
+                                value={procurationSuccessionData.mandant.regimeMatrimonial}
+                                onChange={(e) => setProcurationSuccessionData({
+                                  ...procurationSuccessionData,
+                                  mandant: {...procurationSuccessionData.mandant, regimeMatrimonial: e.target.value}
+                                })}
+                                placeholder="Ex: Communauté réduite aux acquêts"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="mandantConjointNom">Nom du conjoint</Label>
+                              <Input
+                                id="mandantConjointNom"
+                                value={procurationSuccessionData.mandant.conjointNom}
+                                onChange={(e) => setProcurationSuccessionData({
+                                  ...procurationSuccessionData,
+                                  mandant: {...procurationSuccessionData.mandant, conjointNom: e.target.value}
+                                })}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="mandantConjointPrenom">Prénom du conjoint</Label>
+                              <Input
+                                id="mandantConjointPrenom"
+                                value={procurationSuccessionData.mandant.conjointPrenom}
+                                onChange={(e) => setProcurationSuccessionData({
+                                  ...procurationSuccessionData,
+                                  mandant: {...procurationSuccessionData.mandant, conjointPrenom: e.target.value}
+                                })}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Pièce d'identité */}
+                    <div className="space-y-4 mt-4">
+                      <h4 className="font-medium text-sm">Pièce d'identité *</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="mandantPieceType">Type de pièce</Label>
+                          <Select
+                            value={procurationSuccessionData.mandant.pieceIdentite.type}
+                            onValueChange={(value) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandant: {
+                                ...procurationSuccessionData.mandant,
+                                pieceIdentite: {...procurationSuccessionData.mandant.pieceIdentite, type: value}
+                              }
+                            })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="cni">Carte Nationale d'Identité</SelectItem>
+                              <SelectItem value="passeport">Passeport</SelectItem>
+                              <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="mandantPieceNumero">Numéro</Label>
+                          <Input
+                            id="mandantPieceNumero"
+                            value={procurationSuccessionData.mandant.pieceIdentite.numero}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandant: {
+                                ...procurationSuccessionData.mandant,
+                                pieceIdentite: {...procurationSuccessionData.mandant.pieceIdentite, numero: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="mandantPieceDateEmission">Date d'émission</Label>
+                          <Input
+                            id="mandantPieceDateEmission"
+                            type="date"
+                            value={procurationSuccessionData.mandant.pieceIdentite.dateEmission}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandant: {
+                                ...procurationSuccessionData.mandant,
+                                pieceIdentite: {...procurationSuccessionData.mandant.pieceIdentite, dateEmission: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="mandantPieceAutorite">Autorité émettrice</Label>
+                          <Input
+                            id="mandantPieceAutorite"
+                            value={procurationSuccessionData.mandant.pieceIdentite.autorite}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandant: {
+                                ...procurationSuccessionData.mandant,
+                                pieceIdentite: {...procurationSuccessionData.mandant.pieceIdentite, autorite: e.target.value}
+                              }
+                            })}
+                            placeholder="Ex: Préfecture de Paris"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Capacité juridique */}
+                    <div className="space-y-4 mt-4">
+                      <h4 className="font-medium text-sm">Capacité juridique *</h4>
+                      <Select
+                        value={procurationSuccessionData.mandant.capaciteJuridique}
+                        onValueChange={(value) => setProcurationSuccessionData({
+                          ...procurationSuccessionData,
+                          mandant: {...procurationSuccessionData.mandant, capaciteJuridique: value}
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="majeur">Majeur</SelectItem>
+                          <SelectItem value="curatelle">Sous curatelle (joindre jugement)</SelectItem>
+                          <SelectItem value="tutelle">Sous tutelle (joindre jugement + identités tuteur)</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {(procurationSuccessionData.mandant.capaciteJuridique === "curatelle" || procurationSuccessionData.mandant.capaciteJuridique === "tutelle") && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                          <div>
+                            <Label htmlFor="mandantTuteurNom">Nom du tuteur/curateur</Label>
+                            <Input
+                              id="mandantTuteurNom"
+                              value={procurationSuccessionData.mandant.tuteurNom}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                mandant: {...procurationSuccessionData.mandant, tuteurNom: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="mandantTuteurPrenom">Prénom du tuteur/curateur</Label>
+                            <Input
+                              id="mandantTuteurPrenom"
+                              value={procurationSuccessionData.mandant.tuteurPrenom}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                mandant: {...procurationSuccessionData.mandant, tuteurPrenom: e.target.value}
+                              })}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* SECTION 3: IDENTITÉ DU MANDATAIRE */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité complète du mandataire</h3>
+                    <p className="text-sm text-muted-foreground">(Personne représentant le mandant)</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="mandataireNom">Nom *</Label>
+                        <Input
+                          id="mandataireNom"
+                          value={procurationSuccessionData.mandataire.nom}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, nom: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandatairePrenom">Prénom *</Label>
+                        <Input
+                          id="mandatairePrenom"
+                          value={procurationSuccessionData.mandataire.prenom}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, prenom: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandataireNomNaissance">Nom de naissance</Label>
+                        <Input
+                          id="mandataireNomNaissance"
+                          value={procurationSuccessionData.mandataire.nomNaissance}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, nomNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandataireDateNaissance">Date de naissance *</Label>
+                        <Input
+                          id="mandataireDateNaissance"
+                          type="date"
+                          value={procurationSuccessionData.mandataire.dateNaissance}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, dateNaissance: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandataireLieuNaissance">Lieu de naissance *</Label>
+                        <Input
+                          id="mandataireLieuNaissance"
+                          value={procurationSuccessionData.mandataire.lieuNaissance}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, lieuNaissance: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandataireProfession">Profession</Label>
+                        <Input
+                          id="mandataireProfession"
+                          value={procurationSuccessionData.mandataire.profession}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandataireNationalite">Nationalité *</Label>
+                        <Input
+                          id="mandataireNationalite"
+                          value={procurationSuccessionData.mandataire.nationalite}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, nationalite: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="mandataireAdresse">Adresse complète *</Label>
+                      <Textarea
+                        id="mandataireAdresse"
+                        value={procurationSuccessionData.mandataire.adresse}
+                        onChange={(e) => setProcurationSuccessionData({
+                          ...procurationSuccessionData,
+                          mandataire: {...procurationSuccessionData.mandataire, adresse: e.target.value}
+                        })}
+                        rows={2}
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="mandataireTelephone">Téléphone *</Label>
+                        <Input
+                          id="mandataireTelephone"
+                          value={procurationSuccessionData.mandataire.telephone}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, telephone: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="mandataireEmail">Email</Label>
+                        <Input
+                          id="mandataireEmail"
+                          type="email"
+                          value={procurationSuccessionData.mandataire.email}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            mandataire: {...procurationSuccessionData.mandataire, email: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Pièce d'identité mandataire */}
+                    <div className="space-y-4 mt-4">
+                      <h4 className="font-medium text-sm">Pièce d'identité *</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="mandatairePieceType">Type de pièce</Label>
+                          <Select
+                            value={procurationSuccessionData.mandataire.pieceIdentite.type}
+                            onValueChange={(value) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandataire: {
+                                ...procurationSuccessionData.mandataire,
+                                pieceIdentite: {...procurationSuccessionData.mandataire.pieceIdentite, type: value}
+                              }
+                            })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="cni">Carte Nationale d'Identité</SelectItem>
+                              <SelectItem value="passeport">Passeport</SelectItem>
+                              <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="mandatairePieceNumero">Numéro</Label>
+                          <Input
+                            id="mandatairePieceNumero"
+                            value={procurationSuccessionData.mandataire.pieceIdentite.numero}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandataire: {
+                                ...procurationSuccessionData.mandataire,
+                                pieceIdentite: {...procurationSuccessionData.mandataire.pieceIdentite, numero: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="mandatairePieceDateEmission">Date d'émission</Label>
+                          <Input
+                            id="mandatairePieceDateEmission"
+                            type="date"
+                            value={procurationSuccessionData.mandataire.pieceIdentite.dateEmission}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandataire: {
+                                ...procurationSuccessionData.mandataire,
+                                pieceIdentite: {...procurationSuccessionData.mandataire.pieceIdentite, dateEmission: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="mandatairePieceAutorite">Autorité émettrice</Label>
+                          <Input
+                            id="mandatairePieceAutorite"
+                            value={procurationSuccessionData.mandataire.pieceIdentite.autorite}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandataire: {
+                                ...procurationSuccessionData.mandataire,
+                                pieceIdentite: {...procurationSuccessionData.mandataire.pieceIdentite, autorite: e.target.value}
+                              }
+                            })}
+                            placeholder="Ex: Préfecture de Paris"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Lien avec le mandant */}
+                    <div className="space-y-4 mt-4">
+                      <h4 className="font-medium text-sm">Lien avec le mandant *</h4>
+                      <Select
+                        value={procurationSuccessionData.mandataire.lienMandant}
+                        onValueChange={(value) => setProcurationSuccessionData({
+                          ...procurationSuccessionData,
+                          mandataire: {...procurationSuccessionData.mandataire, lienMandant: value}
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="enfant">Enfant</SelectItem>
+                          <SelectItem value="frere_soeur">Frère / Sœur</SelectItem>
+                          <SelectItem value="conjoint">Conjoint</SelectItem>
+                          <SelectItem value="ami">Ami</SelectItem>
+                          <SelectItem value="avocat">Avocat</SelectItem>
+                          <SelectItem value="autre">Autre</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {procurationSuccessionData.mandataire.lienMandant === "autre" && (
+                        <div className="mt-2">
+                          <Label htmlFor="mandataireAutreLien">Précisez le lien</Label>
+                          <Input
+                            id="mandataireAutreLien"
+                            value={procurationSuccessionData.mandataire.autreLien}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mandataire: {...procurationSuccessionData.mandataire, autreLien: e.target.value}
+                            })}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* SECTION 4: INFORMATIONS SUR LA SUCCESSION */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Informations sur la succession</h3>
+
+                    {/* Défunt */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-md">Informations sur le défunt</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="procurationDefuntNom">Nom *</Label>
+                          <Input
+                            id="procurationDefuntNom"
+                            value={procurationSuccessionData.succession.defunt.nom}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                defunt: {...procurationSuccessionData.succession.defunt, nom: e.target.value}
+                              }
+                            })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="procurationDefuntPrenom">Prénom *</Label>
+                          <Input
+                            id="procurationDefuntPrenom"
+                            value={procurationSuccessionData.succession.defunt.prenom}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                defunt: {...procurationSuccessionData.succession.defunt, prenom: e.target.value}
+                              }
+                            })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="procurationDefuntNomNaissance">Nom de naissance</Label>
+                          <Input
+                            id="procurationDefuntNomNaissance"
+                            value={procurationSuccessionData.succession.defunt.nomNaissance}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                defunt: {...procurationSuccessionData.succession.defunt, nomNaissance: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="procurationDefuntDateDeces">Date du décès *</Label>
+                          <Input
+                            id="procurationDefuntDateDeces"
+                            type="date"
+                            value={procurationSuccessionData.succession.defunt.dateDeces}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                defunt: {...procurationSuccessionData.succession.defunt, dateDeces: e.target.value}
+                              }
+                            })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="procurationDefuntLieuDeces">Lieu du décès *</Label>
+                          <Input
+                            id="procurationDefuntLieuDeces"
+                            value={procurationSuccessionData.succession.defunt.lieuDeces}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                defunt: {...procurationSuccessionData.succession.defunt, lieuDeces: e.target.value}
+                              }
+                            })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="procurationDefuntRegimeMatrimonial">Régime matrimonial</Label>
+                          <Input
+                            id="procurationDefuntRegimeMatrimonial"
+                            value={procurationSuccessionData.succession.defunt.regimeMatrimonial}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                defunt: {...procurationSuccessionData.succession.defunt, regimeMatrimonial: e.target.value}
+                              }
+                            })}
+                            placeholder="Ex: Communauté réduite aux acquêts"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="procurationDefuntDerniereAdresse">Dernière adresse *</Label>
+                        <Textarea
+                          id="procurationDefuntDerniereAdresse"
+                          value={procurationSuccessionData.succession.defunt.derniereAdresse}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            succession: {
+                              ...procurationSuccessionData.succession,
+                              defunt: {...procurationSuccessionData.succession.defunt, derniereAdresse: e.target.value}
+                            }
+                          })}
+                          rows={2}
+                          required
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="procurationDefuntTestaments"
+                          checked={procurationSuccessionData.succession.defunt.testamentsExistants}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            succession: {
+                              ...procurationSuccessionData.succession,
+                              defunt: {...procurationSuccessionData.succession.defunt, testamentsExistants: e.target.checked}
+                            }
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="procurationDefuntTestaments">Testaments existants</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="procurationDefuntDonations"
+                          checked={procurationSuccessionData.succession.defunt.donationsAnterieures}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            succession: {
+                              ...procurationSuccessionData.succession,
+                              defunt: {...procurationSuccessionData.succession.defunt, donationsAnterieures: e.target.checked}
+                            }
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="procurationDefuntDonations">Donations antérieures</Label>
+                      </div>
+                    </div>
+
+                    {/* Notaire */}
+                    <div className="space-y-4 mt-6">
+                      <h4 className="font-medium text-md">Notaire chargé de la succession</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="procurationNotaireNom">Nom du notaire *</Label>
+                          <Input
+                            id="procurationNotaireNom"
+                            value={procurationSuccessionData.succession.notaire.nom}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                notaire: {...procurationSuccessionData.succession.notaire, nom: e.target.value}
+                              }
+                            })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="procurationNotaireEtude">Étude notariale</Label>
+                          <Input
+                            id="procurationNotaireEtude"
+                            value={procurationSuccessionData.succession.notaire.etude}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                notaire: {...procurationSuccessionData.succession.notaire, etude: e.target.value}
+                              }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="procurationNotaireEmail">Email *</Label>
+                          <Input
+                            id="procurationNotaireEmail"
+                            type="email"
+                            value={procurationSuccessionData.succession.notaire.email}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                notaire: {...procurationSuccessionData.succession.notaire, email: e.target.value}
+                              }
+                            })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="procurationNotaireTelephone">Téléphone *</Label>
+                          <Input
+                            id="procurationNotaireTelephone"
+                            value={procurationSuccessionData.succession.notaire.telephone}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              succession: {
+                                ...procurationSuccessionData.succession,
+                                notaire: {...procurationSuccessionData.succession.notaire, telephone: e.target.value}
+                              }
+                            })}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 5: OBJET PRÉCIS DE LA PROCURATION */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Objet précis de la procuration - Pouvoirs autorisés</h3>
+                    
+                    {/* A. Actes déclaratifs */}
+                    <div className="p-4 border rounded-lg bg-blue-50">
+                      <h4 className="font-medium text-md mb-3">A. Procuration pour actes déclaratifs</h4>
+                      <div className="space-y-2">
+                        {[
+                          { key: "signerActeNotoriete", label: "Signer l'acte de notoriété" },
+                          { key: "representerRendezVous", label: "Représenter aux rendez-vous successoraux" },
+                          { key: "signerDeclarationSuccession", label: "Signer la déclaration de succession" },
+                          { key: "deposerRetirerDocuments", label: "Déposer et retirer les documents officiels" },
+                          { key: "prendreConnaissancePatrimoine", label: "Prendre connaissance des éléments patrimoniaux" },
+                          { key: "demanderRenseignements", label: "Demander les renseignements aux banques / assureurs" },
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`pouvoir_${item.key}`}
+                              checked={procurationSuccessionData.pouvoirs.actesDeclaratifs[item.key]}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                pouvoirs: {
+                                  ...procurationSuccessionData.pouvoirs,
+                                  actesDeclaratifs: {
+                                    ...procurationSuccessionData.pouvoirs.actesDeclaratifs,
+                                    [item.key]: e.target.checked
+                                  }
+                                }
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={`pouvoir_${item.key}`} className="cursor-pointer">{item.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* B. Décisions successorales */}
+                    <div className="p-4 border rounded-lg bg-green-50">
+                      <h4 className="font-medium text-md mb-3">B. Procuration pour décisions successorales</h4>
+                      <div className="space-y-2">
+                        {[
+                          { key: "accepterSuccession", label: "Accepter la succession" },
+                          { key: "renoncerSuccession", label: "Renoncer à la succession" },
+                          { key: "accepterConcurrenceActif", label: "Accepter à concurrence de l'actif net" },
+                          { key: "representerDiscussions", label: "Représenter dans les discussions avec les cohéritiers" },
+                          { key: "accordIndivisionConventionnelle", label: "Donner ou refuser son accord à une indivision conventionnelle" },
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`pouvoir_${item.key}`}
+                              checked={procurationSuccessionData.pouvoirs.decisionsSuccessorales[item.key]}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                pouvoirs: {
+                                  ...procurationSuccessionData.pouvoirs,
+                                  decisionsSuccessorales: {
+                                    ...procurationSuccessionData.pouvoirs.decisionsSuccessorales,
+                                    [item.key]: e.target.checked
+                                  }
+                                }
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={`pouvoir_${item.key}`} className="cursor-pointer">{item.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* C. Opérations immobilières */}
+                    <div className="p-4 border rounded-lg bg-purple-50">
+                      <h4 className="font-medium text-md mb-3">C. Procuration pour opérations immobilières</h4>
+                      <div className="space-y-2">
+                        {[
+                          { key: "signerAttestationImmobiliere", label: "Signer l'attestation immobilière de propriété" },
+                          { key: "gererMiseEnVente", label: "Gérer la mise en vente d'un bien" },
+                          { key: "signerCompromisVente", label: "Signer un compromis de vente" },
+                          { key: "signerActeVente", label: "Signer l'acte authentique de vente" },
+                          { key: "fixerPrixConditions", label: "Fixer le prix et conditions de vente" },
+                          { key: "gererDiagnostics", label: "Gérer les diagnostics, état des lieux" },
+                          { key: "encaisserPrix", label: "Encaisser le prix (rare mais possible)" },
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`pouvoir_${item.key}`}
+                              checked={procurationSuccessionData.pouvoirs.operationsImmobilieres[item.key]}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                pouvoirs: {
+                                  ...procurationSuccessionData.pouvoirs,
+                                  operationsImmobilieres: {
+                                    ...procurationSuccessionData.pouvoirs.operationsImmobilieres,
+                                    [item.key]: e.target.checked
+                                  }
+                                }
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={`pouvoir_${item.key}`} className="cursor-pointer">{item.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* D. Partage successoral */}
+                    <div className="p-4 border rounded-lg bg-yellow-50">
+                      <h4 className="font-medium text-md mb-3">D. Procuration pour le partage successoral</h4>
+                      <div className="space-y-2">
+                        {[
+                          { key: "accepterProjetPartage", label: "Accepter un projet de partage" },
+                          { key: "signerActePartage", label: "Signer l'acte de partage" },
+                          { key: "accepterVerserRecevoirSoulte", label: "Accepter / verser / recevoir une soulte" },
+                          { key: "accepterAttributionPreferentielle", label: "Accepter une attribution préférentielle" },
+                          { key: "renoncerLot", label: "Renoncer à un lot" },
+                          { key: "demanderPartagePartiel", label: "Demander un partage partiel" },
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`pouvoir_${item.key}`}
+                              checked={procurationSuccessionData.pouvoirs.partageSuccessoral[item.key]}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                pouvoirs: {
+                                  ...procurationSuccessionData.pouvoirs,
+                                  partageSuccessoral: {
+                                    ...procurationSuccessionData.pouvoirs.partageSuccessoral,
+                                    [item.key]: e.target.checked
+                                  }
+                                }
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={`pouvoir_${item.key}`} className="cursor-pointer">{item.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* E. Procuration bancaire */}
+                    <div className="p-4 border rounded-lg bg-indigo-50">
+                      <h4 className="font-medium text-md mb-3">E. Procuration bancaire</h4>
+                      <div className="space-y-2">
+                        {[
+                          { key: "obtenirInformationsComptes", label: "Obtenir informations sur comptes du défunt" },
+                          { key: "effectuerTransfertsNotaire", label: "Effectuer transferts vers le notaire" },
+                          { key: "cloturerComptes", label: "Clôturer les comptes du défunt" },
+                          { key: "gererRemboursementCredits", label: "Gérer le remboursement des crédits" },
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`pouvoir_${item.key}`}
+                              checked={procurationSuccessionData.pouvoirs.procurationBancaire[item.key]}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                pouvoirs: {
+                                  ...procurationSuccessionData.pouvoirs,
+                                  procurationBancaire: {
+                                    ...procurationSuccessionData.pouvoirs.procurationBancaire,
+                                    [item.key]: e.target.checked
+                                  }
+                                }
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={`pouvoir_${item.key}`} className="cursor-pointer">{item.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* F. Procuration fiscale */}
+                    <div className="p-4 border rounded-lg bg-red-50">
+                      <h4 className="font-medium text-md mb-3">F. Procuration fiscale</h4>
+                      <div className="space-y-2">
+                        {[
+                          { key: "representerFisc", label: "Représenter le mandant auprès du fisc pour la succession" },
+                          { key: "deposerDeclaration", label: "Déposer la déclaration de succession" },
+                          { key: "reglerDroits", label: "Régler les droits de succession" },
+                          { key: "demanderDelaiPaiement", label: "Demander un délai de paiement" },
+                          { key: "contesterTaxation", label: "Contester une taxation" },
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`pouvoir_${item.key}`}
+                              checked={procurationSuccessionData.pouvoirs.procurationFiscale[item.key]}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                pouvoirs: {
+                                  ...procurationSuccessionData.pouvoirs,
+                                  procurationFiscale: {
+                                    ...procurationSuccessionData.pouvoirs.procurationFiscale,
+                                    [item.key]: e.target.checked
+                                  }
+                                }
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={`pouvoir_${item.key}`} className="cursor-pointer">{item.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* G. Procuration générale */}
+                    <div className="p-4 border rounded-lg bg-orange-50">
+                      <h4 className="font-medium text-md mb-3">G. Procuration générale</h4>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="pouvoir_procurationGenerale"
+                          checked={procurationSuccessionData.pouvoirs.procurationGenerale}
+                          onChange={(e) => setProcurationSuccessionData({
+                            ...procurationSuccessionData,
+                            pouvoirs: {
+                              ...procurationSuccessionData.pouvoirs,
+                              procurationGenerale: e.target.checked
+                            }
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="pouvoir_procurationGenerale" className="cursor-pointer font-semibold">
+                          Autorise toutes opérations successorales nécessaires
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 6: PORTÉE DE LA PROCURATION */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Portée de la procuration</h3>
+                    
+                    {/* A. Durée */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-md">A. Durée</h4>
+                      <Select
+                        value={procurationSuccessionData.portee.duree}
+                        onValueChange={(value) => setProcurationSuccessionData({
+                          ...procurationSuccessionData,
+                          portee: {...procurationSuccessionData.portee, duree: value}
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner la durée..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="acte_specifique">Jusqu'à la signature d'un acte spécifique</SelectItem>
+                          <SelectItem value="cloture_succession">Jusqu'à la clôture complète de la succession</SelectItem>
+                          <SelectItem value="determinee">Durée déterminée</SelectItem>
+                          <SelectItem value="indeterminee">Durée indéterminée</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {procurationSuccessionData.portee.duree === "acte_specifique" && (
+                        <div className="mt-2">
+                          <Label htmlFor="acteSpecifiquePrecision">Précisez l'acte spécifique</Label>
+                          <Input
+                            id="acteSpecifiquePrecision"
+                            value={procurationSuccessionData.portee.acteSpecifiquePrecision}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              portee: {...procurationSuccessionData.portee, acteSpecifiquePrecision: e.target.value}
+                            })}
+                            placeholder="Ex: Signature de l'acte de partage"
+                          />
+                        </div>
+                      )}
+
+                      {procurationSuccessionData.portee.duree === "determinee" && (
+                        <div className="mt-2">
+                          <Label htmlFor="dateFinDeterminee">Date de fin</Label>
+                          <Input
+                            id="dateFinDeterminee"
+                            type="date"
+                            value={procurationSuccessionData.portee.dateFinDeterminee}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              portee: {...procurationSuccessionData.portee, dateFinDeterminee: e.target.value}
+                            })}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* B. Limites éventuelles */}
+                    <div className="space-y-4 mt-6">
+                      <h4 className="font-medium text-md">B. Limites éventuelles</h4>
+                      <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="limite_vendreBien"
+                            checked={procurationSuccessionData.portee.limites.interdictionVendreBien}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              portee: {
+                                ...procurationSuccessionData.portee,
+                                limites: {...procurationSuccessionData.portee.limites, interdictionVendreBien: e.target.checked}
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="limite_vendreBien" className="cursor-pointer">Interdiction de vendre un bien</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="limite_signerPartage"
+                            checked={procurationSuccessionData.portee.limites.interdictionSignerPartage}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              portee: {
+                                ...procurationSuccessionData.portee,
+                                limites: {...procurationSuccessionData.portee.limites, interdictionSignerPartage: e.target.checked}
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="limite_signerPartage" className="cursor-pointer">Interdiction de signer acte de partage</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="limite_accepterSoulte"
+                            checked={procurationSuccessionData.portee.limites.interdictionAccepterSoulte}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              portee: {
+                                ...procurationSuccessionData.portee,
+                                limites: {...procurationSuccessionData.portee.limites, interdictionAccepterSoulte: e.target.checked}
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="limite_accepterSoulte" className="cursor-pointer">Interdiction d'accepter une soulte</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="limite_seulementNotarie"
+                            checked={procurationSuccessionData.portee.limites.seulementActeNotarie}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              portee: {
+                                ...procurationSuccessionData.portee,
+                                limites: {...procurationSuccessionData.portee.limites, seulementActeNotarie: e.target.checked}
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="limite_seulementNotarie" className="cursor-pointer">Autorisation seulement pour acte notarié (pas d'acte sous seing privé)</Label>
+                        </div>
+
+                        <div className="mt-4">
+                          <Label htmlFor="limiteMontant">Limite de montant (optionnel)</Label>
+                          <Input
+                            id="limiteMontant"
+                            value={procurationSuccessionData.portee.limites.limiteMontant}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              portee: {
+                                ...procurationSuccessionData.portee,
+                                limites: {...procurationSuccessionData.portee.limites, limiteMontant: e.target.value}
+                              }
+                            })}
+                            placeholder="Ex: Maximum 50 000 € pour une vente"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 7: DÉCLARATIONS OBLIGATOIRES DU MANDANT */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Déclarations obligatoires du mandant</h3>
+                    <p className="text-sm text-muted-foreground">Pour la validité juridique de la procuration</p>
+
+                    <div className="space-y-3 p-4 border rounded-lg bg-amber-50">
+                      {[
+                        { key: "procurationLibre", label: "Déclare donner procuration librement" },
+                        { key: "comprendreConsequences", label: "Déclare comprendre les conséquences de la succession" },
+                        { key: "sainEsprit", label: "Déclare être sain d'esprit" },
+                        { key: "sansInfluence", label: "Déclare ne pas être sous influence ou pression" },
+                        { key: "exactitudeInformations", label: "Déclare exactitude des informations données" },
+                        { key: "assumerActesMandataire", label: "Déclare assumer les actes du mandataire" },
+                        { key: "revocationPossible", label: "Clause de révocation possible à tout moment" },
+                        { key: "toleranceRatification", label: "Clause de tolérance / ratification des actes" },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`declaration_${item.key}`}
+                            checked={procurationSuccessionData.declarations[item.key]}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              declarations: {
+                                ...procurationSuccessionData.declarations,
+                                [item.key]: e.target.checked
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor={`declaration_${item.key}`} className="cursor-pointer">{item.label}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* SECTION 8: MENTIONS LÉGALES */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Mentions légales à insérer dans l'acte</h3>
+
+                    <div className="space-y-3 p-4 border rounded-lg bg-slate-50">
+                      {[
+                        { key: "articlesCodeCivil", label: "Articles du Code civil applicables" },
+                        { key: "natureMandatRappel", label: "Rappel de la nature d'un mandat" },
+                        { key: "responsabiliteMandataire", label: "Responsabilité du mandataire" },
+                        { key: "validiteSignatureElectronique", label: "Validité de la signature électronique" },
+                        { key: "pouvoirSpecialGeneral", label: "Pouvoir spécial / pouvoir général" },
+                        { key: "mentionsNotariees", label: "Mentions obligatoires notariées (lecture, compréhension...)" },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`mention_${item.key}`}
+                            checked={procurationSuccessionData.mentionsLegales[item.key]}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              mentionsLegales: {
+                                ...procurationSuccessionData.mentionsLegales,
+                                [item.key]: e.target.checked
+                              }
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor={`mention_${item.key}`} className="cursor-pointer">{item.label}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* SECTION 9: CAS PARTICULIERS */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Cas particuliers</h3>
+
+                    {/* Mandant résident à l'étranger */}
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-medium text-sm mb-3">Mandant résident à l'étranger</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="cas_residentEtranger"
+                            checked={procurationSuccessionData.casParticuliers.residentEtranger}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              casParticuliers: {...procurationSuccessionData.casParticuliers, residentEtranger: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="cas_residentEtranger" className="cursor-pointer">Mandant résident à l'étranger</Label>
+                        </div>
+                        {procurationSuccessionData.casParticuliers.residentEtranger && (
+                          <div className="ml-6 space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="cas_apostille"
+                                checked={procurationSuccessionData.casParticuliers.apostilleNecessaire}
+                                onChange={(e) => setProcurationSuccessionData({
+                                  ...procurationSuccessionData,
+                                  casParticuliers: {...procurationSuccessionData.casParticuliers, apostilleNecessaire: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="cas_apostille" className="cursor-pointer">Apostille / légalisation nécessaire</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="cas_certificatCoutume"
+                                checked={procurationSuccessionData.casParticuliers.certificatCoutume}
+                                onChange={(e) => setProcurationSuccessionData({
+                                  ...procurationSuccessionData,
+                                  casParticuliers: {...procurationSuccessionData.casParticuliers, certificatCoutume: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="cas_certificatCoutume" className="cursor-pointer">Certificat de coutume</Label>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Mandant ne sachant pas signer */}
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-medium text-sm mb-3">Mandant ne sachant pas signer</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="cas_neSaitPasSigner"
+                            checked={procurationSuccessionData.casParticuliers.neSaitPasSigner}
+                            onChange={(e) => setProcurationSuccessionData({
+                              ...procurationSuccessionData,
+                              casParticuliers: {...procurationSuccessionData.casParticuliers, neSaitPasSigner: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="cas_neSaitPasSigner" className="cursor-pointer">Ne sait pas signer</Label>
+                        </div>
+                        {procurationSuccessionData.casParticuliers.neSaitPasSigner && (
+                          <div className="ml-6 space-y-3">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="cas_signatureMarque"
+                                checked={procurationSuccessionData.casParticuliers.signatureParMarque}
+                                onChange={(e) => setProcurationSuccessionData({
+                                  ...procurationSuccessionData,
+                                  casParticuliers: {...procurationSuccessionData.casParticuliers, signatureParMarque: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="cas_signatureMarque" className="cursor-pointer">Signature par marque</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="cas_temoins"
+                                checked={procurationSuccessionData.casParticuliers.temoinsNecessaires}
+                                onChange={(e) => setProcurationSuccessionData({
+                                  ...procurationSuccessionData,
+                                  casParticuliers: {...procurationSuccessionData.casParticuliers, temoinsNecessaires: e.target.checked}
+                                })}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor="cas_temoins" className="cursor-pointer">Présence de deux témoins</Label>
+                            </div>
+                            {procurationSuccessionData.casParticuliers.temoinsNecessaires && (
+                              <div className="ml-6 grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                                <Input
+                                  placeholder="Témoin 1 - Nom"
+                                  value={procurationSuccessionData.casParticuliers.temoin1Nom}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, temoin1Nom: e.target.value}
+                                  })}
+                                />
+                                <Input
+                                  placeholder="Témoin 1 - Prénom"
+                                  value={procurationSuccessionData.casParticuliers.temoin1Prenom}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, temoin1Prenom: e.target.value}
+                                  })}
+                                />
+                                <Input
+                                  placeholder="Témoin 2 - Nom"
+                                  value={procurationSuccessionData.casParticuliers.temoin2Nom}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, temoin2Nom: e.target.value}
+                                  })}
+                                />
+                                <Input
+                                  placeholder="Témoin 2 - Prénom"
+                                  value={procurationSuccessionData.casParticuliers.temoin2Prenom}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, temoin2Prenom: e.target.value}
+                                  })}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Autres cas particuliers */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Mandant sous tutelle/curatelle */}
+                      <div className="p-4 border rounded-lg">
+                        <h4 className="font-medium text-sm mb-3">Mandant sous tutelle/curatelle</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="cas_tutelle"
+                              checked={procurationSuccessionData.casParticuliers.sousTutelleCuratelle}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                casParticuliers: {...procurationSuccessionData.casParticuliers, sousTutelleCuratelle: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="cas_tutelle" className="cursor-pointer text-sm">Sous tutelle / curatelle</Label>
+                          </div>
+                          {procurationSuccessionData.casParticuliers.sousTutelleCuratelle && (
+                            <div className="ml-6 space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="cas_autorisationJuge"
+                                  checked={procurationSuccessionData.casParticuliers.autorisationJuge}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, autorisationJuge: e.target.checked}
+                                  })}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor="cas_autorisationJuge" className="cursor-pointer text-sm">Autorisation du juge</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="cas_interventionTuteur"
+                                  checked={procurationSuccessionData.casParticuliers.interventionTuteur}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, interventionTuteur: e.target.checked}
+                                  })}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor="cas_interventionTuteur" className="cursor-pointer text-sm">Intervention du tuteur/curateur</Label>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Succession avec mineurs */}
+                      <div className="p-4 border rounded-lg">
+                        <h4 className="font-medium text-sm mb-3">Succession avec mineurs</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="cas_mineurs"
+                              checked={procurationSuccessionData.casParticuliers.successionAvecMineurs}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                casParticuliers: {...procurationSuccessionData.casParticuliers, successionAvecMineurs: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="cas_mineurs" className="cursor-pointer text-sm">Mineurs concernés</Label>
+                          </div>
+                          {procurationSuccessionData.casParticuliers.successionAvecMineurs && (
+                            <div className="ml-6 space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="cas_representationLegale"
+                                  checked={procurationSuccessionData.casParticuliers.representationLegale}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, representationLegale: e.target.checked}
+                                  })}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor="cas_representationLegale" className="cursor-pointer text-sm">Représentation légale par parents</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="cas_autorisationJugeMineurs"
+                                  checked={procurationSuccessionData.casParticuliers.autorisationJugeMineurs}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, autorisationJugeMineurs: e.target.checked}
+                                  })}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor="cas_autorisationJugeMineurs" className="cursor-pointer text-sm">Autorisation du juge si acte de disposition</Label>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Succession avec démembrement */}
+                      <div className="p-4 border rounded-lg">
+                        <h4 className="font-medium text-sm mb-3">Succession avec démembrement</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="cas_demembrement"
+                              checked={procurationSuccessionData.casParticuliers.successionDemembrement}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                casParticuliers: {...procurationSuccessionData.casParticuliers, successionDemembrement: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="cas_demembrement" className="cursor-pointer text-sm">Démembrement de propriété</Label>
+                          </div>
+                          {procurationSuccessionData.casParticuliers.successionDemembrement && (
+                            <div className="ml-6 space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="cas_procurationUsufruit"
+                                  checked={procurationSuccessionData.casParticuliers.procurationSepareeUsufruit}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, procurationSepareeUsufruit: e.target.checked}
+                                  })}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor="cas_procurationUsufruit" className="cursor-pointer text-sm">Procuration séparée pour usufruitier</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="cas_procurationNuePropriete"
+                                  checked={procurationSuccessionData.casParticuliers.procurationSepareeNuePropriete}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, procurationSepareeNuePropriete: e.target.checked}
+                                  })}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor="cas_procurationNuePropriete" className="cursor-pointer text-sm">Procuration séparée pour nu-propriétaire</Label>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Succession internationale */}
+                      <div className="p-4 border rounded-lg">
+                        <h4 className="font-medium text-sm mb-3">Succession internationale</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="cas_international"
+                              checked={procurationSuccessionData.casParticuliers.successionInternationale}
+                              onChange={(e) => setProcurationSuccessionData({
+                                ...procurationSuccessionData,
+                                casParticuliers: {...procurationSuccessionData.casParticuliers, successionInternationale: e.target.checked}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="cas_international" className="cursor-pointer text-sm">Éléments internationaux</Label>
+                          </div>
+                          {procurationSuccessionData.casParticuliers.successionInternationale && (
+                            <div className="ml-6 space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="cas_doubleDeclaration"
+                                  checked={procurationSuccessionData.casParticuliers.doubleDeclarationFiscale}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, doubleDeclarationFiscale: e.target.checked}
+                                  })}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor="cas_doubleDeclaration" className="cursor-pointer text-sm">Double déclaration fiscale</Label>
+                              </div>
+                              <div className="mt-2">
+                                <Label htmlFor="limitationsEtat" className="text-sm">Limitations du mandataire selon État</Label>
+                                <Textarea
+                                  id="limitationsEtat"
+                                  value={procurationSuccessionData.casParticuliers.limitationsSelonEtat}
+                                  onChange={(e) => setProcurationSuccessionData({
+                                    ...procurationSuccessionData,
+                                    casParticuliers: {...procurationSuccessionData.casParticuliers, limitationsSelonEtat: e.target.value}
+                                  })}
+                                  rows={2}
+                                  placeholder="Précisez les limitations..."
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 10: PIÈCES JUSTIFICATIVES */}
+                  <div className="mt-8 p-6 border rounded-lg bg-amber-50">
+                    <h3 className="text-lg font-semibold mb-4">🔟 Pièces justificatives à fournir</h3>
+
+                    <div className="space-y-6">
+                      {/* Documents du mandant */}
+                      <div>
+                        <Label className="text-md font-medium mb-2 block">Pour le mandant</Label>
+                        <div className="space-y-4">
+                          <div>
+                            <Label>Pièce d'identité *</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationMandantIdentite}
+                              onFilesChange={setProcurationMandantIdentite}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                          <div>
+                            <Label>Justificatif de domicile</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationMandantDomicile}
+                              onFilesChange={setProcurationMandantDomicile}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                          <div>
+                            <Label>Acte de naissance</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationMandantNaissance}
+                              onFilesChange={setProcurationMandantNaissance}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                          <div>
+                            <Label>Acte de mariage (si utile)</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationMandantMariage}
+                              onFilesChange={setProcurationMandantMariage}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                          <div>
+                            <Label>Jugement de tutelle/curatelle (si nécessaire)</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationMandantTutelle}
+                              onFilesChange={setProcurationMandantTutelle}
+                              accept="application/pdf"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Documents du mandataire */}
+                      <div>
+                        <Label className="text-md font-medium mb-2 block">Pour le mandataire</Label>
+                        <div className="space-y-4">
+                          <div>
+                            <Label>Pièce d'identité *</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationMandataireIdentite}
+                              onFilesChange={setProcurationMandataireIdentite}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                          <div>
+                            <Label>Justificatif de domicile</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationMandataireDomicile}
+                              onFilesChange={setProcurationMandataireDomicile}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Documents de la succession */}
+                      <div>
+                        <Label className="text-md font-medium mb-2 block">Pour la succession</Label>
+                        <div className="space-y-4">
+                          <div>
+                            <Label>Acte de décès *</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationSuccessionDeces}
+                              onFilesChange={setProcurationSuccessionDeces}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                          <div>
+                            <Label>Livret de famille du défunt</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationSuccessionLivret}
+                              onFilesChange={setProcurationSuccessionLivret}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                          <div>
+                            <Label>Testaments</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationSuccessionTestaments}
+                              onFilesChange={setProcurationSuccessionTestaments}
+                              accept="application/pdf"
+                            />
+                          </div>
+                          <div>
+                            <Label>Donations entre époux / antérieures</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationSuccessionDonations}
+                              onFilesChange={setProcurationSuccessionDonations}
+                              accept="application/pdf"
+                            />
+                          </div>
+                          <div>
+                            <Label>RIB de la succession (pour opérations bancaires)</Label>
+                            <MultiFileUpload
+                              label=""
+                              files={procurationSuccessionRIB}
+                              onFilesChange={setProcurationSuccessionRIB}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -33442,6 +35719,8 @@ FIN DE LA CONVENTION
                   handleActeNotorieteSubmit();
                 } else if (pendingContractType === "Partage successoral") {
                   handlePartageSuccessoralSubmit();
+                } else if (pendingContractType === "Procuration notariée liée à la succession") {
+                  handleProcurationSuccessionSubmit();
                 } else {
                   handleQuestionnaireSubmit();
                 }
