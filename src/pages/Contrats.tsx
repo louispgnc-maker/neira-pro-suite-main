@@ -3109,20 +3109,25 @@ export default function Contrats() {
     const contractType = params.get('type');
     const category = params.get('category');
     
-    if (shouldCreate === 'true' && contractType && category) {
+    if (shouldCreate === 'true' && contractType && category && !showQuestionDialog) {
       console.log('📋 Ouverture du formulaire:', contractType, category);
       // Ouvrir le dialog avec le type de contrat
       setPendingContractType(contractType);
       setPendingCategory(category);
       
-      // Utiliser setTimeout pour s'assurer que les états sont mis à jour avant d'ouvrir le dialogue
-      setTimeout(() => {
+      // Ouvrir le dialogue après avoir défini les états avec un léger délai
+      requestAnimationFrame(() => {
         setShowQuestionDialog(true);
-        // Nettoyer les paramètres URL après l'ouverture du dialogue
+      });
+      
+      // Nettoyer les paramètres URL
+      const timer = setTimeout(() => {
         navigate(location.pathname, { replace: true });
-      }, 100);
+      }, 500);
+      
+      return () => clearTimeout(timer);
     }
-  }, [location.search, location.pathname, navigate]);
+  }, [location.search, location.pathname, navigate, showQuestionDialog]);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
