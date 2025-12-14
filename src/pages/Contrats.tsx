@@ -3102,33 +3102,6 @@ export default function Contrats() {
     return () => clearTimeout(t);
   }, [search]);
 
-  // Détecte les paramètres URL pour ouvrir automatiquement le formulaire
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const shouldCreate = params.get('create');
-    const contractType = params.get('type');
-    const category = params.get('category');
-    
-    if (shouldCreate === 'true' && contractType && category && !showQuestionDialog) {
-      console.log('📋 Ouverture du formulaire:', contractType, category);
-      // Ouvrir le dialog avec le type de contrat
-      setPendingContractType(contractType);
-      setPendingCategory(category);
-      
-      // Ouvrir le dialogue après avoir défini les états avec un léger délai
-      requestAnimationFrame(() => {
-        setShowQuestionDialog(true);
-      });
-      
-      // Nettoyer les paramètres URL
-      const timer = setTimeout(() => {
-        navigate(location.pathname, { replace: true });
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [location.search, location.pathname, navigate, showQuestionDialog]);
-
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
@@ -3611,15 +3584,24 @@ export default function Contrats() {
     const type = params.get('type');
     const category = params.get('category');
     
-    if (shouldCreate && type && category) {
+    if (shouldCreate && type && category && !showQuestionDialog) {
+      console.log('📋 Ouverture du formulaire depuis URL:', type, category);
       setPendingContractType(type);
       setPendingCategory(category);
-      setShowQuestionDialog(true);
       
-      // Nettoyer l'URL
-      window.history.replaceState({}, '', location.pathname);
+      // Ouvrir le dialogue après avoir défini les états
+      requestAnimationFrame(() => {
+        setShowQuestionDialog(true);
+      });
+      
+      // Nettoyer l'URL après un délai pour laisser le dialogue se monter
+      const timer = setTimeout(() => {
+        window.history.replaceState({}, '', location.pathname);
+      }, 500);
+      
+      return () => clearTimeout(timer);
     }
-  }, [location]);
+  }, [location.search, showQuestionDialog]);
 
   useEffect(() => {
     let isMounted = true;
