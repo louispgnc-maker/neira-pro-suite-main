@@ -3650,6 +3650,35 @@ export default function Contrats() {
     setShowQuestionDialog(true);
   };
 
+  // Fonction pour créer un contrat générique (sans formulaire spécifique)
+  const handleGenericContractSubmit = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success('Contrat créé', { description: pendingContractType });
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création contrat:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
   const handleQuestionnaireSubmit = async () => {
     if (!user) return;
     
@@ -33252,6 +33281,20 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {/* Formulaire générique pour tous les autres types de contrats */}
+            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral"].includes(pendingContractType) && (
+              <div className="space-y-4">
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-900">
+                    <strong>Type de contrat :</strong> {pendingContractType}
+                  </p>
+                  <p className="text-sm text-blue-700 mt-2">
+                    Ce contrat sera créé et vous pourrez le modifier ensuite dans la page de détails.
+                  </p>
+                </div>
+              </div>
+            )}
+
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
@@ -33265,7 +33308,9 @@ FIN DE LA CONVENTION
             <Button 
               className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
               onClick={() => {
-                if (pendingContractType === "Acte de vente immobilière") {
+                if (pendingContractType === "Compromis de vente / Promesse unilatérale de vente") {
+                  handleQuestionnaireSubmit();
+                } else if (pendingContractType === "Acte de vente immobilière") {
                   handleActeVenteSubmit();
                 } else if (pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") {
                   handleBailHabitationSubmit();
@@ -33294,7 +33339,8 @@ FIN DE LA CONVENTION
                 } else if (pendingContractType === "Partage successoral") {
                   handlePartageSuccessoralSubmit();
                 } else {
-                  handleQuestionnaireSubmit();
+                  // Pour tous les autres types, utiliser le formulaire générique
+                  handleGenericContractSubmit();
                 }
               }}
             >
