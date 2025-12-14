@@ -197,6 +197,34 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
       return;
     }
 
+    // Si c'est un "Acte de notoriété", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Acte de notoriété") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
+    // Si c'est un "Partage successoral", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Partage successoral") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
+    // Si c'est une "Procuration notariée liée à la succession", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Procuration notariée liée à la succession") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
+    // Si c'est une "Procuration authentique", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Procuration authentique") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
     try {
       const { data, error} = await supabase
         .from('contrats')
