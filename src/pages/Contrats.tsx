@@ -33283,16 +33283,67 @@ FIN DE LA CONVENTION
 
             {/* Formulaire générique pour tous les autres types de contrats */}
             {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral"].includes(pendingContractType) && (
-              <div className="space-y-4">
+              <>
+                <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-lg">Informations sur le contrat</h3>
+                  <div className="space-y-2">
+                    <Label>Type de contrat</Label>
+                    <Input 
+                      value={pendingContractType}
+                      disabled
+                      className="bg-gray-100"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Catégorie</Label>
+                    <Input 
+                      value={pendingCategory}
+                      disabled
+                      className="bg-gray-100"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">👤 Client concerné</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="genericClientId">Sélectionner un client (optionnel)</Label>
+                    <Select 
+                      value={questionnaireData.clientId} 
+                      onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientId: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisir un client..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.nom} {client.prenom}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">📝 Description du contrat</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="genericDescription">Informations complémentaires (optionnel)</Label>
+                    <Textarea 
+                      id="genericDescription"
+                      placeholder="Ajoutez des détails sur ce contrat..."
+                      rows={4}
+                    />
+                  </div>
+                </div>
+
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-900">
-                    <strong>Type de contrat :</strong> {pendingContractType}
-                  </p>
-                  <p className="text-sm text-blue-700 mt-2">
-                    Ce contrat sera créé et vous pourrez le modifier ensuite dans la page de détails.
+                  <p className="text-sm text-blue-700">
+                    Ce contrat sera créé avec les informations de base. Vous pourrez le compléter et le modifier ensuite dans la page de détails du contrat.
                   </p>
                 </div>
-              </div>
+              </>
             )}
 
           </div>
