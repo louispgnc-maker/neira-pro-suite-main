@@ -198,6 +198,7 @@ export default function Contrats() {
   const [bailCommercialLocataireFiles, setBailCommercialLocataireFiles] = useState<File[]>([]); // Kbis/ID locataire commercial
   const [bailCommercialDiagnosticsFiles, setBailCommercialDiagnosticsFiles] = useState<File[]>([]); // Diagnostics bail commercial
   const [bailCommercialCautionFiles, setBailCommercialCautionFiles] = useState<File[]>([]); // Acte de caution
+  const [procurationMandantIdentiteUrl, setProcurationMandantIdentiteUrl] = useState<string | null>(null); // URL du document du mandant procuration
   const [bailCommercialEtatLieuxFiles, setBailCommercialEtatLieuxFiles] = useState<File[]>([]); // État des lieux
   const [bailCommercialCautionIdFiles, setBailCommercialCautionIdFiles] = useState<File[]>([]); // Pièce d'identité caution
   const [bailCommercialAssuranceFiles, setBailCommercialAssuranceFiles] = useState<File[]>([]); // Attestation d'assurance
@@ -33511,10 +33512,70 @@ FIN DE LA CONVENTION
                       <Label>Sélectionner un client existant (optionnel)</Label>
                       <Select
                         value={procurationData.mandant.clientId}
-                        onValueChange={(value) => setProcurationData({
-                          ...procurationData,
-                          mandant: { ...procurationData.mandant, clientId: value, isClient: !!value }
-                        })}
+                        onValueChange={(value) => {
+                          const selectedClient = clients.find(c => c.id === value) as any;
+                          if (selectedClient) {
+                            // Extraire la situation familiale
+                            let situationFamiliale = "";
+                            if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                              situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                            } else if (typeof selectedClient.situation_familiale === 'string') {
+                              situationFamiliale = selectedClient.situation_familiale;
+                            }
+
+                            setProcurationData({
+                              ...procurationData,
+                              mandant: { 
+                                ...procurationData.mandant, 
+                                clientId: value, 
+                                isClient: true,
+                                nom: selectedClient.nom || "",
+                                prenom: selectedClient.prenom || "",
+                                dateNaissance: selectedClient.date_naissance || "",
+                                lieuNaissance: selectedClient.lieu_naissance || "",
+                                nationalite: selectedClient.nationalite || "",
+                                profession: selectedClient.profession || "",
+                                adresseComplete: selectedClient.adresse || "",
+                                telephone: selectedClient.telephone || "",
+                                email: selectedClient.email || "",
+                                situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
+                              }
+                            });
+
+                            // Charger le document d'identité
+                            if (selectedClient.id_doc_path) {
+                              supabase.storage
+                                .from('documents')
+                                .createSignedUrl(selectedClient.id_doc_path, 3600)
+                                .then(({ data, error }) => {
+                                  if (!error && data?.signedUrl) {
+                                    setProcurationMandantIdentiteUrl(data.signedUrl);
+                                  }
+                                });
+                            } else {
+                              // Chercher dans client_documents
+                              supabase
+                                .from('client_documents')
+                                .select('file_path')
+                                .eq('client_id', selectedClient.id)
+                                .eq('document_type', 'piece_identite')
+                                .order('uploaded_at', { ascending: false })
+                                .limit(1)
+                                .then(({ data: docs }) => {
+                                  if (docs && docs.length > 0) {
+                                    supabase.storage
+                                      .from('documents')
+                                      .createSignedUrl(docs[0].file_path, 3600)
+                                      .then(({ data, error }) => {
+                                        if (!error && data?.signedUrl) {
+                                          setProcurationMandantIdentiteUrl(data.signedUrl);
+                                        }
+                                      });
+                                  }
+                                });
+                            }
+                          }
+                        }}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Choisir un client..." />
@@ -33527,6 +33588,21 @@ FIN DE LA CONVENTION
                           ))}
                         </SelectContent>
                       </Select>
+                      {procurationMandantIdentiteUrl && (
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <p className="text-sm text-green-700 flex items-center gap-2">
+                            ✅ <strong>Pièce d'identité chargée depuis le profil client</strong>
+                          </p>
+                          <a 
+                            href={procurationMandantIdentiteUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:underline mt-1 inline-block"
+                          >
+                            Voir le document →
+                          </a>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
