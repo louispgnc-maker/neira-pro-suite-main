@@ -3313,6 +3313,129 @@ export default function Contrats() {
     },
   });
 
+  // State pour Attestation de propriété immobilière
+  const [attestationData, setAttestationData] = useState({
+    // 1. Informations sur le défunt
+    defunt: {
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      sexe: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresseDecesComplete: "",
+      dateDeces: "",
+      lieuDeces: "",
+      situationMatrimoniale: "",
+      regimeMatrimonial: "",
+      existenceContratMariage: false,
+      existencePacs: false,
+      existenceTestament: false,
+      existenceDonationsEntreEpoux: false,
+      existenceDonationsAnterieures: false,
+    },
+    
+    // 2. Succession - Héritiers (array)
+    heritiers: [{
+      id: 1,
+      nom: "",
+      prenom: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      lienParente: "",
+      adresseComplete: "",
+      email: "",
+      telephone: "",
+      nationalite: "",
+      profession: "",
+      typeAcceptation: "", // pure_simple / concurrence / renonciation
+      statutAge: "", // majeur / mineur
+      protectionJuridique: "", // aucune / tutelle / curatelle
+    }],
+    
+    // Conjoint survivant
+    conjointSurvivant: {
+      existe: false,
+      nom: "",
+      prenom: "",
+      regimeMatrimonial: "",
+      droitsConjoint: "", // usufruit / quart / testament / donation
+    },
+    
+    // 3. Biens immobiliers (array)
+    biens: [{
+      id: 1,
+      // A. Identité du bien
+      adresseComplete: "",
+      codePostal: "",
+      commune: "",
+      cadastreSection: "",
+      cadastreNumero: "",
+      cadastreContenance: "",
+      
+      // B. Description
+      typeBien: "", // maison / appartement / terrain / commercial / garage
+      surfaceHabitable: "",
+      nombrePieces: "",
+      dependances: "",
+      annexes: "",
+      equipements: "",
+      situationLocative: "", // libre / occupe
+      montantLoyer: "",
+      
+      // C. Origine de propriété
+      dateAcquisition: "",
+      natureAcquisition: "", // achat / donation / partage / succession
+      repartitionDroits: "", // pleine / usufruit / indivision
+      quotePart: "",
+      
+      // D. Servitudes
+      servitudesActives: "",
+      servitudesPassives: "",
+      
+      // E. Hypothèques
+      pretEnCours: false,
+      hypothequeInscrite: false,
+      typeHypotheque: "",
+      montantResiduel: "",
+      necessitMainlevee: false,
+      
+      // F. Copropriété
+      estCopropriete: false,
+      numeroLot: "",
+      quotepartCommunes: "",
+      chargesAnnuelles: "",
+    }],
+    
+    // 4. Situation familiale
+    regimeMatrimonial: "",
+    droitsConjointSurvivant: "",
+    
+    // 5. Répartition des droits (calculé)
+    repartitionDroits: {
+      conjoint: "",
+      heritiers: "",
+    },
+    
+    // 6. Destination du bien
+    destinationBien: "", // indivision / usage_conjoint / attribution / vente / location / aucune
+    
+    // 7. Déclarations
+    loiSuccessoraleApplicable: "",
+    confirmationAbsenceAutresHeritiers: false,
+    
+    // 8. Évaluation
+    valeurVenale: "",
+    methodeEstimation: "", // expertise / avis / references
+    valeurDeclareeFiscale: "",
+    
+    // 9. Formalités publiaires
+    bureauSPF: "",
+    fichesPreparees: false,
+  });
+
   // State pour Procuration authentique
   const [procurationData, setProcurationData] = useState({
     // 1. Type de procuration
@@ -4331,6 +4454,85 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création mandat protection:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour Attestation de propriété immobilière
+  const handleAttestationSubmit = async () => {
+    if (!user) return;
+
+    // Validation
+    if (!attestationData.defunt.nom || !attestationData.defunt.prenom || !attestationData.defunt.dateDeces) {
+      toast.error("Informations défunt requises", { description: "Nom, prénom et date de décès obligatoires" });
+      return;
+    }
+    if (attestationData.heritiers.length === 0 || !attestationData.heritiers[0].nom) {
+      toast.error("Au moins un héritier requis", { description: "Veuillez ajouter les héritiers" });
+      return;
+    }
+    if (attestationData.biens.length === 0 || !attestationData.biens[0].adresseComplete) {
+      toast.error("Au moins un bien requis", { description: "Veuillez décrire les biens immobiliers" });
+      return;
+    }
+
+    try {
+      const description = `Attestation de propriété immobilière - Défunt: ${attestationData.defunt.prenom} ${attestationData.defunt.nom} (décédé le ${attestationData.defunt.dateDeces})
+${attestationData.heritiers.length} héritier(s), ${attestationData.biens.length} bien(s)`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          details: JSON.stringify(attestationData),
+          status: 'draft',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("Attestation créée", { description: "Vous pouvez maintenant compléter les détails" });
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire
+      setAttestationData({
+        defunt: {
+          nom: "", prenom: "", nomNaissance: "", sexe: "", dateNaissance: "", lieuNaissance: "", nationalite: "",
+          profession: "", adresseDecesComplete: "", dateDeces: "", lieuDeces: "", situationMatrimoniale: "",
+          regimeMatrimonial: "", existenceContratMariage: false, existencePacs: false, existenceTestament: false,
+          existenceDonationsEntreEpoux: false, existenceDonationsAnterieures: false,
+        },
+        heritiers: [{
+          id: 1, nom: "", prenom: "", dateNaissance: "", lieuNaissance: "", lienParente: "", adresseComplete: "",
+          email: "", telephone: "", nationalite: "", profession: "", typeAcceptation: "", statutAge: "", protectionJuridique: "",
+        }],
+        conjointSurvivant: {
+          existe: false, nom: "", prenom: "", regimeMatrimonial: "", droitsConjoint: "",
+        },
+        biens: [{
+          id: 1, adresseComplete: "", codePostal: "", commune: "", cadastreSection: "", cadastreNumero: "",
+          cadastreContenance: "", typeBien: "", surfaceHabitable: "", nombrePieces: "", dependances: "", annexes: "",
+          equipements: "", situationLocative: "", montantLoyer: "", dateAcquisition: "", natureAcquisition: "",
+          repartitionDroits: "", quotePart: "", servitudesActives: "", servitudesPassives: "", pretEnCours: false,
+          hypothequeInscrite: false, typeHypotheque: "", montantResiduel: "", necessitMainlevee: false,
+          estCopropriete: false, numeroLot: "", quotepartCommunes: "", chargesAnnuelles: "",
+        }],
+        regimeMatrimonial: "", droitsConjointSurvivant: "",
+        repartitionDroits: { conjoint: "", heritiers: "" },
+        destinationBien: "", loiSuccessoraleApplicable: "", confirmationAbsenceAutresHeritiers: false,
+        valeurVenale: "", methodeEstimation: "", valeurDeclareeFiscale: "", bureauSPF: "", fichesPreparees: false,
+      });
+      
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création attestation:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -37620,69 +37822,1540 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {/* Formulaire Attestation de propriété immobilière */}
+            {pendingContractType === "Attestation de propriété immobilière" && (
+              <div className="space-y-6">
+                {/* Section 1 : Informations sur le défunt */}
+                  <div className="space-y-4 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-gray-800">
+                      ⚰️ Section 1 : Informations sur le défunt
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input 
+                          value={attestationData.defunt.nom}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, nom: e.target.value}
+                          })}
+                          placeholder="Nom de famille"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input 
+                          value={attestationData.defunt.prenom}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, prenom: e.target.value}
+                          })}
+                          placeholder="Prénom"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nom de naissance (si différent)</Label>
+                        <Input 
+                          value={attestationData.defunt.nomNaissance}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, nomNaissance: e.target.value}
+                          })}
+                          placeholder="Nom de jeune fille"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Sexe</Label>
+                        <Select 
+                          value={attestationData.defunt.sexe}
+                          onValueChange={(value) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, sexe: value}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="masculin">Masculin</SelectItem>
+                            <SelectItem value="feminin">Féminin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de naissance</Label>
+                        <Input 
+                          type="date"
+                          value={attestationData.defunt.dateNaissance}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance</Label>
+                        <Input 
+                          value={attestationData.defunt.lieuNaissance}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, lieuNaissance: e.target.value}
+                          })}
+                          placeholder="Ville, département, pays"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nationalité</Label>
+                        <Input 
+                          value={attestationData.defunt.nationalite}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, nationalite: e.target.value}
+                          })}
+                          placeholder="Française"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input 
+                          value={attestationData.defunt.profession}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, profession: e.target.value}
+                          })}
+                          placeholder="Profession exercée"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Dernière adresse complète du défunt</Label>
+                      <textarea 
+                        value={attestationData.defunt.adresseDecesComplete}
+                        onChange={(e) => setAttestationData({
+                          ...attestationData,
+                          defunt: {...attestationData.defunt, adresseDecesComplete: e.target.value}
+                        })}
+                        placeholder="Numéro, rue, code postal, ville"
+                        className="w-full min-h-[60px] p-2 border rounded-md"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Date de décès <span className="text-red-500">*</span></Label>
+                        <Input 
+                          type="date"
+                          value={attestationData.defunt.dateDeces}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, dateDeces: e.target.value}
+                          })}
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu de décès</Label>
+                        <Input 
+                          value={attestationData.defunt.lieuDeces}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, lieuDeces: e.target.value}
+                          })}
+                          placeholder="Ville du décès"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 p-4 bg-white rounded-lg border">
+                      <h4 className="font-medium text-gray-700">💍 Situation matrimoniale</h4>
+                      
+                      <div className="space-y-2">
+                        <Label>Situation matrimoniale du défunt</Label>
+                        <Select 
+                          value={attestationData.defunt.situationMatrimoniale}
+                          onValueChange={(value) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, situationMatrimoniale: value}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="celibataire">Célibataire</SelectItem>
+                            <SelectItem value="marie">Marié(e)</SelectItem>
+                            <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                            <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                            <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                            <SelectItem value="concubinage">Concubinage</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {(attestationData.defunt.situationMatrimoniale === "marie" || 
+                        attestationData.defunt.situationMatrimoniale === "divorce" ||
+                        attestationData.defunt.situationMatrimoniale === "veuf") && (
+                        <div className="space-y-2">
+                          <Label>Régime matrimonial</Label>
+                          <Select 
+                            value={attestationData.defunt.regimeMatrimonial}
+                            onValueChange={(value) => setAttestationData({
+                              ...attestationData,
+                              defunt: {...attestationData.defunt, regimeMatrimonial: value}
+                            })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="communaute_reduite">Communauté réduite aux acquêts</SelectItem>
+                              <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                              <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                              <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                      <h4 className="font-medium text-amber-800">📄 Documents et dispositions du défunt</h4>
+                      
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="existenceContratMariage"
+                          checked={attestationData.defunt.existenceContratMariage}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, existenceContratMariage: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="existenceContratMariage" className="cursor-pointer">
+                          Existence d'un contrat de mariage
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="existencePacs"
+                          checked={attestationData.defunt.existencePacs}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, existencePacs: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="existencePacs" className="cursor-pointer">
+                          Existence d'un PACS
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="existenceTestament"
+                          checked={attestationData.defunt.existenceTestament}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, existenceTestament: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="existenceTestament" className="cursor-pointer">
+                          Existence d'un testament
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="existenceDonationsEntreEpoux"
+                          checked={attestationData.defunt.existenceDonationsEntreEpoux}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, existenceDonationsEntreEpoux: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="existenceDonationsEntreEpoux" className="cursor-pointer">
+                          Donations entre époux
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="existenceDonationsAnterieures"
+                          checked={attestationData.defunt.existenceDonationsAnterieures}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, existenceDonationsAnterieures: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="existenceDonationsAnterieures" className="cursor-pointer">
+                          Donations antérieures au décès
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2 : Héritiers */}
+                  <div className="space-y-4 bg-green-50 p-6 rounded-lg border border-green-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-green-800">
+                      👥 Section 2 : Héritiers et succession
+                    </h3>
+
+                    <div className="space-y-6">
+                      {attestationData.heritiers.map((heritier, index) => (
+                        <div key={heritier.id} className="p-4 bg-white rounded-lg border border-green-300 space-y-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium text-green-700">Héritier #{index + 1}</h4>
+                            {attestationData.heritiers.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => {
+                                  setAttestationData({
+                                    ...attestationData,
+                                    heritiers: attestationData.heritiers.filter(h => h.id !== heritier.id)
+                                  });
+                                }}
+                              >
+                                Supprimer
+                              </Button>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Nom <span className="text-red-500">*</span></Label>
+                              <Input 
+                                value={heritier.nom}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, nom: e.target.value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                                placeholder="Nom"
+                                required
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Prénom <span className="text-red-500">*</span></Label>
+                              <Input 
+                                value={heritier.prenom}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, prenom: e.target.value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                                placeholder="Prénom"
+                                required
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Date de naissance</Label>
+                              <Input 
+                                type="date"
+                                value={heritier.dateNaissance}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, dateNaissance: e.target.value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Lieu de naissance</Label>
+                              <Input 
+                                value={heritier.lieuNaissance}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, lieuNaissance: e.target.value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                                placeholder="Ville, pays"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Lien de parenté avec le défunt</Label>
+                              <Select 
+                                value={heritier.lienParente}
+                                onValueChange={(value) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, lienParente: value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Sélectionner" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="conjoint">Conjoint survivant</SelectItem>
+                                  <SelectItem value="enfant">Enfant</SelectItem>
+                                  <SelectItem value="petit-enfant">Petit-enfant</SelectItem>
+                                  <SelectItem value="parent">Parent (père/mère)</SelectItem>
+                                  <SelectItem value="frere_soeur">Frère/Sœur</SelectItem>
+                                  <SelectItem value="neveu_niece">Neveu/Nièce</SelectItem>
+                                  <SelectItem value="autre">Autre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Type d'acceptation de la succession</Label>
+                              <Select 
+                                value={heritier.typeAcceptation}
+                                onValueChange={(value) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, typeAcceptation: value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Sélectionner" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="pure_simple">Acceptation pure et simple</SelectItem>
+                                  <SelectItem value="concurrence_actif">À concurrence de l'actif net</SelectItem>
+                                  <SelectItem value="renonciation">Renonciation</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Statut (âge)</Label>
+                              <Select 
+                                value={heritier.statutAge}
+                                onValueChange={(value) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, statutAge: value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Sélectionner" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="majeur">Majeur</SelectItem>
+                                  <SelectItem value="mineur">Mineur</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Nationalité</Label>
+                              <Input 
+                                value={heritier.nationalite}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, nationalite: e.target.value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                                placeholder="Française"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Profession</Label>
+                              <Input 
+                                value={heritier.profession}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, profession: e.target.value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                                placeholder="Profession"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Email</Label>
+                              <Input 
+                                type="email"
+                                value={heritier.email}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, email: e.target.value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                                placeholder="email@exemple.fr"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Téléphone</Label>
+                              <Input 
+                                value={heritier.telephone}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, telephone: e.target.value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                                placeholder="06 12 34 56 78"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Protection juridique éventuelle</Label>
+                              <Select 
+                                value={heritier.protectionJuridique}
+                                onValueChange={(value) => {
+                                  const updated = [...attestationData.heritiers];
+                                  updated[index] = {...heritier, protectionJuridique: value};
+                                  setAttestationData({...attestationData, heritiers: updated});
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Aucune" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="aucune">Aucune</SelectItem>
+                                  <SelectItem value="tutelle">Sous tutelle</SelectItem>
+                                  <SelectItem value="curatelle">Sous curatelle</SelectItem>
+                                  <SelectItem value="sauvegarde_justice">Sauvegarde de justice</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Adresse complète</Label>
+                            <textarea 
+                              value={heritier.adresseComplete}
+                              onChange={(e) => {
+                                const updated = [...attestationData.heritiers];
+                                updated[index] = {...heritier, adresseComplete: e.target.value};
+                                setAttestationData({...attestationData, heritiers: updated});
+                              }}
+                              placeholder="Numéro, rue, code postal, ville"
+                              className="w-full min-h-[60px] p-2 border rounded-md"
+                            />
+                          </div>
+                        </div>
+                      ))}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full border-green-300 text-green-700 hover:bg-green-50"
+                        onClick={() => {
+                          const newId = Math.max(...attestationData.heritiers.map(h => h.id)) + 1;
+                          setAttestationData({
+                            ...attestationData,
+                            heritiers: [...attestationData.heritiers, {
+                              id: newId, nom: "", prenom: "", dateNaissance: "", lieuNaissance: "", 
+                              lienParente: "", adresseComplete: "", email: "", telephone: "", 
+                              nationalite: "", profession: "", typeAcceptation: "", statutAge: "", 
+                              protectionJuridique: "",
+                            }]
+                          });
+                        }}
+                      >
+                        + Ajouter un héritier
+                      </Button>
+                    </div>
+
+                    {/* Conjoint survivant */}
+                    <div className="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200 space-y-4">
+                      <h4 className="font-medium text-purple-800">💑 Conjoint survivant (si applicable)</h4>
+                      
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="conjointExiste"
+                          checked={attestationData.conjointSurvivant.existe}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            conjointSurvivant: {...attestationData.conjointSurvivant, existe: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="conjointExiste" className="cursor-pointer">
+                          Le défunt laisse un conjoint survivant
+                        </Label>
+                      </div>
+
+                      {attestationData.conjointSurvivant.existe && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Nom du conjoint</Label>
+                            <Input 
+                              value={attestationData.conjointSurvivant.nom}
+                              onChange={(e) => setAttestationData({
+                                ...attestationData,
+                                conjointSurvivant: {...attestationData.conjointSurvivant, nom: e.target.value}
+                              })}
+                              placeholder="Nom"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Prénom du conjoint</Label>
+                            <Input 
+                              value={attestationData.conjointSurvivant.prenom}
+                              onChange={(e) => setAttestationData({
+                                ...attestationData,
+                                conjointSurvivant: {...attestationData.conjointSurvivant, prenom: e.target.value}
+                              })}
+                              placeholder="Prénom"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Régime matrimonial</Label>
+                            <Input 
+                              value={attestationData.conjointSurvivant.regimeMatrimonial}
+                              onChange={(e) => setAttestationData({
+                                ...attestationData,
+                                conjointSurvivant: {...attestationData.conjointSurvivant, regimeMatrimonial: e.target.value}
+                              })}
+                              placeholder="Ex: Communauté réduite aux acquêts"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Droits du conjoint</Label>
+                            <Input 
+                              value={attestationData.conjointSurvivant.droitsConjoint}
+                              onChange={(e) => setAttestationData({
+                                ...attestationData,
+                                conjointSurvivant: {...attestationData.conjointSurvivant, droitsConjoint: e.target.value}
+                              })}
+                              placeholder="Ex: Usufruit, 1/4 en pleine propriété"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Section 3 : Biens immobiliers */}
+                  <div className="space-y-4 bg-blue-50 p-6 rounded-lg border border-blue-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-blue-800">
+                      🏠 Section 3 : Biens immobiliers concernés
+                    </h3>
+
+                    <div className="space-y-6">
+                      {attestationData.biens.map((bien, index) => (
+                        <div key={bien.id} className="p-4 bg-white rounded-lg border border-blue-300 space-y-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium text-blue-700">Bien immobilier #{index + 1}</h4>
+                            {attestationData.biens.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => {
+                                  setAttestationData({
+                                    ...attestationData,
+                                    biens: attestationData.biens.filter(b => b.id !== bien.id)
+                                  });
+                                }}
+                              >
+                                Supprimer ce bien
+                              </Button>
+                            )}
+                          </div>
+
+                          {/* Identité cadastrale */}
+                          <div className="p-3 bg-gray-50 rounded space-y-3">
+                            <h5 className="font-medium text-sm text-gray-700">📍 Identité et localisation</h5>
+                            
+                            <div className="space-y-2">
+                              <Label>Adresse complète du bien <span className="text-red-500">*</span></Label>
+                              <textarea 
+                                value={bien.adresseComplete}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.biens];
+                                  updated[index] = {...bien, adresseComplete: e.target.value};
+                                  setAttestationData({...attestationData, biens: updated});
+                                }}
+                                placeholder="Numéro, rue, code postal, ville"
+                                className="w-full min-h-[60px] p-2 border rounded-md"
+                                required
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Code postal</Label>
+                                <Input 
+                                  value={bien.codePostal}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, codePostal: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="75001"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Commune</Label>
+                                <Input 
+                                  value={bien.commune}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, commune: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Paris"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Section cadastrale</Label>
+                                <Input 
+                                  value={bien.cadastreSection}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, cadastreSection: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="AB"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Numéro de parcelle</Label>
+                                <Input 
+                                  value={bien.cadastreNumero}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, cadastreNumero: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="123"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Contenance cadastrale</Label>
+                                <Input 
+                                  value={bien.cadastreContenance}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, cadastreContenance: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="500 m²"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Description du bien */}
+                          <div className="p-3 bg-amber-50 rounded space-y-3">
+                            <h5 className="font-medium text-sm text-amber-700">🏘️ Description du bien</h5>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Type de bien</Label>
+                                <Select 
+                                  value={bien.typeBien}
+                                  onValueChange={(value) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, typeBien: value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="appartement">Appartement</SelectItem>
+                                    <SelectItem value="maison">Maison</SelectItem>
+                                    <SelectItem value="terrain">Terrain</SelectItem>
+                                    <SelectItem value="immeuble">Immeuble</SelectItem>
+                                    <SelectItem value="local_commercial">Local commercial</SelectItem>
+                                    <SelectItem value="parking">Parking/Garage</SelectItem>
+                                    <SelectItem value="autre">Autre</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Surface habitable</Label>
+                                <Input 
+                                  value={bien.surfaceHabitable}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, surfaceHabitable: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="80 m²"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Nombre de pièces</Label>
+                                <Input 
+                                  value={bien.nombrePieces}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, nombrePieces: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="3"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Dépendances</Label>
+                                <Input 
+                                  value={bien.dependances}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, dependances: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Cave, garage..."
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Annexes</Label>
+                                <Input 
+                                  value={bien.annexes}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, annexes: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Jardin, terrasse..."
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Équipements</Label>
+                                <Input 
+                                  value={bien.equipements}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, equipements: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Chauffage, ascenseur..."
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Situation locative */}
+                          <div className="p-3 bg-green-50 rounded space-y-3">
+                            <h5 className="font-medium text-sm text-green-700">🏘️ Situation locative</h5>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Le bien est-il loué ?</Label>
+                                <Select 
+                                  value={bien.situationLocative}
+                                  onValueChange={(value) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, situationLocative: value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="libre">Libre d'occupation</SelectItem>
+                                    <SelectItem value="loue">Loué</SelectItem>
+                                    <SelectItem value="occupe_heritier">Occupé par un héritier</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {bien.situationLocative === "loue" && (
+                                <div className="space-y-2">
+                                  <Label>Montant du loyer mensuel</Label>
+                                  <Input 
+                                    value={bien.montantLoyer}
+                                    onChange={(e) => {
+                                      const updated = [...attestationData.biens];
+                                      updated[index] = {...bien, montantLoyer: e.target.value};
+                                      setAttestationData({...attestationData, biens: updated});
+                                    }}
+                                    placeholder="1200 €"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Origine de propriété */}
+                          <div className="p-3 bg-purple-50 rounded space-y-3">
+                            <h5 className="font-medium text-sm text-purple-700">📜 Origine de propriété</h5>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Date d'acquisition par le défunt</Label>
+                                <Input 
+                                  type="date"
+                                  value={bien.dateAcquisition}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, dateAcquisition: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Nature de l'acquisition</Label>
+                                <Select 
+                                  value={bien.natureAcquisition}
+                                  onValueChange={(value) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, natureAcquisition: value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="achat">Achat</SelectItem>
+                                    <SelectItem value="donation">Donation</SelectItem>
+                                    <SelectItem value="succession">Succession</SelectItem>
+                                    <SelectItem value="construction">Construction</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Répartition des droits</Label>
+                                <Input 
+                                  value={bien.repartitionDroits}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, repartitionDroits: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Ex: Pleine propriété"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Quote-part du défunt</Label>
+                                <Input 
+                                  value={bien.quotePart}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, quotePart: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="100% ou 1/2, 1/3..."
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Servitudes */}
+                          <div className="p-3 bg-orange-50 rounded space-y-3">
+                            <h5 className="font-medium text-sm text-orange-700">⚖️ Servitudes</h5>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Servitudes actives (au bénéfice du bien)</Label>
+                                <textarea 
+                                  value={bien.servitudesActives}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, servitudesActives: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Ex: Droit de passage..."
+                                  className="w-full min-h-[60px] p-2 border rounded-md"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Servitudes passives (à la charge du bien)</Label>
+                                <textarea 
+                                  value={bien.servitudesPassives}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, servitudesPassives: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Ex: Servitude de vue..."
+                                  className="w-full min-h-[60px] p-2 border rounded-md"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Charges et hypothèques */}
+                          <div className="p-3 bg-red-50 rounded space-y-3">
+                            <h5 className="font-medium text-sm text-red-700">💰 Charges, prêts et hypothèques</h5>
+                            
+                            <div className="space-y-4">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`pretEnCours-${index}`}
+                                  checked={bien.pretEnCours}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, pretEnCours: e.target.checked};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor={`pretEnCours-${index}`} className="cursor-pointer">
+                                  Prêt immobilier en cours
+                                </Label>
+                              </div>
+
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`hypothequeInscrite-${index}`}
+                                  checked={bien.hypothequeInscrite}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, hypothequeInscrite: e.target.checked};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  className="w-4 h-4"
+                                />
+                                <Label htmlFor={`hypothequeInscrite-${index}`} className="cursor-pointer">
+                                  Hypothèque inscrite
+                                </Label>
+                              </div>
+
+                              {bien.hypothequeInscrite && (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                                  <div className="space-y-2">
+                                    <Label>Type d'hypothèque</Label>
+                                    <Input 
+                                      value={bien.typeHypotheque}
+                                      onChange={(e) => {
+                                        const updated = [...attestationData.biens];
+                                        updated[index] = {...bien, typeHypotheque: e.target.value};
+                                        setAttestationData({...attestationData, biens: updated});
+                                      }}
+                                      placeholder="Conventionnelle, légale..."
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Montant résiduel</Label>
+                                    <Input 
+                                      value={bien.montantResiduel}
+                                      onChange={(e) => {
+                                        const updated = [...attestationData.biens];
+                                        updated[index] = {...bien, montantResiduel: e.target.value};
+                                        setAttestationData({...attestationData, biens: updated});
+                                      }}
+                                      placeholder="50 000 €"
+                                    />
+                                  </div>
+
+                                  <div className="flex items-center space-x-2 mt-6">
+                                    <input
+                                      type="checkbox"
+                                      id={`necessitMainlevee-${index}`}
+                                      checked={bien.necessitMainlevee}
+                                      onChange={(e) => {
+                                        const updated = [...attestationData.biens];
+                                        updated[index] = {...bien, necessitMainlevee: e.target.checked};
+                                        setAttestationData({...attestationData, biens: updated});
+                                      }}
+                                      className="w-4 h-4"
+                                    />
+                                    <Label htmlFor={`necessitMainlevee-${index}`} className="cursor-pointer">
+                                      Nécessite mainlevée
+                                    </Label>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Copropriété */}
+                          <div className="p-3 bg-indigo-50 rounded space-y-3">
+                            <h5 className="font-medium text-sm text-indigo-700">🏢 Copropriété</h5>
+                            
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`estCopropriete-${index}`}
+                                checked={bien.estCopropriete}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.biens];
+                                  updated[index] = {...bien, estCopropriete: e.target.checked};
+                                  setAttestationData({...attestationData, biens: updated});
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`estCopropriete-${index}`} className="cursor-pointer">
+                                Le bien est en copropriété
+                              </Label>
+                            </div>
+
+                            {bien.estCopropriete && (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                                <div className="space-y-2">
+                                  <Label>Numéro de lot</Label>
+                                  <Input 
+                                    value={bien.numeroLot}
+                                    onChange={(e) => {
+                                      const updated = [...attestationData.biens];
+                                      updated[index] = {...bien, numeroLot: e.target.value};
+                                      setAttestationData({...attestationData, biens: updated});
+                                    }}
+                                    placeholder="Ex: 42"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label>Quote-part parties communes</Label>
+                                  <Input 
+                                    value={bien.quotepartCommunes}
+                                    onChange={(e) => {
+                                      const updated = [...attestationData.biens];
+                                      updated[index] = {...bien, quotepartCommunes: e.target.value};
+                                      setAttestationData({...attestationData, biens: updated});
+                                    }}
+                                    placeholder="Ex: 125/10000"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label>Charges annuelles</Label>
+                                  <Input 
+                                    value={bien.chargesAnnuelles}
+                                    onChange={(e) => {
+                                      const updated = [...attestationData.biens];
+                                      updated[index] = {...bien, chargesAnnuelles: e.target.value};
+                                      setAttestationData({...attestationData, biens: updated});
+                                    }}
+                                    placeholder="1500 €"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full border-blue-300 text-blue-700 hover:bg-blue-50"
+                        onClick={() => {
+                          const newId = Math.max(...attestationData.biens.map(b => b.id)) + 1;
+                          setAttestationData({
+                            ...attestationData,
+                            biens: [...attestationData.biens, {
+                              id: newId, adresseComplete: "", codePostal: "", commune: "", cadastreSection: "", 
+                              cadastreNumero: "", cadastreContenance: "", typeBien: "", surfaceHabitable: "", 
+                              nombrePieces: "", dependances: "", annexes: "", equipements: "", situationLocative: "", 
+                              montantLoyer: "", dateAcquisition: "", natureAcquisition: "", repartitionDroits: "", 
+                              quotePart: "", servitudesActives: "", servitudesPassives: "", pretEnCours: false, 
+                              hypothequeInscrite: false, typeHypotheque: "", montantResiduel: "", 
+                              necessitMainlevee: false, estCopropriete: false, numeroLot: "", quotepartCommunes: "", 
+                              chargesAnnuelles: "",
+                            }]
+                          });
+                        }}
+                      >
+                        + Ajouter un bien immobilier
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Section 4 : Répartition des droits */}
+                  <div className="space-y-4 bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-yellow-800">
+                      📊 Section 4 : Répartition des droits sur les biens
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Droits du conjoint survivant (si applicable)</Label>
+                        <textarea 
+                          value={attestationData.repartitionDroits.conjoint}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            repartitionDroits: {...attestationData.repartitionDroits, conjoint: e.target.value}
+                          })}
+                          placeholder="Ex: Usufruit sur la totalité, 1/4 en pleine propriété..."
+                          className="w-full min-h-[80px] p-2 border rounded-md"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Répartition entre les héritiers</Label>
+                        <textarea 
+                          value={attestationData.repartitionDroits.heritiers}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            repartitionDroits: {...attestationData.repartitionDroits, heritiers: e.target.value}
+                          })}
+                          placeholder="Ex: Chaque enfant 1/3 en nue-propriété, parts égales..."
+                          className="w-full min-h-[100px] p-2 border rounded-md"
+                        />
+                      </div>
+
+                      <div className="p-3 bg-yellow-100 border border-yellow-300 rounded">
+                        <p className="text-xs text-yellow-800">
+                          💡 Indiquez précisément les quotes-parts de chaque héritier et la nature des droits (pleine propriété, usufruit, nue-propriété)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 5 : Destination du bien */}
+                  <div className="space-y-4 bg-pink-50 p-6 rounded-lg border border-pink-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-pink-800">
+                      🎯 Section 5 : Destination du bien
+                    </h3>
+
+                    <div className="space-y-2">
+                      <Label>Que souhaitent faire les héritiers du bien ?</Label>
+                      <Select 
+                        value={attestationData.destinationBien}
+                        onValueChange={(value) => setAttestationData({
+                          ...attestationData,
+                          destinationBien: value
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="conservation_indivision">Conservation en indivision</SelectItem>
+                          <SelectItem value="vente">Vente du bien</SelectItem>
+                          <SelectItem value="partage">Partage entre héritiers</SelectItem>
+                          <SelectItem value="attribution_heritier">Attribution à un héritier</SelectItem>
+                          <SelectItem value="donation">Donation</SelectItem>
+                          <SelectItem value="indecis">Pas encore décidé</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Section 6 : Déclarations légales */}
+                  <div className="space-y-4 bg-red-50 p-6 rounded-lg border border-red-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-red-800">
+                      ⚖️ Section 6 : Déclarations obligatoires
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Loi successorale applicable</Label>
+                        <Input 
+                          value={attestationData.loiSuccessoraleApplicable}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            loiSuccessoraleApplicable: e.target.value
+                          })}
+                          placeholder="Loi française, loi du dernier domicile..."
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="confirmationAbsenceAutresHeritiers"
+                          checked={attestationData.confirmationAbsenceAutresHeritiers}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            confirmationAbsenceAutresHeritiers: e.target.checked
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="confirmationAbsenceAutresHeritiers" className="cursor-pointer">
+                          Déclaration sur l'honneur : absence d'autres héritiers
+                        </Label>
+                      </div>
+
+                      <div className="p-3 bg-red-100 border border-red-300 rounded">
+                        <p className="text-xs text-red-800">
+                          ⚠️ <strong>Important :</strong> Cette déclaration engage la responsabilité des héritiers signataires
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 7 : Évaluation du bien */}
+                  <div className="space-y-4 bg-teal-50 p-6 rounded-lg border border-teal-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-teal-800">
+                      💶 Section 7 : Évaluation du bien
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Valeur vénale estimée</Label>
+                        <Input 
+                          value={attestationData.valeurVenale}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            valeurVenale: e.target.value
+                          })}
+                          placeholder="250 000 €"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Méthode d'estimation</Label>
+                        <Select 
+                          value={attestationData.methodeEstimation}
+                          onValueChange={(value) => setAttestationData({
+                            ...attestationData,
+                            methodeEstimation: value
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="comparaison">Méthode par comparaison</SelectItem>
+                            <SelectItem value="expertise">Expertise professionnelle</SelectItem>
+                            <SelectItem value="avis_valeur">Avis de valeur (agence)</SelectItem>
+                            <SelectItem value="valeur_locative">Valeur locative capitalisée</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Valeur déclarée pour le fisc</Label>
+                        <Input 
+                          value={attestationData.valeurDeclareeFiscale}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            valeurDeclareeFiscale: e.target.value
+                          })}
+                          placeholder="245 000 €"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-teal-100 border border-teal-300 rounded">
+                      <p className="text-xs text-teal-800">
+                        💡 La valeur vénale doit correspondre au prix de vente potentiel au jour du décès
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Section 8 : Formalités de publicité foncière */}
+                  <div className="space-y-4 bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-indigo-800">
+                      📋 Section 8 : Formalités de publicité foncière (SPF)
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Bureau du Service de la Publicité Foncière compétent</Label>
+                        <Input 
+                          value={attestationData.bureauSPF}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            bureauSPF: e.target.value
+                          })}
+                          placeholder="Ex: SPF de Paris 1er"
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="fichesPreparees"
+                          checked={attestationData.fichesPreparees}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            fichesPreparees: e.target.checked
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="fichesPreparees" className="cursor-pointer">
+                          Fiches immobilières préparées pour inscription
+                        </Label>
+                      </div>
+
+                      <div className="p-3 bg-indigo-100 border border-indigo-300 rounded">
+                        <p className="text-xs text-indigo-800">
+                          📌 L'attestation doit être publiée au SPF dans les 6 mois du décès (ou dans l'année si testament)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 9 : Récapitulatif des pièces justificatives */}
+                  <div className="space-y-4 bg-gray-50 p-6 rounded-lg border border-gray-300">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-gray-800">
+                      📎 Section 9 : Pièces justificatives à fournir
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="p-3 bg-white rounded border">
+                        <p className="text-sm font-medium">✅ Acte de décès</p>
+                        <p className="text-xs text-gray-500">Copie intégrale récente</p>
+                      </div>
+
+                      <div className="p-3 bg-white rounded border">
+                        <p className="text-sm font-medium">✅ Pièces d'identité héritiers</p>
+                        <p className="text-xs text-gray-500">CNI ou passeport valide</p>
+                      </div>
+
+                      <div className="p-3 bg-white rounded border">
+                        <p className="text-sm font-medium">✅ Titre de propriété</p>
+                        <p className="text-xs text-gray-500">Acte notarié d'acquisition</p>
+                      </div>
+
+                      <div className="p-3 bg-white rounded border">
+                        <p className="text-sm font-medium">✅ Livret de famille</p>
+                        <p className="text-xs text-gray-500">À jour</p>
+                      </div>
+
+                      {attestationData.defunt.existenceTestament && (
+                        <div className="p-3 bg-amber-50 rounded border border-amber-200">
+                          <p className="text-sm font-medium">⚠️ Testament</p>
+                          <p className="text-xs text-amber-700">Copie authentique ou dépôt chez notaire</p>
+                        </div>
+                      )}
+
+                      {attestationData.defunt.existenceContratMariage && (
+                        <div className="p-3 bg-purple-50 rounded border border-purple-200">
+                          <p className="text-sm font-medium">💍 Contrat de mariage</p>
+                          <p className="text-xs text-purple-700">Copie authentique</p>
+                        </div>
+                      )}
+
+                      {attestationData.biens.some(b => b.estCopropriete) && (
+                        <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                          <p className="text-sm font-medium">🏢 Règlement de copropriété</p>
+                          <p className="text-xs text-blue-700">+ dernier PV d'AG</p>
+                        </div>
+                      )}
+
+                      {attestationData.biens.some(b => b.situationLocative === "loue") && (
+                        <div className="p-3 bg-green-50 rounded border border-green-200">
+                          <p className="text-sm font-medium">📄 Baux en cours</p>
+                          <p className="text-xs text-green-700">Copies des contrats de location</p>
+                        </div>
+                      )}
+
+                      {attestationData.biens.some(b => b.hypothequeInscrite) && (
+                        <div className="p-3 bg-red-50 rounded border border-red-200">
+                          <p className="text-sm font-medium">💰 État hypothécaire</p>
+                          <p className="text-xs text-red-700">Moins de 3 mois</p>
+                        </div>
+                      )}
+
+                      <div className="p-3 bg-white rounded border">
+                        <p className="text-sm font-medium">📋 Justificatif de domicile</p>
+                        <p className="text-xs text-gray-500">Moins de 3 mois pour chaque héritier</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-blue-100 border border-blue-300 rounded-lg mt-4">
+                      <p className="text-sm font-semibold text-blue-800 mb-2">📌 Documents à préparer :</p>
+                      <ul className="text-xs text-blue-700 space-y-1 list-disc list-inside">
+                        <li>Extrait cadastral et plan de masse</li>
+                        <li>Taxe foncière (dernier avis)</li>
+                        <li>Diagnostic de performance énergétique (DPE) si vente prévue</li>
+                        <li>Attestation assurance habitation</li>
+                        <li>Relevé d'identité bancaire pour succession</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Section 10 : Notes et observations */}
+                  <div className="space-y-4 bg-slate-50 p-6 rounded-lg border border-slate-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-slate-800">
+                      📝 Section 10 : Notes et observations complémentaires
+                    </h3>
+
+                    <div className="space-y-2">
+                      <Label>Informations complémentaires</Label>
+                      <textarea 
+                        value={attestationData.regimeMatrimonial}
+                        onChange={(e) => setAttestationData({
+                          ...attestationData,
+                          regimeMatrimonial: e.target.value
+                        })}
+                        placeholder="Toute information utile : particularités de la succession, difficultés rencontrées, héritiers injoignables, litiges potentiels..."
+                        className="w-full min-h-[150px] p-3 border rounded-md"
+                      />
+                    </div>
+
+                    <div className="p-4 bg-green-100 border border-green-300 rounded-lg">
+                      <p className="text-sm font-semibold text-green-800 mb-2">✅ Attestation complète</p>
+                      <p className="text-xs text-green-700">
+                        Une fois toutes les sections remplies, l'attestation pourra être établie par le notaire et publiée au Service de la Publicité Foncière.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Formulaire générique pour tous les autres types de contrats */}
-            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future"].includes(pendingContractType) && (
-              <>
-                <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg">Informations sur le contrat</h3>
-                  <div className="space-y-2">
-                    <Label>Type de contrat</Label>
-                    <Input 
-                      value={pendingContractType}
-                      disabled
-                      className="bg-gray-100"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Catégorie</Label>
-                    <Input 
-                      value={pendingCategory}
-                      disabled
-                      className="bg-gray-100"
-                    />
-                  </div>
+            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière"].includes(pendingContractType) && (
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg border-b pb-2">👤 Client concerné</h3>
+                <div className="space-y-2">
+                  <Label>Sélectionner le client</Label>
+                  <Select 
+                    value={selectedClientId}
+                    onValueChange={(value) => {
+                      setSelectedClientId(value);
+                      const client = clients.find(c => c.id === value);
+                      if (client) {
+                        setGenericDescription(`Contrat pour ${client.prenom} ${client.nom}`);
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir un client" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clients.map((client) => (
+                        <SelectItem key={client.id} value={client.id}>
+                          {client.prenom} {client.nom}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">👤 Client concerné</h3>
-                  <div className="space-y-2">
-                    <Label htmlFor="genericClientId">Sélectionner un client (optionnel)</Label>
-                    <Select 
-                      value={questionnaireData.clientId} 
-                      onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientId: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choisir un client..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {clients.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>
-                            {client.nom} {client.prenom}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label>Description du contrat</Label>
+                  <textarea 
+                    value={genericDescription}
+                    onChange={(e) => setGenericDescription(e.target.value)}
+                    placeholder="Décrivez brièvement le contrat..."
+                    className="w-full min-h-[100px] p-2 border rounded-md"
+                  />
                 </div>
-
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">📝 Description du contrat</h3>
-                  <div className="space-y-2">
-                    <Label htmlFor="genericDescription">Informations complémentaires (optionnel)</Label>
-                    <Textarea 
-                      id="genericDescription"
-                      placeholder="Ajoutez des détails sur ce contrat..."
-                      rows={4}
-                    />
-                  </div>
-                </div>
-
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-700">
-                    Ce contrat sera créé avec les informations de base. Vous pourrez le compléter et le modifier ensuite dans la page de détails du contrat.
-                  </p>
-                </div>
-              </>
+              </div>
             )}
 
           </div>
@@ -37740,6 +39413,8 @@ FIN DE LA CONVENTION
                   handleProcurationSubmit();
                 } else if (pendingContractType === "Mandat de protection future") {
                   handleMandatProtectionSubmit();
+                } else if (pendingContractType === "Attestation de propriété immobilière") {
+                  handleAttestationSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
                   handleGenericContractSubmit();
