@@ -200,6 +200,8 @@ export default function Contrats() {
   const [bailCommercialCautionFiles, setBailCommercialCautionFiles] = useState<File[]>([]); // Acte de caution
   const [procurationMandantIdentiteUrl, setProcurationMandantIdentiteUrl] = useState<string | null>(null); // URL du document du mandant procuration
   const [procurationMandataireIdentiteFile, setProcurationMandataireIdentiteFile] = useState<File | null>(null); // Fichier pièce d'identité mandataire
+  const [mandatProtectionMandantIdentiteUrl, setMandatProtectionMandantIdentiteUrl] = useState<string | null>(null); // URL pièce d'identité mandant
+  const [mandatProtectionMandataireIdentiteFile, setMandatProtectionMandataireIdentiteFile] = useState<File | null>(null); // Fichier pièce d'identité mandataire
   const [bailCommercialEtatLieuxFiles, setBailCommercialEtatLieuxFiles] = useState<File[]>([]); // État des lieux
   const [bailCommercialCautionIdFiles, setBailCommercialCautionIdFiles] = useState<File[]>([]); // Pièce d'identité caution
   const [bailCommercialAssuranceFiles, setBailCommercialAssuranceFiles] = useState<File[]>([]); // Attestation d'assurance
@@ -3096,6 +3098,183 @@ export default function Contrats() {
     },
   });
 
+  // State pour Mandat de protection future
+  const [mandatProtectionData, setMandatProtectionData] = useState({
+    // 1. Type de mandat
+    typeMandat: [], // mandat_soi_meme, mandat_autrui, sous_seing_prive, acte_authentique, mandat_mixte
+    
+    // 2. Identité complète du mandant
+    mandant: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      sexe: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresseComplete: "",
+      telephone: "",
+      email: "",
+      situationMatrimoniale: "", // celibataire, marie, divorce, veuf, pacse
+      regimeMatrimonial: "",
+      conjointNom: "",
+      conjointPrenom: "",
+      capaciteJuridique: "majeur_capable", // majeur_capable, sauvegarde_justice, curatelle, tutelle
+      typeIdentite: "",
+      numeroIdentite: "",
+      dateEmissionIdentite: "",
+      dateExpirationIdentite: "",
+    },
+    
+    // 3. Identité complète du mandataire principal
+    mandatairePrincipal: {
+      nom: "",
+      prenom: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      adresseComplete: "",
+      profession: "",
+      telephone: "",
+      email: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      dateExpirationIdentite: "",
+      lienMandant: "", // conjoint, enfant, parent, ami, tiers_professionnel
+      absenceIncapacite: false,
+      acceptationEcrite: false,
+    },
+    
+    // 4. Mandataire substitut (optionnel)
+    mandataireSubstitut: {
+      existe: false,
+      nom: "",
+      prenom: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      adresseComplete: "",
+      profession: "",
+      telephone: "",
+      email: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      lienMandant: "",
+      conditionsEntree: "",
+      etenduePouvoirs: "",
+    },
+    
+    // 5A. Pouvoirs sur la personne
+    pouvoirsPersonne: {
+      representationActesCourants: false,
+      choixEtablissement: false,
+      demarchesSociales: false,
+      organisationSoins: false,
+      gestionMedecins: false,
+      gestionQuotidien: false,
+      precisionsAutres: "",
+    },
+    
+    // 5B. Pouvoirs sur le patrimoine - Actes d'administration
+    pouvoirsAdministration: {
+      gestionComptes: false,
+      encaissementRevenus: false,
+      paiementDepenses: false,
+      renouvellementBail: false,
+      souscriptionAssurances: false,
+      entretienBiens: false,
+    },
+    
+    // 5B. Pouvoirs sur le patrimoine - Actes de disposition
+    pouvoirsDisposition: {
+      venteImmobilier: false,
+      achatImmobilier: false,
+      donationMobilier: false,
+      gestionTitres: false,
+      resiliationBail: false,
+      reglementDettes: false,
+      acceptationSuccession: false,
+      renonciationSuccession: false,
+      donations: false,
+      modificationsSuccessorales: false,
+      actesGratuits: false,
+      modificationContratMariage: false,
+    },
+    
+    // 6. Liste des biens du mandant
+    biensPatrimoine: {
+      biensImmobiliers: "",
+      comptesBancaires: "",
+      assurancesVie: "",
+      livretsEpargne: "",
+      biensMobiliers: "",
+      partsSociales: "",
+      revenusReguliers: "",
+      dettesExistantes: "",
+    },
+    
+    // 7. Limites du mandat
+    limites: {
+      interdictionVenteCertainsBiens: false,
+      biensConcernes: "",
+      interdictionDeplacement: false,
+      interdictionModificationContrats: false,
+      montantMaximum: "",
+      obligationComptesReguliers: false,
+      periodiciteComptes: "", // mensuel, trimestriel, annuel
+    },
+    
+    // 8. Contrôle du mandataire
+    controle: {
+      obligationCompteGestion: false,
+      controlePersonne: false,
+      controleIdentite: "",
+      controlePouvoirs: "",
+      controleNotaire: false,
+      controleExpertComptable: false,
+      compteRenduAnnuel: false,
+      periodicite: "",
+    },
+    
+    // 9. Conditions de mise en œuvre
+    miseEnOeuvre: {
+      certificatMedical: true,
+      medecinListe: "",
+      dateConstat: "",
+      depotGreffe: false,
+      notificationMandataire: false,
+    },
+    
+    // 10. Fin du mandat
+    finMandat: {
+      finRetourFacultes: true,
+      revocationMandant: true,
+      destitutionJuge: true,
+      decesMandant: true,
+      remplacementSubstitut: false,
+    },
+    
+    // 11. Déclarations obligatoires
+    declarations: {
+      volonteLibre: false,
+      consentementSansPression: false,
+      explicationComprise: false,
+      acceptationActesDisposition: false,
+      acceptationMandataire: false,
+      droitRevocation: false,
+    },
+    
+    // 12. Forme du mandat
+    forme: {
+      typeActe: "", // notarie / sous_seing_prive
+      nomNotaire: "",
+      villeOffice: "",
+      dateSignature: "",
+      lieuSignature: "",
+    },
+  });
+
   // State pour Procuration authentique
   const [procurationData, setProcurationData] = useState({
     // 1. Type de procuration
@@ -3912,6 +4091,117 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création procuration:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour le formulaire de mandat de protection future
+  const handleMandatProtectionSubmit = async () => {
+    if (!user) return;
+
+    // Validation
+    if (mandatProtectionData.typeMandat.length === 0) {
+      toast.error("Type de mandat requis", { description: "Veuillez sélectionner au moins un type" });
+      return;
+    }
+    if (!mandatProtectionData.mandant.nom || !mandatProtectionData.mandant.prenom || !mandatProtectionData.mandant.dateNaissance || !mandatProtectionData.mandant.adresseComplete) {
+      toast.error("Champs mandant requis", { description: "Nom, prénom, date de naissance et adresse obligatoires" });
+      return;
+    }
+    if (!mandatProtectionData.mandatairePrincipal.nom || !mandatProtectionData.mandatairePrincipal.prenom || !mandatProtectionData.mandatairePrincipal.adresseComplete) {
+      toast.error("Champs mandataire requis", { description: "Nom, prénom et adresse obligatoires" });
+      return;
+    }
+    if (!mandatProtectionData.forme.typeActe || !mandatProtectionData.forme.dateSignature) {
+      toast.error("Forme du mandat requise", { description: "Type d'acte et date de signature obligatoires" });
+      return;
+    }
+
+    try {
+      const description = `Mandat de protection future - Mandant: ${mandatProtectionData.mandant.prenom} ${mandatProtectionData.mandant.nom} → Mandataire: ${mandatProtectionData.mandatairePrincipal.prenom} ${mandatProtectionData.mandatairePrincipal.nom}`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: mandatProtectionData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("Mandat de protection future créé", { description: "Vous pouvez maintenant compléter les détails" });
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire
+      setMandatProtectionData({
+        typeMandat: [],
+        mandant: {
+          isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", sexe: "", dateNaissance: "", lieuNaissance: "",
+          nationalite: "", profession: "", adresseComplete: "", telephone: "", email: "", situationMatrimoniale: "",
+          regimeMatrimonial: "", conjointNom: "", conjointPrenom: "", capaciteJuridique: "majeur_capable",
+          typeIdentite: "", numeroIdentite: "", dateEmissionIdentite: "", dateExpirationIdentite: "",
+        },
+        mandatairePrincipal: {
+          nom: "", prenom: "", dateNaissance: "", lieuNaissance: "", adresseComplete: "", profession: "",
+          telephone: "", email: "", typeIdentite: "", numeroIdentite: "", dateExpirationIdentite: "",
+          lienMandant: "", absenceIncapacite: false, acceptationEcrite: false,
+        },
+        mandataireSubstitut: {
+          existe: false, nom: "", prenom: "", dateNaissance: "", lieuNaissance: "", adresseComplete: "",
+          profession: "", telephone: "", email: "", typeIdentite: "", numeroIdentite: "",
+          lienMandant: "", conditionsEntree: "", etenduePouvoirs: "",
+        },
+        pouvoirsPersonne: {
+          representationActesCourants: false, choixEtablissement: false, demarchesSociales: false,
+          organisationSoins: false, gestionMedecins: false, gestionQuotidien: false, precisionsAutres: "",
+        },
+        pouvoirsAdministration: {
+          gestionComptes: false, encaissementRevenus: false, paiementDepenses: false,
+          renouvellementBail: false, souscriptionAssurances: false, entretienBiens: false,
+        },
+        pouvoirsDisposition: {
+          venteImmobilier: false, achatImmobilier: false, donationMobilier: false, gestionTitres: false,
+          resiliationBail: false, reglementDettes: false, acceptationSuccession: false, renonciationSuccession: false,
+          donations: false, modificationsSuccessorales: false, actesGratuits: false, modificationContratMariage: false,
+        },
+        biensPatrimoine: {
+          biensImmobiliers: "", comptesBancaires: "", assurancesVie: "", livretsEpargne: "",
+          biensMobiliers: "", partsSociales: "", revenusReguliers: "", dettesExistantes: "",
+        },
+        limites: {
+          interdictionVenteCertainsBiens: false, biensConcernes: "", interdictionDeplacement: false,
+          interdictionModificationContrats: false, montantMaximum: "", obligationComptesReguliers: false, periodiciteComptes: "",
+        },
+        controle: {
+          obligationCompteGestion: false, controlePersonne: false, controleIdentite: "", controlePouvoirs: "",
+          controleNotaire: false, controleExpertComptable: false, compteRenduAnnuel: false, periodicite: "",
+        },
+        miseEnOeuvre: {
+          certificatMedical: true, medecinListe: "", dateConstat: "", depotGreffe: false, notificationMandataire: false,
+        },
+        finMandat: {
+          finRetourFacultes: true, revocationMandant: true, destitutionJuge: true, decesMandant: true, remplacementSubstitut: false,
+        },
+        declarations: {
+          volonteLibre: false, consentementSansPression: false, explicationComprise: false,
+          acceptationActesDisposition: false, acceptationMandataire: false, droitRevocation: false,
+        },
+        forme: {
+          typeActe: "", nomNotaire: "", villeOffice: "", dateSignature: "", lieuSignature: "",
+        },
+      });
+      
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création mandat protection:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -34624,8 +34914,763 @@ FIN DE LA CONVENTION
               </>
             )}
 
+            {/* Formulaire spécifique pour Mandat de protection future */}
+            {pendingContractType === "Mandat de protection future" && (
+              <>
+                <div className="space-y-6">
+                  {/* SECTION 1: TYPE DE MANDAT */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-orange-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Type de mandat</h3>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Sélectionnez le(s) type(s) de mandat <span className="text-red-500">*</span></Label>
+                      <div className="space-y-2">
+                        {[
+                          { value: "mandat_soi_meme", label: "Mandat pour soi-même" },
+                          { value: "mandat_autrui", label: "Mandat pour autrui (ex. enfant handicapé)" },
+                          { value: "sous_seing_prive", label: "Sous seing privé" },
+                          { value: "acte_authentique", label: "Acte authentique (notarié)" },
+                          { value: "mandat_mixte", label: "Mandat mixte (partie sous seing privé / partie notariée)" },
+                        ].map(option => (
+                          <div key={option.value} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`type-${option.value}`}
+                              checked={mandatProtectionData.typeMandat.includes(option.value)}
+                              onChange={(e) => {
+                                const newTypes = e.target.checked
+                                  ? [...mandatProtectionData.typeMandat, option.value]
+                                  : mandatProtectionData.typeMandat.filter(t => t !== option.value);
+                                setMandatProtectionData({...mandatProtectionData, typeMandat: newTypes});
+                              }}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={`type-${option.value}`} className="cursor-pointer">{option.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Le type de mandat détermine les pouvoirs permis.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* SECTION 2: IDENTITÉ DU MANDANT */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du MANDANT (OBLIGATOIRE)</h3>
+                    
+                    {/* Sélection client existant */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="mandant-is-client-mandat"
+                          checked={mandatProtectionData.mandant.isClient}
+                          onChange={(e) => {
+                            setMandatProtectionData({
+                              ...mandatProtectionData,
+                              mandant: {...mandatProtectionData.mandant, isClient: e.target.checked, clientId: ""}
+                            });
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="mandant-is-client-mandat" className="cursor-pointer">
+                          Le mandant est un client existant
+                        </Label>
+                      </div>
+
+                      {mandatProtectionData.mandant.isClient && (
+                        <Select
+                          value={mandatProtectionData.mandant.clientId}
+                          onValueChange={(val) => {
+                            setMandatProtectionData({
+                              ...mandatProtectionData,
+                              mandant: {...mandatProtectionData.mandant, clientId: val}
+                            });
+                            // Auto-fill depuis le client sélectionné
+                            const selectedClient = clients.find(c => c.id === val);
+                            if (selectedClient) {
+                              setMandatProtectionData(prev => ({
+                                ...prev,
+                                mandant: {
+                                  ...prev.mandant,
+                                  clientId: val,
+                                  nom: selectedClient.nom || "",
+                                  prenom: selectedClient.prenom || "",
+                                  nomNaissance: selectedClient.nom_naissance || "",
+                                  dateNaissance: selectedClient.date_naissance || "",
+                                  lieuNaissance: selectedClient.lieu_naissance || "",
+                                  nationalite: selectedClient.nationalite || "",
+                                  adresseComplete: selectedClient.adresse || "",
+                                  telephone: selectedClient.telephone || "",
+                                  email: selectedClient.email || "",
+                                  typeIdentite: selectedClient.type_identite || "",
+                                  numeroIdentite: selectedClient.numero_identite || "",
+                                }
+                              }));
+                            }
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un client" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {clients.map(c => (
+                              <SelectItem key={c.id} value={c.id}>
+                                {c.prenom} {c.nom}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+
+                      {/* Upload pièce d'identité mandant */}
+                      {mandatProtectionData.mandant.clientId && (
+                        <div className="space-y-2">
+                          <Label>📎 Copie de la pièce d'identité</Label>
+                          {(() => {
+                            const selectedClient = clients.find(c => c.id === mandatProtectionData.mandant.clientId);
+                            const hasDocument = selectedClient?.piece_identite_url;
+                            
+                            if (hasDocument) {
+                              return (
+                                <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                                  <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                  <span className="text-sm flex-1 text-green-700">Pièce d'identité du client disponible</span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                    onClick={() => window.open(selectedClient.piece_identite_url, '_blank')}
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              );
+                            } else {
+                              return (
+                                <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-300 rounded-lg">
+                                  <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                  </svg>
+                                  <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité associée à ce client</span>
+                                </div>
+                              );
+                            }
+                          })()}
+                        </div>
+                      )}
+
+                      {!mandatProtectionData.mandant.isClient && (
+                        <div className="space-y-2">
+                          <Label>📎 Copie de la pièce d'identité</Label>
+                          {mandatProtectionMandantIdentiteUrl ? (
+                            <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                              <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                onClick={() => window.open(mandatProtectionMandantIdentiteUrl, '_blank')}
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                                onClick={() => setMandatProtectionMandantIdentiteUrl(null)}
+                              >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </Button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const input = document.createElement('input');
+                                input.type = 'file';
+                                input.accept = '.pdf,.jpg,.jpeg,.png';
+                                input.onchange = (e: any) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const url = URL.createObjectURL(file);
+                                    setMandatProtectionMandantIdentiteUrl(url);
+                                  }
+                                };
+                                input.click();
+                              }}
+                              className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                            >
+                              <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                              <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Champs d'identité */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input 
+                          value={mandatProtectionData.mandant.nom}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, nom: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input 
+                          value={mandatProtectionData.mandant.prenom}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, prenom: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Nom de naissance</Label>
+                        <Input 
+                          value={mandatProtectionData.mandant.nomNaissance}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, nomNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Sexe</Label>
+                        <Select
+                          value={mandatProtectionData.mandant.sexe}
+                          onValueChange={(val) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, sexe: val}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="masculin">Masculin</SelectItem>
+                            <SelectItem value="feminin">Féminin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                        <Input 
+                          type="date"
+                          value={mandatProtectionData.mandant.dateNaissance}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance</Label>
+                        <Input 
+                          value={mandatProtectionData.mandant.lieuNaissance}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, lieuNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Nationalité</Label>
+                        <Input 
+                          value={mandatProtectionData.mandant.nationalite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, nationalite: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input 
+                          value={mandatProtectionData.mandant.profession}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                      <Textarea 
+                        value={mandatProtectionData.mandant.adresseComplete}
+                        onChange={(e) => setMandatProtectionData({
+                          ...mandatProtectionData,
+                          mandant: {...mandatProtectionData.mandant, adresseComplete: e.target.value}
+                        })}
+                        rows={2}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input 
+                          value={mandatProtectionData.mandant.telephone}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, telephone: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input 
+                          type="email"
+                          value={mandatProtectionData.mandant.email}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, email: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Situation familiale</Label>
+                        <Select
+                          value={mandatProtectionData.mandant.situationMatrimoniale}
+                          onValueChange={(val) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, situationMatrimoniale: val}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="celibataire">Célibataire</SelectItem>
+                            <SelectItem value="marie">Marié</SelectItem>
+                            <SelectItem value="divorce">Divorcé</SelectItem>
+                            <SelectItem value="veuf">Veuf</SelectItem>
+                            <SelectItem value="pacse">Pacsé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {(mandatProtectionData.mandant.situationMatrimoniale === "marie" || mandatProtectionData.mandant.situationMatrimoniale === "pacse") && (
+                        <div className="space-y-2">
+                          <Label>Régime matrimonial</Label>
+                          <Input 
+                            value={mandatProtectionData.mandant.regimeMatrimonial}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              mandant: {...mandatProtectionData.mandant, regimeMatrimonial: e.target.value}
+                            })}
+                            placeholder="Ex: Communauté réduite aux acquêts"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {(mandatProtectionData.mandant.situationMatrimoniale === "marie" || mandatProtectionData.mandant.situationMatrimoniale === "pacse") && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom du conjoint</Label>
+                          <Input 
+                            value={mandatProtectionData.mandant.conjointNom}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              mandant: {...mandatProtectionData.mandant, conjointNom: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom du conjoint</Label>
+                          <Input 
+                            value={mandatProtectionData.mandant.conjointPrenom}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              mandant: {...mandatProtectionData.mandant, conjointPrenom: e.target.value}
+                            })}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label>Capacité juridique actuelle <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={mandatProtectionData.mandant.capaciteJuridique}
+                        onValueChange={(val) => setMandatProtectionData({
+                          ...mandatProtectionData,
+                          mandant: {...mandatProtectionData.mandant, capaciteJuridique: val}
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="majeur_capable">Majeur capable</SelectItem>
+                          <SelectItem value="sauvegarde_justice">Sauvegarde de justice (mandat impossible)</SelectItem>
+                          <SelectItem value="curatelle">Curatelle (mandat limité)</SelectItem>
+                          <SelectItem value="tutelle">Tutelle (mandat impossible)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {mandatProtectionData.mandant.capaciteJuridique === "sauvegarde_justice" && (
+                        <p className="text-xs text-red-600 mt-1">⚠️ Un mandant sous sauvegarde de justice ne peut pas établir de mandat de protection future</p>
+                      )}
+                      {mandatProtectionData.mandant.capaciteJuridique === "tutelle" && (
+                        <p className="text-xs text-red-600 mt-1">⚠️ Un mandant sous tutelle ne peut pas établir de mandat de protection future</p>
+                      )}
+                      {mandatProtectionData.mandant.capaciteJuridique === "curatelle" && (
+                        <p className="text-xs text-orange-600 mt-1">⚠️ Mandat possible mais avec pouvoirs limités</p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de pièce d'identité</Label>
+                        <Select
+                          value={mandatProtectionData.mandant.typeIdentite}
+                          onValueChange={(val) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, typeIdentite: val}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CNI">Carte nationale d'identité</SelectItem>
+                            <SelectItem value="passeport">Passeport</SelectItem>
+                            <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Numéro de pièce</Label>
+                        <Input 
+                          value={mandatProtectionData.mandant.numeroIdentite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, numeroIdentite: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date d'expiration</Label>
+                        <Input 
+                          type="date"
+                          value={mandatProtectionData.mandant.dateExpirationIdentite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandant: {...mandatProtectionData.mandant, dateExpirationIdentite: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 3: MANDATAIRE PRINCIPAL */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité complète du MANDATAIRE PRINCIPAL (OBLIGATOIRE)</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input 
+                          value={mandatProtectionData.mandatairePrincipal.nom}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, nom: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input 
+                          value={mandatProtectionData.mandatairePrincipal.prenom}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, prenom: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de naissance</Label>
+                        <Input 
+                          type="date"
+                          value={mandatProtectionData.mandatairePrincipal.dateNaissance}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Lieu de naissance</Label>
+                        <Input 
+                          value={mandatProtectionData.mandatairePrincipal.lieuNaissance}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, lieuNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                      <Textarea 
+                        value={mandatProtectionData.mandatairePrincipal.adresseComplete}
+                        onChange={(e) => setMandatProtectionData({
+                          ...mandatProtectionData,
+                          mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, adresseComplete: e.target.value}
+                        })}
+                        rows={2}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input 
+                          value={mandatProtectionData.mandatairePrincipal.profession}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Lien avec le mandant</Label>
+                        <Select
+                          value={mandatProtectionData.mandatairePrincipal.lienMandant}
+                          onValueChange={(val) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, lienMandant: val}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="conjoint">Conjoint</SelectItem>
+                            <SelectItem value="enfant">Enfant</SelectItem>
+                            <SelectItem value="parent">Parent</SelectItem>
+                            <SelectItem value="ami">Ami</SelectItem>
+                            <SelectItem value="tiers_professionnel">Tiers professionnel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input 
+                          value={mandatProtectionData.mandatairePrincipal.telephone}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, telephone: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input 
+                          type="email"
+                          value={mandatProtectionData.mandatairePrincipal.email}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, email: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Pièce d'identité du mandataire */}
+                    <div className="space-y-2">
+                      <Label>📎 Copie de la pièce</Label>
+                      {mandatProtectionMandataireIdentiteFile ? (
+                        <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée : {mandatProtectionMandataireIdentiteFile.name}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => {
+                              const url = URL.createObjectURL(mandatProtectionMandataireIdentiteFile);
+                              window.open(url, '_blank');
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                            onClick={() => setMandatProtectionMandataireIdentiteFile(null)}
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </Button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = '.pdf,.jpg,.jpeg,.png';
+                            input.onchange = (e: any) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setMandatProtectionMandataireIdentiteFile(file);
+                              }
+                            };
+                            input.click();
+                          }}
+                          className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                        >
+                          <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de pièce d'identité</Label>
+                        <Select
+                          value={mandatProtectionData.mandatairePrincipal.typeIdentite}
+                          onValueChange={(val) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, typeIdentite: val}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CNI">Carte nationale d'identité</SelectItem>
+                            <SelectItem value="passeport">Passeport</SelectItem>
+                            <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Numéro de pièce</Label>
+                        <Input 
+                          value={mandatProtectionData.mandatairePrincipal.numeroIdentite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, numeroIdentite: e.target.value}
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date d'expiration</Label>
+                        <Input 
+                          type="date"
+                          value={mandatProtectionData.mandatairePrincipal.dateExpirationIdentite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, dateExpirationIdentite: e.target.value}
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="absenceIncapacite"
+                          checked={mandatProtectionData.mandatairePrincipal.absenceIncapacite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, absenceIncapacite: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="absenceIncapacite" className="cursor-pointer">
+                          Absence d'incapacité ou d'empêchement légal
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="acceptationEcrite"
+                          checked={mandatProtectionData.mandatairePrincipal.acceptationEcrite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, acceptationEcrite: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="acceptationEcrite" className="cursor-pointer">
+                          Acceptation écrite du mandat
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Boutons d'action */}
+                  <div className="flex gap-2 justify-end pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowQuestionDialog(false);
+                        setPendingContractType("");
+                        setPendingCategory("");
+                      }}
+                    >
+                      Annuler
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleMandatProtectionSubmit}
+                      className={mainButtonColor}
+                    >
+                      Créer le mandat
+                    </Button>
+                  </div>
+
+                  {/* Note informative */}
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm text-green-700">
+                      <strong>✅ Formulaire partiel :</strong> Ce formulaire contient les 3 premières sections du mandat de protection future. Les sections suivantes seront ajoutées progressivement.
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+
             {/* Formulaire générique pour tous les autres types de contrats */}
-            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique"].includes(pendingContractType) && (
+            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future"].includes(pendingContractType) && (
               <>
                 <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
                   <h3 className="font-semibold text-lg">Informations sur le contrat</h3>
@@ -34742,6 +35787,8 @@ FIN DE LA CONVENTION
                   handlePartageSuccessoralSubmit();
                 } else if (pendingContractType === "Procuration authentique") {
                   handleProcurationSubmit();
+                } else if (pendingContractType === "Mandat de protection future") {
+                  handleMandatProtectionSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
                   handleGenericContractSubmit();
