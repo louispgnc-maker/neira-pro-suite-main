@@ -199,6 +199,7 @@ export default function Contrats() {
   const [bailCommercialDiagnosticsFiles, setBailCommercialDiagnosticsFiles] = useState<File[]>([]); // Diagnostics bail commercial
   const [bailCommercialCautionFiles, setBailCommercialCautionFiles] = useState<File[]>([]); // Acte de caution
   const [procurationMandantIdentiteUrl, setProcurationMandantIdentiteUrl] = useState<string | null>(null); // URL du document du mandant procuration
+  const [procurationMandataireIdentiteFile, setProcurationMandataireIdentiteFile] = useState<File | null>(null); // Fichier pièce d'identité mandataire
   const [bailCommercialEtatLieuxFiles, setBailCommercialEtatLieuxFiles] = useState<File[]>([]); // État des lieux
   const [bailCommercialCautionIdFiles, setBailCommercialCautionIdFiles] = useState<File[]>([]); // Pièce d'identité caution
   const [bailCommercialAssuranceFiles, setBailCommercialAssuranceFiles] = useState<File[]>([]); // Attestation d'assurance
@@ -33959,25 +33960,59 @@ FIN DE LA CONVENTION
                     {/* Pièce d'identité du mandataire */}
                     <div className="space-y-2">
                       <Label>📎 Copie de la pièce</Label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const input = document.createElement('input');
-                          input.type = 'file';
-                          input.accept = '.pdf,.jpg,.jpeg,.png';
-                          input.onchange = (e: any) => {
-                            console.log('Upload fichier mandataire:', e.target.files?.[0]);
-                            // TODO: Gérer l'upload et stocker le nom du fichier
-                          };
-                          input.click();
-                        }}
-                        className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
-                      >
-                        <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                        <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                      </button>
+                      {procurationMandataireIdentiteFile ? (
+                        <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée : {procurationMandataireIdentiteFile.name}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => {
+                              const url = URL.createObjectURL(procurationMandataireIdentiteFile);
+                              window.open(url, '_blank');
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                            onClick={() => setProcurationMandataireIdentiteFile(null)}
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </Button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = '.pdf,.jpg,.jpeg,.png';
+                            input.onchange = (e: any) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setProcurationMandataireIdentiteFile(file);
+                              }
+                            };
+                            input.click();
+                          }}
+                          className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                        >
+                          <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                        </button>
+                      )}
                     </div>
                   </div>
 
