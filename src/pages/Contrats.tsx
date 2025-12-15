@@ -37616,28 +37616,6 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                   </div>
-
-                  {/* Boutons d'action */}
-                  <div className="flex gap-2 justify-end pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowQuestionDialog(false);
-                        setPendingContractType("");
-                        setPendingCategory("");
-                      }}
-                    >
-                      Annuler
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={handleMandatProtectionSubmit}
-                      className={mainButtonColor}
-                    >
-                      Créer le mandat
-                    </Button>
-                  </div>
                 </div>
               </>
             )}
