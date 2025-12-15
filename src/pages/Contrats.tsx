@@ -3102,6 +3102,10 @@ export default function Contrats() {
   const [mandatProtectionData, setMandatProtectionData] = useState({
     // 1. Type de mandat
     typeMandat: [], // mandat_soi_meme, mandat_autrui, sous_seing_prive, acte_authentique, mandat_mixte
+    mandatAutrui: {
+      lienJuridique: "",
+      justificationLegale: "",
+    },
     
     // 2. Identité complète du mandant
     mandant: {
@@ -3110,7 +3114,6 @@ export default function Contrats() {
       nom: "",
       prenom: "",
       nomNaissance: "",
-      sexe: "",
       dateNaissance: "",
       lieuNaissance: "",
       nationalite: "",
@@ -3143,7 +3146,10 @@ export default function Contrats() {
       numeroIdentite: "",
       dateExpirationIdentite: "",
       lienMandant: "", // conjoint, enfant, parent, ami, tiers_professionnel
-      absenceIncapacite: false,
+      absenceIncapaciteLegale: false,
+      absenceDecheanceAutorite: false,
+      absenceInterdictionGestion: false,
+      absenceMesureProtection: false,
       acceptationEcrite: false,
     },
     
@@ -3271,7 +3277,39 @@ export default function Contrats() {
       nomNotaire: "",
       villeOffice: "",
       dateSignature: "",
+      datePriseEffet: "",
       lieuSignature: "",
+      referenceLegale: "Articles 477 à 494 du Code civil",
+    },
+    
+    // 13. Juridiction et conservation
+    juridictionConservation: {
+      tribunalCompetent: "",
+      villeJuridiction: "",
+      lieuConservation: "", // notaire / mandant / tiers
+      precisionsConservation: "",
+    },
+    
+    // 14. Frais et rémunération
+    remuneration: {
+      typeRemuneration: "", // gratuit / remunere
+      modalitesRemuneration: "",
+      remboursementFrais: false,
+      precisionsRemboursement: "",
+    },
+    
+    // 15. Clauses spéciales
+    clausesSpeciales: {
+      prioriteFamiliale: false,
+      obligationInformationFamille: false,
+      precisionsInformationFamille: "",
+      ordreSubstitution: "",
+      conditionsRemplacement: "",
+      etenduePouvoirs: "",
+      responsabiliteCivile: false,
+      obligationInteretExclusif: true, // ⚠️ OBLIGATOIRE par la loi
+      donationsAutorisees: "", // autorise / interdit / limite / presentsUsage
+      beneficiairesAutorises: "",
     },
   });
 
@@ -4117,6 +4155,22 @@ export default function Contrats() {
       toast.error("Forme du mandat requise", { description: "Type d'acte et date de signature obligatoires" });
       return;
     }
+    if (!mandatProtectionData.juridictionConservation.tribunalCompetent || !mandatProtectionData.juridictionConservation.villeJuridiction || !mandatProtectionData.juridictionConservation.lieuConservation) {
+      toast.error("Juridiction et conservation requises", { description: "Tribunal compétent, ville et lieu de conservation obligatoires" });
+      return;
+    }
+    if (!mandatProtectionData.remuneration.typeRemuneration) {
+      toast.error("Rémunération requise", { description: "Type de rémunération obligatoire" });
+      return;
+    }
+    if (mandatProtectionData.remuneration.typeRemuneration === "remunere" && !mandatProtectionData.remuneration.modalitesRemuneration) {
+      toast.error("Modalités de rémunération requises", { description: "Veuillez préciser les modalités de rémunération" });
+      return;
+    }
+    if (!mandatProtectionData.clausesSpeciales.donationsAutorisees) {
+      toast.error("Clause donations requise", { description: "Clause expresse obligatoire sur les donations et actes à titre gratuit" });
+      return;
+    }
 
     try {
       const description = `Mandat de protection future - Mandant: ${mandatProtectionData.mandant.prenom} ${mandatProtectionData.mandant.nom} → Mandataire: ${mandatProtectionData.mandatairePrincipal.prenom} ${mandatProtectionData.mandatairePrincipal.nom}`;
@@ -4143,8 +4197,9 @@ export default function Contrats() {
       // Réinitialiser le formulaire
       setMandatProtectionData({
         typeMandat: [],
+        mandatAutrui: { lienJuridique: "", justificationLegale: "" },
         mandant: {
-          isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", sexe: "", dateNaissance: "", lieuNaissance: "",
+          isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", dateNaissance: "", lieuNaissance: "",
           nationalite: "", profession: "", adresseComplete: "", telephone: "", email: "", situationMatrimoniale: "",
           regimeMatrimonial: "", conjointNom: "", conjointPrenom: "", capaciteJuridique: "majeur_capable",
           typeIdentite: "", numeroIdentite: "", dateEmissionIdentite: "", dateExpirationIdentite: "",
@@ -4152,7 +4207,8 @@ export default function Contrats() {
         mandatairePrincipal: {
           nom: "", prenom: "", dateNaissance: "", lieuNaissance: "", adresseComplete: "", profession: "",
           telephone: "", email: "", typeIdentite: "", numeroIdentite: "", dateExpirationIdentite: "",
-          lienMandant: "", absenceIncapacite: false, acceptationEcrite: false,
+          lienMandant: "", absenceIncapaciteLegale: false, absenceDecheanceAutorite: false,
+          absenceInterdictionGestion: false, absenceMesureProtection: false, acceptationEcrite: false,
         },
         mandataireSubstitut: {
           existe: false, nom: "", prenom: "", dateNaissance: "", lieuNaissance: "", adresseComplete: "",
@@ -4195,7 +4251,20 @@ export default function Contrats() {
           acceptationActesDisposition: false, acceptationMandataire: false, droitRevocation: false,
         },
         forme: {
-          typeActe: "", nomNotaire: "", villeOffice: "", dateSignature: "", lieuSignature: "",
+          typeActe: "", nomNotaire: "", villeOffice: "", dateSignature: "", datePriseEffet: "",
+          lieuSignature: "", referenceLegale: "Articles 477 à 494 du Code civil",
+        },
+        juridictionConservation: {
+          tribunalCompetent: "", villeJuridiction: "", lieuConservation: "", precisionsConservation: "",
+        },
+        remuneration: {
+          typeRemuneration: "", modalitesRemuneration: "", remboursementFrais: false, precisionsRemboursement: "",
+        },
+        clausesSpeciales: {
+          prioriteFamiliale: false, obligationInformationFamille: false, precisionsInformationFamille: "",
+          ordreSubstitution: "", conditionsRemplacement: "", etenduePouvoirs: "",
+          responsabiliteCivile: false, obligationInteretExclusif: true,
+          donationsAutorisees: "", beneficiairesAutorises: "",
         },
       });
       
@@ -34952,6 +35021,38 @@ FIN DE LA CONVENTION
                       <p className="text-xs text-gray-500 mt-2">
                         Le type de mandat détermine les pouvoirs permis.
                       </p>
+
+                      {/* Précisions pour mandat pour autrui */}
+                      {mandatProtectionData.typeMandat.includes("mandat_autrui") && (
+                        <div className="space-y-4 mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                          <p className="text-sm text-orange-800 font-medium">
+                            ⚠️ Mandat pour autrui : uniquement possible pour un enfant mineur ou un enfant majeur handicapé
+                          </p>
+                          <div className="space-y-2">
+                            <Label>Lien juridique avec la personne protégée <span className="text-red-500">*</span></Label>
+                            <Input 
+                              value={mandatProtectionData.mandatAutrui.lienJuridique}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandatAutrui: {...mandatProtectionData.mandatAutrui, lienJuridique: e.target.value}
+                              })}
+                              placeholder="Ex: Parent, Tuteur légal..."
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Justification légale <span className="text-red-500">*</span></Label>
+                            <Textarea 
+                              value={mandatProtectionData.mandatAutrui.justificationLegale}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandatAutrui: {...mandatProtectionData.mandatAutrui, justificationLegale: e.target.value}
+                              })}
+                              placeholder="Précisez: handicap, vulnérabilité, reconnaissance MDPH, etc."
+                              rows={2}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -35153,24 +35254,6 @@ FIN DE LA CONVENTION
                             mandant: {...mandatProtectionData.mandant, nomNaissance: e.target.value}
                           })}
                         />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Sexe</Label>
-                        <Select
-                          value={mandatProtectionData.mandant.sexe}
-                          onValueChange={(val) => setMandatProtectionData({
-                            ...mandatProtectionData,
-                            mandant: {...mandatProtectionData.mandant, sexe: val}
-                          })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="masculin">Masculin</SelectItem>
-                            <SelectItem value="feminin">Féminin</SelectItem>
-                          </SelectContent>
-                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label>Date de naissance <span className="text-red-500">*</span></Label>
@@ -35604,21 +35687,72 @@ FIN DE LA CONVENTION
                     </div>
 
                     <div className="space-y-3">
+                      <p className="text-sm font-medium text-gray-700">Déclarations du mandataire :</p>
+                      
                       <div className="flex items-center space-x-2">
                         <input
                           type="checkbox"
-                          id="absenceIncapacite"
-                          checked={mandatProtectionData.mandatairePrincipal.absenceIncapacite}
+                          id="absenceIncapaciteLegale"
+                          checked={mandatProtectionData.mandatairePrincipal.absenceIncapaciteLegale}
                           onChange={(e) => setMandatProtectionData({
                             ...mandatProtectionData,
-                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, absenceIncapacite: e.target.checked}
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, absenceIncapaciteLegale: e.target.checked}
                           })}
                           className="w-4 h-4"
                         />
-                        <Label htmlFor="absenceIncapacite" className="cursor-pointer">
-                          Absence d'incapacité ou d'empêchement légal
+                        <Label htmlFor="absenceIncapaciteLegale" className="cursor-pointer">
+                          N'est pas frappé d'une incapacité légale
                         </Label>
                       </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="absenceDecheanceAutorite"
+                          checked={mandatProtectionData.mandatairePrincipal.absenceDecheanceAutorite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, absenceDecheanceAutorite: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="absenceDecheanceAutorite" className="cursor-pointer">
+                          N'est pas déchu de l'autorité parentale
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="absenceInterdictionGestion"
+                          checked={mandatProtectionData.mandatairePrincipal.absenceInterdictionGestion}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, absenceInterdictionGestion: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="absenceInterdictionGestion" className="cursor-pointer">
+                          N'est pas interdit de gestion
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="absenceMesureProtection"
+                          checked={mandatProtectionData.mandatairePrincipal.absenceMesureProtection}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            mandatairePrincipal: {...mandatProtectionData.mandatairePrincipal, absenceMesureProtection: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="absenceMesureProtection" className="cursor-pointer">
+                          N'est pas placé sous mesure de protection
+                        </Label>
+                      </div>
+
                       <div className="flex items-center space-x-2">
                         <input
                           type="checkbox"
@@ -35630,10 +35764,14 @@ FIN DE LA CONVENTION
                           })}
                           className="w-4 h-4"
                         />
-                        <Label htmlFor="acceptationEcrite" className="cursor-pointer">
-                          Acceptation écrite du mandat
+                        <Label htmlFor="acceptationEcrite" className="cursor-pointer font-medium">
+                          Acceptation écrite du mandat <span className="text-red-500">*</span>
                         </Label>
                       </div>
+
+                      <p className="text-xs text-red-600 mt-2">
+                        ⚠️ Un juge peut invalider le mandat si le mandataire ne remplit pas ces conditions
+                      </p>
                     </div>
                   </div>
 
@@ -36675,8 +36813,14 @@ FIN DE LA CONVENTION
                           className="w-4 h-4"
                         />
                         <Label htmlFor="depotGreffe" className="cursor-pointer">
-                          Remise du mandat au greffe du tribunal
+                          Présentation du mandat au greffe du tribunal judiciaire compétent lors de la mise en œuvre
                         </Label>
+                      </div>
+
+                      <div className="p-3 bg-orange-100 border border-orange-300 rounded-lg">
+                        <p className="text-xs text-orange-800">
+                          <strong>⚠️ Important :</strong> Le mandat n'est pas déposé au greffe lors de sa signature, mais présenté lors de sa mise en œuvre effective.
+                        </p>
                       </div>
 
                       <div className="flex items-center space-x-2">
@@ -36973,7 +37117,27 @@ FIN DE LA CONVENTION
                               forme: {...mandatProtectionData.forme, dateSignature: e.target.value}
                             })}
                           />
+                          <p className="text-xs text-gray-500">
+                            Date de signature de l'acte
+                          </p>
                         </div>
+                        <div className="space-y-2">
+                          <Label>Date de prise d'effet</Label>
+                          <Input 
+                            type="date"
+                            value={mandatProtectionData.forme.datePriseEffet}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              forme: {...mandatProtectionData.forme, datePriseEffet: e.target.value}
+                            })}
+                          />
+                          <p className="text-xs text-gray-500">
+                            Date effective de mise en œuvre (si différente)
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Lieu de signature</Label>
                           <Input 
@@ -36984,6 +37148,419 @@ FIN DE LA CONVENTION
                             })}
                           />
                         </div>
+                      </div>
+
+                      <div className="p-3 bg-blue-100 border border-blue-300 rounded-lg">
+                        <p className="text-xs text-blue-800">
+                          <strong>ℹ️ Information :</strong> La date de signature est la date de rédaction du mandat. La date de prise d'effet est la date à laquelle le mandat entre en vigueur (généralement constatée par le médecin ou le juge).
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 13: JURIDICTION ET CONSERVATION */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Juridiction et conservation</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Tribunal judiciaire compétent <span className="text-red-500">*</span></Label>
+                          <Input 
+                            value={mandatProtectionData.juridictionConservation.tribunalCompetent}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              juridictionConservation: {...mandatProtectionData.juridictionConservation, tribunalCompetent: e.target.value}
+                            })}
+                            placeholder="Ex: Tribunal judiciaire de Paris"
+                          />
+                          <p className="text-xs text-gray-500">
+                            Généralement le tribunal du domicile du mandant
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Ville de la juridiction <span className="text-red-500">*</span></Label>
+                          <Input 
+                            value={mandatProtectionData.juridictionConservation.villeJuridiction}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              juridictionConservation: {...mandatProtectionData.juridictionConservation, villeJuridiction: e.target.value}
+                            })}
+                            placeholder="Ex: Paris"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Lieu de conservation du mandat <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={mandatProtectionData.juridictionConservation.lieuConservation}
+                          onValueChange={(val) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            juridictionConservation: {...mandatProtectionData.juridictionConservation, lieuConservation: val}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="notaire">Chez le notaire</SelectItem>
+                            <SelectItem value="mandant">Chez le mandant</SelectItem>
+                            <SelectItem value="tiers">Chez un tiers de confiance</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {mandatProtectionData.juridictionConservation.lieuConservation === "tiers" && (
+                        <div className="space-y-2">
+                          <Label>Précisions sur le lieu de conservation</Label>
+                          <textarea 
+                            value={mandatProtectionData.juridictionConservation.precisionsConservation}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              juridictionConservation: {...mandatProtectionData.juridictionConservation, precisionsConservation: e.target.value}
+                            })}
+                            placeholder="Identité et adresse du tiers conservant le mandat"
+                            className="w-full min-h-[60px] p-2 border rounded-md"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* SECTION 14: FRAIS ET RÉMUNÉRATION */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-amber-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣4️⃣ Frais et rémunération</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Rémunération du mandataire <span className="text-red-500">*</span></Label>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="remunerationGratuit"
+                              checked={mandatProtectionData.remuneration.typeRemuneration === "gratuit"}
+                              onChange={() => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                remuneration: {...mandatProtectionData.remuneration, typeRemuneration: "gratuit"}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="remunerationGratuit" className="cursor-pointer">
+                              Mandat gratuit
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="remunerationRemunere"
+                              checked={mandatProtectionData.remuneration.typeRemuneration === "remunere"}
+                              onChange={() => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                remuneration: {...mandatProtectionData.remuneration, typeRemuneration: "remunere"}
+                              })}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor="remunerationRemunere" className="cursor-pointer">
+                              Mandat rémunéré
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {mandatProtectionData.remuneration.typeRemuneration === "remunere" && (
+                        <div className="space-y-2">
+                          <Label>Modalités de rémunération <span className="text-red-500">*</span></Label>
+                          <textarea 
+                            value={mandatProtectionData.remuneration.modalitesRemuneration}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              remuneration: {...mandatProtectionData.remuneration, modalitesRemuneration: e.target.value}
+                            })}
+                            placeholder="Montant, périodicité, conditions de versement..."
+                            className="w-full min-h-[80px] p-2 border rounded-md"
+                          />
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="remboursementFrais"
+                          checked={mandatProtectionData.remuneration.remboursementFrais}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            remuneration: {...mandatProtectionData.remuneration, remboursementFrais: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="remboursementFrais" className="cursor-pointer">
+                          Remboursement des frais exposés par le mandataire
+                        </Label>
+                      </div>
+
+                      {mandatProtectionData.remuneration.remboursementFrais && (
+                        <div className="space-y-2">
+                          <Label>Précisions sur le remboursement des frais</Label>
+                          <textarea 
+                            value={mandatProtectionData.remuneration.precisionsRemboursement}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              remuneration: {...mandatProtectionData.remuneration, precisionsRemboursement: e.target.value}
+                            })}
+                            placeholder="Nature des frais remboursables, justificatifs requis, plafond éventuel..."
+                            className="w-full min-h-[60px] p-2 border rounded-md"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* SECTION 15: CLAUSES SPÉCIALES */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-indigo-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ Clauses spéciales</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="prioriteFamiliale"
+                          checked={mandatProtectionData.clausesSpeciales.prioriteFamiliale}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            clausesSpeciales: {...mandatProtectionData.clausesSpeciales, prioriteFamiliale: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="prioriteFamiliale" className="cursor-pointer">
+                          Priorité au maintien dans l'environnement familial
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="obligationInformationFamille"
+                          checked={mandatProtectionData.clausesSpeciales.obligationInformationFamille}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            clausesSpeciales: {...mandatProtectionData.clausesSpeciales, obligationInformationFamille: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="obligationInformationFamille" className="cursor-pointer">
+                          Obligation d'information régulière de la famille
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="ordreSubstitution"
+                          checked={mandatProtectionData.clausesSpeciales.ordreSubstitution}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            clausesSpeciales: {...mandatProtectionData.clausesSpeciales, ordreSubstitution: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="ordreSubstitution" className="cursor-pointer">
+                          Ordre de substitution des mandataires en cas d'empêchement
+                        </Label>
+                      </div>
+
+                      <div className="p-4 bg-red-50 border border-red-300 rounded-lg space-y-3">
+                        <p className="text-sm font-semibold text-red-800">⚖️ Clauses légales fondamentales</p>
+                        
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="obligationInteretExclusif"
+                            checked={mandatProtectionData.clausesSpeciales.obligationInteretExclusif}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              clausesSpeciales: {...mandatProtectionData.clausesSpeciales, obligationInteretExclusif: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                            disabled
+                          />
+                          <Label htmlFor="obligationInteretExclusif" className="cursor-not-allowed opacity-70 font-medium">
+                            Obligation d'agir dans l'intérêt exclusif du mandant <span className="text-red-500">*</span>
+                          </Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="responsabiliteCivile"
+                            checked={mandatProtectionData.clausesSpeciales.responsabiliteCivile}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              clausesSpeciales: {...mandatProtectionData.clausesSpeciales, responsabiliteCivile: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="responsabiliteCivile" className="cursor-pointer">
+                            Responsabilité civile en cas de faute ou négligence
+                          </Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="assuranceRC"
+                            checked={mandatProtectionData.clausesSpeciales.responsabiliteCivile}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              clausesSpeciales: {...mandatProtectionData.clausesSpeciales, responsabiliteCivile: e.target.checked}
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="assuranceRC" className="cursor-pointer">
+                            Souscription d'une assurance responsabilité civile professionnelle
+                          </Label>
+                        </div>
+
+                        <p className="text-xs text-red-600 mt-2">
+                          ⚠️ Ces clauses protègent juridiquement le mandant et sont souvent exigées par le greffe
+                        </p>
+                      </div>
+
+                      <div className="space-y-3 p-4 bg-orange-50 border border-orange-300 rounded-lg">
+                        <p className="text-sm font-semibold text-orange-800">🎁 Donations et actes à titre gratuit</p>
+                        
+                        <div className="space-y-2">
+                          <Label>Autorisation des donations <span className="text-red-500">*</span></Label>
+                          <Select
+                            value={mandatProtectionData.clausesSpeciales.donationsAutorisees}
+                            onValueChange={(val) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              clausesSpeciales: {...mandatProtectionData.clausesSpeciales, donationsAutorisees: val}
+                            })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="interdites">❌ Donations strictement interdites</SelectItem>
+                              <SelectItem value="presentsUsage">✅ Présents d'usage autorisés uniquement</SelectItem>
+                              <SelectItem value="limitees">⚠️ Donations limitées (avec conditions)</SelectItem>
+                              <SelectItem value="autorisees">✅ Donations autorisées</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-gray-500">
+                            Clause expresse exigée par la loi (source fréquente de contentieux)
+                          </p>
+                        </div>
+
+                        {(mandatProtectionData.clausesSpeciales.donationsAutorisees === "presentsUsage" || 
+                          mandatProtectionData.clausesSpeciales.donationsAutorisees === "limitees" || 
+                          mandatProtectionData.clausesSpeciales.donationsAutorisees === "autorisees") && (
+                          <div className="space-y-2">
+                            <Label>Bénéficiaires autorisés</Label>
+                            <textarea 
+                              value={mandatProtectionData.clausesSpeciales.beneficiairesAutorises}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                clausesSpeciales: {...mandatProtectionData.clausesSpeciales, beneficiairesAutorises: e.target.value}
+                              })}
+                              placeholder="Ex: Descendants directs, petits-enfants, œuvres caritatives spécifiques..."
+                              className="w-full min-h-[60px] p-2 border rounded-md"
+                            />
+                          </div>
+                        )}
+
+                        {mandatProtectionData.clausesSpeciales.donationsAutorisees === "limitees" && (
+                          <div className="p-2 bg-orange-100 border border-orange-400 rounded">
+                            <p className="text-xs text-orange-800">
+                              💡 Précisez les montants maximaux, fréquence, occasions autorisées (anniversaires, fêtes...)
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="comptesRendusPeriodicite"
+                          checked={mandatProtectionData.clausesSpeciales.comptesRendusPeriodicite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            clausesSpeciales: {...mandatProtectionData.clausesSpeciales, comptesRendusPeriodicite: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="comptesRendusPeriodicite" className="cursor-pointer">
+                          Périodicité des comptes rendus de gestion
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="accordsAutoriteProtection"
+                          checked={mandatProtectionData.clausesSpeciales.accordsAutoriteProtection}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            clausesSpeciales: {...mandatProtectionData.clausesSpeciales, accordsAutoriteProtection: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="accordsAutoriteProtection" className="cursor-pointer">
+                          Nécessité d'accords préalables pour certains actes (juge, famille)
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="interdictionsSpecifiques"
+                          checked={mandatProtectionData.clausesSpeciales.interdictionsSpecifiques}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            clausesSpeciales: {...mandatProtectionData.clausesSpeciales, interdictionsSpecifiques: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="interdictionsSpecifiques" className="cursor-pointer">
+                          Interdictions spécifiques (ex: vente de la résidence principale)
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="revocabilite"
+                          checked={mandatProtectionData.clausesSpeciales.revocabilite}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            clausesSpeciales: {...mandatProtectionData.clausesSpeciales, revocabilite: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="revocabilite" className="cursor-pointer">
+                          Modalités de révocation du mandat
+                        </Label>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Autres clauses particulières</Label>
+                        <textarea 
+                          value={mandatProtectionData.clausesSpeciales.autresClausesParticulieres}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            clausesSpeciales: {...mandatProtectionData.clausesSpeciales, autresClausesParticulieres: e.target.value}
+                          })}
+                          placeholder="Toute autre clause jugée utile par le mandant..."
+                          className="w-full min-h-[100px] p-2 border rounded-md"
+                        />
+                      </div>
+
+                      <div className="p-3 bg-blue-100 border border-blue-300 rounded-lg">
+                        <p className="text-xs text-blue-800">
+                          <strong>💡 Conseil :</strong> Les clauses spéciales permettent d'adapter le mandat aux souhaits du mandant. Elles doivent respecter l'ordre public et les bonnes mœurs.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -37013,7 +37590,7 @@ FIN DE LA CONVENTION
                   {/* Note informative */}
                   <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-sm text-green-700">
-                      <strong>✅ Formulaire complet :</strong> Toutes les 12 sections obligatoires du mandat de protection future sont présentes dans ce formulaire conforme aux exigences légales.
+                      <strong>✅ Formulaire complet :</strong> Toutes les 15 sections obligatoires du mandat de protection future sont présentes dans ce formulaire conforme aux exigences légales.
                     </p>
                   </div>
                 </div>
