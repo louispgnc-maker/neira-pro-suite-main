@@ -34082,6 +34082,7 @@ FIN DE LA CONVENTION
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
             <Button 
+              type="button"
               variant="outline"
               className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:text-orange-600 hover:bg-orange-50' : 'border-blue-600 text-blue-600 hover:text-blue-600 hover:bg-blue-50'}
               onClick={() => setShowQuestionDialog(false)}
@@ -34089,6 +34090,7 @@ FIN DE LA CONVENTION
               Annuler
             </Button>
             <Button 
+              type="button"
               className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
               onClick={() => {
                 if (pendingContractType === "Compromis de vente / Promesse unilatérale de vente") {
