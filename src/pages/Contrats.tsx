@@ -33807,10 +33807,6 @@ FIN DE LA CONVENTION
                         <Label>Date d'émission</Label>
                         <Input type="date" value={procurationData.mandant.dateEmissionIdentite} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, dateEmissionIdentite: e.target.value}})} />
                       </div>
-                      <div className="space-y-2">
-                        <Label>Autorité émettrice</Label>
-                        <Input value={procurationData.mandant.autoriteEmettrice} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, autoriteEmettrice: e.target.value}})} placeholder="Ex: Préfecture de Paris" />
-                      </div>
                     </div>
 
                     {/* Pièce d'identité du mandant */}
@@ -33957,10 +33953,6 @@ FIN DE LA CONVENTION
                       <div className="space-y-2">
                         <Label>Date d'émission</Label>
                         <Input type="date" value={procurationData.mandataire.dateEmissionIdentite} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, dateEmissionIdentite: e.target.value}})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Autorité émettrice</Label>
-                        <Input value={procurationData.mandataire.autoriteEmettrice} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, autoriteEmettrice: e.target.value}})} placeholder="Ex: Préfecture de Paris" />
                       </div>
                     </div>
 
