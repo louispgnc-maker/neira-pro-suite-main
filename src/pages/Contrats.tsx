@@ -33728,6 +33728,50 @@ FIN DE LA CONVENTION
                         <Input type="date" value={procurationData.mandant.dateEmissionIdentite} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, dateEmissionIdentite: e.target.value}})} />
                       </div>
                     </div>
+
+                    {/* Pièce d'identité du mandant */}
+                    {procurationData.mandant.clientId ? (
+                      <div className="space-y-2">
+                        <Label>📎 Pièce d'identité du mandant</Label>
+                        {procurationMandantIdentiteUrl ? (
+                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => window.open(procurationMandantIdentiteUrl, '_blank')}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <Label>📎 Pièce d'identité du mandant</Label>
+                        <Input 
+                          type="file" 
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) => {
+                            // TODO: Gérer l'upload
+                            console.log('Upload fichier mandant:', e.target.files?.[0]);
+                          }}
+                        />
+                        <p className="text-xs text-muted-foreground">Format accepté : PDF, JPG, PNG (max 10 Mo)</p>
+                      </div>
+                    )}
                   </div>
 
                   {/* 3️⃣ Identité du mandataire */}
@@ -33779,6 +33823,20 @@ FIN DE LA CONVENTION
                         <Label>Numéro de pièce d'identité</Label>
                         <Input value={procurationData.mandataire.numeroIdentite} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, numeroIdentite: e.target.value}})} />
                       </div>
+                    </div>
+
+                    {/* Pièce d'identité du mandataire */}
+                    <div className="space-y-2">
+                      <Label>📎 Pièce d'identité du mandataire</Label>
+                      <Input 
+                        type="file" 
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={(e) => {
+                          // TODO: Gérer l'upload
+                          console.log('Upload fichier mandataire:', e.target.files?.[0]);
+                        }}
+                      />
+                      <p className="text-xs text-muted-foreground">Format accepté : PDF, JPG, PNG (max 10 Mo)</p>
                     </div>
 
                     <div className="space-y-2">
