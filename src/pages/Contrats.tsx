@@ -33829,58 +33829,28 @@ FIN DE LA CONVENTION
                     </div>
 
                     {/* Pièce d'identité du mandant */}
-                    {procurationData.mandant.clientId ? (
-                      <div className="space-y-2">
-                        <Label>📎 Pièce d'identité du mandant</Label>
-                        {procurationMandantIdentiteUrl ? (
-                          <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                            <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="bg-green-600 hover:bg-green-700 text-white"
-                              onClick={() => window.open(procurationMandantIdentiteUrl, '_blank')}
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
-                            <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                            <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <Label>📎 Pièce d'identité du mandant</Label>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const input = document.createElement('input');
-                            input.type = 'file';
-                            input.accept = '.pdf,.jpg,.jpeg,.png';
-                            input.onchange = (e: any) => {
-                              console.log('Upload fichier mandant:', e.target.files?.[0]);
-                              // TODO: Gérer l'upload et stocker le nom du fichier
-                            };
-                            input.click();
-                          }}
-                          className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
-                        >
-                          <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                          </svg>
-                          <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
-                        </button>
-                      </div>
-                    )}
+                    <div className="space-y-2">
+                      <Label>📎 Pièce d'identité du mandant</Label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = '.pdf,.jpg,.jpeg,.png';
+                          input.onchange = (e: any) => {
+                            console.log('Upload fichier mandant:', e.target.files?.[0]);
+                            // TODO: Gérer l'upload et stocker le nom du fichier
+                          };
+                          input.click();
+                        }}
+                        className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                      >
+                        <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* 3️⃣ Identité du mandataire */}
