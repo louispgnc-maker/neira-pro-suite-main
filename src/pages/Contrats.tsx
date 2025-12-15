@@ -33714,7 +33714,7 @@ FIN DE LA CONVENTION
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label>Type de pièce d'identité</Label>
                         <Input value={procurationData.mandant.typeIdentite} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, typeIdentite: e.target.value}})} placeholder="Ex: CNI, Passeport, Titre de séjour" />
@@ -33726,10 +33726,6 @@ FIN DE LA CONVENTION
                       <div className="space-y-2">
                         <Label>Date d'émission</Label>
                         <Input type="date" value={procurationData.mandant.dateEmissionIdentite} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, dateEmissionIdentite: e.target.value}})} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Autorité émettrice</Label>
-                        <Input value={procurationData.mandant.autoriteEmission} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, autoriteEmission: e.target.value}})} placeholder="Ex: Préfecture de Paris" />
                       </div>
                     </div>
                   </div>
