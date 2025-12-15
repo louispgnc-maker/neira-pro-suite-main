@@ -33761,15 +33761,25 @@ FIN DE LA CONVENTION
                     ) : (
                       <div className="space-y-2">
                         <Label>📎 Pièce d'identité du mandant</Label>
-                        <Input 
-                          type="file" 
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          onChange={(e) => {
-                            // TODO: Gérer l'upload
-                            console.log('Upload fichier mandant:', e.target.files?.[0]);
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = '.pdf,.jpg,.jpeg,.png';
+                            input.onchange = (e: any) => {
+                              console.log('Upload fichier mandant:', e.target.files?.[0]);
+                              // TODO: Gérer l'upload et stocker le nom du fichier
+                            };
+                            input.click();
                           }}
-                        />
-                        <p className="text-xs text-muted-foreground">Format accepté : PDF, JPG, PNG (max 10 Mo)</p>
+                          className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                        >
+                          <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -33828,15 +33838,25 @@ FIN DE LA CONVENTION
                     {/* Pièce d'identité du mandataire */}
                     <div className="space-y-2">
                       <Label>📎 Pièce d'identité du mandataire</Label>
-                      <Input 
-                        type="file" 
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={(e) => {
-                          // TODO: Gérer l'upload
-                          console.log('Upload fichier mandataire:', e.target.files?.[0]);
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = '.pdf,.jpg,.jpeg,.png';
+                          input.onchange = (e: any) => {
+                            console.log('Upload fichier mandataire:', e.target.files?.[0]);
+                            // TODO: Gérer l'upload et stocker le nom du fichier
+                          };
+                          input.click();
                         }}
-                      />
-                      <p className="text-xs text-muted-foreground">Format accepté : PDF, JPG, PNG (max 10 Mo)</p>
+                        className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+                      >
+                        <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
+                      </button>
                     </div>
 
                     <div className="space-y-2">
