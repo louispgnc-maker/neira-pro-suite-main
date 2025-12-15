@@ -35162,6 +35162,7 @@ FIN DE LA CONVENTION
                                   dateNaissance: selectedClient.date_naissance || "",
                                   lieuNaissance: selectedClient.lieu_naissance || "",
                                   nationalite: selectedClient.nationalite || "",
+                                  profession: selectedClient.profession || "",
                                   adresseComplete: selectedClient.adresse || "",
                                   telephone: selectedClient.telephone || "",
                                   email: selectedClient.email || "",
@@ -37636,13 +37637,6 @@ FIN DE LA CONVENTION
                     >
                       Créer le mandat
                     </Button>
-                  </div>
-
-                  {/* Note informative */}
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-sm text-green-700">
-                      <strong>✅ Formulaire complet :</strong> Toutes les 15 sections obligatoires du mandat de protection future sont présentes dans ce formulaire conforme aux exigences légales.
-                    </p>
                   </div>
                 </div>
               </>
