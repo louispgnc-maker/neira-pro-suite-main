@@ -7284,10 +7284,7 @@ FIN DE LA CONVENTION
       </div>
 
       {/* Dialog questionnaire pour compromis de vente / acte de vente */}
-      <Dialog open={showQuestionDialog} onOpenChange={(open) => {
-        console.log('Dialog onOpenChange:', open);
-        setShowQuestionDialog(open);
-      }}>
+      <Dialog open={showQuestionDialog} onOpenChange={setShowQuestionDialog}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
