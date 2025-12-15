@@ -33647,21 +33647,6 @@ FIN DE LA CONVENTION
                           ))}
                         </SelectContent>
                       </Select>
-                      {procurationMandantIdentiteUrl && (
-                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                          <p className="text-sm text-green-700 flex items-center gap-2">
-                            ✅ <strong>Pièce d'identité chargée depuis le profil client</strong>
-                          </p>
-                          <a 
-                            href={procurationMandantIdentiteUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-600 hover:underline mt-1 inline-block"
-                          >
-                            Voir le document →
-                          </a>
-                        </div>
-                      )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
