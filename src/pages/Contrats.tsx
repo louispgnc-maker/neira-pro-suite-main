@@ -34085,14 +34085,20 @@ FIN DE LA CONVENTION
               type="button"
               variant="outline"
               className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:text-orange-600 hover:bg-orange-50' : 'border-blue-600 text-blue-600 hover:text-blue-600 hover:bg-blue-50'}
-              onClick={() => setShowQuestionDialog(false)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowQuestionDialog(false);
+              }}
             >
               Annuler
             </Button>
             <Button 
               type="button"
               className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 if (pendingContractType === "Compromis de vente / Promesse unilatérale de vente") {
                   handleQuestionnaireSubmit();
                 } else if (pendingContractType === "Acte de vente immobilière") {
