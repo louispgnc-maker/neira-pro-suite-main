@@ -3098,9 +3098,10 @@ export default function Contrats() {
   // State pour Procuration authentique
   const [procurationData, setProcurationData] = useState({
     // 1. Type de procuration
-    typeProcuration: [], // Array de string pour cases à cocher multiples
+    typeProcuration: "",
+    actesVises: "", // Si spéciale/immobilière/bancaire/fiscale
     
-    // 2. Identité du mandant
+    // 2. Identité complète du mandant
     mandant: {
       isClient: false,
       clientId: "",
@@ -3119,65 +3120,110 @@ export default function Contrats() {
       conjointNom: "",
       conjointPrenom: "",
       capaciteJuridique: "majeur_capable",
-      tuteurCurateurNom: "",
-      tuteurCurateurCoordonnees: "",
+      typeMesureProtection: "", // tutelle/curatelle/sauvegarde
+      autorisationJointe: false,
       typeIdentite: "",
       numeroIdentite: "",
       dateEmissionIdentite: "",
-      autoriteEmission: "",
+      autoriteEmettrice: "",
     },
     
-    // 3. Identité du mandataire
+    // 3. Identité complète du mandataire
     mandataire: {
       nom: "",
       prenom: "",
       nomNaissance: "",
-      adresseComplete: "",
       dateNaissance: "",
       lieuNaissance: "",
       nationalite: "",
+      profession: "",
+      adresseComplete: "",
       telephone: "",
+      email: "",
+      lienMandant: "",
       typeIdentite: "",
       numeroIdentite: "",
-      lienMandant: "",
+      dateEmissionIdentite: "",
+      autoriteEmettrice: "",
     },
     
-    // 4. Objet de la procuration
-    objetProcuration: "",
-    actesConcernes: "",
+    // 4. Objet précis de la procuration
+    objet: {
+      descriptionPrecise: "",
+      listeActesAutorises: "",
+      faculteSignerActes: false,
+      faculteRecevoirSommes: false,
+      // Si procuration immobilière
+      immobilierVente: false,
+      immobilierAchat: false,
+      immobilierHypotheque: false,
+      immobilierMainlevee: false,
+      immobilierSignatureAvantContrats: false,
+      immobilierAcceptationConditions: false,
+      immobilierPercevoirPrix: false,
+      faculteSubstituer: false,
+    },
     
-    // 5. Portée et limites
-    portee: {
-      etenduePouvoirs: "",
+    // 5. Étendue des pouvoirs et limites
+    etendue: {
+      typeEtendue: "tres_large", // tres_large / limitee
+      precisionsLimitees: "",
       actesExclus: "",
-      subdelegationAutorisee: false,
-      dureeType: "revocable",
+      subdelegation: "interdite", // autorisee / interdite
+    },
+    
+    // 6. Durée - Révocation
+    duree: {
+      type: "indeterminee", // indeterminee / determinee
       dateFin: "",
+      revocable: true,
     },
     
-    // 6. Acceptation du mandataire
-    acceptationMandataire: "expresse",
-    
-    // 7. Mentions notariales
-    mentionsNotariales: {
-      nomNotaire: "",
-      villeNotaire: "",
-      dateReception: "",
-      lieuReception: "",
+    // 7. Acceptation du mandataire
+    acceptation: {
+      type: "expresse", // expresse / tacite
+      acceptationJourActe: true,
     },
     
-    // 8. Comparution et consentement
+    // 8. Déclarations essentielles du mandant
+    declarations: {
+      agitLibrement: false,
+      pleineCapacite: false,
+      comprendPortee: false,
+      consentLibre: false,
+      pouvoirIrrevocable: false,
+    },
+    
+    // 9. Langue - Compréhension
+    langue: {
+      langueComprise: "Français",
+      interpreteNecessaire: false,
+      interpreteIdentite: "",
+    },
+    
+    // 10. Comparution - Signature
     comparution: {
-      typeComparution: "presence",
+      typeComparution: "presence", // presence / distance
       lectureFaite: false,
       consentementRecueilli: false,
-      signaturePresenceNotaire: false,
+      typeSignature: "presentiel", // presentiel / distance
     },
     
-    // 9. Conservation de l'acte
+    // 11. Mentions notariales
+    mentionsNotariales: {
+      nomNotaire: "",
+      villeOffice: "",
+      dateReception: "",
+      lieuReception: "",
+      acteRecuMinute: false,
+    },
+    
+    // 12. Conservation - Copies
     conservation: {
       minuteConservee: false,
+      copiesSimples: false,
       copiesCertifiees: false,
+      copiesExecutoires: false,
     },
   });
 
@@ -3783,11 +3829,11 @@ export default function Contrats() {
       toast.error("Champs mandataire requis", { description: "Nom, prénom et adresse obligatoires" });
       return;
     }
-    if (!procurationData.objetProcuration.trim()) {
+    if (!procurationData.objet.descriptionPrecise.trim()) {
       toast.error("Objet de la procuration requis", { description: "Veuillez préciser l'objet de la procuration" });
       return;
     }
-    if (!procurationData.mentionsNotariales.nomNotaire || !procurationData.mentionsNotariales.villeNotaire || !procurationData.mentionsNotariales.dateReception || !procurationData.mentionsNotariales.lieuReception) {
+    if (!procurationData.mentionsNotariales.nomNotaire || !procurationData.mentionsNotariales.villeOffice || !procurationData.mentionsNotariales.dateReception || !procurationData.mentionsNotariales.lieuReception) {
       toast.error("Mentions notariales requises", { description: "Tous les champs notariaux sont obligatoires" });
       return;
     }
@@ -3816,34 +3862,49 @@ export default function Contrats() {
       
       // Réinitialiser le formulaire
       setProcurationData({
-        typeProcuration: [],
+        typeProcuration: "",
+        actesVises: "",
         mandant: {
           isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "",
           dateNaissance: "", lieuNaissance: "", nationalite: "", profession: "", adresseComplete: "",
           telephone: "", email: "", situationMatrimoniale: "", regimeMatrimonial: "", conjointNom: "",
-          conjointPrenom: "", capaciteJuridique: "majeur_capable", tuteurCurateurNom: "", tuteurCurateurCoordonnees: "",
-          typeIdentite: "", numeroIdentite: "", dateEmissionIdentite: "", autoriteEmission: "",
+          conjointPrenom: "", capaciteJuridique: "majeur_capable", typeMesureProtection: "", autorisationJointe: false,
+          typeIdentite: "", numeroIdentite: "", dateEmissionIdentite: "", autoriteEmettrice: "",
         },
         mandataire: {
-          nom: "", prenom: "", nomNaissance: "", dateNaissance: "", lieuNaissance: "", nationalite: "",
-          adresseComplete: "", telephone: "", typeIdentite: "", numeroIdentite: "", lienMandant: "",
+          nom: "", prenom: "", nomNaissance: "", dateNaissance: "", lieuNaissance: "", nationalite: "", profession: "",
+          adresseComplete: "", telephone: "", email: "", lienMandant: "",
+          typeIdentite: "", numeroIdentite: "", dateEmissionIdentite: "", autoriteEmettrice: "",
         },
-        objetProcuration: "",
-        actesConcernes: "",
-        portee: {
-          etenduePouvoirs: "", actesExclus: "", subdelegationAutorisee: false,
-          dureeType: "revocable", dateFin: "",
+        objet: {
+          descriptionPrecise: "", listeActesAutorises: "", faculteSignerActes: false, faculteRecevoirSommes: false,
+          immobilierVente: false, immobilierAchat: false, immobilierHypotheque: false, immobilierMainlevee: false,
+          immobilierSignatureAvantContrats: false, immobilierAcceptationConditions: false, immobilierPercevoirPrix: false,
+          faculteSubstituer: false,
         },
-        acceptationMandataire: "expresse",
-        mentionsNotariales: {
-          nomNotaire: "", villeNotaire: "", dateReception: "", lieuReception: "",
+        etendue: {
+          typeEtendue: "tres_large", precisionsLimitees: "", actesExclus: "", subdelegation: "interdite",
+        },
+        duree: {
+          type: "indeterminee", dateFin: "", revocable: true,
+        },
+        acceptation: {
+          type: "expresse", acceptationJourActe: true,
+        },
+        declarations: {
+          agitLibrement: false, pleineCapacite: false, comprendPortee: false, consentLibre: false, pouvoirIrrevocable: false,
+        },
+        langue: {
+          langueComprise: "Français", interpreteNecessaire: false, interpreteIdentite: "",
         },
         comparution: {
-          typeComparution: "presence", lectureFaite: false, consentementRecueilli: false,
-          signaturePresenceNotaire: false,
+          typeComparution: "presence", lectureFaite: false, consentementRecueilli: false, typeSignature: "presentiel",
+        },
+        mentionsNotariales: {
+          nomNotaire: "", villeOffice: "", dateReception: "", lieuReception: "", acteRecuMinute: false,
         },
         conservation: {
-          minuteConservee: false, copiesCertifiees: false,
+          minuteConservee: false, copiesSimples: false, copiesCertifiees: false, copiesExecutoires: false,
         }
       });
       
@@ -33465,43 +33526,38 @@ FIN DE LA CONVENTION
                 <div className="space-y-6">
                   {/* 1️⃣ Type de procuration */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Type de procuration à créer</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Type de procuration (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
-                      {[
-                        { value: "generale", label: "Procuration générale (autorise dans tous les actes)" },
-                        { value: "speciale", label: "Procuration spéciale (acte précisément défini)" },
-                        { value: "immobiliere", label: "Procuration immobilière" },
-                        { value: "bancaire", label: "Procuration bancaire" },
-                        { value: "fiscale", label: "Procuration fiscale" },
-                        { value: "ssp", label: "Procuration pour signature d'un acte sous seing privé" },
-                        { value: "internationale", label: "Procuration internationale (avec apostille/légalisation)" },
-                      ].map((type) => (
-                        <div key={type.value} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id={`type-${type.value}`}
-                            checked={procurationData.typeProcuration.includes(type.value)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setProcurationData({
-                                  ...procurationData,
-                                  typeProcuration: [...procurationData.typeProcuration, type.value]
-                                });
-                              } else {
-                                setProcurationData({
-                                  ...procurationData,
-                                  typeProcuration: procurationData.typeProcuration.filter(t => t !== type.value)
-                                });
-                              }
-                            }}
-                            className="rounded"
-                          />
-                          <Label htmlFor={`type-${type.value}`} className="cursor-pointer font-normal">
-                            {type.label}
-                          </Label>
-                        </div>
-                      ))}
+                      <Label>Sélectionnez le type de procuration *</Label>
+                      <Select 
+                        value={procurationData.typeProcuration} 
+                        onValueChange={(value) => setProcurationData({...procurationData, typeProcuration: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="generale">☐ Procuration générale</SelectItem>
+                          <SelectItem value="speciale">☐ Procuration spéciale</SelectItem>
+                          <SelectItem value="immobiliere">☐ Procuration immobilière</SelectItem>
+                          <SelectItem value="bancaire">☐ Procuration bancaire</SelectItem>
+                          <SelectItem value="fiscale">☐ Procuration fiscale</SelectItem>
+                          <SelectItem value="ssp">☐ Procuration pour signature d'acte sous seing privé</SelectItem>
+                          <SelectItem value="internationale">☐ Procuration internationale</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
+                    
+                    {["speciale", "immobiliere", "bancaire", "fiscale"].includes(procurationData.typeProcuration) && (
+                      <div className="space-y-2 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <Label>Acte(s) précisément visé(s) (OBLIGATOIRE) *</Label>
+                        <Textarea 
+                          value={procurationData.actesVises} 
+                          onChange={(e) => setProcurationData({...procurationData, actesVises: e.target.value})} 
+                          rows={3}
+                          placeholder="Décrivez précisément le ou les actes pour lesquels cette procuration est donnée..."
+                          className="border-yellow-300"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* 2️⃣ Identité du mandant */}
@@ -33688,44 +33744,87 @@ FIN DE LA CONVENTION
 
                     <div className="space-y-2">
                       <Label>Capacité juridique</Label>
-                      <Select value={procurationData.mandant.capaciteJuridique} onValueChange={(value) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, capaciteJuridique: value}})}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="majeur_capable">Majeur capable</SelectItem>
-                          <SelectItem value="curatelle">Sous curatelle</SelectItem>
-                          <SelectItem value="tutelle">Sous tutelle</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="majeur_capable"
+                            value="majeur_capable"
+                            checked={procurationData.mandant.capaciteJuridique === "majeur_capable"}
+                            onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, capaciteJuridique: e.target.value}})}
+                          />
+                          <Label htmlFor="majeur_capable" className="cursor-pointer font-normal">☐ Majeur capable</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="sous_protection"
+                            value="sous_protection"
+                            checked={procurationData.mandant.capaciteJuridique === "sous_protection"}
+                            onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, capaciteJuridique: e.target.value}})}
+                          />
+                          <Label htmlFor="sous_protection" className="cursor-pointer font-normal">☐ Sous mesure de protection</Label>
+                        </div>
+                      </div>
                     </div>
 
-                    {(procurationData.mandant.capaciteJuridique === "curatelle" || procurationData.mandant.capaciteJuridique === "tutelle") && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    {procurationData.mandant.capaciteJuridique === "sous_protection" && (
+                      <div className="space-y-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                         <div className="space-y-2">
-                          <Label>Nom du tuteur/curateur *</Label>
-                          <Input value={procurationData.mandant.tuteurCurateurNom} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, tuteurCurateurNom: e.target.value}})} />
+                          <Label>Type de mesure *</Label>
+                          <Select value={procurationData.mandant.typeMesureProtection} onValueChange={(value) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, typeMesureProtection: value}})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="tutelle">Tutelle</SelectItem>
+                              <SelectItem value="curatelle">Curatelle</SelectItem>
+                              <SelectItem value="sauvegarde">Sauvegarde de justice</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                        <div className="space-y-2">
-                          <Label>Coordonnées du tuteur/curateur *</Label>
-                          <Input value={procurationData.mandant.tuteurCurateurCoordonnees} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, tuteurCurateurCoordonnees: e.target.value}})} placeholder="Téléphone / Email" />
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="autorisation"
+                            checked={procurationData.mandant.autorisationJointe}
+                            onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, autorisationJointe: e.target.checked}})}
+                            className="rounded"
+                          />
+                          <Label htmlFor="autorisation" className="cursor-pointer font-normal">Autorisation jointe (PDF)</Label>
                         </div>
-                        <div className="col-span-2 text-sm text-yellow-700">
-                          ⚠️ Joindre le jugement de tutelle/curatelle
+                        <div className="text-sm text-yellow-700">
+                          ⚠️ Joindre le jugement de protection et l'autorisation du juge/curateur
                         </div>
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="font-semibold">Pièce d'identité du mandant (OBLIGATOIRE)</Label>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Type de pièce d'identité</Label>
-                        <Input value={procurationData.mandant.typeIdentite} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, typeIdentite: e.target.value}})} placeholder="Ex: CNI, Passeport, Titre de séjour" />
+                        <Label>Type de pièce *</Label>
+                        <Select value={procurationData.mandant.typeIdentite} onValueChange={(value) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, typeIdentite: value}})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CNI">Carte Nationale d'Identité (CNI)</SelectItem>
+                            <SelectItem value="Passeport">Passeport</SelectItem>
+                            <SelectItem value="Titre de séjour">Titre de séjour</SelectItem>
+                            <SelectItem value="Permis de conduire">Permis de conduire</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Numéro de pièce d'identité</Label>
+                        <Label>Numéro *</Label>
                         <Input value={procurationData.mandant.numeroIdentite} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, numeroIdentite: e.target.value}})} />
                       </div>
                       <div className="space-y-2">
                         <Label>Date d'émission</Label>
                         <Input type="date" value={procurationData.mandant.dateEmissionIdentite} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, dateEmissionIdentite: e.target.value}})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Autorité émettrice</Label>
+                        <Input value={procurationData.mandant.autoriteEmettrice} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, autoriteEmettrice: e.target.value}})} placeholder="Ex: Préfecture de Paris" />
                       </div>
                     </div>
 
@@ -33786,7 +33885,7 @@ FIN DE LA CONVENTION
 
                   {/* 3️⃣ Identité du mandataire */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité complète du mandataire (celui qui reçoit procuration)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité complète du MANDATAIRE (OBLIGATOIRE)</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -33814,6 +33913,10 @@ FIN DE LA CONVENTION
                         <Input value={procurationData.mandataire.nationalite} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, nationalite: e.target.value}})} />
                       </div>
                       <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input value={procurationData.mandataire.profession} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, profession: e.target.value}})} />
+                      </div>
+                      <div className="space-y-2">
                         <Label>Téléphone</Label>
                         <Input value={procurationData.mandataire.telephone} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, telephone: e.target.value}})} />
                       </div>
@@ -33824,20 +33927,61 @@ FIN DE LA CONVENTION
                       <Textarea value={procurationData.mandataire.adresseComplete} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, adresseComplete: e.target.value}})} rows={2} />
                     </div>
 
+                    <div className="space-y-2">
+                      <Label>Email (optionnel mais recommandé)</Label>
+                      <Input type="email" value={procurationData.mandataire.email} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, email: e.target.value}})} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Lien avec le mandant</Label>
+                      <Select value={procurationData.mandataire.lienMandant} onValueChange={(value) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, lienMandant: value}})}>
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="conjoint">Conjoint</SelectItem>
+                          <SelectItem value="parent">Parent</SelectItem>
+                          <SelectItem value="enfant">Enfant</SelectItem>
+                          <SelectItem value="ami">Ami</SelectItem>
+                          <SelectItem value="avocat">Avocat</SelectItem>
+                          <SelectItem value="notaire">Notaire</SelectItem>
+                          <SelectItem value="tiers_professionnel">Tiers professionnel</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-semibold">Pièce d'identité du mandataire (OBLIGATOIRE)</Label>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Type de pièce d'identité</Label>
-                        <Input value={procurationData.mandataire.typeIdentite} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, typeIdentite: e.target.value}})} placeholder="Ex: CNI, Passeport, Titre de séjour" />
+                        <Label>Type de pièce *</Label>
+                        <Select value={procurationData.mandataire.typeIdentite} onValueChange={(value) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, typeIdentite: value}})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CNI">Carte Nationale d'Identité (CNI)</SelectItem>
+                            <SelectItem value="Passeport">Passeport</SelectItem>
+                            <SelectItem value="Titre de séjour">Titre de séjour</SelectItem>
+                            <SelectItem value="Permis de conduire">Permis de conduire</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Numéro de pièce d'identité</Label>
+                        <Label>Numéro *</Label>
                         <Input value={procurationData.mandataire.numeroIdentite} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, numeroIdentite: e.target.value}})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date d'émission</Label>
+                        <Input type="date" value={procurationData.mandataire.dateEmissionIdentite} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, dateEmissionIdentite: e.target.value}})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Autorité émettrice</Label>
+                        <Input value={procurationData.mandataire.autoriteEmettrice} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, autoriteEmettrice: e.target.value}})} placeholder="Ex: Préfecture de Paris" />
                       </div>
                     </div>
 
                     {/* Pièce d'identité du mandataire */}
                     <div className="space-y-2">
-                      <Label>📎 Pièce d'identité du mandataire</Label>
+                      <Label>📎 Copie de la pièce</Label>
                       <button
                         type="button"
                         onClick={() => {
@@ -33858,133 +34002,534 @@ FIN DE LA CONVENTION
                         <span className="text-orange-700">Aucune pièce chargée - Cliquer pour ajouter</span>
                       </button>
                     </div>
-
-                    <div className="space-y-2">
-                      <Label>Lien avec le mandant</Label>
-                      <Select value={procurationData.mandataire.lienMandant} onValueChange={(value) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, lienMandant: value}})}>
-                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="conjoint">Conjoint</SelectItem>
-                          <SelectItem value="parent">Parent</SelectItem>
-                          <SelectItem value="enfant">Enfant</SelectItem>
-                          <SelectItem value="ami">Ami</SelectItem>
-                          <SelectItem value="avocat">Avocat</SelectItem>
-                          <SelectItem value="tiers_professionnel">Tiers professionnel</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </div>
 
-                  {/* 4️⃣ Objet de la procuration */}
+                  {/* 4️⃣ Objet précis de la procuration */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Objet de la procuration *</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ OBJET PRÉCIS DE LA PROCURATION (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
-                      <Label>Objet précis de la procuration *</Label>
+                      <Label>Description précise et détaillée de l'objet *</Label>
                       <Textarea 
-                        value={procurationData.objetProcuration} 
-                        onChange={(e) => setProcurationData({...procurationData, objetProcuration: e.target.value})} 
-                        rows={3}
+                        value={procurationData.objet.descriptionPrecise} 
+                        onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, descriptionPrecise: e.target.value}})} 
+                        rows={4}
                         placeholder="Décrivez précisément l'objet de la procuration..."
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Acte(s) concerné(s)</Label>
+                      <Label>Liste exhaustive des actes autorisés *</Label>
                       <Textarea 
-                        value={procurationData.actesConcernes} 
-                        onChange={(e) => setProcurationData({...procurationData, actesConcernes: e.target.value})} 
-                        rows={2}
-                        placeholder="Listez les actes pour lesquels la procuration est donnée..."
+                        value={procurationData.objet.listeActesAutorises} 
+                        onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, listeActesAutorises: e.target.value}})} 
+                        rows={3}
+                        placeholder="Listez tous les actes pour lesquels la procuration est donnée..."
                       />
                     </div>
-                  </div>
+                    
+                    <div className="space-y-2 p-4 bg-gray-50 border rounded-lg">
+                      <Label className="font-semibold">Facultés du mandataire</Label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="faculte_signer"
+                          checked={procurationData.objet.faculteSignerActes}
+                          onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, faculteSignerActes: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="faculte_signer" className="cursor-pointer font-normal">Faculté de signer tous actes nécessaires à l'exécution</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="faculte_recevoir"
+                          checked={procurationData.objet.faculteRecevoirSommes}
+                          onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, faculteRecevoirSommes: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="faculte_recevoir" className="cursor-pointer font-normal">Faculté de recevoir sommes / donner quittance</Label>
+                      </div>
+                    </div>
 
-                  {/* 5️⃣ Portée et limites */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Portée et limites</h3>
-                    <div className="space-y-2">
-                      <Label>Étendue des pouvoirs</Label>
-                      <Textarea 
-                        value={procurationData.portee.etenduePouvoirs} 
-                        onChange={(e) => setProcurationData({...procurationData, portee: {...procurationData.portee, etenduePouvoirs: e.target.value}})} 
-                        rows={2}
-                        placeholder="Précisez l'étendue des pouvoirs conférés..."
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Actes exclus (le cas échéant)</Label>
-                      <Textarea 
-                        value={procurationData.portee.actesExclus} 
-                        onChange={(e) => setProcurationData({...procurationData, portee: {...procurationData.portee, actesExclus: e.target.value}})} 
-                        rows={2}
-                        placeholder="Listez les actes explicitement exclus de la procuration..."
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="subdelegation"
-                        checked={procurationData.portee.subdelegationAutorisee}
-                        onChange={(e) => setProcurationData({...procurationData, portee: {...procurationData.portee, subdelegationAutorisee: e.target.checked}})}
-                        className="rounded"
-                      />
-                      <Label htmlFor="subdelegation" className="cursor-pointer font-normal">Subdélégation autorisée</Label>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Durée de la procuration</Label>
-                      <RadioGroup 
-                        value={procurationData.portee.dureeType} 
-                        onValueChange={(value) => setProcurationData({...procurationData, portee: {...procurationData.portee, dureeType: value}})}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <input type="radio" value="revocable" checked={procurationData.portee.dureeType === "revocable"} onChange={(e) => setProcurationData({...procurationData, portee: {...procurationData.portee, dureeType: e.target.value}})} />
-                          <Label className="cursor-pointer font-normal">Révocable à tout moment</Label>
+                    {/* Cas particulier : Procuration immobilière */}
+                    {procurationData.typeProcuration === "immobiliere" && (
+                      <div className="space-y-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <Label className="font-semibold text-blue-900">➡️ Procuration immobilière - Précisions</Label>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="immo_vente"
+                              checked={procurationData.objet.immobilierVente}
+                              onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, immobilierVente: e.target.checked}})}
+                              className="rounded"
+                            />
+                            <Label htmlFor="immo_vente" className="cursor-pointer font-normal">Vente</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="immo_achat"
+                              checked={procurationData.objet.immobilierAchat}
+                              onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, immobilierAchat: e.target.checked}})}
+                              className="rounded"
+                            />
+                            <Label htmlFor="immo_achat" className="cursor-pointer font-normal">Achat</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="immo_hypotheque"
+                              checked={procurationData.objet.immobilierHypotheque}
+                              onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, immobilierHypotheque: e.target.checked}})}
+                              className="rounded"
+                            />
+                            <Label htmlFor="immo_hypotheque" className="cursor-pointer font-normal">Hypothèque</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="immo_mainlevee"
+                              checked={procurationData.objet.immobilierMainlevee}
+                              onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, immobilierMainlevee: e.target.checked}})}
+                              className="rounded"
+                            />
+                            <Label htmlFor="immo_mainlevee" className="cursor-pointer font-normal">Mainlevée</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="immo_avant_contrats"
+                              checked={procurationData.objet.immobilierSignatureAvantContrats}
+                              onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, immobilierSignatureAvantContrats: e.target.checked}})}
+                              className="rounded"
+                            />
+                            <Label htmlFor="immo_avant_contrats" className="cursor-pointer font-normal">Signature de tous avant-contrats et actes définitifs</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="immo_conditions"
+                              checked={procurationData.objet.immobilierAcceptationConditions}
+                              onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, immobilierAcceptationConditions: e.target.checked}})}
+                              className="rounded"
+                            />
+                            <Label htmlFor="immo_conditions" className="cursor-pointer font-normal">Acceptation / renonciation aux conditions suspensives</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="immo_percevoir"
+                              checked={procurationData.objet.immobilierPercevoirPrix}
+                              onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, immobilierPercevoirPrix: e.target.checked}})}
+                              className="rounded"
+                            />
+                            <Label htmlFor="immo_percevoir" className="cursor-pointer font-normal">Faculté de percevoir le prix</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="faculte_substituer"
+                              checked={procurationData.objet.faculteSubstituer}
+                              onChange={(e) => setProcurationData({...procurationData, objet: {...procurationData.objet, faculteSubstituer: e.target.checked}})}
+                              className="rounded"
+                            />
+                            <Label htmlFor="faculte_substituer" className="cursor-pointer font-normal">Faculté de substituer</Label>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <input type="radio" value="determinee" checked={procurationData.portee.dureeType === "determinee"} onChange={(e) => setProcurationData({...procurationData, portee: {...procurationData.portee, dureeType: e.target.value}})} />
-                          <Label className="cursor-pointer font-normal">Durée déterminée</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    {procurationData.portee.dureeType === "determinee" && (
-                      <div className="space-y-2">
-                        <Label>Date de fin</Label>
-                        <Input type="date" value={procurationData.portee.dateFin} onChange={(e) => setProcurationData({...procurationData, portee: {...procurationData.portee, dateFin: e.target.value}})} />
                       </div>
                     )}
                   </div>
 
-                  {/* 6️⃣ Acceptation du mandataire */}
+                  {/* 5️⃣ ÉTENDUE DES POUVOIRS ET LIMITES */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Acceptation du mandataire</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ ÉTENDUE DES POUVOIRS ET LIMITES (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
-                      <Label>Type d'acceptation</Label>
-                      <RadioGroup 
-                        value={procurationData.acceptationMandataire} 
-                        onValueChange={(value) => setProcurationData({...procurationData, acceptationMandataire: value})}
-                      >
+                      <Label>Étendue des pouvoirs *</Label>
+                      <div className="space-y-2">
                         <div className="flex items-center space-x-2">
-                          <input type="radio" value="expresse" checked={procurationData.acceptationMandataire === "expresse"} onChange={(e) => setProcurationData({...procurationData, acceptationMandataire: e.target.value})} />
-                          <Label className="cursor-pointer font-normal">Acceptation expresse</Label>
+                          <input
+                            type="radio"
+                            id="etendue_large"
+                            value="tres_large"
+                            checked={procurationData.etendue.typeEtendue === "tres_large"}
+                            onChange={(e) => setProcurationData({...procurationData, etendue: {...procurationData.etendue, typeEtendue: e.target.value}})}
+                          />
+                          <Label htmlFor="etendue_large" className="cursor-pointer font-normal">☐ Très large</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <input type="radio" value="tacite" checked={procurationData.acceptationMandataire === "tacite"} onChange={(e) => setProcurationData({...procurationData, acceptationMandataire: e.target.value})} />
-                          <Label className="cursor-pointer font-normal">Acceptation tacite</Label>
+                          <input
+                            type="radio"
+                            id="etendue_limitee"
+                            value="limitee"
+                            checked={procurationData.etendue.typeEtendue === "limitee"}
+                            onChange={(e) => setProcurationData({...procurationData, etendue: {...procurationData.etendue, typeEtendue: e.target.value}})}
+                          />
+                          <Label htmlFor="etendue_limitee" className="cursor-pointer font-normal">☐ Limitée (préciser)</Label>
                         </div>
-                      </RadioGroup>
+                      </div>
+                    </div>
+
+                    {procurationData.etendue.typeEtendue === "limitee" && (
+                      <div className="space-y-2 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <Label>Précisions sur les limites *</Label>
+                        <Textarea 
+                          value={procurationData.etendue.precisionsLimitees} 
+                          onChange={(e) => setProcurationData({...procurationData, etendue: {...procurationData.etendue, precisionsLimitees: e.target.value}})} 
+                          rows={2}
+                          placeholder="Précisez les limites de la procuration..."
+                        />
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label>Actes expressément exclus (champ texte)</Label>
+                      <Textarea 
+                        value={procurationData.etendue.actesExclus} 
+                        onChange={(e) => setProcurationData({...procurationData, etendue: {...procurationData.etendue, actesExclus: e.target.value}})} 
+                        rows={2}
+                        placeholder="Listez les actes explicitement exclus de la procuration..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Subdélégation</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="subdel_autorisee"
+                            value="autorisee"
+                            checked={procurationData.etendue.subdelegation === "autorisee"}
+                            onChange={(e) => setProcurationData({...procurationData, etendue: {...procurationData.etendue, subdelegation: e.target.value}})}
+                          />
+                          <Label htmlFor="subdel_autorisee" className="cursor-pointer font-normal">☐ Autorisée</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="subdel_interdite"
+                            value="interdite"
+                            checked={procurationData.etendue.subdelegation === "interdite"}
+                            onChange={(e) => setProcurationData({...procurationData, etendue: {...procurationData.etendue, subdelegation: e.target.value}})}
+                          />
+                          <Label htmlFor="subdel_interdite" className="cursor-pointer font-normal">☐ Interdite</Label>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* 7️⃣ Mentions notariales */}
+                  {/* 6️⃣ DURÉE - RÉVOCATION */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Mentions notariales *</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ DURÉE - RÉVOCATION (OBLIGATOIRE)</h3>
+                    <div className="space-y-2">
+                      <Label>Durée *</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="duree_indeterminee"
+                            value="indeterminee"
+                            checked={procurationData.duree.type === "indeterminee"}
+                            onChange={(e) => setProcurationData({...procurationData, duree: {...procurationData.duree, type: e.target.value}})}
+                          />
+                          <Label htmlFor="duree_indeterminee" className="cursor-pointer font-normal">☐ Durée indéterminée</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="duree_determinee"
+                            value="determinee"
+                            checked={procurationData.duree.type === "determinee"}
+                            onChange={(e) => setProcurationData({...procurationData, duree: {...procurationData.duree, type: e.target.value}})}
+                          />
+                          <Label htmlFor="duree_determinee" className="cursor-pointer font-normal">☐ Durée déterminée (date de fin)</Label>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {procurationData.duree.type === "determinee" && (
+                      <div className="space-y-2">
+                        <Label>Date de fin *</Label>
+                        <Input type="date" value={procurationData.duree.dateFin} onChange={(e) => setProcurationData({...procurationData, duree: {...procurationData.duree, dateFin: e.target.value}})} />
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label>Révocable à tout moment</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="revocable_oui"
+                            checked={procurationData.duree.revocable === true}
+                            onChange={() => setProcurationData({...procurationData, duree: {...procurationData.duree, revocable: true}})}
+                          />
+                          <Label htmlFor="revocable_oui" className="cursor-pointer font-normal">☐ Oui</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="revocable_non"
+                            checked={procurationData.duree.revocable === false}
+                            onChange={() => setProcurationData({...procurationData, duree: {...procurationData.duree, revocable: false}})}
+                          />
+                          <Label htmlFor="revocable_non" className="cursor-pointer font-normal">☐ Non (rare mais possible)</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7️⃣ ACCEPTATION DU MANDATAIRE */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ ACCEPTATION DU MANDATAIRE (OBLIGATOIRE)</h3>
+                    <div className="space-y-2">
+                      <Label>Type d'acceptation *</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="accept_expresse"
+                            value="expresse"
+                            checked={procurationData.acceptation.type === "expresse"}
+                            onChange={(e) => setProcurationData({...procurationData, acceptation: {...procurationData.acceptation, type: e.target.value}})}
+                          />
+                          <Label htmlFor="accept_expresse" className="cursor-pointer font-normal">☐ Acceptation expresse</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="accept_tacite"
+                            value="tacite"
+                            checked={procurationData.acceptation.type === "tacite"}
+                            onChange={(e) => setProcurationData({...procurationData, acceptation: {...procurationData.acceptation, type: e.target.value}})}
+                          />
+                          <Label htmlFor="accept_tacite" className="cursor-pointer font-normal">☐ Acceptation tacite</Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Acceptation réalisée le jour de l'acte</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="accept_jour_oui"
+                            checked={procurationData.acceptation.acceptationJourActe === true}
+                            onChange={() => setProcurationData({...procurationData, acceptation: {...procurationData.acceptation, acceptationJourActe: true}})}
+                          />
+                          <Label htmlFor="accept_jour_oui" className="cursor-pointer font-normal">☐ Oui</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="accept_jour_non"
+                            checked={procurationData.acceptation.acceptationJourActe === false}
+                            onChange={() => setProcurationData({...procurationData, acceptation: {...procurationData.acceptation, acceptationJourActe: false}})}
+                          />
+                          <Label htmlFor="accept_jour_non" className="cursor-pointer font-normal">☐ Non (acceptation ultérieure)</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8️⃣ DÉCLARATIONS ESSENTIELLES DU MANDANT */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ DÉCLARATIONS ESSENTIELLES DU MANDANT (OBLIGATOIRE)</h3>
+                    <div className="p-4 bg-gray-50 border rounded-lg space-y-2">
+                      <Label className="font-semibold">Cases à cocher :</Label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decl_libre"
+                          checked={procurationData.declarations.agitLibrement}
+                          onChange={(e) => setProcurationData({...procurationData, declarations: {...procurationData.declarations, agitLibrement: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="decl_libre" className="cursor-pointer font-normal">☐ Déclare agir librement, sans contrainte</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decl_capacite"
+                          checked={procurationData.declarations.pleineCapacite}
+                          onChange={(e) => setProcurationData({...procurationData, declarations: {...procurationData.declarations, pleineCapacite: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="decl_capacite" className="cursor-pointer font-normal">☐ Déclare avoir pleine capacité juridique</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decl_comprend"
+                          checked={procurationData.declarations.comprendPortee}
+                          onChange={(e) => setProcurationData({...procurationData, declarations: {...procurationData.declarations, comprendPortee: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="decl_comprend" className="cursor-pointer font-normal">☐ Déclare comprendre la portée de la procuration</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decl_consent"
+                          checked={procurationData.declarations.consentLibre}
+                          onChange={(e) => setProcurationData({...procurationData, declarations: {...procurationData.declarations, consentLibre: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="decl_consent" className="cursor-pointer font-normal">☐ Déclare consentir librement et de manière éclairée</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decl_irrevocable"
+                          checked={procurationData.declarations.pouvoirIrrevocable}
+                          onChange={(e) => setProcurationData({...procurationData, declarations: {...procurationData.declarations, pouvoirIrrevocable: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="decl_irrevocable" className="cursor-pointer font-normal">☐ Déclare donner pouvoir irrévocable pendant la durée prévue (si applicable)</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 9️⃣ LANGUE - COMPRÉHENSION */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ LANGUE - COMPRÉHENSION (OBLIGATOIRE)</h3>
+                    <div className="space-y-2">
+                      <Label>Langue comprise par le mandant *</Label>
+                      <Input 
+                        value={procurationData.langue.langueComprise} 
+                        onChange={(e) => setProcurationData({...procurationData, langue: {...procurationData.langue, langueComprise: e.target.value}})} 
+                        placeholder="Ex: Français, Anglais, Espagnol..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Recours à un interprète</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="interprete_non"
+                            checked={procurationData.langue.interpreteNecessaire === false}
+                            onChange={() => setProcurationData({...procurationData, langue: {...procurationData.langue, interpreteNecessaire: false}})}
+                          />
+                          <Label htmlFor="interprete_non" className="cursor-pointer font-normal">☐ Non</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="interprete_oui"
+                            checked={procurationData.langue.interpreteNecessaire === true}
+                            onChange={() => setProcurationData({...procurationData, langue: {...procurationData.langue, interpreteNecessaire: true}})}
+                          />
+                          <Label htmlFor="interprete_oui" className="cursor-pointer font-normal">☐ Oui (identité de l'interprète)</Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {procurationData.langue.interpreteNecessaire && (
+                      <div className="space-y-2 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <Label>Identité de l'interprète *</Label>
+                        <Textarea 
+                          value={procurationData.langue.interpreteIdentite} 
+                          onChange={(e) => setProcurationData({...procurationData, langue: {...procurationData.langue, interpreteIdentite: e.target.value}})} 
+                          rows={2}
+                          placeholder="Nom, prénom, qualifications de l'interprète..."
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 🔟 COMPARUTION - SIGNATURE */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 COMPARUTION - SIGNATURE (OBLIGATOIRE)</h3>
+                    <div className="space-y-2">
+                      <Label>Comparution du mandant *</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="comp_presence"
+                            value="presence"
+                            checked={procurationData.comparution.typeComparution === "presence"}
+                            onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, typeComparution: e.target.value}})}
+                          />
+                          <Label htmlFor="comp_presence" className="cursor-pointer font-normal">☐ En présence du notaire</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="comp_distance"
+                            value="distance"
+                            checked={procurationData.comparution.typeComparution === "distance"}
+                            onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, typeComparution: e.target.value}})}
+                          />
+                          <Label htmlFor="comp_distance" className="cursor-pointer font-normal">☐ À distance (visioconférence sécurisée)</Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="lecture"
+                          checked={procurationData.comparution.lectureFaite}
+                          onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, lectureFaite: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="lecture" className="cursor-pointer font-normal">Lecture de l'acte faite par le notaire</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="consentement"
+                          checked={procurationData.comparution.consentementRecueilli}
+                          onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, consentementRecueilli: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="consentement" className="cursor-pointer font-normal">Consentement recueilli</Label>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Signature *</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="sign_presentiel"
+                            value="presentiel"
+                            checked={procurationData.comparution.typeSignature === "presentiel"}
+                            onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, typeSignature: e.target.value}})}
+                          />
+                          <Label htmlFor="sign_presentiel" className="cursor-pointer font-normal">☐ En présentiel</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="sign_distance"
+                            value="distance"
+                            checked={procurationData.comparution.typeSignature === "distance"}
+                            onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, typeSignature: e.target.value}})}
+                          />
+                          <Label htmlFor="sign_distance" className="cursor-pointer font-normal">☐ À distance via système sécurisé de l'office</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣1️⃣ MENTIONS NOTARIALES */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ MENTIONS NOTARIALES (OBLIGATOIRE)</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Nom du notaire instrumentaire *</Label>
                         <Input value={procurationData.mentionsNotariales.nomNotaire} onChange={(e) => setProcurationData({...procurationData, mentionsNotariales: {...procurationData.mentionsNotariales, nomNotaire: e.target.value}})} />
                       </div>
                       <div className="space-y-2">
-                        <Label>Ville du notaire *</Label>
-                        <Input value={procurationData.mentionsNotariales.villeNotaire} onChange={(e) => setProcurationData({...procurationData, mentionsNotariales: {...procurationData.mentionsNotariales, villeNotaire: e.target.value}})} />
+                        <Label>Ville de l'office *</Label>
+                        <Input value={procurationData.mentionsNotariales.villeOffice} onChange={(e) => setProcurationData({...procurationData, mentionsNotariales: {...procurationData.mentionsNotariales, villeOffice: e.target.value}})} />
                       </div>
                       <div className="space-y-2">
                         <Label>Date de réception de l'acte *</Label>
@@ -33995,64 +34540,22 @@ FIN DE LA CONVENTION
                         <Input value={procurationData.mentionsNotariales.lieuReception} onChange={(e) => setProcurationData({...procurationData, mentionsNotariales: {...procurationData.mentionsNotariales, lieuReception: e.target.value}})} placeholder="Ex: Étude notariale, domicile..." />
                       </div>
                     </div>
-                  </div>
 
-                  {/* 8️⃣ Comparution & consentement */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Comparution & consentement</h3>
-                    <div className="space-y-2">
-                      <Label>Comparution du mandant</Label>
-                      <RadioGroup 
-                        value={procurationData.comparution.typeComparution} 
-                        onValueChange={(value) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, typeComparution: value}})}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <input type="radio" value="presence" checked={procurationData.comparution.typeComparution === "presence"} onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, typeComparution: e.target.value}})} />
-                          <Label className="cursor-pointer font-normal">En présence du notaire</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input type="radio" value="distance" checked={procurationData.comparution.typeComparution === "distance"} onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, typeComparution: e.target.value}})} />
-                          <Label className="cursor-pointer font-normal">À distance (visioconférence sécurisée)</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="lecture"
-                          checked={procurationData.comparution.lectureFaite}
-                          onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, lectureFaite: e.target.checked}})}
-                          className="rounded"
-                        />
-                        <Label htmlFor="lecture" className="cursor-pointer font-normal">Lecture faite par le notaire</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="consentement"
-                          checked={procurationData.comparution.consentementRecueilli}
-                          onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, consentementRecueilli: e.target.checked}})}
-                          className="rounded"
-                        />
-                        <Label htmlFor="consentement" className="cursor-pointer font-normal">Consentement libre et éclairé recueilli</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="signature"
-                          checked={procurationData.comparution.signaturePresenceNotaire}
-                          onChange={(e) => setProcurationData({...procurationData, comparution: {...procurationData.comparution, signaturePresenceNotaire: e.target.checked}})}
-                          className="rounded"
-                        />
-                        <Label htmlFor="signature" className="cursor-pointer font-normal">Signature en présence du notaire</Label>
-                      </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="acte_minute"
+                        checked={procurationData.mentionsNotariales.acteRecuMinute}
+                        onChange={(e) => setProcurationData({...procurationData, mentionsNotariales: {...procurationData.mentionsNotariales, acteRecuMinute: e.target.checked}})}
+                        className="rounded"
+                      />
+                      <Label htmlFor="acte_minute" className="cursor-pointer font-normal">Acte reçu en minute</Label>
                     </div>
                   </div>
 
-                  {/* 9️⃣ Conservation de l'acte */}
+                  {/* 1️⃣2️⃣ CONSERVATION - COPIES */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Conservation de l'acte</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ CONSERVATION - COPIES (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
                         <input
@@ -34064,23 +34567,45 @@ FIN DE LA CONVENTION
                         />
                         <Label htmlFor="minute" className="cursor-pointer font-normal">Minute conservée par le notaire</Label>
                       </div>
+                      
+                      <Label className="font-semibold mt-4 block">Délivrance :</Label>
                       <div className="flex items-center space-x-2">
                         <input
                           type="checkbox"
-                          id="copies"
+                          id="copies_simples"
+                          checked={procurationData.conservation.copiesSimples}
+                          onChange={(e) => setProcurationData({...procurationData, conservation: {...procurationData.conservation, copiesSimples: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="copies_simples" className="cursor-pointer font-normal">☐ Copies simples</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="copies_certifiees"
                           checked={procurationData.conservation.copiesCertifiees}
                           onChange={(e) => setProcurationData({...procurationData, conservation: {...procurationData.conservation, copiesCertifiees: e.target.checked}})}
                           className="rounded"
                         />
-                        <Label htmlFor="copies" className="cursor-pointer font-normal">Délivrance de copies certifiées / exécutoires</Label>
+                        <Label htmlFor="copies_certifiees" className="cursor-pointer font-normal">☐ Copies certifiées conformes</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="copies_executoires"
+                          checked={procurationData.conservation.copiesExecutoires}
+                          onChange={(e) => setProcurationData({...procurationData, conservation: {...procurationData.conservation, copiesExecutoires: e.target.checked}})}
+                          className="rounded"
+                        />
+                        <Label htmlFor="copies_executoires" className="cursor-pointer font-normal">☐ Copies exécutoires</Label>
                       </div>
                     </div>
                   </div>
 
                   {/* Note informative */}
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm text-blue-700">
-                      <strong>Note :</strong> La procuration sera créée avec ces informations. Les sections 4 à 9 (Objet de la procuration, Portée et limites, Déclarations, Mentions légales, Cas particuliers, Pièces justificatives) seront ajoutables après la création du contrat.
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm text-green-700">
+                      <strong>✅ Checklist complète :</strong> Tous les champs obligatoires pour une procuration authentique sont présents dans ce formulaire conforme aux exigences notariales.
                     </p>
                   </div>
                 </div>
