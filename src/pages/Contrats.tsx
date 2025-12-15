@@ -39314,7 +39314,6 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                 </div>
-              </div>
             )}
 
             {/* Formulaire générique pour tous les autres types de contrats */}
