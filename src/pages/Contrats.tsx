@@ -33562,6 +33562,8 @@ FIN DE LA CONVENTION
 
                   {/* 2️⃣ Identité du mandant */}
                   <div className="space-y-4">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du MANDANT (OBLIGATOIRE)</h3>
+                    
                     <div className="space-y-2">
                       <Label>Sélectionner un client existant (optionnel)</Label>
                       <Select
