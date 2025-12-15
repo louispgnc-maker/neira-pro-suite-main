@@ -176,7 +176,7 @@ export default function Contrats() {
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [pendingContractType, setPendingContractType] = useState<string>("");
   const [pendingCategory, setPendingCategory] = useState<string>("");
-  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string | {regime_matrimonial?: string, nombre_enfants?: string, personne_a_charge?: any}, type_identite?: string, numero_identite?: string, id_doc_path?: string}>>([]);
+  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string | {regime_matrimonial?: string, nombre_enfants?: string, personne_a_charge?: any}, type_identite?: string, numero_identite?: string, date_expiration_identite?: string, id_doc_path?: string}>>([]);
 
   // States pour les fichiers uploadés
   const [compromisClientIdentiteUrl, setCompromisClientIdentiteUrl] = useState<string | null>(null); // URL du document du client
@@ -3211,7 +3211,7 @@ export default function Contrats() {
       if (!user) return;
       const { data, error } = await supabase
         .from('clients')
-        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession, situation_matrimoniale, situation_familiale, type_identite, numero_identite, id_doc_path')
+        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession, situation_matrimoniale, situation_familiale, type_identite, numero_identite, date_expiration_identite, id_doc_path')
         .eq('owner_id', user.id)
         .eq('role', role)
         .order('nom', { ascending: true });
@@ -33539,6 +33539,9 @@ FIN DE LA CONVENTION
                                 telephone: selectedClient.telephone || "",
                                 email: selectedClient.email || "",
                                 situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
+                                typeIdentite: selectedClient.type_identite || "",
+                                numeroIdentite: selectedClient.numero_identite || "",
+                                dateEmissionIdentite: selectedClient.date_expiration_identite || "",
                               }
                             });
 
@@ -33714,14 +33717,7 @@ FIN DE LA CONVENTION
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Type de pièce d'identité</Label>
-                        <Select value={procurationData.mandant.typeIdentite} onValueChange={(value) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, typeIdentite: value}})}>
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="cni">Carte nationale d'identité</SelectItem>
-                            <SelectItem value="passeport">Passeport</SelectItem>
-                            <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Input value={procurationData.mandant.typeIdentite} onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, typeIdentite: e.target.value}})} placeholder="Ex: CNI, Passeport, Titre de séjour" />
                       </div>
                       <div className="space-y-2">
                         <Label>Numéro de pièce d'identité</Label>
@@ -33781,14 +33777,7 @@ FIN DE LA CONVENTION
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Type de pièce d'identité</Label>
-                        <Select value={procurationData.mandataire.typeIdentite} onValueChange={(value) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, typeIdentite: value}})}>
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="cni">Carte nationale d'identité</SelectItem>
-                            <SelectItem value="passeport">Passeport</SelectItem>
-                            <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Input value={procurationData.mandataire.typeIdentite} onChange={(e) => setProcurationData({...procurationData, mandataire: {...procurationData.mandataire, typeIdentite: e.target.value}})} placeholder="Ex: CNI, Passeport, Titre de séjour" />
                       </div>
                       <div className="space-y-2">
                         <Label>Numéro de pièce d'identité</Label>
