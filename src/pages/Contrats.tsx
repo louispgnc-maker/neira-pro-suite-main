@@ -3569,6 +3569,66 @@ export default function Contrats() {
     }
   }, [questionnaireData.clientId, clients]);
 
+  // Charger la pièce d'identité du mandant (Mandat de Protection Future)
+  useEffect(() => {
+    if (mandatProtectionData.mandant.clientId && clients.length > 0) {
+      const selectedClient = clients.find(c => c.id === mandatProtectionData.mandant.clientId) as any;
+      if (selectedClient?.id_doc_path) {
+        console.log('✅ Chargement pièce identité mandant depuis id_doc_path:', selectedClient.id_doc_path);
+        supabase.storage
+          .from('documents')
+          .createSignedUrl(selectedClient.id_doc_path, 3600)
+          .then(({ data, error }) => {
+            if (error) {
+              console.error('❌ Erreur chargement document mandant:', error);
+              setMandatProtectionMandantIdentiteUrl(null);
+            } else if (data?.signedUrl) {
+              console.log('✅ Document mandant chargé avec succès');
+              setMandatProtectionMandantIdentiteUrl(data.signedUrl);
+            }
+          });
+      } else {
+        // Chercher dans client_documents si pas de id_doc_path
+        console.log('🔍 Recherche dans client_documents pour mandant:', selectedClient?.id);
+        if (selectedClient?.id) {
+          supabase
+            .from('client_documents')
+            .select('file_path, file_name, document_type')
+            .eq('client_id', selectedClient.id)
+            .eq('document_type', 'piece_identite')
+            .order('uploaded_at', { ascending: false })
+            .limit(1)
+            .then(({ data: docs, error: docsError }) => {
+              if (docsError) {
+                console.error('❌ Erreur recherche documents mandant:', docsError);
+                setMandatProtectionMandantIdentiteUrl(null);
+              } else if (docs && docs.length > 0) {
+                console.log('📄 Document trouvé dans client_documents:', docs[0].file_name);
+                supabase.storage
+                  .from('documents')
+                  .createSignedUrl(docs[0].file_path, 3600)
+                  .then(({ data, error }) => {
+                    if (error) {
+                      console.error('❌ Erreur chargement document mandant:', error);
+                      setMandatProtectionMandantIdentiteUrl(null);
+                    } else if (data?.signedUrl) {
+                      console.log('✅ Document mandant client_documents chargé avec succès');
+                      setMandatProtectionMandantIdentiteUrl(data.signedUrl);
+                    }
+                  });
+              } else {
+                setMandatProtectionMandantIdentiteUrl(null);
+              }
+            });
+        } else {
+          setMandatProtectionMandantIdentiteUrl(null);
+        }
+      }
+    } else {
+      setMandatProtectionMandantIdentiteUrl(null);
+    }
+  }, [mandatProtectionData.mandant.clientId, clients]);
+
   // Auto-fill depuis le client sélectionné selon son rôle (Acte de vente)
   useEffect(() => {
     if (acteVenteData.clientId && acteVenteData.clientRole && clients.length > 0) {
@@ -35129,39 +35189,30 @@ FIN DE LA CONVENTION
                       {mandatProtectionData.mandant.clientId && (
                         <div className="space-y-2">
                           <Label>📎 Copie de la pièce d'identité</Label>
-                          {(() => {
-                            const selectedClient = clients.find(c => c.id === mandatProtectionData.mandant.clientId);
-                            const hasDocument = selectedClient?.id_doc_path;
-                            
-                            if (hasDocument) {
-                              return (
-                                <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
-                                  <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                  <span className="text-sm flex-1 text-green-700">Pièce d'identité du client disponible</span>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="bg-green-600 hover:bg-green-700 text-white"
-                                    onClick={() => window.open(selectedClient.id_doc_path, '_blank')}
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </Button>
-                                </div>
-                              );
-                            } else {
-                              return (
-                                <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-300 rounded-lg">
-                                  <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                  </svg>
-                                  <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité associée à ce client</span>
-                                </div>
-                              );
-                            }
-                          })()}
+                          {mandatProtectionMandantIdentiteUrl ? (
+                            <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                              <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span className="text-sm flex-1 text-green-700">Pièce d'identité du client disponible</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                onClick={() => window.open(mandatProtectionMandantIdentiteUrl, '_blank')}
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-300 rounded-lg">
+                              <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                              <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité associée à ce client</span>
+                            </div>
+                          )}
                         </div>
                       )}
 
