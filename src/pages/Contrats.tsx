@@ -7285,7 +7285,7 @@ FIN DE LA CONVENTION
 
       {/* Dialog questionnaire pour compromis de vente / acte de vente */}
       <Dialog open={showQuestionDialog} onOpenChange={setShowQuestionDialog}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {pendingContractType === "Acte de vente immobilière" 
