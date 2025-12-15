@@ -35637,6 +35637,1357 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
+                  {/* SECTION 4: MANDATAIRE SUBSTITUT */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-yellow-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Mandataire substitut (optionnel)</h3>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="mandataireSubstitutExiste"
+                        checked={mandatProtectionData.mandataireSubstitut.existe}
+                        onChange={(e) => setMandatProtectionData({
+                          ...mandatProtectionData,
+                          mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, existe: e.target.checked}
+                        })}
+                        className="w-4 h-4"
+                      />
+                      <Label htmlFor="mandataireSubstitutExiste" className="cursor-pointer">
+                        Prévoir un mandataire substitut (remplaçant si le principal ne peut pas agir)
+                      </Label>
+                    </div>
+
+                    {mandatProtectionData.mandataireSubstitut.existe && (
+                      <div className="space-y-4 pl-6 border-l-2 border-yellow-300">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Nom</Label>
+                            <Input 
+                              value={mandatProtectionData.mandataireSubstitut.nom}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, nom: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Prénom</Label>
+                            <Input 
+                              value={mandatProtectionData.mandataireSubstitut.prenom}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, prenom: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Date de naissance</Label>
+                            <Input 
+                              type="date"
+                              value={mandatProtectionData.mandataireSubstitut.dateNaissance}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, dateNaissance: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Lieu de naissance</Label>
+                            <Input 
+                              value={mandatProtectionData.mandataireSubstitut.lieuNaissance}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, lieuNaissance: e.target.value}
+                              })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Adresse complète</Label>
+                          <Textarea 
+                            value={mandatProtectionData.mandataireSubstitut.adresseComplete}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, adresseComplete: e.target.value}
+                            })}
+                            rows={2}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Profession</Label>
+                            <Input 
+                              value={mandatProtectionData.mandataireSubstitut.profession}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, profession: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Lien avec le mandant</Label>
+                            <Select
+                              value={mandatProtectionData.mandataireSubstitut.lienMandant}
+                              onValueChange={(val) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, lienMandant: val}
+                              })}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="conjoint">Conjoint</SelectItem>
+                                <SelectItem value="enfant">Enfant</SelectItem>
+                                <SelectItem value="parent">Parent</SelectItem>
+                                <SelectItem value="ami">Ami</SelectItem>
+                                <SelectItem value="tiers_professionnel">Tiers professionnel</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Téléphone</Label>
+                            <Input 
+                              value={mandatProtectionData.mandataireSubstitut.telephone}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, telephone: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input 
+                              type="email"
+                              value={mandatProtectionData.mandataireSubstitut.email}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, email: e.target.value}
+                              })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Conditions d'entrée en fonction</Label>
+                          <Textarea 
+                            value={mandatProtectionData.mandataireSubstitut.conditionsEntree}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, conditionsEntree: e.target.value}
+                            })}
+                            placeholder="Ex: En cas de décès, incapacité, refus du mandataire principal..."
+                            rows={2}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Étendue des pouvoirs du substitut</Label>
+                          <Textarea 
+                            value={mandatProtectionData.mandataireSubstitut.etenduePouvoirs}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              mandataireSubstitut: {...mandatProtectionData.mandataireSubstitut, etenduePouvoirs: e.target.value}
+                            })}
+                            placeholder="Précisez les pouvoirs identiques ou différents du mandataire principal..."
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* SECTION 5: POUVOIRS SUR LA PERSONNE */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-green-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ A. Pouvoirs sur la personne du mandant</h3>
+                    
+                    <p className="text-sm text-gray-600">
+                      Sélectionnez les actes que le mandataire pourra accomplir pour la protection de la personne :
+                    </p>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="representationActesCourants"
+                          checked={mandatProtectionData.pouvoirsPersonne.representationActesCourants}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsPersonne: {...mandatProtectionData.pouvoirsPersonne, representationActesCourants: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="representationActesCourants" className="cursor-pointer">
+                          Représenter pour les actes de la vie courante
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="choixEtablissement"
+                          checked={mandatProtectionData.pouvoirsPersonne.choixEtablissement}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsPersonne: {...mandatProtectionData.pouvoirsPersonne, choixEtablissement: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="choixEtablissement" className="cursor-pointer">
+                          Choisir l'établissement d'hébergement
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="demarchesSociales"
+                          checked={mandatProtectionData.pouvoirsPersonne.demarchesSociales}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsPersonne: {...mandatProtectionData.pouvoirsPersonne, demarchesSociales: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="demarchesSociales" className="cursor-pointer">
+                          Représenter dans les démarches sociales
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="organisationSoins"
+                          checked={mandatProtectionData.pouvoirsPersonne.organisationSoins}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsPersonne: {...mandatProtectionData.pouvoirsPersonne, organisationSoins: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="organisationSoins" className="cursor-pointer">
+                          Organiser et payer les soins
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="gestionMedecins"
+                          checked={mandatProtectionData.pouvoirsPersonne.gestionMedecins}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsPersonne: {...mandatProtectionData.pouvoirsPersonne, gestionMedecins: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="gestionMedecins" className="cursor-pointer">
+                          Gérer les relations avec les médecins (dans le cadre légal)
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="gestionQuotidien"
+                          checked={mandatProtectionData.pouvoirsPersonne.gestionQuotidien}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsPersonne: {...mandatProtectionData.pouvoirsPersonne, gestionQuotidien: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="gestionQuotidien" className="cursor-pointer">
+                          Gérer le quotidien : transports, loisirs, sécurité
+                        </Label>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Précisions / Autres pouvoirs sur la personne</Label>
+                      <Textarea 
+                        value={mandatProtectionData.pouvoirsPersonne.precisionsAutres}
+                        onChange={(e) => setMandatProtectionData({
+                          ...mandatProtectionData,
+                          pouvoirsPersonne: {...mandatProtectionData.pouvoirsPersonne, precisionsAutres: e.target.value}
+                        })}
+                        rows={2}
+                        placeholder="Précisez d'autres pouvoirs..."
+                      />
+                    </div>
+
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-xs text-red-700">
+                        <strong>⚠️ Le mandataire ne peut JAMAIS :</strong> consentir au mariage, au divorce, à des actes médicaux graves sans autorisation, ou disposer du corps du mandant.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* SECTION 5B: POUVOIRS SUR LE PATRIMOINE - ADMINISTRATION */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ B. Pouvoirs sur le patrimoine - Actes d'administration</h3>
+                    
+                    <p className="text-sm text-gray-600">
+                      Ces actes sont généralement autorisés dans un mandat :
+                    </p>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="gestionComptes"
+                          checked={mandatProtectionData.pouvoirsAdministration.gestionComptes}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsAdministration: {...mandatProtectionData.pouvoirsAdministration, gestionComptes: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="gestionComptes" className="cursor-pointer">
+                          Gérer les comptes bancaires
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="encaissementRevenus"
+                          checked={mandatProtectionData.pouvoirsAdministration.encaissementRevenus}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsAdministration: {...mandatProtectionData.pouvoirsAdministration, encaissementRevenus: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="encaissementRevenus" className="cursor-pointer">
+                          Encaisser les revenus
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="paiementDepenses"
+                          checked={mandatProtectionData.pouvoirsAdministration.paiementDepenses}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsAdministration: {...mandatProtectionData.pouvoirsAdministration, paiementDepenses: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="paiementDepenses" className="cursor-pointer">
+                          Payer les dépenses courantes
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="renouvellementBail"
+                          checked={mandatProtectionData.pouvoirsAdministration.renouvellementBail}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsAdministration: {...mandatProtectionData.pouvoirsAdministration, renouvellementBail: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="renouvellementBail" className="cursor-pointer">
+                          Renouveler un bail
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="souscriptionAssurances"
+                          checked={mandatProtectionData.pouvoirsAdministration.souscriptionAssurances}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsAdministration: {...mandatProtectionData.pouvoirsAdministration, souscriptionAssurances: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="souscriptionAssurances" className="cursor-pointer">
+                          Souscrire assurance habitation / santé
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="entretienBiens"
+                          checked={mandatProtectionData.pouvoirsAdministration.entretienBiens}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsAdministration: {...mandatProtectionData.pouvoirsAdministration, entretienBiens: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="entretienBiens" className="cursor-pointer">
+                          Faire l'entretien courant des biens
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 5C: POUVOIRS SUR LE PATRIMOINE - DISPOSITION */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-orange-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ C. Pouvoirs sur le patrimoine - Actes de disposition</h3>
+                    
+                    <div className="p-3 bg-orange-100 border border-orange-300 rounded-lg mb-4">
+                      <p className="text-xs text-orange-800">
+                        <strong>⚠️ Important :</strong> Ces actes ne sont autorisés que dans un mandat notarié. Sélectionnez uniquement si le mandat est authentique.
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="venteImmobilier"
+                          checked={mandatProtectionData.pouvoirsDisposition.venteImmobilier}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, venteImmobilier: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="venteImmobilier" className="cursor-pointer">
+                          Vendre un bien immobilier
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="achatImmobilier"
+                          checked={mandatProtectionData.pouvoirsDisposition.achatImmobilier}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, achatImmobilier: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="achatImmobilier" className="cursor-pointer">
+                          Acheter un bien
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="donationMobilier"
+                          checked={mandatProtectionData.pouvoirsDisposition.donationMobilier}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, donationMobilier: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="donationMobilier" className="cursor-pointer">
+                          Donner un bien mobilier
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="gestionTitres"
+                          checked={mandatProtectionData.pouvoirsDisposition.gestionTitres}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, gestionTitres: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="gestionTitres" className="cursor-pointer">
+                          Gérer un portefeuille titres
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="resiliationBail"
+                          checked={mandatProtectionData.pouvoirsDisposition.resiliationBail}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, resiliationBail: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="resiliationBail" className="cursor-pointer">
+                          Résilier un bail
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="reglementDettes"
+                          checked={mandatProtectionData.pouvoirsDisposition.reglementDettes}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, reglementDettes: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="reglementDettes" className="cursor-pointer">
+                          Régler des dettes importantes
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="acceptationSuccession"
+                          checked={mandatProtectionData.pouvoirsDisposition.acceptationSuccession}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, acceptationSuccession: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="acceptationSuccession" className="cursor-pointer">
+                          Accepter une succession
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="renonciationSuccession"
+                          checked={mandatProtectionData.pouvoirsDisposition.renonciationSuccession}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, renonciationSuccession: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="renonciationSuccession" className="cursor-pointer">
+                          Renoncer à une succession (nécessite clause spéciale)
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="donations"
+                          checked={mandatProtectionData.pouvoirsDisposition.donations}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, donations: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="donations" className="cursor-pointer">
+                          Faire des donations
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="modificationsSuccessorales"
+                          checked={mandatProtectionData.pouvoirsDisposition.modificationsSuccessorales}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, modificationsSuccessorales: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="modificationsSuccessorales" className="cursor-pointer">
+                          Effectuer des modifications successorales
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="actesGratuits"
+                          checked={mandatProtectionData.pouvoirsDisposition.actesGratuits}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, actesGratuits: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="actesGratuits" className="cursor-pointer">
+                          Actes à titre gratuit importants
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="modificationContratMariage"
+                          checked={mandatProtectionData.pouvoirsDisposition.modificationContratMariage}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            pouvoirsDisposition: {...mandatProtectionData.pouvoirsDisposition, modificationContratMariage: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="modificationContratMariage" className="cursor-pointer">
+                          Modifications de contrat de mariage
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 6: LISTE DES BIENS */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-indigo-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Liste des biens du mandant (patrimoine)</h3>
+                    
+                    <p className="text-sm text-gray-600">
+                      Indispensable pour déterminer l'étendue du mandat :
+                    </p>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Biens immobiliers</Label>
+                        <Textarea 
+                          value={mandatProtectionData.biensPatrimoine.biensImmobiliers}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            biensPatrimoine: {...mandatProtectionData.biensPatrimoine, biensImmobiliers: e.target.value}
+                          })}
+                          placeholder="Adresses, titres, valeurs estimées..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Comptes bancaires</Label>
+                        <Textarea 
+                          value={mandatProtectionData.biensPatrimoine.comptesBancaires}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            biensPatrimoine: {...mandatProtectionData.biensPatrimoine, comptesBancaires: e.target.value}
+                          })}
+                          placeholder="Banques, numéros de comptes, montants approximatifs..."
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Contrats d'assurance-vie</Label>
+                        <Textarea 
+                          value={mandatProtectionData.biensPatrimoine.assurancesVie}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            biensPatrimoine: {...mandatProtectionData.biensPatrimoine, assurancesVie: e.target.value}
+                          })}
+                          placeholder="Compagnies, numéros de contrats, capitaux..."
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Livrets, PEL, PEA</Label>
+                        <Textarea 
+                          value={mandatProtectionData.biensPatrimoine.livretsEpargne}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            biensPatrimoine: {...mandatProtectionData.biensPatrimoine, livretsEpargne: e.target.value}
+                          })}
+                          placeholder="Types d'épargne et montants..."
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Biens mobiliers</Label>
+                        <Textarea 
+                          value={mandatProtectionData.biensPatrimoine.biensMobiliers}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            biensPatrimoine: {...mandatProtectionData.biensPatrimoine, biensMobiliers: e.target.value}
+                          })}
+                          placeholder="Voitures, œuvres d'art, bijoux, meubles de valeur..."
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Parts sociales / Valeurs mobilières</Label>
+                        <Textarea 
+                          value={mandatProtectionData.biensPatrimoine.partsSociales}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            biensPatrimoine: {...mandatProtectionData.biensPatrimoine, partsSociales: e.target.value}
+                          })}
+                          placeholder="Actions, obligations, SCPI, parts de société..."
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Revenus réguliers</Label>
+                        <Textarea 
+                          value={mandatProtectionData.biensPatrimoine.revenusReguliers}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            biensPatrimoine: {...mandatProtectionData.biensPatrimoine, revenusReguliers: e.target.value}
+                          })}
+                          placeholder="Salaires, pensions, retraites, loyers perçus..."
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Dettes existantes</Label>
+                        <Textarea 
+                          value={mandatProtectionData.biensPatrimoine.dettesExistantes}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            biensPatrimoine: {...mandatProtectionData.biensPatrimoine, dettesExistantes: e.target.value}
+                          })}
+                          placeholder="Crédits, emprunts, dettes fiscales..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 7: LIMITES DU MANDAT */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-red-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Limites du mandat (si nécessaire)</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="interdictionVenteCertainsBiens"
+                          checked={mandatProtectionData.limites.interdictionVenteCertainsBiens}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            limites: {...mandatProtectionData.limites, interdictionVenteCertainsBiens: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="interdictionVenteCertainsBiens" className="cursor-pointer">
+                          Interdiction de vendre certains biens
+                        </Label>
+                      </div>
+
+                      {mandatProtectionData.limites.interdictionVenteCertainsBiens && (
+                        <div className="space-y-2 pl-6">
+                          <Label>Biens concernés</Label>
+                          <Textarea 
+                            value={mandatProtectionData.limites.biensConcernes}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              limites: {...mandatProtectionData.limites, biensConcernes: e.target.value}
+                            })}
+                            placeholder="Précisez les biens qui ne peuvent pas être vendus..."
+                            rows={2}
+                          />
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="interdictionDeplacement"
+                          checked={mandatProtectionData.limites.interdictionDeplacement}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            limites: {...mandatProtectionData.limites, interdictionDeplacement: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="interdictionDeplacement" className="cursor-pointer">
+                          Interdiction de déplacer le mandant sans accord familial
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="interdictionModificationContrats"
+                          checked={mandatProtectionData.limites.interdictionModificationContrats}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            limites: {...mandatProtectionData.limites, interdictionModificationContrats: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="interdictionModificationContrats" className="cursor-pointer">
+                          Interdiction de modifier certains contrats
+                        </Label>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Montant maximum pour les actes</Label>
+                        <Input 
+                          type="number"
+                          value={mandatProtectionData.limites.montantMaximum}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            limites: {...mandatProtectionData.limites, montantMaximum: e.target.value}
+                          })}
+                          placeholder="Ex: 10000"
+                        />
+                        <p className="text-xs text-gray-500">Montant au-delà duquel le mandataire ne peut pas agir seul</p>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="obligationComptesReguliers"
+                          checked={mandatProtectionData.limites.obligationComptesReguliers}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            limites: {...mandatProtectionData.limites, obligationComptesReguliers: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="obligationComptesReguliers" className="cursor-pointer">
+                          Obligation de rendre des comptes réguliers
+                        </Label>
+                      </div>
+
+                      {mandatProtectionData.limites.obligationComptesReguliers && (
+                        <div className="space-y-2 pl-6">
+                          <Label>Périodicité</Label>
+                          <Select
+                            value={mandatProtectionData.limites.periodiciteComptes}
+                            onValueChange={(val) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              limites: {...mandatProtectionData.limites, periodiciteComptes: val}
+                            })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="mensuel">Mensuel</SelectItem>
+                              <SelectItem value="trimestriel">Trimestriel</SelectItem>
+                              <SelectItem value="semestriel">Semestriel</SelectItem>
+                              <SelectItem value="annuel">Annuel</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* SECTION 8: CONTRÔLE DU MANDATAIRE */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Contrôle du mandataire</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="obligationCompteGestion"
+                          checked={mandatProtectionData.controle.obligationCompteGestion}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            controle: {...mandatProtectionData.controle, obligationCompteGestion: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="obligationCompteGestion" className="cursor-pointer">
+                          Obligation de tenir un compte de gestion
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="controlePersonne"
+                          checked={mandatProtectionData.controle.controlePersonne}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            controle: {...mandatProtectionData.controle, controlePersonne: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="controlePersonne" className="cursor-pointer">
+                          Contrôle par une personne désignée
+                        </Label>
+                      </div>
+
+                      {mandatProtectionData.controle.controlePersonne && (
+                        <div className="space-y-4 pl-6 border-l-2 border-purple-300">
+                          <div className="space-y-2">
+                            <Label>Identité complète du contrôleur</Label>
+                            <Textarea 
+                              value={mandatProtectionData.controle.controleIdentite}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                controle: {...mandatProtectionData.controle, controleIdentite: e.target.value}
+                              })}
+                              placeholder="Nom, prénom, adresse, lien avec le mandant..."
+                              rows={2}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Étendue du contrôle / Pouvoirs du contrôleur</Label>
+                            <Textarea 
+                              value={mandatProtectionData.controle.controlePouvoirs}
+                              onChange={(e) => setMandatProtectionData({
+                                ...mandatProtectionData,
+                                controle: {...mandatProtectionData.controle, controlePouvoirs: e.target.value}
+                              })}
+                              placeholder="Définissez ce que le contrôleur peut vérifier, demander, etc..."
+                              rows={2}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="controleNotaire"
+                          checked={mandatProtectionData.controle.controleNotaire}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            controle: {...mandatProtectionData.controle, controleNotaire: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="controleNotaire" className="cursor-pointer">
+                          Contrôle par un notaire
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="controleExpertComptable"
+                          checked={mandatProtectionData.controle.controleExpertComptable}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            controle: {...mandatProtectionData.controle, controleExpertComptable: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="controleExpertComptable" className="cursor-pointer">
+                          Contrôle par un expert-comptable
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="compteRenduAnnuel"
+                          checked={mandatProtectionData.controle.compteRenduAnnuel}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            controle: {...mandatProtectionData.controle, compteRenduAnnuel: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="compteRenduAnnuel" className="cursor-pointer">
+                          Compte rendu annuel obligatoire
+                        </Label>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Périodicité du contrôle</Label>
+                        <Select
+                          value={mandatProtectionData.controle.periodicite}
+                          onValueChange={(val) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            controle: {...mandatProtectionData.controle, periodicite: val}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="mensuel">Mensuel</SelectItem>
+                            <SelectItem value="trimestriel">Trimestriel</SelectItem>
+                            <SelectItem value="semestriel">Semestriel</SelectItem>
+                            <SelectItem value="annuel">Annuel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 9: CONDITIONS DE MISE EN ŒUVRE */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-yellow-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Conditions de mise en œuvre du mandat</h3>
+                    
+                    <p className="text-sm text-gray-600 mb-4">
+                      Le mandat ne prend effet qu'en cas d'incapacité du mandant.
+                    </p>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="certificatMedical"
+                          checked={mandatProtectionData.miseEnOeuvre.certificatMedical}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            miseEnOeuvre: {...mandatProtectionData.miseEnOeuvre, certificatMedical: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                          disabled
+                        />
+                        <Label htmlFor="certificatMedical" className="cursor-not-allowed opacity-70">
+                          Certificat médical circonstancié (OBLIGATOIRE)
+                        </Label>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Médecin inscrit sur la liste du procureur</Label>
+                        <Input 
+                          value={mandatProtectionData.miseEnOeuvre.medecinListe}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            miseEnOeuvre: {...mandatProtectionData.miseEnOeuvre, medecinListe: e.target.value}
+                          })}
+                          placeholder="Nom du médecin"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de constat de l'incapacité</Label>
+                        <Input 
+                          type="date"
+                          value={mandatProtectionData.miseEnOeuvre.dateConstat}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            miseEnOeuvre: {...mandatProtectionData.miseEnOeuvre, dateConstat: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="depotGreffe"
+                          checked={mandatProtectionData.miseEnOeuvre.depotGreffe}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            miseEnOeuvre: {...mandatProtectionData.miseEnOeuvre, depotGreffe: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="depotGreffe" className="cursor-pointer">
+                          Remise du mandat au greffe du tribunal
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="notificationMandataire"
+                          checked={mandatProtectionData.miseEnOeuvre.notificationMandataire}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            miseEnOeuvre: {...mandatProtectionData.miseEnOeuvre, notificationMandataire: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="notificationMandataire" className="cursor-pointer">
+                          Notification au mandataire
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 10: FIN DU MANDAT */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-red-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Fin du mandat</h3>
+                    
+                    <p className="text-sm text-gray-600 mb-4">
+                      Sélectionnez les événements qui mettent fin au mandat :
+                    </p>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="finRetourFacultes"
+                          checked={mandatProtectionData.finMandat.finRetourFacultes}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            finMandat: {...mandatProtectionData.finMandat, finRetourFacultes: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="finRetourFacultes" className="cursor-pointer">
+                          Fin au retour des facultés du mandant
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="revocationMandant"
+                          checked={mandatProtectionData.finMandat.revocationMandant}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            finMandat: {...mandatProtectionData.finMandat, revocationMandant: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="revocationMandant" className="cursor-pointer">
+                          Révocation par le mandant tant qu'il est capable
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="destitutionJuge"
+                          checked={mandatProtectionData.finMandat.destitutionJuge}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            finMandat: {...mandatProtectionData.finMandat, destitutionJuge: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="destitutionJuge" className="cursor-pointer">
+                          Destitution du mandataire par le juge
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="decesMandant"
+                          checked={mandatProtectionData.finMandat.decesMandant}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            finMandat: {...mandatProtectionData.finMandat, decesMandant: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="decesMandant" className="cursor-pointer">
+                          Décès du mandant
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="remplacementSubstitut"
+                          checked={mandatProtectionData.finMandat.remplacementSubstitut}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            finMandat: {...mandatProtectionData.finMandat, remplacementSubstitut: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="remplacementSubstitut" className="cursor-pointer">
+                          Remplacement par le mandataire substitut
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 11: DÉCLARATIONS OBLIGATOIRES */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-orange-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Déclarations obligatoires du mandant</h3>
+                    
+                    <p className="text-sm text-red-600 mb-4">
+                      <strong>⚠️ Ces déclarations sont OBLIGATOIRES pour la validité du mandat :</strong>
+                    </p>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="volonteLibre"
+                          checked={mandatProtectionData.declarations.volonteLibre}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            declarations: {...mandatProtectionData.declarations, volonteLibre: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="volonteLibre" className="cursor-pointer font-medium">
+                          Déclaration de volonté libre et éclairée <span className="text-red-500">*</span>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="consentementSansPression"
+                          checked={mandatProtectionData.declarations.consentementSansPression}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            declarations: {...mandatProtectionData.declarations, consentementSansPression: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="consentementSansPression" className="cursor-pointer font-medium">
+                          Consentement sans pression <span className="text-red-500">*</span>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="explicationComprise"
+                          checked={mandatProtectionData.declarations.explicationComprise}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            declarations: {...mandatProtectionData.declarations, explicationComprise: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="explicationComprise" className="cursor-pointer font-medium">
+                          Explication comprise des conséquences juridiques <span className="text-red-500">*</span>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="acceptationActesDisposition"
+                          checked={mandatProtectionData.declarations.acceptationActesDisposition}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            declarations: {...mandatProtectionData.declarations, acceptationActesDisposition: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="acceptationActesDisposition" className="cursor-pointer font-medium">
+                          Acceptation ou refus de certains actes de disposition <span className="text-red-500">*</span>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="acceptationMandataire"
+                          checked={mandatProtectionData.declarations.acceptationMandataire}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            declarations: {...mandatProtectionData.declarations, acceptationMandataire: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="acceptationMandataire" className="cursor-pointer font-medium">
+                          Acceptation du mandataire désigné <span className="text-red-500">*</span>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="droitRevocation"
+                          checked={mandatProtectionData.declarations.droitRevocation}
+                          onChange={(e) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            declarations: {...mandatProtectionData.declarations, droitRevocation: e.target.checked}
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="droitRevocation" className="cursor-pointer font-medium">
+                          Mention que le mandant peut révoquer tant qu'il est lucide <span className="text-red-500">*</span>
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 12: FORME DU MANDAT */}
+                  <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ Forme du mandat</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Type d'acte <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={mandatProtectionData.forme.typeActe}
+                          onValueChange={(val) => setMandatProtectionData({
+                            ...mandatProtectionData,
+                            forme: {...mandatProtectionData.forme, typeActe: val}
+                          })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="notarie">Mandat notarié (authentique)</SelectItem>
+                            <SelectItem value="sous_seing_prive">Mandat sous seing privé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {mandatProtectionData.forme.typeActe === "notarie" && (
+                        <div className="p-3 bg-blue-100 border border-blue-300 rounded-lg">
+                          <p className="text-xs text-blue-800">
+                            <strong>✅ Mandat notarié :</strong> Permet les actes de disposition lourds (vente d'immeubles, etc.). Doit être signé devant notaire.
+                          </p>
+                        </div>
+                      )}
+
+                      {mandatProtectionData.forme.typeActe === "sous_seing_prive" && (
+                        <div className="p-3 bg-orange-100 border border-orange-300 rounded-lg">
+                          <p className="text-xs text-orange-800">
+                            <strong>⚠️ Mandat sous seing privé :</strong> Pouvoirs plus limités. Ne permet pas les actes de disposition importants.
+                          </p>
+                        </div>
+                      )}
+
+                      {mandatProtectionData.forme.typeActe === "notarie" && (
+                        <>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Nom du notaire</Label>
+                              <Input 
+                                value={mandatProtectionData.forme.nomNotaire}
+                                onChange={(e) => setMandatProtectionData({
+                                  ...mandatProtectionData,
+                                  forme: {...mandatProtectionData.forme, nomNotaire: e.target.value}
+                                })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Ville de l'office notarial</Label>
+                              <Input 
+                                value={mandatProtectionData.forme.villeOffice}
+                                onChange={(e) => setMandatProtectionData({
+                                  ...mandatProtectionData,
+                                  forme: {...mandatProtectionData.forme, villeOffice: e.target.value}
+                                })}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Date de signature <span className="text-red-500">*</span></Label>
+                          <Input 
+                            type="date"
+                            value={mandatProtectionData.forme.dateSignature}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              forme: {...mandatProtectionData.forme, dateSignature: e.target.value}
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de signature</Label>
+                          <Input 
+                            value={mandatProtectionData.forme.lieuSignature}
+                            onChange={(e) => setMandatProtectionData({
+                              ...mandatProtectionData,
+                              forme: {...mandatProtectionData.forme, lieuSignature: e.target.value}
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Boutons d'action */}
                   <div className="flex gap-2 justify-end pt-4">
                     <Button
@@ -35662,7 +37013,7 @@ FIN DE LA CONVENTION
                   {/* Note informative */}
                   <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-sm text-green-700">
-                      <strong>✅ Formulaire partiel :</strong> Ce formulaire contient les 3 premières sections du mandat de protection future. Les sections suivantes seront ajoutées progressivement.
+                      <strong>✅ Formulaire complet :</strong> Toutes les 12 sections obligatoires du mandat de protection future sont présentes dans ce formulaire conforme aux exigences légales.
                     </p>
                   </div>
                 </div>
