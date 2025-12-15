@@ -35131,7 +35131,7 @@ FIN DE LA CONVENTION
                           <Label>📎 Copie de la pièce d'identité</Label>
                           {(() => {
                             const selectedClient = clients.find(c => c.id === mandatProtectionData.mandant.clientId);
-                            const hasDocument = selectedClient?.piece_identite_url;
+                            const hasDocument = selectedClient?.id_doc_path;
                             
                             if (hasDocument) {
                               return (
@@ -35145,7 +35145,7 @@ FIN DE LA CONVENTION
                                     variant="ghost"
                                     size="sm"
                                     className="bg-green-600 hover:bg-green-700 text-white"
-                                    onClick={() => window.open(selectedClient.piece_identite_url, '_blank')}
+                                    onClick={() => window.open(selectedClient.id_doc_path, '_blank')}
                                   >
                                     <Eye className="w-4 h-4" />
                                   </Button>
