@@ -39564,52 +39564,48 @@ FIN DE LA CONVENTION
                       {/* Acte de décès */}
                       <div>
                         <p className="text-xs text-gray-500 mb-2">Copie intégrale récente</p>
-                        <FileUploadButton
+                        <MultiFileUpload
                           label="📄 Acte de décès"
                           required
                           files={attestationActeDecesFiles}
                           onFilesChange={setAttestationActeDecesFiles}
                           accept="application/pdf,image/*"
-                          inputId="attestation_acte_deces"
                         />
                       </div>
 
                       {/* Pièces d'identité héritiers */}
                       <div>
                         <p className="text-xs text-gray-500 mb-2">CNI ou passeport valide de tous les héritiers</p>
-                        <FileUploadButton
+                        <MultiFileUpload
                           label="🪪 Pièces d'identité héritiers"
                           required
                           files={attestationIdentiteHeritiers}
                           onFilesChange={setAttestationIdentiteHeritiers}
                           accept="application/pdf,image/*"
-                          inputId="attestation_identite_heritiers"
                         />
                       </div>
 
                       {/* Titre de propriété */}
                       <div>
                         <p className="text-xs text-gray-500 mb-2">Acte notarié d'acquisition</p>
-                        <FileUploadButton
+                        <MultiFileUpload
                           label="🏠 Titre de propriété"
                           required
                           files={attestationTitrePropriete}
                           onFilesChange={setAttestationTitrePropriete}
                           accept="application/pdf,image/*"
-                          inputId="attestation_titre_propriete"
                         />
                       </div>
 
                       {/* Livret de famille */}
                       <div>
                         <p className="text-xs text-gray-500 mb-2">À jour</p>
-                        <FileUploadButton
+                        <MultiFileUpload
                           label="👨‍👩‍👧‍👦 Livret de famille"
                           required
                           files={attestationLivretFamille}
                           onFilesChange={setAttestationLivretFamille}
                           accept="application/pdf,image/*"
-                          inputId="attestation_livret_famille"
                         />
                       </div>
 
@@ -39617,13 +39613,12 @@ FIN DE LA CONVENTION
                       {attestationData.defunt.existenceTestament && (
                         <div>
                           <p className="text-xs text-amber-600 mb-2">Copie authentique ou dépôt chez notaire</p>
-                          <FileUploadButton
+                          <MultiFileUpload
                             label="📜 Testament"
                             required
                             files={attestationTestament}
                             onFilesChange={setAttestationTestament}
                             accept="application/pdf,image/*"
-                            inputId="attestation_testament"
                           />
                         </div>
                       )}
@@ -39632,13 +39627,12 @@ FIN DE LA CONVENTION
                       {attestationData.defunt.existenceContratMariage && (
                         <div>
                           <p className="text-xs text-purple-600 mb-2">Copie authentique</p>
-                          <FileUploadButton
+                          <MultiFileUpload
                             label="💍 Contrat de mariage"
                             required
                             files={attestationContratMariage}
                             onFilesChange={setAttestationContratMariage}
                             accept="application/pdf,image/*"
-                            inputId="attestation_contrat_mariage"
                           />
                         </div>
                       )}
@@ -39647,12 +39641,11 @@ FIN DE LA CONVENTION
                       {attestationData.biens.some(b => b.estCopropriete) && (
                         <div>
                           <p className="text-xs text-blue-600 mb-2">+ dernier PV d'assemblée générale</p>
-                          <FileUploadButton
+                          <MultiFileUpload
                             label="🏢 Règlement de copropriété"
                             files={attestationCopropriete}
                             onFilesChange={setAttestationCopropriete}
                             accept="application/pdf,image/*"
-                            inputId="attestation_copropriete"
                           />
                         </div>
                       )}
@@ -39661,12 +39654,11 @@ FIN DE LA CONVENTION
                       {attestationData.biens.some(b => b.situationLocative === "loue") && (
                         <div>
                           <p className="text-xs text-green-600 mb-2">Copies des contrats de location</p>
-                          <FileUploadButton
+                          <MultiFileUpload
                             label="📄 Baux en cours"
                             files={attestationBaux}
                             onFilesChange={setAttestationBaux}
                             accept="application/pdf,image/*"
-                            inputId="attestation_baux"
                           />
                         </div>
                       )}
@@ -39675,13 +39667,12 @@ FIN DE LA CONVENTION
                       {attestationData.biens.some(b => b.hypothequeInscrite) && (
                         <div>
                           <p className="text-xs text-red-600 mb-2">Moins de 3 mois</p>
-                          <FileUploadButton
+                          <MultiFileUpload
                             label="💰 État hypothécaire"
                             required
                             files={attestationHypotheque}
                             onFilesChange={setAttestationHypotheque}
                             accept="application/pdf,image/*"
-                            inputId="attestation_hypotheque"
                           />
                         </div>
                       )}
@@ -39689,13 +39680,12 @@ FIN DE LA CONVENTION
                       {/* Justificatifs de domicile */}
                       <div>
                         <p className="text-xs text-gray-500 mb-2">Moins de 3 mois pour chaque héritier</p>
-                        <FileUploadButton
+                        <MultiFileUpload
                           label="📋 Justificatifs de domicile"
                           required
                           files={attestationJustifDomicile}
                           onFilesChange={setAttestationJustifDomicile}
                           accept="application/pdf,image/*"
-                          inputId="attestation_justif_domicile"
                         />
                       </div>
                     </div>
