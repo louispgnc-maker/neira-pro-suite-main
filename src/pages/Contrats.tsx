@@ -38276,6 +38276,18 @@ FIN DE LA CONVENTION
                                   // Remplir avec les données du client
                                   const selectedClient = clients.find(c => c.id === value);
                                   if (selectedClient) {
+                                    // Calculer le statut d'âge si date de naissance disponible
+                                    let statutAge = "";
+                                    if (selectedClient.date_naissance) {
+                                      const birthDate = new Date(selectedClient.date_naissance);
+                                      const today = new Date();
+                                      let age = today.getFullYear() - birthDate.getFullYear();
+                                      const monthDiff = today.getMonth() - birthDate.getMonth();
+                                      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                                        age--;
+                                      }
+                                      statutAge = age >= 18 ? "majeur" : "mineur";
+                                    }
                                     updated[index] = {
                                       ...heritier,
                                       clientId: value,
@@ -38288,6 +38300,7 @@ FIN DE LA CONVENTION
                                       telephone: selectedClient.telephone || "",
                                       nationalite: selectedClient.nationalite || "",
                                       profession: selectedClient.profession || "",
+                                      statutAge,
                                     };
                                   }
                                 }
@@ -38349,7 +38362,16 @@ FIN DE LA CONVENTION
                                 value={heritier.dateNaissance}
                                 onChange={(e) => {
                                   const updated = [...attestationData.heritiers];
-                                  updated[index] = {...heritier, dateNaissance: e.target.value};
+                                  // Calculer l'âge automatiquement
+                                  const birthDate = new Date(e.target.value);
+                                  const today = new Date();
+                                  let age = today.getFullYear() - birthDate.getFullYear();
+                                  const monthDiff = today.getMonth() - birthDate.getMonth();
+                                  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                                    age--;
+                                  }
+                                  const statutAge = age >= 18 ? "majeur" : "mineur";
+                                  updated[index] = {...heritier, dateNaissance: e.target.value, statutAge};
                                   setAttestationData({...attestationData, heritiers: updated});
                                 }}
                               />
@@ -38415,23 +38437,27 @@ FIN DE LA CONVENTION
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Statut (âge)</Label>
-                              <Select 
-                                value={heritier.statutAge}
-                                onValueChange={(value) => {
-                                  const updated = [...attestationData.heritiers];
-                                  updated[index] = {...heritier, statutAge: value};
-                                  setAttestationData({...attestationData, heritiers: updated});
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Sélectionner" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="majeur">Majeur</SelectItem>
-                                  <SelectItem value="mineur">Mineur</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <Label>Statut (âge) - Calculé automatiquement</Label>
+                              <div className="p-3 bg-gray-100 rounded-md border">
+                                {heritier.dateNaissance ? (
+                                  <div className="flex items-center gap-2">
+                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                      heritier.statutAge === "majeur" 
+                                        ? "bg-green-100 text-green-800" 
+                                        : "bg-orange-100 text-orange-800"
+                                    }`}>
+                                      {heritier.statutAge === "majeur" ? "✅ Majeur" : "⚠️ Mineur"}
+                                    </span>
+                                    <span className="text-sm text-gray-600">
+                                      (né(e) le {new Date(heritier.dateNaissance).toLocaleDateString('fr-FR')})
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-sm text-gray-500 italic">
+                                    Saisissez la date de naissance pour calculer le statut
+                                  </span>
+                                )}
+                              </div>
                             </div>
 
                             <div className="space-y-2">
