@@ -74,6 +74,54 @@ const categoriesAvocat = [
   "Propriété intellectuelle & Numérique",
 ];
 
+// ============================================
+// DESIGN SYSTEM UNIFIÉ POUR TOUS LES FORMULAIRES
+// ============================================
+
+// Classes CSS standardisées pour toutes les sections
+const SECTION_STYLES = {
+  container: "space-y-4 p-6 rounded-lg border-2 transition-all hover:shadow-md",
+  title: "font-semibold text-lg flex items-center gap-2 pb-3 border-b-2",
+  grid: "grid grid-cols-1 md:grid-cols-2 gap-4",
+  gridFull: "grid grid-cols-1 gap-4",
+  subSection: "p-4 rounded-lg border-2 space-y-3",
+  infoBox: "flex items-center gap-2 p-3 rounded-lg border-2",
+  requiredMark: "text-red-600 text-sm font-bold"
+};
+
+// Couleurs standardisées pour les sections (rotation cohérente)
+const SECTION_COLORS = [
+  { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-800" },
+  { bg: "bg-green-50", border: "border-green-200", text: "text-green-800" },
+  { bg: "bg-orange-50", border: "border-orange-200", text: "text-orange-800" },
+  { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-800" },
+  { bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-800" },
+  { bg: "bg-red-50", border: "border-red-200", text: "text-red-800" },
+  { bg: "bg-indigo-50", border: "border-indigo-200", text: "text-indigo-800" },
+  { bg: "bg-pink-50", border: "border-pink-200", text: "text-pink-800" },
+  { bg: "bg-teal-50", border: "border-teal-200", text: "text-teal-800" },
+  { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-800" },
+  { bg: "bg-violet-50", border: "border-violet-200", text: "text-violet-800" },
+  { bg: "bg-rose-50", border: "border-rose-200", text: "text-rose-800" },
+  { bg: "bg-cyan-50", border: "border-cyan-200", text: "text-cyan-800" },
+  { bg: "bg-lime-50", border: "border-lime-200", text: "text-lime-800" },
+  { bg: "bg-gray-50", border: "border-gray-200", text: "text-gray-800" }
+];
+
+// Fonction pour obtenir une couleur de section par index
+const getSectionColor = (index: number) => SECTION_COLORS[index % SECTION_COLORS.length];
+
+// Bouton de soumission standardisé
+const SUBMIT_BUTTON_STYLE = "w-full py-3 px-6 text-lg font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 shadow-lg";
+
+// Messages d'information standardisés
+const INFO_MESSAGES = {
+  success: { icon: "✓", bg: "bg-green-50", border: "border-green-200", text: "text-green-700" },
+  warning: { icon: "⚠", bg: "bg-orange-50", border: "border-orange-200", text: "text-orange-700" },
+  error: { icon: "✗", bg: "bg-red-50", border: "border-red-200", text: "text-red-700" },
+  info: { icon: "ℹ", bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700" }
+};
+
 // Composant réutilisable pour upload multiple de fichiers
 interface FileWithMetadata extends File {
   _autoLoaded?: boolean;
@@ -86,6 +134,101 @@ interface MultiFileUploadProps {
   onFilesChange: (files: File[]) => void;
   required?: boolean;
   accept?: string;
+}
+
+// Composant Section standardisé
+interface FormSectionProps {
+  title: string;
+  sectionNumber: number;
+  children: React.ReactNode;
+  icon?: string;
+}
+
+function FormSection({ title, sectionNumber, children, icon }: FormSectionProps) {
+  const color = getSectionColor(sectionNumber - 1);
+  
+  return (
+    <div className={`${SECTION_STYLES.container} ${color.bg} ${color.border}`}>
+      <h3 className={`${SECTION_STYLES.title} ${color.text}`}>
+        <span className="font-bold">{sectionNumber}️⃣</span>
+        {icon && <span>{icon}</span>}
+        <span>{title}</span>
+      </h3>
+      <div className="space-y-4 mt-4">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Composant InfoMessage standardisé
+interface InfoMessageProps {
+  type: 'success' | 'warning' | 'error' | 'info';
+  children: React.ReactNode;
+}
+
+function InfoMessage({ type, children }: InfoMessageProps) {
+  const style = INFO_MESSAGES[type];
+  
+  return (
+    <div className={`${SECTION_STYLES.infoBox} ${style.bg} ${style.border}`}>
+      <span className={`text-xl font-bold ${style.text}`}>{style.icon}</span>
+      <span className={`text-sm ${style.text} flex-1`}>{children}</span>
+    </div>
+  );
+}
+
+// Composant ClientSelector standardisé
+interface ClientSelectorProps {
+  clients: Array<{id: string, nom: string, prenom: string}>;
+  selectedClientId: string;
+  onClientChange: (clientId: string) => void;
+  label?: string;
+}
+
+function ClientSelector({ clients, selectedClientId, onClientChange, label = "Sélectionner votre client" }: ClientSelectorProps) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor="client-select">
+        {label} <span className={SECTION_STYLES.requiredMark}>*</span>
+      </Label>
+      <Select value={selectedClientId} onValueChange={onClientChange}>
+        <SelectTrigger id="client-select">
+          <SelectValue placeholder="Choisir un client" />
+        </SelectTrigger>
+        <SelectContent>
+          {clients.map((client) => (
+            <SelectItem key={client.id} value={client.id}>
+              {client.prenom} {client.nom}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+// Composant SubmitButton standardisé
+interface SubmitButtonProps {
+  onClick: () => void;
+  label: string;
+  role: 'notaire' | 'avocat';
+  disabled?: boolean;
+}
+
+function SubmitButton({ onClick, label, role, disabled = false }: SubmitButtonProps) {
+  const bgColor = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700';
+  
+  return (
+    <Button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${SUBMIT_BUTTON_STYLE} ${bgColor} text-white`}
+    >
+      <ArrowRight className="mr-2 h-5 w-5" />
+      {label}
+    </Button>
+  );
 }
 
 function MultiFileUpload({ label, files, onFilesChange, required = false, accept }: MultiFileUploadProps) {
