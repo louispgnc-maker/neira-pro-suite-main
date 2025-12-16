@@ -42861,7 +42861,7 @@ FIN DE LA CONVENTION
                     3️⃣ Identité complète du cédant (vendeur des parts)
                   </h3>
 
-                  {!readOnly && clients && clients.length > 0 && (
+                  {clients && clients.length > 0 && (
                     <div className="space-y-2">
                       <Label>Lier à un client existant (facultatif)</Label>
                       <Select
