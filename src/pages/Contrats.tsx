@@ -3507,6 +3507,7 @@ export default function Contrats() {
   const [quitusDetteData, setQuitusDetteData] = useState({
     // 1. Type d'acte
     typeActe: "", // reconnaissance_dette / reconnaissance_dette_modalites / quitus / quitus_partiel / remise_dette / solde_tout_compte / attestation_reglement
+    natureJuridique: "", // quitus_total / quitus_partiel / reconnaissance_dette_initiale / reconnaissance_solde_restant
     
     // 2. Identité complète du créancier
     creancier: {
@@ -3565,6 +3566,7 @@ export default function Contrats() {
       sommeRestantDue: "",
       montantReconnuDebiteur: "",
       modalitePret: "", // transfert_bancaire / cheque / especes / virement
+      dateExigibiliteSolde: "",
     },
     
     // 6. Conditions de remboursement
@@ -3663,12 +3665,18 @@ export default function Contrats() {
       liberationDefinitive: false,
       renonciationRecours: false,
       identificationDette: "",
+      clauseNonNovation: false,
+      droitApplicable: "france",
+      tribunalCompetent: "",
+      pluraliteDebiteurs: false,
+      solidarite: false,
     },
     
     // 11. Signatures et formalités
     signatures: {
       dateSignature: "",
       lieuSignature: "",
+      dateExtinctionEffective: "",
       signatureNotaire: false,
       nomNotaire: "",
       villeNotaire: "",
@@ -4849,6 +4857,7 @@ export default function Contrats() {
       // Réinitialiser le formulaire
       setQuitusDetteData({
         typeActe: "",
+        natureJuridique: "",
         creancier: {
           isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", dateNaissance: "",
           lieuNaissance: "", nationalite: "", profession: "", adresseComplete: "", telephone: "",
@@ -4863,7 +4872,7 @@ export default function Contrats() {
           natureDette: "", dateNaissanceDette: "", circonstancesDette: "", preuveEcriteExiste: "", temoinsEventuels: ""
         },
         montant: {
-          montantTotal: "", devise: "EUR", sommeDejaRemboursee: "", sommeRestantDue: "", montantReconnuDebiteur: "", modalitePret: ""
+          montantTotal: "", devise: "EUR", sommeDejaRemboursee: "", sommeRestantDue: "", montantReconnuDebiteur: "", modalitePret: "", dateExigibiliteSolde: ""
         },
         remboursement: {
           modalite: "", conditionRemboursement: "",
@@ -4892,10 +4901,12 @@ export default function Contrats() {
         clausesLegales: {
           consentementLibre: false, reconnaissanceMontant: false, engagementRemboursement: false,
           mentionManuscrite: "", clauseSolidarite: false, clauseDivisibilite: false,
-          extinctionDette: false, liberationDefinitive: false, renonciationRecours: false, identificationDette: ""
+          extinctionDette: false, liberationDefinitive: false, renonciationRecours: false, identificationDette: "",
+          clauseNonNovation: false, droitApplicable: "france", tribunalCompetent: "",
+          pluraliteDebiteurs: false, solidarite: false
         },
         signatures: {
-          dateSignature: "", lieuSignature: "", signatureNotaire: "non", nomNotaire: "", villeNotaire: ""
+          dateSignature: "", lieuSignature: "", dateExtinctionEffective: "", signatureNotaire: "non", nomNotaire: "", villeNotaire: ""
         }
       });
       setQuitusCreancierIdentiteFiles([]);
@@ -40187,6 +40198,57 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
+                {/* Section 1bis : Nature juridique exacte de l'acte */}
+                <div className="space-y-4 bg-red-50 p-6 rounded-lg border border-red-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-red-800">
+                    🔴 1️⃣ Nature juridique exacte de l'acte (FONDAMENTAL)
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <div className="p-3 bg-red-100 border border-red-300 rounded">
+                      <p className="text-sm font-medium text-red-900 mb-2">
+                        ⚠️ ATTENTION : Cette distinction est juridiquement essentielle
+                      </p>
+                      <p className="text-xs text-red-800">
+                        Elle détermine les effets juridiques de l'acte et prévient tout risque de nullité ou d'interprétation défavorable.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nature juridique de l'acte <span className="text-red-600">*</span></Label>
+                      <RadioGroup
+                        value={quitusDetteData.natureJuridique}
+                        onValueChange={(value) => setQuitusDetteData({...quitusDetteData, natureJuridique: value})}
+                      >
+                        <div className="flex items-center space-x-2 p-3 border rounded hover:bg-red-50">
+                          <RadioGroupItem value="quitus_total" id="nature_quitus_total" />
+                          <Label htmlFor="nature_quitus_total" className="cursor-pointer flex-1">
+                            <strong>☐ Quitus total</strong> - Extinction complète de la dette
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2 p-3 border rounded hover:bg-red-50">
+                          <RadioGroupItem value="quitus_partiel" id="nature_quitus_partiel" />
+                          <Label htmlFor="nature_quitus_partiel" className="cursor-pointer flex-1">
+                            <strong>☐ Quitus partiel</strong> - Solde restant dû
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2 p-3 border rounded hover:bg-red-50">
+                          <RadioGroupItem value="reconnaissance_dette_initiale" id="nature_reco_initiale" />
+                          <Label htmlFor="nature_reco_initiale" className="cursor-pointer flex-1">
+                            <strong>☐ Reconnaissance de dette initiale</strong> - Première constatation de la dette
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2 p-3 border rounded hover:bg-red-50">
+                          <RadioGroupItem value="reconnaissance_solde_restant" id="nature_reco_solde" />
+                          <Label htmlFor="nature_reco_solde" className="cursor-pointer flex-1">
+                            <strong>☐ Reconnaissance de solde restant dû</strong> - Après paiements partiels
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Section 2 : Identité complète du créancier */}
                 <div className="space-y-4 bg-green-50 p-6 rounded-lg border border-green-200">
                   <h3 className="font-semibold text-lg border-b pb-2 text-green-800">
@@ -40886,6 +40948,29 @@ FIN DE LA CONVENTION
                       💡 Calcul automatique : Somme restant due = Montant total - Somme déjà remboursée
                     </p>
                   </div>
+
+                  {/* Date d'exigibilité si quitus partiel ou solde restant dû */}
+                  {(quitusDetteData.natureJuridique === "quitus_partiel" || quitusDetteData.natureJuridique === "reconnaissance_solde_restant" || parseFloat(quitusDetteData.montant.sommeRestantDue) > 0) && (
+                    <div className="p-4 bg-red-100 border-2 border-red-300 rounded-lg mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="date_exigibilite_solde" className="font-medium text-red-900">
+                          🔴 Date d'exigibilité du solde restant dû <span className="text-red-600">*</span>
+                        </Label>
+                        <Input
+                          id="date_exigibilite_solde"
+                          type="date"
+                          value={quitusDetteData.montant.dateExigibiliteSolde}
+                          onChange={(e) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            montant: {...quitusDetteData.montant, dateExigibiliteSolde: e.target.value}
+                          })}
+                        />
+                        <p className="text-xs text-red-800">
+                          ⚠️ <strong>Indispensable</strong> si la dette n'est pas totalement éteinte. Fixe la date à laquelle le solde devient exigible.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Section 6 : Conditions de remboursement */}
@@ -41983,52 +42068,146 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
                     )}
+
+                    {/* Nouvelles clauses juridiques importantes */}
+                    <div className="space-y-3 mt-6 p-4 border-2 border-red-300 rounded-lg bg-red-50">
+                      <Label className="font-medium text-red-800 text-base">🔴 Clauses juridiques essentielles</Label>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="clause_non_novation"
+                            checked={quitusDetteData.clausesLegales.clauseNonNovation}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              clausesLegales: {...quitusDetteData.clausesLegales, clauseNonNovation: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="clause_non_novation" className="cursor-pointer text-sm">
+                            <strong>Clause de non-novation</strong> - Le présent acte ne constitue pas novation de la dette initiale
+                          </Label>
+                        </div>
+                        <p className="text-xs text-gray-600 ml-6">
+                          ⚠️ Important : Prévient qu'un simple quitus ou reconnaissance ne crée pas une nouvelle dette
+                        </p>
+
+                        <div className="space-y-3 mt-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="droit_applicable">
+                              🔴 Droit applicable <span className="text-red-600">*</span>
+                            </Label>
+                            <Select
+                              value={quitusDetteData.clausesLegales.droitApplicable}
+                              onValueChange={(value) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, droitApplicable: value}
+                              })}
+                            >
+                              <SelectTrigger id="droit_applicable"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="france">☐ Droit français</SelectItem>
+                                <SelectItem value="autre">☐ Autre droit (à préciser)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="tribunal_competent">
+                              🔴 Tribunal compétent <span className="text-red-600">*</span>
+                            </Label>
+                            <Input
+                              id="tribunal_competent"
+                              value={quitusDetteData.clausesLegales.tribunalCompetent}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, tribunalCompetent: e.target.value}
+                              })}
+                              placeholder="Ex: Tribunal de grande instance de Paris"
+                            />
+                            <p className="text-xs text-gray-600">
+                              Indispensable en cas de litige. Généralement le tribunal du lieu du domicile du débiteur.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                          <Label className="font-medium text-sm">Pluralité de débiteurs (si applicable)</Label>
+                          
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="pluralite_debiteurs"
+                              checked={quitusDetteData.clausesLegales.pluraliteDebiteurs}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, pluraliteDebiteurs: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="pluralite_debiteurs" className="cursor-pointer">
+                              Plusieurs débiteurs
+                            </Label>
+                          </div>
+
+                          {quitusDetteData.clausesLegales.pluraliteDebiteurs && (
+                            <div className="mt-3 space-y-2">
+                              <RadioGroup
+                                value={quitusDetteData.clausesLegales.solidarite ? "solidaire" : "non_solidaire"}
+                                onValueChange={(value) => setQuitusDetteData({
+                                  ...quitusDetteData,
+                                  clausesLegales: {...quitusDetteData.clausesLegales, solidarite: value === "solidaire"}
+                                })}
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="solidaire" id="solidarite_oui" />
+                                  <Label htmlFor="solidarite_oui" className="cursor-pointer">
+                                    ☐ Solidarité (chaque débiteur peut être poursuivi pour la totalité)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="non_solidaire" id="solidarite_non" />
+                                  <Label htmlFor="solidarite_non" className="cursor-pointer">
+                                    ☐ Non solidarité (chacun ne doit que sa part)
+                                  </Label>
+                                </div>
+                              </RadioGroup>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Section 11 : Documents à joindre et signatures */}
+                {/* Section 11 : Signatures */}
                 <div className="space-y-4 bg-gray-50 p-6 rounded-lg border border-gray-300">
                   <h3 className="font-semibold text-lg border-b pb-2 text-gray-800">
-                    1️⃣1️⃣ Documents à joindre et signatures
+                    1️⃣1️⃣ Signatures et formalités
                   </h3>
                   
                   <div className="space-y-4">
-                    {/* Résumé des documents selon le type */}
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <h4 className="font-medium mb-2 text-blue-800">📋 Documents recommandés selon le type d'acte</h4>
-                      
-                      {(quitusDetteData.typeActe === "reconnaissance_dette" || quitusDetteData.typeActe === "reconnaissance_dette_modalites") && (
-                        <ul className="text-sm space-y-1 text-gray-700">
-                          <li>• Pièces d'identité du créancier et débiteur (obligatoire)</li>
-                          <li>• Justificatifs de domicile (recommandé)</li>
-                          <li>• Preuves de l'existence de la dette initiale (contrat, factures, relevés...)</li>
-                          <li>• Preuves de transfert de fonds si prêt d'argent (virement bancaire)</li>
-                          <li>• Échéancier signé si remboursement échelonné</li>
-                          <li>• Pièces d'identité des cautions le cas échéant</li>
-                        </ul>
-                      )}
+                    {/* Dates importantes */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="date_extinction_effective">
+                          🔴 Date effective d'extinction de la dette
+                        </Label>
+                        <Input
+                          id="date_extinction_effective"
+                          type="date"
+                          value={quitusDetteData.signatures.dateExtinctionEffective}
+                          onChange={(e) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            signatures: {...quitusDetteData.signatures, dateExtinctionEffective: e.target.value}
+                          })}
+                        />
+                        <p className="text-xs text-gray-600">
+                          Différente de la date de signature. Date réelle de paiement final ou d'extinction.
+                        </p>
+                      </div>
 
-                      {(quitusDetteData.typeActe === "quitus" || quitusDetteData.typeActe === "quitus_partiel" || quitusDetteData.typeActe === "solde_tout_compte" || quitusDetteData.typeActe === "attestation_reglement") && (
-                        <ul className="text-sm space-y-1 text-gray-700">
-                          <li>• Pièces d'identité du créancier et débiteur</li>
-                          <li>• Preuves des paiements reçus (virements, chèques encaissés...) (obligatoire)</li>
-                          <li>• Ancienne reconnaissance de dette ou contrat initial</li>
-                          <li>• Justificatifs de l'extinction de la dette</li>
-                        </ul>
-                      )}
-
-                      {quitusDetteData.typeActe === "remise_dette" && (
-                        <ul className="text-sm space-y-1 text-gray-700">
-                          <li>• Pièces d'identité du créancier et débiteur</li>
-                          <li>• Ancienne reconnaissance de dette ou contrat initial</li>
-                          <li>• Preuves de paiements partiels le cas échéant</li>
-                          <li>• Justificatifs de la situation financière du débiteur (si remise pour difficultés)</li>
-                        </ul>
-                      )}
-                    </div>
-
-                    {/* Signatures */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                       <div className="space-y-2">
                         <Label htmlFor="date_signature">
                           Date de signature <span className="text-red-600">*</span>
@@ -42111,19 +42290,6 @@ FIN DE LA CONVENTION
                         </div>
                       </div>
                     )}
-
-                    {/* Informations finales */}
-                    <div className="p-4 bg-green-50 border border-green-300 rounded-lg">
-                      <p className="text-sm text-gray-700">
-                        <strong>✅ Important :</strong> Pour une reconnaissance de dette supérieure à 1 500€, 
-                        la mention manuscrite du débiteur est <strong>obligatoire</strong>. 
-                        Le document final devra être signé en <strong>deux exemplaires</strong> (un pour chaque partie).
-                      </p>
-                      <p className="text-sm text-gray-700 mt-2">
-                        <strong>💡 Conseil :</strong> Pour un montant important ou une situation complexe, 
-                        envisagez un acte authentique (devant notaire) qui a force exécutoire.
-                      </p>
-                    </div>
                   </div>
                 </div>
 
