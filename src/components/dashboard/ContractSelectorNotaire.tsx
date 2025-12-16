@@ -225,6 +225,20 @@ export function ContractSelectorNotaire({ variant = 'vertical', label = 'Créer 
       return;
     }
 
+    // Si c'est une "Attestation de propriété immobilière", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Attestation de propriété immobilière") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
+    // Si c'est un "Quitus / reconnaissance de dette", rediriger vers la page Contrats avec paramètres
+    if (contractType === "Quitus / reconnaissance de dette") {
+      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
+      return;
+    }
+
     try {
       const { data, error} = await supabase
         .from('contrats')

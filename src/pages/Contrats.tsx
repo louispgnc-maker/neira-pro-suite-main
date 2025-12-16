@@ -232,6 +232,18 @@ export default function Contrats() {
   const [attestationJustifDomicile, setAttestationJustifDomicile] = useState<File[]>([]);
   const [bailCommercialDiagnosticsFiles, setBailCommercialDiagnosticsFiles] = useState<File[]>([]); // Diagnostics bail commercial
   const [bailCommercialCautionFiles, setBailCommercialCautionFiles] = useState<File[]>([]); // Acte de caution
+  
+  // States pour Quitus / Reconnaissance de dette
+  const [quitusCreancierIdentiteFiles, setQuitusCreancierIdentiteFiles] = useState<File[]>([]);
+  const [quitusDebiteurIdentiteFiles, setQuitusDebiteurIdentiteFiles] = useState<File[]>([]);
+  const [quitusPreuveDetteFiles, setQuitusPreuveDetteFiles] = useState<File[]>([]);
+  const [quitusPreuveTransfertFiles, setQuitusPreuveTransfertFiles] = useState<File[]>([]);
+  const [quitusEcheancierFiles, setQuitusEcheancierFiles] = useState<File[]>([]);
+  const [quitusCautionIdentiteFiles, setQuitusCautionIdentiteFiles] = useState<File[]>([]);
+  const [quitusPreuvesPaiementsFiles, setQuitusPreuvesPaiementsFiles] = useState<File[]>([]);
+  const [quitusAncienneDetteFiles, setQuitusAncienneDetteFiles] = useState<File[]>([]);
+  const [quitusJustifDomicileCreancierFiles, setQuitusJustifDomicileCreancierFiles] = useState<File[]>([]);
+  const [quitusJustifDomicileDebiteurFiles, setQuitusJustifDomicileDebiteurFiles] = useState<File[]>([]);
   const [procurationMandantIdentiteUrl, setProcurationMandantIdentiteUrl] = useState<string | null>(null); // URL du document du mandant procuration
   const [procurationMandataireIdentiteFile, setProcurationMandataireIdentiteFile] = useState<File | null>(null); // Fichier pièce d'identité mandataire
   const [mandatProtectionMandantIdentiteUrl, setMandatProtectionMandantIdentiteUrl] = useState<string | null>(null); // URL pièce d'identité mandant
@@ -3489,6 +3501,178 @@ export default function Contrats() {
     // 9. Formalités publiaires
     bureauSPF: "",
     fichesPreparees: false,
+  });
+
+  // State pour Quitus / Reconnaissance de dette
+  const [quitusDetteData, setQuitusDetteData] = useState({
+    // 1. Type d'acte
+    typeActe: "", // reconnaissance_dette / reconnaissance_dette_modalites / quitus / quitus_partiel / remise_dette / solde_tout_compte / attestation_reglement
+    
+    // 2. Identité complète du créancier
+    creancier: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresseComplete: "",
+      telephone: "",
+      email: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      situationMatrimoniale: "",
+      rib: "",
+    },
+    
+    // 3. Identité complète du débiteur
+    debiteur: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      dateNaissance: "",
+      lieuNaissance: "",
+      nationalite: "",
+      profession: "",
+      adresseComplete: "",
+      telephone: "",
+      email: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      situationMatrimoniale: "",
+      rib: "",
+    },
+    
+    // 4. Objet de la dette
+    objetDette: {
+      natureDette: "", // pret_argent / avance_fonds / aide_exceptionnelle / remboursement_depenses / participation_projet / dette_commerciale / dette_familiale
+      dateNaissanceDette: "",
+      circonstancesDette: "",
+      preuveEcriteExiste: false,
+      temoinsEventuels: "",
+    },
+    
+    // 5. Montant de la dette
+    montant: {
+      montantTotal: "",
+      devise: "EUR",
+      sommeDejaRemboursee: "",
+      sommeRestantDue: "",
+      montantReconnuDebiteur: "",
+      modalitePret: "", // transfert_bancaire / cheque / especes / virement
+    },
+    
+    // 6. Conditions de remboursement
+    remboursement: {
+      modalite: "", // une_fois / plusieurs_echeances / libre / premiere_demande / conditionnel
+      conditionRemboursement: "", // vente_bien / obtention_credit / autre
+      
+      // Échéancier (array)
+      echeances: [{
+        id: 1,
+        date: "",
+        montant: "",
+        moyenPaiement: "",
+        consequencesRetard: "",
+      }],
+      
+      // Intérêts
+      avecInterets: false,
+      tauxInteret: "",
+      tauxUsuraire: "",
+      capitalisationInterets: false,
+      
+      // Clause pénale
+      clausePenale: false,
+      montantPenalite: "",
+      pourcentagePenalite: "",
+      delaiGrace: "",
+    },
+    
+    // 7. Sûretés et garanties
+    suretes: {
+      cautionPersonnelle: false,
+      cautionIdentite: "",
+      cautionMontant: "",
+      cautionDuree: "",
+      
+      garantieSalaire: false,
+      
+      gageMobilier: false,
+      gageDescription: "",
+      
+      nantissementTitres: false,
+      nantissementDetails: "",
+      
+      hypotheque: false,
+      hypothequeDetails: "",
+      
+      depotGarantie: false,
+      depotMontant: "",
+      
+      acteAuthentique: false,
+      notaireNom: "",
+    },
+    
+    // 8. Remise de dette (si applicable)
+    remiseDette: {
+      remiseTotale: false,
+      remisePartielle: false,
+      montantRemise: "",
+      conditionsRemise: "",
+      effetsRetroactifs: false,
+      renonciationPoursuites: false,
+      preuvesPaiementsPartiels: "",
+    },
+    
+    // 9. Quitus (si dette réglée)
+    quitus: {
+      typeQuitus: "", // total / partiel / comptable
+      
+      // Paiements reçus (array)
+      paiementsRecus: [{
+        id: 1,
+        date: "",
+        montant: "",
+        modePaiement: "",
+        referenceBancaire: "",
+      }],
+      
+      // Déclarations du créancier
+      sommesRecuesTotalement: false,
+      renonciationReclamations: false,
+      detteEteinte: false,
+      annulationGaranties: false,
+      restitutionDocuments: false,
+    },
+    
+    // 10. Clauses légales
+    clausesLegales: {
+      consentementLibre: false,
+      reconnaissanceMontant: false,
+      engagementRemboursement: false,
+      mentionManuscrite: "",
+      clauseSolidarite: false,
+      clauseDivisibilite: false,
+      extinctionDette: false,
+      liberationDefinitive: false,
+      renonciationRecours: false,
+      identificationDette: "",
+    },
+    
+    // 11. Signatures et formalités
+    signatures: {
+      dateSignature: "",
+      lieuSignature: "",
+      signatureNotaire: false,
+      nomNotaire: "",
+      villeNotaire: "",
+    },
   });
 
   // State pour Procuration authentique
