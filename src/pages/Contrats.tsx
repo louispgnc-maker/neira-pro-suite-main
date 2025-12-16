@@ -34784,16 +34784,11 @@ FIN DE LA CONVENTION
 
                     <div className="space-y-2">
                       <Label>Situation matrimoniale</Label>
-                      <Select value={procurationData.mandant.situationMatrimoniale} onValueChange={(value) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, situationMatrimoniale: value}})}>
-                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="celibataire">Célibataire</SelectItem>
-                          <SelectItem value="marie">Marié</SelectItem>
-                          <SelectItem value="divorce">Divorcé</SelectItem>
-                          <SelectItem value="veuf">Veuf</SelectItem>
-                          <SelectItem value="pacse">Pacsé</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Input 
+                        value={procurationData.mandant.situationMatrimoniale} 
+                        onChange={(e) => setProcurationData({...procurationData, mandant: {...procurationData.mandant, situationMatrimoniale: e.target.value}})}
+                        placeholder="Renseignée automatiquement si client sélectionné"
+                      />
                     </div>
 
                     {(procurationData.mandant.situationMatrimoniale === "marie" || procurationData.mandant.situationMatrimoniale === "pacse") && (
@@ -36055,24 +36050,14 @@ FIN DE LA CONVENTION
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Situation familiale</Label>
-                        <Select
+                        <Input
                           value={mandatProtectionData.mandant.situationMatrimoniale}
-                          onValueChange={(val) => setMandatProtectionData({
+                          onChange={(e) => setMandatProtectionData({
                             ...mandatProtectionData,
-                            mandant: {...mandatProtectionData.mandant, situationMatrimoniale: val}
+                            mandant: {...mandatProtectionData.mandant, situationMatrimoniale: e.target.value}
                           })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="celibataire">Célibataire</SelectItem>
-                            <SelectItem value="marie">Marié</SelectItem>
-                            <SelectItem value="divorce">Divorcé</SelectItem>
-                            <SelectItem value="veuf">Veuf</SelectItem>
-                            <SelectItem value="pacse">Pacsé</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          placeholder="Renseignée automatiquement si client sélectionné"
+                        />
                       </div>
                       {(mandatProtectionData.mandant.situationMatrimoniale === "marie" || mandatProtectionData.mandant.situationMatrimoniale === "pacse") && (
                         <div className="space-y-2">
@@ -40331,22 +40316,14 @@ FIN DE LA CONVENTION
                     </div>
                     <div className="space-y-2">
                       <Label>Situation matrimoniale</Label>
-                      <Select
+                      <Input
                         value={quitusDetteData.creancier.situationMatrimoniale}
-                        onValueChange={(value) => setQuitusDetteData({
+                        onChange={(e) => setQuitusDetteData({
                           ...quitusDetteData,
-                          creancier: {...quitusDetteData.creancier, situationMatrimoniale: value}
+                          creancier: {...quitusDetteData.creancier, situationMatrimoniale: e.target.value}
                         })}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="celibataire">Célibataire</SelectItem>
-                          <SelectItem value="marie">Marié(e)</SelectItem>
-                          <SelectItem value="pacse">Pacsé(e)</SelectItem>
-                          <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                          <SelectItem value="veuf">Veuf/Veuve</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        placeholder="Renseignée automatiquement si client sélectionné"
+                      />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label>Adresse complète <span className="text-red-500">*</span></Label>
@@ -40581,22 +40558,14 @@ FIN DE LA CONVENTION
                     </div>
                     <div className="space-y-2">
                       <Label>Situation matrimoniale</Label>
-                      <Select
+                      <Input
                         value={quitusDetteData.debiteur.situationMatrimoniale}
-                        onValueChange={(value) => setQuitusDetteData({
+                        onChange={(e) => setQuitusDetteData({
                           ...quitusDetteData,
-                          debiteur: {...quitusDetteData.debiteur, situationMatrimoniale: value}
+                          debiteur: {...quitusDetteData.debiteur, situationMatrimoniale: e.target.value}
                         })}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="celibataire">Célibataire</SelectItem>
-                          <SelectItem value="marie">Marié(e)</SelectItem>
-                          <SelectItem value="pacse">Pacsé(e)</SelectItem>
-                          <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                          <SelectItem value="veuf">Veuf/Veuve</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        placeholder="Renseignée automatiquement si client sélectionné"
+                      />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label>Adresse complète <span className="text-red-500">*</span></Label>
