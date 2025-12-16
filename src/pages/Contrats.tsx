@@ -219,6 +219,22 @@ export default function Contrats() {
   const [bailCommercialBailleurFiles, setBailCommercialBailleurFiles] = useState<File[]>([]); // Kbis/ID bailleur commercial
   const [bailCommercialLocataireFiles, setBailCommercialLocataireFiles] = useState<File[]>([]); // Kbis/ID locataire commercial
   
+  // States pour cession de parts sociales
+  const [cessionStatutsFiles, setCessionStatutsFiles] = useState<File[]>([]); // Statuts société
+  const [cessionKbisFiles, setCessionKbisFiles] = useState<File[]>([]); // Kbis
+  const [cessionComptesFiles, setCessionComptesFiles] = useState<File[]>([]); // Comptes annuels
+  const [cessionRegistreFiles, setCessionRegistreFiles] = useState<File[]>([]); // Registre associés
+  const [cessionPacteFiles, setCessionPacteFiles] = useState<File[]>([]); // Pacte d'associés
+  const [cessionCedantIdFiles, setCessionCedantIdFiles] = useState<File[]>([]); // ID cédant
+  const [cessionCedantMariageFiles, setCessionCedantMariageFiles] = useState<File[]>([]); // Contrat mariage cédant
+  const [cessionExpertiseFiles, setCessionExpertiseFiles] = useState<File[]>([]); // Expertise parts
+  const [cessionCCAFiles, setCessionCCAFiles] = useState<File[]>([]); // Justificatif CCA
+  const [cessionCessionnaireIdFiles, setCessionCessionnaireIdFiles] = useState<File[]>([]); // ID cessionnaire
+  const [cessionCessionnaireDomicileFiles, setCessionCessionnaireDomicileFiles] = useState<File[]>([]); // Justif domicile
+  const [cessionCessionnaireKbisFiles, setCessionCessionnaireKbisFiles] = useState<File[]>([]); // Kbis cessionnaire
+  const [cessionOrigineFondsFiles, setCessionOrigineFondsFiles] = useState<File[]>([]); // Origine fonds
+  const [cessionPVAgrementFiles, setCessionPVAgrementFiles] = useState<File[]>([]); // PV agrément
+  
   // States pour attestation de propriété immobilière
   const [attestationActeDecesFiles, setAttestationActeDecesFiles] = useState<File[]>([]);
   const [attestationIdentiteHeritiers, setAttestationIdentiteHeritiers] = useState<File[]>([]);
@@ -3682,6 +3698,189 @@ export default function Contrats() {
     },
   });
 
+  // State pour Cession de parts sociales
+  const [cessionPartsData, setCessionPartsData] = useState({
+    // 1. Type de société
+    typeSociete: "", // sarl / sci / sas / snc / autre_personne
+    
+    // 2. Informations sur la société
+    societe: {
+      denominationSociale: "",
+      sigle: "",
+      formeJuridique: "",
+      capitalSocial: "",
+      siegeSocial: "",
+      siren: "",
+      rcs: "",
+      greffeCompetent: "",
+      activiteSociete: "",
+      dateCreation: "",
+      objetSocial: "",
+      pacteAssocies: false,
+      expertComptable: false,
+      
+      // Gérant/Président
+      gerantNom: "",
+      gerantPrenom: "",
+      gerantAdresse: "",
+      gerantPouvoirs: "",
+    },
+    
+    // 3. Identité complète du cédant (vendeur)
+    cedant: {
+      isClient: false,
+      clientId: "",
+      nom: "",
+      prenom: "",
+      nomNaissance: "",
+      adresseComplete: "",
+      email: "",
+      telephone: "",
+      dateNaissance: "",
+      nationalite: "",
+      profession: "",
+      situationMatrimoniale: "",
+      regimeMatrimonial: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      qualiteSociete: "", // associe / gerant_president / associe_fondateur
+    },
+    
+    // 4. Identité complète du cessionnaire (acheteur)
+    cessionnaire: {
+      typePersonne: "physique", // physique / morale
+      
+      // Personne physique
+      nom: "",
+      prenom: "",
+      adresseComplete: "",
+      email: "",
+      telephone: "",
+      dateNaissance: "",
+      nationalite: "",
+      profession: "",
+      situationMatrimoniale: "",
+      typeIdentite: "",
+      numeroIdentite: "",
+      capaciteJuridique: "majeur",
+      
+      // Personne morale
+      denominationMorale: "",
+      representantLegal: "",
+    },
+    
+    // 5. Objet de la cession
+    objetCession: {
+      // A. Type de droits cédés
+      typeDroits: "", // parts_sociales / actions / droits_indivis / compte_courant / cession_reprise_dette
+      
+      // B. Nombre de parts
+      nombreParts: "",
+      pourcentageCapital: "",
+      
+      // C. Valeur nominale
+      valeurNominale: "",
+      
+      // D. Prix de cession
+      prixTotal: "",
+      prixUnitaire: "",
+      modeCalcul: "", // valeur_marche / valeur_comptable / clause_statutaire
+      
+      // E. Modalités de paiement
+      modalitePaiement: "", // comptant / echelonne / differe / conditionnel
+      ribCedant: "",
+      
+      // F. Conditions suspensives
+      agrement: false,
+      approbationConjoint: false,
+      financementBancaire: false,
+      leveeNantissement: false,
+    },
+    
+    // 6. Agrément (SARL & SCI)
+    agrement: {
+      procedureAgrement: "",
+      convocationAssocies: false,
+      voteEffectue: false,
+      majoriteRequise: "",
+      notificationStatut: "", // acceptation / refus
+      delaiLegalRespecte: false,
+    },
+    
+    // 7. Compte courant d'associé
+    compteCourant: {
+      cessionCCA: false,
+      maintienCCA: false,
+      remboursementImmediat: false,
+      remboursementEchelonne: false,
+      compensationPrix: false,
+      garantieSolde: false,
+      montantSoldeCCA: "",
+      detteVersTiers: false,
+      natureDetteTiers: "",
+      montantDetteTiers: "",
+      creancierTiers: "",
+      acceptationCreancier: false,
+    },
+    
+    // 8. Garanties données par le cédant
+    garanties: {
+      // Garanties classiques
+      garantieEviction: false,
+      garantiePropriete: false,
+      garantiePassif: "", // generale / limitee / aucune
+      garantieActifNet: false,
+      absenceNantissement: false,
+      absenceLitiges: false,
+      
+      // Garanties renforcées
+      plafondGarantie: "",
+      dureeGarantie: "",
+      exclusions: "",
+      procedureMiseEnJeu: "",
+    },
+    
+    // 9. Droit du conjoint
+    conjoint: {
+      identiteConjoint: "",
+      acceptationCession: false,
+      renonciationCession: false,
+      signatureObligatoire: false,
+      regimeMatrimonialPrecise: "",
+    },
+    
+    // 10. Déclarations légales obligatoires
+    declarationsLegales: {
+      consentementLibre: false,
+      origineLiciteFonds: false,
+      absenceFraude: false,
+      acceptationPrix: false,
+      transfertProprieteDateSignature: false,
+      mentionStatutsMisAJour: false,
+      mentionImpositionFiscale: false,
+      renonciationDroitPreemption: false,
+    },
+    
+    // 11. Mise à jour statuts et formalités
+    formalites: {
+      modificationCapital: false,
+      miseAJourRegistreMouvements: false,
+      miseAJourRegistreAssocies: false,
+      depotGreffe: false,
+      publicationLegale: false,
+      informationBanques: false,
+    },
+    
+    // 12. Signatures
+    signatures: {
+      dateSignature: "",
+      lieuSignature: "",
+      signatureNotaire: false,
+      nomNotaire: "",
+      villeNotaire: "",
+    },
+  });
+
   // State pour Procuration authentique
   const [procurationData, setProcurationData] = useState({
     // 1. Type de procuration
@@ -4921,6 +5120,142 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création quitus/reconnaissance:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour Cession de parts sociales
+  const handleCessionPartsSubmit = async () => {
+    if (!user) return;
+
+    // Validation
+    if (!cessionPartsData.typeSociete) {
+      toast.error("Type de société requis", { description: "Veuillez sélectionner le type de société" });
+      return;
+    }
+    if (!cessionPartsData.societe.denominationSociale || !cessionPartsData.societe.siren || !cessionPartsData.societe.siegeSocial) {
+      toast.error("Informations société requises", { description: "Dénomination, SIREN et siège obligatoires" });
+      return;
+    }
+    if (!cessionPartsData.cedant.nom || !cessionPartsData.cedant.prenom || !cessionPartsData.cedant.adresseComplete) {
+      toast.error("Identité cédant requise", { description: "Nom, prénom et adresse obligatoires" });
+      return;
+    }
+    if (cessionPartsData.cessionnaire.typePersonne === "physique") {
+      if (!cessionPartsData.cessionnaire.nom || !cessionPartsData.cessionnaire.prenom || !cessionPartsData.cessionnaire.adresseComplete) {
+        toast.error("Identité cessionnaire requise", { description: "Nom, prénom et adresse obligatoires" });
+        return;
+      }
+    } else {
+      if (!cessionPartsData.cessionnaire.denominationMorale || !cessionPartsData.cessionnaire.representantLegal) {
+        toast.error("Informations personne morale requises", { description: "Dénomination et représentant obligatoires" });
+        return;
+      }
+    }
+    if (!cessionPartsData.objetCession.nombreParts || !cessionPartsData.objetCession.prixTotal) {
+      toast.error("Objet de cession requis", { description: "Nombre de parts et prix obligatoires" });
+      return;
+    }
+    if (!cessionPartsData.signatures.dateSignature || !cessionPartsData.signatures.lieuSignature) {
+      toast.error("Signatures requises", { description: "Date et lieu de signature obligatoires" });
+      return;
+    }
+
+    try {
+      const description = `Cession de parts ${cessionPartsData.typeSociete.toUpperCase()} - ${cessionPartsData.societe.denominationSociale} - Cédant: ${cessionPartsData.cedant.prenom} ${cessionPartsData.cedant.nom} - ${cessionPartsData.objetCession.nombreParts} parts pour ${cessionPartsData.objetCession.prixTotal}€`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: cessionPartsData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("Document créé", { description: "Vous pouvez maintenant compléter les détails" });
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire
+      setCessionPartsData({
+        typeSociete: "",
+        societe: {
+          denominationSociale: "", sigle: "", formeJuridique: "", capitalSocial: "", siegeSocial: "",
+          siren: "", rcs: "", greffeCompetent: "", activiteSociete: "", dateCreation: "", objetSocial: "",
+          pacteAssocies: false, expertComptable: false, gerantNom: "", gerantPrenom: "", gerantAdresse: "", gerantPouvoirs: ""
+        },
+        cedant: {
+          isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", adresseComplete: "",
+          email: "", telephone: "", dateNaissance: "", nationalite: "", profession: "", situationMatrimoniale: "",
+          regimeMatrimonial: "", typeIdentite: "", numeroIdentite: "", qualiteSociete: ""
+        },
+        cessionnaire: {
+          typePersonne: "physique", nom: "", prenom: "", adresseComplete: "", email: "", telephone: "",
+          dateNaissance: "", nationalite: "", profession: "", situationMatrimoniale: "", typeIdentite: "",
+          numeroIdentite: "", capaciteJuridique: "majeur", denominationMorale: "", representantLegal: ""
+        },
+        objetCession: {
+          typeDroits: "", nombreParts: "", pourcentageCapital: "", valeurNominale: "", prixTotal: "",
+          prixUnitaire: "", modeCalcul: "", modalitePaiement: "", ribCedant: "",
+          agrement: false, approbationConjoint: false, financementBancaire: false, leveeNantissement: false
+        },
+        agrement: {
+          procedureAgrement: "", convocationAssocies: false, voteEffectue: false, majoriteRequise: "",
+          notificationStatut: "", delaiLegalRespecte: false
+        },
+        compteCourant: {
+          cessionCCA: false, maintienCCA: false, remboursementImmediat: false, remboursementEchelonne: false,
+          compensationPrix: false, garantieSolde: false, montantSoldeCCA: "",
+          detteVersTiers: false, natureDetteTiers: "", montantDetteTiers: "", creancierTiers: "", acceptationCreancier: false
+        },
+        garanties: {
+          garantieEviction: false, garantiePropriete: false, garantiePassif: "", garantieActifNet: false,
+          absenceNantissement: false, absenceLitiges: false, plafondGarantie: "", dureeGarantie: "",
+          exclusions: "", procedureMiseEnJeu: ""
+        },
+        conjoint: {
+          identiteConjoint: "", acceptationCession: false, renonciationCession: false,
+          signatureObligatoire: false, regimeMatrimonialPrecise: ""
+        },
+        declarationsLegales: {
+          consentementLibre: false, origineLiciteFonds: false, absenceFraude: false, acceptationPrix: false,
+          transfertProprieteDateSignature: false, mentionStatutsMisAJour: false, mentionImpositionFiscale: false,
+          renonciationDroitPreemption: false
+        },
+        formalites: {
+          modificationCapital: false, miseAJourRegistreMouvements: false, miseAJourRegistreAssocies: false,
+          depotGreffe: false, publicationLegale: false, informationBanques: false
+        },
+        signatures: {
+          dateSignature: "", lieuSignature: "", signatureNotaire: false, nomNotaire: "", villeNotaire: ""
+        }
+      });
+      setCessionStatutsFiles([]);
+      setCessionKbisFiles([]);
+      setCessionComptesFiles([]);
+      setCessionRegistreFiles([]);
+      setCessionPacteFiles([]);
+      setCessionCedantIdFiles([]);
+      setCessionCedantMariageFiles([]);
+      setCessionExpertiseFiles([]);
+      setCessionCCAFiles([]);
+      setCessionCessionnaireIdFiles([]);
+      setCessionCessionnaireDomicileFiles([]);
+      setCessionCessionnaireKbisFiles([]);
+      setCessionOrigineFondsFiles([]);
+      setCessionPVAgrementFiles([]);
+      
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création cession parts:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -42249,8 +42584,1818 @@ FIN DE LA CONVENTION
               </div>
             )}
 
+            {/* Formulaire Acte de cession de parts sociales */}
+            {pendingContractType === "Acte de cession de parts sociales" && (
+              <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                
+                {/* Section 1 : Type de société */}
+                <div className="space-y-4 bg-blue-50 p-6 rounded-lg border border-blue-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-blue-800">
+                    1️⃣ Type de société
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <Label>Type de société <span className="text-red-500">*</span></Label>
+                    <Select
+                      value={cessionPartsData.typeSociete}
+                      onValueChange={(value) => setCessionPartsData({...cessionPartsData, typeSociete: value})}
+                    >
+                      <SelectTrigger><SelectValue placeholder="Sélectionner le type de société" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sarl">SARL (Société à responsabilité limitée)</SelectItem>
+                        <SelectItem value="sci">SCI (Société civile immobilière)</SelectItem>
+                        <SelectItem value="sas">SAS (Société par actions simplifiée - acte sous seing privé)</SelectItem>
+                        <SelectItem value="snc">SNC (Société en nom collectif)</SelectItem>
+                        <SelectItem value="autre_personne">Autre société de personnes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Section 2 : Informations sur la société */}
+                <div className="space-y-4 bg-green-50 p-6 rounded-lg border border-green-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-green-800">
+                    2️⃣ Informations sur la société
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Dénomination sociale <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.societe.denominationSociale}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, denominationSociale: e.target.value}
+                        })}
+                        placeholder="Raison sociale de la société"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Sigle (si existant)</Label>
+                      <Input
+                        value={cessionPartsData.societe.sigle}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, sigle: e.target.value}
+                        })}
+                        placeholder="Sigle commercial"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Forme juridique <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.societe.formeJuridique}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, formeJuridique: e.target.value}
+                        })}
+                        placeholder="SARL, SCI, SAS..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Capital social <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.societe.capitalSocial}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, capitalSocial: e.target.value}
+                        })}
+                        placeholder="Montant du capital"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Siège social <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.societe.siegeSocial}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, siegeSocial: e.target.value}
+                        })}
+                        placeholder="Adresse complète du siège"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>SIREN <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.societe.siren}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, siren: e.target.value}
+                        })}
+                        placeholder="Numéro SIREN (9 chiffres)"
+                        maxLength={9}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>RCS + Greffe compétent <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.societe.rcs}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, rcs: e.target.value}
+                        })}
+                        placeholder="Ex: RCS Paris 123456789"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Greffe compétent <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.societe.greffeCompetent}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, greffeCompetent: e.target.value}
+                        })}
+                        placeholder="Nom du greffe"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Activité de la société <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.societe.activiteSociete}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, activiteSociete: e.target.value}
+                        })}
+                        placeholder="Secteur d'activité"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Date de création <span className="text-red-500">*</span></Label>
+                      <Input
+                        type="date"
+                        value={cessionPartsData.societe.dateCreation}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, dateCreation: e.target.value}
+                        })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Objet social <span className="text-red-500">*</span></Label>
+                    <Textarea
+                      value={cessionPartsData.societe.objetSocial}
+                      onChange={(e) => setCessionPartsData({
+                        ...cessionPartsData,
+                        societe: {...cessionPartsData.societe, objetSocial: e.target.value}
+                      })}
+                      placeholder="Décrire l'objet social de la société"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Existence d'un pacte d'associés</Label>
+                      <Select
+                        value={cessionPartsData.societe.pacteAssocies ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, pacteAssocies: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui (à fournir)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Existence d'un expert-comptable</Label>
+                      <Select
+                        value={cessionPartsData.societe.expertComptable ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          societe: {...cessionPartsData.societe, expertComptable: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Identité du gérant/président */}
+                  <div className="bg-white p-4 rounded-lg border border-green-300 space-y-4">
+                    <h4 className="font-semibold text-green-800">Identité du gérant / président</h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.societe.gerantNom}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            societe: {...cessionPartsData.societe, gerantNom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.societe.gerantPrenom}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            societe: {...cessionPartsData.societe, gerantPrenom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.societe.gerantAdresse}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            societe: {...cessionPartsData.societe, gerantAdresse: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Pouvoirs selon statuts</Label>
+                        <Textarea
+                          value={cessionPartsData.societe.gerantPouvoirs}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            societe: {...cessionPartsData.societe, gerantPouvoirs: e.target.value}
+                          })}
+                          placeholder="Décrire les pouvoirs du gérant/président"
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Upload statuts */}
+                  <div className="space-y-2">
+                    <Label className="text-red-600 font-semibold">📄 Statuts de la société (obligatoire)</Label>
+                    <MultiFileUpload
+                      files={cessionStatutsFiles}
+                      onFilesChange={setCessionStatutsFiles}
+                      accept=".pdf,.doc,.docx"
+                      label="Joindre les statuts à jour"
+                    />
+                  </div>
+                </div>
+
+                {/* Section 3 : Identité du cédant (vendeur) */}
+                <div className="space-y-4 bg-orange-50 p-6 rounded-lg border border-orange-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-orange-800">
+                    3️⃣ Identité complète du cédant (vendeur des parts)
+                  </h3>
+
+                  {!readOnly && clients && clients.length > 0 && (
+                    <div className="space-y-2">
+                      <Label>Lier à un client existant (facultatif)</Label>
+                      <Select
+                        value={cessionPartsData.cedant.clientId}
+                        onValueChange={(value) => {
+                          const selectedClient = clients.find(c => c.id === value);
+                          if (selectedClient) {
+                            // Extraire la situation familiale de l'objet JSON
+                            let situationFamiliale = "";
+                            if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                              situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                            } else if (typeof selectedClient.situation_familiale === 'string') {
+                              situationFamiliale = selectedClient.situation_familiale;
+                            }
+                            
+                            setCessionPartsData({
+                              ...cessionPartsData,
+                              cedant: {
+                                ...cessionPartsData.cedant,
+                                clientId: value,
+                                nom: selectedClient.nom,
+                                prenom: selectedClient.prenom,
+                                dateNaissance: selectedClient.date_naissance || "",
+                                nationalite: selectedClient.nationalite || "",
+                                profession: selectedClient.profession || "",
+                                adresseComplete: selectedClient.adresse || "",
+                                telephone: selectedClient.telephone || "",
+                                email: selectedClient.email || "",
+                                typeIdentite: selectedClient.type_identite || "",
+                                numeroIdentite: selectedClient.numero_identite || "",
+                                situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nom <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.cedant.nom}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, nom: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Prénom <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.cedant.prenom}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, prenom: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nom de naissance</Label>
+                      <Input
+                        value={cessionPartsData.cedant.nomNaissance}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, nomNaissance: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                      <Input
+                        type="date"
+                        value={cessionPartsData.cedant.dateNaissance}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, dateNaissance: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nationalité <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.cedant.nationalite}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, nationalite: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Profession</Label>
+                      <Input
+                        value={cessionPartsData.cedant.profession}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, profession: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.cedant.adresseComplete}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, adresseComplete: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      <Input
+                        type="email"
+                        value={cessionPartsData.cedant.email}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, email: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Téléphone</Label>
+                      <Input
+                        value={cessionPartsData.cedant.telephone}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, telephone: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Situation matrimoniale</Label>
+                      <Input
+                        value={cessionPartsData.cedant.situationMatrimoniale}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, situationMatrimoniale: e.target.value}
+                        })}
+                        placeholder="Célibataire, marié(e), pacsé(e)..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Régime matrimonial</Label>
+                      <Input
+                        value={cessionPartsData.cedant.regimeMatrimonial}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, regimeMatrimonial: e.target.value}
+                        })}
+                        placeholder="Communauté, séparation de biens..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Type de pièce d'identité <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.cedant.typeIdentite}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, typeIdentite: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cni">Carte nationale d'identité</SelectItem>
+                          <SelectItem value="passeport">Passeport</SelectItem>
+                          <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Numéro de pièce d'identité <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.cedant.numeroIdentite}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, numeroIdentite: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Qualité dans la société <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.cedant.qualiteSociete}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          cedant: {...cessionPartsData.cedant, qualiteSociete: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner la qualité" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="associe">Associé</SelectItem>
+                          <SelectItem value="gerant_president">Gérant / Président</SelectItem>
+                          <SelectItem value="associe_fondateur">Associé fondateur</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 4 : Identité du cessionnaire (acheteur) */}
+                <div className="space-y-4 bg-purple-50 p-6 rounded-lg border border-purple-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-purple-800">
+                    4️⃣ Identité complète du cessionnaire (acheteur)
+                  </h3>
+
+                  <div className="space-y-2">
+                    <Label>Type de personne <span className="text-red-500">*</span></Label>
+                    <Select
+                      value={cessionPartsData.cessionnaire.typePersonne}
+                      onValueChange={(value) => setCessionPartsData({
+                        ...cessionPartsData,
+                        cessionnaire: {...cessionPartsData.cessionnaire, typePersonne: value as "physique" | "morale"}
+                      })}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="physique">Personne physique</SelectItem>
+                        <SelectItem value="morale">Personne morale (société)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {cessionPartsData.cessionnaire.typePersonne === "physique" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.nom}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, nom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Prénom <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.prenom}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, prenom: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.adresseComplete}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, adresseComplete: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input
+                          type="email"
+                          value={cessionPartsData.cessionnaire.email}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, email: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.telephone}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, telephone: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de naissance <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={cessionPartsData.cessionnaire.dateNaissance}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, dateNaissance: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nationalité <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.nationalite}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, nationalite: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Profession</Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.profession}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, profession: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Situation matrimoniale</Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.situationMatrimoniale}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, situationMatrimoniale: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Type pièce d'identité <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={cessionPartsData.cessionnaire.typeIdentite}
+                          onValueChange={(value) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, typeIdentite: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="cni">CNI</SelectItem>
+                            <SelectItem value="passeport">Passeport</SelectItem>
+                            <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Numéro pièce d'identité <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.numeroIdentite}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, numeroIdentite: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Capacité juridique</Label>
+                        <Select
+                          value={cessionPartsData.cessionnaire.capaciteJuridique}
+                          onValueChange={(value) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, capaciteJuridique: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="majeur">Majeur capable</SelectItem>
+                            <SelectItem value="mineur">Mineur</SelectItem>
+                            <SelectItem value="protege">Majeur protégé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+
+                  {cessionPartsData.cessionnaire.typePersonne === "morale" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Dénomination sociale <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.denominationMorale}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, denominationMorale: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Représentant légal <span className="text-red-500">*</span></Label>
+                        <Input
+                          value={cessionPartsData.cessionnaire.representantLegal}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            cessionnaire: {...cessionPartsData.cessionnaire, representantLegal: e.target.value}
+                          })}
+                          placeholder="Nom et prénom du représentant"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label className="text-red-600 font-semibold">📄 Extrait Kbis (obligatoire)</Label>
+                        <MultiFileUpload
+                          files={cessionCessionnaireKbisFiles}
+                          onFilesChange={setCessionCessionnaireKbisFiles}
+                          accept=".pdf"
+                          label="Joindre Kbis de moins de 3 mois"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Section 5 : Objet de la cession */}
+                <div className="space-y-4 bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-yellow-800">
+                    5️⃣ Objet de la cession
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Type de droits cédés <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.objetCession.typeDroits}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, typeDroits: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="parts_sociales">Parts sociales</SelectItem>
+                          <SelectItem value="actions">Actions (SAS)</SelectItem>
+                          <SelectItem value="droits_indivis">Droits indivis sur parts</SelectItem>
+                          <SelectItem value="compte_courant">Compte courant d'associé (créance)</SelectItem>
+                          <SelectItem value="cession_reprise_dette">Cession + reprise de dette éventuelle</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Nombre de parts cédées <span className="text-red-500">*</span></Label>
+                      <Input
+                        type="number"
+                        value={cessionPartsData.objetCession.nombreParts}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, nombreParts: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Pourcentage du capital <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.objetCession.pourcentageCapital}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, pourcentageCapital: e.target.value}
+                        })}
+                        placeholder="Ex: 25%"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Valeur nominale <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.objetCession.valeurNominale}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, valeurNominale: e.target.value}
+                        })}
+                        placeholder="Valeur nominale par part"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Prix total de cession <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.objetCession.prixTotal}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, prixTotal: e.target.value}
+                        })}
+                        placeholder="Montant total en €"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Prix unitaire par part</Label>
+                      <Input
+                        value={cessionPartsData.objetCession.prixUnitaire}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, prixUnitaire: e.target.value}
+                        })}
+                        placeholder="Prix par part"
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Mode de calcul du prix <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.objetCession.modeCalcul}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, modeCalcul: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="valeur_marche">Valeur de marché</SelectItem>
+                          <SelectItem value="valeur_comptable">Valeur comptable</SelectItem>
+                          <SelectItem value="clause_statutaire">Clause statutaire</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Modalités de paiement <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.objetCession.modalitePaiement}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, modalitePaiement: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="comptant">Comptant</SelectItem>
+                          <SelectItem value="echelonne">Échelonné</SelectItem>
+                          <SelectItem value="differe">Paiement différé</SelectItem>
+                          <SelectItem value="conditionnel">Paiement conditionnel</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>RIB du cédant <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.objetCession.ribCedant}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, ribCedant: e.target.value}
+                        })}
+                        placeholder="IBAN"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Conditions suspensives */}
+                  <div className="bg-white p-4 rounded-lg border border-yellow-300 space-y-3">
+                    <h4 className="font-semibold text-yellow-800">Conditions suspensives</h4>
+                    
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.objetCession.agrement}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            objetCession: {...cessionPartsData.objetCession, agrement: e.target.checked}
+                          })}
+                        />
+                        <span>Agrément par les associés</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.objetCession.approbationConjoint}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            objetCession: {...cessionPartsData.objetCession, approbationConjoint: e.target.checked}
+                          })}
+                        />
+                        <span>Approbation du conjoint (si bien commun)</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.objetCession.financementBancaire}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            objetCession: {...cessionPartsData.objetCession, financementBancaire: e.target.checked}
+                          })}
+                        />
+                        <span>Financement bancaire</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.objetCession.leveeNantissement}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            objetCession: {...cessionPartsData.objetCession, leveeNantissement: e.target.checked}
+                          })}
+                        />
+                        <span>Levée d'un nantissement sur parts</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 6 : Agrément (SARL & SCI) */}
+                {(cessionPartsData.typeSociete === "sarl" || cessionPartsData.typeSociete === "sci") && (
+                  <div className="space-y-4 bg-red-50 p-6 rounded-lg border border-red-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-red-800">
+                      6️⃣ Agrément (obligatoire pour SARL & SCI)
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Procédure d'agrément</Label>
+                        <Textarea
+                          value={cessionPartsData.agrement.procedureAgrement}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, procedureAgrement: e.target.value}
+                          })}
+                          placeholder="Décrire la procédure suivie"
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Convocation des associés</Label>
+                        <Select
+                          value={cessionPartsData.agrement.convocationAssocies ? "oui" : "non"}
+                          onValueChange={(value) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, convocationAssocies: value === "oui"}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Vote effectué</Label>
+                        <Select
+                          value={cessionPartsData.agrement.voteEffectue ? "oui" : "non"}
+                          onValueChange={(value) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, voteEffectue: value === "oui"}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Majorité requise</Label>
+                        <Input
+                          value={cessionPartsData.agrement.majoriteRequise}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, majoriteRequise: e.target.value}
+                          })}
+                          placeholder="Ex: 2/3, majorité simple..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Statut de la notification</Label>
+                        <Select
+                          value={cessionPartsData.agrement.notificationStatut}
+                          onValueChange={(value) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, notificationStatut: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="acceptation">Acceptation</SelectItem>
+                            <SelectItem value="refus">Refus</SelectItem>
+                            <SelectItem value="en_attente">En attente</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Délai légal respecté</Label>
+                        <Select
+                          value={cessionPartsData.agrement.delaiLegalRespecte ? "oui" : "non"}
+                          onValueChange={(value) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, delaiLegalRespecte: value === "oui"}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label className="text-red-600 font-semibold">📄 Procès-verbal d'assemblée générale</Label>
+                        <MultiFileUpload
+                          files={cessionPVAgrementFiles}
+                          onFilesChange={setCessionPVAgrementFiles}
+                          accept=".pdf,.doc,.docx"
+                          label="Joindre le PV d'agrément"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Section 7 : Compte courant d'associé */}
+                <div className="space-y-4 bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-indigo-800">
+                    7️⃣ Compte courant d'associé / Dettes liées
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3 md:col-span-2">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.compteCourant.cessionCCA}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            compteCourant: {...cessionPartsData.compteCourant, cessionCCA: e.target.checked}
+                          })}
+                        />
+                        <span>Cession du compte courant d'associé au cessionnaire</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.compteCourant.maintienCCA}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            compteCourant: {...cessionPartsData.compteCourant, maintienCCA: e.target.checked}
+                          })}
+                        />
+                        <span>Maintien du compte courant au cédant</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.compteCourant.remboursementImmediat}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            compteCourant: {...cessionPartsData.compteCourant, remboursementImmediat: e.target.checked}
+                          })}
+                        />
+                        <span>Remboursement immédiat du compte courant</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.compteCourant.remboursementEchelonne}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            compteCourant: {...cessionPartsData.compteCourant, remboursementEchelonne: e.target.checked}
+                          })}
+                        />
+                        <span>Remboursement échelonné</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.compteCourant.compensationPrix}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            compteCourant: {...cessionPartsData.compteCourant, compensationPrix: e.target.checked}
+                          })}
+                        />
+                        <span>Compensation entre prix de cession et dette CCA</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.compteCourant.garantieSolde}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            compteCourant: {...cessionPartsData.compteCourant, garantieSolde: e.target.checked}
+                          })}
+                        />
+                        <span>Garantie du solde du compte courant</span>
+                      </label>
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Montant exact du solde CCA</Label>
+                      <Input
+                        value={cessionPartsData.compteCourant.montantSoldeCCA}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          compteCourant: {...cessionPartsData.compteCourant, montantSoldeCCA: e.target.value}
+                        })}
+                        placeholder="Montant en €"
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label className="font-semibold">📄 Preuves comptables (justificatif CCA)</Label>
+                      <MultiFileUpload
+                        files={cessionCCAFiles}
+                        onFilesChange={setCessionCCAFiles}
+                        accept=".pdf,.xlsx,.xls"
+                        label="Joindre les justificatifs du compte courant"
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Dette envers un tiers ?</Label>
+                      <Select
+                        value={cessionPartsData.compteCourant.detteVersTiers ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          compteCourant: {...cessionPartsData.compteCourant, detteVersTiers: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {cessionPartsData.compteCourant.detteVersTiers && (
+                      <>
+                        <div className="space-y-2">
+                          <Label>Nature de la dette</Label>
+                          <Input
+                            value={cessionPartsData.compteCourant.natureDetteTiers}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              compteCourant: {...cessionPartsData.compteCourant, natureDetteTiers: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Montant de la dette</Label>
+                          <Input
+                            value={cessionPartsData.compteCourant.montantDetteTiers}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              compteCourant: {...cessionPartsData.compteCourant, montantDetteTiers: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Créancier</Label>
+                          <Input
+                            value={cessionPartsData.compteCourant.creancierTiers}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              compteCourant: {...cessionPartsData.compteCourant, creancierTiers: e.target.value}
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Acceptation par le créancier</Label>
+                          <Select
+                            value={cessionPartsData.compteCourant.acceptationCreancier ? "oui" : "non"}
+                            onValueChange={(value) => setCessionPartsData({
+                              ...cessionPartsData,
+                              compteCourant: {...cessionPartsData.compteCourant, acceptationCreancier: value === "oui"}
+                            })}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="non">Non</SelectItem>
+                              <SelectItem value="oui">Oui</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Section 8 : Garanties données par le cédant */}
+                <div className="space-y-4 bg-pink-50 p-6 rounded-lg border border-pink-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-pink-800">
+                    8️⃣ Garanties données par le cédant
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded-lg border border-pink-300 space-y-3">
+                      <h4 className="font-semibold text-pink-800">Garanties classiques</h4>
+                      
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.garanties.garantieEviction}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            garanties: {...cessionPartsData.garanties, garantieEviction: e.target.checked}
+                          })}
+                        />
+                        <span>Garantie d'éviction</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.garanties.garantiePropriete}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            garanties: {...cessionPartsData.garanties, garantiePropriete: e.target.checked}
+                          })}
+                        />
+                        <span>Garantie de propriété des parts</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.garanties.garantieActifNet}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            garanties: {...cessionPartsData.garanties, garantieActifNet: e.target.checked}
+                          })}
+                        />
+                        <span>Garantie d'actif net</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.garanties.absenceNantissement}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            garanties: {...cessionPartsData.garanties, absenceNantissement: e.target.checked}
+                          })}
+                        />
+                        <span>Absence de nantissement des parts</span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={cessionPartsData.garanties.absenceLitiges}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            garanties: {...cessionPartsData.garanties, absenceLitiges: e.target.checked}
+                          })}
+                        />
+                        <span>Absence de litiges en cours</span>
+                      </label>
+
+                      <div className="space-y-2">
+                        <Label>Garantie de passif</Label>
+                        <Select
+                          value={cessionPartsData.garanties.garantiePassif}
+                          onValueChange={(value) => setCessionPartsData({
+                            ...cessionPartsData,
+                            garanties: {...cessionPartsData.garanties, garantiePassif: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="aucune">Aucune</SelectItem>
+                            <SelectItem value="limitee">Limitée</SelectItem>
+                            <SelectItem value="generale">Générale</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg border border-pink-300 space-y-4">
+                      <h4 className="font-semibold text-pink-800">Garanties renforcées (optionnelles)</h4>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Plafond de garantie</Label>
+                          <Input
+                            value={cessionPartsData.garanties.plafondGarantie}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              garanties: {...cessionPartsData.garanties, plafondGarantie: e.target.value}
+                            })}
+                            placeholder="Montant maximum"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Durée de garantie</Label>
+                          <Input
+                            value={cessionPartsData.garanties.dureeGarantie}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              garanties: {...cessionPartsData.garanties, dureeGarantie: e.target.value}
+                            })}
+                            placeholder="Ex: 2 ans, 5 ans..."
+                          />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Exclusions</Label>
+                          <Textarea
+                            value={cessionPartsData.garanties.exclusions}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              garanties: {...cessionPartsData.garanties, exclusions: e.target.value}
+                            })}
+                            placeholder="Éléments exclus de la garantie"
+                            rows={2}
+                          />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Procédure de mise en jeu de la garantie</Label>
+                          <Textarea
+                            value={cessionPartsData.garanties.procedureMiseEnJeu}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              garanties: {...cessionPartsData.garanties, procedureMiseEnJeu: e.target.value}
+                            })}
+                            placeholder="Décrire la procédure"
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 9 : Droit du conjoint */}
+                <div className="space-y-4 bg-teal-50 p-6 rounded-lg border border-teal-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-teal-800">
+                    9️⃣ Droit du conjoint (si régime matrimonial = communauté)
+                  </h3>
+
+                  <div className="bg-amber-100 border border-amber-300 p-4 rounded-lg">
+                    <p className="text-sm font-semibold text-amber-900">
+                      ⚠️ Obligatoire si les parts sont des biens communs. Sinon l'acte est NUL.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Identité du conjoint</Label>
+                      <Input
+                        value={cessionPartsData.conjoint.identiteConjoint}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          conjoint: {...cessionPartsData.conjoint, identiteConjoint: e.target.value}
+                        })}
+                        placeholder="Nom et prénom du conjoint"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Acceptation de la cession</Label>
+                      <Select
+                        value={cessionPartsData.conjoint.acceptationCession ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          conjoint: {...cessionPartsData.conjoint, acceptationCession: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Renonciation à la cession</Label>
+                      <Select
+                        value={cessionPartsData.conjoint.renonciationCession ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          conjoint: {...cessionPartsData.conjoint, renonciationCession: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Signature obligatoire du conjoint</Label>
+                      <Select
+                        value={cessionPartsData.conjoint.signatureObligatoire ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          conjoint: {...cessionPartsData.conjoint, signatureObligatoire: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui (requis)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Régime matrimonial précisé</Label>
+                      <Input
+                        value={cessionPartsData.conjoint.regimeMatrimonialPrecise}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          conjoint: {...cessionPartsData.conjoint, regimeMatrimonialPrecise: e.target.value}
+                        })}
+                        placeholder="Communauté, séparation..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 10 : Déclarations légales obligatoires */}
+                <div className="space-y-4 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-gray-800">
+                    🔟 Déclarations légales obligatoires
+                  </h3>
+
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.declarationsLegales.consentementLibre}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          declarationsLegales: {...cessionPartsData.declarationsLegales, consentementLibre: e.target.checked}
+                        })}
+                      />
+                      <span>Consentement libre et éclairé</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.declarationsLegales.origineLiciteFonds}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          declarationsLegales: {...cessionPartsData.declarationsLegales, origineLiciteFonds: e.target.checked}
+                        })}
+                      />
+                      <span>Origine licite des fonds</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.declarationsLegales.absenceFraude}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          declarationsLegales: {...cessionPartsData.declarationsLegales, absenceFraude: e.target.checked}
+                        })}
+                      />
+                      <span>Absence de fraude ou simulation</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.declarationsLegales.acceptationPrix}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          declarationsLegales: {...cessionPartsData.declarationsLegales, acceptationPrix: e.target.checked}
+                        })}
+                      />
+                      <span>Acceptation du prix</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.declarationsLegales.transfertProprieteDateSignature}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          declarationsLegales: {...cessionPartsData.declarationsLegales, transfertProprieteDateSignature: e.target.checked}
+                        })}
+                      />
+                      <span>Transfert de propriété à la date de signature</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.declarationsLegales.mentionStatutsMisAJour}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          declarationsLegales: {...cessionPartsData.declarationsLegales, mentionStatutsMisAJour: e.target.checked}
+                        })}
+                      />
+                      <span>Mention des statuts mis à jour</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.declarationsLegales.mentionImpositionFiscale}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          declarationsLegales: {...cessionPartsData.declarationsLegales, mentionImpositionFiscale: e.target.checked}
+                        })}
+                      />
+                      <span>Mention d'imposition fiscale potentielle (plus-value)</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.declarationsLegales.renonciationDroitPreemption}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          declarationsLegales: {...cessionPartsData.declarationsLegales, renonciationDroitPreemption: e.target.checked}
+                        })}
+                      />
+                      <span>Renonciation éventuelle au droit de préemption d'autres associés</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Section 11 : Mise à jour statuts et formalités */}
+                <div className="space-y-4 bg-cyan-50 p-6 rounded-lg border border-cyan-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-cyan-800">
+                    1️⃣1️⃣ Mise à jour des statuts et formalités
+                  </h3>
+
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.formalites.modificationCapital}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          formalites: {...cessionPartsData.formalites, modificationCapital: e.target.checked}
+                        })}
+                      />
+                      <span>Modification de la répartition du capital</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.formalites.miseAJourRegistreMouvements}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          formalites: {...cessionPartsData.formalites, miseAJourRegistreMouvements: e.target.checked}
+                        })}
+                      />
+                      <span>Mise à jour du registre des mouvements de titres</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.formalites.miseAJourRegistreAssocies}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          formalites: {...cessionPartsData.formalites, miseAJourRegistreAssocies: e.target.checked}
+                        })}
+                      />
+                      <span>Mise à jour du registre des associés</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.formalites.depotGreffe}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          formalites: {...cessionPartsData.formalites, depotGreffe: e.target.checked}
+                        })}
+                      />
+                      <span>Dépôt au greffe (si applicable)</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.formalites.publicationLegale}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          formalites: {...cessionPartsData.formalites, publicationLegale: e.target.checked}
+                        })}
+                      />
+                      <span>Publication légale (si obligation)</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cessionPartsData.formalites.informationBanques}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          formalites: {...cessionPartsData.formalites, informationBanques: e.target.checked}
+                        })}
+                      />
+                      <span>Information des banques / partenaires</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Section 12 : Signatures */}
+                <div className="space-y-4 bg-lime-50 p-6 rounded-lg border border-lime-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-lime-800">
+                    1️⃣2️⃣ Signatures et formalités finales
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Date de signature <span className="text-red-500">*</span></Label>
+                      <Input
+                        type="date"
+                        value={cessionPartsData.signatures.dateSignature}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          signatures: {...cessionPartsData.signatures, dateSignature: e.target.value}
+                        })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Lieu de signature <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={cessionPartsData.signatures.lieuSignature}
+                        onChange={(e) => setCessionPartsData({
+                          ...cessionPartsData,
+                          signatures: {...cessionPartsData.signatures, lieuSignature: e.target.value}
+                        })}
+                        placeholder="Ville de signature"
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Signature du notaire</Label>
+                      <Select
+                        value={cessionPartsData.signatures.signatureNotaire ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          signatures: {...cessionPartsData.signatures, signatureNotaire: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non (acte sous seing privé)</SelectItem>
+                          <SelectItem value="oui">Oui (acte authentique)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {cessionPartsData.signatures.signatureNotaire && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <div className="space-y-2">
+                          <Label>Nom du notaire <span className="text-red-600">*</span></Label>
+                          <Input
+                            value={cessionPartsData.signatures.nomNotaire}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              signatures: {...cessionPartsData.signatures, nomNotaire: e.target.value}
+                            })}
+                            placeholder="Nom complet"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Ville du notaire <span className="text-red-600">*</span></Label>
+                          <Input
+                            value={cessionPartsData.signatures.villeNotaire}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              signatures: {...cessionPartsData.signatures, villeNotaire: e.target.value}
+                            })}
+                            placeholder="Ville de l'étude"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Pièces justificatives (tous les uploads) */}
+                  <div className="space-y-4 mt-6">
+                    <h4 className="font-semibold text-lime-800 text-base border-b pb-2">
+                      📎 Pièces justificatives à fournir
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Kbis de la société</Label>
+                        <MultiFileUpload
+                          files={cessionKbisFiles}
+                          onFilesChange={setCessionKbisFiles}
+                          accept=".pdf"
+                          label="Joindre Kbis"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Comptes annuels</Label>
+                        <MultiFileUpload
+                          files={cessionComptesFiles}
+                          onFilesChange={setCessionComptesFiles}
+                          accept=".pdf,.xlsx,.xls"
+                          label="Joindre comptes"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Registre des associés</Label>
+                        <MultiFileUpload
+                          files={cessionRegistreFiles}
+                          onFilesChange={setCessionRegistreFiles}
+                          accept=".pdf"
+                          label="Joindre registre"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Pacte d'associés (si existant)</Label>
+                        <MultiFileUpload
+                          files={cessionPacteFiles}
+                          onFilesChange={setCessionPacteFiles}
+                          accept=".pdf"
+                          label="Joindre pacte"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Pièce d'identité cédant</Label>
+                        <MultiFileUpload
+                          files={cessionCedantIdFiles}
+                          onFilesChange={setCessionCedantIdFiles}
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          label="Joindre ID cédant"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Contrat de mariage (si applicable)</Label>
+                        <MultiFileUpload
+                          files={cessionCedantMariageFiles}
+                          onFilesChange={setCessionCedantMariageFiles}
+                          accept=".pdf"
+                          label="Joindre contrat mariage"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Expertise des parts (si existante)</Label>
+                        <MultiFileUpload
+                          files={cessionExpertiseFiles}
+                          onFilesChange={setCessionExpertiseFiles}
+                          accept=".pdf"
+                          label="Joindre expertise"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Pièce d'identité cessionnaire</Label>
+                        <MultiFileUpload
+                          files={cessionCessionnaireIdFiles}
+                          onFilesChange={setCessionCessionnaireIdFiles}
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          label="Joindre ID cessionnaire"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Justificatif de domicile cessionnaire</Label>
+                        <MultiFileUpload
+                          files={cessionCessionnaireDomicileFiles}
+                          onFilesChange={setCessionCessionnaireDomicileFiles}
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          label="Joindre justif domicile"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Justificatif origine des fonds (anti-blanchiment)</Label>
+                        <MultiFileUpload
+                          files={cessionOrigineFondsFiles}
+                          onFilesChange={setCessionOrigineFondsFiles}
+                          accept=".pdf"
+                          label="Joindre justificatifs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
             {/* Formulaire générique pour tous les autres types de contrats */}
-            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière", "Quitus / reconnaissance de dette"].includes(pendingContractType) && (
+            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière", "Quitus / reconnaissance de dette", "Acte de cession de parts sociales"].includes(pendingContractType) && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg border-b pb-2">👤 Client concerné</h3>
                 <div className="space-y-2">
@@ -42349,6 +44494,8 @@ FIN DE LA CONVENTION
                   handleAttestationSubmit();
                 } else if (pendingContractType === "Quitus / reconnaissance de dette") {
                   handleQuitusDetteSubmit();
+                } else if (pendingContractType === "Acte de cession de parts sociales") {
+                  handleCessionPartsSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
                   handleGenericContractSubmit();
