@@ -3507,7 +3507,6 @@ export default function Contrats() {
   const [quitusDetteData, setQuitusDetteData] = useState({
     // 1. Type d'acte
     typeActe: "", // reconnaissance_dette / reconnaissance_dette_modalites / quitus / quitus_partiel / remise_dette / solde_tout_compte / attestation_reglement
-    natureJuridique: "", // quitus_total / quitus_partiel / reconnaissance_dette_initiale / reconnaissance_solde_restant
     
     // 2. Identité complète du créancier
     creancier: {
@@ -4857,7 +4856,6 @@ export default function Contrats() {
       // Réinitialiser le formulaire
       setQuitusDetteData({
         typeActe: "",
-        natureJuridique: "",
         creancier: {
           isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", dateNaissance: "",
           lieuNaissance: "", nationalite: "", profession: "", adresseComplete: "", telephone: "",
@@ -40198,57 +40196,6 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* Section 1bis : Nature juridique exacte de l'acte */}
-                <div className="space-y-4 bg-red-50 p-6 rounded-lg border border-red-200">
-                  <h3 className="font-semibold text-lg border-b pb-2 text-red-800">
-                    🔴 1️⃣ Nature juridique exacte de l'acte (FONDAMENTAL)
-                  </h3>
-                  
-                  <div className="space-y-3">
-                    <div className="p-3 bg-red-100 border border-red-300 rounded">
-                      <p className="text-sm font-medium text-red-900 mb-2">
-                        ⚠️ ATTENTION : Cette distinction est juridiquement essentielle
-                      </p>
-                      <p className="text-xs text-red-800">
-                        Elle détermine les effets juridiques de l'acte et prévient tout risque de nullité ou d'interprétation défavorable.
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Nature juridique de l'acte <span className="text-red-600">*</span></Label>
-                      <RadioGroup
-                        value={quitusDetteData.natureJuridique}
-                        onValueChange={(value) => setQuitusDetteData({...quitusDetteData, natureJuridique: value})}
-                      >
-                        <div className="flex items-center space-x-2 p-3 border rounded hover:bg-red-50">
-                          <RadioGroupItem value="quitus_total" id="nature_quitus_total" />
-                          <Label htmlFor="nature_quitus_total" className="cursor-pointer flex-1">
-                            <strong>☐ Quitus total</strong> - Extinction complète de la dette
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 p-3 border rounded hover:bg-red-50">
-                          <RadioGroupItem value="quitus_partiel" id="nature_quitus_partiel" />
-                          <Label htmlFor="nature_quitus_partiel" className="cursor-pointer flex-1">
-                            <strong>☐ Quitus partiel</strong> - Solde restant dû
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 p-3 border rounded hover:bg-red-50">
-                          <RadioGroupItem value="reconnaissance_dette_initiale" id="nature_reco_initiale" />
-                          <Label htmlFor="nature_reco_initiale" className="cursor-pointer flex-1">
-                            <strong>☐ Reconnaissance de dette initiale</strong> - Première constatation de la dette
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 p-3 border rounded hover:bg-red-50">
-                          <RadioGroupItem value="reconnaissance_solde_restant" id="nature_reco_solde" />
-                          <Label htmlFor="nature_reco_solde" className="cursor-pointer flex-1">
-                            <strong>☐ Reconnaissance de solde restant dû</strong> - Après paiements partiels
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Section 2 : Identité complète du créancier */}
                 <div className="space-y-4 bg-green-50 p-6 rounded-lg border border-green-200">
                   <h3 className="font-semibold text-lg border-b pb-2 text-green-800">
@@ -40950,7 +40897,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Date d'exigibilité si quitus partiel ou solde restant dû */}
-                  {(quitusDetteData.natureJuridique === "quitus_partiel" || quitusDetteData.natureJuridique === "reconnaissance_solde_restant" || parseFloat(quitusDetteData.montant.sommeRestantDue) > 0) && (
+                  {(quitusDetteData.typeActe === "quitus_partiel" || parseFloat(quitusDetteData.montant.sommeRestantDue) > 0) && (
                     <div className="p-4 bg-red-100 border-2 border-red-300 rounded-lg mt-4">
                       <div className="space-y-2">
                         <Label htmlFor="date_exigibilite_solde" className="font-medium text-red-900">
