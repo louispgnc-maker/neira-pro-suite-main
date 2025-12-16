@@ -37826,7 +37826,7 @@ FIN DE LA CONVENTION
             {pendingContractType === "Attestation de propriété immobilière" && (
               <div className="space-y-6">
                 {/* Section 1 : Informations sur le défunt */}
-                  <div className="space-y-4 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <div className="space-y-4 bg-gray-50 p-6 rounded-lg border border-gray-200">
                     <h3 className="font-semibold text-lg border-b pb-2 text-gray-800">
                       ⚰️ Section 1 : Informations sur le défunt
                     </h3>
