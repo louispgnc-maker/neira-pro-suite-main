@@ -198,6 +198,18 @@ export default function Contrats() {
   const [inventaireMobilierFiles, setInventaireMobilierFiles] = useState<File[]>([]); // Inventaire mobilier PDF/images
   const [bailCommercialBailleurFiles, setBailCommercialBailleurFiles] = useState<File[]>([]); // Kbis/ID bailleur commercial
   const [bailCommercialLocataireFiles, setBailCommercialLocataireFiles] = useState<File[]>([]); // Kbis/ID locataire commercial
+  
+  // States pour attestation de propriété immobilière
+  const [attestationActeDecesFiles, setAttestationActeDecesFiles] = useState<File[]>([]);
+  const [attestationIdentiteHeritiers, setAttestationIdentiteHeritiers] = useState<File[]>([]);
+  const [attestationTitrePropriete, setAttestationTitrePropriete] = useState<File[]>([]);
+  const [attestationLivretFamille, setAttestationLivretFamille] = useState<File[]>([]);
+  const [attestationTestament, setAttestationTestament] = useState<File[]>([]);
+  const [attestationContratMariage, setAttestationContratMariage] = useState<File[]>([]);
+  const [attestationCopropriete, setAttestationCopropriete] = useState<File[]>([]);
+  const [attestationBaux, setAttestationBaux] = useState<File[]>([]);
+  const [attestationHypotheque, setAttestationHypotheque] = useState<File[]>([]);
+  const [attestationJustifDomicile, setAttestationJustifDomicile] = useState<File[]>([]);
   const [bailCommercialDiagnosticsFiles, setBailCommercialDiagnosticsFiles] = useState<File[]>([]); // Diagnostics bail commercial
   const [bailCommercialCautionFiles, setBailCommercialCautionFiles] = useState<File[]>([]); // Acte de caution
   const [procurationMandantIdentiteUrl, setProcurationMandantIdentiteUrl] = useState<string | null>(null); // URL du document du mandant procuration
@@ -39550,133 +39562,141 @@ FIN DE LA CONVENTION
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Acte de décès */}
-                      <div className="space-y-2">
-                        <Label>📄 Acte de décès *</Label>
-                        <p className="text-xs text-gray-500">Copie intégrale récente</p>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
-                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_acte_deces" />
-                          <label htmlFor="attestation_acte_deces" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
-                            <span>📎</span> Cliquez pour joindre l'acte de décès
-                          </label>
-                        </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-2">Copie intégrale récente</p>
+                        <FileUploadButton
+                          label="📄 Acte de décès"
+                          required
+                          files={attestationActeDecesFiles}
+                          onFilesChange={setAttestationActeDecesFiles}
+                          accept="application/pdf,image/*"
+                          inputId="attestation_acte_deces"
+                        />
                       </div>
 
                       {/* Pièces d'identité héritiers */}
-                      <div className="space-y-2">
-                        <Label>🪪 Pièces d'identité héritiers *</Label>
-                        <p className="text-xs text-gray-500">CNI ou passeport valide de tous les héritiers</p>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
-                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_identite_heritiers" />
-                          <label htmlFor="attestation_identite_heritiers" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
-                            <span>📎</span> Cliquez pour joindre les pièces d'identité
-                          </label>
-                        </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-2">CNI ou passeport valide de tous les héritiers</p>
+                        <FileUploadButton
+                          label="🪪 Pièces d'identité héritiers"
+                          required
+                          files={attestationIdentiteHeritiers}
+                          onFilesChange={setAttestationIdentiteHeritiers}
+                          accept="application/pdf,image/*"
+                          inputId="attestation_identite_heritiers"
+                        />
                       </div>
 
                       {/* Titre de propriété */}
-                      <div className="space-y-2">
-                        <Label>🏠 Titre de propriété *</Label>
-                        <p className="text-xs text-gray-500">Acte notarié d'acquisition</p>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
-                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_titre_propriete" />
-                          <label htmlFor="attestation_titre_propriete" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
-                            <span>📎</span> Cliquez pour joindre le titre de propriété
-                          </label>
-                        </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-2">Acte notarié d'acquisition</p>
+                        <FileUploadButton
+                          label="🏠 Titre de propriété"
+                          required
+                          files={attestationTitrePropriete}
+                          onFilesChange={setAttestationTitrePropriete}
+                          accept="application/pdf,image/*"
+                          inputId="attestation_titre_propriete"
+                        />
                       </div>
 
                       {/* Livret de famille */}
-                      <div className="space-y-2">
-                        <Label>👨‍👩‍👧‍👦 Livret de famille *</Label>
-                        <p className="text-xs text-gray-500">À jour</p>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
-                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_livret_famille" />
-                          <label htmlFor="attestation_livret_famille" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
-                            <span>📎</span> Cliquez pour joindre le livret de famille
-                          </label>
-                        </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-2">À jour</p>
+                        <FileUploadButton
+                          label="👨‍👩‍👧‍👦 Livret de famille"
+                          required
+                          files={attestationLivretFamille}
+                          onFilesChange={setAttestationLivretFamille}
+                          accept="application/pdf,image/*"
+                          inputId="attestation_livret_famille"
+                        />
                       </div>
 
                       {/* Testament (conditionnel) */}
                       {attestationData.defunt.existenceTestament && (
-                        <div className="space-y-2">
-                          <Label>📜 Testament *</Label>
-                          <p className="text-xs text-amber-600">Copie authentique ou dépôt chez notaire</p>
-                          <div className="border-2 border-dashed border-amber-300 rounded-lg p-3 hover:border-amber-400 transition-colors bg-amber-50">
-                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_testament" />
-                            <label htmlFor="attestation_testament" className="cursor-pointer text-sm text-amber-700 flex items-center gap-2">
-                              <span>📎</span> Cliquez pour joindre le testament
-                            </label>
-                          </div>
+                        <div>
+                          <p className="text-xs text-amber-600 mb-2">Copie authentique ou dépôt chez notaire</p>
+                          <FileUploadButton
+                            label="📜 Testament"
+                            required
+                            files={attestationTestament}
+                            onFilesChange={setAttestationTestament}
+                            accept="application/pdf,image/*"
+                            inputId="attestation_testament"
+                          />
                         </div>
                       )}
 
                       {/* Contrat de mariage (conditionnel) */}
                       {attestationData.defunt.existenceContratMariage && (
-                        <div className="space-y-2">
-                          <Label>💍 Contrat de mariage *</Label>
-                          <p className="text-xs text-purple-600">Copie authentique</p>
-                          <div className="border-2 border-dashed border-purple-300 rounded-lg p-3 hover:border-purple-400 transition-colors bg-purple-50">
-                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_contrat_mariage" />
-                            <label htmlFor="attestation_contrat_mariage" className="cursor-pointer text-sm text-purple-700 flex items-center gap-2">
-                              <span>📎</span> Cliquez pour joindre le contrat de mariage
-                            </label>
-                          </div>
+                        <div>
+                          <p className="text-xs text-purple-600 mb-2">Copie authentique</p>
+                          <FileUploadButton
+                            label="💍 Contrat de mariage"
+                            required
+                            files={attestationContratMariage}
+                            onFilesChange={setAttestationContratMariage}
+                            accept="application/pdf,image/*"
+                            inputId="attestation_contrat_mariage"
+                          />
                         </div>
                       )}
 
                       {/* Règlement copropriété (conditionnel) */}
                       {attestationData.biens.some(b => b.estCopropriete) && (
-                        <div className="space-y-2">
-                          <Label>🏢 Règlement de copropriété</Label>
-                          <p className="text-xs text-blue-600">+ dernier PV d'assemblée générale</p>
-                          <div className="border-2 border-dashed border-blue-300 rounded-lg p-3 hover:border-blue-400 transition-colors bg-blue-50">
-                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_copropriete" />
-                            <label htmlFor="attestation_copropriete" className="cursor-pointer text-sm text-blue-700 flex items-center gap-2">
-                              <span>📎</span> Cliquez pour joindre les documents de copropriété
-                            </label>
-                          </div>
+                        <div>
+                          <p className="text-xs text-blue-600 mb-2">+ dernier PV d'assemblée générale</p>
+                          <FileUploadButton
+                            label="🏢 Règlement de copropriété"
+                            files={attestationCopropriete}
+                            onFilesChange={setAttestationCopropriete}
+                            accept="application/pdf,image/*"
+                            inputId="attestation_copropriete"
+                          />
                         </div>
                       )}
 
                       {/* Baux (conditionnel) */}
                       {attestationData.biens.some(b => b.situationLocative === "loue") && (
-                        <div className="space-y-2">
-                          <Label>📄 Baux en cours</Label>
-                          <p className="text-xs text-green-600">Copies des contrats de location</p>
-                          <div className="border-2 border-dashed border-green-300 rounded-lg p-3 hover:border-green-400 transition-colors bg-green-50">
-                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_baux" />
-                            <label htmlFor="attestation_baux" className="cursor-pointer text-sm text-green-700 flex items-center gap-2">
-                              <span>📎</span> Cliquez pour joindre les baux
-                            </label>
-                          </div>
+                        <div>
+                          <p className="text-xs text-green-600 mb-2">Copies des contrats de location</p>
+                          <FileUploadButton
+                            label="📄 Baux en cours"
+                            files={attestationBaux}
+                            onFilesChange={setAttestationBaux}
+                            accept="application/pdf,image/*"
+                            inputId="attestation_baux"
+                          />
                         </div>
                       )}
 
                       {/* État hypothécaire (conditionnel) */}
                       {attestationData.biens.some(b => b.hypothequeInscrite) && (
-                        <div className="space-y-2">
-                          <Label>💰 État hypothécaire *</Label>
-                          <p className="text-xs text-red-600">Moins de 3 mois</p>
-                          <div className="border-2 border-dashed border-red-300 rounded-lg p-3 hover:border-red-400 transition-colors bg-red-50">
-                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_hypotheque" />
-                            <label htmlFor="attestation_hypotheque" className="cursor-pointer text-sm text-red-700 flex items-center gap-2">
-                              <span>📎</span> Cliquez pour joindre l'état hypothécaire
-                            </label>
-                          </div>
+                        <div>
+                          <p className="text-xs text-red-600 mb-2">Moins de 3 mois</p>
+                          <FileUploadButton
+                            label="💰 État hypothécaire"
+                            required
+                            files={attestationHypotheque}
+                            onFilesChange={setAttestationHypotheque}
+                            accept="application/pdf,image/*"
+                            inputId="attestation_hypotheque"
+                          />
                         </div>
                       )}
 
                       {/* Justificatifs de domicile */}
-                      <div className="space-y-2">
-                        <Label>📋 Justificatifs de domicile *</Label>
-                        <p className="text-xs text-gray-500">Moins de 3 mois pour chaque héritier</p>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
-                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_justif_domicile" />
-                          <label htmlFor="attestation_justif_domicile" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
-                            <span>📎</span> Cliquez pour joindre les justificatifs de domicile
-                          </label>
-                        </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-2">Moins de 3 mois pour chaque héritier</p>
+                        <FileUploadButton
+                          label="📋 Justificatifs de domicile"
+                          required
+                          files={attestationJustifDomicile}
+                          onFilesChange={setAttestationJustifDomicile}
+                          accept="application/pdf,image/*"
+                          inputId="attestation_justif_domicile"
+                        />
                       </div>
                     </div>
 
