@@ -39548,65 +39548,135 @@ FIN DE LA CONVENTION
                       📎 Section 9 : Pièces justificatives à fournir
                     </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="p-3 bg-white rounded border">
-                        <p className="text-sm font-medium">✅ Acte de décès</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Acte de décès */}
+                      <div className="space-y-2">
+                        <Label>📄 Acte de décès *</Label>
                         <p className="text-xs text-gray-500">Copie intégrale récente</p>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
+                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_acte_deces" />
+                          <label htmlFor="attestation_acte_deces" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
+                            <span>📎</span> Cliquez pour joindre l'acte de décès
+                          </label>
+                        </div>
                       </div>
 
-                      <div className="p-3 bg-white rounded border">
-                        <p className="text-sm font-medium">✅ Pièces d'identité héritiers</p>
-                        <p className="text-xs text-gray-500">CNI ou passeport valide</p>
+                      {/* Pièces d'identité héritiers */}
+                      <div className="space-y-2">
+                        <Label>🪪 Pièces d'identité héritiers *</Label>
+                        <p className="text-xs text-gray-500">CNI ou passeport valide de tous les héritiers</p>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
+                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_identite_heritiers" />
+                          <label htmlFor="attestation_identite_heritiers" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
+                            <span>📎</span> Cliquez pour joindre les pièces d'identité
+                          </label>
+                        </div>
                       </div>
 
-                      <div className="p-3 bg-white rounded border">
-                        <p className="text-sm font-medium">✅ Titre de propriété</p>
+                      {/* Titre de propriété */}
+                      <div className="space-y-2">
+                        <Label>🏠 Titre de propriété *</Label>
                         <p className="text-xs text-gray-500">Acte notarié d'acquisition</p>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
+                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_titre_propriete" />
+                          <label htmlFor="attestation_titre_propriete" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
+                            <span>📎</span> Cliquez pour joindre le titre de propriété
+                          </label>
+                        </div>
                       </div>
 
-                      <div className="p-3 bg-white rounded border">
-                        <p className="text-sm font-medium">✅ Livret de famille</p>
+                      {/* Livret de famille */}
+                      <div className="space-y-2">
+                        <Label>👨‍👩‍👧‍👦 Livret de famille *</Label>
                         <p className="text-xs text-gray-500">À jour</p>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
+                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_livret_famille" />
+                          <label htmlFor="attestation_livret_famille" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
+                            <span>📎</span> Cliquez pour joindre le livret de famille
+                          </label>
+                        </div>
                       </div>
 
+                      {/* Testament (conditionnel) */}
                       {attestationData.defunt.existenceTestament && (
-                        <div className="p-3 bg-amber-50 rounded border border-amber-200">
-                          <p className="text-sm font-medium">⚠️ Testament</p>
-                          <p className="text-xs text-amber-700">Copie authentique ou dépôt chez notaire</p>
+                        <div className="space-y-2">
+                          <Label>📜 Testament *</Label>
+                          <p className="text-xs text-amber-600">Copie authentique ou dépôt chez notaire</p>
+                          <div className="border-2 border-dashed border-amber-300 rounded-lg p-3 hover:border-amber-400 transition-colors bg-amber-50">
+                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_testament" />
+                            <label htmlFor="attestation_testament" className="cursor-pointer text-sm text-amber-700 flex items-center gap-2">
+                              <span>📎</span> Cliquez pour joindre le testament
+                            </label>
+                          </div>
                         </div>
                       )}
 
+                      {/* Contrat de mariage (conditionnel) */}
                       {attestationData.defunt.existenceContratMariage && (
-                        <div className="p-3 bg-purple-50 rounded border border-purple-200">
-                          <p className="text-sm font-medium">💍 Contrat de mariage</p>
-                          <p className="text-xs text-purple-700">Copie authentique</p>
+                        <div className="space-y-2">
+                          <Label>💍 Contrat de mariage *</Label>
+                          <p className="text-xs text-purple-600">Copie authentique</p>
+                          <div className="border-2 border-dashed border-purple-300 rounded-lg p-3 hover:border-purple-400 transition-colors bg-purple-50">
+                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_contrat_mariage" />
+                            <label htmlFor="attestation_contrat_mariage" className="cursor-pointer text-sm text-purple-700 flex items-center gap-2">
+                              <span>📎</span> Cliquez pour joindre le contrat de mariage
+                            </label>
+                          </div>
                         </div>
                       )}
 
+                      {/* Règlement copropriété (conditionnel) */}
                       {attestationData.biens.some(b => b.estCopropriete) && (
-                        <div className="p-3 bg-blue-50 rounded border border-blue-200">
-                          <p className="text-sm font-medium">🏢 Règlement de copropriété</p>
-                          <p className="text-xs text-blue-700">+ dernier PV d'AG</p>
+                        <div className="space-y-2">
+                          <Label>🏢 Règlement de copropriété</Label>
+                          <p className="text-xs text-blue-600">+ dernier PV d'assemblée générale</p>
+                          <div className="border-2 border-dashed border-blue-300 rounded-lg p-3 hover:border-blue-400 transition-colors bg-blue-50">
+                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_copropriete" />
+                            <label htmlFor="attestation_copropriete" className="cursor-pointer text-sm text-blue-700 flex items-center gap-2">
+                              <span>📎</span> Cliquez pour joindre les documents de copropriété
+                            </label>
+                          </div>
                         </div>
                       )}
 
+                      {/* Baux (conditionnel) */}
                       {attestationData.biens.some(b => b.situationLocative === "loue") && (
-                        <div className="p-3 bg-green-50 rounded border border-green-200">
-                          <p className="text-sm font-medium">📄 Baux en cours</p>
-                          <p className="text-xs text-green-700">Copies des contrats de location</p>
+                        <div className="space-y-2">
+                          <Label>📄 Baux en cours</Label>
+                          <p className="text-xs text-green-600">Copies des contrats de location</p>
+                          <div className="border-2 border-dashed border-green-300 rounded-lg p-3 hover:border-green-400 transition-colors bg-green-50">
+                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_baux" />
+                            <label htmlFor="attestation_baux" className="cursor-pointer text-sm text-green-700 flex items-center gap-2">
+                              <span>📎</span> Cliquez pour joindre les baux
+                            </label>
+                          </div>
                         </div>
                       )}
 
+                      {/* État hypothécaire (conditionnel) */}
                       {attestationData.biens.some(b => b.hypothequeInscrite) && (
-                        <div className="p-3 bg-red-50 rounded border border-red-200">
-                          <p className="text-sm font-medium">💰 État hypothécaire</p>
-                          <p className="text-xs text-red-700">Moins de 3 mois</p>
+                        <div className="space-y-2">
+                          <Label>💰 État hypothécaire *</Label>
+                          <p className="text-xs text-red-600">Moins de 3 mois</p>
+                          <div className="border-2 border-dashed border-red-300 rounded-lg p-3 hover:border-red-400 transition-colors bg-red-50">
+                            <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_hypotheque" />
+                            <label htmlFor="attestation_hypotheque" className="cursor-pointer text-sm text-red-700 flex items-center gap-2">
+                              <span>📎</span> Cliquez pour joindre l'état hypothécaire
+                            </label>
+                          </div>
                         </div>
                       )}
 
-                      <div className="p-3 bg-white rounded border">
-                        <p className="text-sm font-medium">📋 Justificatif de domicile</p>
+                      {/* Justificatifs de domicile */}
+                      <div className="space-y-2">
+                        <Label>📋 Justificatifs de domicile *</Label>
                         <p className="text-xs text-gray-500">Moins de 3 mois pour chaque héritier</p>
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-muted-foreground/50 transition-colors">
+                          <input type="file" accept="application/pdf,image/*" multiple className="hidden" id="attestation_justif_domicile" />
+                          <label htmlFor="attestation_justif_domicile" className="cursor-pointer text-sm text-muted-foreground flex items-center gap-2">
+                            <span>📎</span> Cliquez pour joindre les justificatifs de domicile
+                          </label>
+                        </div>
                       </div>
                     </div>
 
