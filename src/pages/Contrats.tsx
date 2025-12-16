@@ -8465,9 +8465,19 @@ FIN DE LA CONVENTION
                 ? "Informations pour le partage successoral"
                 : pendingContractType === "Procuration authentique"
                 ? "Informations pour la procuration authentique"
+                : pendingContractType === "Mandat de protection future"
+                ? "Informations pour le mandat de protection future"
+                : pendingContractType === "Attestation de propriété immobilière"
+                ? "Informations pour l'attestation de propriété immobilière"
+                : pendingContractType === "Quitus / reconnaissance de dette"
+                ? "Informations pour le quitus / reconnaissance de dette"
+                : pendingContractType === "Changement de régime matrimonial"
+                ? "Informations pour le changement de régime matrimonial"
+                : pendingContractType === "Déclaration de succession"
+                ? "Informations pour la déclaration de succession"
                 : questionnaireData.typeContrat === "promesse_unilaterale"
                 ? "Informations pour la promesse unilatérale de vente"
-                : "Informations pour le compromis de vente"}
+                : "Informations pour le " + (pendingContractType || "contrat").toLowerCase()}
             </DialogTitle>
             <DialogDescription>
               Remplissez les informations suivantes pour préparer le document. Ces informations aideront l'IA à rédiger un contrat personnalisé.
