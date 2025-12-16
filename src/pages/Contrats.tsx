@@ -8435,7 +8435,11 @@ FIN DE LA CONVENTION
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {pendingContractType === "Acte de vente immobilière" 
+              {pendingContractType === "Compromis de vente / Promesse unilatérale de vente"
+                ? (questionnaireData.typeContrat === "promesse_unilaterale" 
+                    ? "Informations pour la promesse unilatérale de vente"
+                    : "Informations pour le compromis de vente")
+                : pendingContractType === "Acte de vente immobilière" 
                 ? "Informations pour l'acte de vente immobilière" 
                 : (pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé")
                 ? "Informations pour le bail d'habitation"
@@ -8465,6 +8469,8 @@ FIN DE LA CONVENTION
                 ? "Informations pour le partage successoral"
                 : pendingContractType === "Procuration authentique"
                 ? "Informations pour la procuration authentique"
+                : pendingContractType === "Procuration notariée liée à la succession"
+                ? "Informations pour la procuration notariée liée à la succession"
                 : pendingContractType === "Mandat de protection future"
                 ? "Informations pour le mandat de protection future"
                 : pendingContractType === "Attestation de propriété immobilière"
@@ -8475,8 +8481,6 @@ FIN DE LA CONVENTION
                 ? "Informations pour le changement de régime matrimonial"
                 : pendingContractType === "Déclaration de succession"
                 ? "Informations pour la déclaration de succession"
-                : questionnaireData.typeContrat === "promesse_unilaterale"
-                ? "Informations pour la promesse unilatérale de vente"
                 : "Informations pour le " + (pendingContractType || "contrat").toLowerCase()}
             </DialogTitle>
             <DialogDescription>
