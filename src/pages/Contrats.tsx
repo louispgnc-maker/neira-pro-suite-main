@@ -3751,6 +3751,7 @@ export default function Contrats() {
       typePersonne: "physique", // physique / morale
       
       // Personne physique
+      clientId: "",
       nom: "",
       prenom: "",
       adresseComplete: "",
@@ -5230,7 +5231,7 @@ export default function Contrats() {
           regimeMatrimonial: "", typeIdentite: "", numeroIdentite: "", qualiteSociete: ""
         },
         cessionnaire: {
-          typePersonne: "physique", nom: "", prenom: "", adresseComplete: "", email: "", telephone: "",
+          typePersonne: "physique", clientId: "", nom: "", prenom: "", adresseComplete: "", email: "", telephone: "",
           dateNaissance: "", nationalite: "", profession: "", situationMatrimoniale: "", typeIdentite: "",
           numeroIdentite: "", capaciteJuridique: "majeur", denominationMorale: "", representantLegal: ""
         },
@@ -42921,6 +42922,17 @@ FIN DE LA CONVENTION
                               situationFamiliale = selectedClient.situation_familiale;
                             }
                             
+                            // Extraire régime matrimonial seulement si marié/pacsé
+                            let regimeMatrimonial = "";
+                            const situation = situationFamiliale.toLowerCase();
+                            if (situation.includes("marié") || situation.includes("pacsé") || situation.includes("pacse")) {
+                              if (typeof selectedClient.regime_matrimonial === 'object' && selectedClient.regime_matrimonial !== null) {
+                                regimeMatrimonial = selectedClient.regime_matrimonial.regime_matrimonial || "";
+                              } else if (typeof selectedClient.regime_matrimonial === 'string') {
+                                regimeMatrimonial = selectedClient.regime_matrimonial;
+                              }
+                            }
+                            
                             setCessionPartsData({
                               ...cessionPartsData,
                               cedant: {
@@ -42937,6 +42949,7 @@ FIN DE LA CONVENTION
                                 typeIdentite: selectedClient.type_identite || "",
                                 numeroIdentite: selectedClient.numero_identite || "",
                                 situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
+                                regimeMatrimonial: regimeMatrimonial,
                               }
                             });
                           }
@@ -43153,7 +43166,57 @@ FIN DE LA CONVENTION
                   </div>
 
                   {cessionPartsData.cessionnaire.typePersonne === "physique" && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <>
+                      {clients && clients.length > 0 && (
+                        <div className="space-y-2">
+                          <Label>Lier à un client existant (facultatif)</Label>
+                          <Select
+                            value={cessionPartsData.cessionnaire.clientId || ""}
+                            onValueChange={(value) => {
+                              const selectedClient = clients.find(c => c.id === value);
+                              if (selectedClient) {
+                                // Extraire la situation familiale
+                                let situationFamiliale = "";
+                                if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                                } else if (typeof selectedClient.situation_familiale === 'string') {
+                                  situationFamiliale = selectedClient.situation_familiale;
+                                }
+                                
+                                setCessionPartsData({
+                                  ...cessionPartsData,
+                                  cessionnaire: {
+                                    ...cessionPartsData.cessionnaire,
+                                    clientId: value,
+                                    nom: selectedClient.nom,
+                                    prenom: selectedClient.prenom,
+                                    dateNaissance: selectedClient.date_naissance || "",
+                                    nationalite: selectedClient.nationalite || "",
+                                    profession: selectedClient.profession || "",
+                                    adresseComplete: selectedClient.adresse || "",
+                                    telephone: selectedClient.telephone || "",
+                                    email: selectedClient.email || "",
+                                    typeIdentite: selectedClient.type_identite || "",
+                                    numeroIdentite: selectedClient.numero_identite || "",
+                                    situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
+                                  }
+                                });
+                              }
+                            }}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                            <SelectContent>
+                              {clients.map((client) => (
+                                <SelectItem key={client.id} value={client.id}>
+                                  {client.prenom} {client.nom}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Nom <span className="text-red-500">*</span></Label>
                         <Input
@@ -43302,6 +43365,7 @@ FIN DE LA CONVENTION
                         </Select>
                       </div>
                     </div>
+                    </>
                   )}
 
                   {cessionPartsData.cessionnaire.typePersonne === "morale" && (
