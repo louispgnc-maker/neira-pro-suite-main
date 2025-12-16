@@ -3330,8 +3330,13 @@ export default function Contrats() {
       adresseDecesComplete: "",
       dateDeces: "",
       lieuDeces: "",
+      domicileFiscalCommune: "", // Nouveau : obligatoire pour SPF
+      domicileFiscalPays: "", // Nouveau : obligatoire pour SPF
       situationMatrimoniale: "",
       regimeMatrimonial: "",
+      regimeMatrimonialAutre: "", // Nouveau : si "autre" sélectionné
+      dateContratMariage: "", // Nouveau : obligatoire si contrat
+      notaireContratMariage: "", // Nouveau : obligatoire si contrat
       existenceContratMariage: false,
       existencePacs: false,
       existenceTestament: false,
@@ -3355,6 +3360,7 @@ export default function Contrats() {
       typeAcceptation: "", // pure_simple / concurrence / renonciation
       statutAge: "", // majeur / mineur
       protectionJuridique: "", // aucune / tutelle / curatelle
+      clientId: "", // Nouveau : lien vers clients existants
     }],
     
     // Conjoint survivant
@@ -3392,6 +3398,10 @@ export default function Contrats() {
       natureAcquisition: "", // achat / donation / partage / succession
       repartitionDroits: "", // pleine / usufruit / indivision
       quotePart: "",
+      notaireAcquisition: "", // Nouveau : obligatoire pour SPF
+      datePublicationSPF: "", // Nouveau : obligatoire pour SPF
+      volumeSPF: "", // Nouveau : obligatoire pour SPF
+      numeroSPF: "", // Nouveau : obligatoire pour SPF
       
       // D. Servitudes
       servitudesActives: "",
@@ -3409,6 +3419,10 @@ export default function Contrats() {
       numeroLot: "",
       quotepartCommunes: "",
       chargesAnnuelles: "",
+      
+      // G. Legs particuliers
+      existenceLegsParticuliers: false, // Nouveau : obligatoire
+      precisionLegs: "", // Nouveau : si legs existe
     }],
     
     // 4. Situation familiale
@@ -3427,6 +3441,13 @@ export default function Contrats() {
     // 7. Déclarations
     loiSuccessoraleApplicable: "",
     confirmationAbsenceAutresHeritiers: false,
+    indivisionSuccessorale: false, // Nouveau : mention obligatoire
+    declarationFiscaleHonneur: false, // Nouveau : déclaration fiscale obligatoire
+    
+    // 8. Signatures
+    dateSignature: "", // Nouveau : date de signature
+    lieuSignature: "", // Nouveau : lieu de signature
+    notaireInstrumentaire: "", // Nouveau : notaire signataire
     
     // 8. Évaluation
     valeurVenale: "",
@@ -4511,13 +4532,15 @@ ${attestationData.heritiers.length} héritier(s), ${attestationData.biens.length
       setAttestationData({
         defunt: {
           nom: "", prenom: "", nomNaissance: "", sexe: "", dateNaissance: "", lieuNaissance: "", nationalite: "",
-          profession: "", adresseDecesComplete: "", dateDeces: "", lieuDeces: "", situationMatrimoniale: "",
-          regimeMatrimonial: "", existenceContratMariage: false, existencePacs: false, existenceTestament: false,
-          existenceDonationsEntreEpoux: false, existenceDonationsAnterieures: false,
+          profession: "", adresseDecesComplete: "", dateDeces: "", lieuDeces: "", domicileFiscalCommune: "", 
+          domicileFiscalPays: "", situationMatrimoniale: "", regimeMatrimonial: "", regimeMatrimonialAutre: "",
+          dateContratMariage: "", notaireContratMariage: "", existenceContratMariage: false, existencePacs: false, 
+          existenceTestament: false, existenceDonationsEntreEpoux: false, existenceDonationsAnterieures: false,
         },
         heritiers: [{
           id: 1, nom: "", prenom: "", dateNaissance: "", lieuNaissance: "", lienParente: "", adresseComplete: "",
-          email: "", telephone: "", nationalite: "", profession: "", typeAcceptation: "", statutAge: "", protectionJuridique: "",
+          email: "", telephone: "", nationalite: "", profession: "", typeAcceptation: "", statutAge: "", 
+          protectionJuridique: "", clientId: "",
         }],
         conjointSurvivant: {
           existe: false, nom: "", prenom: "", regimeMatrimonial: "", droitsConjoint: "",
@@ -4526,14 +4549,18 @@ ${attestationData.heritiers.length} héritier(s), ${attestationData.biens.length
           id: 1, adresseComplete: "", codePostal: "", commune: "", cadastreSection: "", cadastreNumero: "",
           cadastreContenance: "", typeBien: "", surfaceHabitable: "", nombrePieces: "", dependances: "", annexes: "",
           equipements: "", situationLocative: "", montantLoyer: "", dateAcquisition: "", natureAcquisition: "",
-          repartitionDroits: "", quotePart: "", servitudesActives: "", servitudesPassives: "", pretEnCours: false,
+          repartitionDroits: "", quotePart: "", notaireAcquisition: "", datePublicationSPF: "", volumeSPF: "",
+          numeroSPF: "", servitudesActives: "", servitudesPassives: "", pretEnCours: false,
           hypothequeInscrite: false, typeHypotheque: "", montantResiduel: "", necessitMainlevee: false,
           estCopropriete: false, numeroLot: "", quotepartCommunes: "", chargesAnnuelles: "",
+          existenceLegsParticuliers: false, precisionLegs: "",
         }],
         regimeMatrimonial: "", droitsConjointSurvivant: "",
         repartitionDroits: { conjoint: "", heritiers: "" },
         destinationBien: "", loiSuccessoraleApplicable: "", confirmationAbsenceAutresHeritiers: false,
+        indivisionSuccessorale: false, declarationFiscaleHonneur: false,
         valeurVenale: "", methodeEstimation: "", valeurDeclareeFiscale: "", bureauSPF: "", fichesPreparees: false,
+        dateSignature: "", lieuSignature: "", notaireInstrumentaire: "",
       });
       
       refreshContrats();
@@ -37984,6 +38011,42 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
 
+                    <div className="space-y-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                      <h4 className="font-medium text-red-700">🏛️ Dernier domicile fiscal <span className="text-red-500">*</span></h4>
+                      
+                      <div className="space-y-2">
+                        <Label>Commune du dernier domicile fiscal <span className="text-red-500">*</span></Label>
+                        <Input 
+                          value={attestationData.defunt.domicileFiscalCommune || ""}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, domicileFiscalCommune: e.target.value}
+                          })}
+                          placeholder="Commune"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Pays <span className="text-red-500">*</span></Label>
+                        <Input 
+                          value={attestationData.defunt.domicileFiscalPays || ""}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            defunt: {...attestationData.defunt, domicileFiscalPays: e.target.value}
+                          })}
+                          placeholder="France"
+                          required
+                        />
+                      </div>
+
+                      <div className="p-3 bg-red-100 border border-red-300 rounded">
+                        <p className="text-xs text-red-800">
+                          ⚠️ <strong>Obligatoire</strong> pour déterminer la loi successorale, la compétence fiscale et la déclaration de succession
+                        </p>
+                      </div>
+                    </div>
+
                     <div className="space-y-4 p-4 bg-white rounded-lg border">
                       <h4 className="font-medium text-gray-700">💍 Situation matrimoniale</h4>
                       
@@ -38013,25 +38076,76 @@ FIN DE LA CONVENTION
                       {(attestationData.defunt.situationMatrimoniale === "marie" || 
                         attestationData.defunt.situationMatrimoniale === "divorce" ||
                         attestationData.defunt.situationMatrimoniale === "veuf") && (
-                        <div className="space-y-2">
-                          <Label>Régime matrimonial</Label>
-                          <Select 
-                            value={attestationData.defunt.regimeMatrimonial}
-                            onValueChange={(value) => setAttestationData({
-                              ...attestationData,
-                              defunt: {...attestationData.defunt, regimeMatrimonial: value}
-                            })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Sélectionner" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="communaute_reduite">Communauté réduite aux acquêts</SelectItem>
-                              <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
-                              <SelectItem value="separation_biens">Séparation de biens</SelectItem>
-                              <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
-                            </SelectContent>
-                          </Select>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Régime matrimonial applicable <span className="text-red-500">*</span></Label>
+                            <Select 
+                              value={attestationData.defunt.regimeMatrimonial}
+                              onValueChange={(value) => setAttestationData({
+                                ...attestationData,
+                                defunt: {...attestationData.defunt, regimeMatrimonial: value}
+                              })}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="communaute_legale">Communauté légale (réduite aux acquêts)</SelectItem>
+                                <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                                <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                                <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                                <SelectItem value="autre">Autre (préciser)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {attestationData.defunt.regimeMatrimonial === "autre" && (
+                            <div className="space-y-2">
+                              <Label>Préciser le régime</Label>
+                              <Input 
+                                value={attestationData.defunt.regimeMatrimonialAutre || ""}
+                                onChange={(e) => setAttestationData({
+                                  ...attestationData,
+                                  defunt: {...attestationData.defunt, regimeMatrimonialAutre: e.target.value}
+                                })}
+                                placeholder="Détails du régime matrimonial"
+                              />
+                            </div>
+                          )}
+
+                          {attestationData.defunt.existenceContratMariage && (
+                            <>
+                              <div className="space-y-2">
+                                <Label>Date du contrat de mariage</Label>
+                                <Input 
+                                  type="date"
+                                  value={attestationData.defunt.dateContratMariage || ""}
+                                  onChange={(e) => setAttestationData({
+                                    ...attestationData,
+                                    defunt: {...attestationData.defunt, dateContratMariage: e.target.value}
+                                  })}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Notaire rédacteur du contrat</Label>
+                                <Input 
+                                  value={attestationData.defunt.notaireContratMariage || ""}
+                                  onChange={(e) => setAttestationData({
+                                    ...attestationData,
+                                    defunt: {...attestationData.defunt, notaireContratMariage: e.target.value}
+                                  })}
+                                  placeholder="Nom et office du notaire"
+                                />
+                              </div>
+                            </>
+                          )}
+
+                          <div className="p-3 bg-orange-100 border border-orange-300 rounded">
+                            <p className="text-xs text-orange-800">
+                              ⚠️ <strong>Essentiel</strong> pour déterminer les droits du conjoint survivant
+                            </p>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -38146,6 +38260,56 @@ FIN DE LA CONVENTION
                               >
                                 Supprimer
                               </Button>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>👤 Sélectionner un client existant (optionnel)</Label>
+                            <Select 
+                              value={heritier.clientId || "none"}
+                              onValueChange={(value) => {
+                                const updated = [...attestationData.heritiers];
+                                if (value === "none") {
+                                  // Réinitialiser aux valeurs vides pour saisie manuelle
+                                  updated[index] = {...heritier, clientId: ""};
+                                } else {
+                                  // Remplir avec les données du client
+                                  const selectedClient = clients.find(c => c.id === value);
+                                  if (selectedClient) {
+                                    updated[index] = {
+                                      ...heritier,
+                                      clientId: value,
+                                      nom: selectedClient.nom,
+                                      prenom: selectedClient.prenom,
+                                      dateNaissance: selectedClient.date_naissance || "",
+                                      lieuNaissance: selectedClient.lieu_naissance || "",
+                                      adresseComplete: selectedClient.adresse || "",
+                                      email: selectedClient.email || "",
+                                      telephone: selectedClient.telephone || "",
+                                      nationalite: selectedClient.nationalite || "",
+                                      profession: selectedClient.profession || "",
+                                    };
+                                  }
+                                }
+                                setAttestationData({...attestationData, heritiers: updated});
+                              }}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Aucun client sélectionné (saisie manuelle)" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">❌ Aucun (saisie manuelle)</SelectItem>
+                                {clients.map((client) => (
+                                  <SelectItem key={client.id} value={client.id}>
+                                    👤 {client.prenom} {client.nom}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            {heritier.clientId && heritier.clientId !== "" && (
+                              <p className="text-xs text-green-600 flex items-center gap-1">
+                                ✅ Client sélectionné - Les champs sont pré-remplis
+                              </p>
                             )}
                           </div>
 
@@ -38714,7 +38878,7 @@ FIN DE LA CONVENTION
 
                           {/* Origine de propriété */}
                           <div className="p-3 bg-purple-50 rounded space-y-3">
-                            <h5 className="font-medium text-sm text-purple-700">📜 Origine de propriété</h5>
+                            <h5 className="font-medium text-sm text-purple-700">📜 Origine de propriété <span className="text-red-500">*</span></h5>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-2">
@@ -38753,6 +38917,58 @@ FIN DE LA CONVENTION
                               </div>
 
                               <div className="space-y-2">
+                                <Label>Notaire rédacteur de l'acte <span className="text-red-500">*</span></Label>
+                                <Input 
+                                  value={bien.notaireAcquisition || ""}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, notaireAcquisition: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Maître X, office notarial de..."
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Date de publication SPF <span className="text-red-500">*</span></Label>
+                                <Input 
+                                  type="date"
+                                  value={bien.datePublicationSPF || ""}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, datePublicationSPF: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Volume SPF <span className="text-red-500">*</span></Label>
+                                <Input 
+                                  value={bien.volumeSPF || ""}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, volumeSPF: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Ex: 2024-15"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Numéro SPF <span className="text-red-500">*</span></Label>
+                                <Input 
+                                  value={bien.numeroSPF || ""}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, numeroSPF: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Ex: 42"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
                                 <Label>Répartition des droits</Label>
                                 <Input 
                                   value={bien.repartitionDroits}
@@ -38778,6 +38994,50 @@ FIN DE LA CONVENTION
                                 />
                               </div>
                             </div>
+
+                            <div className="p-3 bg-purple-100 border border-purple-300 rounded mt-3">
+                              <p className="text-xs text-purple-800">
+                                ⚠️ <strong>Références SPF obligatoires</strong> - Le Service de la Publicité Foncière refusera l'attestation sans ces informations
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Legs particuliers */}
+                          <div className="p-3 bg-amber-50 rounded space-y-3">
+                            <h5 className="font-medium text-sm text-amber-700">📋 Legs particuliers</h5>
+                            
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`legsParticuliers-${index}`}
+                                checked={bien.existenceLegsParticuliers || false}
+                                onChange={(e) => {
+                                  const updated = [...attestationData.biens];
+                                  updated[index] = {...bien, existenceLegsParticuliers: e.target.checked};
+                                  setAttestationData({...attestationData, biens: updated});
+                                }}
+                                className="w-4 h-4"
+                              />
+                              <Label htmlFor={`legsParticuliers-${index}`} className="cursor-pointer">
+                                Existence de legs particuliers portant sur ce bien
+                              </Label>
+                            </div>
+
+                            {bien.existenceLegsParticuliers && (
+                              <div className="space-y-2 mt-2">
+                                <Label>Préciser les legs</Label>
+                                <textarea 
+                                  value={bien.precisionLegs || ""}
+                                  onChange={(e) => {
+                                    const updated = [...attestationData.biens];
+                                    updated[index] = {...bien, precisionLegs: e.target.value};
+                                    setAttestationData({...attestationData, biens: updated});
+                                  }}
+                                  placeholder="Nature et bénéficiaires des legs..."
+                                  className="w-full min-h-[60px] p-2 border rounded-md"
+                                />
+                              </div>
+                            )}
                           </div>
 
                           {/* Servitudes */}
@@ -39002,6 +39262,27 @@ FIN DE LA CONVENTION
                       📊 Section 4 : Répartition des droits sur les biens
                     </h3>
 
+                    <div className="p-4 bg-red-100 border-2 border-red-400 rounded-lg mb-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="indivisionSuccessorale"
+                          checked={attestationData.indivisionSuccessorale || false}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            indivisionSuccessorale: e.target.checked
+                          })}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="indivisionSuccessorale" className="cursor-pointer font-semibold text-red-800">
+                          Les biens sont entrés en indivision successorale entre les héritiers susnommés à compter du décès <span className="text-red-500">*</span>
+                        </Label>
+                      </div>
+                      <p className="text-xs text-red-700 mt-2 ml-6">
+                        ⚠️ <strong>Mention obligatoire</strong> dans l'attestation de propriété immobilière
+                      </p>
+                    </div>
+
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label>Droits du conjoint survivant (si applicable)</Label>
@@ -39102,9 +39383,31 @@ FIN DE LA CONVENTION
                         </Label>
                       </div>
 
+                      <div className="p-4 bg-blue-50 border-2 border-blue-300 rounded-lg mt-4">
+                        <h4 className="font-semibold text-blue-800 mb-3">💶 Déclaration fiscale</h4>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="declarationFiscale"
+                            checked={attestationData.declarationFiscaleHonneur || false}
+                            onChange={(e) => setAttestationData({
+                              ...attestationData,
+                              declarationFiscaleHonneur: e.target.checked
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="declarationFiscale" className="cursor-pointer">
+                            Les héritiers déclarent sur l'honneur que les informations fiscales communiquées sont exactes et correspondent à la valeur réelle des biens
+                          </Label>
+                        </div>
+                        <p className="text-xs text-blue-700 mt-2 ml-6">
+                          Cette déclaration engage la responsabilité fiscale des héritiers
+                        </p>
+                      </div>
+
                       <div className="p-3 bg-red-100 border border-red-300 rounded">
                         <p className="text-xs text-red-800">
-                          ⚠️ <strong>Important :</strong> Cette déclaration engage la responsabilité des héritiers signataires
+                          ⚠️ <strong>Important :</strong> Ces déclarations engagent la responsabilité des héritiers signataires
                         </p>
                       </div>
                     </div>
@@ -39317,6 +39620,65 @@ FIN DE LA CONVENTION
                       <p className="text-xs text-green-700">
                         Une fois toutes les sections remplies, l'attestation pourra être établie par le notaire et publiée au Service de la Publicité Foncière.
                       </p>
+                    </div>
+                  </div>
+
+                  {/* Section 11 : Signatures */}
+                  <div className="space-y-4 bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-indigo-800">
+                      ✍️ Section 11 : Signatures
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Date de signature</Label>
+                          <Input 
+                            type="date"
+                            value={attestationData.dateSignature || ""}
+                            onChange={(e) => setAttestationData({
+                              ...attestationData,
+                              dateSignature: e.target.value
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Lieu de signature</Label>
+                          <Input 
+                            value={attestationData.lieuSignature || ""}
+                            onChange={(e) => setAttestationData({
+                              ...attestationData,
+                              lieuSignature: e.target.value
+                            })}
+                            placeholder="Ville"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="p-4 bg-indigo-100 border border-indigo-300 rounded-lg">
+                        <p className="text-sm font-semibold text-indigo-800 mb-2">📝 Signataires requis :</p>
+                        <ul className="text-xs text-indigo-700 space-y-1 list-disc list-inside">
+                          <li>Tous les héritiers acceptants</li>
+                          <li>Le conjoint survivant (si applicable)</li>
+                          <li>Le notaire instrumentaire</li>
+                        </ul>
+                        <p className="text-xs text-indigo-600 mt-3 italic">
+                          Les signatures seront apposées sur le document définitif généré
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Notaire instrumentaire</Label>
+                        <Input 
+                          value={attestationData.notaireInstrumentaire || ""}
+                          onChange={(e) => setAttestationData({
+                            ...attestationData,
+                            notaireInstrumentaire: e.target.value
+                          })}
+                          placeholder="Maître X, Notaire à..."
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
