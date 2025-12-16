@@ -40220,6 +40220,14 @@ FIN DE LA CONVENTION
                         onValueChange={(value) => {
                           const selectedClient = clients.find(c => c.id === value);
                           if (selectedClient) {
+                            // Extraire la situation familiale de l'objet JSON
+                            let situationFamiliale = "";
+                            if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                              situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                            } else if (typeof selectedClient.situation_familiale === 'string') {
+                              situationFamiliale = selectedClient.situation_familiale;
+                            }
+                            
                             setQuitusDetteData({
                               ...quitusDetteData,
                               creancier: {
@@ -40236,7 +40244,7 @@ FIN DE LA CONVENTION
                                 email: selectedClient.email || "",
                                 typeIdentite: selectedClient.type_identite || "",
                                 numeroIdentite: selectedClient.numero_identite || "",
-                                situationMatrimoniale: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
+                                situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
                               }
                             });
                           }
@@ -40463,6 +40471,14 @@ FIN DE LA CONVENTION
                         onValueChange={(value) => {
                           const selectedClient = clients.find(c => c.id === value);
                           if (selectedClient) {
+                            // Extraire la situation familiale de l'objet JSON
+                            let situationFamiliale = "";
+                            if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                              situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                            } else if (typeof selectedClient.situation_familiale === 'string') {
+                              situationFamiliale = selectedClient.situation_familiale;
+                            }
+                            
                             setQuitusDetteData({
                               ...quitusDetteData,
                               debiteur: {
@@ -40479,7 +40495,7 @@ FIN DE LA CONVENTION
                                 email: selectedClient.email || "",
                                 typeIdentite: selectedClient.type_identite || "",
                                 numeroIdentite: selectedClient.numero_identite || "",
-                                situationMatrimoniale: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
+                                situationMatrimoniale: situationFamiliale || selectedClient.situation_matrimoniale || "",
                               }
                             });
                           }
