@@ -4116,6 +4116,72 @@ export default function Contrats() {
     }
   }, [bailHabitationData.clientId, clients]);
 
+  // Charger automatiquement les pièces d'identité des héritiers depuis les clients
+  useEffect(() => {
+    const loadHeritiersIdentite = async () => {
+      const allFiles: File[] = [];
+      
+      for (const heritier of attestationData.heritiers) {
+        if (heritier.clientId && clients.length > 0) {
+          const selectedClient = clients.find(c => c.id === heritier.clientId) as any;
+          
+          if (selectedClient?.id_doc_path) {
+            console.log('✅ Chargement pièce identité héritier depuis id_doc_path:', selectedClient.id_doc_path);
+            try {
+              const { data, error } = await supabase.storage
+                .from('documents')
+                .download(selectedClient.id_doc_path);
+              
+              if (data && !error) {
+                const fileName = selectedClient.id_doc_path.split('/').pop() || `identite_${heritier.nom}_${heritier.prenom}.pdf`;
+                const file = new File([data], fileName, { type: data.type });
+                allFiles.push(file);
+                console.log('✅ Document héritier chargé:', fileName);
+              }
+            } catch (error) {
+              console.error('❌ Erreur chargement identité héritier:', error);
+            }
+          } else if (selectedClient?.id) {
+            // Chercher dans client_documents
+            console.log('🔍 Recherche dans client_documents pour héritier:', selectedClient.id);
+            try {
+              const { data: docs, error: docsError } = await supabase
+                .from('client_documents')
+                .select('file_path, file_name, document_type')
+                .eq('client_id', selectedClient.id)
+                .eq('document_type', 'piece_identite')
+                .order('uploaded_at', { ascending: false })
+                .limit(1);
+              
+              if (docs && docs.length > 0 && !docsError) {
+                const { data, error } = await supabase.storage
+                  .from('documents')
+                  .download(docs[0].file_path);
+                
+                if (data && !error) {
+                  const file = new File([data], docs[0].file_name, { type: data.type });
+                  allFiles.push(file);
+                  console.log('✅ Document héritier chargé depuis client_documents:', docs[0].file_name);
+                }
+              }
+            } catch (error) {
+              console.error('❌ Erreur recherche client_documents héritier:', error);
+            }
+          }
+        }
+      }
+      
+      if (allFiles.length > 0) {
+        setAttestationIdentiteHeritiers(allFiles);
+        console.log(`📦 ${allFiles.length} document(s) héritier(s) chargé(s)`);
+      }
+    };
+    
+    if (attestationData.heritiers.some(h => h.clientId)) {
+      loadHeritiersIdentite();
+    }
+  }, [attestationData.heritiers, clients]);
+
   // Auto-fill depuis le client sélectionné comme bailleur (Bail d'habitation)
   useEffect(() => {
     if (bailHabitationData.bailleurClientId && clients.length > 0) {
