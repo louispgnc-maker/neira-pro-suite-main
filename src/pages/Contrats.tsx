@@ -3771,35 +3771,48 @@ export default function Contrats() {
     
     // 5. Objet de la cession
     objetCession: {
-      // A. Type de droits cédés
+      // A. Nature exacte des titres
+      natureTitres: "", // parts_sociales / actions
+      
+      // B. Type de droits cédés
       typeDroits: "", // parts_sociales / actions / droits_indivis / compte_courant / cession_reprise_dette
       
-      // B. Nombre de parts
+      // C. Nombre de parts
       nombreParts: "",
       pourcentageCapital: "",
       
-      // C. Valeur nominale
+      // D. Valeur nominale
       valeurNominale: "",
       
-      // D. Prix de cession
+      // E. Prix de cession
       prixTotal: "",
       prixUnitaire: "",
       modeCalcul: "", // valeur_marche / valeur_comptable / clause_statutaire
       
-      // E. Modalités de paiement
+      // F. Modalités de paiement
       modalitePaiement: "", // comptant / echelonne / differe / conditionnel
       ribCedant: "",
       
-      // F. Conditions suspensives
+      // G. Date d'effet de la cession
+      dateEffetCession: "", // date_signature / date_differee
+      dateEffetDifferee: "",
+      
+      // H. Conditions suspensives
       agrement: false,
       approbationConjoint: false,
       financementBancaire: false,
       leveeNantissement: false,
+      
+      // I. Clause de non-garantie de passif
+      sansGarantiePassif: false,
     },
     
     // 6. Agrément (SARL & SCI)
     agrement: {
       procedureAgrement: "",
+      organeCompetent: "", // assemblee_generale / gerant_president / autre
+      dateDecisionAgrement: "",
+      modeVoteMajorite: "",
       convocationAssocies: false,
       voteEffectue: false,
       majoriteRequise: "",
@@ -3849,7 +3862,26 @@ export default function Contrats() {
       regimeMatrimonialPrecise: "",
     },
     
-    // 10. Déclarations légales obligatoires
+    // 10. Droits d'enregistrement (fiscal)
+    droitsEnregistrement: {
+      tauxApplicable: "", // 3_pourcent / 0_1_pourcent
+      chargeDroits: "", // cessionnaire / cedant / autre
+    },
+    
+    // 11. Clause de non-concurrence
+    nonConcurrence: {
+      clauseNonConcurrence: false,
+      dureeNonConcurrence: "",
+      zoneGeographique: "",
+      activiteInterdite: "",
+    },
+    
+    // 12. Notification à la société
+    notificationSociete: {
+      modeNotification: "", // signification_huissier / acceptation_acte
+    },
+    
+    // 13. Déclarations légales obligatoires
     declarationsLegales: {
       consentementLibre: false,
       origineLiciteFonds: false,
@@ -3861,7 +3893,7 @@ export default function Contrats() {
       renonciationDroitPreemption: false,
     },
     
-    // 11. Mise à jour statuts et formalités
+    // 14. Mise à jour statuts et formalités
     formalites: {
       modificationCapital: false,
       miseAJourRegistreMouvements: false,
@@ -3871,7 +3903,7 @@ export default function Contrats() {
       informationBanques: false,
     },
     
-    // 12. Signatures
+    // 15. Signatures
     signatures: {
       dateSignature: "",
       lieuSignature: "",
@@ -5203,12 +5235,15 @@ export default function Contrats() {
           numeroIdentite: "", capaciteJuridique: "majeur", denominationMorale: "", representantLegal: ""
         },
         objetCession: {
-          typeDroits: "", nombreParts: "", pourcentageCapital: "", valeurNominale: "", prixTotal: "",
+          natureTitres: "", typeDroits: "", nombreParts: "", pourcentageCapital: "", valeurNominale: "", prixTotal: "",
           prixUnitaire: "", modeCalcul: "", modalitePaiement: "", ribCedant: "",
-          agrement: false, approbationConjoint: false, financementBancaire: false, leveeNantissement: false
+          dateEffetCession: "", dateEffetDifferee: "",
+          agrement: false, approbationConjoint: false, financementBancaire: false, leveeNantissement: false,
+          sansGarantiePassif: false
         },
         agrement: {
-          procedureAgrement: "", convocationAssocies: false, voteEffectue: false, majoriteRequise: "",
+          procedureAgrement: "", organeCompetent: "", dateDecisionAgrement: "", modeVoteMajorite: "",
+          convocationAssocies: false, voteEffectue: false, majoriteRequise: "",
           notificationStatut: "", delaiLegalRespecte: false
         },
         compteCourant: {
@@ -5224,6 +5259,15 @@ export default function Contrats() {
         conjoint: {
           identiteConjoint: "", acceptationCession: false, renonciationCession: false,
           signatureObligatoire: false, regimeMatrimonialPrecise: ""
+        },
+        droitsEnregistrement: {
+          tauxApplicable: "", chargeDroits: ""
+        },
+        nonConcurrence: {
+          clauseNonConcurrence: false, dureeNonConcurrence: "", zoneGeographique: "", activiteInterdite: ""
+        },
+        notificationSociete: {
+          modeNotification: ""
         },
         declarationsLegales: {
           consentementLibre: false, origineLiciteFonds: false, absenceFraude: false, acceptationPrix: false,
@@ -43306,6 +43350,24 @@ FIN DE LA CONVENTION
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 md:col-span-2">
+                      <Label>Nature exacte des titres selon la forme sociale <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.objetCession.natureTitres}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, natureTitres: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="parts_sociales">Parts sociales (SARL / SNC / SCI)</SelectItem>
+                          <SelectItem value="actions">Actions (SAS / SA)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-amber-700">⚠️ Qualification juridique essentielle</p>
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
                       <Label>Type de droits cédés <span className="text-red-500">*</span></Label>
                       <Select
                         value={cessionPartsData.objetCession.typeDroits}
@@ -43435,6 +43497,70 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
+                  {/* Date d'effet de la cession */}
+                  <div className="bg-white p-4 rounded-lg border border-yellow-300 space-y-3">
+                    <h4 className="font-semibold text-yellow-800">Date d'effet de la cession (clé fiscale & sociale)</h4>
+                    
+                    <div className="space-y-2">
+                      <Label>Date d'effet <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.objetCession.dateEffetCession}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, dateEffetCession: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="date_signature">À la date de signature</SelectItem>
+                          <SelectItem value="date_differee">À une date différée</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-yellow-700">
+                        ➡️ Impact : droits de vote, dividendes, plus-value, responsabilité
+                      </p>
+                    </div>
+
+                    {cessionPartsData.objetCession.dateEffetCession === "date_differee" && (
+                      <div className="space-y-2">
+                        <Label>Date différée précise <span className="text-red-500">*</span></Label>
+                        <Input
+                          type="date"
+                          value={cessionPartsData.objetCession.dateEffetDifferee}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            objetCession: {...cessionPartsData.objetCession, dateEffetDifferee: e.target.value}
+                          })}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Clause de non-garantie de passif */}
+                  <div className="bg-white p-4 rounded-lg border border-yellow-300 space-y-3">
+                    <h4 className="font-semibold text-yellow-800">Garantie de passif</h4>
+                    
+                    <div className="space-y-2">
+                      <Label>La cession est-elle consentie sans garantie de passif ?</Label>
+                      <Select
+                        value={cessionPartsData.objetCession.sansGarantiePassif ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          objetCession: {...cessionPartsData.objetCession, sansGarantiePassif: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non (avec garantie de passif)</SelectItem>
+                          <SelectItem value="oui">Oui (sans garantie de passif)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-yellow-700">
+                        ⚠️ Sans cette précision → zone grise interprétative
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Conditions suspensives */}
                   <div className="bg-white p-4 rounded-lg border border-yellow-300 space-y-3">
                     <h4 className="font-semibold text-yellow-800">Conditions suspensives</h4>
@@ -43499,6 +43625,49 @@ FIN DE LA CONVENTION
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Organe compétent pour l'agrément <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={cessionPartsData.agrement.organeCompetent}
+                          onValueChange={(value) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, organeCompetent: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="assemblee_generale">Assemblée générale</SelectItem>
+                            <SelectItem value="gerant_president">Gérant / Président</SelectItem>
+                            <SelectItem value="autre">Autre (selon statuts)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-red-700">⚠️ Le greffe peut refuser l'acte sans cette précision</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date de la décision d'agrément</Label>
+                        <Input
+                          type="date"
+                          value={cessionPartsData.agrement.dateDecisionAgrement}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, dateDecisionAgrement: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Mode de vote et majorité</Label>
+                        <Input
+                          value={cessionPartsData.agrement.modeVoteMajorite}
+                          onChange={(e) => setCessionPartsData({
+                            ...cessionPartsData,
+                            agrement: {...cessionPartsData.agrement, modeVoteMajorite: e.target.value}
+                          })}
+                          placeholder="Ex: 2/3 des voix présentes"
+                        />
+                      </div>
+
                       <div className="space-y-2 md:col-span-2">
                         <Label>Procédure d'agrément</Label>
                         <Textarea
@@ -44019,10 +44188,160 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* Section 10 : Déclarations légales obligatoires */}
+                {/* Section 10 : Droits d'enregistrement */}
+                <div className="space-y-4 bg-emerald-50 p-6 rounded-lg border border-emerald-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-emerald-800">
+                    🔟 Droits d'enregistrement (fiscal - obligatoire)
+                  </h3>
+
+                  <div className="bg-amber-100 border border-amber-300 p-4 rounded-lg">
+                    <p className="text-sm font-semibold text-amber-900">
+                      ⚠️ Indispensable pour la validité fiscale
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Taux applicable <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.droitsEnregistrement.tauxApplicable}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          droitsEnregistrement: {...cessionPartsData.droitsEnregistrement, tauxApplicable: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3_pourcent">3 % après abattement (parts sociales)</SelectItem>
+                          <SelectItem value="0_1_pourcent">0,1 % (actions)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Charge des droits <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={cessionPartsData.droitsEnregistrement.chargeDroits}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          droitsEnregistrement: {...cessionPartsData.droitsEnregistrement, chargeDroits: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cessionnaire">Cessionnaire (acheteur)</SelectItem>
+                          <SelectItem value="cedant">Cédant (vendeur)</SelectItem>
+                          <SelectItem value="autre">Autre (moitié-moitié ou convention)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 11 : Clause de non-concurrence */}
+                <div className="space-y-4 bg-violet-50 p-6 rounded-lg border border-violet-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-violet-800">
+                    1️⃣1️⃣ Clause de non-concurrence
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Clause de non-concurrence</Label>
+                      <Select
+                        value={cessionPartsData.nonConcurrence.clauseNonConcurrence ? "oui" : "non"}
+                        onValueChange={(value) => setCessionPartsData({
+                          ...cessionPartsData,
+                          nonConcurrence: {...cessionPartsData.nonConcurrence, clauseNonConcurrence: value === "oui"}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-violet-700">
+                        Pas obligatoire légalement, mais attendue en pratique
+                      </p>
+                    </div>
+
+                    {cessionPartsData.nonConcurrence.clauseNonConcurrence && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white border border-violet-300 rounded-lg">
+                        <div className="space-y-2">
+                          <Label>Durée</Label>
+                          <Input
+                            value={cessionPartsData.nonConcurrence.dureeNonConcurrence}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              nonConcurrence: {...cessionPartsData.nonConcurrence, dureeNonConcurrence: e.target.value}
+                            })}
+                            placeholder="Ex: 2 ans, 5 ans..."
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Zone géographique</Label>
+                          <Input
+                            value={cessionPartsData.nonConcurrence.zoneGeographique}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              nonConcurrence: {...cessionPartsData.nonConcurrence, zoneGeographique: e.target.value}
+                            })}
+                            placeholder="Ex: France, Île-de-France..."
+                          />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Activité interdite</Label>
+                          <Textarea
+                            value={cessionPartsData.nonConcurrence.activiteInterdite}
+                            onChange={(e) => setCessionPartsData({
+                              ...cessionPartsData,
+                              nonConcurrence: {...cessionPartsData.nonConcurrence, activiteInterdite: e.target.value}
+                            })}
+                            placeholder="Décrire l'activité interdite"
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Section 12 : Notification à la société */}
+                <div className="space-y-4 bg-rose-50 p-6 rounded-lg border border-rose-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-rose-800">
+                    1️⃣2️⃣ Information de la société (formalisme interne)
+                  </h3>
+
+                  <div className="bg-amber-100 border border-amber-300 p-4 rounded-lg">
+                    <p className="text-sm font-semibold text-amber-900">
+                      ⚠️ Article 1690 du Code civil / pratique sociétaire
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Notification de la cession à la société <span className="text-red-500">*</span></Label>
+                    <Select
+                      value={cessionPartsData.notificationSociete.modeNotification}
+                      onValueChange={(value) => setCessionPartsData({
+                        ...cessionPartsData,
+                        notificationSociete: {...cessionPartsData.notificationSociete, modeNotification: value}
+                      })}
+                    >
+                      <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="signification_huissier">Signification par huissier</SelectItem>
+                        <SelectItem value="acceptation_acte">Acceptation dans l'acte</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Section 13 : Déclarations légales obligatoires */}
                 <div className="space-y-4 bg-gray-50 p-6 rounded-lg border border-gray-200">
                   <h3 className="font-semibold text-lg border-b pb-2 text-gray-800">
-                    🔟 Déclarations légales obligatoires
+                    1️⃣3️⃣ Déclarations légales obligatoires
                   </h3>
 
                   <div className="space-y-3">
@@ -44124,10 +44443,10 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* Section 11 : Mise à jour statuts et formalités */}
+                {/* Section 14 : Mise à jour statuts et formalités */}
                 <div className="space-y-4 bg-cyan-50 p-6 rounded-lg border border-cyan-200">
                   <h3 className="font-semibold text-lg border-b pb-2 text-cyan-800">
-                    1️⃣1️⃣ Mise à jour des statuts et formalités
+                    1️⃣4️⃣ Mise à jour des statuts et formalités
                   </h3>
 
                   <div className="space-y-3">
@@ -44205,10 +44524,10 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* Section 12 : Signatures */}
+                {/* Section 15 : Signatures */}
                 <div className="space-y-4 bg-lime-50 p-6 rounded-lg border border-lime-200">
                   <h3 className="font-semibold text-lg border-b pb-2 text-lime-800">
-                    1️⃣2️⃣ Signatures et formalités finales
+                    1️⃣5️⃣ Signatures et formalités finales
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
