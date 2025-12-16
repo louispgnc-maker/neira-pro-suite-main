@@ -75,6 +75,11 @@ const categoriesAvocat = [
 ];
 
 // Composant réutilisable pour upload multiple de fichiers
+interface FileWithMetadata extends File {
+  _autoLoaded?: boolean;
+  _clientName?: string;
+}
+
 interface MultiFileUploadProps {
   label: string;
   files: File[];
@@ -134,29 +139,44 @@ function MultiFileUpload({ label, files, onFilesChange, required = false, accept
       />
       {files.length > 0 && (
         <div className="mt-2 space-y-1">
-          {files.map((file, index) => (
-            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                </svg>
-                <span className="truncate" title={file.name}>{file.name}</span>
-                <span className="text-gray-400 text-xs flex-shrink-0">
-                  ({(file.size / 1024).toFixed(0)} KB)
-                </span>
+          {files.map((file, index) => {
+            const fileWithMeta = file as FileWithMetadata;
+            const isAutoLoaded = fileWithMeta._autoLoaded === true;
+            
+            return (
+              <div key={index} className="space-y-1">
+                <div className="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="truncate" title={file.name}>{file.name}</span>
+                    <span className="text-gray-400 text-xs flex-shrink-0">
+                      ({(file.size / 1024).toFixed(0)} KB)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    className="ml-2 p-1 text-red-600 hover:bg-red-50 rounded flex-shrink-0"
+                    title="Supprimer"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+                {isAutoLoaded && (
+                  <div className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 bg-blue-50 rounded">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <span>Pièce du client {fileWithMeta._clientName || ''} chargée automatiquement</span>
+                  </div>
+                )}
               </div>
-              <button
-                type="button"
-                onClick={() => removeFile(index)}
-                className="ml-2 p-1 text-red-600 hover:bg-red-50 rounded flex-shrink-0"
-                title="Supprimer"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -4119,11 +4139,12 @@ export default function Contrats() {
   // Charger automatiquement les pièces d'identité des héritiers depuis les clients
   useEffect(() => {
     const loadHeritiersIdentite = async () => {
-      const allFiles: File[] = [];
+      const allFiles: FileWithMetadata[] = [];
       
       for (const heritier of attestationData.heritiers) {
         if (heritier.clientId && clients.length > 0) {
           const selectedClient = clients.find(c => c.id === heritier.clientId) as any;
+          const clientName = `${selectedClient?.prenom || ''} ${selectedClient?.nom || ''}`.trim();
           
           if (selectedClient?.id_doc_path) {
             console.log('✅ Chargement pièce identité héritier depuis id_doc_path:', selectedClient.id_doc_path);
@@ -4134,7 +4155,9 @@ export default function Contrats() {
               
               if (data && !error) {
                 const fileName = selectedClient.id_doc_path.split('/').pop() || `identite_${heritier.nom}_${heritier.prenom}.pdf`;
-                const file = new File([data], fileName, { type: data.type });
+                const file = new File([data], fileName, { type: data.type }) as FileWithMetadata;
+                file._autoLoaded = true;
+                file._clientName = clientName;
                 allFiles.push(file);
                 console.log('✅ Document héritier chargé:', fileName);
               }
@@ -4159,7 +4182,9 @@ export default function Contrats() {
                   .download(docs[0].file_path);
                 
                 if (data && !error) {
-                  const file = new File([data], docs[0].file_name, { type: data.type });
+                  const file = new File([data], docs[0].file_name, { type: data.type }) as FileWithMetadata;
+                  file._autoLoaded = true;
+                  file._clientName = clientName;
                   allFiles.push(file);
                   console.log('✅ Document héritier chargé depuis client_documents:', docs[0].file_name);
                 }
