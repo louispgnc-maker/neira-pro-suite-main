@@ -4773,6 +4773,150 @@ export default function Contrats() {
     }
   };
 
+  // Handler pour Quitus / reconnaissance de dette
+  const handleQuitusDetteSubmit = async () => {
+    if (!user) return;
+
+    // Validation
+    if (!quitusDetteData.typeActe) {
+      toast.error("Type d'acte requis", { description: "Veuillez sélectionner le type d'acte" });
+      return;
+    }
+    if (!quitusDetteData.creancier.nom || !quitusDetteData.creancier.prenom || !quitusDetteData.creancier.adresseComplete) {
+      toast.error("Identité créancier requise", { description: "Nom, prénom et adresse obligatoires" });
+      return;
+    }
+    if (!quitusDetteData.debiteur.nom || !quitusDetteData.debiteur.prenom || !quitusDetteData.debiteur.adresseComplete) {
+      toast.error("Identité débiteur requise", { description: "Nom, prénom et adresse obligatoires" });
+      return;
+    }
+    if (!quitusDetteData.objetDette.natureDette || !quitusDetteData.objetDette.dateNaissanceDette) {
+      toast.error("Objet de la dette requis", { description: "Nature et date de la dette obligatoires" });
+      return;
+    }
+    if (!quitusDetteData.montant.montantTotal || !quitusDetteData.montant.devise) {
+      toast.error("Montant requis", { description: "Montant total et devise obligatoires" });
+      return;
+    }
+    if (!quitusDetteData.signatures.dateSignature || !quitusDetteData.signatures.lieuSignature) {
+      toast.error("Signatures requises", { description: "Date et lieu de signature obligatoires" });
+      return;
+    }
+
+    // Validations spécifiques selon type d'acte
+    if ((quitusDetteData.typeActe === "reconnaissance_dette" || quitusDetteData.typeActe === "reconnaissance_dette_modalites") && parseFloat(quitusDetteData.montant.montantTotal) > 1500 && !quitusDetteData.clausesLegales.mentionManuscrite) {
+      toast.error("Mention manuscrite requise", { description: "Pour une dette > 1500€, la mention manuscrite est obligatoire" });
+      return;
+    }
+
+    if ((quitusDetteData.typeActe === "quitus" || quitusDetteData.typeActe === "quitus_partiel" || quitusDetteData.typeActe === "solde_tout_compte" || quitusDetteData.typeActe === "attestation_reglement") && quitusDetteData.quitus.paiementsRecus.length === 0) {
+      toast.error("Paiements requis", { description: "Veuillez indiquer les paiements reçus" });
+      return;
+    }
+
+    try {
+      const typeLabels: Record<string, string> = {
+        reconnaissance_dette: "Reconnaissance de dette",
+        reconnaissance_dette_modalites: "Reconnaissance de dette avec modalités",
+        quitus: "Quitus total",
+        quitus_partiel: "Quitus partiel",
+        remise_dette: "Remise de dette",
+        solde_tout_compte: "Solde de tout compte",
+        attestation_reglement: "Attestation de règlement"
+      };
+
+      const description = `${typeLabels[quitusDetteData.typeActe] || quitusDetteData.typeActe} - Créancier: ${quitusDetteData.creancier.prenom} ${quitusDetteData.creancier.nom} / Débiteur: ${quitusDetteData.debiteur.prenom} ${quitusDetteData.debiteur.nom} - Montant: ${quitusDetteData.montant.montantTotal} ${quitusDetteData.montant.devise}`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: quitusDetteData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("Document créé", { description: "Vous pouvez maintenant compléter les détails" });
+      setShowQuestionDialog(false);
+      
+      // Réinitialiser le formulaire
+      setQuitusDetteData({
+        typeActe: "",
+        creancier: {
+          isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", dateNaissance: "",
+          lieuNaissance: "", nationalite: "", profession: "", adresseComplete: "", telephone: "",
+          email: "", typeIdentite: "", numeroIdentite: "", situationMatrimoniale: "", rib: ""
+        },
+        debiteur: {
+          isClient: false, clientId: "", nom: "", prenom: "", nomNaissance: "", dateNaissance: "",
+          lieuNaissance: "", nationalite: "", profession: "", adresseComplete: "", telephone: "",
+          email: "", typeIdentite: "", numeroIdentite: "", situationMatrimoniale: "", rib: ""
+        },
+        objetDette: {
+          natureDette: "", dateNaissanceDette: "", circonstancesDette: "", preuveEcriteExiste: "", temoinsEventuels: ""
+        },
+        montant: {
+          montantTotal: "", devise: "EUR", sommeDejaRemboursee: "", sommeRestantDue: "", montantReconnuDebiteur: "", modalitePret: ""
+        },
+        remboursement: {
+          modalite: "", conditionRemboursement: "",
+          echeances: [{ id: 1, date: "", montant: "", moyenPaiement: "", consequencesRetard: "" }],
+          avecInterets: false, tauxInteret: "", tauxUsuraire: "", capitalisationInterets: "",
+          clausePenale: false, montantPenalite: "", pourcentagePenalite: "", delaiGrace: ""
+        },
+        suretes: {
+          cautionPersonnelle: false, cautionIdentite: "", cautionMontant: "", cautionDuree: "",
+          garantieSalaire: false, gageMobilier: false, gageDescription: "",
+          nantissementTitres: false, nantissementDetails: "",
+          hypotheque: false, hypothequeDetails: "",
+          depotGarantie: false, depotMontant: "",
+          acteAuthentique: false, notaireNom: ""
+        },
+        remiseDette: {
+          remiseTotale: false, remisePartielle: false, montantRemise: "", conditionsRemise: "",
+          effetsRetroactifs: false, renonciationPoursuites: false, preuvesPaiementsPartiels: ""
+        },
+        quitus: {
+          typeQuitus: "",
+          paiementsRecus: [{ id: 1, date: "", montant: "", modePaiement: "", referenceBancaire: "" }],
+          sommesRecuesTotalement: false, renonciationReclamations: false, detteEteinte: false,
+          annulationGaranties: false, restitutionDocuments: false
+        },
+        clausesLegales: {
+          consentementLibre: false, reconnaissanceMontant: false, engagementRemboursement: false,
+          mentionManuscrite: "", clauseSolidarite: false, clauseDivisibilite: false,
+          extinctionDette: false, liberationDefinitive: false, renonciationRecours: false, identificationDette: ""
+        },
+        signatures: {
+          dateSignature: "", lieuSignature: "", signatureNotaire: "non", nomNotaire: "", villeNotaire: ""
+        }
+      });
+      setQuitusCreancierIdentiteFiles([]);
+      setQuitusDebiteurIdentiteFiles([]);
+      setQuitusPreuveDetteFiles([]);
+      setQuitusPreuveTransfertFiles([]);
+      setQuitusEcheancierFiles([]);
+      setQuitusCautionIdentiteFiles([]);
+      setQuitusPreuvesPaiementsFiles([]);
+      setQuitusAncienneDetteFiles([]);
+      setQuitusJustifDomicileCreancierFiles([]);
+      setQuitusJustifDomicileDebiteurFiles([]);
+      
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création quitus/reconnaissance:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
   // Handler pour Attestation de propriété immobilière
   const handleAttestationSubmit = async () => {
     if (!user) return;
@@ -40000,8 +40144,2011 @@ FIN DE LA CONVENTION
                 </div>
             )}
 
+            {/* Formulaire Quitus / Reconnaissance de dette */}
+            {pendingContractType === "Quitus / reconnaissance de dette" && (
+              <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                
+                {/* Section 1 : Type d'acte à générer */}
+                <div className="space-y-4 bg-blue-50 p-6 rounded-lg border border-blue-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-blue-800">
+                    1️⃣ Type d'acte à générer
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <Label>Type d'acte <span className="text-red-500">*</span></Label>
+                    <Select
+                      value={quitusDetteData.typeActe}
+                      onValueChange={(value) => setQuitusDetteData({...quitusDetteData, typeActe: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner le type d'acte" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="reconnaissance_dette">☐ Reconnaissance de dette (dette NON réglée)</SelectItem>
+                        <SelectItem value="reconnaissance_dette_modalites">☐ Reconnaissance de dette + modalités de remboursement</SelectItem>
+                        <SelectItem value="quitus">☐ Quitus (dette totalement réglée)</SelectItem>
+                        <SelectItem value="quitus_partiel">☐ Quitus partiel</SelectItem>
+                        <SelectItem value="remise_dette">☐ Remise de dette (abandon total ou partiel)</SelectItem>
+                        <SelectItem value="solde_tout_compte">☐ Solde de tout compte entre particuliers</SelectItem>
+                        <SelectItem value="attestation_reglement">☐ Attestation de règlement d'une somme due</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <div className="p-3 bg-blue-100 border border-blue-300 rounded">
+                      <p className="text-xs text-blue-800">
+                        {quitusDetteData.typeActe === "reconnaissance_dette" && "📌 Pour une dette non encore réglée, sans échéancier de remboursement"}
+                        {quitusDetteData.typeActe === "reconnaissance_dette_modalites" && "📌 Pour une dette avec un plan de remboursement détaillé (échéances, intérêts, etc.)"}
+                        {quitusDetteData.typeActe === "quitus" && "📌 Pour attester que la dette a été totalement réglée et éteinte"}
+                        {quitusDetteData.typeActe === "quitus_partiel" && "📌 Pour attester d'un paiement partiel avec un solde restant dû"}
+                        {quitusDetteData.typeActe === "remise_dette" && "📌 Pour un abandon de créance (total ou partiel) par le créancier"}
+                        {quitusDetteData.typeActe === "solde_tout_compte" && "📌 Pour un règlement définitif de toutes les créances entre les parties"}
+                        {quitusDetteData.typeActe === "attestation_reglement" && "📌 Pour attester du paiement d'une somme précise"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 2 : Identité complète du créancier */}
+                <div className="space-y-4 bg-green-50 p-6 rounded-lg border border-green-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-green-800">
+                    2️⃣ Identité complète du CRÉANCIER (celui qui prête / celui à qui on doit l'argent)
+                  </h3>
+                  
+                  <div className="space-y-2">
+                    <Label>Le créancier est-il votre client ?</Label>
+                    <RadioGroup
+                      value={quitusDetteData.creancier.isClient ? "client" : "autre"}
+                      onValueChange={(value) => {
+                        setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, isClient: value === "client"}
+                        });
+                      }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="client" id="creancier_client" />
+                        <Label htmlFor="creancier_client" className="cursor-pointer">Oui, c'est un de mes clients</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="autre" id="creancier_autre" />
+                        <Label htmlFor="creancier_autre" className="cursor-pointer">Non, saisie manuelle</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {quitusDetteData.creancier.isClient && (
+                    <div className="space-y-2">
+                      <Label>Sélectionner le client créancier</Label>
+                      <Select 
+                        value={quitusDetteData.creancier.clientId}
+                        onValueChange={(value) => {
+                          const selectedClient = clients.find(c => c.id === value);
+                          if (selectedClient) {
+                            setQuitusDetteData({
+                              ...quitusDetteData,
+                              creancier: {
+                                ...quitusDetteData.creancier,
+                                clientId: value,
+                                nom: selectedClient.nom,
+                                prenom: selectedClient.prenom,
+                                dateNaissance: selectedClient.date_naissance || "",
+                                lieuNaissance: selectedClient.lieu_naissance || "",
+                                nationalite: selectedClient.nationalite || "",
+                                profession: selectedClient.profession || "",
+                                adresseComplete: selectedClient.adresse || "",
+                                telephone: selectedClient.telephone || "",
+                                email: selectedClient.email || "",
+                                typeIdentite: selectedClient.type_identite || "",
+                                numeroIdentite: selectedClient.numero_identite || "",
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nom <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={quitusDetteData.creancier.nom}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, nom: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Prénom <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={quitusDetteData.creancier.prenom}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, prenom: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Nom de naissance</Label>
+                      <Input
+                        value={quitusDetteData.creancier.nomNaissance}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, nomNaissance: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Date de naissance</Label>
+                      <Input
+                        type="date"
+                        value={quitusDetteData.creancier.dateNaissance}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, dateNaissance: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Lieu de naissance</Label>
+                      <Input
+                        value={quitusDetteData.creancier.lieuNaissance}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, lieuNaissance: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Nationalité</Label>
+                      <Input
+                        value={quitusDetteData.creancier.nationalite}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, nationalite: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Profession</Label>
+                      <Input
+                        value={quitusDetteData.creancier.profession}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, profession: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Situation matrimoniale</Label>
+                      <Select
+                        value={quitusDetteData.creancier.situationMatrimoniale}
+                        onValueChange={(value) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, situationMatrimoniale: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="celibataire">Célibataire</SelectItem>
+                          <SelectItem value="marie">Marié(e)</SelectItem>
+                          <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                          <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                          <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={quitusDetteData.creancier.adresseComplete}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, adresseComplete: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Téléphone</Label>
+                      <Input
+                        value={quitusDetteData.creancier.telephone}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, telephone: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      <Input
+                        type="email"
+                        value={quitusDetteData.creancier.email}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, email: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Type de pièce d'identité</Label>
+                      <Select
+                        value={quitusDetteData.creancier.typeIdentite}
+                        onValueChange={(value) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, typeIdentite: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="CNI">Carte Nationale d'Identité</SelectItem>
+                          <SelectItem value="Passeport">Passeport</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Numéro de pièce d'identité</Label>
+                      <Input
+                        value={quitusDetteData.creancier.numeroIdentite}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, numeroIdentite: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>RIB (si remboursement prévu par virement)</Label>
+                      <Input
+                        value={quitusDetteData.creancier.rib}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          creancier: {...quitusDetteData.creancier, rib: e.target.value}
+                        })}
+                        placeholder="FR76..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <MultiFileUpload
+                      label="📄 Pièce d'identité du créancier"
+                      required
+                      files={quitusCreancierIdentiteFiles}
+                      onFilesChange={setQuitusCreancierIdentiteFiles}
+                      accept="application/pdf,image/*"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <MultiFileUpload
+                      label="📋 Justificatif de domicile du créancier"
+                      files={quitusJustifDomicileCreancierFiles}
+                      onFilesChange={setQuitusJustifDomicileCreancierFiles}
+                      accept="application/pdf,image/*"
+                    />
+                  </div>
+                </div>
+
+                {/* Section 3 : Identité complète du débiteur */}
+                <div className="space-y-4 bg-orange-50 p-6 rounded-lg border border-orange-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-orange-800">
+                    3️⃣ Identité complète du DÉBITEUR (celui qui emprunte / celui qui doit l'argent)
+                  </h3>
+                  
+                  <div className="space-y-2">
+                    <Label>Le débiteur est-il votre client ?</Label>
+                    <RadioGroup
+                      value={quitusDetteData.debiteur.isClient ? "client" : "autre"}
+                      onValueChange={(value) => {
+                        setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, isClient: value === "client"}
+                        });
+                      }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="client" id="debiteur_client" />
+                        <Label htmlFor="debiteur_client" className="cursor-pointer">Oui, c'est un de mes clients</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="autre" id="debiteur_autre" />
+                        <Label htmlFor="debiteur_autre" className="cursor-pointer">Non, saisie manuelle</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {quitusDetteData.debiteur.isClient && (
+                    <div className="space-y-2">
+                      <Label>Sélectionner le client débiteur</Label>
+                      <Select 
+                        value={quitusDetteData.debiteur.clientId}
+                        onValueChange={(value) => {
+                          const selectedClient = clients.find(c => c.id === value);
+                          if (selectedClient) {
+                            setQuitusDetteData({
+                              ...quitusDetteData,
+                              debiteur: {
+                                ...quitusDetteData.debiteur,
+                                clientId: value,
+                                nom: selectedClient.nom,
+                                prenom: selectedClient.prenom,
+                                dateNaissance: selectedClient.date_naissance || "",
+                                lieuNaissance: selectedClient.lieu_naissance || "",
+                                nationalite: selectedClient.nationalite || "",
+                                profession: selectedClient.profession || "",
+                                adresseComplete: selectedClient.adresse || "",
+                                telephone: selectedClient.telephone || "",
+                                email: selectedClient.email || "",
+                                typeIdentite: selectedClient.type_identite || "",
+                                numeroIdentite: selectedClient.numero_identite || "",
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
+                        <SelectContent>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nom <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={quitusDetteData.debiteur.nom}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, nom: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Prénom <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={quitusDetteData.debiteur.prenom}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, prenom: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Nom de naissance</Label>
+                      <Input
+                        value={quitusDetteData.debiteur.nomNaissance}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, nomNaissance: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Date de naissance</Label>
+                      <Input
+                        type="date"
+                        value={quitusDetteData.debiteur.dateNaissance}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, dateNaissance: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Lieu de naissance</Label>
+                      <Input
+                        value={quitusDetteData.debiteur.lieuNaissance}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, lieuNaissance: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Nationalité</Label>
+                      <Input
+                        value={quitusDetteData.debiteur.nationalite}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, nationalite: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Profession</Label>
+                      <Input
+                        value={quitusDetteData.debiteur.profession}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, profession: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Situation matrimoniale</Label>
+                      <Select
+                        value={quitusDetteData.debiteur.situationMatrimoniale}
+                        onValueChange={(value) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, situationMatrimoniale: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="celibataire">Célibataire</SelectItem>
+                          <SelectItem value="marie">Marié(e)</SelectItem>
+                          <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                          <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                          <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Adresse complète <span className="text-red-500">*</span></Label>
+                      <Input
+                        value={quitusDetteData.debiteur.adresseComplete}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, adresseComplete: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Téléphone</Label>
+                      <Input
+                        value={quitusDetteData.debiteur.telephone}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, telephone: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      <Input
+                        type="email"
+                        value={quitusDetteData.debiteur.email}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, email: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Type de pièce d'identité</Label>
+                      <Select
+                        value={quitusDetteData.debiteur.typeIdentite}
+                        onValueChange={(value) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, typeIdentite: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="CNI">Carte Nationale d'Identité</SelectItem>
+                          <SelectItem value="Passeport">Passeport</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Numéro de pièce d'identité</Label>
+                      <Input
+                        value={quitusDetteData.debiteur.numeroIdentite}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, numeroIdentite: e.target.value}
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>RIB (si prélèvements ou paiements programmés)</Label>
+                      <Input
+                        value={quitusDetteData.debiteur.rib}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          debiteur: {...quitusDetteData.debiteur, rib: e.target.value}
+                        })}
+                        placeholder="FR76..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <MultiFileUpload
+                      label="📄 Pièce d'identité du débiteur"
+                      required
+                      files={quitusDebiteurIdentiteFiles}
+                      onFilesChange={setQuitusDebiteurIdentiteFiles}
+                      accept="application/pdf,image/*"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <MultiFileUpload
+                      label="📋 Justificatif de domicile du débiteur"
+                      files={quitusJustifDomicileDebiteurFiles}
+                      onFilesChange={setQuitusJustifDomicileDebiteurFiles}
+                      accept="application/pdf,image/*"
+                    />
+                  </div>
+                </div>
+
+                {/* Section 4 : Objet de la dette */}
+                <div className="space-y-4 bg-purple-50 p-6 rounded-lg border border-purple-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-purple-800">
+                    4️⃣ Objet de la dette
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nature de la dette <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={quitusDetteData.objetDette.natureDette}
+                        onValueChange={(value) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          objetDette: {...quitusDetteData.objetDette, natureDette: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pret_argent">Prêt d'argent</SelectItem>
+                          <SelectItem value="avance_fonds">Avance de fonds</SelectItem>
+                          <SelectItem value="aide_exceptionnelle">Aide exceptionnelle</SelectItem>
+                          <SelectItem value="remboursement_depenses">Remboursement de dépenses</SelectItem>
+                          <SelectItem value="participation_projet">Participation dans un projet</SelectItem>
+                          <SelectItem value="dette_commerciale">Dette commerciale informelle</SelectItem>
+                          <SelectItem value="dette_familiale">Dette familiale</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Date de naissance de la dette <span className="text-red-500">*</span></Label>
+                      <Input
+                        type="date"
+                        value={quitusDetteData.objetDette.dateNaissanceDette}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          objetDette: {...quitusDetteData.objetDette, dateNaissanceDette: e.target.value}
+                        })}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Circonstances de la dette <span className="text-red-500">*</span></Label>
+                      <textarea
+                        value={quitusDetteData.objetDette.circonstancesDette}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          objetDette: {...quitusDetteData.objetDette, circonstancesDette: e.target.value}
+                        })}
+                        className="w-full min-h-[100px] p-3 border rounded-md"
+                        placeholder="Décrivez les circonstances précises : pourquoi, comment, dans quel contexte..."
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Preuve écrite existante ?</Label>
+                      <RadioGroup
+                        value={quitusDetteData.objetDette.preuveEcriteExiste ? "oui" : "non"}
+                        onValueChange={(value) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          objetDette: {...quitusDetteData.objetDette, preuveEcriteExiste: value === "oui"}
+                        })}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="oui" id="preuve_oui" />
+                          <Label htmlFor="preuve_oui" className="cursor-pointer">Oui</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="non" id="preuve_non" />
+                          <Label htmlFor="preuve_non" className="cursor-pointer">Non</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Témoins éventuels</Label>
+                      <Input
+                        value={quitusDetteData.objetDette.temoinsEventuels}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          objetDette: {...quitusDetteData.objetDette, temoinsEventuels: e.target.value}
+                        })}
+                        placeholder="Nom(s) et coordonnées des témoins"
+                      />
+                    </div>
+                  </div>
+
+                  {quitusDetteData.objetDette.preuveEcriteExiste && (
+                    <div className="space-y-2">
+                      <MultiFileUpload
+                        label="📄 Preuve écrite de la dette"
+                        files={quitusPreuveDetteFiles}
+                        onFilesChange={setQuitusPreuveDetteFiles}
+                        accept="application/pdf,image/*"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Section 5 : Montant de la dette */}
+                <div className="space-y-4 bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-yellow-800">
+                    5️⃣ Montant de la dette
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Montant total exact (en euros) <span className="text-red-500">*</span></Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={quitusDetteData.montant.montantTotal}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          montant: {...quitusDetteData.montant, montantTotal: e.target.value}
+                        })}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Devise</Label>
+                      <Select
+                        value={quitusDetteData.montant.devise}
+                        onValueChange={(value) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          montant: {...quitusDetteData.montant, devise: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="EUR">EUR (€)</SelectItem>
+                          <SelectItem value="USD">USD ($)</SelectItem>
+                          <SelectItem value="GBP">GBP (£)</SelectItem>
+                          <SelectItem value="CHF">CHF</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Somme déjà remboursée</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={quitusDetteData.montant.sommeDejaRemboursee}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          montant: {...quitusDetteData.montant, sommeDejaRemboursee: e.target.value}
+                        })}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Somme restant due</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={quitusDetteData.montant.sommeRestantDue}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          montant: {...quitusDetteData.montant, sommeRestantDue: e.target.value}
+                        })}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Montant reconnu par le débiteur</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={quitusDetteData.montant.montantReconnuDebiteur}
+                        onChange={(e) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          montant: {...quitusDetteData.montant, montantReconnuDebiteur: e.target.value}
+                        })}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Modalité du prêt <span className="text-red-500">*</span></Label>
+                      <Select
+                        value={quitusDetteData.montant.modalitePret}
+                        onValueChange={(value) => setQuitusDetteData({
+                          ...quitusDetteData,
+                          montant: {...quitusDetteData.montant, modalitePret: value}
+                        })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="transfert_bancaire">Transfert bancaire</SelectItem>
+                          <SelectItem value="cheque">Remise de chèque</SelectItem>
+                          <SelectItem value="especes">Espèces</SelectItem>
+                          <SelectItem value="virement">Virement entre comptes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <MultiFileUpload
+                      label="💰 Preuve du transfert d'argent"
+                      files={quitusPreuveTransfertFiles}
+                      onFilesChange={setQuitusPreuveTransfertFiles}
+                      accept="application/pdf,image/*"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-yellow-100 border border-yellow-300 rounded">
+                    <p className="text-xs text-yellow-800">
+                      💡 Calcul automatique : Somme restant due = Montant total - Somme déjà remboursée
+                    </p>
+                  </div>
+                </div>
+
+                {/* Section 6 : Conditions de remboursement */}
+                {(quitusDetteData.typeActe === "reconnaissance_dette" || quitusDetteData.typeActe === "reconnaissance_dette_modalites") && (
+                  <div className="space-y-4 bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-indigo-800">
+                      6️⃣ Conditions de remboursement
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Modalité de remboursement <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={quitusDetteData.remboursement.modalite}
+                          onValueChange={(value) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            remboursement: {...quitusDetteData.remboursement, modalite: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="une_fois">☐ En une seule fois</SelectItem>
+                            <SelectItem value="plusieurs_echeances">☐ En plusieurs échéances</SelectItem>
+                            <SelectItem value="libre">☐ Remboursement libre sans échéances</SelectItem>
+                            <SelectItem value="premiere_demande">☐ Remboursement à la première demande</SelectItem>
+                            <SelectItem value="conditionnel">☐ Remboursement conditionnel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {quitusDetteData.remboursement.modalite === "conditionnel" && (
+                        <div className="space-y-2">
+                          <Label>Condition du remboursement</Label>
+                          <Input
+                            value={quitusDetteData.remboursement.conditionRemboursement}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              remboursement: {...quitusDetteData.remboursement, conditionRemboursement: e.target.value}
+                            })}
+                            placeholder="Ex: vente d'un bien, obtention d'un crédit, etc."
+                          />
+                        </div>
+                      )}
+
+                      {quitusDetteData.remboursement.modalite === "plusieurs_echeances" && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label className="font-medium">Échéancier de remboursement</Label>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const newEcheance = {
+                                  id: quitusDetteData.remboursement.echeances.length + 1,
+                                  date: "",
+                                  montant: "",
+                                  moyenPaiement: "",
+                                  consequencesRetard: ""
+                                };
+                                setQuitusDetteData({
+                                  ...quitusDetteData,
+                                  remboursement: {
+                                    ...quitusDetteData.remboursement,
+                                    echeances: [...quitusDetteData.remboursement.echeances, newEcheance]
+                                  }
+                                });
+                              }}
+                            >
+                              + Ajouter une échéance
+                            </Button>
+                          </div>
+
+                          {quitusDetteData.remboursement.echeances.map((echeance, index) => (
+                            <div key={echeance.id} className="p-4 border rounded-lg bg-white space-y-3">
+                              <div className="flex justify-between items-center">
+                                <h4 className="font-medium">Échéance #{index + 1}</h4>
+                                {quitusDetteData.remboursement.echeances.length > 1 && (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      setQuitusDetteData({
+                                        ...quitusDetteData,
+                                        remboursement: {
+                                          ...quitusDetteData.remboursement,
+                                          echeances: quitusDetteData.remboursement.echeances.filter(e => e.id !== echeance.id)
+                                        }
+                                      });
+                                    }}
+                                  >
+                                    Supprimer
+                                  </Button>
+                                )}
+                              </div>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                  <Label>Date</Label>
+                                  <Input
+                                    type="date"
+                                    value={echeance.date}
+                                    onChange={(e) => {
+                                      const updated = [...quitusDetteData.remboursement.echeances];
+                                      updated[index] = {...echeance, date: e.target.value};
+                                      setQuitusDetteData({
+                                        ...quitusDetteData,
+                                        remboursement: {...quitusDetteData.remboursement, echeances: updated}
+                                      });
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Montant (€)</Label>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={echeance.montant}
+                                    onChange={(e) => {
+                                      const updated = [...quitusDetteData.remboursement.echeances];
+                                      updated[index] = {...echeance, montant: e.target.value};
+                                      setQuitusDetteData({
+                                        ...quitusDetteData,
+                                        remboursement: {...quitusDetteData.remboursement, echeances: updated}
+                                      });
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Moyen de paiement</Label>
+                                  <Input
+                                    value={echeance.moyenPaiement}
+                                    onChange={(e) => {
+                                      const updated = [...quitusDetteData.remboursement.echeances];
+                                      updated[index] = {...echeance, moyenPaiement: e.target.value};
+                                      setQuitusDetteData({
+                                        ...quitusDetteData,
+                                        remboursement: {...quitusDetteData.remboursement, echeances: updated}
+                                      });
+                                    }}
+                                    placeholder="Virement, chèque, espèces..."
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Conséquences en cas de retard</Label>
+                                  <Input
+                                    value={echeance.consequencesRetard}
+                                    onChange={(e) => {
+                                      const updated = [...quitusDetteData.remboursement.echeances];
+                                      updated[index] = {...echeance, consequencesRetard: e.target.value};
+                                      setQuitusDetteData({
+                                        ...quitusDetteData,
+                                        remboursement: {...quitusDetteData.remboursement, echeances: updated}
+                                      });
+                                    }}
+                                    placeholder="Pénalités, intérêts de retard..."
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+
+                          <div className="space-y-2">
+                            <MultiFileUpload
+                              label="📋 Échéancier signé"
+                              files={quitusEcheancierFiles}
+                              onFilesChange={setQuitusEcheancierFiles}
+                              accept="application/pdf,image/*"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Intérêts */}
+                      <div className="space-y-3 p-4 border rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="avec_interets"
+                            checked={quitusDetteData.remboursement.avecInterets}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              remboursement: {...quitusDetteData.remboursement, avecInterets: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="avec_interets" className="cursor-pointer font-medium">
+                            Avec intérêts
+                          </Label>
+                        </div>
+
+                        {quitusDetteData.remboursement.avecInterets && (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                            <div className="space-y-2">
+                              <Label>Taux d'intérêt (%)</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={quitusDetteData.remboursement.tauxInteret}
+                                onChange={(e) => setQuitusDetteData({
+                                  ...quitusDetteData,
+                                  remboursement: {...quitusDetteData.remboursement, tauxInteret: e.target.value}
+                                })}
+                                placeholder="Ex: 3.5"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Taux usuraire applicable</Label>
+                              <Input
+                                value={quitusDetteData.remboursement.tauxUsuraire}
+                                onChange={(e) => setQuitusDetteData({
+                                  ...quitusDetteData,
+                                  remboursement: {...quitusDetteData.remboursement, tauxUsuraire: e.target.value}
+                                })}
+                                placeholder="À vérifier selon la loi"
+                              />
+                            </div>
+                            <div className="space-y-2 flex items-end">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="capitalisation"
+                                  checked={quitusDetteData.remboursement.capitalisationInterets}
+                                  onChange={(e) => setQuitusDetteData({
+                                    ...quitusDetteData,
+                                    remboursement: {...quitusDetteData.remboursement, capitalisationInterets: e.target.checked}
+                                  })}
+                                  className="rounded"
+                                />
+                                <Label htmlFor="capitalisation" className="cursor-pointer">
+                                  Capitalisation des intérêts
+                                </Label>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Clause pénale */}
+                      <div className="space-y-3 p-4 border rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="clause_penale"
+                            checked={quitusDetteData.remboursement.clausePenale}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              remboursement: {...quitusDetteData.remboursement, clausePenale: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="clause_penale" className="cursor-pointer font-medium">
+                            Clause pénale en cas d'impayé
+                          </Label>
+                        </div>
+
+                        {quitusDetteData.remboursement.clausePenale && (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                            <div className="space-y-2">
+                              <Label>Montant de la pénalité (€)</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={quitusDetteData.remboursement.montantPenalite}
+                                onChange={(e) => setQuitusDetteData({
+                                  ...quitusDetteData,
+                                  remboursement: {...quitusDetteData.remboursement, montantPenalite: e.target.value}
+                                })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Pourcentage appliqué (%)</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={quitusDetteData.remboursement.pourcentagePenalite}
+                                onChange={(e) => setQuitusDetteData({
+                                  ...quitusDetteData,
+                                  remboursement: {...quitusDetteData.remboursement, pourcentagePenalite: e.target.value}
+                                })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Délai de grâce (jours)</Label>
+                              <Input
+                                value={quitusDetteData.remboursement.delaiGrace}
+                                onChange={(e) => setQuitusDetteData({
+                                  ...quitusDetteData,
+                                  remboursement: {...quitusDetteData.remboursement, delaiGrace: e.target.value}
+                                })}
+                                placeholder="Ex: 15 jours"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Section 7 : Sûretés et garanties */}
+                <div className="space-y-4 bg-red-50 p-6 rounded-lg border border-red-200">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-red-800">
+                    7️⃣ Sûretés et garanties (optionnelles)
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {/* Caution personnelle */}
+                    <div className="p-4 border rounded-lg space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="caution_personnelle"
+                          checked={quitusDetteData.suretes.cautionPersonnelle}
+                          onChange={(e) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            suretes: {...quitusDetteData.suretes, cautionPersonnelle: e.target.checked}
+                          })}
+                          className="rounded"
+                        />
+                        <Label htmlFor="caution_personnelle" className="cursor-pointer font-medium">
+                          ☐ Caution personnelle
+                        </Label>
+                      </div>
+
+                      {quitusDetteData.suretes.cautionPersonnelle && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                          <div className="space-y-2">
+                            <Label>Identité du cautionnaire</Label>
+                            <Input
+                              value={quitusDetteData.suretes.cautionIdentite}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                suretes: {...quitusDetteData.suretes, cautionIdentite: e.target.value}
+                              })}
+                              placeholder="Nom complet"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Montant garanti (€)</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={quitusDetteData.suretes.cautionMontant}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                suretes: {...quitusDetteData.suretes, cautionMontant: e.target.value}
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Durée du cautionnement</Label>
+                            <Input
+                              value={quitusDetteData.suretes.cautionDuree}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                suretes: {...quitusDetteData.suretes, cautionDuree: e.target.value}
+                              })}
+                              placeholder="Ex: 24 mois"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {quitusDetteData.suretes.cautionPersonnelle && (
+                        <div className="space-y-2">
+                          <MultiFileUpload
+                            label="📄 Pièce d'identité de la caution"
+                            files={quitusCautionIdentiteFiles}
+                            onFilesChange={setQuitusCautionIdentiteFiles}
+                            accept="application/pdf,image/*"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Autres sûretés */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="garantie_salaire"
+                          checked={quitusDetteData.suretes.garantieSalaire}
+                          onChange={(e) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            suretes: {...quitusDetteData.suretes, garantieSalaire: e.target.checked}
+                          })}
+                          className="rounded"
+                        />
+                        <Label htmlFor="garantie_salaire" className="cursor-pointer">
+                          ☐ Garantie sur salaire (engagement moral)
+                        </Label>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="gage_mobilier"
+                            checked={quitusDetteData.suretes.gageMobilier}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, gageMobilier: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="gage_mobilier" className="cursor-pointer">
+                            ☐ Gage / nantissement d'un bien mobilier
+                          </Label>
+                        </div>
+                        {quitusDetteData.suretes.gageMobilier && (
+                          <Input
+                            value={quitusDetteData.suretes.gageDescription}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, gageDescription: e.target.value}
+                            })}
+                            placeholder="Description du bien"
+                            className="mt-2"
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="nantissement_titres"
+                            checked={quitusDetteData.suretes.nantissementTitres}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, nantissementTitres: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="nantissement_titres" className="cursor-pointer">
+                            ☐ Nantissement de compte-titres
+                          </Label>
+                        </div>
+                        {quitusDetteData.suretes.nantissementTitres && (
+                          <Input
+                            value={quitusDetteData.suretes.nantissementDetails}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, nantissementDetails: e.target.value}
+                            })}
+                            placeholder="Détails du compte-titres"
+                            className="mt-2"
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="hypotheque"
+                            checked={quitusDetteData.suretes.hypotheque}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, hypotheque: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="hypotheque" className="cursor-pointer">
+                            ☐ Hypothèque (rare pour particuliers)
+                          </Label>
+                        </div>
+                        {quitusDetteData.suretes.hypotheque && (
+                          <Input
+                            value={quitusDetteData.suretes.hypothequeDetails}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, hypothequeDetails: e.target.value}
+                            })}
+                            placeholder="Détails de l'hypothèque"
+                            className="mt-2"
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="depot_garantie"
+                            checked={quitusDetteData.suretes.depotGarantie}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, depotGarantie: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="depot_garantie" className="cursor-pointer">
+                            ☐ Dépôt de garantie / somme bloquée
+                          </Label>
+                        </div>
+                        {quitusDetteData.suretes.depotGarantie && (
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={quitusDetteData.suretes.depotMontant}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, depotMontant: e.target.value}
+                            })}
+                            placeholder="Montant (€)"
+                            className="mt-2"
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="acte_authentique"
+                            checked={quitusDetteData.suretes.acteAuthentique}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, acteAuthentique: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="acte_authentique" className="cursor-pointer">
+                            ☐ Reconnaissance de dette authentique (devant notaire)
+                          </Label>
+                        </div>
+                        {quitusDetteData.suretes.acteAuthentique && (
+                          <Input
+                            value={quitusDetteData.suretes.notaireNom}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              suretes: {...quitusDetteData.suretes, notaireNom: e.target.value}
+                            })}
+                            placeholder="Nom du notaire"
+                            className="mt-2"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 8 : Remise de dette */}
+                {quitusDetteData.typeActe === "remise_dette" && (
+                  <div className="space-y-4 bg-pink-50 p-6 rounded-lg border border-pink-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-pink-800">
+                      8️⃣ Remise de dette (abandon de créance)
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Type de remise</Label>
+                        <RadioGroup
+                          value={quitusDetteData.remiseDette.remiseTotale ? "totale" : "partielle"}
+                          onValueChange={(value) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            remiseDette: {
+                              ...quitusDetteData.remiseDette,
+                              remiseTotale: value === "totale",
+                              remisePartielle: value === "partielle"
+                            }
+                          })}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="totale" id="remise_totale" />
+                            <Label htmlFor="remise_totale" className="cursor-pointer">☐ Remise totale de dette</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="partielle" id="remise_partielle" />
+                            <Label htmlFor="remise_partielle" className="cursor-pointer">☐ Remise partielle</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      {quitusDetteData.remiseDette.remisePartielle && (
+                        <div className="space-y-2">
+                          <Label>Montant de la remise (€)</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={quitusDetteData.remiseDette.montantRemise}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              remiseDette: {...quitusDetteData.remiseDette, montantRemise: e.target.value}
+                            })}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Conditions de la remise</Label>
+                        <textarea
+                          value={quitusDetteData.remiseDette.conditionsRemise}
+                          onChange={(e) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            remiseDette: {...quitusDetteData.remiseDette, conditionsRemise: e.target.value}
+                          })}
+                          className="w-full min-h-[80px] p-3 border rounded-md"
+                          placeholder="Conditions et raisons de la remise de dette..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="effets_retroactifs"
+                            checked={quitusDetteData.remiseDette.effetsRetroactifs}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              remiseDette: {...quitusDetteData.remiseDette, effetsRetroactifs: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="effets_retroactifs" className="cursor-pointer">
+                            Effets rétroactifs
+                          </Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="renonciation_poursuites"
+                            checked={quitusDetteData.remiseDette.renonciationPoursuites}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              remiseDette: {...quitusDetteData.remiseDette, renonciationPoursuites: e.target.checked}
+                            })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="renonciation_poursuites" className="cursor-pointer">
+                            Renonciation à poursuites futures
+                          </Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Preuve de paiement partiel déjà reçu</Label>
+                        <textarea
+                          value={quitusDetteData.remiseDette.preuvesPaiementsPartiels}
+                          onChange={(e) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            remiseDette: {...quitusDetteData.remiseDette, preuvesPaiementsPartiels: e.target.value}
+                          })}
+                          className="w-full min-h-[60px] p-3 border rounded-md"
+                          placeholder="Détails des paiements partiels reçus..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Section 9 : Quitus */}
+                {(quitusDetteData.typeActe === "quitus" || quitusDetteData.typeActe === "quitus_partiel" || quitusDetteData.typeActe === "solde_tout_compte" || quitusDetteData.typeActe === "attestation_reglement") && (
+                  <div className="space-y-4 bg-teal-50 p-6 rounded-lg border border-teal-200">
+                    <h3 className="font-semibold text-lg border-b pb-2 text-teal-800">
+                      9️⃣ Quitus (dette réglée)
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Type de quitus</Label>
+                        <Select
+                          value={quitusDetteData.quitus.typeQuitus}
+                          onValueChange={(value) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            quitus: {...quitusDetteData.quitus, typeQuitus: value}
+                          })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="total">☐ Quitus total (dette éteinte)</SelectItem>
+                            <SelectItem value="partiel">☐ Quitus partiel</SelectItem>
+                            <SelectItem value="comptable">☐ Quitus comptable (solde de tout compte)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Paiements reçus */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label className="font-medium">Paiements reçus</Label>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const newPaiement = {
+                                id: quitusDetteData.quitus.paiementsRecus.length + 1,
+                                date: "",
+                                montant: "",
+                                modePaiement: "",
+                                referenceBancaire: ""
+                              };
+                              setQuitusDetteData({
+                                ...quitusDetteData,
+                                quitus: {
+                                  ...quitusDetteData.quitus,
+                                  paiementsRecus: [...quitusDetteData.quitus.paiementsRecus, newPaiement]
+                                }
+                              });
+                            }}
+                          >
+                            + Ajouter un paiement
+                          </Button>
+                        </div>
+
+                        {quitusDetteData.quitus.paiementsRecus.map((paiement, index) => (
+                          <div key={paiement.id} className="p-4 border rounded-lg bg-white space-y-3">
+                            <div className="flex justify-between items-center">
+                              <h4 className="font-medium">Paiement #{index + 1}</h4>
+                              {quitusDetteData.quitus.paiementsRecus.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setQuitusDetteData({
+                                      ...quitusDetteData,
+                                      quitus: {
+                                        ...quitusDetteData.quitus,
+                                        paiementsRecus: quitusDetteData.quitus.paiementsRecus.filter(p => p.id !== paiement.id)
+                                      }
+                                    });
+                                  }}
+                                >
+                                  Supprimer
+                                </Button>
+                              )}
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>Date</Label>
+                                <Input
+                                  type="date"
+                                  value={paiement.date}
+                                  onChange={(e) => {
+                                    const updated = [...quitusDetteData.quitus.paiementsRecus];
+                                    updated[index] = {...paiement, date: e.target.value};
+                                    setQuitusDetteData({
+                                      ...quitusDetteData,
+                                      quitus: {...quitusDetteData.quitus, paiementsRecus: updated}
+                                    });
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Montant (€)</Label>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={paiement.montant}
+                                  onChange={(e) => {
+                                    const updated = [...quitusDetteData.quitus.paiementsRecus];
+                                    updated[index] = {...paiement, montant: e.target.value};
+                                    setQuitusDetteData({
+                                      ...quitusDetteData,
+                                      quitus: {...quitusDetteData.quitus, paiementsRecus: updated}
+                                    });
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Mode de paiement</Label>
+                                <Input
+                                  value={paiement.modePaiement}
+                                  onChange={(e) => {
+                                    const updated = [...quitusDetteData.quitus.paiementsRecus];
+                                    updated[index] = {...paiement, modePaiement: e.target.value};
+                                    setQuitusDetteData({
+                                      ...quitusDetteData,
+                                      quitus: {...quitusDetteData.quitus, paiementsRecus: updated}
+                                    });
+                                  }}
+                                  placeholder="Virement, chèque..."
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Référence bancaire</Label>
+                                <Input
+                                  value={paiement.referenceBancaire}
+                                  onChange={(e) => {
+                                    const updated = [...quitusDetteData.quitus.paiementsRecus];
+                                    updated[index] = {...paiement, referenceBancaire: e.target.value};
+                                    setQuitusDetteData({
+                                      ...quitusDetteData,
+                                      quitus: {...quitusDetteData.quitus, paiementsRecus: updated}
+                                    });
+                                  }}
+                                  placeholder="Numéro de transaction"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="space-y-2">
+                        <MultiFileUpload
+                          label="💰 Preuves des paiements reçus"
+                          required
+                          files={quitusPreuvesPaiementsFiles}
+                          onFilesChange={setQuitusPreuvesPaiementsFiles}
+                          accept="application/pdf,image/*"
+                        />
+                      </div>
+
+                      {/* Déclarations du créancier */}
+                      <div className="space-y-3 p-4 border rounded-lg bg-teal-100">
+                        <Label className="font-medium">Déclarations du créancier (obligatoires)</Label>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="sommes_recues"
+                              checked={quitusDetteData.quitus.sommesRecuesTotalement}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                quitus: {...quitusDetteData.quitus, sommesRecuesTotalement: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="sommes_recues" className="cursor-pointer">
+                              Avoir reçu toutes les sommes dues
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="renonciation_reclamations"
+                              checked={quitusDetteData.quitus.renonciationReclamations}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                quitus: {...quitusDetteData.quitus, renonciationReclamations: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="renonciation_reclamations" className="cursor-pointer">
+                              Renoncer à toute réclamation future
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="dette_eteinte"
+                              checked={quitusDetteData.quitus.detteEteinte}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                quitus: {...quitusDetteData.quitus, detteEteinte: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="dette_eteinte" className="cursor-pointer">
+                              Reconnaître la dette comme entièrement éteinte
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="annulation_garanties"
+                              checked={quitusDetteData.quitus.annulationGaranties}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                quitus: {...quitusDetteData.quitus, annulationGaranties: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="annulation_garanties" className="cursor-pointer">
+                              Annuler les garanties éventuellement données
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="restitution_documents"
+                              checked={quitusDetteData.quitus.restitutionDocuments}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                quitus: {...quitusDetteData.quitus, restitutionDocuments: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="restitution_documents" className="cursor-pointer">
+                              Restituer les documents remis en garantie
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <MultiFileUpload
+                          label="📄 Ancienne reconnaissance de dette"
+                          files={quitusAncienneDetteFiles}
+                          onFilesChange={setQuitusAncienneDetteFiles}
+                          accept="application/pdf,image/*"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Section 10 : Clauses légales */}
+                <div className="space-y-4 bg-slate-100 p-6 rounded-lg border border-slate-300">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-slate-800">
+                    🔟 Clauses légales
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {(quitusDetteData.typeActe === "reconnaissance_dette" || quitusDetteData.typeActe === "reconnaissance_dette_modalites") && (
+                      <div className="space-y-3">
+                        <Label className="font-medium text-slate-700">Clauses obligatoires pour reconnaissance de dette</Label>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="consentement_libre"
+                              checked={quitusDetteData.clausesLegales.consentementLibre}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, consentementLibre: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="consentement_libre" className="cursor-pointer">
+                              Consentement libre et éclairé (absence de vice)
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="reconnaissance_montant"
+                              checked={quitusDetteData.clausesLegales.reconnaissanceMontant}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, reconnaissanceMontant: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="reconnaissance_montant" className="cursor-pointer">
+                              Reconnaissance du montant exact de la dette
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="engagement_remboursement"
+                              checked={quitusDetteData.clausesLegales.engagementRemboursement}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, engagementRemboursement: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="engagement_remboursement" className="cursor-pointer">
+                              Engagement de remboursement
+                            </Label>
+                          </div>
+
+                          <div className="space-y-2 mt-4">
+                            <Label htmlFor="mention_manuscrite">
+                              Mention manuscrite obligatoire (à recopier par le débiteur) <span className="text-red-600">*</span>
+                            </Label>
+                            <textarea
+                              id="mention_manuscrite"
+                              value={quitusDetteData.clausesLegales.mentionManuscrite}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, mentionManuscrite: e.target.value}
+                              })}
+                              className="w-full min-h-[100px] p-3 border rounded-md"
+                              placeholder={`Ex: "Je reconnais devoir la somme de ... euros à ... au titre de ... Je m'engage à rembourser selon les modalités décrites ci-dessus."`}
+                            />
+                            <p className="text-xs text-gray-600">
+                              ⚠️ Cette mention doit être écrite de la main du débiteur pour être valable
+                            </p>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="clause_solidarite"
+                              checked={quitusDetteData.clausesLegales.clauseSolidarite}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, clauseSolidarite: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="clause_solidarite" className="cursor-pointer">
+                              Clause de solidarité (si plusieurs débiteurs)
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="clause_divisibilite"
+                              checked={quitusDetteData.clausesLegales.clauseDivisibilite}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, clauseDivisibilite: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="clause_divisibilite" className="cursor-pointer">
+                              Clause de divisibilité / indépendance des clauses
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {(quitusDetteData.typeActe === "quitus" || quitusDetteData.typeActe === "quitus_partiel" || quitusDetteData.typeActe === "solde_tout_compte" || quitusDetteData.typeActe === "remise_dette" || quitusDetteData.typeActe === "attestation_reglement") && (
+                      <div className="space-y-3">
+                        <Label className="font-medium text-slate-700">Clauses pour quitus / extinction de dette</Label>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="extinction_dette"
+                              checked={quitusDetteData.clausesLegales.extinctionDette}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, extinctionDette: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="extinction_dette" className="cursor-pointer">
+                              Extinction complète de la dette
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="liberation_definitive"
+                              checked={quitusDetteData.clausesLegales.liberationDefinitive}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, liberationDefinitive: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="liberation_definitive" className="cursor-pointer">
+                              Libération définitive du débiteur
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="renonciation_recours"
+                              checked={quitusDetteData.clausesLegales.renonciationRecours}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, renonciationRecours: e.target.checked}
+                              })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="renonciation_recours" className="cursor-pointer">
+                              Renonciation à tout recours ultérieur
+                            </Label>
+                          </div>
+
+                          <div className="space-y-2 mt-4">
+                            <Label htmlFor="identification_dette">
+                              Identification précise de la dette éteinte
+                            </Label>
+                            <textarea
+                              id="identification_dette"
+                              value={quitusDetteData.clausesLegales.identificationDette}
+                              onChange={(e) => setQuitusDetteData({
+                                ...quitusDetteData,
+                                clausesLegales: {...quitusDetteData.clausesLegales, identificationDette: e.target.value}
+                              })}
+                              className="w-full min-h-[80px] p-3 border rounded-md"
+                              placeholder="Description précise de la dette qui est éteinte (date, montant, nature...)"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Section 11 : Documents à joindre et signatures */}
+                <div className="space-y-4 bg-gray-50 p-6 rounded-lg border border-gray-300">
+                  <h3 className="font-semibold text-lg border-b pb-2 text-gray-800">
+                    1️⃣1️⃣ Documents à joindre et signatures
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {/* Résumé des documents selon le type */}
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <h4 className="font-medium mb-2 text-blue-800">📋 Documents recommandés selon le type d'acte</h4>
+                      
+                      {(quitusDetteData.typeActe === "reconnaissance_dette" || quitusDetteData.typeActe === "reconnaissance_dette_modalites") && (
+                        <ul className="text-sm space-y-1 text-gray-700">
+                          <li>• Pièces d'identité du créancier et débiteur (obligatoire)</li>
+                          <li>• Justificatifs de domicile (recommandé)</li>
+                          <li>• Preuves de l'existence de la dette initiale (contrat, factures, relevés...)</li>
+                          <li>• Preuves de transfert de fonds si prêt d'argent (virement bancaire)</li>
+                          <li>• Échéancier signé si remboursement échelonné</li>
+                          <li>• Pièces d'identité des cautions le cas échéant</li>
+                        </ul>
+                      )}
+
+                      {(quitusDetteData.typeActe === "quitus" || quitusDetteData.typeActe === "quitus_partiel" || quitusDetteData.typeActe === "solde_tout_compte" || quitusDetteData.typeActe === "attestation_reglement") && (
+                        <ul className="text-sm space-y-1 text-gray-700">
+                          <li>• Pièces d'identité du créancier et débiteur</li>
+                          <li>• Preuves des paiements reçus (virements, chèques encaissés...) (obligatoire)</li>
+                          <li>• Ancienne reconnaissance de dette ou contrat initial</li>
+                          <li>• Justificatifs de l'extinction de la dette</li>
+                        </ul>
+                      )}
+
+                      {quitusDetteData.typeActe === "remise_dette" && (
+                        <ul className="text-sm space-y-1 text-gray-700">
+                          <li>• Pièces d'identité du créancier et débiteur</li>
+                          <li>• Ancienne reconnaissance de dette ou contrat initial</li>
+                          <li>• Preuves de paiements partiels le cas échéant</li>
+                          <li>• Justificatifs de la situation financière du débiteur (si remise pour difficultés)</li>
+                        </ul>
+                      )}
+                    </div>
+
+                    {/* Signatures */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="date_signature">
+                          Date de signature <span className="text-red-600">*</span>
+                        </Label>
+                        <Input
+                          id="date_signature"
+                          type="date"
+                          value={quitusDetteData.signatures.dateSignature}
+                          onChange={(e) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            signatures: {...quitusDetteData.signatures, dateSignature: e.target.value}
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="lieu_signature">
+                          Lieu de signature <span className="text-red-600">*</span>
+                        </Label>
+                        <Input
+                          id="lieu_signature"
+                          value={quitusDetteData.signatures.lieuSignature}
+                          onChange={(e) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            signatures: {...quitusDetteData.signatures, lieuSignature: e.target.value}
+                          })}
+                          placeholder="Ville"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="signature_notaire">
+                          Signature devant notaire ?
+                        </Label>
+                        <Select
+                          value={quitusDetteData.signatures.signatureNotaire}
+                          onValueChange={(value) => setQuitusDetteData({
+                            ...quitusDetteData,
+                            signatures: {...quitusDetteData.signatures, signatureNotaire: value}
+                          })}
+                        >
+                          <SelectTrigger id="signature_notaire"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non (acte sous seing privé)</SelectItem>
+                            <SelectItem value="oui">Oui (acte authentique)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {quitusDetteData.signatures.signatureNotaire === "oui" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <div className="space-y-2">
+                          <Label htmlFor="nom_notaire">
+                            Nom du notaire <span className="text-red-600">*</span>
+                          </Label>
+                          <Input
+                            id="nom_notaire"
+                            value={quitusDetteData.signatures.nomNotaire}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              signatures: {...quitusDetteData.signatures, nomNotaire: e.target.value}
+                            })}
+                            placeholder="Nom complet"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="ville_notaire">
+                            Ville du notaire <span className="text-red-600">*</span>
+                          </Label>
+                          <Input
+                            id="ville_notaire"
+                            value={quitusDetteData.signatures.villeNotaire}
+                            onChange={(e) => setQuitusDetteData({
+                              ...quitusDetteData,
+                              signatures: {...quitusDetteData.signatures, villeNotaire: e.target.value}
+                            })}
+                            placeholder="Ville de l'étude"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Informations finales */}
+                    <div className="p-4 bg-green-50 border border-green-300 rounded-lg">
+                      <p className="text-sm text-gray-700">
+                        <strong>✅ Important :</strong> Pour une reconnaissance de dette supérieure à 1 500€, 
+                        la mention manuscrite du débiteur est <strong>obligatoire</strong>. 
+                        Le document final devra être signé en <strong>deux exemplaires</strong> (un pour chaque partie).
+                      </p>
+                      <p className="text-sm text-gray-700 mt-2">
+                        <strong>💡 Conseil :</strong> Pour un montant important ou une situation complexe, 
+                        envisagez un acte authentique (devant notaire) qui a force exécutoire.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
             {/* Formulaire générique pour tous les autres types de contrats */}
-            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière"].includes(pendingContractType) && (
+            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière", "Quitus / reconnaissance de dette"].includes(pendingContractType) && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg border-b pb-2">👤 Client concerné</h3>
                 <div className="space-y-2">
@@ -40098,6 +42245,8 @@ FIN DE LA CONVENTION
                   handleMandatProtectionSubmit();
                 } else if (pendingContractType === "Attestation de propriété immobilière") {
                   handleAttestationSubmit();
+                } else if (pendingContractType === "Quitus / reconnaissance de dette") {
+                  handleQuitusDetteSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
                   handleGenericContractSubmit();
