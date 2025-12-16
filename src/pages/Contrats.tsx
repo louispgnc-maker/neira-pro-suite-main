@@ -176,6 +176,8 @@ export default function Contrats() {
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [pendingContractType, setPendingContractType] = useState<string>("");
   const [pendingCategory, setPendingCategory] = useState<string>("");
+  const [selectedClientId, setSelectedClientId] = useState<string>("");
+  const [genericDescription, setGenericDescription] = useState<string>("");
   const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string | {regime_matrimonial?: string, nombre_enfants?: string, personne_a_charge?: any}, type_identite?: string, numero_identite?: string, date_expiration_identite?: string, id_doc_path?: string}>>([]);
 
   // States pour les fichiers uploadés
@@ -4197,6 +4199,8 @@ export default function Contrats() {
           type: pendingContractType,
           category: pendingCategory,
           role: role,
+          description: genericDescription || undefined,
+          client_id: selectedClientId || undefined,
         })
         .select()
         .single();
@@ -4205,6 +4209,8 @@ export default function Contrats() {
       
       toast.success('Contrat créé', { description: pendingContractType });
       setShowQuestionDialog(false);
+      setSelectedClientId("");
+      setGenericDescription("");
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création contrat:', err);
