@@ -40181,18 +40181,6 @@ FIN DE LA CONVENTION
                         <SelectItem value="attestation_reglement">☐ Attestation de règlement d'une somme due</SelectItem>
                       </SelectContent>
                     </Select>
-                    
-                    <div className="p-3 bg-blue-100 border border-blue-300 rounded">
-                      <p className="text-xs text-blue-800">
-                        {quitusDetteData.typeActe === "reconnaissance_dette" && "📌 Pour une dette non encore réglée, sans échéancier de remboursement"}
-                        {quitusDetteData.typeActe === "reconnaissance_dette_modalites" && "📌 Pour une dette avec un plan de remboursement détaillé (échéances, intérêts, etc.)"}
-                        {quitusDetteData.typeActe === "quitus" && "📌 Pour attester que la dette a été totalement réglée et éteinte"}
-                        {quitusDetteData.typeActe === "quitus_partiel" && "📌 Pour attester d'un paiement partiel avec un solde restant dû"}
-                        {quitusDetteData.typeActe === "remise_dette" && "📌 Pour un abandon de créance (total ou partiel) par le créancier"}
-                        {quitusDetteData.typeActe === "solde_tout_compte" && "📌 Pour un règlement définitif de toutes les créances entre les parties"}
-                        {quitusDetteData.typeActe === "attestation_reglement" && "📌 Pour attester du paiement d'une somme précise"}
-                      </p>
-                    </div>
                   </div>
                 </div>
 
