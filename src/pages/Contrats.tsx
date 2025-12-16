@@ -40236,6 +40236,7 @@ FIN DE LA CONVENTION
                                 email: selectedClient.email || "",
                                 typeIdentite: selectedClient.type_identite || "",
                                 numeroIdentite: selectedClient.numero_identite || "",
+                                situationMatrimoniale: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
                               }
                             });
                           }
@@ -40478,6 +40479,7 @@ FIN DE LA CONVENTION
                                 email: selectedClient.email || "",
                                 typeIdentite: selectedClient.type_identite || "",
                                 numeroIdentite: selectedClient.numero_identite || "",
+                                situationMatrimoniale: selectedClient.situation_familiale || selectedClient.situation_matrimoniale || "",
                               }
                             });
                           }
