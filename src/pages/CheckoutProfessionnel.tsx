@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,11 +13,14 @@ import { supabase } from "@/lib/supabaseClient";
 
 export default function CheckoutProfessionnel() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [userCount, setUserCount] = useState(2);
   const [minMembers, setMinMembers] = useState(2);
+  
+  const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
 
   console.log('CheckoutProfessionnel component mounted, user:', user);
 
@@ -256,18 +259,26 @@ export default function CheckoutProfessionnel() {
                           onClick={() => setBillingPeriod('monthly')}
                           className={`p-4 rounded-lg border-2 text-left transition-all ${
                             billingPeriod === 'monthly'
-                              ? 'border-orange-600 bg-orange-50'
-                              : 'border-gray-200 bg-white hover:border-orange-300'
+                              ? role === 'notaire'
+                                ? 'border-orange-600 bg-orange-50'
+                                : 'border-blue-600 bg-blue-50'
+                              : role === 'notaire'
+                                ? 'border-gray-200 bg-white hover:border-orange-300'
+                                : 'border-gray-200 bg-white hover:border-blue-300'
                           }`}
                         >
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold text-gray-900 text-sm">Mensuel</div>
-                              <div className="text-xl font-bold text-orange-600 mt-1">{monthlyPrice}€</div>
+                              <div className={`text-xl font-bold mt-1 ${
+                                role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`}>{monthlyPrice}€</div>
                               <div className="text-xs text-gray-600">par utilisateur/mois</div>
                             </div>
                             {billingPeriod === 'monthly' && (
-                              <CheckCircle2 className="w-5 h-5 text-orange-600" />
+                              <CheckCircle2 className={`w-5 h-5 ${
+                                role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`} />
                             )}
                           </div>
                         </button>
@@ -276,8 +287,12 @@ export default function CheckoutProfessionnel() {
                           onClick={() => setBillingPeriod('yearly')}
                           className={`p-4 rounded-lg border-2 text-left transition-all relative ${
                             billingPeriod === 'yearly'
-                              ? 'border-orange-600 bg-orange-50'
-                              : 'border-gray-200 bg-white hover:border-orange-300'
+                              ? role === 'notaire'
+                                ? 'border-orange-600 bg-orange-50'
+                                : 'border-blue-600 bg-blue-50'
+                              : role === 'notaire'
+                                ? 'border-gray-200 bg-white hover:border-orange-300'
+                                : 'border-gray-200 bg-white hover:border-blue-300'
                           }`}
                         >
                           <div className="absolute -top-2 right-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
@@ -286,11 +301,15 @@ export default function CheckoutProfessionnel() {
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold text-gray-900 text-sm">Annuel</div>
-                              <div className="text-xl font-bold text-orange-600 mt-1">{yearlyPrice}€</div>
+                              <div className={`text-xl font-bold mt-1 ${
+                                role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`}>{yearlyPrice}€</div>
                               <div className="text-xs text-gray-600">par utilisateur/an</div>
                             </div>
                             {billingPeriod === 'yearly' && (
-                              <CheckCircle2 className="w-5 h-5 text-orange-600" />
+                              <CheckCircle2 className={`w-5 h-5 ${
+                                role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`} />
                             )}
                           </div>
                         </button>
@@ -374,7 +393,11 @@ export default function CheckoutProfessionnel() {
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                      className={`w-full text-white ${
+                        role === 'notaire'
+                          ? 'bg-orange-500 hover:bg-orange-600'
+                          : 'bg-blue-500 hover:bg-blue-600'
+                      }`}
                       disabled={loading}
                     >
                       {loading ? "Traitement en cours..." : `Confirmer - ${total}€`}

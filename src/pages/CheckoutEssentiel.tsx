@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,8 +10,11 @@ import { toast } from "sonner";
 
 export default function CheckoutEssentiel() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  
+  const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
 
   const monthlyPrice = 39;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
@@ -53,7 +56,11 @@ export default function CheckoutEssentiel() {
       <div className="container mx-auto px-4 py-24">
         <button 
           onClick={() => navigate('/solution')} 
-          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6"
+          className={`flex items-center gap-2 mb-6 ${
+            role === 'notaire' 
+              ? 'text-orange-600 hover:text-orange-700' 
+              : 'text-blue-600 hover:text-blue-700'
+          }`}
         >
           <ArrowLeft className="w-4 h-4" />
           Retour aux offres
@@ -65,7 +72,9 @@ export default function CheckoutEssentiel() {
             {/* Nom de la formule */}
             <Card className="bg-white/90 backdrop-blur">
               <CardContent className="p-6">
-                <h1 className="text-2xl font-bold text-blue-600 mb-2">Neira Essentiel</h1>
+                <h1 className={`text-2xl font-bold mb-2 ${
+                  role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                }`}>Neira Essentiel</h1>
                 <p className="text-sm text-gray-600">Idéal pour avocats et notaires indépendants</p>
               </CardContent>
             </Card>
@@ -90,14 +99,18 @@ export default function CheckoutEssentiel() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
                       <div>
                         <h4 className="font-medium text-gray-900 text-sm">Gestion documentaire</h4>
                         <p className="text-xs text-gray-600 mt-0.5">Organisez tous vos documents</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
                       <div>
                         <h4 className="font-medium text-gray-900 text-sm">Partage sécurisé client</h4>
                         <p className="text-xs text-gray-600 mt-0.5">Échangez en toute sécurité</p>
@@ -159,18 +172,26 @@ export default function CheckoutEssentiel() {
                           onClick={() => setBillingPeriod('monthly')}
                           className={`p-4 rounded-lg border-2 text-left transition-all ${
                             billingPeriod === 'monthly'
-                              ? 'border-orange-600 bg-orange-50'
-                              : 'border-gray-200 bg-white hover:border-orange-300'
+                              ? role === 'notaire' 
+                                ? 'border-orange-600 bg-orange-50' 
+                                : 'border-blue-600 bg-blue-50'
+                              : role === 'notaire'
+                                ? 'border-gray-200 bg-white hover:border-orange-300'
+                                : 'border-gray-200 bg-white hover:border-blue-300'
                           }`}
                         >
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold text-gray-900 text-sm">Mensuel</div>
-                              <div className="text-xl font-bold text-orange-600 mt-1">{monthlyPrice}€</div>
+                              <div className={`text-xl font-bold mt-1 ${
+                                role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`}>{monthlyPrice}€</div>
                               <div className="text-xs text-gray-600">par mois</div>
                             </div>
                             {billingPeriod === 'monthly' && (
-                              <CheckCircle2 className="w-5 h-5 text-orange-600" />
+                              <CheckCircle2 className={`w-5 h-5 ${
+                                role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`} />
                             )}
                           </div>
                         </button>
@@ -179,8 +200,12 @@ export default function CheckoutEssentiel() {
                           onClick={() => setBillingPeriod('yearly')}
                           className={`p-4 rounded-lg border-2 text-left transition-all relative ${
                             billingPeriod === 'yearly'
-                              ? 'border-orange-600 bg-orange-50'
-                              : 'border-gray-200 bg-white hover:border-orange-300'
+                              ? role === 'notaire'
+                                ? 'border-orange-600 bg-orange-50'
+                                : 'border-blue-600 bg-blue-50'
+                              : role === 'notaire'
+                                ? 'border-gray-200 bg-white hover:border-orange-300'
+                                : 'border-gray-200 bg-white hover:border-blue-300'
                           }`}
                         >
                           <div className="absolute -top-2 right-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
@@ -189,11 +214,15 @@ export default function CheckoutEssentiel() {
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold text-gray-900 text-sm">Annuel</div>
-                              <div className="text-xl font-bold text-orange-600 mt-1">{yearlyPrice}€</div>
+                              <div className={`text-xl font-bold mt-1 ${
+                                role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`}>{yearlyPrice}€</div>
                               <div className="text-xs text-gray-600">par an</div>
                             </div>
                             {billingPeriod === 'yearly' && (
-                              <CheckCircle2 className="w-5 h-5 text-orange-600" />
+                              <CheckCircle2 className={`w-5 h-5 ${
+                                role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                              }`} />
                             )}
                           </div>
                         </button>
@@ -273,7 +302,11 @@ export default function CheckoutEssentiel() {
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                      className={`w-full text-white ${
+                        role === 'notaire'
+                          ? 'bg-orange-500 hover:bg-orange-600'
+                          : 'bg-blue-500 hover:bg-blue-600'
+                      }`}
                       disabled={loading}
                     >
                       {loading ? "Traitement en cours..." : `Confirmer - ${total}€`}
