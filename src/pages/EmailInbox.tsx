@@ -1130,53 +1130,7 @@ export default function EmailInbox() {
                         {selectedEmail.attachments.map((attachment, index) => (
                           <Card 
                             key={index} 
-                            className="p-3 flex items-center justify-between cursor-pointer hover:bg-muted/50"
-                            onClick={async () => {
-                              try {
-                                toast.info('Téléchargement en cours...');
-                                
-                                // Get auth token
-                                const { data: { session } } = await supabase.auth.getSession();
-                                const authToken = session?.access_token;
-                                
-                                const response = await fetch(
-                                  'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-operations',
-                                  {
-                                    method: 'POST',
-                                    headers: { 
-                                      'Content-Type': 'application/json',
-                                      'Authorization': `Bearer ${authToken}`
-                                    },
-                                    body: JSON.stringify({
-                                      action: 'get-attachment',
-                                      accountId: selectedAccount,
-                                      messageId: selectedEmail.id,
-                                      attachmentId: attachment.attachmentId
-                                    })
-                                  }
-                                );
-                                
-                                if (!response.ok) {
-                                  const errorData = await response.json().catch(() => ({}));
-                                  throw new Error(errorData.error || 'Erreur lors du téléchargement');
-                                }
-                                
-                                const blob = await response.blob();
-                                const url = window.URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = attachment.filename;
-                                document.body.appendChild(a);
-                                a.click();
-                                window.URL.revokeObjectURL(url);
-                                document.body.removeChild(a);
-                                
-                                toast.success('Fichier téléchargé');
-                              } catch (error) {
-                                console.error('Error downloading attachment:', error);
-                                toast.error(error instanceof Error ? error.message : 'Erreur lors du téléchargement');
-                              }
-                            }}
+                            className="p-3 flex items-center justify-between"
                           >
                             <div className="flex items-center gap-3">
                               <Paperclip className="h-5 w-5 text-muted-foreground" />
@@ -1187,7 +1141,59 @@ export default function EmailInbox() {
                                 </div>
                               </div>
                             </div>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              size="sm"
+                              className={role === 'notaire' 
+                                ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'}
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                try {
+                                  toast.info('Téléchargement en cours...');
+                                  
+                                  // Get auth token
+                                  const { data: { session } } = await supabase.auth.getSession();
+                                  const authToken = session?.access_token;
+                                  
+                                  const response = await fetch(
+                                    'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/gmail-operations',
+                                    {
+                                      method: 'POST',
+                                      headers: { 
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${authToken}`
+                                      },
+                                      body: JSON.stringify({
+                                        action: 'get-attachment',
+                                        accountId: selectedAccount,
+                                        messageId: selectedEmail.id,
+                                        attachmentId: attachment.attachmentId
+                                      })
+                                    }
+                                  );
+                                  
+                                  if (!response.ok) {
+                                    const errorData = await response.json().catch(() => ({}));
+                                    throw new Error(errorData.error || 'Erreur lors du téléchargement');
+                                  }
+                                  
+                                  const blob = await response.blob();
+                                  const url = window.URL.createObjectURL(blob);
+                                  const a = document.createElement('a');
+                                  a.href = url;
+                                  a.download = attachment.filename;
+                                  document.body.appendChild(a);
+                                  a.click();
+                                  window.URL.revokeObjectURL(url);
+                                  document.body.removeChild(a);
+                                  
+                                  toast.success('Fichier téléchargé');
+                                } catch (error) {
+                                  console.error('Error downloading attachment:', error);
+                                  toast.error(error instanceof Error ? error.message : 'Erreur lors du téléchargement');
+                                }
+                              }}
+                            >
                               Télécharger
                             </Button>
                           </Card>
