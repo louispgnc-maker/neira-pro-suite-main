@@ -116,19 +116,22 @@ export default function EmailInbox() {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing) return;
       
-      const newWidth = e.clientX - 300; // Adjust based on sidebar width
-      if (newWidth >= 300 && newWidth <= 800) {
-        setEmailListWidth(newWidth);
-        localStorage.setItem('emailListWidth', newWidth.toString());
-      }
+      requestAnimationFrame(() => {
+        const newWidth = e.clientX - 300; // Adjust based on sidebar width
+        if (newWidth >= 300 && newWidth <= 800) {
+          setEmailListWidth(newWidth);
+        }
+      });
     };
 
     const handleMouseUp = () => {
       setIsResizing(false);
+      // Save to localStorage only when done resizing
+      localStorage.setItem('emailListWidth', emailListWidth.toString());
     };
 
     if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mousemove', handleMouseMove, { passive: true });
       document.addEventListener('mouseup', handleMouseUp);
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
@@ -140,7 +143,7 @@ export default function EmailInbox() {
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
-  }, [isResizing]);
+  }, [isResizing, emailListWidth]);
 
   useEffect(() => {
     loadAccounts();
@@ -1071,10 +1074,13 @@ export default function EmailInbox() {
 
           {/* Resize Handle */}
           <div
-            className="w-1 hover:w-1.5 bg-border hover:bg-primary/50 cursor-col-resize transition-all relative group"
+            className={`w-1 hover:w-1.5 bg-border hover:bg-primary/50 cursor-col-resize relative group transition-colors ${
+              isResizing ? 'w-1.5 bg-primary/50' : ''
+            }`}
             onMouseDown={handleMouseDown}
+            style={{ transition: isResizing ? 'none' : 'all 0.2s' }}
           >
-            <div className="absolute inset-y-0 -left-1 -right-1" />
+            <div className="absolute inset-y-0 -left-2 -right-2" />
           </div>
 
           {/* Email Content */}
