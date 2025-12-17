@@ -225,9 +225,13 @@ export default function Subscription() {
 
           if (cabinet) {
             console.log('Setting subscription from cabinet:', cabinet);
-            setCurrentPlan(cabinet.subscription_plan || 'essentiel');
+            console.log('Cabinet subscription_plan value:', cabinet.subscription_plan);
+            console.log('Available plan IDs:', plans.map(p => p.id));
+            
+            const planValue = cabinet.subscription_plan || 'essentiel';
+            setCurrentPlan(planValue);
             setSubscriptionData({
-              tier: cabinet.subscription_plan || 'essentiel',
+              tier: planValue,
               status: cabinet.subscription_status || 'active',
               started_at: cabinet.subscription_started_at || new Date().toISOString(),
               expires_at: cabinet.subscription_expires_at,
@@ -235,6 +239,7 @@ export default function Subscription() {
               storage_limit: cabinet.storage_limit || 21474836480,
               cabinet_name: cabinet.nom || 'Mon Cabinet'
             });
+            console.log('subscriptionData set with tier:', planValue);
           } else {
             console.log('Cabinet found but no data returned - possible RLS issue');
           }
@@ -317,7 +322,9 @@ export default function Subscription() {
 
           {/* 2) Carte "Abonnement actuel" */}
           {subscriptionData && (() => {
+            console.log('Rendering subscription card with tier:', subscriptionData.tier);
             const plan = plans.find(p => p.id === subscriptionData.tier);
+            console.log('Found plan:', plan);
             const Icon = plan?.icon || Zap;
             return (
               <Card className="mb-12 border-2 border-primary shadow-xl bg-card">
