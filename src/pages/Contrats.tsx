@@ -48264,6 +48264,152 @@ FIN DE LA CONVENTION
                     <div><Label>Volume ou objectifs minimaux</Label><Textarea value={agenceData.objectifsMinimaux} onChange={(e) => setAgenceData({...agenceData, objectifsMinimaux: e.target.value})} placeholder="Objectifs chiffrés, quotas..." className="min-h-[60px]" /></div>
                   </div>
                 </div>
+                
+                {/* 6. OBLIGATIONS DE L'AGENT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Obligations de l'agent</h4>
+                  <div className="space-y-3">
+                    <div><Label>Prospecter activement</Label><Textarea value={agenceData.obligationProspecter} onChange={(e) => setAgenceData({...agenceData, obligationProspecter: e.target.value})} placeholder="Modalités de prospection..." className="min-h-[60px]" /></div>
+                    <div><Label>Promouvoir selon l'image de marque</Label><Textarea value={agenceData.obligationPromouvoir} onChange={(e) => setAgenceData({...agenceData, obligationPromouvoir: e.target.value})} placeholder="Respect de la charte graphique, communication..." className="min-h-[60px]" /></div>
+                    <div><Label>Respecter la politique commerciale</Label><Textarea value={agenceData.obligationPolitiqueCommerciale} onChange={(e) => setAgenceData({...agenceData, obligationPolitiqueCommerciale: e.target.value})} placeholder="Règles de tarification, remises..." className="min-h-[60px]" /></div>
+                    <div><Label>Informer le mandant des opportunités</Label><Textarea value={agenceData.obligationInformer} onChange={(e) => setAgenceData({...agenceData, obligationInformer: e.target.value})} placeholder="Transmission des leads, alertes marché..." className="min-h-[60px]" /></div>
+                    <div><Label>Fréquence du reporting</Label><Input value={agenceData.obligationReportingFrequence} onChange={(e) => setAgenceData({...agenceData, obligationReportingFrequence: e.target.value})} placeholder="Hebdomadaire, mensuel..." /></div>
+                    <div><Label>Respecter la confidentialité</Label><Textarea value={agenceData.obligationConfidentialite} onChange={(e) => setAgenceData({...agenceData, obligationConfidentialite: e.target.value})} placeholder="Non-divulgation informations..." className="min-h-[60px]" /></div>
+                    <div><Label>Absence de conflits d'intérêts</Label><Textarea value={agenceData.obligationNonConflit} onChange={(e) => setAgenceData({...agenceData, obligationNonConflit: e.target.value})} placeholder="Incompatibilités..." className="min-h-[60px]" /></div>
+                    <div><Label>Non-concurrence (si applicable)</Label><Textarea value={agenceData.obligationNonConcurrence} onChange={(e) => setAgenceData({...agenceData, obligationNonConcurrence: e.target.value})} placeholder="Restrictions concurrentielles..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 7. OBLIGATIONS DU MANDANT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Obligations du mandant</h4>
+                  <div className="space-y-3">
+                    <div><Label>Remettre catalogues, tarifs, documentation</Label><Textarea value={agenceData.obligationCatalogues} onChange={(e) => setAgenceData({...agenceData, obligationCatalogues: e.target.value})} placeholder="Documents fournis à l'agent..." className="min-h-[60px]" /></div>
+                    <div><Label>Informer des modifications tarifaires</Label><Textarea value={agenceData.obligationInformerModifs} onChange={(e) => setAgenceData({...agenceData, obligationInformerModifs: e.target.value})} placeholder="Délai de notification..." className="min-h-[60px]" /></div>
+                    <div><Label>Fournir un support technique</Label><Textarea value={agenceData.obligationSupportTechnique} onChange={(e) => setAgenceData({...agenceData, obligationSupportTechnique: e.target.value})} placeholder="Assistance, formation..." className="min-h-[60px]" /></div>
+                    <div><Label>Respecter l'exclusivité (si applicable)</Label><Textarea value={agenceData.obligationRespecterExclusivite} onChange={(e) => setAgenceData({...agenceData, obligationRespecterExclusivite: e.target.value})} placeholder="Ne pas court-circuiter l'agent..." className="min-h-[60px]" /></div>
+                    <div><Label>Payer les commissions</Label><Textarea value={agenceData.obligationPayerCommissions} onChange={(e) => setAgenceData({...agenceData, obligationPayerCommissions: e.target.value})} placeholder="Délais de paiement..." className="min-h-[60px]" /></div>
+                    <div><Label>Informer des opérations commerciales</Label><Textarea value={agenceData.obligationInformerOperations} onChange={(e) => setAgenceData({...agenceData, obligationInformerOperations: e.target.value})} placeholder="Ventes directes sur la zone..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 8. COMMISSIONNEMENT */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">8️⃣ Commissionnement (POINT CLÉ)</h4>
+                  <div className="p-3 bg-green-100 rounded border border-green-300">
+                    <p className="text-xs text-green-800">💰 Élément essentiel du contrat - définir précisément les modalités</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="font-medium">A. Type de commission *</Label>
+                      <RadioGroup value={agenceData.commissionType} onValueChange={(v) => setAgenceData({...agenceData, commissionType: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="pourcentage" id="comm-pct" /><Label htmlFor="comm-pct">Pourcentage sur CA</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="fixe" id="comm-fix" /><Label htmlFor="comm-fix">Montant fixe par contrat</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="degressif" id="comm-deg" /><Label htmlFor="comm-deg">Tarifs dégressifs</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="progressif" id="comm-prog" /><Label htmlFor="comm-prog">Tarifs progressifs</Label></div>
+                      </RadioGroup>
+                    </div>
+                    {agenceData.commissionType === "pourcentage" && (
+                      <div><Label>Pourcentage *</Label><Input value={agenceData.commissionPourcentage} onChange={(e) => setAgenceData({...agenceData, commissionPourcentage: e.target.value})} placeholder="Ex: 10%" /></div>
+                    )}
+                    {agenceData.commissionType === "fixe" && (
+                      <div><Label>Montant fixe *</Label><Input value={agenceData.commissionMontantFixe} onChange={(e) => setAgenceData({...agenceData, commissionMontantFixe: e.target.value})} placeholder="Ex: 500 € par contrat" /></div>
+                    )}
+                    <div><Label>Commissions différentes par gamme</Label><Textarea value={agenceData.commissionGammes} onChange={(e) => setAgenceData({...agenceData, commissionGammes: e.target.value})} placeholder="Détail par produit/service..." className="min-h-[60px]" /></div>
+                    <div>
+                      <Label className="font-medium">B. Sur quelles ventes ?</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.commissionVentesAgent} onCheckedChange={(v) => setAgenceData({...agenceData, commissionVentesAgent: !!v})} id="vente-1" /><Label htmlFor="vente-1" className="font-normal">Ventes conclues par l'agent</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.commissionVentesMandant} onCheckedChange={(v) => setAgenceData({...agenceData, commissionVentesMandant: !!v})} id="vente-2" /><Label htmlFor="vente-2" className="font-normal">Ventes conclues par le mandant sur la zone de l'agent (obligatoire légalement)</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.commissionRenouvellements} onCheckedChange={(v) => setAgenceData({...agenceData, commissionRenouvellements: !!v})} id="vente-3" /><Label htmlFor="vente-3" className="font-normal">Renouvellements de contrats</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.commissionAugmentations} onCheckedChange={(v) => setAgenceData({...agenceData, commissionAugmentations: !!v})} id="vente-4" /><Label htmlFor="vente-4" className="font-normal">Augmentations de volume</Label></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">C. Moment où la commission est due *</Label>
+                      <RadioGroup value={agenceData.commissionMomentDue} onValueChange={(v) => setAgenceData({...agenceData, commissionMomentDue: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="conclusion" id="moment-1" /><Label htmlFor="moment-1">À la conclusion du contrat</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="paiement" id="moment-2" /><Label htmlFor="moment-2">Au paiement par le client</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="expedition" id="moment-3" /><Label htmlFor="moment-3">À l'expédition des produits</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div>
+                      <Label className="font-medium">D. Périodicité de paiement *</Label>
+                      <RadioGroup value={agenceData.commissionPeriodicite} onValueChange={(v) => setAgenceData({...agenceData, commissionPeriodicite: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="mensuelle" id="period-1" /><Label htmlFor="period-1">Mensuelle</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="trimestrielle" id="period-2" /><Label htmlFor="period-2">Trimestrielle</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>E. Droit à l'information</Label><Textarea value={agenceData.commissionDroitInformation} onChange={(e) => setAgenceData({...agenceData, commissionDroitInformation: e.target.value})} placeholder="Liste des contrats conclus, montants facturés et encaissés..." className="min-h-[80px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 9. NON-CONCURRENCE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Clause de non-concurrence (optionnelle mais fréquente)</h4>
+                  <div className="space-y-3">
+                    <div><Label>Avant résiliation (pendant le contrat)</Label><Textarea value={agenceData.nonConcurrenceAvant} onChange={(e) => setAgenceData({...agenceData, nonConcurrenceAvant: e.target.value})} placeholder="Interdiction de représenter des produits concurrents..." className="min-h-[60px]" /></div>
+                    <div className="p-3 bg-orange-50 rounded border border-orange-200">
+                      <p className="text-xs text-orange-700">⚠️ Après résiliation : durée max 2 ans (obligation légale)</p>
+                    </div>
+                    <div><Label>Durée après résiliation (max 2 ans)</Label><Input value={agenceData.nonConcurrenceApresDuree} onChange={(e) => setAgenceData({...agenceData, nonConcurrenceApresDuree: e.target.value})} placeholder="Ex: 12 mois, 24 mois" /></div>
+                    <div><Label>Zone géographique concernée</Label><Input value={agenceData.nonConcurrenceApresZone} onChange={(e) => setAgenceData({...agenceData, nonConcurrenceApresZone: e.target.value})} placeholder="Ex: Ile-de-France" /></div>
+                    <div><Label>Secteur concerné</Label><Input value={agenceData.nonConcurrenceApresSecteur} onChange={(e) => setAgenceData({...agenceData, nonConcurrenceApresSecteur: e.target.value})} placeholder="Secteur d'activité" /></div>
+                    <div><Label>Compensation financière (optionnelle)</Label><Textarea value={agenceData.nonConcurrenceCompensation} onChange={(e) => setAgenceData({...agenceData, nonConcurrenceCompensation: e.target.value})} placeholder="Indemnité compensatrice..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 10. RESPONSABILITÉ & ASSURANCE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔟 Responsabilité & Assurance</h4>
+                  <div className="space-y-3">
+                    <div><Label>Responsabilité de l'agent</Label><Textarea value={agenceData.responsabiliteAgent} onChange={(e) => setAgenceData({...agenceData, responsabiliteAgent: e.target.value})} placeholder="Responsable de ses fautes professionnelles, doit être assuré en RC Pro..." className="min-h-[80px]" /></div>
+                    <div><Label>Responsabilité du mandant</Label><Textarea value={agenceData.responsabiliteMandant} onChange={(e) => setAgenceData({...agenceData, responsabiliteMandant: e.target.value})} placeholder="Responsable des défauts produits, de la politique tarifaire..." className="min-h-[80px]" /></div>
+                    <div><Label>Exclusions de responsabilité</Label><Textarea value={agenceData.exclusionsResponsabilite} onChange={(e) => setAgenceData({...agenceData, exclusionsResponsabilite: e.target.value})} placeholder="Perte de clients, dommages indirects..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 11. CONFIDENTIALITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Confidentialité</h4>
+                  <div className="space-y-3">
+                    <div><Label>Obligation pendant le contrat</Label><Textarea value={agenceData.confidentialitePendant} onChange={(e) => setAgenceData({...agenceData, confidentialitePendant: e.target.value})} placeholder="Non-divulgation des informations confidentielles..." className="min-h-[60px]" /></div>
+                    <div><Label>Obligation après le contrat</Label><Textarea value={agenceData.confidentialiteApres} onChange={(e) => setAgenceData({...agenceData, confidentialiteApres: e.target.value})} placeholder="Durée de maintien de la confidentialité..." className="min-h-[60px]" /></div>
+                    <div><Label>Interdiction de divulguer données sensibles</Label><Textarea value={agenceData.confidentialiteDonneesSensibles} onChange={(e) => setAgenceData({...agenceData, confidentialiteDonneesSensibles: e.target.value})} placeholder="Liste des données sensibles..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 12. PROPRIÉTÉ INTELLECTUELLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Propriété intellectuelle</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.piInterdictionMarques} onCheckedChange={(v) => setAgenceData({...agenceData, piInterdictionMarques: !!v})} id="pi-marques" disabled />
+                      <Label htmlFor="pi-marques" className="font-normal">Interdiction d'utiliser les marques sans autorisation ✅</Label>
+                    </div>
+                    <div><Label>Licence limitée et non exclusive</Label><Textarea value={agenceData.piLicenceLimitee} onChange={(e) => setAgenceData({...agenceData, piLicenceLimitee: e.target.value})} placeholder="Droit d'utilisation limité à l'exécution du contrat..." className="min-h-[60px]" /></div>
+                    <div><Label>Restitution du matériel marketing</Label><Textarea value={agenceData.piRestitutionMateriel} onChange={(e) => setAgenceData({...agenceData, piRestitutionMateriel: e.target.value})} placeholder="Restitution à la fin du contrat..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 13. DONNÉES PERSONNELLES / RGPD */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">1️⃣3️⃣ Données personnelles / RGPD</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Statut de l'agent *</Label>
+                      <RadioGroup value={agenceData.rgpdStatutAgent} onValueChange={(v) => setAgenceData({...agenceData, rgpdStatutAgent: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="responsable" id="rgpd-resp" /><Label htmlFor="rgpd-resp">Responsable de traitement</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="sous-traitant" id="rgpd-st" /><Label htmlFor="rgpd-st">Sous-traitant</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Données traitées</Label><Textarea value={agenceData.rgpdDonneesTraitees} onChange={(e) => setAgenceData({...agenceData, rgpdDonneesTraitees: e.target.value})} placeholder="Types de données collectées..." className="min-h-[60px]" /></div>
+                    <div><Label>Finalités</Label><Textarea value={agenceData.rgpdFinalites} onChange={(e) => setAgenceData({...agenceData, rgpdFinalites: e.target.value})} placeholder="Objectifs du traitement..." className="min-h-[60px]" /></div>
+                    <div><Label>Durées de conservation</Label><Input value={agenceData.rgpdDurees} onChange={(e) => setAgenceData({...agenceData, rgpdDurees: e.target.value})} placeholder="Ex: 3 ans après fin de relation" /></div>
+                    <div><Label>Mesures de sécurité</Label><Textarea value={agenceData.rgpdMesuresSecurite} onChange={(e) => setAgenceData({...agenceData, rgpdMesuresSecurite: e.target.value})} placeholder="Chiffrement, accès restreints..." className="min-h-[60px]" /></div>
+                    <div><Label>DPO du mandant (si applicable)</Label><Input value={agenceData.rgpdDPO} onChange={(e) => setAgenceData({...agenceData, rgpdDPO: e.target.value})} placeholder="Nom et contact du DPO" /></div>
+                  </div>
+                </div>
 
               </div>
             )}
