@@ -44737,8 +44737,31 @@ FIN DE LA CONVENTION
               </div>
             )}
 
+            {/* Formulaires minimaux pour contrats d'avocats */}
+            {pendingContractType === "Contrat de prestation de services" && (
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg border-b pb-2 text-blue-700">📝 Contrat de prestation de services</h3>
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-gray-700 mb-4">Formulaire en cours de développement.</p>
+                  <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={setSelectedClientId} label="Client (prestataire)" />
+                  <div className="mt-4"><Label>Description</Label><Textarea value={genericDescription} onChange={(e) => setGenericDescription(e.target.value)} placeholder="Description..." className="min-h-[100px]" /></div>
+                </div>
+              </div>
+            )}
+
+            {["Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Conditions Générales d'Utilisation (CGU) — SaaS / site web", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType) && (
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg border-b pb-2 text-blue-700">📝 {pendingContractType}</h3>
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-gray-700 mb-4">Formulaire en cours de développement.</p>
+                  <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={setSelectedClientId} label="Client" />
+                  <div className="mt-4"><Label>Description</Label><Textarea value={genericDescription} onChange={(e) => setGenericDescription(e.target.value)} placeholder="Description du contrat..." className="min-h-[100px]" /></div>
+                </div>
+              </div>
+            )}
+
             {/* Formulaire générique pour tous les autres types de contrats */}
-            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière", "Quitus / reconnaissance de dette", "Acte de cession de parts sociales"].includes(pendingContractType) && (
+            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière", "Quitus / reconnaissance de dette", "Acte de cession de parts sociales", "Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Conditions Générales d'Utilisation (CGU) — SaaS / site web", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType) && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg border-b pb-2">👤 Client concerné</h3>
                 <div className="space-y-2">
@@ -44839,6 +44862,8 @@ FIN DE LA CONVENTION
                   handleQuitusDetteSubmit();
                 } else if (pendingContractType === "Acte de cession de parts sociales") {
                   handleCessionPartsSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Conditions Générales d'Utilisation (CGU) — SaaS / site web", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                  handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
                   handleGenericContractSubmit();
