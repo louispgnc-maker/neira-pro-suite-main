@@ -84,6 +84,13 @@ export default function EmailInbox() {
   const [selectedDraft, setSelectedDraft] = useState<any | null>(null);
   const [showCompose, setShowCompose] = useState(false);
   
+  // Resizable email list width
+  const [emailListWidth, setEmailListWidth] = useState(() => {
+    const saved = localStorage.getItem('emailListWidth');
+    return saved ? parseInt(saved) : 450;
+  });
+  const [isResizing, setIsResizing] = useState(false);
+  
   // Compose form
   const [composeTo, setComposeTo] = useState('');
   const [composeCc, setComposeCc] = useState('');
@@ -98,6 +105,42 @@ export default function EmailInbox() {
   const mainButtonColor = role === 'notaire' 
     ? 'bg-orange-600 hover:bg-orange-700 text-white' 
     : 'bg-blue-600 hover:bg-blue-700 text-white';
+
+  // Handle resize
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      
+      const newWidth = e.clientX - 300; // Adjust based on sidebar width
+      if (newWidth >= 300 && newWidth <= 800) {
+        setEmailListWidth(newWidth);
+        localStorage.setItem('emailListWidth', newWidth.toString());
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing]);
 
   useEffect(() => {
     loadAccounts();
@@ -888,7 +931,10 @@ export default function EmailInbox() {
         <Card className="flex-1 flex flex-col overflow-hidden shadow-lg">        <CardContent className="flex-1 overflow-hidden p-0">
           <div className="flex h-full overflow-hidden rounded-lg border bg-card">
             {/* Email List */}
-            <div className="w-[450px] border-r overflow-y-auto bg-background">
+            <div 
+              className="border-r overflow-y-auto bg-background" 
+              style={{ width: `${emailListWidth}px`, minWidth: '300px', maxWidth: '800px' }}
+            >
             {loading ? (
               <div className="p-8 text-center">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
@@ -1021,6 +1067,14 @@ export default function EmailInbox() {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Resize Handle */}
+          <div
+            className="w-1 hover:w-1.5 bg-border hover:bg-primary/50 cursor-col-resize transition-all relative group"
+            onMouseDown={handleMouseDown}
+          >
+            <div className="absolute inset-y-0 -left-1 -right-1" />
           </div>
 
           {/* Email Content */}
