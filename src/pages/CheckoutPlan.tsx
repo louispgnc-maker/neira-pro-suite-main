@@ -234,7 +234,11 @@ export default function CheckoutPlan() {
         <div className="mb-6">
           <Button
             onClick={() => navigate(`${prefix}/subscription`)}
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            className={`text-white ${
+              role === 'notaire'
+                ? 'bg-orange-500 hover:bg-orange-600'
+                : 'bg-blue-500 hover:bg-blue-600'
+            }`}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour à l'espace abonnement
@@ -354,7 +358,11 @@ export default function CheckoutPlan() {
                         {planId === 'cabinet-plus' && numberOfUsers >= 50 ? (
                           <>
                             Plus de 50 membres ?{' '}
-                            <a href="/contact" className="text-orange-600 hover:text-orange-700 underline">
+                            <a href="/contact" className={`underline ${
+                              role === 'notaire'
+                                ? 'text-orange-600 hover:text-orange-700'
+                                : 'text-blue-600 hover:text-blue-700'
+                            }`}>
                               Contactez-nous
                             </a>
                           </>
@@ -369,13 +377,21 @@ export default function CheckoutPlan() {
                   <div className="space-y-3">
                     <Label className="text-black">Période de facturation</Label>
                     <RadioGroup value={billingPeriod} onValueChange={(v) => setBillingPeriod(v as 'monthly' | 'yearly')}>
-                      <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-orange-500/20 transition-colors">
+                      <div className={`flex items-center space-x-2 p-3 border rounded-lg cursor-pointer transition-colors ${
+                        role === 'notaire'
+                          ? 'hover:bg-orange-500/20'
+                          : 'hover:bg-blue-500/20'
+                      }`}>
                         <RadioGroupItem value="monthly" id="monthly" />
                         <Label htmlFor="monthly" className="flex-1 cursor-pointer text-black text-sm">
                           Mensuel - {monthlyPrice}€/mois
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-orange-500/20 transition-colors">
+                      <div className={`flex items-center space-x-2 p-3 border rounded-lg cursor-pointer transition-colors ${
+                        role === 'notaire'
+                          ? 'hover:bg-orange-500/20'
+                          : 'hover:bg-blue-500/20'
+                      }`}>
                         <RadioGroupItem value="yearly" id="yearly" />
                         <Label htmlFor="yearly" className="flex-1 cursor-pointer text-black text-sm">
                           Annuel - {yearlyPrice}€/an
@@ -448,7 +464,11 @@ export default function CheckoutPlan() {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                    className={`w-full text-white ${
+                      role === 'notaire'
+                        ? 'bg-orange-500 hover:bg-orange-600'
+                        : 'bg-blue-500 hover:bg-blue-600'
+                    }`}
                     disabled={loading}
                   >
                     {loading ? "Traitement en cours..." : `Confirmer - ${total}€`}

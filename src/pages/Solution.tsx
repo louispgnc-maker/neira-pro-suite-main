@@ -149,7 +149,7 @@ export default function Solution() {
                 </div>
               </div>
               
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/avocats/checkout/essentiel')}>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/auth?plan=essentiel')}>
                 Choisir Essentiel
               </Button>
             </Card>
@@ -209,7 +209,7 @@ export default function Solution() {
                 <p className="text-sm text-green-700 font-semibold">✨ Tout compris - Aucune limitation supplémentaire</p>
               </div>
               
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/avocats/checkout/professionnel')}>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/auth?plan=professionnel')}>
                 Choisir Professionnel
               </Button>
             </Card>
@@ -269,7 +269,7 @@ export default function Solution() {
                 <p className="text-sm text-orange-700 font-semibold">🚀 Tout illimité - Solution premium complète</p>
               </div>
               
-              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/avocats/checkout/cabinet-plus')}>
+              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/auth?plan=cabinet-plus')}>
                 Choisir Cabinet+
               </Button>
             </Card>

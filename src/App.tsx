@@ -74,15 +74,6 @@ const App = () => (
             <Route path="/" element={<Auth />} />
             <Route path="/about" element={<About />} />
             <Route path="/solution" element={<Solution />} />
-            <Route path="/checkout/essentiel" element={<CheckoutEssentiel />} />
-            <Route path="/checkout/professionnel" element={<CheckoutProfessionnel />} />
-            <Route path="/checkout/cabinet-plus" element={<CheckoutCabinetPlus />} />
-            <Route path="/avocats/checkout/essentiel" element={<CheckoutEssentiel />} />
-            <Route path="/avocats/checkout/professionnel" element={<CheckoutProfessionnel />} />
-            <Route path="/avocats/checkout/cabinet-plus" element={<CheckoutCabinetPlus />} />
-            <Route path="/notaires/checkout/essentiel" element={<CheckoutEssentiel />} />
-            <Route path="/notaires/checkout/professionnel" element={<CheckoutProfessionnel />} />
-            <Route path="/notaires/checkout/cabinet-plus" element={<CheckoutCabinetPlus />} />
             <Route path="/test-subscription" element={<TestSubscription />} />
             <Route path="/test-subscription/payment" element={<TestPayment />} />
             <Route path="/test-subscription/thanks" element={<TestThanks />} />
