@@ -336,7 +336,8 @@ export default function Subscription() {
                       </div>
                       <div>
                         <CardTitle className="text-2xl mb-1 text-black">
-                          Neira {plan?.name}
+                          Neira {plan?.name || subscriptionData.tier}
+                          <span className="text-xs text-gray-500 ml-2">(tier: {subscriptionData.tier}, plan found: {plan ? 'yes' : 'no'})</span>
                         </CardTitle>
                         <CardDescription className="text-base text-black">
                           {plan?.description}
