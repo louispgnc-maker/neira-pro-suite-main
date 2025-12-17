@@ -47285,6 +47285,12 @@ FIN DE LA CONVENTION
             )}
 
             {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
+            {(() => {
+              console.log('🔍 DEBUG CGU - pendingContractType:', pendingContractType);
+              console.log('🔍 DEBUG CGU - Expected:', "Conditions Générales d'Utilisation (CGU) — SaaS / site web");
+              console.log('🔍 DEBUG CGU - Match:', pendingContractType === "Conditions Générales d'Utilisation (CGU) — SaaS / site web");
+              return null;
+            })()}
             {pendingContractType === "Conditions Générales d'Utilisation (CGU) — SaaS / site web" && (
               <div className="space-y-6">
                 <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">📱 Conditions Générales d'Utilisation (CGU) — SaaS / Site Web</h3>
