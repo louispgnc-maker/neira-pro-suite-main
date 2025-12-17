@@ -985,6 +985,172 @@ export default function Contrats() {
   const [cguMentionsLegalesFiles, setCguMentionsLegalesFiles] = useState<File[]>([]);
   const [cguAnnexesFiles, setCguAnnexesFiles] = useState<File[]>([]);
   
+  // States pour Contrat d'agence commerciale
+  const [agenceClientId, setAgenceClientId] = useState<string>("");
+  const [agenceData, setAgenceData] = useState({
+    // 1. Identification mandant
+    mandantDenomination: "",
+    mandantFormeJuridique: "",
+    mandantCapital: "",
+    mandantRCS: "",
+    mandantSIREN: "",
+    mandantSiege: "",
+    mandantRepresentant: "",
+    mandantActivite: "",
+    mandantEmail: "",
+    mandantTelephone: "",
+    
+    // 1. Identification agent
+    agentNomPrenom: "",
+    agentDenomination: "",
+    agentStatutJuridique: "",
+    agentAdresse: "",
+    agentRCS: "",
+    agentSIREN: "",
+    agentRSAC: "",
+    agentRCPro: "", // oui/non
+    agentNumeroRCPro: "",
+    agentEmail: "",
+    agentTelephone: "",
+    agentEtranger: false,
+    agentSousAgents: "", // oui/non
+    
+    // 2. Objet
+    produits: "",
+    marchesCibles: "",
+    secteursGeographiques: "",
+    clienteleVisee: "",
+    cgvApplicables: "",
+    
+    // 3. Nature juridique
+    rappelIntermediaireIndependant: true,
+    rappelPasRisqueVente: true,
+    rappelPasEncaissementSaufClause: true,
+    rappelArticlesCodeCommerce: true,
+    
+    // 4. Mandat et pouvoirs
+    pouvoirProspection: false,
+    pouvoirPresentation: false,
+    pouvoirNegociation: false,
+    pouvoirConclusion: false,
+    pouvoirSalons: false,
+    pouvoirReporting: false,
+    interdictionModifTarifs: true,
+    interdictionRemises: true,
+    interdictionClausesNonApprouvees: true,
+    interdictionEncaissement: true,
+    mandatExclusif: "", // exclusif/non exclusif
+    possibiliteSousAgents: "", // oui/non
+    
+    // 5. Exclusivité
+    exclusiviteZone: "",
+    exclusiviteSecteur: "",
+    exclusiviteGamme: "",
+    exclusiviteMandantInterdictionConcurrent: "", // oui/non
+    exclusiviteMandantInterdictionProduitsConcurrents: "", // oui/non
+    objectifsMinimaux: "",
+    
+    // 6. Obligations agent
+    obligationProspecter: "",
+    obligationPromouvoir: "",
+    obligationPolitiqueCommerciale: "",
+    obligationInformer: "",
+    obligationReportingFrequence: "",
+    obligationConfidentialite: "",
+    obligationNonConflit: "",
+    obligationNonConcurrence: "",
+    
+    // 7. Obligations mandant
+    obligationCatalogues: "",
+    obligationInformerModifs: "",
+    obligationSupportTechnique: "",
+    obligationRespecterExclusivite: "",
+    obligationPayerCommissions: "",
+    obligationInformerOperations: "",
+    
+    // 8. Commissionnement
+    commissionType: "", // pourcentage/fixe/degressif/progressif
+    commissionPourcentage: "",
+    commissionMontantFixe: "",
+    commissionGammes: "",
+    commissionVentesAgent: false,
+    commissionVentesMandant: false,
+    commissionRenouvellements: false,
+    commissionAugmentations: false,
+    commissionMomentDue: "", // conclusion/paiement/expedition
+    commissionPeriodicite: "", // mensuelle/trimestrielle
+    commissionDroitInformation: "",
+    
+    // 9. Non-concurrence
+    nonConcurrenceAvant: "",
+    nonConcurrenceApresDuree: "",
+    nonConcurrenceApresZone: "",
+    nonConcurrenceApresSecteur: "",
+    nonConcurrenceCompensation: "",
+    
+    // 10. Responsabilité
+    responsabiliteAgent: "",
+    responsabiliteMandant: "",
+    exclusionsResponsabilite: "",
+    
+    // 11. Confidentialité
+    confidentialitePendant: "",
+    confidentialiteApres: "",
+    confidentialiteDonneesSensibles: "",
+    
+    // 12. Propriété intellectuelle
+    piInterdictionMarques: true,
+    piLicenceLimitee: "",
+    piRestitutionMateriel: "",
+    
+    // 13. RGPD
+    rgpdStatutAgent: "", // responsable/sous-traitant
+    rgpdDonneesTraitees: "",
+    rgpdFinalites: "",
+    rgpdDurees: "",
+    rgpdMesuresSecurite: "",
+    rgpdDPO: "",
+    
+    // 14. Durée et résiliation
+    dureeDeterminee: "", // oui/non
+    dureeIndeterminee: "", // oui/non
+    dureeReconduction: "", // oui/non
+    resiliationPreavis1an: "1 mois",
+    resiliationPreavis2ans: "2 mois",
+    resiliationPreavis3ans: "3 mois et plus",
+    resiliationImmediateFauteGrave: true,
+    resiliationImmediateNonRespect: true,
+    resiliationImmediateCessation: true,
+    resiliationImmediateLiquidation: true,
+    
+    // 15. Indemnité légale
+    indemniteMontant: "2 années de commissions",
+    indemniteSaufFauteGrave: true,
+    indemnitePaiementDelai: "",
+    
+    // 16. Annexes
+    annexeTarifs: false,
+    annexeCatalogue: false,
+    annexePolitiqueCommerciale: false,
+    annexeFichesTechniques: false,
+    annexeReporting: false,
+    annexeHistoriqueCommissions: false,
+    annexeFormulaireRSAC: false,
+    
+    // 17. Pièces justificatives
+    piecesMandantKbis: false,
+    piecesMandantPolitique: false,
+    piecesMandantCatalogue: false,
+    piecesMandantTarifs: false,
+    piecesAgentKbisRSAC: false,
+    piecesAgentRCPro: false,
+    piecesAgentIdentite: false,
+  });
+  
+  const [agenceMandantFiles, setAgenceMandantFiles] = useState<File[]>([]);
+  const [agenceAgentFiles, setAgenceAgentFiles] = useState<File[]>([]);
+  const [agenceAnnexesFiles, setAgenceAnnexesFiles] = useState<File[]>([]);
+  
   // States pour attestation de propriété immobilière
   const [attestationActeDecesFiles, setAttestationActeDecesFiles] = useState<File[]>([]);
   const [attestationIdentiteHeritiers, setAttestationIdentiteHeritiers] = useState<File[]>([]);
@@ -47898,6 +48064,207 @@ FIN DE LA CONVENTION
                   />
                 </div>
                 
+              </div>
+            )}
+
+            {/* Formulaire complet pour Contrat d'agence commerciale */}
+            {(pendingContractType.includes("agence commerciale") || pendingContractType.includes("Contrat d'agence commerciale")) && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">🤝 Contrat d'Agence Commerciale</h3>
+                
+                {/* 1. IDENTIFICATION DES PARTIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  
+                  {/* MANDANT */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-semibold text-blue-600">A. Mandant (entreprise représentée)</h5>
+                    <ClientSelector 
+                      clients={clients} 
+                      selectedClientId={agenceClientId} 
+                      onClientChange={(clientId) => {
+                        setAgenceClientId(clientId);
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setAgenceData({
+                            ...agenceData,
+                            mandantDenomination: client.nom || "",
+                            mandantSiege: client.adresse || "",
+                            mandantEmail: client.email || "",
+                            mandantTelephone: client.telephone || "",
+                          });
+                        }
+                      }}
+                      label="Sélectionner le mandant (facultatif)"
+                      role="avocat"
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label>Dénomination sociale *</Label><Input value={agenceData.mandantDenomination} onChange={(e) => setAgenceData({...agenceData, mandantDenomination: e.target.value})} placeholder="SAS EXEMPLE" /></div>
+                      <div><Label>Forme juridique *</Label><Input value={agenceData.mandantFormeJuridique} onChange={(e) => setAgenceData({...agenceData, mandantFormeJuridique: e.target.value})} placeholder="SAS, SARL, SA..." /></div>
+                      <div><Label>Capital social</Label><Input value={agenceData.mandantCapital} onChange={(e) => setAgenceData({...agenceData, mandantCapital: e.target.value})} placeholder="100 000 €" /></div>
+                      <div><Label>RCS</Label><Input value={agenceData.mandantRCS} onChange={(e) => setAgenceData({...agenceData, mandantRCS: e.target.value})} placeholder="RCS Paris" /></div>
+                      <div><Label>SIREN *</Label><Input value={agenceData.mandantSIREN} onChange={(e) => setAgenceData({...agenceData, mandantSIREN: e.target.value})} placeholder="123 456 789" /></div>
+                      <div><Label>Représentant légal *</Label><Input value={agenceData.mandantRepresentant} onChange={(e) => setAgenceData({...agenceData, mandantRepresentant: e.target.value})} placeholder="M. Jean DUPONT" /></div>
+                    </div>
+                    <div><Label>Adresse siège social *</Label><Textarea value={agenceData.mandantSiege} onChange={(e) => setAgenceData({...agenceData, mandantSiege: e.target.value})} placeholder="Adresse complète" className="min-h-[60px]" /></div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label>Activité principale</Label><Input value={agenceData.mandantActivite} onChange={(e) => setAgenceData({...agenceData, mandantActivite: e.target.value})} placeholder="Vente de produits..." /></div>
+                      <div><Label>Email</Label><Input type="email" value={agenceData.mandantEmail} onChange={(e) => setAgenceData({...agenceData, mandantEmail: e.target.value})} placeholder="contact@entreprise.com" /></div>
+                    </div>
+                    <div><Label>Téléphone</Label><Input value={agenceData.mandantTelephone} onChange={(e) => setAgenceData({...agenceData, mandantTelephone: e.target.value})} placeholder="+33 1 23 45 67 89" /></div>
+                  </div>
+                  
+                  {/* AGENT COMMERCIAL */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-semibold text-blue-600">B. Agent commercial (mandataire indépendant)</h5>
+                    <div className="p-3 bg-orange-50 rounded border border-orange-200">
+                      <p className="text-xs text-orange-700">⚠️ L'agent doit être inscrit au RSAC (Registre Spécial des Agents Commerciaux)</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label>Nom / Prénom (si personne physique)</Label><Input value={agenceData.agentNomPrenom} onChange={(e) => setAgenceData({...agenceData, agentNomPrenom: e.target.value})} placeholder="Jean MARTIN" /></div>
+                      <div><Label>Ou dénomination sociale (si société)</Label><Input value={agenceData.agentDenomination} onChange={(e) => setAgenceData({...agenceData, agentDenomination: e.target.value})} placeholder="AGENT SOLUTIONS SARL" /></div>
+                      <div><Label>Statut juridique *</Label><Input value={agenceData.agentStatutJuridique} onChange={(e) => setAgenceData({...agenceData, agentStatutJuridique: e.target.value})} placeholder="EI, EURL, SASU..." /></div>
+                      <div><Label>RCS</Label><Input value={agenceData.agentRCS} onChange={(e) => setAgenceData({...agenceData, agentRCS: e.target.value})} placeholder="RCS Lyon" /></div>
+                      <div><Label>SIREN</Label><Input value={agenceData.agentSIREN} onChange={(e) => setAgenceData({...agenceData, agentSIREN: e.target.value})} placeholder="987 654 321" /></div>
+                      <div><Label>N° RSAC *</Label><Input value={agenceData.agentRSAC} onChange={(e) => setAgenceData({...agenceData, agentRSAC: e.target.value})} placeholder="RSAC 12345678" /></div>
+                    </div>
+                    <div><Label>Adresse complète *</Label><Textarea value={agenceData.agentAdresse} onChange={(e) => setAgenceData({...agenceData, agentAdresse: e.target.value})} placeholder="Adresse complète de l'agent" className="min-h-[60px]" /></div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Assurance RC Professionnelle *</Label>
+                        <RadioGroup value={agenceData.agentRCPro} onValueChange={(v) => setAgenceData({...agenceData, agentRCPro: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="rc-oui" /><Label htmlFor="rc-oui">Oui</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="rc-non" /><Label htmlFor="rc-non">Non</Label></div>
+                        </RadioGroup>
+                      </div>
+                      {agenceData.agentRCPro === "oui" && (
+                        <div><Label>Numéro de police</Label><Input value={agenceData.agentNumeroRCPro} onChange={(e) => setAgenceData({...agenceData, agentNumeroRCPro: e.target.value})} placeholder="N° police RC Pro" /></div>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label>Email</Label><Input type="email" value={agenceData.agentEmail} onChange={(e) => setAgenceData({...agenceData, agentEmail: e.target.value})} placeholder="agent@email.com" /></div>
+                      <div><Label>Téléphone</Label><Input value={agenceData.agentTelephone} onChange={(e) => setAgenceData({...agenceData, agentTelephone: e.target.value})} placeholder="+33 6 12 34 56 78" /></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={agenceData.agentEtranger} onCheckedChange={(v) => setAgenceData({...agenceData, agentEtranger: !!v})} id="agent-etranger" />
+                        <Label htmlFor="agent-etranger" className="font-normal">Agent étranger</Label>
+                      </div>
+                      <div>
+                        <Label>Sous-agents utilisés</Label>
+                        <RadioGroup value={agenceData.agentSousAgents} onValueChange={(v) => setAgenceData({...agenceData, agentSousAgents: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="sa-oui" /><Label htmlFor="sa-oui">Oui</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="sa-non" /><Label htmlFor="sa-non">Non</Label></div>
+                        </RadioGroup>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 2. OBJET DU CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du contrat</h4>
+                  <div className="space-y-3">
+                    <div><Label>Produits ou services à promouvoir *</Label><Textarea value={agenceData.produits} onChange={(e) => setAgenceData({...agenceData, produits: e.target.value})} placeholder="Description des produits/services..." className="min-h-[80px]" /></div>
+                    <div><Label>Marchés cibles</Label><Input value={agenceData.marchesCibles} onChange={(e) => setAgenceData({...agenceData, marchesCibles: e.target.value})} placeholder="B2B, B2C, secteur industriel..." /></div>
+                    <div><Label>Secteurs géographiques *</Label><Input value={agenceData.secteursGeographiques} onChange={(e) => setAgenceData({...agenceData, secteursGeographiques: e.target.value})} placeholder="France, Europe, régions..." /></div>
+                    <div><Label>Type de clientèle visée</Label><Input value={agenceData.clienteleVisee} onChange={(e) => setAgenceData({...agenceData, clienteleVisee: e.target.value})} placeholder="PME, grands comptes, particuliers..." /></div>
+                    <div><Label>Conditions générales de vente applicables</Label><Input value={agenceData.cgvApplicables} onChange={(e) => setAgenceData({...agenceData, cgvApplicables: e.target.value})} placeholder="Référence aux CGV du mandant" /></div>
+                  </div>
+                </div>
+                
+                {/* 3. NATURE JURIDIQUE */}
+                <div className="space-y-4 p-4 bg-orange-50/50 rounded-lg border border-orange-200">
+                  <h4 className="font-semibold text-lg text-orange-700">3️⃣ Nature juridique — Rappels obligatoires</h4>
+                  <div className="p-3 bg-orange-100 rounded border border-orange-300">
+                    <p className="text-xs text-orange-800">⚠️ Articles L134-1 à L134-17 du Code de commerce</p>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2"><Checkbox checked={agenceData.rappelIntermediaireIndependant} onCheckedChange={(v) => setAgenceData({...agenceData, rappelIntermediaireIndependant: !!v})} id="rappel-1" disabled /><Label htmlFor="rappel-1" className="font-normal">L'agent commercial agit en tant qu'intermédiaire indépendant ✅</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={agenceData.rappelPasRisqueVente} onCheckedChange={(v) => setAgenceData({...agenceData, rappelPasRisqueVente: !!v})} id="rappel-2" disabled /><Label htmlFor="rappel-2" className="font-normal">Il ne supporte pas les risques de la vente ✅</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={agenceData.rappelPasEncaissementSaufClause} onCheckedChange={(v) => setAgenceData({...agenceData, rappelPasEncaissementSaufClause: !!v})} id="rappel-3" disabled /><Label htmlFor="rappel-3" className="font-normal">Il ne peut pas encaisser de paiements sauf clause spéciale ✅</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={agenceData.rappelArticlesCodeCommerce} onCheckedChange={(v) => setAgenceData({...agenceData, rappelArticlesCodeCommerce: !!v})} id="rappel-4" disabled /><Label htmlFor="rappel-4" className="font-normal">Régi par les articles L134-1 à L134-17 du Code de commerce ✅</Label></div>
+                  </div>
+                </div>
+                
+                {/* 4. MANDAT & POUVOIRS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Mandat & Pouvoirs de l'agent</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="font-medium">Pouvoirs accordés</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.pouvoirProspection} onCheckedChange={(v) => setAgenceData({...agenceData, pouvoirProspection: !!v})} id="pouv-1" /><Label htmlFor="pouv-1" className="font-normal">Prospection commerciale</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.pouvoirPresentation} onCheckedChange={(v) => setAgenceData({...agenceData, pouvoirPresentation: !!v})} id="pouv-2" /><Label htmlFor="pouv-2" className="font-normal">Présentation des produits</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.pouvoirNegociation} onCheckedChange={(v) => setAgenceData({...agenceData, pouvoirNegociation: !!v})} id="pouv-3" /><Label htmlFor="pouv-3" className="font-normal">Négociation des contrats</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.pouvoirConclusion} onCheckedChange={(v) => setAgenceData({...agenceData, pouvoirConclusion: !!v})} id="pouv-4" /><Label htmlFor="pouv-4" className="font-normal">Conclusion des contrats au nom du mandant (optionnel)</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.pouvoirSalons} onCheckedChange={(v) => setAgenceData({...agenceData, pouvoirSalons: !!v})} id="pouv-5" /><Label htmlFor="pouv-5" className="font-normal">Participation aux salons / événements</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.pouvoirReporting} onCheckedChange={(v) => setAgenceData({...agenceData, pouvoirReporting: !!v})} id="pouv-6" /><Label htmlFor="pouv-6" className="font-normal">Reporting commercial</Label></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">Pouvoirs interdits (standards)</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.interdictionModifTarifs} onCheckedChange={(v) => setAgenceData({...agenceData, interdictionModifTarifs: !!v})} id="int-1" disabled /><Label htmlFor="int-1" className="font-normal">Modifier les tarifs ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.interdictionRemises} onCheckedChange={(v) => setAgenceData({...agenceData, interdictionRemises: !!v})} id="int-2" disabled /><Label htmlFor="int-2" className="font-normal">Accorder des remises non autorisées ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.interdictionClausesNonApprouvees} onCheckedChange={(v) => setAgenceData({...agenceData, interdictionClausesNonApprouvees: !!v})} id="int-3" disabled /><Label htmlFor="int-3" className="font-normal">Engager la société sur des clauses non approuvées ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={agenceData.interdictionEncaissement} onCheckedChange={(v) => setAgenceData({...agenceData, interdictionEncaissement: !!v})} id="int-4" disabled /><Label htmlFor="int-4" className="font-normal">Encaisser des paiements (sauf autorisation écrite) ✅</Label></div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Type de mandat *</Label>
+                        <RadioGroup value={agenceData.mandatExclusif} onValueChange={(v) => setAgenceData({...agenceData, mandatExclusif: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="exclusif" id="mand-exc" /><Label htmlFor="mand-exc">Exclusif</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non_exclusif" id="mand-non" /><Label htmlFor="mand-non">Non exclusif</Label></div>
+                        </RadioGroup>
+                      </div>
+                      <div>
+                        <Label>Possibilité de sous-agents</Label>
+                        <RadioGroup value={agenceData.possibiliteSousAgents} onValueChange={(v) => setAgenceData({...agenceData, possibiliteSousAgents: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="sa-yes" /><Label htmlFor="sa-yes">Oui</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="sa-no" /><Label htmlFor="sa-no">Non</Label></div>
+                        </RadioGroup>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 5. EXCLUSIVITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Exclusivité (si applicable)</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="font-medium">Exclusivité accordée à l'agent</Label>
+                      <div className="space-y-2 mt-2">
+                        <div><Label>Zone géographique</Label><Input value={agenceData.exclusiviteZone} onChange={(e) => setAgenceData({...agenceData, exclusiviteZone: e.target.value})} placeholder="Ex: Ile-de-France, Sud-Est..." /></div>
+                        <div><Label>Marché / Secteur</Label><Input value={agenceData.exclusiviteSecteur} onChange={(e) => setAgenceData({...agenceData, exclusiviteSecteur: e.target.value})} placeholder="Ex: Secteur industriel" /></div>
+                        <div><Label>Gamme de produits</Label><Input value={agenceData.exclusiviteGamme} onChange={(e) => setAgenceData({...agenceData, exclusiviteGamme: e.target.value})} placeholder="Ex: Gamme Premium uniquement" /></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">Exclusivité accordée au mandant</Label>
+                      <div className="space-y-2 mt-2">
+                        <div>
+                          <Label>Interdiction pour l'agent de représenter un concurrent</Label>
+                          <RadioGroup value={agenceData.exclusiviteMandantInterdictionConcurrent} onValueChange={(v) => setAgenceData({...agenceData, exclusiviteMandantInterdictionConcurrent: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="excl-conc-oui" /><Label htmlFor="excl-conc-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="excl-conc-non" /><Label htmlFor="excl-conc-non">Non</Label></div>
+                          </RadioGroup>
+                        </div>
+                        <div>
+                          <Label>Interdiction de proposer des produits concurrents</Label>
+                          <RadioGroup value={agenceData.exclusiviteMandantInterdictionProduitsConcurrents} onValueChange={(v) => setAgenceData({...agenceData, exclusiviteMandantInterdictionProduitsConcurrents: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="excl-prod-oui" /><Label htmlFor="excl-prod-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="excl-prod-non" /><Label htmlFor="excl-prod-non">Non</Label></div>
+                          </RadioGroup>
+                        </div>
+                      </div>
+                    </div>
+                    <div><Label>Volume ou objectifs minimaux</Label><Textarea value={agenceData.objectifsMinimaux} onChange={(e) => setAgenceData({...agenceData, objectifsMinimaux: e.target.value})} placeholder="Objectifs chiffrés, quotas..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+
               </div>
             )}
 
