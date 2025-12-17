@@ -403,6 +403,20 @@ export default function Contrats() {
     tribunalCompetent: "",
     mediationArbitrage: "", // oui / non
     clauseAmiable: "", // oui / non
+    
+    // 14. Clauses complémentaires essentielles
+    dateEffetContrat: "", // Date d'entrée en vigueur
+    independanceParties: "", // oui / non
+    absenceSubordination: "", // oui / non
+    liberteOrganisation: "", // oui / non
+    exclusivite: "", // oui / non / non
+    precisionExclusivite: "",
+    nonDebauchage: "", // oui / non
+    dureeNonDebauchage: "",
+    penaliteNonDebauchage: "",
+    modificationAvenant: "", // oui (par défaut)
+    clauseTolerance: "", // oui (par défaut)
+    clauseNullitePartielle: "", // oui (par défaut)
   });
   
   const [prestationPrestataireFiles, setPrestationPrestataireFiles] = useState<File[]>([]); // Kbis, assurance, etc.
@@ -45250,9 +45264,109 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* 14. ANNEXES */}
+                {/* 14. DATE D'EFFET & INDÉPENDANCE DES PARTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Annexes et pièces justificatives</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Date d'effet & Indépendance des parties</h4>
+                  <div className="space-y-3">
+                    <div><Label>Date d'entrée en vigueur du contrat *</Label><Input type="date" value={prestationData.dateEffetContrat} onChange={(e) => setPrestationData({...prestationData, dateEffetContrat: e.target.value})} /></div>
+                    
+                    <div className="p-3 bg-yellow-50 rounded border border-yellow-200">
+                      <p className="text-sm font-semibold text-yellow-800 mb-2">⚠️ Clause d'indépendance (fondamentale pour éviter la requalification en contrat de travail)</p>
+                    </div>
+                    
+                    <div>
+                      <Label>Absence de lien de subordination</Label>
+                      <RadioGroup value={prestationData.absenceSubordination} onValueChange={(v) => setPrestationData({...prestationData, absenceSubordination: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="sub-oui" /><Label htmlFor="sub-oui">Oui, le prestataire est indépendant</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="sub-non" /><Label htmlFor="sub-non">Non (attention : risque de requalification)</Label></div>
+                      </RadioGroup>
+                    </div>
+                    
+                    <div>
+                      <Label>Liberté d'organisation du prestataire</Label>
+                      <RadioGroup value={prestationData.liberteOrganisation} onValueChange={(v) => setPrestationData({...prestationData, liberteOrganisation: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="lib-oui" /><Label htmlFor="lib-oui">Oui, le prestataire organise librement son travail</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="lib-non" /><Label htmlFor="lib-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    
+                    <div>
+                      <Label>Clause d'exclusivité</Label>
+                      <RadioGroup value={prestationData.exclusivite} onValueChange={(v) => setPrestationData({...prestationData, exclusivite: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="excl-non" /><Label htmlFor="excl-non">Non, le prestataire peut travailler pour d'autres clients</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="excl-oui" /><Label htmlFor="excl-oui">Oui, exclusivité totale</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="partielle" id="excl-part" /><Label htmlFor="excl-part">Exclusivité partielle / encadrée</Label></div>
+                      </RadioGroup>
+                      {prestationData.exclusivite === "oui" || prestationData.exclusivite === "partielle" ? (
+                        <Textarea value={prestationData.precisionExclusivite} onChange={(e) => setPrestationData({...prestationData, precisionExclusivite: e.target.value})} placeholder="Préciser les modalités de l'exclusivité..." className="mt-2" />
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 15. CLAUSE DE NON-SOLLICITATION / NON-DÉBAUCHAGE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Clause de non-sollicitation / non-débauchage</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Clause de non-débauchage des salariés / sous-traitants</Label>
+                      <RadioGroup value={prestationData.nonDebauchage} onValueChange={(v) => setPrestationData({...prestationData, nonDebauchage: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="deb-oui" /><Label htmlFor="deb-oui">Oui, interdiction de débaucher</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="deb-non" /><Label htmlFor="deb-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    
+                    {prestationData.nonDebauchage === "oui" && (
+                      <>
+                        <div><Label>Durée de la clause</Label><Input value={prestationData.dureeNonDebauchage} onChange={(e) => setPrestationData({...prestationData, dureeNonDebauchage: e.target.value})} placeholder="Ex: 2 ans à compter de la fin du contrat" /></div>
+                        <div><Label>Pénalité en cas de violation</Label><Input value={prestationData.penaliteNonDebauchage} onChange={(e) => setPrestationData({...prestationData, penaliteNonDebauchage: e.target.value})} placeholder="Ex: 12 mois de salaire brut de la personne débauchée" /></div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* 16. MODIFICATION DU CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Modification du contrat</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Toute modification doit faire l'objet d'un avenant écrit et signé</Label>
+                      <RadioGroup value={prestationData.modificationAvenant} onValueChange={(v) => setPrestationData({...prestationData, modificationAvenant: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="aven-oui" /><Label htmlFor="aven-oui">Oui (recommandé)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="aven-non" /><Label htmlFor="aven-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <p className="text-xs text-gray-600">Cette clause sécurise toute évolution de la prestation en exigeant un accord écrit des deux parties.</p>
+                  </div>
+                </div>
+
+                {/* 17. CLAUSES JURIDIQUES STANDARDS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Clauses juridiques standards</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Clause de tolérance / non-renonciation</Label>
+                      <RadioGroup value={prestationData.clauseTolerance} onValueChange={(v) => setPrestationData({...prestationData, clauseTolerance: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="tol-oui" /><Label htmlFor="tol-oui">Oui (recommandé)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="tol-non" /><Label htmlFor="tol-non">Non</Label></div>
+                      </RadioGroup>
+                      <p className="text-xs text-gray-600 mt-1">Le fait pour une partie de ne pas se prévaloir d'un droit ne constitue pas une renonciation définitive à ce droit.</p>
+                    </div>
+                    
+                    <div>
+                      <Label>Clause de nullité partielle (divisibilité)</Label>
+                      <RadioGroup value={prestationData.clauseNullitePartielle} onValueChange={(v) => setPrestationData({...prestationData, clauseNullitePartielle: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="null-oui" /><Label htmlFor="null-oui">Oui (recommandé)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="null-non" /><Label htmlFor="null-non">Non</Label></div>
+                      </RadioGroup>
+                      <p className="text-xs text-gray-600 mt-1">Si une clause est déclarée nulle ou inapplicable, le reste du contrat demeure valable et applicable.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 18. ANNEXES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Annexes et pièces justificatives</h4>
                   <MultiFileUpload 
                     label="Annexes (Cahier des charges, planning, liste livrables, CGV, devis, RGPD/DPA, plans techniques...)" 
                     files={prestationAnnexesFiles} 
