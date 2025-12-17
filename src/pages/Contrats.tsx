@@ -86,6 +86,7 @@ interface MultiFileUploadProps {
   onFilesChange: (files: File[]) => void;
   required?: boolean;
   accept?: string;
+  role?: 'notaire' | 'avocat';
 }
 
 function ClientSelector({ clients, selectedClientId, onClientChange, label = "Sélectionner votre client" }: { clients: Array<{id: string, nom: string, prenom: string}>; selectedClientId: string; onClientChange: (clientId: string) => void; label?: string }) {
@@ -125,7 +126,7 @@ function SubmitButton({ onClick, label, role, disabled = false }: SubmitButtonPr
     <Button
       onClick={onClick}
       disabled={disabled}
-      className={`${SUBMIT_BUTTON_STYLE} ${bgColor} text-white`}
+      className={`w-full py-6 text-lg font-semibold ${bgColor} text-white`}
     >
       <ArrowRight className="mr-2 h-5 w-5" />
       {label}
@@ -133,7 +134,7 @@ function SubmitButton({ onClick, label, role, disabled = false }: SubmitButtonPr
   );
 }
 
-function MultiFileUpload({ label, files, onFilesChange, required = false, accept }: MultiFileUploadProps) {
+function MultiFileUpload({ label, files, onFilesChange, required = false, accept, role = 'notaire' }: MultiFileUploadProps) {
   const inputId = `upload-${label.replace(/\s+/g, '-').toLowerCase()}`;
   
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44912,7 +44913,7 @@ FIN DE LA CONVENTION
                       )}
                     </div>
                     
-                    <MultiFileUpload label="Pièces justificatives prestataire (Kbis, assurance, etc.)" files={prestationPrestataireFiles} onFilesChange={setPrestationPrestataireFiles} accept=".pdf,.jpg,.jpeg,.png" />
+                    <MultiFileUpload label="Pièces justificatives prestataire (Kbis, assurance, etc.)" files={prestationPrestataireFiles} onFilesChange={setPrestationPrestataireFiles} accept=".pdf,.jpg,.jpeg,.png" role="avocat" />
                   </div>
                   
                   {/* CLIENT */}
@@ -44930,7 +44931,7 @@ FIN DE LA CONVENTION
                       <div><Label>Téléphone</Label><Input value={prestationData.clientTelephone} onChange={(e) => setPrestationData({...prestationData, clientTelephone: e.target.value})} /></div>
                     </div>
                     
-                    <MultiFileUpload label="Pièces justificatives client" files={prestationClientFiles} onFilesChange={setPrestationClientFiles} accept=".pdf,.jpg,.jpeg,.png" />
+                    <MultiFileUpload label="Pièces justificatives client" files={prestationClientFiles} onFilesChange={setPrestationClientFiles} accept=".pdf,.jpg,.jpeg,.png" role="avocat" />
                   </div>
                 </div>
                 
@@ -45257,6 +45258,7 @@ FIN DE LA CONVENTION
                     files={prestationAnnexesFiles} 
                     onFilesChange={setPrestationAnnexesFiles} 
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                    role="avocat"
                   />
                 </div>
               </div>
