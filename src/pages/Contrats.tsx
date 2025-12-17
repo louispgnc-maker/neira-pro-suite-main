@@ -47481,9 +47481,49 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* CGU Suite sections 6-17 à venir... */}
+                {/* 6. RÈGLES D'UTILISATION / COMPORTEMENTS INTERDITS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Règles d'utilisation / Comportements interdits</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="font-medium">A. Interdictions générales</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.interdictionUsurpationIdentite} onCheckedChange={(v) => setCguData({...cguData, interdictionUsurpationIdentite: !!v})} id="int-usurp" disabled /><Label htmlFor="int-usurp" className="font-normal">Usurpation d'identité ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.interdictionViolationLois} onCheckedChange={(v) => setCguData({...cguData, interdictionViolationLois: !!v})} id="int-lois" disabled /><Label htmlFor="int-lois" className="font-normal">Violation des lois (fraude, harcèlement, haine) ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.interdictionSpamPhishing} onCheckedChange={(v) => setCguData({...cguData, interdictionSpamPhishing: !!v})} id="int-spam" disabled /><Label htmlFor="int-spam" className="font-normal">Spam / Phishing ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.interdictionExploitationCommerciale} onCheckedChange={(v) => setCguData({...cguData, interdictionExploitationCommerciale: !!v})} id="int-comm" disabled /><Label htmlFor="int-comm" className="font-normal">Exploitation commerciale non autorisée ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.interdictionAccesNonAutorise} onCheckedChange={(v) => setCguData({...cguData, interdictionAccesNonAutorise: !!v})} id="int-acces" disabled /><Label htmlFor="int-acces" className="font-normal">Accès non autorisé à des données ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.interdictionContournementProtections} onCheckedChange={(v) => setCguData({...cguData, interdictionContournementProtections: !!v})} id="int-protect" disabled /><Label htmlFor="int-protect" className="font-normal">Contournement des protections ✅</Label></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">B. Contenu interdit</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.contenuIllicite} onCheckedChange={(v) => setCguData({...cguData, contenuIllicite: !!v})} id="cont-illic" disabled /><Label htmlFor="cont-illic" className="font-normal">Contenu illicite ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.contenuViolentHaineux} onCheckedChange={(v) => setCguData({...cguData, contenuViolentHaineux: !!v})} id="cont-viol" disabled /><Label htmlFor="cont-viol" className="font-normal">Contenu violent ou haineux ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.contenuPornographique} onCheckedChange={(v) => setCguData({...cguData, contenuPornographique: !!v})} id="cont-porno" disabled /><Label htmlFor="cont-porno" className="font-normal">Pornographie / mineurs ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.contenuDiffamatoire} onCheckedChange={(v) => setCguData({...cguData, contenuDiffamatoire: !!v})} id="cont-diff" disabled /><Label htmlFor="cont-diff" className="font-normal">Contenu diffamatoire ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.violationDroitsAuteur} onCheckedChange={(v) => setCguData({...cguData, violationDroitsAuteur: !!v})} id="cont-da" disabled /><Label htmlFor="cont-da" className="font-normal">Violation droits d'auteur ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.publiciteDissimulee} onCheckedChange={(v) => setCguData({...cguData, publiciteDissimulee: !!v})} id="cont-pub" disabled /><Label htmlFor="cont-pub" className="font-normal">Publicité dissimulée ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.venteProduitsInterdits} onCheckedChange={(v) => setCguData({...cguData, venteProduitsInterdits: !!v})} id="cont-vente" disabled /><Label htmlFor="cont-vente" className="font-normal">Vente de produits interdits ✅</Label></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">C. Activités interdites (SaaS / plateformes techniques)</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.reverseEngineering} onCheckedChange={(v) => setCguData({...cguData, reverseEngineering: !!v})} id="act-reverse" disabled /><Label htmlFor="act-reverse" className="font-normal">Reverse engineering ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.scrapingIntensif} onCheckedChange={(v) => setCguData({...cguData, scrapingIntensif: !!v})} id="act-scraping" disabled /><Label htmlFor="act-scraping" className="font-normal">Scraping intensif ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.surutilisationService} onCheckedChange={(v) => setCguData({...cguData, surutilisationService: !!v})} id="act-surutil" disabled /><Label htmlFor="act-surutil" className="font-normal">Surutilisation du service ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.automatisationNonAutorisee} onCheckedChange={(v) => setCguData({...cguData, automatisationNonAutorisee: !!v})} id="act-auto" disabled /><Label htmlFor="act-auto" className="font-normal">Automatisation non autorisée ✅</Label></div>
+                      </div>
+                    </div>
+                    <div><Label>Autres interdictions spécifiques</Label><Textarea value={cguData.autresInterdictions} onChange={(e) => setCguData({...cguData, autresInterdictions: e.target.value})} placeholder="Ajoutez d'autres interdictions spécifiques à votre service..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* CGU Suite sections 7-17 à venir... */}
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-700">✅ Sections 6 à 17 à ajouter dans la prochaine partie</p>
+                  <p className="text-sm text-blue-700">✅ Sections 7 à 17 à ajouter dans la partie finale</p>
                 </div>
                 
                 {/* UPLOAD FICHIERS */}
