@@ -780,6 +780,202 @@ export default function Contrats() {
   const [cgvProduitsFiles, setCgvProduitsFiles] = useState<File[]>([]); // Certificats produits, fiches techniques
   const [cgvAnnexesFiles, setCgvAnnexesFiles] = useState<File[]>([]); // Formulaires, politiques, grilles tarifaires
   
+  // States pour CGU (Conditions Générales d'Utilisation)
+  const [cguVendeurClientId, setCguVendeurClientId] = useState<string>("");
+  const [cguData, setCguData] = useState({
+    // 1. Identification éditeur
+    editeurNom: "",
+    editeurDenomination: "",
+    editeurFormeJuridique: "",
+    editeurCapitalSocial: "",
+    editeurSiegeSocial: "",
+    editeurSIREN: "",
+    editeurRCS: "",
+    editeurTVA: "",
+    editeurDirecteurPublication: "",
+    editeurEmail: "",
+    editeurTelephone: "",
+    hebergeurNom: "",
+    hebergeurCoordonnees: "",
+    secteurReglemente: "", // oui/non
+    secteurReglementeAutorite: "",
+    
+    // 2. Objet des CGU
+    serviceFourni: "",
+    typePlateforme: [] as string[], // SaaS, App mobile, Marketplace, Réseau social, Service info, Plateforme échange
+    limitesService: "",
+    exclusionsExplicites: "",
+    
+    // 3. Définitions
+    defUtilisateur: "",
+    defCompteUtilisateur: "",
+    defService: "",
+    defContenu: "",
+    defContenuUtilisateur: "",
+    defDonneesPersonnelles: "",
+    defPlateforme: "",
+    defEspaceClient: "",
+    defModeration: "",
+    defForceMajeure: "",
+    defAcceptationCGU: "",
+    
+    // 4. Accès au site / Compte utilisateur
+    champsCreeCompteNom: false,
+    champsCreeComptePrenom: false,
+    champsCreeCompteEmail: false,
+    champsCreeCompteTelephone: false,
+    champsCreeCompteMotDePasse: false,
+    champsCreeCompteEntreprise: false,
+    verificationEmail: "", // oui/non
+    verificationTelephone: "", // oui/non
+    ageMinimum: "16", // 16 ou 18
+    interdictionsAcces: "",
+    exactitudeDonnees: "",
+    confidentialiteMotDePasse: "",
+    doubleAuthentification: "", // oui/non
+    responsabiliteVolCompte: "",
+    
+    // 5. Fonctionnement du service
+    fonctionnalitesDisponibles: "",
+    limitationsService: "",
+    prerequisTechniques: "",
+    misesAJour: "",
+    interruptionsService: "",
+    evolutionsSansPreavis: "",
+    
+    // 6. Règles d'utilisation / Comportements interdits
+    interdictionUsurpationIdentite: true,
+    interdictionViolationLois: true,
+    interdictionSpamPhishing: true,
+    interdictionExploitationCommerciale: true,
+    interdictionAccesNonAutorise: true,
+    interdictionContournementProtections: true,
+    contenuIllicite: true,
+    contenuViolentHaineux: true,
+    contenuPornographique: true,
+    contenuDiffamatoire: true,
+    violationDroitsAuteur: true,
+    publiciteDissimulee: true,
+    venteProduitsInterdits: true,
+    reverseEngineering: true,
+    scrapingIntensif: true,
+    surutilisationService: true,
+    automatisationNonAutorisee: true,
+    autresInterdictions: "",
+    
+    // 7. Contenus utilisateurs (UGC)
+    definitionContenuUGC: "",
+    droitsConcedes: "",
+    licenceUtilisation: "",
+    droitsReproduction: "",
+    dureeLicence: "",
+    responsabiliteContenu: "",
+    pouvoirSuppression: "",
+    procedureSignalement: "",
+    suspensionCompte: "",
+    dsaSignalement: "",
+    dsaTransparence: "",
+    
+    // 8. Propriété intellectuelle
+    titulariteDroits: "",
+    marquesLogosDesign: "",
+    logicielsUtilises: "",
+    interdictionReproductionPI: true,
+    protectionCodePI: true,
+    droitsClientContenu: "",
+    
+    // 9. Données personnelles / RGPD
+    donneesIdentite: false,
+    donneesContacts: false,
+    donneesIdentifiants: false,
+    donneesCookiesTracking: false,
+    donneesNavigation: false,
+    donneesUsage: false,
+    finaliteFonctionnement: false,
+    finaliteSecurite: false,
+    finaliteStatistiques: false,
+    finalitePublicite: false,
+    finalitePreventionFraude: false,
+    baseLegaleConsentement: false,
+    baseLegaleContrat: false,
+    baseLegaleInteretLegitime: false,
+    dureeConservationRGPD: "",
+    droitAcces: true,
+    droitRectification: true,
+    droitSuppression: true,
+    droitOpposition: true,
+    droitPortabilite: true,
+    droitLimitation: true,
+    sousTraitants: "",
+    transfertHorsUERGPD: "", // oui/non
+    transfertHorsUEPays: "",
+    dpo: "",
+    
+    // 10. Cookies et traceurs
+    cookiesNecessaires: true,
+    cookiesStatistiques: false,
+    cookiesPublicitaires: false,
+    consentementCookies: true,
+    conservationChoixCookies: "",
+    lienPolitiqueCookies: "",
+    
+    // 11. Responsabilité
+    engagementDisponibilite: "",
+    engagementSecurite: "",
+    engagementMaintenance: "",
+    engagementRespectLois: "",
+    exclusionUtilisationIncorrecte: true,
+    exclusionPanneInternet: true,
+    exclusionDommagesIndirects: true,
+    exclusionPerteDonnees: true,
+    exclusionIntrusionExterne: true,
+    forceMajeureResponsabilite: "",
+    
+    // 12. Suspension / Suppression du compte
+    suspensionNonRespectCGU: true,
+    suspensionComportementsIllicites: true,
+    suspensionUtilisationAbusive: true,
+    suppressionDemandeUtilisateur: true,
+    suppressionDecesUtilisateur: true,
+    dureeSuspension: "",
+    procedureRecours: "",
+    
+    // 13. Modification des CGU
+    notificationModification: "", // oui/non
+    dateEntreeVigueur: "",
+    acceptationTaciteExpresse: "", // tacite/expresse
+    archivageVersions: "", // oui/non
+    
+    // 14. Résiliation du service
+    resiliationParUtilisateur: "",
+    resiliationParPlateforme: "",
+    effetsClotureCompte: "",
+    effetsSuppressionDonnees: "",
+    effetsRestitutionAcces: "",
+    
+    // 15. Litiges / Droit applicable
+    droitApplicable: "France",
+    tribunalCompetent: "",
+    procedureAmiable: "", // oui/non
+    clauseMediationLitiges: "", // oui/non
+    
+    // 16. Annexes techniques
+    annexePolitiqueConfidentialite: false,
+    annexePolitiqueCookies: false,
+    annexeCharteUtilisation: false,
+    annexeDocumentationAPI: false,
+    annexeReglesModeration: false,
+    
+    // 17. Pièces justificatives
+    piecesMentionsLegales: false,
+    piecesPolitiqueConfidentialite: false,
+    piecesPolitiqueCookies: false,
+    piecesConditionsCommerciales: false,
+  });
+  
+  const [cguMentionsLegalesFiles, setCguMentionsLegalesFiles] = useState<File[]>([]);
+  const [cguAnnexesFiles, setCguAnnexesFiles] = useState<File[]>([]);
+  
   // States pour attestation de propriété immobilière
   const [attestationActeDecesFiles, setAttestationActeDecesFiles] = useState<File[]>([]);
   const [attestationIdentiteHeritiers, setAttestationIdentiteHeritiers] = useState<File[]>([]);
@@ -47080,6 +47276,96 @@ FIN DE LA CONVENTION
                     label="Joindre les fichiers annexes (Formulaire rétractation, politique confidentialité, grilles tarifaires, fiches techniques, procédure SAV, notices...)" 
                     files={cgvAnnexesFiles} 
                     onFilesChange={setCgvAnnexesFiles} 
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                    role="avocat"
+                  />
+                </div>
+                
+              </div>
+            )}
+
+            {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
+            {pendingContractType === "Conditions Générales d'Utilisation (CGU) — SaaS / site web" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">📱 Conditions Générales d'Utilisation (CGU) — SaaS / Site Web</h3>
+                
+                {/* 1. IDENTIFICATION DE L'ÉDITEUR */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification de l'éditeur du site / application</h4>
+                  <div className="p-3 bg-orange-50 rounded border border-orange-200">
+                    <p className="text-xs text-orange-700">⚠️ Obligatoire par la LCEN (Loi pour la Confiance dans l'Économie Numérique)</p>
+                  </div>
+                  <div className="space-y-3">
+                    <ClientSelector 
+                      clients={clients} 
+                      selectedClientId={cguVendeurClientId} 
+                      onClientChange={(clientId) => {
+                        setCguVendeurClientId(clientId);
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setCguData({
+                            ...cguData,
+                            editeurNom: `${client.prenom} ${client.nom}`,
+                            editeurDenomination: `${client.prenom} ${client.nom}`,
+                            editeurSiegeSocial: client.adresse || "",
+                            editeurEmail: client.email || "",
+                            editeurTelephone: client.telephone || ""
+                          });
+                        }
+                      }} 
+                      label="Sélectionner un client comme éditeur" 
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Nom de l'éditeur *</Label><Input value={cguData.editeurNom} onChange={(e) => setCguData({...cguData, editeurNom: e.target.value})} /></div>
+                      <div><Label>Dénomination sociale *</Label><Input value={cguData.editeurDenomination} onChange={(e) => setCguData({...cguData, editeurDenomination: e.target.value})} /></div>
+                      <div><Label>Forme juridique</Label><Input value={cguData.editeurFormeJuridique} onChange={(e) => setCguData({...cguData, editeurFormeJuridique: e.target.value})} placeholder="SARL, SAS, SASU, EI..." /></div>
+                      <div><Label>Capital social</Label><Input value={cguData.editeurCapitalSocial} onChange={(e) => setCguData({...cguData, editeurCapitalSocial: e.target.value})} placeholder="Ex: 10 000€" /></div>
+                      <div><Label>SIREN *</Label><Input value={cguData.editeurSIREN} onChange={(e) => setCguData({...cguData, editeurSIREN: e.target.value})} placeholder="123 456 789" /></div>
+                      <div><Label>RCS</Label><Input value={cguData.editeurRCS} onChange={(e) => setCguData({...cguData, editeurRCS: e.target.value})} placeholder="RCS Ville" /></div>
+                      <div><Label>TVA intracommunautaire</Label><Input value={cguData.editeurTVA} onChange={(e) => setCguData({...cguData, editeurTVA: e.target.value})} placeholder="FR12345678901" /></div>
+                      <div><Label>Directeur de la publication *</Label><Input value={cguData.editeurDirecteurPublication} onChange={(e) => setCguData({...cguData, editeurDirecteurPublication: e.target.value})} /></div>
+                    </div>
+                    <div><Label>Siège social *</Label><Input value={cguData.editeurSiegeSocial} onChange={(e) => setCguData({...cguData, editeurSiegeSocial: e.target.value})} /></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Email de contact *</Label><Input type="email" value={cguData.editeurEmail} onChange={(e) => setCguData({...cguData, editeurEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone</Label><Input value={cguData.editeurTelephone} onChange={(e) => setCguData({...cguData, editeurTelephone: e.target.value})} /></div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Nom de l'hébergeur *</Label><Input value={cguData.hebergeurNom} onChange={(e) => setCguData({...cguData, hebergeurNom: e.target.value})} placeholder="Ex: OVH, AWS, Vercel..." /></div>
+                      <div><Label>Coordonnées hébergeur *</Label><Textarea value={cguData.hebergeurCoordonnees} onChange={(e) => setCguData({...cguData, hebergeurCoordonnees: e.target.value})} placeholder="Adresse complète de l'hébergeur..." className="min-h-[60px]" /></div>
+                    </div>
+                    <div>
+                      <Label>Secteur réglementé ?</Label>
+                      <RadioGroup value={cguData.secteurReglemente} onValueChange={(v) => setCguData({...cguData, secteurReglemente: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="sect-oui" /><Label htmlFor="sect-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="sect-non" /><Label htmlFor="sect-non">Non</Label></div>
+                      </RadioGroup>
+                      {cguData.secteurReglemente === "oui" && (
+                        <Input value={cguData.secteurReglementeAutorite} onChange={(e) => setCguData({...cguData, secteurReglementeAutorite: e.target.value})} placeholder="Nom de l'autorité de régulation..." className="mt-2" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* CGU Suite sections 2-5 à venir... */}
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-700">✅ Sections 2 à 17 à ajouter dans la prochaine partie</p>
+                </div>
+                
+                {/* UPLOAD FICHIERS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📎 Pièces justificatives</h4>
+                  <MultiFileUpload 
+                    label="Mentions légales (Kbis, statuts...)" 
+                    files={cguMentionsLegalesFiles} 
+                    onFilesChange={setCguMentionsLegalesFiles} 
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    role="avocat"
+                  />
+                  <MultiFileUpload 
+                    label="Annexes (Politique confidentialité, politique cookies, charte utilisation, documentation API...)" 
+                    files={cguAnnexesFiles} 
+                    onFilesChange={setCguAnnexesFiles} 
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                     role="avocat"
                   />
