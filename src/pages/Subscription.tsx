@@ -183,7 +183,9 @@ export default function Subscription() {
           if (memberData) {
             cabinetId = memberData.cabinet_id;
             setUserRole(memberData.role_cabinet);
-            setIsManager(memberData.role_cabinet === 'Fondateur');
+            const isFounder = memberData.role_cabinet === 'Fondateur';
+            setIsManager(isFounder);
+            console.log('User role:', memberData.role_cabinet, 'isManager:', isFounder);
           }
         } else {
           // If cabinet_id exists in profile, also check the role in cabinet_members
@@ -198,7 +200,9 @@ export default function Subscription() {
           console.log('Member role for cabinet from profile:', memberData);
           if (memberData?.role_cabinet) {
             setUserRole(memberData.role_cabinet);
-            setIsManager(memberData.role_cabinet === 'Fondateur');
+            const isFounder = memberData.role_cabinet === 'Fondateur';
+            setIsManager(isFounder);
+            console.log('User role:', memberData.role_cabinet, 'isManager:', isFounder);
           }
         }
 
@@ -252,7 +256,7 @@ export default function Subscription() {
         console.error('Error loading subscription:', error);
       } finally {
         setLoading(false);
-        console.log('Loading complete. subscriptionData:', subscriptionData);
+        console.log('Loading complete. subscriptionData:', subscriptionData, 'isManager:', isManager);
       }
     };
 
@@ -463,7 +467,7 @@ export default function Subscription() {
           )}
 
           {/* 3) Section "Changer d'abonnement" */}
-          {isManager && (
+          {isManager ? (
             <div className="mb-12">
               <h2 className="text-2xl font-bold text-black mb-2">
                 Changer d'abonnement
@@ -532,6 +536,17 @@ export default function Subscription() {
                   );
                 })}
               </div>
+            </div>
+          ) : (
+            <div className="mb-12">
+              <Card className="border-2 border-yellow-200 bg-yellow-50">
+                <CardHeader>
+                  <CardTitle className="text-xl text-black">Modification d'abonnement réservée au Fondateur</CardTitle>
+                  <CardDescription className="text-black">
+                    Seul le fondateur du cabinet peut changer l'abonnement. Contactez-le si vous souhaitez effectuer des modifications.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
             </div>
           )}
 
