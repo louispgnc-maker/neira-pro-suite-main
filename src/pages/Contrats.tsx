@@ -155,9 +155,9 @@ function MultiFileUpload({ label, files, onFilesChange, required = false, accept
       <button
         type="button"
         onClick={() => document.getElementById(inputId)?.click()}
-        className="w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 transition-colors"
+        className={`w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 transition-colors ${role === 'notaire' ? 'hover:bg-orange-50' : 'hover:bg-blue-50'}`}
         style={{
-          borderColor: files.length > 0 ? "#22c55e" : "#fb923c",
+          borderColor: files.length > 0 ? "#22c55e" : (role === 'notaire' ? "#fb923c" : "#3b82f6"),
           backgroundColor: files.length > 0 ? "#f0fdf4" : "white"
         }}
       >
@@ -166,11 +166,11 @@ function MultiFileUpload({ label, files, onFilesChange, required = false, accept
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
           </svg>
         ) : (
-          <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+          <svg className={`w-5 h-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
           </svg>
         )}
-        <span className={files.length > 0 ? "text-green-700 font-medium" : "text-orange-700"}>
+        <span className={files.length > 0 ? "text-green-700 font-medium" : (role === 'notaire' ? "text-orange-700" : "text-blue-700")}>
           {files.length > 0 ? `${files.length} fichier(s) chargé(s) - Cliquer pour en ajouter` : "Aucune pièce chargée - Cliquer pour ajouter"}
         </span>
       </button>

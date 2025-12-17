@@ -75,9 +75,10 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
   }, [user, requiredRole, authLoading]);
 
   if (loading || authLoading) {
+    const spinnerColor = requiredRole === 'notaire' ? 'border-orange-600' : 'border-blue-600';
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${spinnerColor}`}></div>
       </div>
     );
   }
