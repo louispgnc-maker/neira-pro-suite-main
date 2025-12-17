@@ -118,18 +118,46 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
       return;
     }
 
-    // Si c'est un "Bail d'habitation", rediriger vers la page Contrats avec paramètres
-    if (contractType === "Bail d'habitation vide" || contractType === "Bail d'habitation meublé") {
-      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
-      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
-      return;
-    }
+    // Liste des contrats avocats avec formulaires spécifiques - rediriger vers page Contrats
+    const contratsAvecFormulaires = [
+      "Contrat de prestation de services",
+      "Contrat de vente B2B / distribution",
+      "Conditions Générales de Vente (CGV)",
+      "Conditions Générales d'Utilisation (CGU) — SaaS / site web",
+      "Contrat d'agence commerciale",
+      "Contrat de franchise",
+      "Contrat de partenariat / coopération",
+      "Contrat de sous-traitance",
+      "NDA (Accord de confidentialité)",
+      "Cession de marque / cession de droits de propriété intellectuelle",
+      "Contrat de travail (CDD/CDI)",
+      "Convention de stage",
+      "Rupture conventionnelle",
+      "Avenants au contrat de travail",
+      "Accords de confidentialité employé",
+      "Politique RGPD interne (annexes)",
+      "Bail d'habitation vide",
+      "Bail d'habitation meublé",
+      "Bail commercial",
+      "État des lieux (annexe)",
+      "Mise en demeure de payer le loyer / autres obligations",
+      "Pacte de concubinage",
+      "Convention parentale",
+      "Reconnaissance de dettes",
+      "Mandat de protection future sous seing privé",
+      "Testament olographe + accompagnement au dépôt",
+      "Contrat de cession de droits d'auteur",
+      "Licence logicielle",
+      "Contrat de développement web / application",
+      "Politique de confidentialité / mentions légales / RGPD"
+    ];
 
-    // Si c'est un "Bail commercial", rediriger vers la page Contrats avec paramètres
-    if (contractType === "Bail commercial") {
+    // Si c'est un contrat avec formulaire, rediriger vers la page Contrats
+    if (contratsAvecFormulaires.includes(contractType)) {
       const basePath = role === 'notaire' ? '/notaires' : '/avocats';
-      // Utiliser le type normalisé "Bail commercial / professionnel"
-      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent("Bail commercial / professionnel")}&category=${encodeURIComponent(categoryKey)}`);
+      // Pour "Bail commercial", utiliser le type normalisé "Bail commercial / professionnel"
+      const typeToUse = contractType === "Bail commercial" ? "Bail commercial / professionnel" : contractType;
+      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(typeToUse)}&category=${encodeURIComponent(categoryKey)}`);
       return;
     }
 
