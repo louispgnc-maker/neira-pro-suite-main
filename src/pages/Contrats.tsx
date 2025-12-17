@@ -44952,9 +44952,330 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* Suite du formulaire... à continuer dans les prochaines sections */}
-                <div className="p-4 bg-yellow-50 rounded border border-yellow-200">
-                  <p className="text-sm text-gray-700">Formulaire en cours de développement - Sections 2 à 17 à venir...</p>
+                {/* 2. OBJET DU CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du contrat — Définition du service</h4>
+                  <div className="space-y-3">
+                    <div><Label>Nature exacte de la prestation *</Label><Input value={prestationData.naturePrestation} onChange={(e) => setPrestationData({...prestationData, naturePrestation: e.target.value})} placeholder="Ex: Développement web, Conseil juridique, Formation..." /></div>
+                    <div><Label>Description détaillée du service *</Label><Textarea value={prestationData.descriptionDetaillee} onChange={(e) => setPrestationData({...prestationData, descriptionDetaillee: e.target.value})} className="min-h-[100px]" placeholder="Décrivez précisément le service fourni..." /></div>
+                    <div><Label>Périmètre d'intervention</Label><Textarea value={prestationData.perimetreIntervention} onChange={(e) => setPrestationData({...prestationData, perimetreIntervention: e.target.value})} placeholder="Zone géographique, domaine d'activité..." /></div>
+                    <div><Label>Ce qui est inclus dans la prestation</Label><Textarea value={prestationData.inclusionsPrestations} onChange={(e) => setPrestationData({...prestationData, inclusionsPrestations: e.target.value})} placeholder="Liste des éléments inclus..." /></div>
+                    <div><Label>Ce qui est exclu de la prestation</Label><Textarea value={prestationData.exclusionsPrestations} onChange={(e) => setPrestationData({...prestationData, exclusionsPrestations: e.target.value})} placeholder="Liste des éléments exclus..." /></div>
+                    <div><Label>Résultats attendus / Livrables</Label><Textarea value={prestationData.resultatsAttendus} onChange={(e) => setPrestationData({...prestationData, resultatsAttendus: e.target.value})} placeholder="Quels sont les livrables concrets ?" /></div>
+                    <div>
+                      <Label>Type d'obligation *</Label>
+                      <RadioGroup value={prestationData.typeObligation} onValueChange={(v) => setPrestationData({...prestationData, typeObligation: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="moyens" id="obl-moyens" /><Label htmlFor="obl-moyens">Obligation de moyens</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="resultat" id="obl-resultat" /><Label htmlFor="obl-resultat">Obligation de résultat</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Compétences techniques requises</Label><Input value={prestationData.competencesTechniques} onChange={(e) => setPrestationData({...prestationData, competencesTechniques: e.target.value})} /></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Référent technique prestataire</Label><Input value={prestationData.referentTechniquePrestataire} onChange={(e) => setPrestationData({...prestationData, referentTechniquePrestataire: e.target.value})} /></div>
+                      <div><Label>Référent technique client</Label><Input value={prestationData.referentTechniqueClient} onChange={(e) => setPrestationData({...prestationData, referentTechniqueClient: e.target.value})} /></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. DURÉE DU CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Durée du contrat</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Type de durée *</Label>
+                      <RadioGroup value={prestationData.typeDuree} onValueChange={(v) => setPrestationData({...prestationData, typeDuree: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="determinee" id="dur-det" /><Label htmlFor="dur-det">Durée déterminée</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="ponctuelle" id="dur-ponc" /><Label htmlFor="dur-ponc">Exécution ponctuelle</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="indeterminee" id="dur-ind" /><Label htmlFor="dur-ind">Durée indéterminée</Label></div>
+                      </RadioGroup>
+                    </div>
+                    {(prestationData.typeDuree === "determinee" || prestationData.typeDuree === "ponctuelle") && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div><Label>Date de début</Label><Input type="date" value={prestationData.dateDebut} onChange={(e) => setPrestationData({...prestationData, dateDebut: e.target.value})} /></div>
+                        <div><Label>Date de fin</Label><Input type="date" value={prestationData.dateFin} onChange={(e) => setPrestationData({...prestationData, dateFin: e.target.value})} /></div>
+                      </div>
+                    )}
+                    <div>
+                      <Label>Reconduction tacite ?</Label>
+                      <RadioGroup value={prestationData.reconductionTacite} onValueChange={(v) => setPrestationData({...prestationData, reconductionTacite: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="recon-oui" /><Label htmlFor="recon-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="recon-non" /><Label htmlFor="recon-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Durée minimale d'engagement</Label><Input value={prestationData.dureeMinimale} onChange={(e) => setPrestationData({...prestationData, dureeMinimale: e.target.value})} placeholder="Ex: 6 mois, 1 an..." /></div>
+                  </div>
+                </div>
+
+                {/* 4. MODALITÉS DE RÉALISATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Modalités de réalisation</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Lieu d'exécution *</Label>
+                      <Select value={prestationData.lieuExecution} onValueChange={(v) => setPrestationData({...prestationData, lieuExecution: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="teletravail">Télétravail</SelectItem>
+                          <SelectItem value="locaux_client">Locaux du client</SelectItem>
+                          <SelectItem value="locaux_prestataire">Locaux du prestataire</SelectItem>
+                          <SelectItem value="mixte">Mixte</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Conditions d'intervention</Label><Textarea value={prestationData.conditionsIntervention} onChange={(e) => setPrestationData({...prestationData, conditionsIntervention: e.target.value})} placeholder="Accès, badges, autorisations..." /></div>
+                    <div>
+                      <Label>Horaires imposés ?</Label>
+                      <RadioGroup value={prestationData.horairesImpose} onValueChange={(v) => setPrestationData({...prestationData, horairesImpose: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="hor-oui" /><Label htmlFor="hor-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="hor-non" /><Label htmlFor="hor-non">Non</Label></div>
+                      </RadioGroup>
+                      {prestationData.horairesImpose === "oui" && (
+                        <Input value={prestationData.detailsHoraires} onChange={(e) => setPrestationData({...prestationData, detailsHoraires: e.target.value})} placeholder="Préciser les horaires" className="mt-2" />
+                      )}
+                    </div>
+                    <div><Label>Matériel mis à disposition</Label><Textarea value={prestationData.materielMisADisposition} onChange={(e) => setPrestationData({...prestationData, materielMisADisposition: e.target.value})} placeholder="Ordinateur, logiciels, outils..." /></div>
+                    <div><Label>Obligations du client</Label><Textarea value={prestationData.obligationsClient} onChange={(e) => setPrestationData({...prestationData, obligationsClient: e.target.value})} placeholder="Fournir accès, données, outils..." /></div>
+                    <div><Label>Délais de réalisation</Label><Input value={prestationData.delaisRealisation} onChange={(e) => setPrestationData({...prestationData, delaisRealisation: e.target.value})} placeholder="Ex: 3 mois, 15 jours..." /></div>
+                    <div><Label>Planning / Jalons</Label><Textarea value={prestationData.planning} onChange={(e) => setPrestationData({...prestationData, planning: e.target.value})} placeholder="Étapes, dates clés..." /></div>
+                    <div><Label>Critères d'acceptation des livrables</Label><Textarea value={prestationData.criteresAcceptation} onChange={(e) => setPrestationData({...prestationData, criteresAcceptation: e.target.value})} placeholder="Comment valide-t-on les livrables ?" /></div>
+                  </div>
+                </div>
+
+                {/* 5. PRIX ET CONDITIONS FINANCIÈRES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Prix et conditions financières</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Mode de facturation *</Label>
+                      <Select value={prestationData.modeFacturation} onValueChange={(v) => setPrestationData({...prestationData, modeFacturation: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="forfait">Forfait global</SelectItem>
+                          <SelectItem value="horaire">Taux horaire</SelectItem>
+                          <SelectItem value="journalier">Taux journalier (TJM)</SelectItem>
+                          <SelectItem value="livrable">Facturation au livrable</SelectItem>
+                          <SelectItem value="abonnement">Abonnement périodique</SelectItem>
+                          <SelectItem value="performance">Paiement à la performance</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Montant HT *</Label><Input type="number" value={prestationData.montantHT} onChange={(e) => setPrestationData({...prestationData, montantHT: e.target.value})} placeholder="0.00" /></div>
+                      <div><Label>TVA applicable (%)</Label><Input type="number" value={prestationData.tva} onChange={(e) => setPrestationData({...prestationData, tva: e.target.value})} placeholder="20" /></div>
+                    </div>
+                    <div><Label>Modalités de variation</Label><Input value={prestationData.modalitesVariation} onChange={(e) => setPrestationData({...prestationData, modalitesVariation: e.target.value})} placeholder="Révision annuelle, indexation..." /></div>
+                    <div><Label>Frais annexes</Label><Textarea value={prestationData.fraisAnnexes} onChange={(e) => setPrestationData({...prestationData, fraisAnnexes: e.target.value})} placeholder="Déplacement, hébergement, matériel..." /></div>
+                    <div>
+                      <Label>Modalités de paiement *</Label>
+                      <Select value={prestationData.modalitesPaiement} onValueChange={(v) => setPrestationData({...prestationData, modalitesPaiement: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="comptant">Comptant</SelectItem>
+                          <SelectItem value="30j">30 jours</SelectItem>
+                          <SelectItem value="45j">45 jours</SelectItem>
+                          <SelectItem value="60j">60 jours</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Acompte initial</Label><Input value={prestationData.acompte} onChange={(e) => setPrestationData({...prestationData, acompte: e.target.value})} placeholder="Ex: 30%, 5000€..." /></div>
+                    <div><Label>Échéancier</Label><Textarea value={prestationData.echeancier} onChange={(e) => setPrestationData({...prestationData, echeancier: e.target.value})} placeholder="Détail des paiements..." /></div>
+                    <div>
+                      <Label>Facturation électronique ?</Label>
+                      <RadioGroup value={prestationData.facturationElectronique} onValueChange={(v) => setPrestationData({...prestationData, facturationElectronique: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="fact-oui" /><Label htmlFor="fact-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="fact-non" /><Label htmlFor="fact-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Pénalités de retard</Label><Input value={prestationData.penalitesRetard} onChange={(e) => setPrestationData({...prestationData, penalitesRetard: e.target.value})} placeholder="Ex: 3 fois le taux légal" /></div>
+                    <div><Label>Indemnité légale de recouvrement</Label><Input value={prestationData.indemniteLegale} onChange={(e) => setPrestationData({...prestationData, indemniteLegale: e.target.value})} placeholder="40€" /></div>
+                    <div>
+                      <Label>Suspension en cas d'impayé ?</Label>
+                      <RadioGroup value={prestationData.suspensionImpaye} onValueChange={(v) => setPrestationData({...prestationData, suspensionImpaye: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="susp-oui" /><Label htmlFor="susp-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="susp-non" /><Label htmlFor="susp-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. PROPRIÉTÉ INTELLECTUELLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Propriété intellectuelle</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Droits sur les créations du prestataire *</Label>
+                      <Select value={prestationData.droitsCreationsPrestataire} onValueChange={(v) => setPrestationData({...prestationData, droitsCreationsPrestataire: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="licence">Licence d'utilisation cédée au client</SelectItem>
+                          <SelectItem value="cession">Cession totale des droits au client</SelectItem>
+                          <SelectItem value="reserves">Droits réservés au prestataire</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Limitation des droits</Label><Input value={prestationData.limitationDroits} onChange={(e) => setPrestationData({...prestationData, limitationDroits: e.target.value})} placeholder="Dans le temps, l'espace..." /></div>
+                    <div><Label>Droits sur les créations du client</Label><Textarea value={prestationData.droitsCreationsClient} onChange={(e) => setPrestationData({...prestationData, droitsCreationsClient: e.target.value})} placeholder="Utilisation autorisée ou interdite par le prestataire" /></div>
+                    <div>
+                      <Label>Propriétaire du code/designs/textes</Label>
+                      <RadioGroup value={prestationData.proprietaireCode} onValueChange={(v) => setPrestationData({...prestationData, proprietaireCode: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="prestataire" id="prop-prest" /><Label htmlFor="prop-prest">Prestataire</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="client" id="prop-client" /><Label htmlFor="prop-client">Client</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Droits de reproduction</Label><Input value={prestationData.droitsReproduction} onChange={(e) => setPrestationData({...prestationData, droitsReproduction: e.target.value})} /></div>
+                    <div><Label>Garanties contre la contrefaçon</Label><Textarea value={prestationData.garantiesContrefacon} onChange={(e) => setPrestationData({...prestationData, garantiesContrefacon: e.target.value})} placeholder="Engagement du prestataire..." /></div>
+                  </div>
+                </div>
+
+                {/* 7. CONFIDENTIALITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Confidentialité</h4>
+                  <div className="space-y-3">
+                    <div><Label>Définition des informations confidentielles</Label><Textarea value={prestationData.definitionInfosConfidentielles} onChange={(e) => setPrestationData({...prestationData, definitionInfosConfidentielles: e.target.value})} placeholder="Toutes informations commerciales, techniques, financières..." /></div>
+                    <div><Label>Durée de confidentialité (années)</Label><Input type="number" value={prestationData.dureeConfidentialite} onChange={(e) => setPrestationData({...prestationData, dureeConfidentialite: e.target.value})} placeholder="5" /></div>
+                    <div><Label>Exceptions</Label><Textarea value={prestationData.exceptionsConfidentialite} onChange={(e) => setPrestationData({...prestationData, exceptionsConfidentialite: e.target.value})} placeholder="Ordre public, déjà publique..." /></div>
+                    <div><Label>Sanctions en cas de violation</Label><Input value={prestationData.sanctionsViolation} onChange={(e) => setPrestationData({...prestationData, sanctionsViolation: e.target.value})} placeholder="Dommages et intérêts..." /></div>
+                  </div>
+                </div>
+
+                {/* 8. DONNÉES PERSONNELLES / RGPD */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Données personnelles / RGPD</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Le prestataire agit-il en tant que sous-traitant ?</Label>
+                      <RadioGroup value={prestationData.prestataireSousTraitant} onValueChange={(v) => setPrestationData({...prestationData, prestataireSousTraitant: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="st-oui" /><Label htmlFor="st-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="st-non" /><Label htmlFor="st-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div>
+                      <Label>Le client agit-il en tant que responsable de traitement ?</Label>
+                      <RadioGroup value={prestationData.clientResponsableTraitement} onValueChange={(v) => setPrestationData({...prestationData, clientResponsableTraitement: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="rt-oui" /><Label htmlFor="rt-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="rt-non" /><Label htmlFor="rt-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Nature des données traitées</Label><Textarea value={prestationData.natureDonnees} onChange={(e) => setPrestationData({...prestationData, natureDonnees: e.target.value})} placeholder="Données d'identification, coordonnées..." /></div>
+                    <div><Label>Finalités du traitement</Label><Textarea value={prestationData.finalitesTraitement} onChange={(e) => setPrestationData({...prestationData, finalitesTraitement: e.target.value})} placeholder="Gestion des clients, facturation..." /></div>
+                    <div><Label>Mesures de sécurité</Label><Textarea value={prestationData.mesuresSecurite} onChange={(e) => setPrestationData({...prestationData, mesuresSecurite: e.target.value})} placeholder="Chiffrement, accès restreints..." /></div>
+                    <div><Label>Durée de conservation</Label><Input value={prestationData.dureeConservation} onChange={(e) => setPrestationData({...prestationData, dureeConservation: e.target.value})} placeholder="Ex: 3 ans" /></div>
+                    <div><Label>Clause de violation de données (data breach)</Label><Input value={prestationData.clauseDataBreach} onChange={(e) => setPrestationData({...prestationData, clauseDataBreach: e.target.value})} placeholder="Notification sous 72h..." /></div>
+                    <div>
+                      <Label>DPA (Data Processing Agreement) requis ?</Label>
+                      <RadioGroup value={prestationData.dpaRequis} onValueChange={(v) => setPrestationData({...prestationData, dpaRequis: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="dpa-oui" /><Label htmlFor="dpa-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="dpa-non" /><Label htmlFor="dpa-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 9. SOUS-TRAITANCE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Sous-traitance</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Sous-traitance autorisée ?</Label>
+                      <Select value={prestationData.sousTraitanceAutorisee} onValueChange={(v) => setPrestationData({...prestationData, sousTraitanceAutorisee: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui, autorisée</SelectItem>
+                          <SelectItem value="non">Non, interdite</SelectItem>
+                          <SelectItem value="avec_validation">Avec validation préalable du client</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {prestationData.sousTraitanceAutorisee === "avec_validation" && (
+                      <div>
+                        <Label>Validation préalable nécessaire ?</Label>
+                        <RadioGroup value={prestationData.validationPrealable} onValueChange={(v) => setPrestationData({...prestationData, validationPrealable: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="val-oui" /><Label htmlFor="val-oui">Oui</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="val-non" /><Label htmlFor="val-non">Non</Label></div>
+                        </RadioGroup>
+                      </div>
+                    )}
+                    <div><Label>Responsabilité du prestataire en cas de sous-traitance</Label><Textarea value={prestationData.responsabilitePrestataire} onChange={(e) => setPrestationData({...prestationData, responsabilitePrestataire: e.target.value})} placeholder="Le prestataire reste responsable..." /></div>
+                  </div>
+                </div>
+
+                {/* 10. RESPONSABILITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔟 Responsabilité</h4>
+                  <div className="space-y-3">
+                    <div><Label>Plafond de responsabilité</Label><Input value={prestationData.plafondResponsabilite} onChange={(e) => setPrestationData({...prestationData, plafondResponsabilite: e.target.value})} placeholder="Ex: Montant du contrat, 100 000€..." /></div>
+                    <div><Label>Exclusions de responsabilité</Label><Textarea value={prestationData.exclusionsDommages} onChange={(e) => setPrestationData({...prestationData, exclusionsDommages: e.target.value})} placeholder="Dommages indirects, perte de CA..." /></div>
+                    <div><Label>Cas de force majeure</Label><Textarea value={prestationData.forceMajeure} onChange={(e) => setPrestationData({...prestationData, forceMajeure: e.target.value})} placeholder="Événements imprévisibles..." /></div>
+                    <div><Label>Responsabilité en cas de non-conformité</Label><Textarea value={prestationData.responsabiliteNonConformite} onChange={(e) => setPrestationData({...prestationData, responsabiliteNonConformite: e.target.value})} /></div>
+                    <div><Label>Montant de couverture assurance</Label><Input value={prestationData.montantCouverture} onChange={(e) => setPrestationData({...prestationData, montantCouverture: e.target.value})} placeholder="Ex: 500 000€" /></div>
+                  </div>
+                </div>
+
+                {/* 11. RÉSILIATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Résiliation anticipée</h4>
+                  <div className="space-y-3">
+                    <div><Label>Préavis de résiliation</Label><Input value={prestationData.resiliationPreavis} onChange={(e) => setPrestationData({...prestationData, resiliationPreavis: e.target.value})} placeholder="Ex: 3 mois, 30 jours..." /></div>
+                    <div>
+                      <Label>Résiliation immédiate en cas de :</Label>
+                      <Select value={prestationData.resiliationImmediate} onValueChange={(v) => setPrestationData({...prestationData, resiliationImmediate: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="faute">Faute grave</SelectItem>
+                          <SelectItem value="non_paiement">Non-paiement</SelectItem>
+                          <SelectItem value="non_respect">Non-respect du contrat</SelectItem>
+                          <SelectItem value="tous">Tous les cas ci-dessus</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Effets de la résiliation</Label><Textarea value={prestationData.effetsResiliation} onChange={(e) => setPrestationData({...prestationData, effetsResiliation: e.target.value})} placeholder="Paiement des prestations accomplies, restitution du matériel..." /></div>
+                  </div>
+                </div>
+
+                {/* 12. RÉVERSIBILITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Réversibilité / Fin de contrat</h4>
+                  <div className="space-y-3">
+                    <div><Label>Restitution des données</Label><Textarea value={prestationData.restitutionDonnees} onChange={(e) => setPrestationData({...prestationData, restitutionDonnees: e.target.value})} placeholder="Format, délai..." /></div>
+                    <div><Label>Restitution des documents</Label><Textarea value={prestationData.restitutionDocuments} onChange={(e) => setPrestationData({...prestationData, restitutionDocuments: e.target.value})} /></div>
+                    <div><Label>Continuation du service pendant la transition</Label><Input value={prestationData.continuationTransition} onChange={(e) => setPrestationData({...prestationData, continuationTransition: e.target.value})} placeholder="Ex: 3 mois" /></div>
+                    <div><Label>Assistance à la migration</Label><Textarea value={prestationData.assistanceMigration} onChange={(e) => setPrestationData({...prestationData, assistanceMigration: e.target.value})} /></div>
+                    <div><Label>Coût de la réversibilité</Label><Input value={prestationData.coutReversibilite} onChange={(e) => setPrestationData({...prestationData, coutReversibilite: e.target.value})} placeholder="Gratuit, 2000€..." /></div>
+                  </div>
+                </div>
+
+                {/* 13. LITIGES / LOI APPLICABLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Litiges / Loi applicable</h4>
+                  <div className="space-y-3">
+                    <div><Label>Loi applicable</Label><Input value={prestationData.loiApplicable} onChange={(e) => setPrestationData({...prestationData, loiApplicable: e.target.value})} placeholder="France" /></div>
+                    <div><Label>Tribunal compétent</Label><Input value={prestationData.tribunalCompetent} onChange={(e) => setPrestationData({...prestationData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunal de Commerce de Paris" /></div>
+                    <div>
+                      <Label>Clause de médiation ou arbitrage ?</Label>
+                      <RadioGroup value={prestationData.mediationArbitrage} onValueChange={(v) => setPrestationData({...prestationData, mediationArbitrage: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="med-oui" /><Label htmlFor="med-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="med-non" /><Label htmlFor="med-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div>
+                      <Label>Clause amiable obligatoire avant contentieux ?</Label>
+                      <RadioGroup value={prestationData.clauseAmiable} onValueChange={(v) => setPrestationData({...prestationData, clauseAmiable: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="am-oui" /><Label htmlFor="am-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="am-non" /><Label htmlFor="am-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 14. ANNEXES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Annexes et pièces justificatives</h4>
+                  <MultiFileUpload 
+                    label="Annexes (Cahier des charges, planning, liste livrables, CGV, devis, RGPD/DPA, plans techniques...)" 
+                    files={prestationAnnexesFiles} 
+                    onFilesChange={setPrestationAnnexesFiles} 
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                  />
                 </div>
               </div>
             )}
