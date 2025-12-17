@@ -74,54 +74,6 @@ const categoriesAvocat = [
   "Propriété intellectuelle & Numérique",
 ];
 
-// ============================================
-// DESIGN SYSTEM UNIFIÉ POUR TOUS LES FORMULAIRES
-// ============================================
-
-// Classes CSS standardisées pour toutes les sections
-const SECTION_STYLES = {
-  container: "space-y-4 p-6 rounded-lg border-2 transition-all hover:shadow-md",
-  title: "font-semibold text-lg flex items-center gap-2 pb-3 border-b-2",
-  grid: "grid grid-cols-1 md:grid-cols-2 gap-4",
-  gridFull: "grid grid-cols-1 gap-4",
-  subSection: "p-4 rounded-lg border-2 space-y-3",
-  infoBox: "flex items-center gap-2 p-3 rounded-lg border-2",
-  requiredMark: "text-red-600 text-sm font-bold"
-};
-
-// Couleurs standardisées pour les sections (rotation cohérente)
-const SECTION_COLORS = [
-  { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-800" },
-  { bg: "bg-green-50", border: "border-green-200", text: "text-green-800" },
-  { bg: "bg-orange-50", border: "border-orange-200", text: "text-orange-800" },
-  { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-800" },
-  { bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-800" },
-  { bg: "bg-red-50", border: "border-red-200", text: "text-red-800" },
-  { bg: "bg-indigo-50", border: "border-indigo-200", text: "text-indigo-800" },
-  { bg: "bg-pink-50", border: "border-pink-200", text: "text-pink-800" },
-  { bg: "bg-teal-50", border: "border-teal-200", text: "text-teal-800" },
-  { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-800" },
-  { bg: "bg-violet-50", border: "border-violet-200", text: "text-violet-800" },
-  { bg: "bg-rose-50", border: "border-rose-200", text: "text-rose-800" },
-  { bg: "bg-cyan-50", border: "border-cyan-200", text: "text-cyan-800" },
-  { bg: "bg-lime-50", border: "border-lime-200", text: "text-lime-800" },
-  { bg: "bg-gray-50", border: "border-gray-200", text: "text-gray-800" }
-];
-
-// Fonction pour obtenir une couleur de section par index
-const getSectionColor = (index: number) => SECTION_COLORS[index % SECTION_COLORS.length];
-
-// Bouton de soumission standardisé
-const SUBMIT_BUTTON_STYLE = "w-full py-3 px-6 text-lg font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 shadow-lg";
-
-// Messages d'information standardisés
-const INFO_MESSAGES = {
-  success: { icon: "✓", bg: "bg-green-50", border: "border-green-200", text: "text-green-700" },
-  warning: { icon: "⚠", bg: "bg-orange-50", border: "border-orange-200", text: "text-orange-700" },
-  error: { icon: "✗", bg: "bg-red-50", border: "border-red-200", text: "text-red-700" },
-  info: { icon: "ℹ", bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700" }
-};
-
 // Composant réutilisable pour upload multiple de fichiers
 interface FileWithMetadata extends File {
   _autoLoaded?: boolean;
@@ -136,61 +88,11 @@ interface MultiFileUploadProps {
   accept?: string;
 }
 
-// Composant Section standardisé
-interface FormSectionProps {
-  title: string;
-  sectionNumber: number;
-  children: React.ReactNode;
-  icon?: string;
-}
-
-function FormSection({ title, sectionNumber, children, icon }: FormSectionProps) {
-  const color = getSectionColor(sectionNumber - 1);
-  
-  return (
-    <div className={`${SECTION_STYLES.container} ${color.bg} ${color.border}`}>
-      <h3 className={`${SECTION_STYLES.title} ${color.text}`}>
-        <span className="font-bold">{sectionNumber}️⃣</span>
-        {icon && <span>{icon}</span>}
-        <span>{title}</span>
-      </h3>
-      <div className="space-y-4 mt-4">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-// Composant InfoMessage standardisé
-interface InfoMessageProps {
-  type: 'success' | 'warning' | 'error' | 'info';
-  children: React.ReactNode;
-}
-
-function InfoMessage({ type, children }: InfoMessageProps) {
-  const style = INFO_MESSAGES[type];
-  
-  return (
-    <div className={`${SECTION_STYLES.infoBox} ${style.bg} ${style.border}`}>
-      <span className={`text-xl font-bold ${style.text}`}>{style.icon}</span>
-      <span className={`text-sm ${style.text} flex-1`}>{children}</span>
-    </div>
-  );
-}
-
-// Composant ClientSelector standardisé
-interface ClientSelectorProps {
-  clients: Array<{id: string, nom: string, prenom: string}>;
-  selectedClientId: string;
-  onClientChange: (clientId: string) => void;
-  label?: string;
-}
-
-function ClientSelector({ clients, selectedClientId, onClientChange, label = "Sélectionner votre client" }: ClientSelectorProps) {
+function ClientSelector({ clients, selectedClientId, onClientChange, label = "Sélectionner votre client" }: { clients: Array<{id: string, nom: string, prenom: string}>; selectedClientId: string; onClientChange: (clientId: string) => void; label?: string }) {
   return (
     <div className="space-y-2">
       <Label htmlFor="client-select">
-        {label} <span className={SECTION_STYLES.requiredMark}>*</span>
+        {label} <span className="text-red-500">*</span>
       </Label>
       <Select value={selectedClientId} onValueChange={onClientChange}>
         <SelectTrigger id="client-select">
@@ -38821,8 +38723,8 @@ FIN DE LA CONVENTION
             {pendingContractType === "Attestation de propriété immobilière" && (
               <div className="space-y-6">
                 {/* Section 1 : Informations sur le défunt */}
-                <FormSection title="Informations sur le défunt" sectionNumber={1} icon="⚰️">
-
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Informations sur le défunt</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Nom <span className="text-red-500">*</span></Label>
@@ -39192,11 +39094,11 @@ FIN DE LA CONVENTION
                         </Label>
                       </div>
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 2 : Héritiers */}
-                  <FormSection title="Héritiers et succession" sectionNumber={2} icon="👥">
-
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Héritiers et succession</h3>
                     <div className="space-y-6">
                       {attestationData.heritiers.map((heritier, index) => (
                         <div key={heritier.id} className="p-4 bg-white rounded-lg border border-green-300 space-y-4">
@@ -39601,11 +39503,11 @@ FIN DE LA CONVENTION
                         </div>
                       )}
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 3 : Biens immobiliers */}
-                  <FormSection title="Biens immobiliers concernés" sectionNumber={3} icon="🏠">
-
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Biens immobiliers concernés</h3>
                     <div className="space-y-6">
                       {attestationData.biens.map((bien, index) => (
                         <div key={bien.id} className="p-4 bg-white rounded-lg border border-blue-300 space-y-4">
@@ -40233,10 +40135,11 @@ FIN DE LA CONVENTION
                         + Ajouter un bien immobilier
                       </Button>
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 4 : Répartition des droits */}
-                  <FormSection title="Répartition des droits sur les biens" sectionNumber={4} icon="📊">
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Répartition des droits sur les biens</h3>
 
                     <div className="p-4 bg-red-100 border-2 border-red-400 rounded-lg mb-4">
                       <div className="flex items-center space-x-2">
@@ -40292,10 +40195,11 @@ FIN DE LA CONVENTION
                         </p>
                       </div>
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 5 : Destination du bien */}
-                  <FormSection title="Destination du bien" sectionNumber={5} icon="🎯">
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Destination du bien</h3>
 
                     <div className="space-y-2">
                       <Label>Que souhaitent faire les héritiers du bien ?</Label>
@@ -40319,10 +40223,11 @@ FIN DE LA CONVENTION
                         </SelectContent>
                       </Select>
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 6 : Déclarations légales */}
-                  <FormSection title="Déclarations obligatoires" sectionNumber={6} icon="⚖️">
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Déclarations obligatoires</h3>
 
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -40381,10 +40286,11 @@ FIN DE LA CONVENTION
                         </p>
                       </div>
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 7 : Évaluation du bien */}
-                  <FormSection title="Évaluation du bien" sectionNumber={7} icon="💶">
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Évaluation du bien</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -40438,10 +40344,11 @@ FIN DE LA CONVENTION
                         💡 La valeur vénale doit correspondre au prix de vente potentiel au jour du décès
                       </p>
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 8 : Formalités de publicité foncière */}
-                  <FormSection title="Formalités de publicité foncière (SPF)" sectionNumber={8} icon="📋">
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Formalités de publicité foncière (SPF)</h3>
 
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -40478,11 +40385,11 @@ FIN DE LA CONVENTION
                         </p>
                       </div>
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 9 : Récapitulatif des pièces justificatives */}
-                  <FormSection title="Pièces justificatives à fournir" sectionNumber={9} icon="📎">
-
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Pièces justificatives à fournir</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Acte de décès */}
                       <div>
@@ -40623,10 +40530,11 @@ FIN DE LA CONVENTION
                         <li>Relevé d'identité bancaire pour succession</li>
                       </ul>
                     </div>
-                  </FormSection>
+                  </div>
 
                   {/* Section 10 : Notes et observations */}
-                  <FormSection title="Notes et observations complémentaires" sectionNumber={10} icon="📝">
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Notes et observations complémentaires</h3>
 
                     <div className="space-y-2">
                       <Label>Informations complémentaires</Label>
@@ -40641,7 +40549,7 @@ FIN DE LA CONVENTION
                       />
                     </div>
 
-                  </FormSection>
+                  </div>
                 </div>
             )}
 
@@ -40650,8 +40558,8 @@ FIN DE LA CONVENTION
               <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
                 
                 {/* Section 1 : Type d'acte à générer */}
-                <FormSection title="Type d'acte à générer" sectionNumber={1} icon="📝">
-                  
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Type d'acte à générer</h3>
                   <div className="space-y-3">
                     <Label>Type d'acte <span className="text-red-500">*</span></Label>
                     <Select
@@ -40672,11 +40580,11 @@ FIN DE LA CONVENTION
                       </SelectContent>
                     </Select>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 2 : Identité complète du créancier */}
-                <FormSection title="Identité complète du CRÉANCIER (celui qui prête)" sectionNumber={2} icon="💵">
-                  
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Identité complète du CRÉANCIER (celui qui prête)</h3>
                   <div className="space-y-2">
                     <Label>Le créancier est-il votre client ?</Label>
                     <RadioGroup
@@ -40920,11 +40828,11 @@ FIN DE LA CONVENTION
                       accept="application/pdf,image/*"
                     />
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 3 : Identité complète du débiteur */}
-                <FormSection title="Identité complète du DÉBITEUR (celui qui emprunte)" sectionNumber={3} icon="👤">
-                  
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Identité complète du DÉBITEUR (celui qui emprunte)</h3>
                   <div className="space-y-2">
                     <Label>Le débiteur est-il votre client ?</Label>
                     <RadioGroup
@@ -41168,10 +41076,11 @@ FIN DE LA CONVENTION
                       accept="application/pdf,image/*"
                     />
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 4 : Objet de la dette */}
-                <FormSection title="Objet de la dette" sectionNumber={4} icon="📝">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Objet de la dette</h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -41264,10 +41173,11 @@ FIN DE LA CONVENTION
                       />
                     </div>
                   )}
-                </FormSection>
+                </div>
 
                 {/* Section 5 : Montant de la dette */}
-                <FormSection title="Montant de la dette" sectionNumber={5} icon="💰">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Montant de la dette</h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -41402,11 +41312,12 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                   )}
-                </FormSection>
+                </div>
 
                 {/* Section 6 : Conditions de remboursement */}
                 {(quitusDetteData.typeActe === "reconnaissance_dette" || quitusDetteData.typeActe === "reconnaissance_dette_modalites") && (
-                  <FormSection title="Conditions de remboursement" sectionNumber={6} icon="📅">
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Conditions de remboursement</h3>
                     
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -41697,11 +41608,12 @@ FIN DE LA CONVENTION
                         )}
                       </div>
                     </div>
-                  </FormSection>
+                  </div>
                 )}
 
                 {/* Section 7 : Sûretés et garanties */}
-                <FormSection title="Sûretés et garanties (optionnelles)" sectionNumber={7} icon="🔒">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Sûretés et garanties (optionnelles)</h3>
                   
                   <div className="space-y-4">
                     {/* Caution personnelle */}
@@ -41939,12 +41851,12 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 8 : Remise de dette */}
                 {quitusDetteData.typeActe === "remise_dette" && (
-                  <FormSection title="Remise de dette (abandon de créance)" sectionNumber={8} icon="❌">
-                    
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Remise de dette (abandon de créance)</h3>
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label>Type de remise</Label>
@@ -42047,13 +41959,13 @@ FIN DE LA CONVENTION
                         />
                       </div>
                     </div>
-                  </FormSection>
+                  </div>
                 )}
 
                 {/* Section 9 : Quitus */}
                 {(quitusDetteData.typeActe === "quitus" || quitusDetteData.typeActe === "quitus_partiel" || quitusDetteData.typeActe === "solde_tout_compte" || quitusDetteData.typeActe === "attestation_reglement") && (
-                  <FormSection title="Quitus (dette réglée)" sectionNumber={9} icon="✅">
-                    
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Quitus (dette réglée)</h3>
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label>Type de quitus</Label>
@@ -42299,11 +42211,12 @@ FIN DE LA CONVENTION
                         />
                       </div>
                     </div>
-                  </FormSection>
+                  </div>
                 )}
 
                 {/* Section 10 : Clauses légales */}
-                <FormSection title="Clauses légales" sectionNumber={10} icon="⚖️">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Clauses légales</h3>
                   
                   <div className="space-y-4">
                     {(quitusDetteData.typeActe === "reconnaissance_dette" || quitusDetteData.typeActe === "reconnaissance_dette_modalites") && (
@@ -42595,10 +42508,11 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 11 : Signatures */}
-                <FormSection title="Signatures et formalités" sectionNumber={11} icon="✍️">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Signatures et formalités</h3>
                   
                   <div className="space-y-4">
                     {/* Dates importantes */}
@@ -42704,7 +42618,7 @@ FIN DE LA CONVENTION
                       </div>
                     )}
                   </div>
-                </FormSection>
+                </div>
 
               </div>
             )}
@@ -42714,9 +42628,8 @@ FIN DE LA CONVENTION
               <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
                 
                 {/* Section 1 : Type de société */}
-                <FormSection title="Type de société" sectionNumber={1} icon="🏢">
-                  
-                  
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Type de société</h3>
                   <div className="space-y-3">
                     <Label>Type de société <span className="text-red-500">*</span></Label>
                     <Select
@@ -42733,10 +42646,11 @@ FIN DE LA CONVENTION
                       </SelectContent>
                     </Select>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 2 : Informations sur la société */}
-                <FormSection title="Informations sur la société" sectionNumber={2} icon="📋">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Informations sur la société</h3>
                   
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -42974,11 +42888,11 @@ FIN DE LA CONVENTION
                       label="Joindre les statuts à jour"
                     />
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 3 : Identité du cédant (vendeur) */}
-                <FormSection title="Identité complète du cédant (vendeur des parts)" sectionNumber={3} icon="👤">
-
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Identité complète du cédant (vendeur des parts)</h3>
                   {clients && clients.length > 0 && (
                     <div className="space-y-2">
                       <Label>Lier à un client existant (facultatif)</Label>
@@ -43213,11 +43127,11 @@ FIN DE LA CONVENTION
                       </Select>
                     </div>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 4 : Identité du cessionnaire (acheteur) */}
-                <FormSection title="Identité complète du cessionnaire (acheteur)" sectionNumber={4} icon="🤝">
-
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Identité complète du cessionnaire (acheteur)</h3>
                   <div className="space-y-2">
                     <Label>Type de personne <span className="text-red-500">*</span></Label>
                     <Select
@@ -43474,10 +43388,11 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                   )}
-                </FormSection>
+                </div>
 
                 {/* Section 5 : Objet de la cession */}
-                <FormSection title="Objet de la cession" sectionNumber={5} icon="📋">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Objet de la cession</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 md:col-span-2">
@@ -43746,12 +43661,12 @@ FIN DE LA CONVENTION
                       </label>
                     </div>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 6 : Agrément (SARL & SCI) */}
                 {(cessionPartsData.typeSociete === "sarl" || cessionPartsData.typeSociete === "sci") && (
-                  <FormSection title="Agrément (obligatoire pour SARL & SCI)" sectionNumber={6} icon="✅">
-
+                  <div>
+                    <h3 className="font-semibold text-lg border-b pb-2 mb-4">Agrément (obligatoire pour SARL & SCI)</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2 md:col-span-2">
                         <Label>Organe compétent pour l'agrément <span className="text-red-500">*</span></Label>
@@ -43900,11 +43815,12 @@ FIN DE LA CONVENTION
                         />
                       </div>
                     </div>
-                  </FormSection>
+                  </div>
                 )}
 
                 {/* Section 7 : Compte courant d'associé */}
-                <FormSection title="Compte courant d'associé / Dettes liées" sectionNumber={7} icon="💰">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Compte courant d'associé / Dettes liées</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3 md:col-span-2">
@@ -44074,10 +43990,11 @@ FIN DE LA CONVENTION
                       </>
                     )}
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 8 : Garanties données par le cédant */}
-                <FormSection title="Garanties données par le cédant" sectionNumber={8} icon="🛡️">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Garanties données par le cédant</h3>
 
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded-lg border border-pink-300 space-y-3">
@@ -44218,10 +44135,11 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 9 : Droit du conjoint */}
-                <FormSection title="Droit du conjoint (si régime matrimonial = communauté)" sectionNumber={9} icon="💑">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Droit du conjoint (si régime matrimonial = communauté)</h3>
 
                   <div className="bg-amber-100 border border-amber-300 p-4 rounded-lg">
                     <p className="text-sm font-semibold text-amber-900">
@@ -44305,10 +44223,11 @@ FIN DE LA CONVENTION
                       />
                     </div>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 10 : Droits d'enregistrement */}
-                <FormSection title="Droits d'enregistrement (fiscal - obligatoire)" sectionNumber={10} icon="💸">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Droits d'enregistrement (fiscal - obligatoire)</h3>
 
                   <div className="bg-amber-100 border border-amber-300 p-4 rounded-lg">
                     <p className="text-sm font-semibold text-amber-900">
@@ -44352,10 +44271,11 @@ FIN DE LA CONVENTION
                       </Select>
                     </div>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 11 : Clause de non-concurrence */}
-                <FormSection title="Clause de non-concurrence" sectionNumber={11} icon="⛔">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Clause de non-concurrence</h3>
 
                   <div className="space-y-4">
                     <div className="space-y-2">
@@ -44419,10 +44339,11 @@ FIN DE LA CONVENTION
                       </div>
                     )}
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 12 : Notification à la société */}
-                <FormSection title="Information de la société (formalisme interne)" sectionNumber={12} icon="📢">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Information de la société (formalisme interne)</h3>
 
                   <div className="bg-amber-100 border border-amber-300 p-4 rounded-lg">
                     <p className="text-sm font-semibold text-amber-900">
@@ -44446,10 +44367,11 @@ FIN DE LA CONVENTION
                       </SelectContent>
                     </Select>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 13 : Déclarations légales obligatoires */}
-                <FormSection title="Déclarations légales obligatoires" sectionNumber={13} icon="📋">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Déclarations légales obligatoires</h3>
 
                   <div className="space-y-3">
                     <label className="flex items-center gap-2">
@@ -44548,11 +44470,11 @@ FIN DE LA CONVENTION
                       <span>Renonciation éventuelle au droit de préemption d'autres associés</span>
                     </label>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 14 : Mise à jour statuts et formalités */}
-                <FormSection title="Mise à jour des statuts et formalités" sectionNumber={14} icon="📄">
-
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Mise à jour des statuts et formalités</h3>
                   <div className="space-y-3">
                     <label className="flex items-center gap-2">
                       <input
@@ -44626,10 +44548,11 @@ FIN DE LA CONVENTION
                       <span>Information des banques / partenaires</span>
                     </label>
                   </div>
-                </FormSection>
+                </div>
 
                 {/* Section 15 : Signatures */}
-                <FormSection title="Signatures et formalités finales" sectionNumber={15} icon="✍️">
+                <div>
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">Signatures et formalités finales</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -44809,7 +44732,7 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                   </div>
-                </FormSection>
+                </div>
 
               </div>
             )}
