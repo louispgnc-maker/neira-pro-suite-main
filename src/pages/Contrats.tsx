@@ -5724,6 +5724,118 @@ export default function Contrats() {
     }
   };
 
+  // Handler pour le formulaire de contrat d'agence commerciale
+  const handleAgenceCommercialeSubmit = async () => {
+    if (!user) return;
+
+    // Validation des champs obligatoires
+    if (!agenceData.mandantDenomination || !agenceData.mandantSIREN) {
+      toast.error("Identification mandant incomplète", { 
+        description: "Dénomination et SIREN du mandant sont requis" 
+      });
+      return;
+    }
+    
+    if (!agenceData.agentRSAC) {
+      toast.error("RSAC obligatoire", { 
+        description: "L'agent commercial doit être inscrit au RSAC (obligation légale)" 
+      });
+      return;
+    }
+    
+    if (!agenceData.produits || !agenceData.secteursGeographiques) {
+      toast.error("Objet du contrat incomplet", { 
+        description: "Produits et zones géographiques sont requis" 
+      });
+      return;
+    }
+    
+    if (!agenceData.commissionType) {
+      toast.error("Commissionnement requis", { 
+        description: "Vous devez définir le type de commissionnement" 
+      });
+      return;
+    }
+    
+    // Validation conditionnelle du commissionnement
+    if (agenceData.commissionType === 'pourcentage' && !agenceData.commissionPourcentage) {
+      toast.error("Pourcentage manquant", { 
+        description: "Veuillez indiquer le pourcentage de commission" 
+      });
+      return;
+    }
+    
+    if (agenceData.commissionType === 'fixe' && !agenceData.commissionMontantFixe) {
+      toast.error("Montant fixe manquant", { 
+        description: "Veuillez indiquer le montant fixe de commission" 
+      });
+      return;
+    }
+
+    try {
+      const description = `Contrat d'agence commerciale — ${agenceData.mandantDenomination} / Agent: ${agenceData.agentNomPrenom || agenceData.agentDenomination}`;
+      
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: agenceData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers mandant
+      if (agenceMandantFiles.length > 0) {
+        for (const file of agenceMandantFiles) {
+          const filePath = `${user.id}/${contrat.id}/mandant/${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from('contrats')
+            .upload(filePath, file);
+          if (uploadError) console.error('Erreur upload fichier mandant:', uploadError);
+        }
+      }
+
+      // Upload des fichiers agent
+      if (agenceAgentFiles.length > 0) {
+        for (const file of agenceAgentFiles) {
+          const filePath = `${user.id}/${contrat.id}/agent/${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from('contrats')
+            .upload(filePath, file);
+          if (uploadError) console.error('Erreur upload fichier agent:', uploadError);
+        }
+      }
+
+      // Upload des annexes
+      if (agenceAnnexesFiles.length > 0) {
+        for (const file of agenceAnnexesFiles) {
+          const filePath = `${user.id}/${contrat.id}/annexes/${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from('contrats')
+            .upload(filePath, file);
+          if (uploadError) console.error('Erreur upload annexe:', uploadError);
+        }
+      }
+
+      toast.success("Contrat d'agence commerciale créé", { 
+        description: "Toutes les sections et pièces ont été enregistrées" 
+      });
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création agence commerciale:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
   // Handler pour le formulaire de procuration authentique
   const handleProcurationSubmit = async () => {
     if (!user) return;
@@ -48410,6 +48522,162 @@ FIN DE LA CONVENTION
                     <div><Label>DPO du mandant (si applicable)</Label><Input value={agenceData.rgpdDPO} onChange={(e) => setAgenceData({...agenceData, rgpdDPO: e.target.value})} placeholder="Nom et contact du DPO" /></div>
                   </div>
                 </div>
+                
+                {/* 14. DURÉE & RÉSILIATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Durée & Résiliation</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Type de durée *</Label>
+                      <RadioGroup value={agenceData.dureeDeterminee} onValueChange={(v) => setAgenceData({...agenceData, dureeDeterminee: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="determinee" id="dur-det" /><Label htmlFor="dur-det">Durée déterminée</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="indeterminee" id="dur-ind" /><Label htmlFor="dur-ind">Durée indéterminée</Label></div>
+                      </RadioGroup>
+                    </div>
+                    {agenceData.dureeDeterminee === 'determinee' && (
+                      <div><Label>Durée initiale</Label><Input value={agenceData.dureeInitiale} onChange={(e) => setAgenceData({...agenceData, dureeInitiale: e.target.value})} placeholder="Ex: 2 ans" /></div>
+                    )}
+                    <div>
+                      <Label>Reconduction</Label>
+                      <RadioGroup value={agenceData.dureeReconduction} onValueChange={(v) => setAgenceData({...agenceData, dureeReconduction: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="tacite" id="rec-tac" /><Label htmlFor="rec-tac">Tacite</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="expresse" id="rec-exp" /><Label htmlFor="rec-exp">Expresse</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div className="p-3 bg-orange-50 rounded border border-orange-200">
+                      <p className="text-xs text-orange-700 font-semibold">⚠️ Préavis légaux OBLIGATOIRES (Code de commerce L134-12) :</p>
+                      <ul className="text-xs text-orange-700 mt-1 ml-4 list-disc">
+                        <li>1ère année : 1 mois minimum</li>
+                        <li>2ème année : 2 mois minimum</li>
+                        <li>3ème année et + : 3 mois minimum</li>
+                      </ul>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div><Label>Préavis 1ère année</Label><Input value="1 mois" disabled /></div>
+                      <div><Label>Préavis 2ème année</Label><Input value="2 mois" disabled /></div>
+                      <div><Label>Préavis 3ème année et +</Label><Input value="3 mois et plus" disabled /></div>
+                    </div>
+                    <div><Label>Résiliation immédiate (cas limitatifs)</Label>
+                      <div className="mt-2 space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={agenceData.resiliationFauteGrave} onCheckedChange={(v) => setAgenceData({...agenceData, resiliationFauteGrave: !!v})} id="res-faute" disabled />
+                          <Label htmlFor="res-faute" className="font-normal">Faute grave ✅</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={agenceData.resiliationNonRespect} onCheckedChange={(v) => setAgenceData({...agenceData, resiliationNonRespect: !!v})} id="res-nonresp" disabled />
+                          <Label htmlFor="res-nonresp" className="font-normal">Non-respect obligations contractuelles ✅</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={agenceData.resiliationCessation} onCheckedChange={(v) => setAgenceData({...agenceData, resiliationCessation: !!v})} id="res-cess" disabled />
+                          <Label htmlFor="res-cess" className="font-normal">Cessation d'activité du mandant ✅</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={agenceData.resiliationLiquidation} onCheckedChange={(v) => setAgenceData({...agenceData, resiliationLiquidation: !!v})} id="res-liq" disabled />
+                          <Label htmlFor="res-liq" className="font-normal">Liquidation judiciaire ✅</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 15. INDEMNITÉ LÉGALE FIN DE CONTRAT */}
+                <div className="space-y-4 p-4 bg-orange-50 rounded-lg border border-orange-300">
+                  <h4 className="font-semibold text-lg text-orange-700">1️⃣5️⃣ Indemnité légale de fin de contrat ⚠️ OBLIGATOIRE !!!</h4>
+                  <div className="p-3 bg-orange-100 rounded border border-orange-400">
+                    <p className="text-sm text-orange-800 font-semibold">🚨 ÉLÉMENT CLÉ du contrat d'agent commercial</p>
+                    <p className="text-xs text-orange-700 mt-1">Indemnité généralement fixée à 2 années de commissions (sauf faute grave). C'est une obligation légale impérative (L134-12 Code de commerce).</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div><Label>Montant de l'indemnité</Label><Input value={agenceData.indemniteMontant} onChange={(e) => setAgenceData({...agenceData, indemniteMontant: e.target.value})} placeholder="Ex: 2 années de commissions moyennes" disabled /></div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.indemniteSaufFauteGrave} onCheckedChange={(v) => setAgenceData({...agenceData, indemniteSaufFauteGrave: !!v})} id="ind-faute" disabled />
+                      <Label htmlFor="ind-faute" className="font-normal">Sauf en cas de faute grave de l'agent ✅</Label>
+                    </div>
+                    <div><Label>Délai de paiement</Label><Textarea value={agenceData.indemniteDelai} onChange={(e) => setAgenceData({...agenceData, indemniteDelai: e.target.value})} placeholder="Dans un délai raisonnable après la fin du contrat..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 16. FORMALITÉS & ANNEXES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Formalités & Annexes</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.annexeTarifs} onCheckedChange={(v) => setAgenceData({...agenceData, annexeTarifs: !!v})} id="ann-tarifs" />
+                      <Label htmlFor="ann-tarifs" className="font-normal">Annexe : Tarifs et prix publics</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.annexeCatalogue} onCheckedChange={(v) => setAgenceData({...agenceData, annexeCatalogue: !!v})} id="ann-cat" />
+                      <Label htmlFor="ann-cat" className="font-normal">Annexe : Catalogue produits</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.annexePolitiqueCommerciale} onCheckedChange={(v) => setAgenceData({...agenceData, annexePolitiqueCommerciale: !!v})} id="ann-pol" />
+                      <Label htmlFor="ann-pol" className="font-normal">Annexe : Politique commerciale</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.annexeFichesProduits} onCheckedChange={(v) => setAgenceData({...agenceData, annexeFichesProduits: !!v})} id="ann-fiches" />
+                      <Label htmlFor="ann-fiches" className="font-normal">Annexe : Fiches produits</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.annexeReporting} onCheckedChange={(v) => setAgenceData({...agenceData, annexeReporting: !!v})} id="ann-rep" />
+                      <Label htmlFor="ann-rep" className="font-normal">Annexe : Modèle de reporting</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.annexeHistorique} onCheckedChange={(v) => setAgenceData({...agenceData, annexeHistorique: !!v})} id="ann-hist" />
+                      <Label htmlFor="ann-hist" className="font-normal">Annexe : Historique des commissions</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={agenceData.annexeRSAC} onCheckedChange={(v) => setAgenceData({...agenceData, annexeRSAC: !!v})} id="ann-rsac" />
+                      <Label htmlFor="ann-rsac" className="font-normal">Annexe : Extrait RSAC de l'agent</Label>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 17. PIÈCES JUSTIFICATIVES */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">1️⃣7️⃣ Pièces justificatives requises</h4>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold">Côté mandant :</p>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={agenceData.pieceMandantKbis} onCheckedChange={(v) => setAgenceData({...agenceData, pieceMandantKbis: !!v})} id="piece-kbis" />
+                        <Label htmlFor="piece-kbis" className="font-normal">Extrait Kbis</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={agenceData.pieceMandantPolitique} onCheckedChange={(v) => setAgenceData({...agenceData, pieceMandantPolitique: !!v})} id="piece-pol" />
+                        <Label htmlFor="piece-pol" className="font-normal">Politique commerciale</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={agenceData.pieceMandantCatalogue} onCheckedChange={(v) => setAgenceData({...agenceData, pieceMandantCatalogue: !!v})} id="piece-cat" />
+                        <Label htmlFor="piece-cat" className="font-normal">Catalogue</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={agenceData.pieceMandantTarifs} onCheckedChange={(v) => setAgenceData({...agenceData, pieceMandantTarifs: !!v})} id="piece-tar" />
+                        <Label htmlFor="piece-tar" className="font-normal">Grille tarifaire</Label>
+                      </div>
+                      <MultiFileUpload files={agenceMandantFiles} setFiles={setAgenceMandantFiles} label="Documents mandant" theme="orange" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold">Côté agent commercial :</p>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={agenceData.pieceAgentRSAC} onCheckedChange={(v) => setAgenceData({...agenceData, pieceAgentRSAC: !!v})} id="piece-rsac" />
+                        <Label htmlFor="piece-rsac" className="font-normal">Extrait Kbis RSAC (obligatoire)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={agenceData.pieceAgentRCPro} onCheckedChange={(v) => setAgenceData({...agenceData, pieceAgentRCPro: !!v})} id="piece-rcpro" />
+                        <Label htmlFor="piece-rcpro" className="font-normal">Attestation RC Pro</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={agenceData.pieceAgentIdentite} onCheckedChange={(v) => setAgenceData({...agenceData, pieceAgentIdentite: !!v})} id="piece-id" />
+                        <Label htmlFor="piece-id" className="font-normal">Pièce d'identité si personne physique</Label>
+                      </div>
+                      <MultiFileUpload files={agenceAgentFiles} setFiles={setAgenceAgentFiles} label="Documents agent" theme="orange" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold">Annexes générales :</p>
+                      <MultiFileUpload files={agenceAnnexesFiles} setFiles={setAgenceAnnexesFiles} label="Autres annexes" theme="orange" />
+                    </div>
+                  </div>
+                </div>
 
               </div>
             )}
@@ -48518,7 +48786,9 @@ FIN DE LA CONVENTION
                   handleCessionPartsSubmit();
                 } else if (pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) {
                   handleCGUSubmit();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType.includes("agence commerciale")) {
+                  handleAgenceCommercialeSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
