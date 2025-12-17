@@ -252,6 +252,7 @@ export default function Contrats() {
   const [prestationClientClientId, setPrestationClientClientId] = useState<string>("");
   const [venteB2BFournisseurClientId, setVenteB2BFournisseurClientId] = useState<string>("");
   const [venteB2BDistributeurClientId, setVenteB2BDistributeurClientId] = useState<string>("");
+  const [cgvVendeurClientId, setCgvVendeurClientId] = useState<string>("");
 
   // States pour les fichiers uploadés
   const [compromisClientIdentiteUrl, setCompromisClientIdentiteUrl] = useState<string | null>(null); // URL du document du client
@@ -46515,16 +46516,7 @@ FIN DE LA CONVENTION
               </div>
             )}
 
-            {["Conditions Générales de Vente (CGV)", "Conditions Générales d'Utilisation (CGU) — SaaS / site web", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType) && (
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b pb-2 text-blue-700">📝 {pendingContractType}</h3>
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-gray-700 mb-4">Formulaire en cours de développement.</p>
-                  <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={setSelectedClientId} label="Client" />
-                  <div className="mt-4"><Label>Description</Label><Textarea value={genericDescription} onChange={(e) => setGenericDescription(e.target.value)} placeholder="Description du contrat..." className="min-h-[100px]" /></div>
-                </div>
-              </div>
-            )}
+
 
             {/* Formulaire complet pour Conditions Générales de Vente (CGV) */}
             {pendingContractType === "Conditions Générales de Vente (CGV)" && (
@@ -46535,6 +46527,24 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification du vendeur</h4>
                   <div className="space-y-3">
+                    <ClientSelector 
+                      clients={clients} 
+                      selectedClientId={cgvVendeurClientId} 
+                      onClientChange={(clientId) => {
+                        setCgvVendeurClientId(clientId);
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setCgvData({
+                            ...cgvData,
+                            vendeurDenomination: `${client.prenom} ${client.nom}`,
+                            vendeurAdresseSiege: client.adresse || "",
+                            vendeurEmail: client.email || "",
+                            vendeurTelephone: client.telephone || ""
+                          });
+                        }
+                      }} 
+                      label="Sélectionner un client comme vendeur" 
+                    />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div><Label>Dénomination sociale / Nom *</Label><Input value={cgvData.vendeurDenomination} onChange={(e) => setCgvData({...cgvData, vendeurDenomination: e.target.value})} /></div>
                       <div><Label>Forme juridique</Label><Input value={cgvData.vendeurFormeJuridique} onChange={(e) => setCgvData({...cgvData, vendeurFormeJuridique: e.target.value})} placeholder="SARL, SAS, SASU, EI..." /></div>
