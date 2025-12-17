@@ -1083,7 +1083,9 @@ export default function EmailInbox() {
                             key={index}
                             size="sm"
                             variant="ghost"
-                            className="h-7 text-xs px-2 hover:bg-background"
+                            className={role === 'notaire' 
+                              ? 'h-7 text-xs px-2 hover:bg-orange-100 hover:text-orange-700' 
+                              : 'h-7 text-xs px-2 hover:bg-blue-100 hover:text-blue-700'}
                             onClick={async (e) => {
                               e.stopPropagation();
                               try {
