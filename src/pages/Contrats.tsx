@@ -46484,7 +46484,83 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* Suite sections 3-5 à venir... */}
+                {/* 3. DÉFINITIONS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Définitions indispensables</h4>
+                  <p className="text-sm text-gray-600">Définissez les termes clés utilisés dans vos CGV</p>
+                  <div className="space-y-3">
+                    <div><Label>Produit</Label><Textarea value={cgvData.definitionProduit} onChange={(e) => setCgvData({...cgvData, definitionProduit: e.target.value})} placeholder="Ex: Désigne tout bien meuble proposé à la vente..." className="min-h-[60px]" /></div>
+                    <div><Label>Service</Label><Textarea value={cgvData.definitionService} onChange={(e) => setCgvData({...cgvData, definitionService: e.target.value})} placeholder="Ex: Désigne toute prestation fournie par le vendeur..." className="min-h-[60px]" /></div>
+                    <div><Label>Client</Label><Textarea value={cgvData.definitionClient} onChange={(e) => setCgvData({...cgvData, definitionClient: e.target.value})} placeholder="Ex: Désigne toute personne physique ou morale procédant à un achat..." className="min-h-[60px]" /></div>
+                    <div><Label>Commande</Label><Textarea value={cgvData.definitionCommande} onChange={(e) => setCgvData({...cgvData, definitionCommande: e.target.value})} placeholder="Ex: Désigne tout ordre d'achat de produits ou services..." className="min-h-[60px]" /></div>
+                    <div><Label>Compte utilisateur</Label><Textarea value={cgvData.definitionCompteUtilisateur} onChange={(e) => setCgvData({...cgvData, definitionCompteUtilisateur: e.target.value})} placeholder="Ex: Espace personnel créé par le client..." className="min-h-[60px]" /></div>
+                    <div><Label>Livraison</Label><Textarea value={cgvData.definitionLivraison} onChange={(e) => setCgvData({...cgvData, definitionLivraison: e.target.value})} placeholder="Ex: Désigne le transfert physique des produits..." className="min-h-[60px]" /></div>
+                    <div><Label>Abonnement</Label><Textarea value={cgvData.definitionAbonnement} onChange={(e) => setCgvData({...cgvData, definitionAbonnement: e.target.value})} placeholder="Ex: Formule de paiement récurrent..." className="min-h-[60px]" /></div>
+                    <div><Label>Prix</Label><Textarea value={cgvData.definitionPrix} onChange={(e) => setCgvData({...cgvData, definitionPrix: e.target.value})} placeholder="Ex: Montant dû par le client en contrepartie..." className="min-h-[60px]" /></div>
+                    <div><Label>Force majeure</Label><Textarea value={cgvData.definitionForceMajeure} onChange={(e) => setCgvData({...cgvData, definitionForceMajeure: e.target.value})} placeholder="Ex: Tout événement extérieur, imprévisible et irrésistible..." className="min-h-[60px]" /></div>
+                    <div><Label>Contrat</Label><Textarea value={cgvData.definitionContrat} onChange={(e) => setCgvData({...cgvData, definitionContrat: e.target.value})} placeholder="Ex: Désigne l'ensemble formé par les présentes CGV et la commande..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 4. CARACTÉRISTIQUES DES PRODUITS/SERVICES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Caractéristiques des produits / services</h4>
+                  <div className="space-y-3">
+                    <div><Label>Description précise des produits/services *</Label><Textarea value={cgvData.descriptionProduits} onChange={(e) => setCgvData({...cgvData, descriptionProduits: e.target.value})} placeholder="Décrivez précisément les caractéristiques, spécifications, qualités..." className="min-h-[100px]" /></div>
+                    <div>
+                      <Label>Visuels / Photos / Maquettes disponibles</Label>
+                      <RadioGroup value={cgvData.visuelsDisponibles} onValueChange={(v) => setCgvData({...cgvData, visuelsDisponibles: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="vis-oui" /><Label htmlFor="vis-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="vis-non" /><Label htmlFor="vis-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Spécifications techniques</Label><Textarea value={cgvData.specificationstechniques} onChange={(e) => setCgvData({...cgvData, specificationstechniques: e.target.value})} placeholder="Dimensions, poids, matériaux, compatibilités, performances..." className="min-h-[80px]" /></div>
+                    <div><Label>Disponibilités</Label><Input value={cgvData.disponibilites} onChange={(e) => setCgvData({...cgvData, disponibilites: e.target.value})} placeholder="Ex: En stock, sur devis, sur mesure, délai de fabrication..." /></div>
+                    <div><Label>Restrictions d'usage</Label><Textarea value={cgvData.restrictionsUsage} onChange={(e) => setCgvData({...cgvData, restrictionsUsage: e.target.value})} placeholder="Interdictions, limitations, précautions d'emploi..." className="min-h-[60px]" /></div>
+                    <div><Label>Conditions préalables d'utilisation</Label><Textarea value={cgvData.conditionsPrealables} onChange={(e) => setCgvData({...cgvData, conditionsPrealables: e.target.value})} placeholder="Prérequis techniques, compétences nécessaires, équipements requis..." className="min-h-[60px]" /></div>
+                    
+                    <MultiFileUpload label="Fiches techniques, certificats produits" files={cgvProduitsFiles} onFilesChange={setCgvProduitsFiles} accept=".pdf,.jpg,.jpeg,.png" role="avocat" />
+                  </div>
+                </div>
+                
+                {/* 5. PROCESSUS DE COMMANDE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Processus de commande</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Création d'un compte client obligatoire ?</Label>
+                      <RadioGroup value={cgvData.creationCompteObligatoire} onValueChange={(v) => setCgvData({...cgvData, creationCompteObligatoire: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="compte-oui" /><Label htmlFor="compte-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="compte-non" /><Label htmlFor="compte-non">Non (achat invité possible)</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Étapes de commande</Label><Textarea value={cgvData.etapesCommande} onChange={(e) => setCgvData({...cgvData, etapesCommande: e.target.value})} placeholder="Ex: 1. Ajout au panier, 2. Identification, 3. Adresse livraison, 4. Mode de paiement, 5. Validation..." className="min-h-[80px]" /></div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={cgvData.validationDoubleClick} onCheckedChange={(v) => setCgvData({...cgvData, validationDoubleClick: !!v})} id="double-click" />
+                      <Label htmlFor="double-click" className="font-normal">Validation du double-clic (obligatoire e-commerce) ✅</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={cgvData.confirmationEmail} onCheckedChange={(v) => setCgvData({...cgvData, confirmationEmail: !!v})} id="confirm-email" />
+                      <Label htmlFor="confirm-email" className="font-normal">Confirmation par email ✅</Label>
+                    </div>
+                    <div>
+                      <Label>Annulation possible avant expédition ?</Label>
+                      <RadioGroup value={cgvData.annulationAvantExpedition} onValueChange={(v) => setCgvData({...cgvData, annulationAvantExpedition: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="annul-oui" /><Label htmlFor="annul-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="annul-non" /><Label htmlFor="annul-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div>
+                      <Label>Commandes sur devis uniquement ?</Label>
+                      <RadioGroup value={cgvData.commandesSurDevis} onValueChange={(v) => setCgvData({...cgvData, commandesSurDevis: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="devis-oui" /><Label htmlFor="devis-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="devis-non" /><Label htmlFor="devis-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Suite sections 6-10 à venir... */}
                 
               </div>
             )}
