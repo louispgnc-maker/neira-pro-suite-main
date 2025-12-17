@@ -152,8 +152,12 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
       "Politique de confidentialité / mentions légales / RGPD"
     ];
 
+    console.log('🔍 ContractSelector - contractType:', JSON.stringify(contractType));
+    console.log('🔍 ContractSelector - dans liste?:', contratsAvecFormulaires.includes(contractType));
+    console.log('🔍 ContractSelector - includes CGU?:', contractType.includes("CGU"));
+
     // Si c'est un contrat avec formulaire, rediriger vers la page Contrats
-    if (contratsAvecFormulaires.includes(contractType)) {
+    if (contratsAvecFormulaires.includes(contractType) || (contractType.includes("CGU") && contractType.toLowerCase().includes("saas"))) {
       const basePath = role === 'notaire' ? '/notaires' : '/avocats';
       // Pour "Bail commercial", utiliser le type normalisé "Bail commercial / professionnel"
       const typeToUse = contractType === "Bail commercial" ? "Bail commercial / professionnel" : contractType;
