@@ -2114,7 +2114,9 @@ export default function EspaceCollaboratif() {
                   });
                 }
               }}
-              className={cabinetRole === 'notaire' ? 'text-orange-600 hover:text-orange-700' : 'text-blue-600 hover:text-blue-700'}
+              className={cabinetRole === 'notaire' 
+                ? 'text-orange-600 hover:text-orange-700 border-orange-300 hover:bg-orange-50' 
+                : 'text-blue-600 hover:text-blue-700 border-blue-300 hover:bg-blue-50'}
             >
               Marquer tout comme lu
             </Button>
