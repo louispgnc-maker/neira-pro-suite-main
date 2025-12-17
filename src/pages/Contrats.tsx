@@ -47404,9 +47404,86 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* CGU Suite sections 4-17 à venir... */}
+                {/* 4. ACCÈS AU SITE / COMPTE UTILISATEUR */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Accès au site / Compte utilisateur</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="font-medium">A. Création de compte - Champs collectés</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.champsCreeCompteNom} onCheckedChange={(v) => setCguData({...cguData, champsCreeCompteNom: !!v})} id="champ-nom" /><Label htmlFor="champ-nom" className="font-normal">Nom</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.champsCreeComptePrenom} onCheckedChange={(v) => setCguData({...cguData, champsCreeComptePrenom: !!v})} id="champ-prenom" /><Label htmlFor="champ-prenom" className="font-normal">Prénom</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.champsCreeCompteEmail} onCheckedChange={(v) => setCguData({...cguData, champsCreeCompteEmail: !!v})} id="champ-email" /><Label htmlFor="champ-email" className="font-normal">Email</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.champsCreeCompteTelephone} onCheckedChange={(v) => setCguData({...cguData, champsCreeCompteTelephone: !!v})} id="champ-tel" /><Label htmlFor="champ-tel" className="font-normal">Téléphone</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.champsCreeCompteMotDePasse} onCheckedChange={(v) => setCguData({...cguData, champsCreeCompteMotDePasse: !!v})} id="champ-mdp" /><Label htmlFor="champ-mdp" className="font-normal">Mot de passe</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.champsCreeCompteEntreprise} onCheckedChange={(v) => setCguData({...cguData, champsCreeCompteEntreprise: !!v})} id="champ-ent" /><Label htmlFor="champ-ent" className="font-normal">Entreprise (si B2B)</Label></div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <Label>Vérification email nécessaire ?</Label>
+                        <RadioGroup value={cguData.verificationEmail} onValueChange={(v) => setCguData({...cguData, verificationEmail: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="verif-email-oui" /><Label htmlFor="verif-email-oui">Oui</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="verif-email-non" /><Label htmlFor="verif-email-non">Non</Label></div>
+                        </RadioGroup>
+                      </div>
+                      <div>
+                        <Label>Vérification téléphone nécessaire ?</Label>
+                        <RadioGroup value={cguData.verificationTelephone} onValueChange={(v) => setCguData({...cguData, verificationTelephone: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="verif-tel-oui" /><Label htmlFor="verif-tel-oui">Oui</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="verif-tel-non" /><Label htmlFor="verif-tel-non">Non</Label></div>
+                        </RadioGroup>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">B. Conditions d'accès</Label>
+                      <div className="space-y-2 mt-2">
+                        <div><Label>Âge minimum *</Label>
+                          <Select value={cguData.ageMinimum} onValueChange={(v) => setCguData({...cguData, ageMinimum: v})}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="16">16 ans (RGPD)</SelectItem>
+                              <SelectItem value="18">18 ans (services sensibles)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div><Label>Interdictions d'accès</Label><Textarea value={cguData.interdictionsAcces} onChange={(e) => setCguData({...cguData, interdictionsAcces: e.target.value})} placeholder="Professionnels interdits, mineurs, etc..." className="min-h-[60px]" /></div>
+                        <div><Label>Exactitude des données fournies</Label><Textarea value={cguData.exactitudeDonnees} onChange={(e) => setCguData({...cguData, exactitudeDonnees: e.target.value})} placeholder="L'utilisateur s'engage à fournir des informations exactes..." className="min-h-[60px]" /></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">C. Sécurité du compte</Label>
+                      <div className="space-y-2 mt-2">
+                        <div><Label>Obligation de confidentialité du mot de passe</Label><Textarea value={cguData.confidentialiteMotDePasse} onChange={(e) => setCguData({...cguData, confidentialiteMotDePasse: e.target.value})} placeholder="L'utilisateur est responsable de la confidentialité..." className="min-h-[60px]" /></div>
+                        <div>
+                          <Label>Double authentification (optionnel)</Label>
+                          <RadioGroup value={cguData.doubleAuthentification} onValueChange={(v) => setCguData({...cguData, doubleAuthentification: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="2fa-oui" /><Label htmlFor="2fa-oui">Oui (disponible)</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="2fa-non" /><Label htmlFor="2fa-non">Non</Label></div>
+                          </RadioGroup>
+                        </div>
+                        <div><Label>Responsabilité en cas de vol de compte</Label><Textarea value={cguData.responsabiliteVolCompte} onChange={(e) => setCguData({...cguData, responsabiliteVolCompte: e.target.value})} placeholder="L'utilisateur doit signaler immédiatement tout accès non autorisé..." className="min-h-[60px]" /></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 5. FONCTIONNEMENT DU SERVICE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Fonctionnement du service</h4>
+                  <div className="space-y-3">
+                    <div><Label>Fonctionnalités disponibles *</Label><Textarea value={cguData.fonctionnalitesDisponibles} onChange={(e) => setCguData({...cguData, fonctionnalitesDisponibles: e.target.value})} placeholder="Liste des fonctionnalités offertes..." className="min-h-[100px]" /></div>
+                    <div><Label>Limitations du service</Label><Textarea value={cguData.limitationsService} onChange={(e) => setCguData({...cguData, limitationsService: e.target.value})} placeholder="Limites techniques, quotas, restrictions..." className="min-h-[80px]" /></div>
+                    <div><Label>Prérequis techniques</Label><Textarea value={cguData.prerequisTechniques} onChange={(e) => setCguData({...cguData, prerequisTechniques: e.target.value})} placeholder="Navigateur, OS, connexion Internet..." className="min-h-[80px]" /></div>
+                    <div><Label>Mises à jour possibles</Label><Textarea value={cguData.misesAJour} onChange={(e) => setCguData({...cguData, misesAJour: e.target.value})} placeholder="Le service peut être mis à jour régulièrement..." className="min-h-[60px]" /></div>
+                    <div><Label>Interruptions de service (maintenance)</Label><Textarea value={cguData.interruptionsService} onChange={(e) => setCguData({...cguData, interruptionsService: e.target.value})} placeholder="Maintenance programmée, coupures techniques..." className="min-h-[60px]" /></div>
+                    <div><Label>Évolutions sans préavis</Label><Textarea value={cguData.evolutionsSansPreavis} onChange={(e) => setCguData({...cguData, evolutionsSansPreavis: e.target.value})} placeholder="Le service peut évoluer sans notification préalable..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* CGU Suite sections 6-17 à venir... */}
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-700">✅ Sections 4 à 17 à ajouter dans la prochaine partie</p>
+                  <p className="text-sm text-blue-700">✅ Sections 6 à 17 à ajouter dans la prochaine partie</p>
                 </div>
                 
                 {/* UPLOAD FICHIERS */}
