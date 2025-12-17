@@ -734,11 +734,11 @@ export default function EmailInbox() {
             {/* Left: Navigation */}
             <div className="flex items-center gap-3">
               <Button
-                style={{ backgroundColor: currentFolder === 'inbox' ? '#f97316' : 'white' }}
+                style={{ backgroundColor: currentFolder === 'inbox' ? (role === 'notaire' ? '#f97316' : '#2563eb') : 'white' }}
                 className={`relative h-10 rounded-full text-sm transition-all border-2 ${
                   currentFolder === 'inbox' 
-                    ? 'text-white !border-orange-500 shadow-md hover:!bg-orange-600' 
-                    : 'text-gray-700 !border-gray-200 hover:!bg-orange-50/50 hover:!border-orange-300'
+                    ? `text-white ${role === 'notaire' ? '!border-orange-500 hover:!bg-orange-600' : '!border-blue-500 hover:!bg-blue-600'} shadow-md` 
+                    : `text-gray-700 !border-gray-200 ${role === 'notaire' ? 'hover:!bg-orange-50/50 hover:!border-orange-300' : 'hover:!bg-blue-50/50 hover:!border-blue-300'}`
                 }`}
                 onClick={() => setCurrentFolder('inbox')}
                 title="Boîte de réception"
@@ -769,7 +769,7 @@ export default function EmailInbox() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     style={{ backgroundColor: 'white' }}
-                    className="h-10 rounded-full text-sm text-gray-700 border-2 !border-gray-200 hover:!bg-orange-50/50 hover:!border-orange-300 transition-all"
+                    className={`h-10 rounded-full text-sm text-gray-700 border-2 !border-gray-200 ${role === 'notaire' ? 'hover:!bg-orange-50/50 hover:!border-orange-300' : 'hover:!bg-blue-50/50 hover:!border-blue-300'} transition-all`}
                     title="Plus d'options"
                   >
                     <MoreVertical className="h-4 w-4 mr-2" />
@@ -798,7 +798,7 @@ export default function EmailInbox() {
               {/* Quick Actions - Icon Only */}
               <Button
                 style={{ backgroundColor: 'white' }}
-                className="h-10 w-10 rounded-full border-2 !border-gray-200 hover:!bg-orange-50/50 hover:!border-orange-300 transition-all p-0"
+                className={`h-10 w-10 rounded-full border-2 !border-gray-200 ${role === 'notaire' ? 'hover:!bg-orange-50/50 hover:!border-orange-300' : 'hover:!bg-blue-50/50 hover:!border-blue-300'} transition-all p-0`}
                 onClick={handleSync}
                 disabled={syncing}
                 title="Synchroniser"
@@ -808,7 +808,7 @@ export default function EmailInbox() {
 
               <Button
                 style={{ backgroundColor: 'white' }}
-                className="h-10 w-10 rounded-full border-2 !border-gray-200 hover:!bg-orange-50/50 hover:!border-orange-300 transition-all p-0"
+                className={`h-10 w-10 rounded-full border-2 !border-gray-200 ${role === 'notaire' ? 'hover:!bg-orange-50/50 hover:!border-orange-300' : 'hover:!bg-blue-50/50 hover:!border-blue-300'} transition-all p-0`}
                 onClick={markAllAsRead}
                 title="Marquer tout comme lu"
               >
@@ -817,7 +817,7 @@ export default function EmailInbox() {
               
               {/* Primary CTA */}
               <Button 
-                className="h-10 rounded-full text-sm bg-gradient-to-r from-orange-500 to-orange-600 !text-white shadow-md hover:shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all border-0"
+                className={`h-10 rounded-full text-sm !text-white shadow-md hover:shadow-lg transition-all border-0 ${role === 'notaire' ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'}`}
                 onClick={handleCompose}
                 title="Nouveau message"
               >
