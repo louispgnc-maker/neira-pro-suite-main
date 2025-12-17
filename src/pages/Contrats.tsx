@@ -654,6 +654,52 @@ export default function Contrats() {
     confirmationEmail: true,
     annulationAvantExpedition: "", // oui/non
     commandesSurDevis: "", // oui/non
+    
+    // 6. Prix
+    prixAffichesTTC: "", // TTC/HT
+    tvaApplicable: "",
+    variationPrix: "",
+    fraisSupplementaires: "",
+    remisesReductions: "",
+    devisDureeValidite: "",
+    devisRevision: "",
+    
+    // 7. Conditions de paiement
+    modesPaiement: [] as string[], // carte, virement, sepa, paypal, plusieurs fois
+    paiementImmediatDiffere: "", // immediat/differe
+    acompteArrhes: "", // acompte/arrhes/engagement
+    montantAcompte: "",
+    securisationPaiement: "",
+    fraisPaiement: "",
+    facturesElectroniques: "", // oui/non
+    paiementB2BEcheance: "", // 30j/45j/60j
+    penalitesRetardTaux: "",
+    indemniteRecouvrementB2B: "40", // 40€ par défaut
+    
+    // 8. Livraison
+    zonesLivrees: "",
+    modeLivraison: "",
+    delaisLivraison: "",
+    fraisLivraison: "",
+    transfertRisquesB2C: "reception", // réception par défaut
+    transfertRisquesB2B: "transporteur", // remise transporteur par défaut
+    retardsLivraison: "",
+    casForceMajeureLivraison: "",
+    
+    // 9. Exécution du service (si prestation)
+    calendrierService: "",
+    etapesRealisation: "",
+    obligationMoyensResultat: "", // moyens/resultat
+    validationLivrables: "",
+    reportAnnulationService: "",
+    
+    // 10. Droit de rétractation (B2C uniquement)
+    droitRetractation14jours: true, // obligatoire B2C
+    exceptionsRetractation: [] as string[], // sur mesure, numériques, services exécutés, etc.
+    procedureRetractation: "",
+    formulaireRetractation: true, // obligatoire
+    remboursementDelais: "",
+    remboursementMethode: "",
   });
   
   const [cgvVendeurFiles, setCgvVendeurFiles] = useState<File[]>([]); // Kbis, mentions légales, RC Pro
@@ -46560,7 +46606,160 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* Suite sections 6-10 à venir... */}
+                {/* 6. PRIX */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Prix</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Prix affichés *</Label>
+                      <RadioGroup value={cgvData.prixAffichesTTC} onValueChange={(v) => setCgvData({...cgvData, prixAffichesTTC: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="TTC" id="prix-ttc" /><Label htmlFor="prix-ttc">TTC (B2C)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="HT" id="prix-ht" /><Label htmlFor="prix-ht">HT (B2B)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="mixte" id="prix-mixte" /><Label htmlFor="prix-mixte">Mixte (selon client)</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>TVA applicable</Label><Input value={cgvData.tvaApplicable} onChange={(e) => setCgvData({...cgvData, tvaApplicable: e.target.value})} placeholder="Ex: 20%, 10%, 5.5%..." /></div>
+                    <div><Label>Variation des prix</Label><Textarea value={cgvData.variationPrix} onChange={(e) => setCgvData({...cgvData, variationPrix: e.target.value})} placeholder="Les prix peuvent-ils varier ? Conditions de révision..." className="min-h-[60px]" /></div>
+                    <div><Label>Frais supplémentaires</Label><Textarea value={cgvData.fraisSupplementaires} onChange={(e) => setCgvData({...cgvData, fraisSupplementaires: e.target.value})} placeholder="Livraison, installation, personnalisation..." className="min-h-[60px]" /></div>
+                    <div><Label>Remises, réductions, promotions</Label><Textarea value={cgvData.remisesReductions} onChange={(e) => setCgvData({...cgvData, remisesReductions: e.target.value})} placeholder="Conditions d'application des remises..." className="min-h-[60px]" /></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Durée de validité des devis</Label><Input value={cgvData.devisDureeValidite} onChange={(e) => setCgvData({...cgvData, devisDureeValidite: e.target.value})} placeholder="Ex: 30 jours" /></div>
+                      <div><Label>Révision du devis</Label><Input value={cgvData.devisRevision} onChange={(e) => setCgvData({...cgvData, devisRevision: e.target.value})} placeholder="Conditions de révision" /></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 7. CONDITIONS DE PAIEMENT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Conditions de paiement</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="font-medium">Modes de paiement acceptés</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.modesPaiement.includes("carte")} onCheckedChange={(v) => setCgvData({...cgvData, modesPaiement: v ? [...cgvData.modesPaiement, "carte"] : cgvData.modesPaiement.filter(m => m !== "carte")})} id="pay-carte" /><Label htmlFor="pay-carte" className="font-normal">Carte bancaire</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.modesPaiement.includes("virement")} onCheckedChange={(v) => setCgvData({...cgvData, modesPaiement: v ? [...cgvData.modesPaiement, "virement"] : cgvData.modesPaiement.filter(m => m !== "virement")})} id="pay-vir" /><Label htmlFor="pay-vir" className="font-normal">Virement bancaire</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.modesPaiement.includes("sepa")} onCheckedChange={(v) => setCgvData({...cgvData, modesPaiement: v ? [...cgvData.modesPaiement, "sepa"] : cgvData.modesPaiement.filter(m => m !== "sepa")})} id="pay-sepa" /><Label htmlFor="pay-sepa" className="font-normal">Prélèvement SEPA</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.modesPaiement.includes("paypal")} onCheckedChange={(v) => setCgvData({...cgvData, modesPaiement: v ? [...cgvData.modesPaiement, "paypal"] : cgvData.modesPaiement.filter(m => m !== "paypal")})} id="pay-pp" /><Label htmlFor="pay-pp" className="font-normal">PayPal</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.modesPaiement.includes("plusieurs-fois")} onCheckedChange={(v) => setCgvData({...cgvData, modesPaiement: v ? [...cgvData.modesPaiement, "plusieurs-fois"] : cgvData.modesPaiement.filter(m => m !== "plusieurs-fois")})} id="pay-plusieurs" /><Label htmlFor="pay-plusieurs" className="font-normal">Paiement en plusieurs fois</Label></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Paiement</Label>
+                      <RadioGroup value={cgvData.paiementImmediatDiffere} onValueChange={(v) => setCgvData({...cgvData, paiementImmediatDiffere: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="immediat" id="pay-immed" /><Label htmlFor="pay-immed">Immédiat</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="differe" id="pay-diff" /><Label htmlFor="pay-diff">Différé</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div>
+                      <Label>Acompte / Arrhes / Engagement</Label>
+                      <Select value={cgvData.acompteArrhes} onValueChange={(v) => setCgvData({...cgvData, acompteArrhes: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="aucun">Aucun</SelectItem>
+                          <SelectItem value="acompte">Acompte (engagement ferme)</SelectItem>
+                          <SelectItem value="arrhes">Arrhes (possibilité de se désister)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {cgvData.acompteArrhes !== "aucun" && cgvData.acompteArrhes && (
+                        <Input value={cgvData.montantAcompte} onChange={(e) => setCgvData({...cgvData, montantAcompte: e.target.value})} placeholder="Montant ou pourcentage" className="mt-2" />
+                      )}
+                    </div>
+                    <div><Label>Sécurisation du paiement</Label><Input value={cgvData.securisationPaiement} onChange={(e) => setCgvData({...cgvData, securisationPaiement: e.target.value})} placeholder="3D Secure, SSL, prestataire..." /></div>
+                    <div><Label>Frais liés à certains paiements</Label><Input value={cgvData.fraisPaiement} onChange={(e) => setCgvData({...cgvData, fraisPaiement: e.target.value})} placeholder="Frais pour certains modes de paiement" /></div>
+                    <div>
+                      <Label>Factures électroniques</Label>
+                      <RadioGroup value={cgvData.facturesElectroniques} onValueChange={(v) => setCgvData({...cgvData, facturesElectroniques: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="fact-elec-oui" /><Label htmlFor="fact-elec-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="fact-elec-non" /><Label htmlFor="fact-elec-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    
+                    {cgvData.typesClients.includes("B2B") && (
+                      <div className="p-3 bg-orange-50 border border-orange-200 rounded">
+                        <Label className="font-medium text-orange-700">⚠️ Paiement B2B (obligatoire)</Label>
+                        <div className="space-y-2 mt-2">
+                          <div><Label>Délai de paiement</Label><Select value={cgvData.paiementB2BEcheance} onValueChange={(v) => setCgvData({...cgvData, paiementB2BEcheance: v})}><SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger><SelectContent><SelectItem value="comptant">Comptant</SelectItem><SelectItem value="30j">30 jours (LME)</SelectItem><SelectItem value="45j">45 jours</SelectItem><SelectItem value="60j">60 jours (max)</SelectItem></SelectContent></Select></div>
+                          <div><Label>Pénalités de retard (taux) *</Label><Input value={cgvData.penalitesRetardTaux} onChange={(e) => setCgvData({...cgvData, penalitesRetardTaux: e.target.value})} placeholder="Ex: 3 fois le taux légal" /></div>
+                          <div><Label>Indemnité forfaitaire de recouvrement *</Label><Input value={cgvData.indemniteRecouvrementB2B} onChange={(e) => setCgvData({...cgvData, indemniteRecouvrementB2B: e.target.value})} placeholder="40€" /></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* 8. LIVRAISON */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Livraison</h4>
+                  <div className="space-y-3">
+                    <div><Label>Zones livrées</Label><Input value={cgvData.zonesLivrees} onChange={(e) => setCgvData({...cgvData, zonesLivrees: e.target.value})} placeholder="France métropolitaine, Europe, International..." /></div>
+                    <div><Label>Mode de livraison</Label><Input value={cgvData.modeLivraison} onChange={(e) => setCgvData({...cgvData, modeLivraison: e.target.value})} placeholder="Colissimo, transporteur, retrait magasin..." /></div>
+                    <div><Label>Délais de livraison indicatifs</Label><Input value={cgvData.delaisLivraison} onChange={(e) => setCgvData({...cgvData, delaisLivraison: e.target.value})} placeholder="Ex: 48h, 5 jours ouvrés..." /></div>
+                    <div><Label>Frais de livraison</Label><Textarea value={cgvData.fraisLivraison} onChange={(e) => setCgvData({...cgvData, fraisLivraison: e.target.value})} placeholder="Montants selon zone, poids, offerts si..." className="min-h-[60px]" /></div>
+                    <div className="p-3 bg-gray-50 rounded border">
+                      <Label className="font-medium">Transfert des risques</Label>
+                      <div className="space-y-2 mt-2">
+                        <div><Label className="text-sm">B2C (consommateurs)</Label><Input value={cgvData.transfertRisquesB2C} onChange={(e) => setCgvData({...cgvData, transfertRisquesB2C: e.target.value})} placeholder="À la réception" className="text-sm" /></div>
+                        <div><Label className="text-sm">B2B (professionnels)</Label><Input value={cgvData.transfertRisquesB2B} onChange={(e) => setCgvData({...cgvData, transfertRisquesB2B: e.target.value})} placeholder="À la remise au transporteur" className="text-sm" /></div>
+                      </div>
+                    </div>
+                    <div><Label>Retards de livraison</Label><Textarea value={cgvData.retardsLivraison} onChange={(e) => setCgvData({...cgvData, retardsLivraison: e.target.value})} placeholder="Procédure en cas de retard : remboursement, annulation..." className="min-h-[60px]" /></div>
+                    <div><Label>Cas de force majeure</Label><Textarea value={cgvData.casForceMajeureLivraison} onChange={(e) => setCgvData({...cgvData, casForceMajeureLivraison: e.target.value})} placeholder="Événements exonérant le vendeur de sa responsabilité..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 9. EXÉCUTION DU SERVICE (SI PRESTATION) */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Exécution du service (si prestation)</h4>
+                  <p className="text-sm text-gray-600">Remplir uniquement si vous vendez des services/prestations</p>
+                  <div className="space-y-3">
+                    <div><Label>Calendrier d'exécution</Label><Textarea value={cgvData.calendrierService} onChange={(e) => setCgvData({...cgvData, calendrierService: e.target.value})} placeholder="Délais, planning, phases..." className="min-h-[60px]" /></div>
+                    <div><Label>Étapes de réalisation</Label><Textarea value={cgvData.etapesRealisation} onChange={(e) => setCgvData({...cgvData, etapesRealisation: e.target.value})} placeholder="Description des différentes étapes..." className="min-h-[60px]" /></div>
+                    <div>
+                      <Label>Type d'obligation</Label>
+                      <RadioGroup value={cgvData.obligationMoyensResultat} onValueChange={(v) => setCgvData({...cgvData, obligationMoyensResultat: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="moyens" id="obl-moy" /><Label htmlFor="obl-moy">Obligation de moyens</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="resultat" id="obl-res" /><Label htmlFor="obl-res">Obligation de résultat</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Validation des livrables</Label><Textarea value={cgvData.validationLivrables} onChange={(e) => setCgvData({...cgvData, validationLivrables: e.target.value})} placeholder="Procédure de validation par le client..." className="min-h-[60px]" /></div>
+                    <div><Label>Report / Annulation du service</Label><Textarea value={cgvData.reportAnnulationService} onChange={(e) => setCgvData({...cgvData, reportAnnulationService: e.target.value})} placeholder="Conditions et délais de report ou annulation..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 10. DROIT DE RÉTRACTATION (B2C) */}
+                {cgvData.typesClients.includes("B2C") && (
+                  <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                    <h4 className="font-semibold text-lg text-green-700">🔟 Droit de rétractation (B2C uniquement)</h4>
+                    <p className="text-sm text-green-600">⚠️ Obligatoire pour les ventes à distance aux consommateurs</p>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.droitRetractation14jours} onCheckedChange={(v) => setCgvData({...cgvData, droitRetractation14jours: !!v})} id="retract-14j" disabled />
+                        <Label htmlFor="retract-14j" className="font-normal">Délai légal : 14 jours ✅ (obligatoire)</Label>
+                      </div>
+                      <div>
+                        <Label className="font-medium">Exceptions au droit de rétractation</Label>
+                        <p className="text-xs text-gray-500 mb-2">Cochez les exceptions applicables</p>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2"><Checkbox checked={cgvData.exceptionsRetractation.includes("sur-mesure")} onCheckedChange={(v) => setCgvData({...cgvData, exceptionsRetractation: v ? [...cgvData.exceptionsRetractation, "sur-mesure"] : cgvData.exceptionsRetractation.filter(e => e !== "sur-mesure")})} id="exc-mesure" /><Label htmlFor="exc-mesure" className="font-normal">Produits confectionnés sur mesure</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={cgvData.exceptionsRetractation.includes("numerique-telecharge")} onCheckedChange={(v) => setCgvData({...cgvData, exceptionsRetractation: v ? [...cgvData.exceptionsRetractation, "numerique-telecharge"] : cgvData.exceptionsRetractation.filter(e => e !== "numerique-telecharge")})} id="exc-num" /><Label htmlFor="exc-num" className="font-normal">Contenus numériques téléchargés</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={cgvData.exceptionsRetractation.includes("service-execute")} onCheckedChange={(v) => setCgvData({...cgvData, exceptionsRetractation: v ? [...cgvData.exceptionsRetractation, "service-execute"] : cgvData.exceptionsRetractation.filter(e => e !== "service-execute")})} id="exc-serv" /><Label htmlFor="exc-serv" className="font-normal">Services pleinement exécutés</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={cgvData.exceptionsRetractation.includes("scelles")} onCheckedChange={(v) => setCgvData({...cgvData, exceptionsRetractation: v ? [...cgvData.exceptionsRetractation, "scelles"] : cgvData.exceptionsRetractation.filter(e => e !== "scelles")})} id="exc-scell" /><Label htmlFor="exc-scell" className="font-normal">Produits scellés descellés (hygiène)</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={cgvData.exceptionsRetractation.includes("perissables")} onCheckedChange={(v) => setCgvData({...cgvData, exceptionsRetractation: v ? [...cgvData.exceptionsRetractation, "perissables"] : cgvData.exceptionsRetractation.filter(e => e !== "perissables")})} id="exc-perish" /><Label htmlFor="exc-perish" className="font-normal">Produits périssables</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={cgvData.exceptionsRetractation.includes("journaux")} onCheckedChange={(v) => setCgvData({...cgvData, exceptionsRetractation: v ? [...cgvData.exceptionsRetractation, "journaux"] : cgvData.exceptionsRetractation.filter(e => e !== "journaux")})} id="exc-journ" /><Label htmlFor="exc-journ" className="font-normal">Journaux, périodiques</Label></div>
+                        </div>
+                      </div>
+                      <div><Label>Procédure de rétractation</Label><Textarea value={cgvData.procedureRetractation} onChange={(e) => setCgvData({...cgvData, procedureRetractation: e.target.value})} placeholder="Comment exercer le droit de rétractation : formulaire, email, courrier..." className="min-h-[60px]" /></div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.formulaireRetractation} onCheckedChange={(v) => setCgvData({...cgvData, formulaireRetractation: !!v})} id="form-retract" disabled />
+                        <Label htmlFor="form-retract" className="font-normal">Formulaire type de rétractation ✅ (obligatoire)</Label>
+                      </div>
+                      <div><Label>Délais de remboursement</Label><Input value={cgvData.remboursementDelais} onChange={(e) => setCgvData({...cgvData, remboursementDelais: e.target.value})} placeholder="Ex: 14 jours après réception du retour" /></div>
+                      <div><Label>Méthode de remboursement</Label><Input value={cgvData.remboursementMethode} onChange={(e) => setCgvData({...cgvData, remboursementMethode: e.target.value})} placeholder="Ex: Même moyen de paiement que l'achat" /></div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Suite sections 11-15 à venir... */}
                 
               </div>
             )}
