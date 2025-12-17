@@ -700,6 +700,79 @@ export default function Contrats() {
     formulaireRetractation: true, // obligatoire
     remboursementDelais: "",
     remboursementMethode: "",
+    
+    // 11. Retours & Remboursements
+    conditionsRetour: "",
+    fraisRetour: "",
+    etatProduits: "",
+    delaisRetour: "",
+    produitsNonConformes: "",
+    sav: "",
+    
+    // 12. Garanties légales (obligatoire B2C)
+    garantieLegaleConformite: true, // 2 ans
+    garantieVicesCaches: true, // 2 ans après découverte
+    garantieCommerciale: "", // oui/non
+    garantieCommercialeDuree: "",
+    garantieCommercialeConditions: "",
+    
+    // 13. Transfert de propriété & risques
+    transfertPropriete: "paiement-complet", // paiement-complet/livraison
+    reservePropriete: "", // oui/non
+    transfertRisques: "",
+    
+    // 14. Responsabilité
+    limitationResponsabilite: "",
+    exclusionDommagesIndirects: "", // oui/non
+    plafondIndemnisation: "",
+    casForceMajeureResponsabilite: "",
+    responsabiliteDefautInfo: "",
+    
+    // 15. Propriété intellectuelle
+    marquesLogos: "",
+    interdictionReproduction: true,
+    licenceClient: "",
+    contenusNumeriquesProteges: "",
+    clauseContreContrefacon: "",
+    
+    // 16. Données personnelles / RGPD
+    natureDonneesCollectees: "",
+    finalites: "",
+    responsableTraitement: "",
+    dureeConservation: "",
+    droitsPersonnes: "",
+    transfertHorsUE: "", // oui/non
+    traitementsLiesPaiement: "",
+    cookiePolicy: "",
+    
+    // 17. Service client & Médiation
+    contactServiceClient: "",
+    procedureReclamation: "",
+    serviceMediation: "", // obligatoire B2C
+    coordonneesMediateur: "",
+    
+    // 18. Résiliation services / Abonnements
+    dureeAbonnement: "",
+    reconductionTacite: "", // oui/non + Loi Chatel
+    procedureResiliation: "",
+    preavisResiliation: "",
+    restitutionDonnees: "",
+    suppressionCompte: "",
+    
+    // 19. Loi applicable & Tribunal
+    loiApplicable: "France",
+    tribunalCompetent: "",
+    clauseMediation: "", // oui/non
+    clauseArbitrage: "", // oui/non si B2B
+    
+    // 20. Annexes
+    formulaireRetractationAnnexe: true,
+    politiqueConfidentialite: true,
+    politiqueCookies: "", // oui/non
+    grilleTarifaire: "", // oui/non
+    descriptifTechnique: "", // oui/non
+    procedureSAV: "", // oui/non
+    noticeUtilisation: "", // oui/non
   });
   
   const [cgvVendeurFiles, setCgvVendeurFiles] = useState<File[]>([]); // Kbis, mentions légales, RC Pro
@@ -46759,7 +46832,91 @@ FIN DE LA CONVENTION
                   </div>
                 )}
                 
-                {/* Suite sections 11-15 à venir... */}
+                {/* 11. RETOURS & REMBOURSEMENTS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Retours & Remboursements</h4>
+                  <div className="space-y-3">
+                    <div><Label>Conditions de retour</Label><Textarea value={cgvData.conditionsRetour} onChange={(e) => setCgvData({...cgvData, conditionsRetour: e.target.value})} placeholder="Dans quels cas un retour est accepté..." className="min-h-[60px]" /></div>
+                    <div><Label>Frais de retour</Label><Input value={cgvData.fraisRetour} onChange={(e) => setCgvData({...cgvData, fraisRetour: e.target.value})} placeholder="À la charge du client ou du vendeur" /></div>
+                    <div><Label>État des produits retournés</Label><Input value={cgvData.etatProduits} onChange={(e) => setCgvData({...cgvData, etatProduits: e.target.value})} placeholder="Neuf, emballage d'origine..." /></div>
+                    <div><Label>Délais de retour</Label><Input value={cgvData.delaisRetour} onChange={(e) => setCgvData({...cgvData, delaisRetour: e.target.value})} placeholder="Ex: 14 jours, 30 jours..." /></div>
+                    <div><Label>Retour des produits non conformes</Label><Textarea value={cgvData.produitsNonConformes} onChange={(e) => setCgvData({...cgvData, produitsNonConformes: e.target.value})} placeholder="Procédure en cas de produit défectueux ou non conforme..." className="min-h-[60px]" /></div>
+                    <div><Label>SAV (Service Après-Vente)</Label><Textarea value={cgvData.sav} onChange={(e) => setCgvData({...cgvData, sav: e.target.value})} placeholder="Organisation du SAV, contacts, délais..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 12. GARANTIES LÉGALES (OBLIGATOIRE B2C) */}
+                {cgvData.typesClients.includes("B2C") && (
+                  <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                    <h4 className="font-semibold text-lg text-green-700">1️⃣2️⃣ Garanties légales (obligatoire B2C)</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.garantieLegaleConformite} onCheckedChange={(v) => setCgvData({...cgvData, garantieLegaleConformite: !!v})} id="gar-conf" disabled />
+                        <Label htmlFor="gar-conf" className="font-normal">Garantie légale de conformité (2 ans) ✅</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.garantieVicesCaches} onCheckedChange={(v) => setCgvData({...cgvData, garantieVicesCaches: !!v})} id="gar-vices" disabled />
+                        <Label htmlFor="gar-vices" className="font-normal">Garantie contre les vices cachés (2 ans après découverte) ✅</Label>
+                      </div>
+                      <div>
+                        <Label>Garantie commerciale (facultative)</Label>
+                        <RadioGroup value={cgvData.garantieCommerciale} onValueChange={(v) => setCgvData({...cgvData, garantieCommerciale: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="gar-comm-oui" /><Label htmlFor="gar-comm-oui">Oui</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="gar-comm-non" /><Label htmlFor="gar-comm-non">Non</Label></div>
+                        </RadioGroup>
+                        {cgvData.garantieCommerciale === "oui" && (
+                          <div className="space-y-2 mt-2">
+                            <Input value={cgvData.garantieCommercialeDuree} onChange={(e) => setCgvData({...cgvData, garantieCommercialeDuree: e.target.value})} placeholder="Durée de la garantie commerciale" />
+                            <Textarea value={cgvData.garantieCommercialeConditions} onChange={(e) => setCgvData({...cgvData, garantieCommercialeConditions: e.target.value})} placeholder="Conditions et étendue de la garantie..." className="min-h-[60px]" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* 13. TRANSFERT DE PROPRIÉTÉ & DES RISQUES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Transfert de propriété & des risques</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Transfert de propriété</Label>
+                      <Select value={cgvData.transfertPropriete} onValueChange={(v) => setCgvData({...cgvData, transfertPropriete: v})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="paiement-complet">Au paiement complet</SelectItem>
+                          <SelectItem value="livraison">À la livraison</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Clause de réserve de propriété</Label>
+                      <RadioGroup value={cgvData.reservePropriete} onValueChange={(v) => setCgvData({...cgvData, reservePropriete: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="reserve-oui" /><Label htmlFor="reserve-oui">Oui (recommandé B2B)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="reserve-non" /><Label htmlFor="reserve-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Transfert des risques</Label><Textarea value={cgvData.transfertRisques} onChange={(e) => setCgvData({...cgvData, transfertRisques: e.target.value})} placeholder="B2C: à la livraison, B2B: remise au transporteur..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 14-20 sections finales... */}
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-700">✅ Sections 14 à 20 à compléter dans la prochaine mise à jour</p>
+                  <p className="text-xs text-gray-600 mt-1">Responsabilité, PI, RGPD, Service client, Résiliation, Loi applicable, Annexes</p>
+                </div>
+                
+                {/* ANNEXES ET PIÈCES JUSTIFICATIVES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📎 Annexes et pièces justificatives</h4>
+                  <MultiFileUpload 
+                    label="Annexes (Formulaire rétractation, politique confidentialité, grilles tarifaires, fiches techniques, procédure SAV, notices...)" 
+                    files={cgvAnnexesFiles} 
+                    onFilesChange={setCgvAnnexesFiles} 
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                    role="avocat"
+                  />
+                </div>
                 
               </div>
             )}
