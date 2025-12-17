@@ -603,6 +603,63 @@ export default function Contrats() {
   const [venteB2BDistributeurFiles, setVenteB2BDistributeurFiles] = useState<File[]>([]); // Kbis, assurance, points de vente
   const [venteB2BAnnexesFiles, setVenteB2BAnnexesFiles] = useState<File[]>([]); // CGV, grilles tarifaires, guides
   
+  // States pour Conditions Générales de Vente (CGV)
+  const [cgvData, setCgvData] = useState({
+    // 1. Identification du vendeur
+    vendeurDenomination: "",
+    vendeurFormeJuridique: "",
+    vendeurCapitalSocial: "",
+    vendeurAdresseSiege: "",
+    vendeurSIREN: "",
+    vendeurRCS: "",
+    vendeurTVAIntracommunautaire: "",
+    vendeurEmail: "",
+    vendeurTelephone: "",
+    vendeurResponsableLegal: "",
+    vendeurProfessionReglementee: "", // oui/non
+    vendeurPrecisionProfession: "",
+    vendeurAssurancePro: "", // oui/non
+    vendeurNumeroAssurance: "",
+    
+    // 2. Champ d'application
+    typesProduitsServices: "",
+    typesClients: [] as string[], // B2C, B2B, mixte
+    canalVente: [] as string[], // e-commerce, physique, marketplace, contrat cadre
+    canalAutrePrecision: "",
+    
+    // 3. Définitions (texte libre pour chaque)
+    definitionProduit: "",
+    definitionService: "",
+    definitionClient: "",
+    definitionCommande: "",
+    definitionCompteUtilisateur: "",
+    definitionLivraison: "",
+    definitionAbonnement: "",
+    definitionPrix: "",
+    definitionForceMajeure: "",
+    definitionContrat: "",
+    
+    // 4. Caractéristiques produits/services
+    descriptionProduits: "",
+    visuelsDisponibles: "", // oui/non
+    specificationstechniques: "",
+    disponibilites: "", // stock / sur devis / sur mesure
+    restrictionsUsage: "",
+    conditionsPrealables: "",
+    
+    // 5. Processus de commande
+    creationCompteObligatoire: "", // oui/non
+    etapesCommande: "",
+    validationDoubleClick: true, // obligatoire e-commerce
+    confirmationEmail: true,
+    annulationAvantExpedition: "", // oui/non
+    commandesSurDevis: "", // oui/non
+  });
+  
+  const [cgvVendeurFiles, setCgvVendeurFiles] = useState<File[]>([]); // Kbis, mentions légales, RC Pro
+  const [cgvProduitsFiles, setCgvProduitsFiles] = useState<File[]>([]); // Certificats produits, fiches techniques
+  const [cgvAnnexesFiles, setCgvAnnexesFiles] = useState<File[]>([]); // Formulaires, politiques, grilles tarifaires
+  
   // States pour attestation de propriété immobilière
   const [attestationActeDecesFiles, setAttestationActeDecesFiles] = useState<File[]>([]);
   const [attestationIdentiteHeritiers, setAttestationIdentiteHeritiers] = useState<File[]>([]);
@@ -46347,6 +46404,88 @@ FIN DE LA CONVENTION
                   <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={setSelectedClientId} label="Client" />
                   <div className="mt-4"><Label>Description</Label><Textarea value={genericDescription} onChange={(e) => setGenericDescription(e.target.value)} placeholder="Description du contrat..." className="min-h-[100px]" /></div>
                 </div>
+              </div>
+            )}
+
+            {/* Formulaire complet pour Conditions Générales de Vente (CGV) */}
+            {pendingContractType === "Conditions Générales de Vente (CGV)" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">📋 Conditions Générales de Vente (CGV)</h3>
+                
+                {/* 1. IDENTIFICATION DU VENDEUR */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification du vendeur</h4>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Dénomination sociale / Nom *</Label><Input value={cgvData.vendeurDenomination} onChange={(e) => setCgvData({...cgvData, vendeurDenomination: e.target.value})} /></div>
+                      <div><Label>Forme juridique</Label><Input value={cgvData.vendeurFormeJuridique} onChange={(e) => setCgvData({...cgvData, vendeurFormeJuridique: e.target.value})} placeholder="SARL, SAS, SASU, EI..." /></div>
+                      <div><Label>Capital social</Label><Input value={cgvData.vendeurCapitalSocial} onChange={(e) => setCgvData({...cgvData, vendeurCapitalSocial: e.target.value})} placeholder="Ex: 10 000€" /></div>
+                      <div><Label>SIREN</Label><Input value={cgvData.vendeurSIREN} onChange={(e) => setCgvData({...cgvData, vendeurSIREN: e.target.value})} placeholder="123 456 789" /></div>
+                      <div><Label>RCS</Label><Input value={cgvData.vendeurRCS} onChange={(e) => setCgvData({...cgvData, vendeurRCS: e.target.value})} placeholder="RCS Ville" /></div>
+                      <div><Label>TVA intracommunautaire</Label><Input value={cgvData.vendeurTVAIntracommunautaire} onChange={(e) => setCgvData({...cgvData, vendeurTVAIntracommunautaire: e.target.value})} placeholder="FR12345678901" /></div>
+                    </div>
+                    <div><Label>Adresse du siège social *</Label><Input value={cgvData.vendeurAdresseSiege} onChange={(e) => setCgvData({...cgvData, vendeurAdresseSiege: e.target.value})} /></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Email *</Label><Input type="email" value={cgvData.vendeurEmail} onChange={(e) => setCgvData({...cgvData, vendeurEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone</Label><Input value={cgvData.vendeurTelephone} onChange={(e) => setCgvData({...cgvData, vendeurTelephone: e.target.value})} /></div>
+                      <div><Label>Nom du responsable légal</Label><Input value={cgvData.vendeurResponsableLegal} onChange={(e) => setCgvData({...cgvData, vendeurResponsableLegal: e.target.value})} /></div>
+                    </div>
+                    <div>
+                      <Label>Profession réglementée ?</Label>
+                      <RadioGroup value={cgvData.vendeurProfessionReglementee} onValueChange={(v) => setCgvData({...cgvData, vendeurProfessionReglementee: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="prof-oui" /><Label htmlFor="prof-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="prof-non" /><Label htmlFor="prof-non">Non</Label></div>
+                      </RadioGroup>
+                      {cgvData.vendeurProfessionReglementee === "oui" && (
+                        <Input value={cgvData.vendeurPrecisionProfession} onChange={(e) => setCgvData({...cgvData, vendeurPrecisionProfession: e.target.value})} placeholder="Précisez la profession et l'organisme" className="mt-2" />
+                      )}
+                    </div>
+                    <div>
+                      <Label>Assurance professionnelle</Label>
+                      <RadioGroup value={cgvData.vendeurAssurancePro} onValueChange={(v) => setCgvData({...cgvData, vendeurAssurancePro: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="ass-oui" /><Label htmlFor="ass-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="ass-non" /><Label htmlFor="ass-non">Non</Label></div>
+                      </RadioGroup>
+                      {cgvData.vendeurAssurancePro === "oui" && (
+                        <Input value={cgvData.vendeurNumeroAssurance} onChange={(e) => setCgvData({...cgvData, vendeurNumeroAssurance: e.target.value})} placeholder="Numéro de police d'assurance" className="mt-2" />
+                      )}
+                    </div>
+                    
+                    <MultiFileUpload label="Pièces justificatives vendeur (Kbis, mentions légales, RC Pro)" files={cgvVendeurFiles} onFilesChange={setCgvVendeurFiles} accept=".pdf,.jpg,.jpeg,.png" role="avocat" />
+                  </div>
+                </div>
+                
+                {/* 2. CHAMP D'APPLICATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Champ d'application des CGV</h4>
+                  <div className="space-y-3">
+                    <div><Label>Types de produits / services vendus *</Label><Textarea value={cgvData.typesProduitsServices} onChange={(e) => setCgvData({...cgvData, typesProduitsServices: e.target.value})} placeholder="Décrivez les produits et services couverts par ces CGV..." className="min-h-[80px]" /></div>
+                    <div>
+                      <Label className="font-medium">Types de clients concernés</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.typesClients.includes("B2C")} onCheckedChange={(v) => setCgvData({...cgvData, typesClients: v ? [...cgvData.typesClients, "B2C"] : cgvData.typesClients.filter(t => t !== "B2C")})} id="client-b2c" /><Label htmlFor="client-b2c" className="font-normal">B2C (consommateurs)</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.typesClients.includes("B2B")} onCheckedChange={(v) => setCgvData({...cgvData, typesClients: v ? [...cgvData.typesClients, "B2B"] : cgvData.typesClients.filter(t => t !== "B2B")})} id="client-b2b" /><Label htmlFor="client-b2b" className="font-normal">B2B (professionnels)</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.typesClients.includes("mixte")} onCheckedChange={(v) => setCgvData({...cgvData, typesClients: v ? [...cgvData.typesClients, "mixte"] : cgvData.typesClients.filter(t => t !== "mixte")})} id="client-mixte" /><Label htmlFor="client-mixte" className="font-normal">Mixte (professionnels & consommateurs)</Label></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">Canaux de vente</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.canalVente.includes("e-commerce")} onCheckedChange={(v) => setCgvData({...cgvData, canalVente: v ? [...cgvData.canalVente, "e-commerce"] : cgvData.canalVente.filter(c => c !== "e-commerce")})} id="canal-ecom" /><Label htmlFor="canal-ecom" className="font-normal">Site e-commerce</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.canalVente.includes("physique")} onCheckedChange={(v) => setCgvData({...cgvData, canalVente: v ? [...cgvData.canalVente, "physique"] : cgvData.canalVente.filter(c => c !== "physique")})} id="canal-phys" /><Label htmlFor="canal-phys" className="font-normal">Vente physique</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.canalVente.includes("marketplace")} onCheckedChange={(v) => setCgvData({...cgvData, canalVente: v ? [...cgvData.canalVente, "marketplace"] : cgvData.canalVente.filter(c => c !== "marketplace")})} id="canal-market" /><Label htmlFor="canal-market" className="font-normal">Marketplace</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.canalVente.includes("contrat-cadre")} onCheckedChange={(v) => setCgvData({...cgvData, canalVente: v ? [...cgvData.canalVente, "contrat-cadre"] : cgvData.canalVente.filter(c => c !== "contrat-cadre")})} id="canal-cadre" /><Label htmlFor="canal-cadre" className="font-normal">Contrat cadre + CGV annexées</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cgvData.canalVente.includes("autre")} onCheckedChange={(v) => setCgvData({...cgvData, canalVente: v ? [...cgvData.canalVente, "autre"] : cgvData.canalVente.filter(c => c !== "autre")})} id="canal-autre" /><Label htmlFor="canal-autre" className="font-normal">Autre</Label></div>
+                      </div>
+                      {cgvData.canalVente.includes("autre") && (
+                        <Input value={cgvData.canalAutrePrecision} onChange={(e) => setCgvData({...cgvData, canalAutrePrecision: e.target.value})} placeholder="Précisez" className="mt-2" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Suite sections 3-5 à venir... */}
+                
               </div>
             )}
 
