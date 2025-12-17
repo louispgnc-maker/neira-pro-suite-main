@@ -5507,6 +5507,48 @@ export default function Contrats() {
     }
   };
 
+  // Handler pour le formulaire CGU
+  const handleCGUSubmit = async () => {
+    if (!user) return;
+
+    // Validation des champs obligatoires LCEN
+    if (!cguData.editeurNom || !cguData.editeurDenomination || !cguData.editeurSiege || 
+        !cguData.editeurDirecteurPublication || !cguData.hebergeurNom || !cguData.hebergeurAdresse) {
+      toast.error("Champs LCEN obligatoires manquants", { 
+        description: "Nom, dénomination, siège, directeur publication et hébergeur requis" 
+      });
+      return;
+    }
+
+    try {
+      const description = `CGU — ${cguData.editeurDenomination} — Service: ${cguData.serviceFourni || 'Non précisé'}`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: cguData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("CGU créées", { description: "Conditions Générales d'Utilisation enregistrées" });
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création CGU:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
   // Handler pour le formulaire de procuration authentique
   const handleProcurationSubmit = async () => {
     if (!user) return;
@@ -47898,7 +47940,9 @@ FIN DE LA CONVENTION
                   handleQuitusDetteSubmit();
                 } else if (pendingContractType === "Acte de cession de parts sociales") {
                   handleCessionPartsSubmit();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Conditions Générales d'Utilisation (CGU) — SaaS / site web", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Conditions Générales d'Utilisation (CGU) — SaaS / site web") {
+                  handleCGUSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
