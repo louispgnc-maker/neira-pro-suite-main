@@ -280,6 +280,152 @@ export default function Contrats() {
   const [cessionOrigineFondsFiles, setCessionOrigineFondsFiles] = useState<File[]>([]); // Origine fonds
   const [cessionPVAgrementFiles, setCessionPVAgrementFiles] = useState<File[]>([]); // PV agrément
   
+  // States pour Contrat de prestation de services (avocats)
+  const [prestationData, setPrestationData] = useState({
+    // 1. Identification Prestataire
+    prestataireDenomination: "",
+    prestataireFormeJuridique: "",
+    prestataireRCS: "",
+    prestataireSiegeSocial: "",
+    prestataireRepresentant: "",
+    prestataireFonctionSignataire: "",
+    prestataireEmail: "",
+    prestataireTelephone: "",
+    prestataireAssuranceRC: "", // oui/non
+    prestataireNumeroAssurance: "",
+    
+    // 2. Identification Client
+    clientDenomination: "",
+    clientFormeJuridique: "",
+    clientAdresse: "",
+    clientRCS: "",
+    clientRepresentant: "",
+    clientFonction: "",
+    clientContactOperationnel: "",
+    clientEmail: "",
+    clientTelephone: "",
+    
+    // 3. Objet du contrat
+    naturePrestation: "",
+    descriptionDetaillee: "",
+    perimetreIntervention: "",
+    inclusionsPrestations: "",
+    exclusionsPrestations: "",
+    resultatsAttendus: "",
+    typeObligation: "", // moyens / resultat
+    competencesTechniques: "",
+    referentTechniquePrestataire: "",
+    referentTechniqueClient: "",
+    
+    // 4. Durée
+    typeDuree: "", // determinee / ponctuelle / indeterminee
+    dateDebut: "",
+    dateFin: "",
+    reconductionTacite: "", // oui / non
+    dureeMinimale: "",
+    
+    // 5. Modalités de réalisation
+    lieuExecution: "", // teletravail / locaux_client / locaux_prestataire / mixte
+    conditionsIntervention: "",
+    horairesImpose: "", // oui / non
+    detailsHoraires: "",
+    materielMisADisposition: "",
+    obligationsClient: "",
+    delaisRealisation: "",
+    planning: "",
+    criteresAcceptation: "",
+    
+    // 6. Prix et conditions financières
+    modeFacturation: "", // forfait / horaire / journalier / livrable / abonnement / performance
+    montantHT: "",
+    tva: "",
+    modalitesVariation: "",
+    fraisAnnexes: "",
+    modalitesPaiement: "", // comptant / 30j / 45j / 60j
+    acompte: "",
+    echeancier: "",
+    facturationElectronique: "", // oui / non
+    penalitesRetard: "",
+    indemniteLegale: "",
+    suspensionImpaye: "", // oui / non
+    
+    // 7. Obligations Prestataire
+    executionReglesArt: true,
+    confidentialite: true,
+    respectNormes: true,
+    nonDebauchage: true,
+    assurancePro: true,
+    remonteeAlertes: true,
+    continuitéService: true,
+    
+    // 8. Obligations Client
+    fournirInformations: true,
+    faciliterAcces: true,
+    respecterCalendrier: true,
+    validerLivrables: true,
+    payerPrix: true,
+    responsabiliteDonneesErronees: true,
+    interlocuteurUnique: "",
+    
+    // 9. Propriété intellectuelle
+    droitsCreationsPrestataire: "", // licence / cession / reserves
+    limitationDroits: "",
+    droitsCreationsClient: "",
+    proprietaireCode: "", // prestataire / client
+    droitsReproduction: "",
+    garantiesContrefacon: "",
+    
+    // 10. Confidentialité
+    definitionInfosConfidentielles: "",
+    dureeConfidentialite: "5", // 5 ans par défaut
+    exceptionsConfidentialite: "",
+    sanctionsViolation: "",
+    
+    // 11. RGPD
+    prestataireSousTraitant: "", // oui / non
+    clientResponsableTraitement: "", // oui / non
+    natureDonnees: "",
+    finalitesTraitement: "",
+    mesuresSecurite: "",
+    dureeConservation: "",
+    clauseDataBreach: "",
+    dpaRequis: "", // oui / non
+    
+    // 12. Sous-traitance
+    sousTraitanceAutorisee: "", // oui / non / avec_validation
+    validationPrealable: "", // oui / non
+    responsabilitePrestataire: "",
+    
+    // 13. Responsabilité
+    plafondResponsabilite: "",
+    exclusionsDommages: "",
+    forceMajeure: "",
+    responsabiliteNonConformite: "",
+    montantCouverture: "",
+    
+    // 14. Résiliation
+    resiliationPreavis: "",
+    resiliationImmediate: "", // faute / non_paiement / non_respect
+    effetsResiliation: "",
+    
+    // 15. Réversibilité
+    restitutionDonnees: "",
+    restitutionDocuments: "",
+    continuationTransition: "",
+    assistanceMigration: "",
+    coutReversibilite: "",
+    
+    // 16. Litiges
+    loiApplicable: "France",
+    tribunalCompetent: "",
+    mediationArbitrage: "", // oui / non
+    clauseAmiable: "", // oui / non
+  });
+  
+  const [prestationPrestataireFiles, setPrestationPrestataireFiles] = useState<File[]>([]); // Kbis, assurance, etc.
+  const [prestationClientFiles, setPrestationClientFiles] = useState<File[]>([]); // Docs client
+  const [prestationAnnexesFiles, setPrestationAnnexesFiles] = useState<File[]>([]); // Cahier des charges, etc.
+  
   // States pour attestation de propriété immobilière
   const [attestationActeDecesFiles, setAttestationActeDecesFiles] = useState<File[]>([]);
   const [attestationIdentiteHeritiers, setAttestationIdentiteHeritiers] = useState<File[]>([]);
@@ -44737,14 +44883,78 @@ FIN DE LA CONVENTION
               </div>
             )}
 
-            {/* Formulaires minimaux pour contrats d'avocats */}
+            {/* Formulaire complet pour Contrat de prestation de services */}
             {pendingContractType === "Contrat de prestation de services" && (
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b pb-2 text-blue-700">📝 Contrat de prestation de services</h3>
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-gray-700 mb-4">Formulaire en cours de développement.</p>
-                  <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={setSelectedClientId} label="Client (prestataire)" />
-                  <div className="mt-4"><Label>Description</Label><Textarea value={genericDescription} onChange={(e) => setGenericDescription(e.target.value)} placeholder="Description..." className="min-h-[100px]" /></div>
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">📝 Contrat de prestation de services</h3>
+                
+                {/* 1. IDENTIFICATION DES PARTIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  
+                  {/* PRESTATAIRE */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">👤 Prestataire (fournis le service)</h5>
+                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={(id) => {
+                      setSelectedClientId(id);
+                      const client = clients.find(c => c.id === id);
+                      if (client) {
+                        setPrestationData(prev => ({
+                          ...prev,
+                          prestataireDenomination: `${client.prenom} ${client.nom}`,
+                          prestataireEmail: client.email || "",
+                          prestataireTelephone: client.telephone || "",
+                        }));
+                      }
+                    }} label="Sélectionner le prestataire depuis vos clients" />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                      <div><Label>Dénomination / Nom *</Label><Input value={prestationData.prestataireDenomination} onChange={(e) => setPrestationData({...prestationData, prestataireDenomination: e.target.value})} /></div>
+                      <div><Label>Forme juridique</Label><Select value={prestationData.prestataireFormeJuridique} onValueChange={(v) => setPrestationData({...prestationData, prestataireFormeJuridique: v})}><SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger><SelectContent><SelectItem value="SARL">SARL</SelectItem><SelectItem value="SAS">SAS</SelectItem><SelectItem value="SASU">SASU</SelectItem><SelectItem value="EURL">EURL</SelectItem><SelectItem value="auto-entrepreneur">Auto-entrepreneur</SelectItem><SelectItem value="EI">Entreprise Individuelle</SelectItem><SelectItem value="association">Association</SelectItem><SelectItem value="particulier">Particulier</SelectItem></SelectContent></Select></div>
+                      <div><Label>RCS / SIREN</Label><Input value={prestationData.prestataireRCS} onChange={(e) => setPrestationData({...prestationData, prestataireRCS: e.target.value})} placeholder="123 456 789" /></div>
+                      <div><Label>Siège social</Label><Input value={prestationData.prestataireSiegeSocial} onChange={(e) => setPrestationData({...prestationData, prestataireSiegeSocial: e.target.value})} /></div>
+                      <div><Label>Représentant légal</Label><Input value={prestationData.prestataireRepresentant} onChange={(e) => setPrestationData({...prestationData, prestataireRepresentant: e.target.value})} /></div>
+                      <div><Label>Fonction du signataire</Label><Input value={prestationData.prestataireFonctionSignataire} onChange={(e) => setPrestationData({...prestationData, prestataireFonctionSignataire: e.target.value})} placeholder="Gérant, Président..." /></div>
+                      <div><Label>Email *</Label><Input type="email" value={prestationData.prestataireEmail} onChange={(e) => setPrestationData({...prestationData, prestataireEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone</Label><Input value={prestationData.prestataireTelephone} onChange={(e) => setPrestationData({...prestationData, prestataireTelephone: e.target.value})} /></div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Assurance RC Professionnelle *</Label>
+                      <RadioGroup value={prestationData.prestataireAssuranceRC} onValueChange={(v) => setPrestationData({...prestationData, prestataireAssuranceRC: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="assur-oui" /><Label htmlFor="assur-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="assur-non" /><Label htmlFor="assur-non">Non</Label></div>
+                      </RadioGroup>
+                      {prestationData.prestataireAssuranceRC === "oui" && (
+                        <Input value={prestationData.prestataireNumeroAssurance} onChange={(e) => setPrestationData({...prestationData, prestataireNumeroAssurance: e.target.value})} placeholder="Numéro de police d'assurance" className="mt-2" />
+                      )}
+                    </div>
+                    
+                    <MultiFileUpload label="Pièces justificatives prestataire (Kbis, assurance, etc.)" files={prestationPrestataireFiles} onFilesChange={setPrestationPrestataireFiles} accept=".pdf,.jpg,.jpeg,.png" />
+                  </div>
+                  
+                  {/* CLIENT */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">🏢 Client (bénéficiaire du service)</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Dénomination / Nom *</Label><Input value={prestationData.clientDenomination} onChange={(e) => setPrestationData({...prestationData, clientDenomination: e.target.value})} /></div>
+                      <div><Label>Forme juridique</Label><Input value={prestationData.clientFormeJuridique} onChange={(e) => setPrestationData({...prestationData, clientFormeJuridique: e.target.value})} placeholder="SARL, SAS, Particulier..." /></div>
+                      <div className="md:col-span-2"><Label>Adresse complète *</Label><Input value={prestationData.clientAdresse} onChange={(e) => setPrestationData({...prestationData, clientAdresse: e.target.value})} /></div>
+                      <div><Label>RCS / SIREN</Label><Input value={prestationData.clientRCS} onChange={(e) => setPrestationData({...prestationData, clientRCS: e.target.value})} /></div>
+                      <div><Label>Représentant légal</Label><Input value={prestationData.clientRepresentant} onChange={(e) => setPrestationData({...prestationData, clientRepresentant: e.target.value})} /></div>
+                      <div><Label>Fonction</Label><Input value={prestationData.clientFonction} onChange={(e) => setPrestationData({...prestationData, clientFonction: e.target.value})} /></div>
+                      <div><Label>Contact opérationnel</Label><Input value={prestationData.clientContactOperationnel} onChange={(e) => setPrestationData({...prestationData, clientContactOperationnel: e.target.value})} /></div>
+                      <div><Label>Email *</Label><Input type="email" value={prestationData.clientEmail} onChange={(e) => setPrestationData({...prestationData, clientEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone</Label><Input value={prestationData.clientTelephone} onChange={(e) => setPrestationData({...prestationData, clientTelephone: e.target.value})} /></div>
+                    </div>
+                    
+                    <MultiFileUpload label="Pièces justificatives client" files={prestationClientFiles} onFilesChange={setPrestationClientFiles} accept=".pdf,.jpg,.jpeg,.png" />
+                  </div>
+                </div>
+                
+                {/* Suite du formulaire... à continuer dans les prochaines sections */}
+                <div className="p-4 bg-yellow-50 rounded border border-yellow-200">
+                  <p className="text-sm text-gray-700">Formulaire en cours de développement - Sections 2 à 17 à venir...</p>
                 </div>
               </div>
             )}
