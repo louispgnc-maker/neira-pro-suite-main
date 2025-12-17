@@ -71,7 +71,11 @@ export default function EmailInbox() {
   const [accounts, setAccounts] = useState<EmailAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<string>('');
   const [emails, setEmails] = useState<Email[]>([]);
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(() => {
+    // Restore selected email from localStorage on mount
+    const savedEmailId = localStorage.getItem('selectedEmailId');
+    return savedEmailId ? null : null; // Will be loaded once emails are fetched
+  });
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -291,7 +295,17 @@ export default function EmailInbox() {
         .limit(100);
 
       if (error) throw error;
-      setEmails((data as Email[]) || []);
+      const emailList = (data as Email[]) || [];
+      setEmails(emailList);
+      
+      // Restore selected email from localStorage if exists
+      const savedEmailId = localStorage.getItem('selectedEmailId');
+      if (savedEmailId && emailList.length > 0) {
+        const emailToSelect = emailList.find(e => e.id === savedEmailId);
+        if (emailToSelect) {
+          setSelectedEmail(emailToSelect);
+        }
+      }
     } catch (error) {
       console.error('Error loading emails:', error);
       toast.error('Erreur lors du chargement des emails');
@@ -500,6 +514,7 @@ export default function EmailInbox() {
         if (currentFolder === 'archive' || newFolder === 'archive') {
           setEmails(prev => prev.filter(e => e.id !== emailId));
           setSelectedEmail(null);
+          localStorage.removeItem('selectedEmailId');
         } else {
           await loadEmails();
         }
@@ -516,6 +531,7 @@ export default function EmailInbox() {
         
         setEmails(prev => prev.filter(e => e.id !== emailId));
         setSelectedEmail(null);
+        localStorage.removeItem('selectedEmailId');
         toast.success(folder === 'trash' ? 'Email supprimé' : 'Email déplacé');
       }
     } catch (error) {
@@ -951,6 +967,7 @@ export default function EmailInbox() {
                     } ${!email.is_read ? 'bg-blue-50/50' : ''}`}
                     onClick={() => {
                       setSelectedEmail(email);
+                      localStorage.setItem('selectedEmailId', email.id);
                       if (!email.is_read) markAsRead(email.id);
                     }}
                   >
@@ -1014,7 +1031,10 @@ export default function EmailInbox() {
                   <Button
                     className={mainButtonColor}
                     size="sm"
-                    onClick={() => setSelectedEmail(null)}
+                    onClick={() => {
+                      setSelectedEmail(null);
+                      localStorage.removeItem('selectedEmailId');
+                    }}
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Retour
