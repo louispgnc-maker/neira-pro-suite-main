@@ -245,6 +245,12 @@ export default function Contrats() {
   const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [genericDescription, setGenericDescription] = useState<string>("");
   const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string | {regime_matrimonial?: string, nombre_enfants?: string, personne_a_charge?: any}, type_identite?: string, numero_identite?: string, date_expiration_identite?: string, id_doc_path?: string}>>([]);
+  
+  // États séparés pour chaque partie des contrats
+  const [prestationPrestataireClientId, setPrestationPrestataireClientId] = useState<string>("");
+  const [prestationClientClientId, setPrestationClientClientId] = useState<string>("");
+  const [venteB2BFournisseurClientId, setVenteB2BFournisseurClientId] = useState<string>("");
+  const [venteB2BDistributeurClientId, setVenteB2BDistributeurClientId] = useState<string>("");
 
   // States pour les fichiers uploadés
   const [compromisClientIdentiteUrl, setCompromisClientIdentiteUrl] = useState<string | null>(null); // URL du document du client
@@ -45045,8 +45051,8 @@ FIN DE LA CONVENTION
                   {/* PRESTATAIRE */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
                     <h5 className="font-medium text-blue-600">👤 Prestataire (fournis le service)</h5>
-                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={(id) => {
-                      setSelectedClientId(id);
+                    <ClientSelector clients={clients} selectedClientId={prestationPrestataireClientId} onClientChange={(id) => {
+                      setPrestationPrestataireClientId(id);
                       const client = clients.find(c => c.id === id);
                       if (client) {
                         setPrestationData(prev => ({
@@ -45086,8 +45092,8 @@ FIN DE LA CONVENTION
                   {/* CLIENT */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
                     <h5 className="font-medium text-blue-600">🏢 Client (bénéficiaire du service)</h5>
-                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={(id) => {
-                      setSelectedClientId(id);
+                    <ClientSelector clients={clients} selectedClientId={prestationClientClientId} onClientChange={(id) => {
+                      setPrestationClientClientId(id);
                       const client = clients.find(c => c.id === id);
                       if (client) {
                         setPrestationData(prev => ({
@@ -45556,8 +45562,8 @@ FIN DE LA CONVENTION
                   {/* FOURNISSEUR / VENDEUR */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
                     <h5 className="font-medium text-blue-600">🏭 Fournisseur / Vendeur</h5>
-                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={(id) => {
-                      setSelectedClientId(id);
+                    <ClientSelector clients={clients} selectedClientId={venteB2BFournisseurClientId} onClientChange={(id) => {
+                      setVenteB2BFournisseurClientId(id);
                       const client = clients.find(c => c.id === id);
                       if (client) {
                         setVenteB2BData(prev => ({
@@ -45596,8 +45602,8 @@ FIN DE LA CONVENTION
                   {/* ACHETEUR / DISTRIBUTEUR */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
                     <h5 className="font-medium text-blue-600">🏢 Acheteur / Distributeur</h5>
-                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={(id) => {
-                      setSelectedClientId(id);
+                    <ClientSelector clients={clients} selectedClientId={venteB2BDistributeurClientId} onClientChange={(id) => {
+                      setVenteB2BDistributeurClientId(id);
                       const client = clients.find(c => c.id === id);
                       if (client) {
                         setVenteB2BData(prev => ({
