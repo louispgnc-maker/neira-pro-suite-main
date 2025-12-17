@@ -562,12 +562,32 @@ export default function Contrats() {
     
     // 12. Durée & Résiliation
     dureeContrat: "", // determinee/indeterminee
+    dateEntreeVigueur: "", // Date d'entrée en vigueur
     dateDebutContrat: "",
     dateFinContrat: "",
     reconductionTacite: "", // oui/non
     preavisResiliation: "",
     resiliationImmediateMotifs: "",
+    fautesGravesDefautPaiement: true,
+    fautesGravesAtteintemarque: true,
+    fautesGravesNonRespectExclusivite: true,
+    fautesGravesViolationPI: true,
     effetsResiliation: "",
+    indemniteFinContrat: "", // oui/non/exclusion
+    montantIndemniteFinContrat: "",
+    
+    // Nouvelle section: Clauses spécifiques B2B
+    reservePropriete: "", // oui/non
+    reserveProprietePrecisions: "",
+    nonSollicitationSalaries: "", // oui/non
+    dureeNonSollicitation: "",
+    penaliteNonSollicitation: "",
+    cessionContratAutorisee: "", // oui/non
+    cessionContratAccordPrealable: "", // oui/non
+    clausesSurvieConfidentialite: true,
+    clausesSurviePI: true,
+    clausesSurvieResponsabilite: true,
+    clausesSurvieNonConcurrence: true,
     
     // 13. Compliance
     loiApplicable: "France",
@@ -46055,6 +46075,7 @@ FIN DE LA CONVENTION
                     <div className="p-3 bg-white rounded border border-blue-100">
                       <h5 className="font-medium text-blue-600 mb-2">Durée du contrat</h5>
                       <div className="space-y-2">
+                        <div><Label>Date d'entrée en vigueur *</Label><Input type="date" value={venteB2BData.dateEntreeVigueur} onChange={(e) => setVenteB2BData({...venteB2BData, dateEntreeVigueur: e.target.value})} /></div>
                         <div>
                           <Label>Type de durée *</Label>
                           <RadioGroup value={venteB2BData.dureeContrat} onValueChange={(v) => setVenteB2BData({...venteB2BData, dureeContrat: v})}>
@@ -46083,15 +46104,198 @@ FIN DE LA CONVENTION
                       <div className="space-y-2">
                         <div><Label>Préavis de résiliation</Label><Input value={venteB2BData.preavisResiliation} onChange={(e) => setVenteB2BData({...venteB2BData, preavisResiliation: e.target.value})} placeholder="Ex: 3 mois, 90 jours..." /></div>
                         <div><Label>Résiliation immédiate en cas de</Label><Textarea value={venteB2BData.resiliationImmediateMotifs} onChange={(e) => setVenteB2BData({...venteB2BData, resiliationImmediateMotifs: e.target.value})} placeholder="Impayés, atteinte à l'image, non-respect des objectifs, violation des obligations..." /></div>
+                        
+                        <div className="mt-3">
+                          <Label className="font-medium">Fautes graves qualifiées</Label>
+                          <div className="space-y-2 mt-2">
+                            <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.fautesGravesDefautPaiement} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, fautesGravesDefautPaiement: !!v})} id="fg-paiement" /><Label htmlFor="fg-paiement" className="font-normal">Défaut de paiement</Label></div>
+                            <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.fautesGravesAtteintemarque} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, fautesGravesAtteintemarque: !!v})} id="fg-marque" /><Label htmlFor="fg-marque" className="font-normal">Atteinte à la marque</Label></div>
+                            <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.fautesGravesNonRespectExclusivite} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, fautesGravesNonRespectExclusivite: !!v})} id="fg-exclu" /><Label htmlFor="fg-exclu" className="font-normal">Non-respect exclusivité / territoire</Label></div>
+                            <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.fautesGravesViolationPI} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, fautesGravesViolationPI: !!v})} id="fg-pi" /><Label htmlFor="fg-pi" className="font-normal">Violation PI ou confidentialité</Label></div>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-3">
+                          <Label>Indemnité de fin de contrat (distribution)</Label>
+                          <RadioGroup value={venteB2BData.indemniteFinContrat} onValueChange={(v) => setVenteB2BData({...venteB2BData, indemniteFinContrat: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="ifc-oui" /><Label htmlFor="ifc-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="ifc-non" /><Label htmlFor="ifc-non">Non</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="exclusion" id="ifc-excl" /><Label htmlFor="ifc-excl">Exclusion expresse</Label></div>
+                          </RadioGroup>
+                          {venteB2BData.indemniteFinContrat === "oui" && (
+                            <Input value={venteB2BData.montantIndemniteFinContrat} onChange={(e) => setVenteB2BData({...venteB2BData, montantIndemniteFinContrat: e.target.value})} placeholder="Montant ou formule de calcul" className="mt-2" />
+                          )}
+                        </div>
+                        
                         <div><Label>Effets de la résiliation</Label><Textarea value={venteB2BData.effetsResiliation} onChange={(e) => setVenteB2BData({...venteB2BData, effetsResiliation: e.target.value})} placeholder="Dernières commandes, restitution matériels, arrêt marque, stocks..." /></div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* 13. COMPLIANCE / DROIT APPLICABLE */}
+                {/* 13. CLAUSES SPÉCIFIQUES B2B */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Compliance / Droit applicable</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Clauses spécifiques B2B</h4>
+                  <div className="space-y-4">
+                    {/* Réserve de propriété */}
+                    <div className="p-3 bg-white rounded border border-blue-100">
+                      <h5 className="font-medium text-blue-600 mb-2">🔒 Clause de réserve de propriété</h5>
+                      <div className="space-y-2">
+                        <div>
+                          <Label>Les produits restent la propriété du fournisseur jusqu'au paiement intégral ?</Label>
+                          <RadioGroup value={venteB2BData.reservePropriete} onValueChange={(v) => setVenteB2BData({...venteB2BData, reservePropriete: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="rp-oui" /><Label htmlFor="rp-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="rp-non" /><Label htmlFor="rp-non">Non</Label></div>
+                          </RadioGroup>
+                        </div>
+                        {venteB2BData.reservePropriete === "oui" && (
+                          <div><Label>Précisions sur la réserve de propriété</Label><Textarea value={venteB2BData.reserveProprietePrecisions} onChange={(e) => setVenteB2BData({...venteB2BData, reserveProprietePrecisions: e.target.value})} placeholder="Transfert de propriété, risques, revendication en cas d'impayé..." /></div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Non-sollicitation */}
+                    <div className="p-3 bg-white rounded border border-blue-100">
+                      <h5 className="font-medium text-blue-600 mb-2">🚫 Clause de non-sollicitation / non-débauchage</h5>
+                      <div className="space-y-2">
+                        <div>
+                          <Label>Interdiction de débaucher salariés / agents</Label>
+                          <RadioGroup value={venteB2BData.nonSollicitationSalaries} onValueChange={(v) => setVenteB2BData({...venteB2BData, nonSollicitationSalaries: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="ns-oui" /><Label htmlFor="ns-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="ns-non" /><Label htmlFor="ns-non">Non</Label></div>
+                          </RadioGroup>
+                        </div>
+                        {venteB2BData.nonSollicitationSalaries === "oui" && (
+                          <>
+                            <div><Label>Durée de l'interdiction</Label><Input value={venteB2BData.dureeNonSollicitation} onChange={(e) => setVenteB2BData({...venteB2BData, dureeNonSollicitation: e.target.value})} placeholder="Ex: 2 ans après fin du contrat" /></div>
+                            <div><Label>Pénalité en cas de violation</Label><Input value={venteB2BData.penaliteNonSollicitation} onChange={(e) => setVenteB2BData({...venteB2BData, penaliteNonSollicitation: e.target.value})} placeholder="Montant ou formule" /></div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Cession du contrat */}
+                    <div className="p-3 bg-white rounded border border-blue-100">
+                      <h5 className="font-medium text-blue-600 mb-2">📋 Clause de cession du contrat</h5>
+                      <div className="space-y-2">
+                        <div>
+                          <Label>Cession du contrat autorisée ?</Label>
+                          <RadioGroup value={venteB2BData.cessionContratAutorisee} onValueChange={(v) => setVenteB2BData({...venteB2BData, cessionContratAutorisee: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="cc-oui" /><Label htmlFor="cc-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="cc-non" /><Label htmlFor="cc-non">Non (interdite)</Label></div>
+                          </RadioGroup>
+                        </div>
+                        {venteB2BData.cessionContratAutorisee === "oui" && (
+                          <div>
+                            <Label>Accord préalable requis ?</Label>
+                            <RadioGroup value={venteB2BData.cessionContratAccordPrealable} onValueChange={(v) => setVenteB2BData({...venteB2BData, cessionContratAccordPrealable: v})}>
+                              <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="cca-oui" /><Label htmlFor="cca-oui">Oui</Label></div>
+                              <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="cca-non" /><Label htmlFor="cca-non">Non (libre)</Label></div>
+                            </RadioGroup>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Clause de survie */}
+                    <div className="p-3 bg-white rounded border border-blue-100">
+                      <h5 className="font-medium text-blue-600 mb-2">⏰ Clause de survie (après résiliation)</h5>
+                      <div className="space-y-2">
+                        <Label className="font-medium">Les clauses suivantes survivent à la fin du contrat :</Label>
+                        <div className="space-y-2 mt-2">
+                          <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.clausesSurvieConfidentialite} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, clausesSurvieConfidentialite: !!v})} id="cs-conf" /><Label htmlFor="cs-conf" className="font-normal">Confidentialité</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.clausesSurviePI} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, clausesSurviePI: !!v})} id="cs-pi" /><Label htmlFor="cs-pi" className="font-normal">Propriété intellectuelle</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.clausesSurvieResponsabilite} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, clausesSurvieResponsabilite: !!v})} id="cs-resp" /><Label htmlFor="cs-resp" className="font-normal">Responsabilité</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.clausesSurvieNonConcurrence} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, clausesSurvieNonConcurrence: !!v})} id="cs-nc" /><Label htmlFor="cs-nc" className="font-normal">Non-concurrence</Label></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 13. CLAUSES SPÉCIFIQUES B2B */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Clauses spécifiques B2B</h4>
+                  <div className="space-y-4">
+                    {/* Réserve de propriété */}
+                    <div className="p-3 bg-white rounded border border-blue-100">
+                      <h5 className="font-medium text-blue-600 mb-2">🔒 Clause de réserve de propriété</h5>
+                      <div className="space-y-2">
+                        <div>
+                          <Label>Les produits restent la propriété du fournisseur jusqu'au paiement intégral ?</Label>
+                          <RadioGroup value={venteB2BData.reservePropriete} onValueChange={(v) => setVenteB2BData({...venteB2BData, reservePropriete: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="rp-oui" /><Label htmlFor="rp-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="rp-non" /><Label htmlFor="rp-non">Non</Label></div>
+                          </RadioGroup>
+                        </div>
+                        {venteB2BData.reservePropriete === "oui" && (
+                          <div><Label>Précisions sur la réserve de propriété</Label><Textarea value={venteB2BData.reserveProprietePrecisions} onChange={(e) => setVenteB2BData({...venteB2BData, reserveProprietePrecisions: e.target.value})} placeholder="Transfert de propriété, risques, revendication en cas d'impayé..." /></div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Non-sollicitation */}
+                    <div className="p-3 bg-white rounded border border-blue-100">
+                      <h5 className="font-medium text-blue-600 mb-2">🚫 Clause de non-sollicitation / non-débauchage</h5>
+                      <div className="space-y-2">
+                        <div>
+                          <Label>Interdiction de débaucher salariés / agents</Label>
+                          <RadioGroup value={venteB2BData.nonSollicitationSalaries} onValueChange={(v) => setVenteB2BData({...venteB2BData, nonSollicitationSalaries: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="ns-oui" /><Label htmlFor="ns-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="ns-non" /><Label htmlFor="ns-non">Non</Label></div>
+                          </RadioGroup>
+                        </div>
+                        {venteB2BData.nonSollicitationSalaries === "oui" && (
+                          <>
+                            <div><Label>Durée de l'interdiction</Label><Input value={venteB2BData.dureeNonSollicitation} onChange={(e) => setVenteB2BData({...venteB2BData, dureeNonSollicitation: e.target.value})} placeholder="Ex: 2 ans après fin du contrat" /></div>
+                            <div><Label>Pénalité en cas de violation</Label><Input value={venteB2BData.penaliteNonSollicitation} onChange={(e) => setVenteB2BData({...venteB2BData, penaliteNonSollicitation: e.target.value})} placeholder="Montant ou formule" /></div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Cession du contrat */}
+                    <div className="p-3 bg-white rounded border border-blue-100">
+                      <h5 className="font-medium text-blue-600 mb-2">📋 Clause de cession du contrat</h5>
+                      <div className="space-y-2">
+                        <div>
+                          <Label>Cession du contrat autorisée ?</Label>
+                          <RadioGroup value={venteB2BData.cessionContratAutorisee} onValueChange={(v) => setVenteB2BData({...venteB2BData, cessionContratAutorisee: v})}>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="cc-oui" /><Label htmlFor="cc-oui">Oui</Label></div>
+                            <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="cc-non" /><Label htmlFor="cc-non">Non (interdite)</Label></div>
+                          </RadioGroup>
+                        </div>
+                        {venteB2BData.cessionContratAutorisee === "oui" && (
+                          <div>
+                            <Label>Accord préalable requis ?</Label>
+                            <RadioGroup value={venteB2BData.cessionContratAccordPrealable} onValueChange={(v) => setVenteB2BData({...venteB2BData, cessionContratAccordPrealable: v})}>
+                              <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="cca-oui" /><Label htmlFor="cca-oui">Oui</Label></div>
+                              <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="cca-non" /><Label htmlFor="cca-non">Non (libre)</Label></div>
+                            </RadioGroup>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Clause de survie */}
+                    <div className="p-3 bg-white rounded border border-blue-100">
+                      <h5 className="font-medium text-blue-600 mb-2">⏰ Clause de survie (après résiliation)</h5>
+                      <div className="space-y-2">
+                        <Label className="font-medium">Les clauses suivantes survivent à la fin du contrat :</Label>
+                        <div className="space-y-2 mt-2">
+                          <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.clausesSurvieConfidentialite} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, clausesSurvieConfidentialite: !!v})} id="cs-conf" /><Label htmlFor="cs-conf" className="font-normal">Confidentialité</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.clausesSurviePI} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, clausesSurviePI: !!v})} id="cs-pi" /><Label htmlFor="cs-pi" className="font-normal">Propriété intellectuelle</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.clausesSurvieResponsabilite} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, clausesSurvieResponsabilite: !!v})} id="cs-resp" /><Label htmlFor="cs-resp" className="font-normal">Responsabilité</Label></div>
+                          <div className="flex items-center space-x-2"><Checkbox checked={venteB2BData.clausesSurvieNonConcurrence} onCheckedChange={(v) => setVenteB2BData({...venteB2BData, clausesSurvieNonConcurrence: !!v})} id="cs-nc" /><Label htmlFor="cs-nc" className="font-normal">Non-concurrence</Label></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 14. COMPLIANCE / DROIT APPLICABLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Compliance / Droit applicable</h4>
                   <div className="space-y-3">
                     <div><Label>Loi applicable</Label><Input value={venteB2BData.loiApplicable} onChange={(e) => setVenteB2BData({...venteB2BData, loiApplicable: e.target.value})} placeholder="France" /></div>
                     <div><Label>Tribunal compétent</Label><Input value={venteB2BData.tribunalCompetent} onChange={(e) => setVenteB2BData({...venteB2BData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunal de Commerce de Paris" /></div>
@@ -46120,9 +46324,9 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* 14. ANNEXES ET PIÈCES JUSTIFICATIVES */}
+                {/* 15. ANNEXES ET PIÈCES JUSTIFICATIVES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Annexes et pièces justificatives</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Annexes et pièces justificatives</h4>
                   <MultiFileUpload 
                     label="Annexes (CGV B2B, grilles tarifaires, guides marketing, fiches techniques, cahier des charges, objectifs, procédures SAV, chartes qualité...)" 
                     files={venteB2BAnnexesFiles} 
