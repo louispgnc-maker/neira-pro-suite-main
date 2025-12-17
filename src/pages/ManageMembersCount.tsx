@@ -201,7 +201,11 @@ export default function ManageMembersCount() {
       <div className="container mx-auto p-8 max-w-4xl">
         <Button
           onClick={() => navigate(`${prefix}/subscription`)}
-          className="mb-6 bg-orange-600 hover:bg-orange-700 text-white"
+          className={`mb-6 text-white ${
+            role === 'notaire' 
+              ? 'bg-orange-600 hover:bg-orange-700' 
+              : 'bg-blue-600 hover:bg-blue-700'
+          }`}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour à l'abonnement
@@ -230,7 +234,7 @@ export default function ManageMembersCount() {
                 </p>
                 <div className="mt-3 pt-3 border-t border-gray-200">
                   <p className="text-base font-semibold text-black">
-                    Prix total actuel : <span className="text-orange-600">{currentTTC}€ TTC / {billingPeriod === 'monthly' ? 'mois' : 'an'}</span>
+                    Prix total actuel : <span className={role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}>{currentTTC}€ TTC / {billingPeriod === 'monthly' ? 'mois' : 'an'}</span>
                   </p>
                 </div>
               </div>
@@ -244,7 +248,11 @@ export default function ManageMembersCount() {
                 <Button
                   type="button"
                   size="icon"
-                  className="bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`text-white disabled:opacity-50 disabled:cursor-not-allowed ${
+                    role === 'notaire'
+                      ? 'bg-orange-600 hover:bg-orange-700'
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
                   onClick={() => {
                     const minAllowed = currentPlan === 'professionnel' ? 2 : 1;
                     setNewMembersCount(Math.max(minAllowed, newMembersCount - 1));
@@ -262,7 +270,11 @@ export default function ManageMembersCount() {
                 <Button
                   type="button"
                   size="icon"
-                  className="bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`text-white disabled:opacity-50 disabled:cursor-not-allowed ${
+                    role === 'notaire'
+                      ? 'bg-orange-600 hover:bg-orange-700'
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
                   onClick={() => {
                     if (currentPlan === 'professionnel' && newMembersCount >= 10) {
                       toast.error('Le plan Professionnel est limité à 10 membres');
@@ -284,8 +296,14 @@ export default function ManageMembersCount() {
               
               {/* Avertissement si en dessous du nombre de membres actifs */}
               {newMembersCount < activeMembersCount && (
-                <div className="mt-3 bg-orange-50 border border-orange-200 rounded-lg p-3">
-                  <p className="text-sm text-orange-800">
+                <div className={`mt-3 rounded-lg p-3 ${
+                  role === 'notaire'
+                    ? 'bg-orange-50 border border-orange-200'
+                    : 'bg-blue-50 border border-blue-200'
+                }`}>
+                  <p className={`text-sm ${
+                    role === 'notaire' ? 'text-orange-800' : 'text-blue-800'
+                  }`}>
                     ⚠️ Attention : Vous avez actuellement <strong>{activeMembersCount} membre{activeMembersCount > 1 ? 's' : ''} actif{activeMembersCount > 1 ? 's' : ''}</strong> dans votre cabinet.
                     Vous devrez retirer {activeMembersCount - newMembersCount} membre{(activeMembersCount - newMembersCount) > 1 ? 's' : ''} avant de valider cette modification.
                   </p>
@@ -295,18 +313,30 @@ export default function ManageMembersCount() {
 
             {/* Résumé */}
             {memberDiff !== 0 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold mb-3 text-blue-900">Résumé de la modification</h3>
+              <div className={`rounded-lg p-4 ${
+                role === 'notaire'
+                  ? 'bg-orange-50 border border-orange-200'
+                  : 'bg-blue-50 border border-blue-200'
+              }`}>
+                <h3 className={`font-semibold mb-3 ${
+                  role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
+                }`}>Résumé de la modification</h3>
                 <div className="space-y-2">
-                  <p className="text-sm text-blue-800">
+                  <p className={`text-sm ${
+                    role === 'notaire' ? 'text-orange-800' : 'text-blue-800'
+                  }`}>
                     En {isAdding ? 'ajoutant' : 'supprimant'}{' '}
                     <span className="font-semibold">{Math.abs(memberDiff)} membre{Math.abs(memberDiff) > 1 ? 's' : ''}</span>
                     {isAdding ? ' supplémentaire' : ''}{Math.abs(memberDiff) > 1 ? 's' : ''} :
                   </p>
-                  <p className="text-lg font-semibold text-blue-900 mt-2">
+                  <p className={`text-lg font-semibold mt-2 ${
+                    role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
+                  }`}>
                     Nouveau total : {newTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
                   </p>
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className={`text-xs mt-1 ${
+                    role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                  }`}>
                     Différence : {priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
                   </p>
                 </div>
@@ -317,14 +347,22 @@ export default function ManageMembersCount() {
             <div className="flex gap-4">
               <Button
                 onClick={() => navigate(`${prefix}/subscription`)}
-                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                className={`flex-1 text-white ${
+                  role === 'notaire'
+                    ? 'bg-orange-600 hover:bg-orange-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
                 disabled={loading}
               >
                 Annuler
               </Button>
               <Button
                 onClick={handleSubmit}
-                className="flex-1 bg-orange-600 hover:bg-orange-700"
+                className={`flex-1 ${
+                  role === 'notaire'
+                    ? 'bg-orange-600 hover:bg-orange-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
                 disabled={loading || memberDiff === 0}
               >
                 {loading ? 'Mise à jour...' : 'Valider la modification'}
