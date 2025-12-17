@@ -47347,9 +47347,66 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* CGU Suite sections 2-5 à venir... */}
+                {/* 2. OBJET DES CGU */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet des CGU</h4>
+                  <div className="space-y-3">
+                    <div><Label>Service fourni *</Label><Textarea value={cguData.serviceFourni} onChange={(e) => setCguData({...cguData, serviceFourni: e.target.value})} placeholder="Description détaillée du service..." className="min-h-[100px]" /></div>
+                    <div>
+                      <Label>Type de plateforme *</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={cguData.typePlateforme.includes("SaaS")} onCheckedChange={(v) => setCguData({...cguData, typePlateforme: v ? [...cguData.typePlateforme, "SaaS"] : cguData.typePlateforme.filter(t => t !== "SaaS")})} id="type-saas" />
+                          <Label htmlFor="type-saas" className="font-normal">SaaS</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={cguData.typePlateforme.includes("Application mobile")} onCheckedChange={(v) => setCguData({...cguData, typePlateforme: v ? [...cguData.typePlateforme, "Application mobile"] : cguData.typePlateforme.filter(t => t !== "Application mobile")})} id="type-app" />
+                          <Label htmlFor="type-app" className="font-normal">Application mobile</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={cguData.typePlateforme.includes("Marketplace")} onCheckedChange={(v) => setCguData({...cguData, typePlateforme: v ? [...cguData.typePlateforme, "Marketplace"] : cguData.typePlateforme.filter(t => t !== "Marketplace")})} id="type-market" />
+                          <Label htmlFor="type-market" className="font-normal">Marketplace</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={cguData.typePlateforme.includes("Réseau social")} onCheckedChange={(v) => setCguData({...cguData, typePlateforme: v ? [...cguData.typePlateforme, "Réseau social"] : cguData.typePlateforme.filter(t => t !== "Réseau social")})} id="type-social" />
+                          <Label htmlFor="type-social" className="font-normal">Réseau social</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={cguData.typePlateforme.includes("Service d'information")} onCheckedChange={(v) => setCguData({...cguData, typePlateforme: v ? [...cguData.typePlateforme, "Service d'information"] : cguData.typePlateforme.filter(t => t !== "Service d'information")})} id="type-info" />
+                          <Label htmlFor="type-info" className="font-normal">Service d'information</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={cguData.typePlateforme.includes("Plateforme d'échange")} onCheckedChange={(v) => setCguData({...cguData, typePlateforme: v ? [...cguData.typePlateforme, "Plateforme d'échange"] : cguData.typePlateforme.filter(t => t !== "Plateforme d'échange")})} id="type-echange" />
+                          <Label htmlFor="type-echange" className="font-normal">Plateforme d'échange ou de mise en relation</Label>
+                        </div>
+                      </div>
+                    </div>
+                    <div><Label>Limites du service</Label><Textarea value={cguData.limitesService} onChange={(e) => setCguData({...cguData, limitesService: e.target.value})} placeholder="Ce que le service ne fait pas..." className="min-h-[80px]" /></div>
+                    <div><Label>Exclusions explicites</Label><Textarea value={cguData.exclusionsExplicites} onChange={(e) => setCguData({...cguData, exclusionsExplicites: e.target.value})} placeholder="Ce que le service exclut explicitement..." className="min-h-[80px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 3. DÉFINITIONS INDISPENSABLES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Définitions indispensables</h4>
+                  <div className="space-y-3">
+                    <div><Label>Utilisateur</Label><Textarea value={cguData.defUtilisateur} onChange={(e) => setCguData({...cguData, defUtilisateur: e.target.value})} placeholder="Ex: Toute personne qui accède au service..." className="min-h-[60px]" /></div>
+                    <div><Label>Compte utilisateur</Label><Textarea value={cguData.defCompteUtilisateur} onChange={(e) => setCguData({...cguData, defCompteUtilisateur: e.target.value})} placeholder="Ex: Espace personnel créé par l'utilisateur..." className="min-h-[60px]" /></div>
+                    <div><Label>Service</Label><Textarea value={cguData.defService} onChange={(e) => setCguData({...cguData, defService: e.target.value})} placeholder="Ex: L'ensemble des fonctionnalités proposées..." className="min-h-[60px]" /></div>
+                    <div><Label>Contenu</Label><Textarea value={cguData.defContenu} onChange={(e) => setCguData({...cguData, defContenu: e.target.value})} placeholder="Ex: Toute information disponible sur la plateforme..." className="min-h-[60px]" /></div>
+                    <div><Label>Contenu utilisateur</Label><Textarea value={cguData.defContenuUtilisateur} onChange={(e) => setCguData({...cguData, defContenuUtilisateur: e.target.value})} placeholder="Ex: Contenu publié par l'utilisateur..." className="min-h-[60px]" /></div>
+                    <div><Label>Données personnelles</Label><Textarea value={cguData.defDonneesPersonnelles} onChange={(e) => setCguData({...cguData, defDonneesPersonnelles: e.target.value})} placeholder="Ex: Toute information relative à une personne physique identifiée..." className="min-h-[60px]" /></div>
+                    <div><Label>Plateforme</Label><Textarea value={cguData.defPlateforme} onChange={(e) => setCguData({...cguData, defPlateforme: e.target.value})} placeholder="Ex: Le site web ou l'application..." className="min-h-[60px]" /></div>
+                    <div><Label>Espace client</Label><Textarea value={cguData.defEspaceClient} onChange={(e) => setCguData({...cguData, defEspaceClient: e.target.value})} placeholder="Ex: Interface personnelle de gestion..." className="min-h-[60px]" /></div>
+                    <div><Label>Modération</Label><Textarea value={cguData.defModeration} onChange={(e) => setCguData({...cguData, defModeration: e.target.value})} placeholder="Ex: Contrôle des contenus publiés..." className="min-h-[60px]" /></div>
+                    <div><Label>Force majeure</Label><Textarea value={cguData.defForceMajeure} onChange={(e) => setCguData({...cguData, defForceMajeure: e.target.value})} placeholder="Ex: Événement imprévisible et insurmontable..." className="min-h-[60px]" /></div>
+                    <div><Label>Acceptation des CGU</Label><Textarea value={cguData.defAcceptationCGU} onChange={(e) => setCguData({...cguData, defAcceptationCGU: e.target.value})} placeholder="Ex: Validation expresse lors de l'inscription..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* CGU Suite sections 4-17 à venir... */}
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-700">✅ Sections 2 à 17 à ajouter dans la prochaine partie</p>
+                  <p className="text-sm text-blue-700">✅ Sections 4 à 17 à ajouter dans la prochaine partie</p>
                 </div>
                 
                 {/* UPLOAD FICHIERS */}
