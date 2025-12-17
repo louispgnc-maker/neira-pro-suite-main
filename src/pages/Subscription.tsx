@@ -166,43 +166,32 @@ export default function Subscription() {
 
         console.log('Profile data:', profileData, 'Error:', profileError);
 
-        let cabinetId = profileData?.cabinet_id;
-
-        // If no cabinet in profile, check cabinet_members
-        // Note: Un utilisateur ne peut avoir qu'un seul membership actif à la fois (contrainte DB)
-        if (!cabinetId) {
-          const { data: memberData, error: memberError } = await supabase
-            .from('cabinet_members')
-            .select('cabinet_id, role_cabinet')
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .single();
+        // TOUJOURS récupérer le membership ACTIF (un seul possible grâce à la contrainte DB)
+        // Le cabinet_id du profil peut être obsolète si l'utilisateur a changé de cabinet
+        const { data: memberData, error: memberError } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id, role_cabinet')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .single();
+        
+        console.log('Active member data:', memberData, 'Error:', memberError);
+        
+        let cabinetId = memberData?.cabinet_id;
+        
+        if (memberData) {
+          setUserRole(memberData.role_cabinet);
+          const isFounder = memberData.role_cabinet === 'Fondateur';
+          setIsManager(isFounder);
+          console.log('User role:', memberData.role_cabinet, 'isManager:', isFounder);
           
-          console.log('Member data:', memberData, 'Error:', memberError);
-          
-          if (memberData) {
-            cabinetId = memberData.cabinet_id;
-            setUserRole(memberData.role_cabinet);
-            const isFounder = memberData.role_cabinet === 'Fondateur';
-            setIsManager(isFounder);
-            console.log('User role:', memberData.role_cabinet, 'isManager:', isFounder);
-          }
-        } else {
-          // If cabinet_id exists in profile, also check the role in cabinet_members
-          const { data: memberData } = await supabase
-            .from('cabinet_members')
-            .select('role_cabinet')
-            .eq('user_id', user.id)
-            .eq('cabinet_id', cabinetId)
-            .eq('status', 'active')
-            .maybeSingle();
-          
-          console.log('Member role for cabinet from profile:', memberData);
-          if (memberData?.role_cabinet) {
-            setUserRole(memberData.role_cabinet);
-            const isFounder = memberData.role_cabinet === 'Fondateur';
-            setIsManager(isFounder);
-            console.log('User role:', memberData.role_cabinet, 'isManager:', isFounder);
+          // Si le cabinet_id du profil ne correspond pas au cabinet actif, le mettre à jour
+          if (profileData?.cabinet_id !== cabinetId) {
+            console.log('Updating profile cabinet_id from', profileData?.cabinet_id, 'to', cabinetId);
+            await supabase
+              .from('profiles')
+              .update({ cabinet_id: cabinetId })
+              .eq('id', user.id);
           }
         }
 
