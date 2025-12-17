@@ -45601,9 +45601,134 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* Suite des sections à venir... */}
+                {/* 2. OBJET DU CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du contrat</h4>
+                  <div className="space-y-3">
+                    <div><Label>Nature des produits vendus *</Label><Textarea value={venteB2BData.natureProduits} onChange={(e) => setVenteB2BData({...venteB2BData, natureProduits: e.target.value})} placeholder="Détail, référence, gamme..." className="min-h-[80px]" /></div>
+                    <div><Label>Catégories de produits concernées</Label><Input value={venteB2BData.categoriesProduits} onChange={(e) => setVenteB2BData({...venteB2BData, categoriesProduits: e.target.value})} placeholder="Ex: Électronique, Textile, Alimentaire..." /></div>
+                    <div>
+                      <Label>Périmètre de la distribution *</Label>
+                      <Select value={venteB2BData.perimetreDistribution} onValueChange={(v) => setVenteB2BData({...venteB2BData, perimetreDistribution: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vente_simple">Vente simple B2B</SelectItem>
+                          <SelectItem value="distribution_generale">Contrat de distribution générale</SelectItem>
+                          <SelectItem value="exclusive">Distribution exclusive</SelectItem>
+                          <SelectItem value="selective">Distribution sélective</SelectItem>
+                          <SelectItem value="franchise">Franchise</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Obligations minimales du distributeur</Label><Textarea value={venteB2BData.obligationsMinimalesDistributeur} onChange={(e) => setVenteB2BData({...venteB2BData, obligationsMinimalesDistributeur: e.target.value})} placeholder="Volumes minimum, actions promotionnelles..." /></div>
+                    <div><Label>Canaux de vente autorisés</Label><Input value={venteB2BData.canauxVenteAutorises} onChange={(e) => setVenteB2BData({...venteB2BData, canauxVenteAutorises: e.target.value})} placeholder="Boutique physique, en ligne, marketplace, export..." /></div>
+                  </div>
+                </div>
+
+                {/* 3. CONDITIONS DE VENTE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Conditions de vente (Terms & Conditions)</h4>
+                  
+                  {/* 3A. TARIFS */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">💰 A. Tarifs</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Prix unitaire</Label><Input value={venteB2BData.prixUnitaire} onChange={(e) => setVenteB2BData({...venteB2BData, prixUnitaire: e.target.value})} placeholder="Ex: 50€ HT / unité" /></div>
+                      <div><Label>Grille tarifaire</Label><Input value={venteB2BData.grilleTarifaire} onChange={(e) => setVenteB2BData({...venteB2BData, grilleTarifaire: e.target.value})} placeholder="Annexe ou lien vers tarifs" /></div>
+                    </div>
+                    <div><Label>Remises (quantité, volume, saison...)</Label><Textarea value={venteB2BData.remises} onChange={(e) => setVenteB2BData({...venteB2BData, remises: e.target.value})} placeholder="Ex: -5% dès 100 unités, -10% dès 500 unités" /></div>
+                    <div><Label>Révisions de prix / Indexation</Label><Input value={venteB2BData.revisionsPrix} onChange={(e) => setVenteB2BData({...venteB2BData, revisionsPrix: e.target.value})} placeholder="Ex: Révision annuelle selon l'inflation" /></div>
+                    <div><Label>Conditions préférentielles (si exclusivité)</Label><Input value={venteB2BData.conditionsPreferentielles} onChange={(e) => setVenteB2BData({...venteB2BData, conditionsPreferentielles: e.target.value})} /></div>
+                  </div>
+                  
+                  {/* 3B. COMMANDES */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">📦 B. Commandes</h5>
+                    <div><Label>Modalités de passation</Label><Input value={venteB2BData.modalitesPassationCommande} onChange={(e) => setVenteB2BData({...venteB2BData, modalitesPassationCommande: e.target.value})} placeholder="Email, plateforme, téléphone..." /></div>
+                    <div><Label>Minimums de commande</Label><Input value={venteB2BData.minimumsCommande} onChange={(e) => setVenteB2BData({...venteB2BData, minimumsCommande: e.target.value})} placeholder="Ex: 100 unités ou 1000€ HT" /></div>
+                    <div><Label>Délais de commande</Label><Input value={venteB2BData.delaisCommande} onChange={(e) => setVenteB2BData({...venteB2BData, delaisCommande: e.target.value})} placeholder="Ex: 15 jours avant livraison souhaitée" /></div>
+                    <div>
+                      <Label>Confirmation de commande</Label>
+                      <RadioGroup value={venteB2BData.confirmationCommande} onValueChange={(v) => setVenteB2BData({...venteB2BData, confirmationCommande: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="automatique" id="conf-auto" /><Label htmlFor="conf-auto">Automatique</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="manuelle" id="conf-man" /><Label htmlFor="conf-man">Manuelle (validation fournisseur)</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Conditions annulation / modification</Label><Textarea value={venteB2BData.conditionsAnnulation} onChange={(e) => setVenteB2BData({...venteB2BData, conditionsAnnulation: e.target.value})} placeholder="Délais, pénalités éventuelles..." /></div>
+                  </div>
+                  
+                  {/* 3C. LIVRAISON */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">🚚 C. Livraison</h5>
+                    <div>
+                      <Label>Incoterms *</Label>
+                      <Select value={venteB2BData.incoterms} onValueChange={(v) => setVenteB2BData({...venteB2BData, incoterms: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="EXW">EXW (Ex Works - départ usine)</SelectItem>
+                          <SelectItem value="FCA">FCA (Free Carrier - franco transporteur)</SelectItem>
+                          <SelectItem value="CPT">CPT (Carriage Paid To - port payé jusqu'à)</SelectItem>
+                          <SelectItem value="CIP">CIP (Carriage and Insurance Paid - port et assurance payés)</SelectItem>
+                          <SelectItem value="DAP">DAP (Delivered At Place - rendu au lieu de destination)</SelectItem>
+                          <SelectItem value="DPU">DPU (Delivered at Place Unloaded - rendu déchargé)</SelectItem>
+                          <SelectItem value="DDP">DDP (Delivered Duty Paid - rendu droits acquittés)</SelectItem>
+                          <SelectItem value="FOB">FOB (Free On Board - franco à bord)</SelectItem>
+                          <SelectItem value="CFR">CFR (Cost and Freight - coût et fret)</SelectItem>
+                          <SelectItem value="CIF">CIF (Cost, Insurance and Freight - coût, assurance, fret)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Transporteur</Label><Input value={venteB2BData.transporteur} onChange={(e) => setVenteB2BData({...venteB2BData, transporteur: e.target.value})} placeholder="Choisi par fournisseur / acheteur" /></div>
+                    <div><Label>Transfert des risques</Label><Input value={venteB2BData.transfertRisques} onChange={(e) => setVenteB2BData({...venteB2BData, transfertRisques: e.target.value})} placeholder="Selon Incoterms ou précision" /></div>
+                    <div><Label>Délais de livraison</Label><Input value={venteB2BData.delaisLivraison} onChange={(e) => setVenteB2BData({...venteB2BData, delaisLivraison: e.target.value})} placeholder="Ex: 10 jours ouvrés" /></div>
+                    <div><Label>Pénalités de retard de livraison</Label><Input value={venteB2BData.penalitesRetardLivraison} onChange={(e) => setVenteB2BData({...venteB2BData, penalitesRetardLivraison: e.target.value})} placeholder="Ex: 1% du montant HT par semaine" /></div>
+                    <div><Label>Modalités de réception et contrôle</Label><Textarea value={venteB2BData.modalitesReception} onChange={(e) => setVenteB2BData({...venteB2BData, modalitesReception: e.target.value})} placeholder="Délai de réclamation, réserves..." /></div>
+                  </div>
+                  
+                  {/* 3D. PAIEMENT */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">💳 D. Paiement</h5>
+                    <div>
+                      <Label>Mode de paiement *</Label>
+                      <Select value={venteB2BData.modePaiement} onValueChange={(v) => setVenteB2BData({...venteB2BData, modePaiement: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="virement">Virement bancaire</SelectItem>
+                          <SelectItem value="prelevement">Prélèvement SEPA</SelectItem>
+                          <SelectItem value="LCR">LCR (Lettre de Change Relevé)</SelectItem>
+                          <SelectItem value="cheque">Chèque</SelectItem>
+                          <SelectItem value="carte">Carte bancaire</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Délais de paiement *</Label>
+                      <Select value={venteB2BData.delaisPaiement} onValueChange={(v) => setVenteB2BData({...venteB2BData, delaisPaiement: v})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="comptant">Comptant</SelectItem>
+                          <SelectItem value="30j">30 jours</SelectItem>
+                          <SelectItem value="45j">45 jours fin de mois</SelectItem>
+                          <SelectItem value="60j">60 jours</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Acompte éventuel</Label><Input value={venteB2BData.acomptePaiement} onChange={(e) => setVenteB2BData({...venteB2BData, acomptePaiement: e.target.value})} placeholder="Ex: 30% à la commande" /></div>
+                    <div><Label>Pénalités de retard</Label><Input value={venteB2BData.penalitesRetardPaiement} onChange={(e) => setVenteB2BData({...venteB2BData, penalitesRetardPaiement: e.target.value})} placeholder="Ex: 3 fois le taux légal" /></div>
+                    <div><Label>Indemnité forfaitaire de recouvrement</Label><Input value={venteB2BData.indemniteLegaleRecouvrement} onChange={(e) => setVenteB2BData({...venteB2BData, indemniteLegaleRecouvrement: e.target.value})} placeholder="40€" /></div>
+                    <div>
+                      <Label>Suspension des livraisons en cas d'impayé</Label>
+                      <RadioGroup value={venteB2BData.suspensionLivraisonImpaye} onValueChange={(v) => setVenteB2BData({...venteB2BData, suspensionLivraisonImpaye: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="susp-liv-oui" /><Label htmlFor="susp-liv-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="susp-liv-non" /><Label htmlFor="susp-liv-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Suite sections 4-13 à venir */}
                 <div className="p-4 bg-yellow-50 rounded border border-yellow-200">
-                  <p className="text-sm text-gray-700">Sections 2 à 13 en cours de développement...</p>
+                  <p className="text-sm text-gray-700">Sections 4 à 13 en cours de développement...</p>
                 </div>
               </div>
             )}
