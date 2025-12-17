@@ -298,7 +298,7 @@ export default function Subscription() {
           <div className="mb-8">
             <Button
               onClick={() => navigate(-1)}
-              className="bg-orange-500 hover:bg-orange-600 text-white"
+              className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Retour
@@ -422,7 +422,7 @@ export default function Subscription() {
 
           {/* Section Gérer le nombre de membres (seulement pour Professionnel et Cabinet+) */}
           {isManager && (currentPlan === 'professionnel' || currentPlan === 'cabinet-plus') && (
-            <Card className="mb-12 border-2 border-orange-200 bg-orange-50/50">
+            <Card className={`mb-12 border-2 ${role === 'notaire' ? 'border-orange-200 bg-orange-50/50' : 'border-blue-200 bg-blue-50/50'}`}>
               <CardHeader>
                 <CardTitle className="text-xl text-black flex items-center gap-2">
                   <Users className="h-5 w-5" />
@@ -433,13 +433,13 @@ export default function Subscription() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="bg-white rounded-lg p-4 border border-orange-200">
+                <div className={`bg-white rounded-lg p-4 border ${role === 'notaire' ? 'border-orange-200' : 'border-blue-200'}`}>
                   <p className="text-sm text-black mb-4">
                     Vous avez actuellement <strong>{activeMembersCount} membre{activeMembersCount > 1 ? 's' : ''} actif{activeMembersCount > 1 ? 's' : ''}</strong> dans votre cabinet.
                   </p>
                   <Button
                     onClick={() => navigate(`${prefix}/subscription/manage-members`)}
-                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                    className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}
                   >
                     Modifier le nombre de membres
                   </Button>
@@ -538,7 +538,7 @@ export default function Subscription() {
               <CardContent>
                 <Button 
                   onClick={() => navigate(`${prefix}/contact-support`)}
-                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
                 >
                   Nous contacter
                 </Button>
