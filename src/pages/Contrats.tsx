@@ -47521,9 +47521,251 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* CGU Suite sections 7-17 à venir... */}
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-700">✅ Sections 7 à 17 à ajouter dans la partie finale</p>
+                {/* 7. CONTENUS UTILISATEURS (UGC) */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Contenus utilisateurs (UGC)</h4>
+                  <div className="space-y-3">
+                    <div><Label>Définition du contenu utilisateur</Label><Textarea value={cguData.definitionContenuUGC} onChange={(e) => setCguData({...cguData, definitionContenuUGC: e.target.value})} placeholder="Tout contenu publié, partagé ou transmis par l'utilisateur..." className="min-h-[60px]" /></div>
+                    <div><Label>Droits concédés par l'utilisateur à la plateforme</Label><Textarea value={cguData.droitsConcedes} onChange={(e) => setCguData({...cguData, droitsConcedes: e.target.value})} placeholder="Licence d'utilisation, droits de reproduction..." className="min-h-[80px]" /></div>
+                    <div><Label>Licence d'utilisation</Label><Textarea value={cguData.licenceUtilisation} onChange={(e) => setCguData({...cguData, licenceUtilisation: e.target.value})} placeholder="Type de licence accordée (mondiale, gratuite, non-exclusive...)..." className="min-h-[60px]" /></div>
+                    <div><Label>Droits de reproduction / hébergement</Label><Textarea value={cguData.droitsReproduction} onChange={(e) => setCguData({...cguData, droitsReproduction: e.target.value})} placeholder="Autorisation de reproduire, héberger, diffuser..." className="min-h-[60px]" /></div>
+                    <div><Label>Durée de la licence</Label><Input value={cguData.dureeLicence} onChange={(e) => setCguData({...cguData, dureeLicence: e.target.value})} placeholder="Ex: Durée de présence du contenu, ou perpétuelle" /></div>
+                    <div><Label>Responsabilité de l'utilisateur sur son contenu</Label><Textarea value={cguData.responsabiliteContenu} onChange={(e) => setCguData({...cguData, responsabiliteContenu: e.target.value})} placeholder="L'utilisateur garantit être titulaire des droits..." className="min-h-[80px]" /></div>
+                    <div><Label>Pouvoir de suppression par la plateforme</Label><Textarea value={cguData.pouvoirSuppression} onChange={(e) => setCguData({...cguData, pouvoirSuppression: e.target.value})} placeholder="La plateforme se réserve le droit de supprimer tout contenu..." className="min-h-[60px]" /></div>
+                    <div><Label>Procédure de signalement</Label><Textarea value={cguData.procedureSignalement} onChange={(e) => setCguData({...cguData, procedureSignalement: e.target.value})} placeholder="Comment les utilisateurs peuvent signaler un contenu..." className="min-h-[60px]" /></div>
+                    <div><Label>Suspension du compte</Label><Textarea value={cguData.suspensionCompte} onChange={(e) => setCguData({...cguData, suspensionCompte: e.target.value})} placeholder="Conditions de suspension en cas de violation..." className="min-h-[60px]" /></div>
+                    <div className="p-3 bg-orange-50 rounded border border-orange-200">
+                      <Label className="font-medium text-orange-700">DSA (Digital Services Act)</Label>
+                      <div className="space-y-2 mt-2">
+                        <div><Label>Procédures de signalement DSA</Label><Textarea value={cguData.dsaSignalement} onChange={(e) => setCguData({...cguData, dsaSignalement: e.target.value})} placeholder="Formulaire de signalement conforme DSA..." className="min-h-[60px]" /></div>
+                        <div><Label>Transparence sur la modération</Label><Textarea value={cguData.dsaTransparence} onChange={(e) => setCguData({...cguData, dsaTransparence: e.target.value})} placeholder="Critères de modération, délais de traitement..." className="min-h-[60px]" /></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 8. PROPRIÉTÉ INTELLECTUELLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Propriété intellectuelle</h4>
+                  <div className="space-y-3">
+                    <div><Label>Titularité des droits du site / application</Label><Textarea value={cguData.titulariteDroits} onChange={(e) => setCguData({...cguData, titulariteDroits: e.target.value})} placeholder="Tous les éléments du service sont protégés..." className="min-h-[60px]" /></div>
+                    <div><Label>Marques, logos, design</Label><Textarea value={cguData.marquesLogosDesign} onChange={(e) => setCguData({...cguData, marquesLogosDesign: e.target.value})} placeholder="Protection des marques et éléments graphiques..." className="min-h-[60px]" /></div>
+                    <div><Label>Logiciels utilisés</Label><Textarea value={cguData.logicielsUtilises} onChange={(e) => setCguData({...cguData, logicielsUtilises: e.target.value})} placeholder="Frameworks, bibliothèques, licences tierces..." className="min-h-[60px]" /></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.interdictionReproductionPI} onCheckedChange={(v) => setCguData({...cguData, interdictionReproductionPI: !!v})} id="pi-interdit" disabled /><Label htmlFor="pi-interdit" className="font-normal">Interdiction de reproduction sans accord ✅</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.protectionCodePI} onCheckedChange={(v) => setCguData({...cguData, protectionCodePI: !!v})} id="pi-code" disabled /><Label htmlFor="pi-code" className="font-normal">Protection par le Code de la propriété intellectuelle ✅</Label></div>
+                    <div><Label>Droits du client sur son contenu</Label><Textarea value={cguData.droitsClientContenu} onChange={(e) => setCguData({...cguData, droitsClientContenu: e.target.value})} placeholder="Le client conserve tous les droits sur ses données et contenus..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 9. DONNÉES PERSONNELLES / RGPD */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Données personnelles / RGPD</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="font-medium">A. Données collectées</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.donneesIdentite} onCheckedChange={(v) => setCguData({...cguData, donneesIdentite: !!v})} id="data-id" /><Label htmlFor="data-id" className="font-normal">Identité (nom, prénom)</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.donneesContacts} onCheckedChange={(v) => setCguData({...cguData, donneesContacts: !!v})} id="data-contact" /><Label htmlFor="data-contact" className="font-normal">Contacts (email, téléphone)</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.donneesIdentifiants} onCheckedChange={(v) => setCguData({...cguData, donneesIdentifiants: !!v})} id="data-idfs" /><Label htmlFor="data-idfs" className="font-normal">Identifiants (login, mot de passe)</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.donneesCookiesTracking} onCheckedChange={(v) => setCguData({...cguData, donneesCookiesTracking: !!v})} id="data-cookie" /><Label htmlFor="data-cookie" className="font-normal">Cookies / tracking</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.donneesNavigation} onCheckedChange={(v) => setCguData({...cguData, donneesNavigation: !!v})} id="data-nav" /><Label htmlFor="data-nav" className="font-normal">Données de navigation</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.donneesUsage} onCheckedChange={(v) => setCguData({...cguData, donneesUsage: !!v})} id="data-usage" /><Label htmlFor="data-usage" className="font-normal">Données d'usage</Label></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">B. Finalités</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.finaliteFonctionnement} onCheckedChange={(v) => setCguData({...cguData, finaliteFonctionnement: !!v})} id="fin-fonc" /><Label htmlFor="fin-fonc" className="font-normal">Fonctionnement du service</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.finaliteSecurite} onCheckedChange={(v) => setCguData({...cguData, finaliteSecurite: !!v})} id="fin-secu" /><Label htmlFor="fin-secu" className="font-normal">Sécurité</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.finaliteStatistiques} onCheckedChange={(v) => setCguData({...cguData, finaliteStatistiques: !!v})} id="fin-stat" /><Label htmlFor="fin-stat" className="font-normal">Statistiques</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.finalitePublicite} onCheckedChange={(v) => setCguData({...cguData, finalitePublicite: !!v})} id="fin-pub" /><Label htmlFor="fin-pub" className="font-normal">Publicité / marketing (optionnel)</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.finalitePreventionFraude} onCheckedChange={(v) => setCguData({...cguData, finalitePreventionFraude: !!v})} id="fin-fraud" /><Label htmlFor="fin-fraud" className="font-normal">Prévention fraude</Label></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">C. Base légale</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.baseLegaleConsentement} onCheckedChange={(v) => setCguData({...cguData, baseLegaleConsentement: !!v})} id="base-consent" /><Label htmlFor="base-consent" className="font-normal">Consentement</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.baseLegaleContrat} onCheckedChange={(v) => setCguData({...cguData, baseLegaleContrat: !!v})} id="base-contrat" /><Label htmlFor="base-contrat" className="font-normal">Exécution du contrat</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.baseLegaleInteretLegitime} onCheckedChange={(v) => setCguData({...cguData, baseLegaleInteretLegitime: !!v})} id="base-interet" /><Label htmlFor="base-interet" className="font-normal">Intérêt légitime</Label></div>
+                      </div>
+                    </div>
+                    <div><Label>D. Durées de conservation</Label><Textarea value={cguData.dureeConservationRGPD} onChange={(e) => setCguData({...cguData, dureeConservationRGPD: e.target.value})} placeholder="Durées de conservation selon le type de données..." className="min-h-[80px]" /></div>
+                    <div>
+                      <Label className="font-medium">E. Droits des utilisateurs ✅</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.droitAcces} onCheckedChange={(v) => setCguData({...cguData, droitAcces: !!v})} id="droit-acces" disabled /><Label htmlFor="droit-acces" className="font-normal">Accès ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.droitRectification} onCheckedChange={(v) => setCguData({...cguData, droitRectification: !!v})} id="droit-rect" disabled /><Label htmlFor="droit-rect" className="font-normal">Rectification ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.droitSuppression} onCheckedChange={(v) => setCguData({...cguData, droitSuppression: !!v})} id="droit-suppr" disabled /><Label htmlFor="droit-suppr" className="font-normal">Suppression ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.droitOpposition} onCheckedChange={(v) => setCguData({...cguData, droitOpposition: !!v})} id="droit-oppos" disabled /><Label htmlFor="droit-oppos" className="font-normal">Opposition ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.droitPortabilite} onCheckedChange={(v) => setCguData({...cguData, droitPortabilite: !!v})} id="droit-port" disabled /><Label htmlFor="droit-port" className="font-normal">Portabilité ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.droitLimitation} onCheckedChange={(v) => setCguData({...cguData, droitLimitation: !!v})} id="droit-limit" disabled /><Label htmlFor="droit-limit" className="font-normal">Limitation ✅</Label></div>
+                      </div>
+                    </div>
+                    <div><Label>F. Sous-traitants (API, stockage, paiement)</Label><Textarea value={cguData.sousTraitants} onChange={(e) => setCguData({...cguData, sousTraitants: e.target.value})} placeholder="Liste des sous-traitants et services tiers..." className="min-h-[80px]" /></div>
+                    <div>
+                      <Label>G. Transfert hors UE</Label>
+                      <RadioGroup value={cguData.transfertHorsUERGPD} onValueChange={(v) => setCguData({...cguData, transfertHorsUERGPD: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="ue-rgpd-oui" /><Label htmlFor="ue-rgpd-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="ue-rgpd-non" /><Label htmlFor="ue-rgpd-non">Non</Label></div>
+                      </RadioGroup>
+                      {cguData.transfertHorsUERGPD === "oui" && (
+                        <Input value={cguData.transfertHorsUEPays} onChange={(e) => setCguData({...cguData, transfertHorsUEPays: e.target.value})} placeholder="Pays et garanties (clauses contractuelles types...)" className="mt-2" />
+                      )}
+                    </div>
+                    <div><Label>H. Délégué à la protection des données (DPO)</Label><Input value={cguData.dpo} onChange={(e) => setCguData({...cguData, dpo: e.target.value})} placeholder="Contact DPO ou email de contact RGPD" /></div>
+                  </div>
+                </div>
+                
+                {/* 10. COOKIES ET TRACEURS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔟 Cookies et traceurs</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.cookiesNecessaires} onCheckedChange={(v) => setCguData({...cguData, cookiesNecessaires: !!v})} id="cook-nec" disabled /><Label htmlFor="cook-nec" className="font-normal">Cookies nécessaires ✅</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.cookiesStatistiques} onCheckedChange={(v) => setCguData({...cguData, cookiesStatistiques: !!v})} id="cook-stat" /><Label htmlFor="cook-stat" className="font-normal">Cookies statistiques</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.cookiesPublicitaires} onCheckedChange={(v) => setCguData({...cguData, cookiesPublicitaires: !!v})} id="cook-pub" /><Label htmlFor="cook-pub" className="font-normal">Cookies publicitaires</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.consentementCookies} onCheckedChange={(v) => setCguData({...cguData, consentementCookies: !!v})} id="cook-consent" disabled /><Label htmlFor="cook-consent" className="font-normal">Consentement et refus ✅</Label></div>
+                    <div><Label>Conservation du choix</Label><Input value={cguData.conservationChoixCookies} onChange={(e) => setCguData({...cguData, conservationChoixCookies: e.target.value})} placeholder="Ex: 6 mois, 13 mois..." /></div>
+                    <div><Label>Lien vers politique cookies</Label><Input value={cguData.lienPolitiqueCookies} onChange={(e) => setCguData({...cguData, lienPolitiqueCookies: e.target.value})} placeholder="URL vers la politique cookies complète" /></div>
+                  </div>
+                </div>
+                
+                {/* 11. RESPONSABILITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Responsabilité</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="font-medium">Engagements du fournisseur</Label>
+                      <div className="space-y-2 mt-2">
+                        <div><Label>Disponibilité raisonnable du service</Label><Textarea value={cguData.engagementDisponibilite} onChange={(e) => setCguData({...cguData, engagementDisponibilite: e.target.value})} placeholder="Objectif de disponibilité, maintenance..." className="min-h-[60px]" /></div>
+                        <div><Label>Sécurité technique</Label><Textarea value={cguData.engagementSecurite} onChange={(e) => setCguData({...cguData, engagementSecurite: e.target.value})} placeholder="Mesures de sécurité mises en œuvre..." className="min-h-[60px]" /></div>
+                        <div><Label>Maintenance</Label><Textarea value={cguData.engagementMaintenance} onChange={(e) => setCguData({...cguData, engagementMaintenance: e.target.value})} placeholder="Maintenance corrective et évolutive..." className="min-h-[60px]" /></div>
+                        <div><Label>Respect des lois</Label><Textarea value={cguData.engagementRespectLois} onChange={(e) => setCguData({...cguData, engagementRespectLois: e.target.value})} placeholder="Conformité réglementaire..." className="min-h-[60px]" /></div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-medium">Exclusions de responsabilité (dans la limite légale)</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.exclusionUtilisationIncorrecte} onCheckedChange={(v) => setCguData({...cguData, exclusionUtilisationIncorrecte: !!v})} id="excl-util" disabled /><Label htmlFor="excl-util" className="font-normal">Utilisation incorrecte du service ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.exclusionPanneInternet} onCheckedChange={(v) => setCguData({...cguData, exclusionPanneInternet: !!v})} id="excl-net" disabled /><Label htmlFor="excl-net" className="font-normal">Panne Internet ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.exclusionDommagesIndirects} onCheckedChange={(v) => setCguData({...cguData, exclusionDommagesIndirects: !!v})} id="excl-dmg" disabled /><Label htmlFor="excl-dmg" className="font-normal">Dommages indirects ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.exclusionPerteDonnees} onCheckedChange={(v) => setCguData({...cguData, exclusionPerteDonnees: !!v})} id="excl-data" disabled /><Label htmlFor="excl-data" className="font-normal">Perte de données imputable à l'utilisateur ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.exclusionIntrusionExterne} onCheckedChange={(v) => setCguData({...cguData, exclusionIntrusionExterne: !!v})} id="excl-hack" disabled /><Label htmlFor="excl-hack" className="font-normal">Intrusion informatique extérieure ✅</Label></div>
+                      </div>
+                    </div>
+                    <div><Label>Force majeure</Label><Textarea value={cguData.forceMajeureResponsabilite} onChange={(e) => setCguData({...cguData, forceMajeureResponsabilite: e.target.value})} placeholder="Cas de force majeure exonérant de responsabilité..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 12. SUSPENSION / SUPPRESSION DU COMPTE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Suspension / Suppression du compte</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="font-medium">Cas de suspension/suppression</Label>
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.suspensionNonRespectCGU} onCheckedChange={(v) => setCguData({...cguData, suspensionNonRespectCGU: !!v})} id="susp-cgu" disabled /><Label htmlFor="susp-cgu" className="font-normal">Non-respect des CGU ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.suspensionComportementsIllicites} onCheckedChange={(v) => setCguData({...cguData, suspensionComportementsIllicites: !!v})} id="susp-illic" disabled /><Label htmlFor="susp-illic" className="font-normal">Comportements illicites ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.suspensionUtilisationAbusive} onCheckedChange={(v) => setCguData({...cguData, suspensionUtilisationAbusive: !!v})} id="susp-abus" disabled /><Label htmlFor="susp-abus" className="font-normal">Utilisation abusive ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.suppressionDemandeUtilisateur} onCheckedChange={(v) => setCguData({...cguData, suppressionDemandeUtilisateur: !!v})} id="susp-user" disabled /><Label htmlFor="susp-user" className="font-normal">Demande de suppression par l'utilisateur ✅</Label></div>
+                        <div className="flex items-center space-x-2"><Checkbox checked={cguData.suppressionDecesUtilisateur} onCheckedChange={(v) => setCguData({...cguData, suppressionDecesUtilisateur: !!v})} id="susp-deces" disabled /><Label htmlFor="susp-deces" className="font-normal">Décès de l'utilisateur ✅</Label></div>
+                      </div>
+                    </div>
+                    <div><Label>Durée de suspension</Label><Input value={cguData.dureeSuspension} onChange={(e) => setCguData({...cguData, dureeSuspension: e.target.value})} placeholder="Ex: Temporaire (1 mois) ou définitive" /></div>
+                    <div><Label>Procédure de recours</Label><Textarea value={cguData.procedureRecours} onChange={(e) => setCguData({...cguData, procedureRecours: e.target.value})} placeholder="Comment contester une suspension..." className="min-h-[80px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 13. MODIFICATION DES CGU */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Modification des CGU</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Notification de la modification</Label>
+                      <RadioGroup value={cguData.notificationModification} onValueChange={(v) => setCguData({...cguData, notificationModification: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="notif-oui" /><Label htmlFor="notif-oui">Oui (par email ou sur le site)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="notif-non" /><Label htmlFor="notif-non">Non (publication suffit)</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Date d'entrée en vigueur</Label><Input value={cguData.dateEntreeVigueur} onChange={(e) => setCguData({...cguData, dateEntreeVigueur: e.target.value})} placeholder="Ex: Immédiate, ou 30 jours après notification" /></div>
+                    <div>
+                      <Label>Acceptation tacite / expresse</Label>
+                      <RadioGroup value={cguData.acceptationTaciteExpresse} onValueChange={(v) => setCguData({...cguData, acceptationTaciteExpresse: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="tacite" id="accept-tacite" /><Label htmlFor="accept-tacite">Tacite (poursuite de l'utilisation)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="expresse" id="accept-expresse" /><Label htmlFor="accept-expresse">Expresse (validation requise)</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div>
+                      <Label>Archivage des anciennes versions</Label>
+                      <RadioGroup value={cguData.archivageVersions} onValueChange={(v) => setCguData({...cguData, archivageVersions: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="arch-oui" /><Label htmlFor="arch-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="arch-non" /><Label htmlFor="arch-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 14. RÉSILIATION DU SERVICE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Résiliation du service</h4>
+                  <div className="space-y-3">
+                    <div><Label>Résiliation par l'utilisateur</Label><Textarea value={cguData.resiliationParUtilisateur} onChange={(e) => setCguData({...cguData, resiliationParUtilisateur: e.target.value})} placeholder="Modalités de résiliation à l'initiative de l'utilisateur..." className="min-h-[80px]" /></div>
+                    <div><Label>Résiliation par la plateforme</Label><Textarea value={cguData.resiliationParPlateforme} onChange={(e) => setCguData({...cguData, resiliationParPlateforme: e.target.value})} placeholder="Cas de résiliation par la plateforme..." className="min-h-[80px]" /></div>
+                    <div>
+                      <Label className="font-medium">Effets de la résiliation</Label>
+                      <div className="space-y-2 mt-2">
+                        <div><Label>Clôture du compte</Label><Textarea value={cguData.effetsClotureCompte} onChange={(e) => setCguData({...cguData, effetsClotureCompte: e.target.value})} placeholder="Accès supprimé, fonctionnalités désactivées..." className="min-h-[60px]" /></div>
+                        <div><Label>Suppression ou conservation des données</Label><Textarea value={cguData.effetsSuppressionDonnees} onChange={(e) => setCguData({...cguData, effetsSuppressionDonnees: e.target.value})} placeholder="Données supprimées après X jours, archivage légal..." className="min-h-[60px]" /></div>
+                        <div><Label>Restitution des accès</Label><Textarea value={cguData.effetsRestitutionAcces} onChange={(e) => setCguData({...cguData, effetsRestitutionAcces: e.target.value})} placeholder="Export des données, transfert vers autre service..." className="min-h-[60px]" /></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 15. LITIGES / DROIT APPLICABLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Litiges / Droit applicable</h4>
+                  <div className="space-y-3">
+                    <div><Label>Droit applicable *</Label><Input value={cguData.droitApplicable} onChange={(e) => setCguData({...cguData, droitApplicable: e.target.value})} placeholder="Ex: Droit français" /></div>
+                    <div><Label>Tribunal compétent</Label><Textarea value={cguData.tribunalCompetent} onChange={(e) => setCguData({...cguData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunaux de Paris" className="min-h-[60px]" /></div>
+                    <div>
+                      <Label>Procédure amiable préalable</Label>
+                      <RadioGroup value={cguData.procedureAmiable} onValueChange={(v) => setCguData({...cguData, procedureAmiable: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="amiable-oui" /><Label htmlFor="amiable-oui">Oui (obligatoire)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="amiable-non" /><Label htmlFor="amiable-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div>
+                      <Label>Clause de médiation</Label>
+                      <RadioGroup value={cguData.clauseMediationLitiges} onValueChange={(v) => setCguData({...cguData, clauseMediationLitiges: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="mediation-lit-oui" /><Label htmlFor="mediation-lit-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="mediation-lit-non" /><Label htmlFor="mediation-lit-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 16. ANNEXES TECHNIQUES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Annexes techniques possibles</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexePolitiqueConfidentialite} onCheckedChange={(v) => setCguData({...cguData, annexePolitiqueConfidentialite: !!v})} id="ann-confid" /><Label htmlFor="ann-confid" className="font-normal">Politique de confidentialité</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexePolitiqueCookies} onCheckedChange={(v) => setCguData({...cguData, annexePolitiqueCookies: !!v})} id="ann-cook" /><Label htmlFor="ann-cook" className="font-normal">Politique cookies</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexeCharteUtilisation} onCheckedChange={(v) => setCguData({...cguData, annexeCharteUtilisation: !!v})} id="ann-charte" /><Label htmlFor="ann-charte" className="font-normal">Charte d'utilisation</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexeDocumentationAPI} onCheckedChange={(v) => setCguData({...cguData, annexeDocumentationAPI: !!v})} id="ann-api" /><Label htmlFor="ann-api" className="font-normal">Documentation API (si applicable)</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexeReglesModeration} onCheckedChange={(v) => setCguData({...cguData, annexeReglesModeration: !!v})} id="ann-mod" /><Label htmlFor="ann-mod" className="font-normal">Règles de modération (DSA)</Label></div>
+                  </div>
+                </div>
+                
+                {/* 17. PIÈCES JUSTIFICATIVES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Pièces justificatives (liste)</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.piecesMentionsLegales} onCheckedChange={(v) => setCguData({...cguData, piecesMentionsLegales: !!v})} id="pj-mentions" /><Label htmlFor="pj-mentions" className="font-normal">Mentions légales</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.piecesPolitiqueConfidentialite} onCheckedChange={(v) => setCguData({...cguData, piecesPolitiqueConfidentialite: !!v})} id="pj-confid" /><Label htmlFor="pj-confid" className="font-normal">Politique de confidentialité</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.piecesPolitiqueCookies} onCheckedChange={(v) => setCguData({...cguData, piecesPolitiqueCookies: !!v})} id="pj-cookies" /><Label htmlFor="pj-cookies" className="font-normal">Politique de cookies</Label></div>
+                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.piecesConditionsCommerciales} onCheckedChange={(v) => setCguData({...cguData, piecesConditionsCommerciales: !!v})} id="pj-comm" /><Label htmlFor="pj-comm" className="font-normal">Conditions commerciales (si liées)</Label></div>
+                  </div>
                 </div>
                 
                 {/* UPLOAD FICHIERS */}
