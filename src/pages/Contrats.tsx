@@ -46910,17 +46910,174 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* 14-20 sections finales... */}
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-700">✅ Sections 14 à 20 à compléter dans la prochaine mise à jour</p>
-                  <p className="text-xs text-gray-600 mt-1">Responsabilité, PI, RGPD, Service client, Résiliation, Loi applicable, Annexes</p>
+                {/* 14. RESPONSABILITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Responsabilité</h4>
+                  <div className="space-y-3">
+                    <div><Label>Limitation de responsabilité</Label><Textarea value={cgvData.limitationResponsabilite} onChange={(e) => setCgvData({...cgvData, limitationResponsabilite: e.target.value})} placeholder="Plafond, exclusions, restrictions..." className="min-h-[80px]" /></div>
+                    <div>
+                      <Label>Exclusion des dommages indirects</Label>
+                      <RadioGroup value={cgvData.exclusionDommagesIndirects} onValueChange={(v) => setCgvData({...cgvData, exclusionDommagesIndirects: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="dmg-oui" /><Label htmlFor="dmg-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="dmg-non" /><Label htmlFor="dmg-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Plafond de responsabilité (si applicable)</Label><Input value={cgvData.plafondResponsabilite} onChange={(e) => setCgvData({...cgvData, plafondResponsabilite: e.target.value})} placeholder="Ex: Montant de la commande, 10 000€..." /></div>
+                    <div><Label>Force majeure</Label><Textarea value={cgvData.forceMajeureResponsabilite} onChange={(e) => setCgvData({...cgvData, forceMajeureResponsabilite: e.target.value})} placeholder="Exonération en cas de force majeure..." className="min-h-[60px]" /></div>
+                    <div><Label>Responsabilité défaut information</Label><Textarea value={cgvData.responsabiliteDefautInfo} onChange={(e) => setCgvData({...cgvData, responsabiliteDefautInfo: e.target.value})} placeholder="Inexactitudes, omissions..." className="min-h-[60px]" /></div>
+                  </div>
                 </div>
                 
-                {/* ANNEXES ET PIÈCES JUSTIFICATIVES */}
+                {/* 15. PROPRIÉTÉ INTELLECTUELLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">📎 Annexes et pièces justificatives</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Propriété intellectuelle</h4>
+                  <div className="space-y-3">
+                    <div><Label>Marques & logos</Label><Textarea value={cgvData.marquesLogos} onChange={(e) => setCgvData({...cgvData, marquesLogos: e.target.value})} placeholder="Titularité, protection..." className="min-h-[60px]" /></div>
+                    <div>
+                      <Label>Interdiction reproduction</Label>
+                      <RadioGroup value={cgvData.interdictionReproduction} onValueChange={(v) => setCgvData({...cgvData, interdictionReproduction: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="repro-oui" /><Label htmlFor="repro-oui">Oui (interdiction totale)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="partiel" id="repro-part" /><Label htmlFor="repro-part">Partielle</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="repro-non" /><Label htmlFor="repro-non">Autorisée</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div><Label>Licence client (si applicable)</Label><Textarea value={cgvData.licenceClient} onChange={(e) => setCgvData({...cgvData, licenceClient: e.target.value})} placeholder="Droit d'usage personnel, restrictions..." className="min-h-[60px]" /></div>
+                    <div><Label>Protection contenus numériques</Label><Textarea value={cgvData.protectionContenusNumeriques} onChange={(e) => setCgvData({...cgvData, protectionContenusNumeriques: e.target.value})} placeholder="Téléchargements, copies, DRM..." className="min-h-[60px]" /></div>
+                    <div><Label>Clause anti-contrefaçon</Label><Textarea value={cgvData.clauseAntiContrefacon} onChange={(e) => setCgvData({...cgvData, clauseAntiContrefacon: e.target.value})} placeholder="Engagement du vendeur, garanties..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 16. RGPD & DONNÉES PERSONNELLES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ RGPD & Données personnelles</h4>
+                  <div className="space-y-3">
+                    <div><Label>Nature des données collectées *</Label><Textarea value={cgvData.natureDonneesCollectees} onChange={(e) => setCgvData({...cgvData, natureDonneesCollectees: e.target.value})} placeholder="Identité, coordonnées, données bancaires..." className="min-h-[80px]" /></div>
+                    <div><Label>Finalités du traitement *</Label><Textarea value={cgvData.finalitesTraitement} onChange={(e) => setCgvData({...cgvData, finalitesTraitement: e.target.value})} placeholder="Gestion commandes, facturation, livraison, marketing..." className="min-h-[80px]" /></div>
+                    <div><Label>Responsable de traitement</Label><Input value={cgvData.responsableTraitement} onChange={(e) => setCgvData({...cgvData, responsableTraitement: e.target.value})} placeholder="Nom de l'entreprise" /></div>
+                    <div><Label>Durée de conservation</Label><Input value={cgvData.dureeConservation} onChange={(e) => setCgvData({...cgvData, dureeConservation: e.target.value})} placeholder="Ex: 3 ans après dernière commande" /></div>
+                    <div><Label>Droits des personnes</Label><Textarea value={cgvData.droitsPersonnes} onChange={(e) => setCgvData({...cgvData, droitsPersonnes: e.target.value})} placeholder="Accès, rectification, suppression, portabilité, opposition..." className="min-h-[80px]" /></div>
+                    <div>
+                      <Label>Transfert hors UE</Label>
+                      <RadioGroup value={cgvData.transfertHorsUE} onValueChange={(v) => setCgvData({...cgvData, transfertHorsUE: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="ue-oui" /><Label htmlFor="ue-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="ue-non" /><Label htmlFor="ue-non">Non</Label></div>
+                      </RadioGroup>
+                      {cgvData.transfertHorsUE === "oui" && (
+                        <Input value={cgvData.transfertHorsUEPrecisions} onChange={(e) => setCgvData({...cgvData, transfertHorsUEPrecisions: e.target.value})} placeholder="Pays, garanties..." className="mt-2" />
+                      )}
+                    </div>
+                    <div><Label>Traitement des données de paiement</Label><Textarea value={cgvData.traitementPaiement} onChange={(e) => setCgvData({...cgvData, traitementPaiement: e.target.value})} placeholder="Prestataire, sécurisation, PCI DSS..." className="min-h-[60px]" /></div>
+                    <div><Label>Politique cookies</Label><Textarea value={cgvData.politiqueCookies} onChange={(e) => setCgvData({...cgvData, politiqueCookies: e.target.value})} placeholder="Types, finalités, durée, consentement..." className="min-h-[80px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 17. SERVICE CLIENT & MÉDIATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Service client & Médiation</h4>
+                  <div className="space-y-3">
+                    <div><Label>Contact service client *</Label><Textarea value={cgvData.contactServiceClient} onChange={(e) => setCgvData({...cgvData, contactServiceClient: e.target.value})} placeholder="Email, téléphone, horaires, adresse postale..." className="min-h-[80px]" /></div>
+                    <div><Label>Procédure de réclamation</Label><Textarea value={cgvData.procedureReclamation} onChange={(e) => setCgvData({...cgvData, procedureReclamation: e.target.value})} placeholder="Étapes, délais de réponse..." className="min-h-[80px]" /></div>
+                    {cgvData.typesClients.includes("B2C") && (
+                      <div className="p-3 bg-green-50 rounded border border-green-200">
+                        <Label className="font-medium text-green-700">Service de médiation (obligatoire B2C) *</Label>
+                        <p className="text-xs text-gray-600 mb-2 mt-1">Conformément à l'article L.612-1 du Code de la consommation</p>
+                        <Input value={cgvData.serviceMediationNom} onChange={(e) => setCgvData({...cgvData, serviceMediationNom: e.target.value})} placeholder="Nom du médiateur" className="mb-2" />
+                        <Textarea value={cgvData.coordonneesMediateur} onChange={(e) => setCgvData({...cgvData, coordonneesMediateur: e.target.value})} placeholder="Adresse, email, site web du médiateur..." className="min-h-[60px]" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* 18. RÉSILIATION ABONNEMENTS (si applicable) */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Résiliation abonnements (si applicable)</h4>
+                  <div className="space-y-3">
+                    <div><Label>Durée de l'abonnement</Label><Input value={cgvData.dureeAbonnement} onChange={(e) => setCgvData({...cgvData, dureeAbonnement: e.target.value})} placeholder="Ex: 1 mois, 1 an..." /></div>
+                    <div>
+                      <Label>Reconduction tacite</Label>
+                      <RadioGroup value={cgvData.reconductionTacite} onValueChange={(v) => setCgvData({...cgvData, reconductionTacite: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="recon-oui" /><Label htmlFor="recon-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="recon-non" /><Label htmlFor="recon-non">Non</Label></div>
+                      </RadioGroup>
+                      {cgvData.reconductionTacite === "oui" && (
+                        <p className="text-xs text-gray-600 mt-1">⚠️ Information préalable (Loi Chatel) requise avant échéance</p>
+                      )}
+                    </div>
+                    <div><Label>Procédure de résiliation</Label><Textarea value={cgvData.procedureResiliation} onChange={(e) => setCgvData({...cgvData, procedureResiliation: e.target.value})} placeholder="Modalités, lettre recommandée, email..." className="min-h-[80px]" /></div>
+                    <div><Label>Préavis</Label><Input value={cgvData.preavisResiliation} onChange={(e) => setCgvData({...cgvData, preavisResiliation: e.target.value})} placeholder="Ex: 1 mois avant échéance" /></div>
+                    <div><Label>Restitution / exportation des données</Label><Textarea value={cgvData.restitutionDonnees} onChange={(e) => setCgvData({...cgvData, restitutionDonnees: e.target.value})} placeholder="Format, délai, conditions..." className="min-h-[60px]" /></div>
+                    <div><Label>Suppression du compte</Label><Textarea value={cgvData.suppressionCompte} onChange={(e) => setCgvData({...cgvData, suppressionCompte: e.target.value})} placeholder="Délai de suppression définitive..." className="min-h-[60px]" /></div>
+                  </div>
+                </div>
+                
+                {/* 19. LOI APPLICABLE & TRIBUNAL COMPÉTENT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣9️⃣ Loi applicable & Tribunal compétent</h4>
+                  <div className="space-y-3">
+                    <div><Label>Loi applicable *</Label><Input value={cgvData.loiApplicable} onChange={(e) => setCgvData({...cgvData, loiApplicable: e.target.value})} placeholder="Ex: Droit français" /></div>
+                    <div><Label>Tribunal compétent</Label><Textarea value={cgvData.tribunalCompetent} onChange={(e) => setCgvData({...cgvData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunaux du ressort de Paris" className="min-h-[60px]" /></div>
+                    <div>
+                      <Label>Clause de médiation (alternative au tribunal)</Label>
+                      <RadioGroup value={cgvData.clauseMediation} onValueChange={(v) => setCgvData({...cgvData, clauseMediation: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="mediation-oui" /><Label htmlFor="mediation-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="mediation-non" /><Label htmlFor="mediation-non">Non</Label></div>
+                      </RadioGroup>
+                    </div>
+                    {cgvData.typesClients.includes("B2B") && (
+                      <div>
+                        <Label>Clause d'arbitrage (B2B)</Label>
+                        <RadioGroup value={cgvData.clauseArbitrage} onValueChange={(v) => setCgvData({...cgvData, clauseArbitrage: v})}>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="arb-oui" /><Label htmlFor="arb-oui">Oui</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="arb-non" /><Label htmlFor="arb-non">Non</Label></div>
+                        </RadioGroup>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* 20. ANNEXES (LISTE) */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Annexes (liste des documents)</h4>
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-600">Cochez les annexes fournies avec les CGV :</p>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.annexeFormulaireRetractation} onCheckedChange={(v) => setCgvData({...cgvData, annexeFormulaireRetractation: !!v})} id="ann-retr" />
+                        <Label htmlFor="ann-retr" className="font-normal">Formulaire de rétractation (B2C)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.annexePolitiqueConfidentialite} onCheckedChange={(v) => setCgvData({...cgvData, annexePolitiqueConfidentialite: !!v})} id="ann-conf" />
+                        <Label htmlFor="ann-conf" className="font-normal">Politique de confidentialité</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.annexeGrilleTarifaire} onCheckedChange={(v) => setCgvData({...cgvData, annexeGrilleTarifaire: !!v})} id="ann-tarif" />
+                        <Label htmlFor="ann-tarif" className="font-normal">Grille tarifaire</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.annexeFichesTechniques} onCheckedChange={(v) => setCgvData({...cgvData, annexeFichesTechniques: !!v})} id="ann-tech" />
+                        <Label htmlFor="ann-tech" className="font-normal">Fiches techniques produits</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.annexeProcedureSAV} onCheckedChange={(v) => setCgvData({...cgvData, annexeProcedureSAV: !!v})} id="ann-sav" />
+                        <Label htmlFor="ann-sav" className="font-normal">Procédure SAV</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.annexeNoticesUtilisation} onCheckedChange={(v) => setCgvData({...cgvData, annexeNoticesUtilisation: !!v})} id="ann-notice" />
+                        <Label htmlFor="ann-notice" className="font-normal">Notices d'utilisation</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={cgvData.annexeAutres} onCheckedChange={(v) => setCgvData({...cgvData, annexeAutres: !!v})} id="ann-autre" />
+                        <Label htmlFor="ann-autre" className="font-normal">Autres (à préciser dans les fichiers)</Label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* UPLOAD FICHIERS ANNEXES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📎 Upload des fichiers annexes</h4>
                   <MultiFileUpload 
-                    label="Annexes (Formulaire rétractation, politique confidentialité, grilles tarifaires, fiches techniques, procédure SAV, notices...)" 
+                    label="Joindre les fichiers annexes (Formulaire rétractation, politique confidentialité, grilles tarifaires, fiches techniques, procédure SAV, notices...)" 
                     files={cgvAnnexesFiles} 
                     onFilesChange={setCgvAnnexesFiles} 
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
