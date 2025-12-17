@@ -349,25 +349,7 @@ export default function Contrats() {
     indemniteLegale: "",
     suspensionImpaye: "", // oui / non
     
-    // 7. Obligations Prestataire
-    executionReglesArt: true,
-    confidentialite: true,
-    respectNormes: true,
-    nonDebauchage: true,
-    assurancePro: true,
-    remonteeAlertes: true,
-    continuitéService: true,
-    
-    // 8. Obligations Client
-    fournirInformations: true,
-    faciliterAcces: true,
-    respecterCalendrier: true,
-    validerLivrables: true,
-    payerPrix: true,
-    responsabiliteDonneesErronees: true,
-    interlocuteurUnique: "",
-    
-    // 9. Propriété intellectuelle
+    // 6. Propriété intellectuelle
     droitsCreationsPrestataire: "", // licence / cession / reserves
     limitationDroits: "",
     droitsCreationsClient: "",
@@ -375,13 +357,13 @@ export default function Contrats() {
     droitsReproduction: "",
     garantiesContrefacon: "",
     
-    // 10. Confidentialité
+    // 7. Confidentialité
     definitionInfosConfidentielles: "",
     dureeConfidentialite: "5", // 5 ans par défaut
     exceptionsConfidentialite: "",
     sanctionsViolation: "",
     
-    // 11. RGPD
+    // 8. RGPD
     prestataireSousTraitant: "", // oui / non
     clientResponsableTraitement: "", // oui / non
     natureDonnees: "",
@@ -391,31 +373,31 @@ export default function Contrats() {
     clauseDataBreach: "",
     dpaRequis: "", // oui / non
     
-    // 12. Sous-traitance
+    // 9. Sous-traitance
     sousTraitanceAutorisee: "", // oui / non / avec_validation
     validationPrealable: "", // oui / non
     responsabilitePrestataire: "",
     
-    // 13. Responsabilité
+    // 10. Responsabilité
     plafondResponsabilite: "",
     exclusionsDommages: "",
     forceMajeure: "",
     responsabiliteNonConformite: "",
     montantCouverture: "",
     
-    // 14. Résiliation
+    // 11. Résiliation
     resiliationPreavis: "",
     resiliationImmediate: "", // faute / non_paiement / non_respect
     effetsResiliation: "",
     
-    // 15. Réversibilité
+    // 12. Réversibilité
     restitutionDonnees: "",
     restitutionDocuments: "",
     continuationTransition: "",
     assistanceMigration: "",
     coutReversibilite: "",
     
-    // 16. Litiges
+    // 13. Litiges
     loiApplicable: "France",
     tribunalCompetent: "",
     mediationArbitrage: "", // oui / non
