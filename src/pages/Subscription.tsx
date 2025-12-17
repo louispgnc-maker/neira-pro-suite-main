@@ -170,19 +170,25 @@ export default function Subscription() {
 
         // If no cabinet in profile, check cabinet_members
         if (!cabinetId) {
-          const { data: memberData, error: memberError } = await supabase
+          // Récupérer TOUS les cabinets de l'utilisateur pour choisir le bon
+          const { data: allMemberships, error: memberError } = await supabase
             .from('cabinet_members')
-            .select('cabinet_id, role_cabinet')
+            .select('cabinet_id, role_cabinet, created_at')
             .eq('user_id', user.id)
             .eq('status', 'active')
-            .single();
+            .order('created_at', { ascending: false });
           
-          console.log('Member data:', memberData, 'Error:', memberError);
-          cabinetId = memberData?.cabinet_id;
+          console.log('All memberships:', allMemberships, 'Error:', memberError);
           
-          if (memberData?.role_cabinet) {
-            setUserRole(memberData.role_cabinet);
-            setIsManager(memberData.role_cabinet === 'Fondateur');
+          if (allMemberships && allMemberships.length > 0) {
+            // Priorité 1: Cabinet où l'utilisateur est Fondateur
+            const founderCabinet = allMemberships.find(m => m.role_cabinet === 'Fondateur');
+            const selectedMembership = founderCabinet || allMemberships[0];
+            
+            console.log('Selected membership:', selectedMembership);
+            cabinetId = selectedMembership.cabinet_id;
+            setUserRole(selectedMembership.role_cabinet);
+            setIsManager(selectedMembership.role_cabinet === 'Fondateur');
           }
         } else {
           // If cabinet_id exists in profile, also check the role in cabinet_members
@@ -192,8 +198,9 @@ export default function Subscription() {
             .eq('user_id', user.id)
             .eq('cabinet_id', cabinetId)
             .eq('status', 'active')
-            .single();
+            .maybeSingle();
           
+          console.log('Member role for cabinet from profile:', memberData);
           if (memberData?.role_cabinet) {
             setUserRole(memberData.role_cabinet);
             setIsManager(memberData.role_cabinet === 'Fondateur');
