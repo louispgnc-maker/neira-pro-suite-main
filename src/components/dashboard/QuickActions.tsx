@@ -90,11 +90,11 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
     }
   };
 
-  // Check cabinet membership (only relevant for notaire role per requirement)
+  // Check cabinet membership for both avocats and notaires
   useEffect(() => {
     let active = true;
     const check = async () => {
-      if (!user || role !== 'notaire') return;
+      if (!user) return;
       setCheckingCabinet(true);
       try {
         // Call RPC without chaining filters (some RPC drivers don't support .eq chaining on RPC results)
@@ -120,7 +120,6 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
   }, [user, role]);
 
   const handleCollaborative = () => {
-    if (role !== 'notaire') return; // Only for notaires as specified
     // If still checking, block navigation briefly
     if (checkingCabinet) {
       toast.info('Vérification en cours…');
@@ -132,10 +131,11 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
       return;
     }
     // Redirect to collaborative space
-    navigate('/notaires/espace-collaboratif?tab=dashboard');
+    const prefix = role === 'notaire' ? '/notaires' : '/avocats';
+    navigate(`${prefix}/espace-collaboratif?tab=dashboard`);
   };
 
-  const hasCollaborative = role === 'notaire';
+  const hasCollaborative = true; // Available for both avocats and notaires
 
   return (
     <Card>
@@ -153,18 +153,18 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           onChange={onFilesSelected}
         />
 
-        {hasCollaborative ? (
+        {role === 'notaire' ? (
           <ContractSelectorNotaire />
         ) : (
           <div className="md:col-span-1 [&>button]:w-full [&>button]:py-6 [&>button]:text-base [&>button]:gap-3"><ContractSelectorAvocat /></div>
         )}
 
-        {/* Espace collaboratif (only for notaire). Placed after first selector to appear near middle visually */}
+        {/* Espace collaboratif - available for both avocats and notaires */}
         {hasCollaborative && (
           <Button
             onClick={handleCollaborative}
             disabled={checkingCabinet}
-            className={`${primaryButtonColor || 'bg-orange-600 hover:bg-orange-700 text-white'} h-auto flex-col gap-2 py-4`}
+            className={`${primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')} h-auto flex-col gap-2 py-4`}
           >
             <Users className="h-5 w-5" />
             <span className="text-xs">
