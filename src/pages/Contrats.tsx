@@ -423,6 +423,159 @@ export default function Contrats() {
   const [prestationClientFiles, setPrestationClientFiles] = useState<File[]>([]); // Docs client
   const [prestationAnnexesFiles, setPrestationAnnexesFiles] = useState<File[]>([]); // Cahier des charges, etc.
   
+  // States pour Contrat de vente B2B
+  const [venteB2BData, setVenteB2BData] = useState({
+    // 1. Identification Fournisseur/Vendeur
+    fournisseurDenomination: "",
+    fournisseurFormeJuridique: "",
+    fournisseurCapital: "",
+    fournisseurRCS: "",
+    fournisseurSiegeSocial: "",
+    fournisseurRepresentant: "",
+    fournisseurEmail: "",
+    fournisseurTelephone: "",
+    fournisseurAssurancePro: "", // oui/non
+    fournisseurNumeroAssurance: "",
+    
+    // Acheteur/Distributeur
+    acheteurDenomination: "",
+    acheteurFormeJuridique: "",
+    acheteurRCS: "",
+    acheteurAdresse: "",
+    acheteurRepresentant: "",
+    acheteurEmail: "",
+    acheteurTelephone: "",
+    acheteurZoneGeographique: "",
+    acheteurStatutCommercial: "", // revendeur/agent/importateur/grossiste
+    
+    // 2. Objet du contrat
+    natureProduits: "",
+    categoriesProduits: "",
+    perimetreDistribution: "", // vente_simple/distribution_generale/exclusive/selective/franchise
+    obligationsMinimalesDistributeur: "",
+    canauxVenteAutorises: "", // boutique/en_ligne/marketplace/export
+    
+    // 3A. Tarifs
+    prixUnitaire: "",
+    grilleTarifaire: "",
+    remises: "",
+    revisionsPrix: "",
+    conditionsPreferentielles: "",
+    
+    // 3B. Commandes
+    modalitesPassationCommande: "",
+    minimumsCommande: "",
+    delaisCommande: "",
+    confirmationCommande: "", // automatique/manuelle
+    conditionsAnnulation: "",
+    
+    // 3C. Livraison
+    incoterms: "", // EXW/DDP/FCA/FOB
+    transporteur: "",
+    transfertRisques: "",
+    delaisLivraison: "",
+    penalitesRetardLivraison: "",
+    modalitesReception: "",
+    
+    // 3D. Paiement
+    modePaiement: "", // virement/prelevement/LCR
+    delaisPaiement: "", // comptant/30j/60j
+    acomptePaiement: "",
+    penalitesRetardPaiement: "",
+    indemniteLegaleRecouvrement: "",
+    suspensionLivraisonImpaye: "", // oui/non
+    
+    // 4. Obligations fournisseur
+    obligationConformite: true,
+    respectNormesCertifications: true,
+    garantieDisponibilite: true,
+    assuranceQualite: true,
+    remplacementDefectueux: true,
+    formationDistributeur: "", // oui/non
+    assistanceTechnique: "", // oui/non
+    obligationInformation: true,
+    
+    // 5. Obligations acheteur/distributeur
+    commercialisationImageMarque: true,
+    respectPrixRecommandes: "", // oui/non
+    promotionActive: true,
+    stockMinimum: "",
+    reportingMarche: true,
+    respectNormesLocales: true,
+    serviceClientRetours: true,
+    formationPersonnel: "", // oui/non
+    
+    // 6. Exclusivité
+    exclusiviteTerritoriale: "", // oui/non
+    exclusivitePays: "",
+    exclusiviteRegion: "",
+    dureeExclusivite: "",
+    volumeMinimalExclusivite: "",
+    exclusiviteProduit: "", // oui/non
+    objectifsVenteExclusivite: "",
+    sanctionsEchecExclusivite: "",
+    
+    // 7. Distribution sélective
+    distributionSelective: "", // oui/non
+    criteresAgrement: "",
+    exigencesPresentationProduits: "",
+    qualiteMinimalePointVente: "",
+    conditionsFormationPersonnel: "",
+    interdictionReventeHorsReseau: "", // oui/non
+    
+    // 8. Propriété intellectuelle
+    droitUtilisationMarque: "", // oui/non
+    conditionsUtilisationLogos: "",
+    interdictionModificationProduits: "", // oui/non
+    proprietaireDocumentsMarketing: "", // fournisseur/acheteur
+    interdictionDepotMarque: "", // oui/non
+    clauseContreContrefacon: "",
+    
+    // 9. Garanties
+    garantieLegaleConformite: true,
+    garantieLegaleVicesCaches: true,
+    garantieCommercialeDuree: "",
+    garantieCommercialeEtendue: "",
+    garantieCommercialeExclusions: "",
+    conditionsRetour: "",
+    procedureSAV: "",
+    
+    // 10. Responsabilité
+    limitationResponsabiliteFournisseur: "",
+    exclusionDommagesIndirects: "", // oui/non
+    plafondIndemnitaire: "",
+    casForceMajeure: "",
+    responsabiliteDistributeurClients: "",
+    
+    // 11. Non-concurrence & Confidentialité
+    interdictionProduitsConcurrents: "", // oui/non
+    dureeNonConcurrence: "",
+    sanctionsNonConcurrence: "",
+    confidentialiteDuree: "",
+    natureInformationsConfidentielles: "",
+    
+    // 12. Durée & Résiliation
+    dureeContrat: "", // determinee/indeterminee
+    dateDebutContrat: "",
+    dateFinContrat: "",
+    reconductionTacite: "", // oui/non
+    preavisResiliation: "",
+    resiliationImmediateMotifs: "",
+    effetsResiliation: "",
+    
+    // 13. Compliance
+    loiApplicable: "France",
+    tribunalCompetent: "",
+    clauseMediation: "", // oui/non
+    clauseAntiCorruption: "", // oui/non
+    clauseRGPD: "", // oui/non
+    clauseConformiteExportImport: "",
+  });
+  
+  const [venteB2BFournisseurFiles, setVenteB2BFournisseurFiles] = useState<File[]>([]); // Kbis, statuts, assurance, fiches techniques
+  const [venteB2BDistributeurFiles, setVenteB2BDistributeurFiles] = useState<File[]>([]); // Kbis, assurance, points de vente
+  const [venteB2BAnnexesFiles, setVenteB2BAnnexesFiles] = useState<File[]>([]); // CGV, grilles tarifaires, guides
+  
   // States pour attestation de propriété immobilière
   const [attestationActeDecesFiles, setAttestationActeDecesFiles] = useState<File[]>([]);
   const [attestationIdentiteHeritiers, setAttestationIdentiteHeritiers] = useState<File[]>([]);
@@ -45378,7 +45531,84 @@ FIN DE LA CONVENTION
               </div>
             )}
 
-            {["Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Conditions Générales d'Utilisation (CGU) — SaaS / site web", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType) && (
+            {/* Formulaire complet pour Contrat de vente B2B / distribution */}
+            {pendingContractType === "Contrat de vente B2B / distribution" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">🤝 Contrat de vente B2B / distribution</h3>
+                
+                {/* 1. IDENTIFICATION DES PARTIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  
+                  {/* FOURNISSEUR / VENDEUR */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">🏭 Fournisseur / Vendeur</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Dénomination sociale *</Label><Input value={venteB2BData.fournisseurDenomination} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurDenomination: e.target.value})} /></div>
+                      <div><Label>Forme juridique *</Label><Input value={venteB2BData.fournisseurFormeJuridique} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurFormeJuridique: e.target.value})} placeholder="SARL, SAS, SA..." /></div>
+                      <div><Label>Capital social</Label><Input value={venteB2BData.fournisseurCapital} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurCapital: e.target.value})} placeholder="Ex: 10 000€" /></div>
+                      <div><Label>RCS / SIREN *</Label><Input value={venteB2BData.fournisseurRCS} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurRCS: e.target.value})} /></div>
+                      <div className="md:col-span-2"><Label>Adresse du siège social *</Label><Input value={venteB2BData.fournisseurSiegeSocial} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurSiegeSocial: e.target.value})} /></div>
+                      <div><Label>Représentant légal *</Label><Input value={venteB2BData.fournisseurRepresentant} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurRepresentant: e.target.value})} /></div>
+                      <div><Label>Email *</Label><Input type="email" value={venteB2BData.fournisseurEmail} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone</Label><Input value={venteB2BData.fournisseurTelephone} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurTelephone: e.target.value})} /></div>
+                    </div>
+                    <div>
+                      <Label>Assurance professionnelle</Label>
+                      <RadioGroup value={venteB2BData.fournisseurAssurancePro} onValueChange={(v) => setVenteB2BData({...venteB2BData, fournisseurAssurancePro: v})}>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="oui" id="f-ass-oui" /><Label htmlFor="f-ass-oui">Oui</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="f-ass-non" /><Label htmlFor="f-ass-non">Non</Label></div>
+                      </RadioGroup>
+                      {venteB2BData.fournisseurAssurancePro === "oui" && (
+                        <Input value={venteB2BData.fournisseurNumeroAssurance} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurNumeroAssurance: e.target.value})} placeholder="Numéro de police" className="mt-2" />
+                      )}
+                    </div>
+                    
+                    <MultiFileUpload label="Pièces justificatives fournisseur (Kbis, statuts, assurance, fiches techniques)" files={venteB2BFournisseurFiles} onFilesChange={setVenteB2BFournisseurFiles} accept=".pdf,.jpg,.jpeg,.png" role="avocat" />
+                  </div>
+                  
+                  {/* ACHETEUR / DISTRIBUTEUR */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">🏢 Acheteur / Distributeur</h5>
+                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={setSelectedClientId} label="Sélectionner le client (acheteur/distributeur)" />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Dénomination *</Label><Input value={venteB2BData.acheteurDenomination} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurDenomination: e.target.value})} /></div>
+                      <div><Label>Forme juridique</Label><Input value={venteB2BData.acheteurFormeJuridique} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurFormeJuridique: e.target.value})} /></div>
+                      <div><Label>RCS / SIREN</Label><Input value={venteB2BData.acheteurRCS} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurRCS: e.target.value})} /></div>
+                      <div className="md:col-span-2"><Label>Adresse complète *</Label><Input value={venteB2BData.acheteurAdresse} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurAdresse: e.target.value})} /></div>
+                      <div><Label>Représentant légal</Label><Input value={venteB2BData.acheteurRepresentant} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurRepresentant: e.target.value})} /></div>
+                      <div><Label>Email *</Label><Input type="email" value={venteB2BData.acheteurEmail} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone</Label><Input value={venteB2BData.acheteurTelephone} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurTelephone: e.target.value})} /></div>
+                      <div><Label>Zone géographique d'activité</Label><Input value={venteB2BData.acheteurZoneGeographique} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurZoneGeographique: e.target.value})} placeholder="Ex: France, Europe, International" /></div>
+                      <div className="md:col-span-2">
+                        <Label>Statut commercial</Label>
+                        <Select value={venteB2BData.acheteurStatutCommercial} onValueChange={(v) => setVenteB2BData({...venteB2BData, acheteurStatutCommercial: v})}>
+                          <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="revendeur">Revendeur</SelectItem>
+                            <SelectItem value="agent">Agent commercial</SelectItem>
+                            <SelectItem value="importateur">Importateur</SelectItem>
+                            <SelectItem value="grossiste">Grossiste</SelectItem>
+                            <SelectItem value="detaillant">Détaillant</SelectItem>
+                            <SelectItem value="distributeur_exclusif">Distributeur exclusif</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
+                    <MultiFileUpload label="Pièces justificatives distributeur (Kbis, assurance RC Pro, liste points de vente)" files={venteB2BDistributeurFiles} onFilesChange={setVenteB2BDistributeurFiles} accept=".pdf,.jpg,.jpeg,.png,.xlsx" role="avocat" />
+                  </div>
+                </div>
+                
+                {/* Suite des sections à venir... */}
+                <div className="p-4 bg-yellow-50 rounded border border-yellow-200">
+                  <p className="text-sm text-gray-700">Sections 2 à 13 en cours de développement...</p>
+                </div>
+              </div>
+            )}
+
+            {["Conditions Générales de Vente (CGV)", "Conditions Générales d'Utilisation (CGU) — SaaS / site web", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType) && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg border-b pb-2 text-blue-700">📝 {pendingContractType}</h3>
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
