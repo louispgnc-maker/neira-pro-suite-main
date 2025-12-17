@@ -47329,11 +47329,11 @@ FIN DE LA CONVENTION
             {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
             {(() => {
               console.log('🔍 DEBUG CGU - pendingContractType:', pendingContractType);
-              console.log('🔍 DEBUG CGU - Expected:', "Conditions Générales d'Utilisation (CGU) — SaaS / site web");
-              console.log('🔍 DEBUG CGU - Match:', pendingContractType === "Conditions Générales d'Utilisation (CGU) — SaaS / site web");
+              console.log('🔍 DEBUG CGU - includes CGU:', pendingContractType.includes("CGU"));
+              console.log('🔍 DEBUG CGU - includes SaaS:', pendingContractType.includes("SaaS"));
               return null;
             })()}
-            {pendingContractType === "Conditions Générales d'Utilisation (CGU) — SaaS / site web" && (
+            {(pendingContractType.includes("Conditions Générales d'Utilisation") && pendingContractType.includes("CGU")) && (
               <div className="space-y-6">
                 <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">📱 Conditions Générales d'Utilisation (CGU) — SaaS / Site Web</h3>
                 
@@ -47940,7 +47940,7 @@ FIN DE LA CONVENTION
                   handleQuitusDetteSubmit();
                 } else if (pendingContractType === "Acte de cession de parts sociales") {
                   handleCessionPartsSubmit();
-                } else if (pendingContractType === "Conditions Générales d'Utilisation (CGU) — SaaS / site web") {
+                } else if (pendingContractType.includes("Conditions Générales d'Utilisation") && pendingContractType.includes("CGU")) {
                   handleCGUSubmit();
                 } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
