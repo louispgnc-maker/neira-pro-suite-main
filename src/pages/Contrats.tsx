@@ -45086,7 +45086,20 @@ FIN DE LA CONVENTION
                   {/* CLIENT */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
                     <h5 className="font-medium text-blue-600">🏢 Client (bénéficiaire du service)</h5>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={(id) => {
+                      setSelectedClientId(id);
+                      const client = clients.find(c => c.id === id);
+                      if (client) {
+                        setPrestationData(prev => ({
+                          ...prev,
+                          clientDenomination: `${client.prenom} ${client.nom}`,
+                          clientEmail: client.email || "",
+                          clientTelephone: client.telephone || "",
+                        }));
+                      }
+                    }} label="Sélectionner le client depuis vos clients" />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                       <div><Label>Dénomination / Nom *</Label><Input value={prestationData.clientDenomination} onChange={(e) => setPrestationData({...prestationData, clientDenomination: e.target.value})} /></div>
                       <div><Label>Forme juridique</Label><Input value={prestationData.clientFormeJuridique} onChange={(e) => setPrestationData({...prestationData, clientFormeJuridique: e.target.value})} placeholder="SARL, SAS, Particulier..." /></div>
                       <div className="md:col-span-2"><Label>Adresse complète *</Label><Input value={prestationData.clientAdresse} onChange={(e) => setPrestationData({...prestationData, clientAdresse: e.target.value})} /></div>
@@ -45543,7 +45556,20 @@ FIN DE LA CONVENTION
                   {/* FOURNISSEUR / VENDEUR */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
                     <h5 className="font-medium text-blue-600">🏭 Fournisseur / Vendeur</h5>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={(id) => {
+                      setSelectedClientId(id);
+                      const client = clients.find(c => c.id === id);
+                      if (client) {
+                        setVenteB2BData(prev => ({
+                          ...prev,
+                          fournisseurDenomination: `${client.prenom} ${client.nom}`,
+                          fournisseurEmail: client.email || "",
+                          fournisseurTelephone: client.telephone || "",
+                        }));
+                      }
+                    }} label="Sélectionner le fournisseur depuis vos clients" />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                       <div><Label>Dénomination sociale *</Label><Input value={venteB2BData.fournisseurDenomination} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurDenomination: e.target.value})} /></div>
                       <div><Label>Forme juridique *</Label><Input value={venteB2BData.fournisseurFormeJuridique} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurFormeJuridique: e.target.value})} placeholder="SARL, SAS, SA..." /></div>
                       <div><Label>Capital social</Label><Input value={venteB2BData.fournisseurCapital} onChange={(e) => setVenteB2BData({...venteB2BData, fournisseurCapital: e.target.value})} placeholder="Ex: 10 000€" /></div>
@@ -45570,9 +45596,20 @@ FIN DE LA CONVENTION
                   {/* ACHETEUR / DISTRIBUTEUR */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
                     <h5 className="font-medium text-blue-600">🏢 Acheteur / Distributeur</h5>
-                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={setSelectedClientId} label="Sélectionner le client (acheteur/distributeur)" />
+                    <ClientSelector clients={clients} selectedClientId={selectedClientId} onClientChange={(id) => {
+                      setSelectedClientId(id);
+                      const client = clients.find(c => c.id === id);
+                      if (client) {
+                        setVenteB2BData(prev => ({
+                          ...prev,
+                          acheteurDenomination: `${client.prenom} ${client.nom}`,
+                          acheteurEmail: client.email || "",
+                          acheteurTelephone: client.telephone || "",
+                        }));
+                      }
+                    }} label="Sélectionner le client (acheteur/distributeur)" />
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                       <div><Label>Dénomination *</Label><Input value={venteB2BData.acheteurDenomination} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurDenomination: e.target.value})} /></div>
                       <div><Label>Forme juridique</Label><Input value={venteB2BData.acheteurFormeJuridique} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurFormeJuridique: e.target.value})} /></div>
                       <div><Label>RCS / SIREN</Label><Input value={venteB2BData.acheteurRCS} onChange={(e) => setVenteB2BData({...venteB2BData, acheteurRCS: e.target.value})} /></div>
