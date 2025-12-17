@@ -269,7 +269,14 @@ export default function Statistiques() {
     : clientStats.nouveauxCeMois > 0 ? '+100' : '0';
 
   // Vérifier si l'utilisateur a accès Cabinet+
-  const hasAccess = limits.subscription_plan === 'cabinet-plus';
+  const planName = (limits.subscription_plan || '').toLowerCase().replace(/[\s\-_]/g, '');
+  const hasAccess = planName === 'cabinetplus' || planName === 'cabinet+';
+  
+  console.log('📊 Statistiques access check:', {
+    subscription_plan: limits.subscription_plan,
+    normalized: planName,
+    hasAccess
+  });
 
   // Page accessible avec Cabinet+
   return (
