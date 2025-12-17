@@ -1,4 +1,4 @@
-import { FileText, PenTool, Users, Clock, FolderPlus } from "lucide-react";
+import { FileText, PenTool, Users, Clock, FolderPlus, Crown } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { TasksSummaryCard } from "@/components/dashboard/TasksSummaryCard";
@@ -31,6 +31,7 @@ export function DashboardAvocat() {
   const [clientsToFollow, setClientsToFollow] = useState(0);
   const [dossierCount, setDossierCount] = useState(0);
   const [todayTasks, setTodayTasks] = useState(0);
+  const [subscriptionTier, setSubscriptionTier] = useState<string>('essentiel');
 
   useEffect(() => {
     let isMounted = true;
@@ -43,6 +44,38 @@ export function DashboardAvocat() {
         setClientsToFollow(0);
         setTodayTasks(0);
         return;
+      }
+
+      // Load subscription tier from cabinet
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('cabinet_id')
+        .eq('id', user.id)
+        .single();
+
+      let cabinetId = profileData?.cabinet_id;
+
+      // If no cabinet in profile, check cabinet_members
+      if (!cabinetId) {
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .single();
+        
+        cabinetId = memberData?.cabinet_id;
+      }
+
+      if (cabinetId) {
+        const { data: cabinetData } = await supabase
+          .from('cabinets')
+          .select('subscription_plan')
+          .eq('id', cabinetId);
+        
+        if (cabinetData && cabinetData.length > 0 && cabinetData[0].subscription_plan) {
+          setSubscriptionTier(cabinetData[0].subscription_plan);
+        }
       }
 
       // Dates for current and previous month
@@ -149,9 +182,22 @@ export function DashboardAvocat() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 px-5 py-2 text-sm font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-shadow">
-              ✨ {profile?.subscription_plan || 'Neira Essentiel'}
-            </Badge>
+            <button
+              onClick={() => {
+                console.log('Dashboard subscription button clicked', { subscriptionTier });
+                navigate('/avocats/subscription');
+              }}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 px-5 py-2 rounded-md text-sm font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-shadow cursor-pointer"
+            >
+              <Crown className="h-4 w-4" />
+              <span>
+                {subscriptionTier === 'cabinet-plus' 
+                  ? 'Neira Cabinet+' 
+                  : subscriptionTier === 'professionnel' 
+                  ? 'Neira Professionnel' 
+                  : 'Neira Essentiel'}
+              </span>
+            </button>
           </div>
         </div>
         <p className="text-foreground mt-2">

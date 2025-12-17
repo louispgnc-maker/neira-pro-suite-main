@@ -235,8 +235,8 @@ export default function Profile() {
 
       toast.success("Profil mis à jour");
       
-      // Rediriger vers la page de profil en lecture seule
-      navigate(role === 'notaire' ? '/notaires/profile' : '/avocats/profile');
+      // Forcer le rechargement du profil en attente pour voir les changements
+      window.location.href = role === 'notaire' ? '/notaires/profile' : '/avocats/profile';
     } catch (error: any) {
       console.error('Error saving profile:', error);
       toast.error(error.message || "Erreur lors de la sauvegarde");
@@ -440,7 +440,7 @@ export default function Profile() {
             <Button
               variant="outline"
               onClick={() => signatureInputRef.current?.click()}
-              className="w-full"
+              className={`w-full ${role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-50' : 'border-blue-600 text-blue-600 hover:bg-blue-50'}`}
             >
               <Camera className="w-4 h-4 mr-2" />
               {signatureUrl ? "Changer la signature" : "Ajouter une signature"}

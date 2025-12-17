@@ -504,13 +504,13 @@ export default function Statistiques() {
           <div className="absolute inset-0 flex items-center justify-center">
             <Card className="max-w-md mx-auto border-2 shadow-2xl bg-background/95 backdrop-blur">
               <CardContent className="pt-6 text-center space-y-4">
-                <div className="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center">
-                  <Lock className="h-10 w-10 text-orange-600" />
+                <div className={`mx-auto w-20 h-20 ${role === 'notaire' ? 'bg-orange-100' : 'bg-blue-100'} rounded-full flex items-center justify-center`}>
+                  <Lock className={`h-10 w-10 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold mb-2">Fonctionnalité réservée</h2>
                   <p className="text-muted-foreground mb-4">
-                    Les statistiques avancées sont disponibles uniquement avec l'offre <strong className="text-orange-600">Neira Cabinet+</strong>.
+                    Les statistiques avancées sont disponibles uniquement avec l'offre <strong className={role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}>Neira Cabinet+</strong>.
                   </p>
                   <p className="text-sm text-muted-foreground mb-6">
                     Votre plan actuel : <span className="font-semibold capitalize">{limits.subscription_plan || 'Gratuit'}</span>
@@ -518,7 +518,9 @@ export default function Statistiques() {
                 </div>
                 <Button 
                   onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)}
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
+                  className={role === 'notaire' 
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white'
+                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white'}
                 >
                   Passer à Cabinet+
                 </Button>
