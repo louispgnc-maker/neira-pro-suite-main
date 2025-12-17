@@ -959,6 +959,15 @@ export default function Contrats() {
     procedureAmiable: "", // oui/non
     clauseMediationLitiges: "", // oui/non
     
+    // 15bis. Clause de hiérarchie des documents
+    hierarchieDocuments: "",
+    
+    // 15ter. Clause de nullité partielle
+    clauseNullitePartielle: "",
+    
+    // 15quater. Clause de preuve électronique
+    clausePreuveElectronique: "",
+    
     // 16. Annexes techniques
     annexePolitiqueConfidentialite: false,
     annexePolitiqueCookies: false,
@@ -47793,6 +47802,57 @@ FIN DE LA CONVENTION
                         <div className="flex items-center space-x-2"><RadioGroupItem value="non" id="mediation-lit-non" /><Label htmlFor="mediation-lit-non">Non</Label></div>
                       </RadioGroup>
                     </div>
+                  </div>
+                </div>
+                
+                {/* 15bis. HIÉRARCHIE DES DOCUMENTS */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">1️⃣5️⃣bis Clause de hiérarchie des documents</h4>
+                  <div className="p-3 bg-green-100 rounded border border-green-300">
+                    <p className="text-xs text-green-800">💡 Utile si CGU + CGV + contrats particuliers coexistent</p>
+                  </div>
+                  <div>
+                    <Label>Ordre de priorité des documents</Label>
+                    <Textarea 
+                      value={cguData.hierarchieDocuments} 
+                      onChange={(e) => setCguData({...cguData, hierarchieDocuments: e.target.value})} 
+                      placeholder="Ex: En cas de contradiction entre les documents contractuels, l'ordre de priorité est le suivant : 1. Contrats particuliers, 2. CGV, 3. CGU, 4. Conditions commerciales..."
+                      className="min-h-[100px]" 
+                    />
+                  </div>
+                </div>
+                
+                {/* 15ter. NULLITÉ PARTIELLE */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">1️⃣5️⃣ter Clause de nullité partielle (séparabilité)</h4>
+                  <div className="p-3 bg-green-100 rounded border border-green-300">
+                    <p className="text-xs text-green-800">💡 Standard juridique : si une clause est annulée, les autres restent valables</p>
+                  </div>
+                  <div>
+                    <Label>Clause de séparabilité</Label>
+                    <Textarea 
+                      value={cguData.clauseNullitePartielle} 
+                      onChange={(e) => setCguData({...cguData, clauseNullitePartielle: e.target.value})} 
+                      placeholder="Ex: Si une ou plusieurs stipulations des présentes CGU sont tenues pour non valides ou déclarées nulles en application d'une loi, d'un règlement ou à la suite d'une décision définitive d'une juridiction compétente, les autres stipulations garderont toute leur force et leur portée."
+                      className="min-h-[100px]" 
+                    />
+                  </div>
+                </div>
+                
+                {/* 15quater. PREUVE ÉLECTRONIQUE */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">1️⃣5️⃣quater Clause de preuve électronique</h4>
+                  <div className="p-3 bg-green-100 rounded border border-green-300">
+                    <p className="text-xs text-green-800">💡 Essentiel en SaaS : logs, horodatage, données informatiques font foi</p>
+                  </div>
+                  <div>
+                    <Label>Valeur probante des données électroniques</Label>
+                    <Textarea 
+                      value={cguData.clausePreuveElectronique} 
+                      onChange={(e) => setCguData({...cguData, clausePreuveElectronique: e.target.value})} 
+                      placeholder="Ex: Les registres informatisés, conservés dans les systèmes informatiques de la Plateforme dans des conditions raisonnables de sécurité, seront considérés comme des preuves des communications, des commandes et des paiements intervenus entre les parties. L'archivage des contrats et des documents est effectué sur un support fiable et durable de manière à correspondre à une copie fidèle."
+                      className="min-h-[120px]" 
+                    />
                   </div>
                 </div>
                 
