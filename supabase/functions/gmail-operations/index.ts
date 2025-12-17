@@ -51,7 +51,11 @@ serve(async (req) => {
       });
     }
 
-    const { action, account_id, to, subject, body } = await req.json();
+    const requestBody = await req.json();
+    const { action, account_id, accountId, to, subject, body, messageId, attachmentId } = requestBody;
+    
+    // Use accountId if account_id is not provided (for newer endpoints)
+    const finalAccountId = account_id || accountId;
 
     // Handle get-auth-url action
     if (action === "get-auth-url") {
@@ -92,7 +96,7 @@ serve(async (req) => {
     const { data: account, error: accountError } = await supabaseAdmin
       .from("email_accounts")
       .select("*")
-      .eq("id", account_id)
+      .eq("id", finalAccountId)
       .eq("user_id", user.id)
       .single();
 
@@ -130,7 +134,7 @@ serve(async (req) => {
         await supabaseAdmin
           .from("email_accounts")
           .update({ access_token: accessToken, token_expires_at: expiresAt })
-          .eq("id", account_id);
+          .eq("id", finalAccountId);
       }
     }
 
@@ -220,8 +224,6 @@ serve(async (req) => {
 
     // Handle get-attachment action
     if (action === "get-attachment") {
-      const { accountId, messageId, attachmentId } = await req.json();
-      
       // Get email message_id from database
       const { data: email } = await supabaseAdmin
         .from("emails")
