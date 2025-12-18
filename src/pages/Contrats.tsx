@@ -256,8 +256,8 @@ function SingleFileUpload({ label, files, onFilesChange, required = false, accep
   
   // Code couleur : avocat = bleu, notaire = orange
   const borderColor = role === 'avocat' ? 'border-blue-300' : 'border-orange-300';
-  const hoverBg = role === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50';
-  const hoverBorder = role === 'avocat' ? 'hover:border-blue-400' : 'hover:border-orange-400';
+  const hoverBg = role === 'avocat' ? 'hover:bg-blue-100' : 'hover:bg-orange-50';
+  const hoverBorder = role === 'avocat' ? 'hover:border-blue-500' : 'hover:border-orange-400';
   const iconColor = role === 'avocat' ? 'text-blue-600' : 'text-orange-600';
   const textColor = role === 'avocat' ? 'text-blue-700' : 'text-orange-700';
   
@@ -857,7 +857,15 @@ export default function Contrats() {
   
   const [cgvVendeurFiles, setCgvVendeurFiles] = useState<File[]>([]); // Kbis, mentions légales, RC Pro
   const [cgvProduitsFiles, setCgvProduitsFiles] = useState<File[]>([]); // Certificats produits, fiches techniques
-  const [cgvAnnexesFiles, setCgvAnnexesFiles] = useState<File[]>([]); // Formulaires, politiques, grilles tarifaires
+  
+  // States pour CGV Annexes (7 annexes individuelles)
+  const [cgvFormulaireRetractationFiles, setCgvFormulaireRetractationFiles] = useState<File[]>([]);
+  const [cgvPolitiqueConfidentialiteFiles, setCgvPolitiqueConfidentialiteFiles] = useState<File[]>([]);
+  const [cgvGrilleTarifaireFiles, setCgvGrilleTarifaireFiles] = useState<File[]>([]);
+  const [cgvFichesTechniquesFiles, setCgvFichesTechniquesFiles] = useState<File[]>([]);
+  const [cgvProcedureSAVFiles, setCgvProcedureSAVFiles] = useState<File[]>([]);
+  const [cgvNoticesUtilisationFiles, setCgvNoticesUtilisationFiles] = useState<File[]>([]);
+  const [cgvAutresFiles, setCgvAutresFiles] = useState<File[]>([]);
   
   // States pour CGU (Conditions Générales d'Utilisation)
   const [cguVendeurClientId, setCguVendeurClientId] = useState<string>("");
@@ -47733,54 +47741,60 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
-                {/* 20. ANNEXES (LISTE) */}
+                {/* 20. ANNEXES (upload individuel par document) */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Annexes (liste des documents)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Annexes à joindre</h4>
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-600">Cochez les annexes fournies avec les CGV :</p>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={cgvData.annexeFormulaireRetractation} onCheckedChange={(v) => setCgvData({...cgvData, annexeFormulaireRetractation: !!v})} id="ann-retr" />
-                        <Label htmlFor="ann-retr" className="font-normal">Formulaire de rétractation (B2C)</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={cgvData.annexePolitiqueConfidentialite} onCheckedChange={(v) => setCgvData({...cgvData, annexePolitiqueConfidentialite: !!v})} id="ann-conf" />
-                        <Label htmlFor="ann-conf" className="font-normal">Politique de confidentialité</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={cgvData.annexeGrilleTarifaire} onCheckedChange={(v) => setCgvData({...cgvData, annexeGrilleTarifaire: !!v})} id="ann-tarif" />
-                        <Label htmlFor="ann-tarif" className="font-normal">Grille tarifaire</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={cgvData.annexeFichesTechniques} onCheckedChange={(v) => setCgvData({...cgvData, annexeFichesTechniques: !!v})} id="ann-tech" />
-                        <Label htmlFor="ann-tech" className="font-normal">Fiches techniques produits</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={cgvData.annexeProcedureSAV} onCheckedChange={(v) => setCgvData({...cgvData, annexeProcedureSAV: !!v})} id="ann-sav" />
-                        <Label htmlFor="ann-sav" className="font-normal">Procédure SAV</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={cgvData.annexeNoticesUtilisation} onCheckedChange={(v) => setCgvData({...cgvData, annexeNoticesUtilisation: !!v})} id="ann-notice" />
-                        <Label htmlFor="ann-notice" className="font-normal">Notices d'utilisation</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={cgvData.annexeAutres} onCheckedChange={(v) => setCgvData({...cgvData, annexeAutres: !!v})} id="ann-autre" />
-                        <Label htmlFor="ann-autre" className="font-normal">Autres (à préciser dans les fichiers)</Label>
-                      </div>
-                    </div>
+                    <SingleFileUpload
+                      label="Formulaire de rétractation (B2C)"
+                      files={cgvFormulaireRetractationFiles}
+                      onFilesChange={setCgvFormulaireRetractationFiles}
+                      accept=".pdf,.doc,.docx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Politique de confidentialité"
+                      files={cgvPolitiqueConfidentialiteFiles}
+                      onFilesChange={setCgvPolitiqueConfidentialiteFiles}
+                      accept=".pdf,.doc,.docx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Grille tarifaire"
+                      files={cgvGrilleTarifaireFiles}
+                      onFilesChange={setCgvGrilleTarifaireFiles}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Fiches techniques produits"
+                      files={cgvFichesTechniquesFiles}
+                      onFilesChange={setCgvFichesTechniquesFiles}
+                      accept=".pdf,.doc,.docx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Procédure SAV"
+                      files={cgvProcedureSAVFiles}
+                      onFilesChange={setCgvProcedureSAVFiles}
+                      accept=".pdf,.doc,.docx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Notices d'utilisation"
+                      files={cgvNoticesUtilisationFiles}
+                      onFilesChange={setCgvNoticesUtilisationFiles}
+                      accept=".pdf,.doc,.docx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Autres documents"
+                      files={cgvAutresFiles}
+                      onFilesChange={setCgvAutresFiles}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                      role="avocat"
+                    />
                   </div>
-                </div>
-                
-                {/* UPLOAD FICHIERS ANNEXES */}
-                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">📎 Upload des fichiers annexes</h4>
-                  <MultiFileUpload 
-                    label="Joindre les fichiers annexes (Formulaire rétractation, politique confidentialité, grilles tarifaires, fiches techniques, procédure SAV, notices...)" 
-                    files={cgvAnnexesFiles} 
-                    onFilesChange={setCgvAnnexesFiles} 
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
-                    role="avocat"
-                  />
                 </div>
                 
               </div>
