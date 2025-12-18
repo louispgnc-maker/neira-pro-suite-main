@@ -254,6 +254,13 @@ function SingleFileUpload({ label, files, onFilesChange, required = false, accep
     onFilesChange(files.filter((_, i) => i !== index));
   };
   
+  // Code couleur : avocat = bleu, notaire = orange
+  const borderColor = role === 'avocat' ? 'border-blue-300' : 'border-orange-300';
+  const hoverBg = role === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50';
+  const hoverBorder = role === 'avocat' ? 'hover:border-blue-400' : 'hover:border-orange-400';
+  const iconColor = role === 'avocat' ? 'text-blue-600' : 'text-orange-600';
+  const textColor = role === 'avocat' ? 'text-blue-700' : 'text-orange-700';
+  
   return (
     <div className="space-y-2">
       <Label className="text-sm">
@@ -271,13 +278,13 @@ function SingleFileUpload({ label, files, onFilesChange, required = false, accep
       
       <button
         type="button"
-        className="w-full p-3 border-2 border-dashed border-orange-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-400 transition-colors"
+        className={`w-full p-3 border-2 border-dashed ${borderColor} rounded-lg text-sm flex items-center justify-center gap-2 ${hoverBg} ${hoverBorder} transition-colors`}
         onClick={() => document.getElementById(inputId)?.click()}
       >
-        <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className={`w-4 h-4 ${iconColor} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <span className="text-sm flex-1 text-orange-700">
+        <span className={`text-sm flex-1 ${textColor}`}>
           {files.length > 0 ? `${files.length} fichier(s) chargé(s) - Cliquer pour en ajouter` : "Aucune pièce chargée - Cliquer pour ajouter"}
         </span>
       </button>
