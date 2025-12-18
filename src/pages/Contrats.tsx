@@ -506,9 +506,16 @@ export default function Contrats() {
     clauseNullitePartielle: "", // oui (par défaut)
   });
   
-  const [prestationPrestataireFiles, setPrestationPrestataireFiles] = useState<File[]>([]); // Kbis, assurance, etc.
-  const [prestationClientFiles, setPrestationClientFiles] = useState<File[]>([]); // Docs client
-  const [prestationAnnexesFiles, setPrestationAnnexesFiles] = useState<File[]>([]); // Cahier des charges, etc.
+  // États individuels pour Prestation de services
+  const [prestationPrestataireKbisFiles, setPrestationPrestataireKbisFiles] = useState<File[]>([]);
+  const [prestationPrestataireAssuranceFiles, setPrestationPrestataireAssuranceFiles] = useState<File[]>([]);
+  const [prestationPrestataireAutresFiles, setPrestationPrestataireAutresFiles] = useState<File[]>([]);
+  const [prestationClientKbisFiles, setPrestationClientKbisFiles] = useState<File[]>([]);
+  const [prestationClientAutresFiles, setPrestationClientAutresFiles] = useState<File[]>([]);
+  const [prestationCahierChargesFiles, setPrestationCahierChargesFiles] = useState<File[]>([]);
+  const [prestationCGVFiles, setPrestationCGVFiles] = useState<File[]>([]);
+  const [prestationRGPDFiles, setPrestationRGPDFiles] = useState<File[]>([]);
+  const [prestationAutresAnnexesFiles, setPrestationAutresAnnexesFiles] = useState<File[]>([]);
   
   // States pour Contrat de vente B2B
   const [venteB2BData, setVenteB2BData] = useState({
@@ -679,9 +686,15 @@ export default function Contrats() {
     clauseConformiteExportImport: "",
   });
   
-  const [venteB2BFournisseurFiles, setVenteB2BFournisseurFiles] = useState<File[]>([]); // Kbis, statuts, assurance, fiches techniques
-  const [venteB2BDistributeurFiles, setVenteB2BDistributeurFiles] = useState<File[]>([]); // Kbis, assurance, points de vente
-  const [venteB2BAnnexesFiles, setVenteB2BAnnexesFiles] = useState<File[]>([]); // CGV, grilles tarifaires, guides
+  // États individuels pour Vente B2B
+  const [venteB2BFournisseurKbisFiles, setVenteB2BFournisseurKbisFiles] = useState<File[]>([]);
+  const [venteB2BFournisseurAssuranceFiles, setVenteB2BFournisseurAssuranceFiles] = useState<File[]>([]);
+  const [venteB2BFournisseurFichesFiles, setVenteB2BFournisseurFichesFiles] = useState<File[]>([]);
+  const [venteB2BDistributeurKbisFiles, setVenteB2BDistributeurKbisFiles] = useState<File[]>([]);
+  const [venteB2BDistributeurAssuranceFiles, setVenteB2BDistributeurAssuranceFiles] = useState<File[]>([]);
+  const [venteB2BCGVFiles, setVenteB2BCGVFiles] = useState<File[]>([]);
+  const [venteB2BGrillesTarifairesFiles, setVenteB2BGrillesTarifairesFiles] = useState<File[]>([]);
+  const [venteB2BAutresAnnexesFiles, setVenteB2BAutresAnnexesFiles] = useState<File[]>([]);
   
   // States pour Conditions Générales de Vente (CGV)
   const [cgvData, setCgvData] = useState({
@@ -45990,7 +46003,30 @@ FIN DE LA CONVENTION
                       )}
                     </div>
                     
-                    <MultiFileUpload label="Pièces justificatives prestataire (Kbis, assurance, etc.)" files={prestationPrestataireFiles} onFilesChange={setPrestationPrestataireFiles} accept=".pdf,.jpg,.jpeg,.png" role="avocat" />
+                    <div className="space-y-3">
+                      <h6 className="text-sm font-semibold text-blue-600">Pièces justificatives prestataire</h6>
+                      <SingleFileUpload
+                        label="Extrait Kbis / Immatriculation"
+                        files={prestationPrestataireKbisFiles}
+                        onFilesChange={setPrestationPrestataireKbisFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Attestation RC Professionnelle"
+                        files={prestationPrestataireAssuranceFiles}
+                        onFilesChange={setPrestationPrestataireAssuranceFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Autres documents prestataire"
+                        files={prestationPrestataireAutresFiles}
+                        onFilesChange={setPrestationPrestataireAutresFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                    </div>
                   </div>
                   
                   {/* CLIENT */}
@@ -46021,7 +46057,23 @@ FIN DE LA CONVENTION
                       <div><Label>Téléphone</Label><Input value={prestationData.clientTelephone} onChange={(e) => setPrestationData({...prestationData, clientTelephone: e.target.value})} /></div>
                     </div>
                     
-                    <MultiFileUpload label="Pièces justificatives client" files={prestationClientFiles} onFilesChange={setPrestationClientFiles} accept=".pdf,.jpg,.jpeg,.png" role="avocat" />
+                    <div className="space-y-3">
+                      <h6 className="text-sm font-semibold text-blue-600">Pièces justificatives client</h6>
+                      <SingleFileUpload
+                        label="Extrait Kbis / Immatriculation client"
+                        files={prestationClientKbisFiles}
+                        onFilesChange={setPrestationClientKbisFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Autres documents client"
+                        files={prestationClientAutresFiles}
+                        onFilesChange={setPrestationClientAutresFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                    </div>
                   </div>
                 </div>
                 
@@ -46443,13 +46495,36 @@ FIN DE LA CONVENTION
                 {/* 18. ANNEXES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Annexes et pièces justificatives</h4>
-                  <MultiFileUpload 
-                    label="Annexes (Cahier des charges, planning, liste livrables, CGV, devis, RGPD/DPA, plans techniques...)" 
-                    files={prestationAnnexesFiles} 
-                    onFilesChange={setPrestationAnnexesFiles} 
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
-                    role="avocat"
-                  />
+                  <div className="space-y-3">
+                    <SingleFileUpload
+                      label="Cahier des charges / Description du projet"
+                      files={prestationCahierChargesFiles}
+                      onFilesChange={setPrestationCahierChargesFiles}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="CGV / Conditions commerciales"
+                      files={prestationCGVFiles}
+                      onFilesChange={setPrestationCGVFiles}
+                      accept=".pdf,.doc,.docx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="RGPD / DPA (Data Processing Agreement)"
+                      files={prestationRGPDFiles}
+                      onFilesChange={setPrestationRGPDFiles}
+                      accept=".pdf,.doc,.docx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Autres annexes (planning, plans, devis...)"
+                      files={prestationAutresAnnexesFiles}
+                      onFilesChange={setPrestationAutresAnnexesFiles}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                      role="avocat"
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -46500,7 +46575,30 @@ FIN DE LA CONVENTION
                       )}
                     </div>
                     
-                    <MultiFileUpload label="Pièces justificatives fournisseur (Kbis, statuts, assurance, fiches techniques)" files={venteB2BFournisseurFiles} onFilesChange={setVenteB2BFournisseurFiles} accept=".pdf,.jpg,.jpeg,.png" role="avocat" />
+                    <div className="space-y-3">
+                      <h6 className="text-sm font-semibold text-blue-600">Pièces justificatives fournisseur</h6>
+                      <SingleFileUpload
+                        label="Extrait Kbis / Statuts"
+                        files={venteB2BFournisseurKbisFiles}
+                        onFilesChange={setVenteB2BFournisseurKbisFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Attestation assurance professionnelle"
+                        files={venteB2BFournisseurAssuranceFiles}
+                        onFilesChange={setVenteB2BFournisseurAssuranceFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Fiches techniques produits"
+                        files={venteB2BFournisseurFichesFiles}
+                        onFilesChange={setVenteB2BFournisseurFichesFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                    </div>
                   </div>
                   
                   {/* ACHETEUR / DISTRIBUTEUR */}
@@ -46544,7 +46642,23 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                     
-                    <MultiFileUpload label="Pièces justificatives distributeur (Kbis, assurance RC Pro, liste points de vente)" files={venteB2BDistributeurFiles} onFilesChange={setVenteB2BDistributeurFiles} accept=".pdf,.jpg,.jpeg,.png,.xlsx" role="avocat" />
+                    <div className="space-y-3">
+                      <h6 className="text-sm font-semibold text-blue-600">Pièces justificatives distributeur</h6>
+                      <SingleFileUpload
+                        label="Extrait Kbis distributeur"
+                        files={venteB2BDistributeurKbisFiles}
+                        onFilesChange={setVenteB2BDistributeurKbisFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Attestation RC Pro / Assurance"
+                        files={venteB2BDistributeurAssuranceFiles}
+                        onFilesChange={setVenteB2BDistributeurAssuranceFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                    </div>
                   </div>
                 </div>
                 
@@ -47211,13 +47325,29 @@ FIN DE LA CONVENTION
                 {/* 15. ANNEXES ET PIÈCES JUSTIFICATIVES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Annexes et pièces justificatives</h4>
-                  <MultiFileUpload 
-                    label="Annexes (CGV B2B, grilles tarifaires, guides marketing, fiches techniques, cahier des charges, objectifs, procédures SAV, chartes qualité...)" 
-                    files={venteB2BAnnexesFiles} 
-                    onFilesChange={setVenteB2BAnnexesFiles} 
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
-                    role="avocat"
-                  />
+                  <div className="space-y-3">
+                    <SingleFileUpload
+                      label="CGV B2B / Conditions commerciales"
+                      files={venteB2BCGVFiles}
+                      onFilesChange={setVenteB2BCGVFiles}
+                      accept=".pdf,.doc,.docx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Grilles tarifaires"
+                      files={venteB2BGrillesTarifairesFiles}
+                      onFilesChange={setVenteB2BGrillesTarifairesFiles}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Autres annexes (guides, SAV, chartes...)"
+                      files={venteB2BAutresAnnexesFiles}
+                      onFilesChange={setVenteB2BAutresAnnexesFiles}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                      role="avocat"
+                    />
+                  </div>
                 </div>
               </div>
             )}
