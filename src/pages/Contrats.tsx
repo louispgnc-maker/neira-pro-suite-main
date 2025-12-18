@@ -1872,6 +1872,45 @@ export default function Contrats() {
     // Sous-traitance en cascade
     cascadeAutorisee: "validation", // autorisée, interdite, validation
     cascadeResponsabilite: "",
+    cascadeResponsabilitePleineEntiere: true,
+    cascadeSousTraitantsMemesObligations: true,
+    
+    // Clauses générales essentielles
+    clauseIndependanceParties: true,
+    clauseAbsenceSubordination: "",
+    clauseLiberteOrganisation: "",
+    clauseAucunPouvoirRepresentation: "",
+    clauseNonCreationSociete: true,
+    clauseNonGIE: true,
+    clauseNonMandatImplicite: true,
+    clauseCessionInterdite: true,
+    clauseCessionConditions: "",
+    clauseContinuiteService: "",
+    clauseReversibiliteTransfert: "",
+    clauseReversibiliteAssistance: "non",
+    
+    // Propriété intellectuelle renforcée
+    piLivrablesProtectables: "oui",
+    piCessionLivrables: "cession", // cession ou licence
+    piEtendueGeographique: "monde",
+    piEtendueDuree: "illimité",
+    piEtendueSupports: "tous",
+    piDroitsAdaptation: true,
+    piDroitsModification: true,
+    
+    // RGPD renforcé
+    rgpdQualification: "", // responsable ou sous-traitant
+    rgpdInstructionsDocumentees: "",
+    rgpdSortDonneesFinContrat: "",
+    
+    // Responsabilité renforcée
+    responsabiliteExclusionPerteCA: true,
+    responsabiliteExclusionPerteChance: true,
+    
+    // Notifications
+    notificationAdresse: "",
+    notificationEmail: "",
+    notificationRecommande: "oui",
     
     // Litiges
     loiApplicable: "française",
@@ -51150,6 +51189,9 @@ FIN DE LA CONVENTION
                 {/* PROPRIÉTÉ INTELLECTUELLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">Propriété intellectuelle</h4>
+                  <div className="p-3 bg-blue-50 border border-blue-300 rounded">
+                    <p className="text-sm text-blue-800">⚠️ Même sans création originale, les livrables peuvent être protégeables</p>
+                  </div>
                   <div>
                     <Label>Création de propriété intellectuelle ?</Label>
                     <Select value={sousTraitanceData.piCreation} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, piCreation: val})}>
@@ -51160,6 +51202,74 @@ FIN DE LA CONVENTION
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {/* Champs livrables (toujours affichés) */}
+                  <div>
+                    <Label>Les livrables incluent-ils des éléments protégeables (documents, code, designs...) ?</Label>
+                    <Select value={sousTraitanceData.piLivrablesProtectables} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, piLivrablesProtectables: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {sousTraitanceData.piLivrablesProtectables === "oui" && (
+                    <>
+                      <div>
+                        <Label>Régime applicable aux livrables *</Label>
+                        <Select value={sousTraitanceData.piCessionLivrables} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, piCessionLivrables: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="cession">Cession complète au donneur d'ordre</SelectItem>
+                            <SelectItem value="licence">Licence d'utilisation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Étendue géographique *</Label>
+                        <Select value={sousTraitanceData.piEtendueGeographique} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, piEtendueGeographique: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="monde">Monde entier</SelectItem>
+                            <SelectItem value="france">France uniquement</SelectItem>
+                            <SelectItem value="ue">Union Européenne</SelectItem>
+                            <SelectItem value="autre">Autre (préciser)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Durée de la cession/licence *</Label>
+                        <Select value={sousTraitanceData.piEtendueDuree} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, piEtendueDuree: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="illimité">Illimitée</SelectItem>
+                            <SelectItem value="contrat">Durée du contrat uniquement</SelectItem>
+                            <SelectItem value="autre">Autre durée (préciser)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Supports et modes d'exploitation *</Label>
+                        <Select value={sousTraitanceData.piEtendueSupports} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, piEtendueSupports: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="tous">Tous supports (impression, web, mobile...)</SelectItem>
+                            <SelectItem value="limité">Supports limités (préciser)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" checked={sousTraitanceData.piDroitsAdaptation} onChange={(e) => setSousTraitanceData({...sousTraitanceData, piDroitsAdaptation: e.target.checked})} className="mr-2" />
+                        <Label>Droit d'adaptation et de modification par le donneur d'ordre</Label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" checked={sousTraitanceData.piDroitsModification} onChange={(e) => setSousTraitanceData({...sousTraitanceData, piDroitsModification: e.target.checked})} className="mr-2" />
+                        <Label>Droit de modifier, corriger et faire évoluer</Label>
+                      </div>
+                    </>
+                  )}
                   
                   {sousTraitanceData.piCreation === "non" && (
                     <div className="flex items-center gap-2">
@@ -51224,6 +51334,31 @@ FIN DE LA CONVENTION
                   
                   {sousTraitanceData.rgpdApplicable === "oui" && (
                     <>
+                      <div>
+                        <Label>Qualification des parties (Article 28 RGPD) *</Label>
+                        <Select value={sousTraitanceData.rgpdQualification} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, rgpdQualification: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="responsable">Le donneur d'ordre est responsable, le sous-traitant est sous-traitant</SelectItem>
+                            <SelectItem value="coresponsables">Les deux parties sont co-responsables</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Instructions documentées du responsable *</Label>
+                        <Textarea value={sousTraitanceData.rgpdInstructionsDocumentees} onChange={(e) => setSousTraitanceData({...sousTraitanceData, rgpdInstructionsDocumentees: e.target.value})} placeholder="Décrivez les instructions précises données au sous-traitant pour le traitement des données..." rows={3} />
+                      </div>
+                      <div>
+                        <Label>Sort des données à la fin du contrat *</Label>
+                        <Select value={sousTraitanceData.rgpdSortDonneesFinContrat} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, rgpdSortDonneesFinContrat: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="restitution">Restitution au donneur d'ordre</SelectItem>
+                            <SelectItem value="suppression">Suppression définitive</SelectItem>
+                            <SelectItem value="anonymisation">Anonymisation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <div>
                         <Label>Contrat de sous-traitance RGPD intégré ?</Label>
                         <Select value={sousTraitanceData.rgpdContratIntegre} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, rgpdContratIntegre: val})}>
@@ -51377,6 +51512,14 @@ FIN DE LA CONVENTION
                   <div className="flex items-center gap-2">
                     <input type="checkbox" id="respExcl" checked={sousTraitanceData.responsabiliteExclusionIndirects} onChange={(e) => setSousTraitanceData({...sousTraitanceData, responsabiliteExclusionIndirects: e.target.checked})} className="rounded" />
                     <Label htmlFor="respExcl" className="cursor-pointer">Exclusion des dommages indirects</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="respCA" checked={sousTraitanceData.responsabiliteExclusionPerteCA} onChange={(e) => setSousTraitanceData({...sousTraitanceData, responsabiliteExclusionPerteCA: e.target.checked})} className="rounded" />
+                    <Label htmlFor="respCA" className="cursor-pointer">Exclusion de la perte de chiffre d'affaires</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="respChance" checked={sousTraitanceData.responsabiliteExclusionPerteChance} onChange={(e) => setSousTraitanceData({...sousTraitanceData, responsabiliteExclusionPerteChance: e.target.checked})} className="rounded" />
+                    <Label htmlFor="respChance" className="cursor-pointer">Exclusion de la perte de chance</Label>
                   </div>
                   <div>
                     <Label>Assurance obligatoire ?</Label>
@@ -51561,6 +51704,96 @@ FIN DE LA CONVENTION
                     <Label>Responsabilité du premier sous-traitant</Label>
                     <Textarea value={sousTraitanceData.cascadeResponsabilite} onChange={(e) => setSousTraitanceData({...sousTraitanceData, cascadeResponsabilite: e.target.value})} placeholder="Le sous-traitant reste responsable..." rows={2} />
                   </div>
+                  <div className="flex items-center">
+                    <input type="checkbox" checked={sousTraitanceData.cascadeResponsabilitePleineEntiere} onChange={(e) => setSousTraitanceData({...sousTraitanceData, cascadeResponsabilitePleineEntiere: e.target.checked})} className="mr-2" />
+                    <Label>Le sous-traitant demeure pleinement et entièrement responsable vis-à-vis du donneur d'ordre de toute sous-traitance ultérieure</Label>
+                  </div>
+                  <div className="flex items-center">
+                    <input type="checkbox" checked={sousTraitanceData.cascadeSousTraitantsMemesObligations} onChange={(e) => setSousTraitanceData({...sousTraitanceData, cascadeSousTraitantsMemesObligations: e.target.checked})} className="mr-2" />
+                    <Label>Les sous-traitants ultérieurs sont tenus aux mêmes obligations que le sous-traitant principal</Label>
+                  </div>
+                </div>
+
+                {/* CLAUSES GÉNÉRALES ESSENTIELLES */}
+                <div className="space-y-6 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Clauses générales essentielles</h4>
+                  
+                  {/* Clause d'indépendance */}
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-blue-800">Clause d'indépendance des parties</h5>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={sousTraitanceData.clauseIndependanceParties} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseIndependanceParties: e.target.checked})} className="mr-2" />
+                      <Label>Le sous-traitant agit en toute indépendance</Label>
+                    </div>
+                    <div>
+                      <Label>Absence de lien de subordination</Label>
+                      <Textarea value={sousTraitanceData.clauseAbsenceSubordination} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseAbsenceSubordination: e.target.value})} placeholder="Le sous-traitant agit en toute indépendance, sans lien de subordination avec le donneur d'ordre..." rows={2} />
+                    </div>
+                    <div>
+                      <Label>Liberté d'organisation</Label>
+                      <Textarea value={sousTraitanceData.clauseLiberteOrganisation} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseLiberteOrganisation: e.target.value})} placeholder="Le sous-traitant organise librement son travail et ses moyens..." rows={2} />
+                    </div>
+                    <div>
+                      <Label>Aucun pouvoir de représentation</Label>
+                      <Textarea value={sousTraitanceData.clauseAucunPouvoirRepresentation} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseAucunPouvoirRepresentation: e.target.value})} placeholder="Le sous-traitant n'a aucun pouvoir pour engager le donneur d'ordre..." rows={2} />
+                    </div>
+                  </div>
+                  
+                  {/* Clause non-création société */}
+                  <div className="space-y-2">
+                    <h5 className="font-medium text-blue-800">Clause de non-création de société</h5>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={sousTraitanceData.clauseNonCreationSociete} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseNonCreationSociete: e.target.checked})} className="mr-2" />
+                      <Label>Le présent contrat ne crée aucune société de fait</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={sousTraitanceData.clauseNonGIE} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseNonGIE: e.target.checked})} className="mr-2" />
+                      <Label>Aucun groupement d'intérêt économique (GIE)</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={sousTraitanceData.clauseNonMandatImplicite} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseNonMandatImplicite: e.target.checked})} className="mr-2" />
+                      <Label>Aucun mandat implicite ou apparent</Label>
+                    </div>
+                  </div>
+                  
+                  {/* Clause de cession */}
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-blue-800">Clause de cession du contrat</h5>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={sousTraitanceData.clauseCessionInterdite} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseCessionInterdite: e.target.checked})} className="mr-2" />
+                      <Label>Interdiction de céder le contrat sans accord écrit préalable</Label>
+                    </div>
+                    {!sousTraitanceData.clauseCessionInterdite && (
+                      <div>
+                        <Label>Conditions de cession autorisée</Label>
+                        <Textarea value={sousTraitanceData.clauseCessionConditions} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseCessionConditions: e.target.value})} placeholder="Le contrat peut être cédé avec l'accord écrit préalable..." rows={2} />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Clause continuité/réversibilité */}
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-blue-800">Clause de continuité et réversibilité</h5>
+                    <div>
+                      <Label>Obligation de continuité minimale</Label>
+                      <Textarea value={sousTraitanceData.clauseContinuiteService} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseContinuiteService: e.target.value})} placeholder="En cas de résiliation, le sous-traitant assure la continuité pendant [durée]..." rows={2} />
+                    </div>
+                    <div>
+                      <Label>Modalités de transfert des opérations</Label>
+                      <Textarea value={sousTraitanceData.clauseReversibiliteTransfert} onChange={(e) => setSousTraitanceData({...sousTraitanceData, clauseReversibiliteTransfert: e.target.value})} placeholder="Le sous-traitant remet toute documentation nécessaire..." rows={2} />
+                    </div>
+                    <div>
+                      <Label>Assistance pendant la transition</Label>
+                      <Select value={sousTraitanceData.clauseReversibiliteAssistance} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, clauseReversibiliteAssistance: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Aucune assistance</SelectItem>
+                          <SelectItem value="gratuite">Assistance gratuite incluse</SelectItem>
+                          <SelectItem value="payante">Assistance payante sur devis</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
 
                 {/* RÈGLEMENT DES LITIGES */}
@@ -51597,6 +51830,33 @@ FIN DE LA CONVENTION
                       <SelectContent>
                         <SelectItem value="oui">Oui</SelectItem>
                         <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* NOTIFICATIONS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Notifications (optionnel)</h4>
+                  <div className="p-3 bg-blue-50 border border-blue-300 rounded">
+                    <p className="text-sm text-blue-800">💡 Préciser les modalités de notification recommandé pour les mises en demeure</p>
+                  </div>
+                  <div>
+                    <Label>Adresse postale pour notifications</Label>
+                    <Input value={sousTraitanceData.notificationAdresse} onChange={(e) => setSousTraitanceData({...sousTraitanceData, notificationAdresse: e.target.value})} placeholder="Adresse complète pour courrier recommandé..." />
+                  </div>
+                  <div>
+                    <Label>Email pour notifications</Label>
+                    <Input value={sousTraitanceData.notificationEmail} onChange={(e) => setSousTraitanceData({...sousTraitanceData, notificationEmail: e.target.value})} placeholder="email@exemple.com" type="email" />
+                  </div>
+                  <div>
+                    <Label>Notifications par recommandé avec AR ?</Label>
+                    <Select value={sousTraitanceData.notificationRecommande} onValueChange={(val) => setSousTraitanceData({...sousTraitanceData, notificationRecommande: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui, recommandé avec AR obligatoire</SelectItem>
+                        <SelectItem value="non">Non, email suffit</SelectItem>
+                        <SelectItem value="grave">Recommandé avec AR seulement pour notifications graves (résiliation, mise en demeure)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
