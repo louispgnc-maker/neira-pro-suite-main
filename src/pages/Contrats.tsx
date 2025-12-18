@@ -254,50 +254,42 @@ function SingleFileUpload({ label, file, onFileChange, required = false, accept,
   };
   
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex-1">
-        <Label className="text-sm font-normal">
-          {label} {required && <span className="text-red-500">*</span>}
-        </Label>
-      </div>
-      <div className="flex items-center gap-2">
+    <div className="space-y-2">
+      <Label className="text-sm">
+        {label} {required && <span className="text-red-500">*</span>}
+      </Label>
+      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
+        <input
+          type="file"
+          accept={accept}
+          className="hidden"
+          id={inputId}
+          onChange={handleFileSelect}
+        />
         {file ? (
-          <>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded text-xs text-green-700">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span className="truncate max-w-[150px]" title={file.name}>{file.name}</span>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs bg-green-50 border border-green-200 p-2 rounded">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="truncate text-green-700 font-medium" title={file.name}>{file.name}</span>
+              </div>
               <button
                 type="button"
                 onClick={removeFile}
-                className="p-0.5 text-red-600 hover:bg-red-100 rounded"
+                className="ml-2 text-red-600 hover:bg-red-100 p-1 rounded flex-shrink-0"
                 title="Supprimer"
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
+                ✕
               </button>
             </div>
-          </>
+          </div>
         ) : (
-          <>
-            <button
-              type="button"
-              onClick={() => document.getElementById(inputId)?.click()}
-              className={`px-4 py-1.5 text-xs font-medium text-white rounded transition-colors ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-500 hover:bg-blue-600'}`}
-            >
-              📎 Ajouter
-            </button>
-          </>
+          <label htmlFor={inputId} className="cursor-pointer text-sm text-muted-foreground block text-center">
+            Cliquez pour joindre {label.toLowerCase()}
+          </label>
         )}
-        <Input
-          id={inputId}
-          type="file"
-          className="hidden"
-          accept={accept}
-          onChange={handleFileSelect}
-        />
       </div>
     </div>
   );
