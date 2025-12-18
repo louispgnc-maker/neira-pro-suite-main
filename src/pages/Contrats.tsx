@@ -36902,9 +36902,9 @@ FIN DE LA CONVENTION
             {pendingContractType === "Procuration authentique" && (
               <>
                 <div className="space-y-6">
-                  {/* 1️⃣ Type de procuration */}
+                  {/* Type de procuration */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Type de procuration (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Type de procuration (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
                       <Label>Sélectionnez le type de procuration *</Label>
                       <Select 
@@ -36938,9 +36938,9 @@ FIN DE LA CONVENTION
                     )}
                   </div>
 
-                  {/* 2️⃣ Identité du mandant */}
+                  {/* Identité du mandant */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du MANDANT (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète du MANDANT (OBLIGATOIRE)</h3>
                     
                     <div className="space-y-2">
                       <Label>Sélectionner un client existant (optionnel)</Label>
@@ -37237,9 +37237,9 @@ FIN DE LA CONVENTION
                     )}
                   </div>
 
-                  {/* 3️⃣ Identité du mandataire */}
+                  {/* Identité du mandataire */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité complète du MANDATAIRE (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète du MANDATAIRE (OBLIGATOIRE)</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -37388,9 +37388,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 4️⃣ Objet précis de la procuration */}
+                  {/* Objet précis de la procuration */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ OBJET PRÉCIS DE LA PROCURATION (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">OBJET PRÉCIS DE LA PROCURATION (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
                       <Label>Description précise et détaillée de l'objet *</Label>
                       <Textarea 
@@ -37524,9 +37524,9 @@ FIN DE LA CONVENTION
                     )}
                   </div>
 
-                  {/* 5️⃣ ÉTENDUE DES POUVOIRS ET LIMITES */}
+                  {/* ÉTENDUE DES POUVOIRS ET LIMITES */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ ÉTENDUE DES POUVOIRS ET LIMITES (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">ÉTENDUE DES POUVOIRS ET LIMITES (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
                       <Label>Étendue des pouvoirs *</Label>
                       <div className="space-y-2">
@@ -37602,9 +37602,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 6️⃣ DURÉE - RÉVOCATION */}
+                  {/* DURÉE - RÉVOCATION */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ DURÉE - RÉVOCATION (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">DURÉE - RÉVOCATION (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
                       <Label>Durée *</Label>
                       <div className="space-y-2">
@@ -37663,9 +37663,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 7️⃣ ACCEPTATION DU MANDATAIRE */}
+                  {/* ACCEPTATION DU MANDATAIRE */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ ACCEPTATION DU MANDATAIRE (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">ACCEPTATION DU MANDATAIRE (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
                       <Label>Type d'acceptation *</Label>
                       <div className="space-y-2">
@@ -37717,9 +37717,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 8️⃣ DÉCLARATIONS ESSENTIELLES DU MANDANT */}
+                  {/* DÉCLARATIONS ESSENTIELLES DU MANDANT */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ DÉCLARATIONS ESSENTIELLES DU MANDANT (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">DÉCLARATIONS ESSENTIELLES DU MANDANT (OBLIGATOIRE)</h3>
                     <div className="p-4 bg-gray-50 border rounded-lg space-y-2">
                       <Label className="font-semibold">Cases à cocher :</Label>
                       <div className="flex items-center space-x-2">
@@ -37775,9 +37775,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 9️⃣ LANGUE - COMPRÉHENSION */}
+                  {/* LANGUE - COMPRÉHENSION */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ LANGUE - COMPRÉHENSION (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">LANGUE - COMPRÉHENSION (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
                       <Label>Langue comprise par le mandant *</Label>
                       <Input 
@@ -37903,9 +37903,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 1️⃣1️⃣ MENTIONS NOTARIALES */}
+                  {/* MENTIONS NOTARIALES */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ MENTIONS NOTARIALES (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">MENTIONS NOTARIALES (OBLIGATOIRE)</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Nom du notaire instrumentaire *</Label>
@@ -37937,9 +37937,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 1️⃣2️⃣ CONSERVATION - COPIES */}
+                  {/* CONSERVATION - COPIES */}
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ CONSERVATION - COPIES (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">CONSERVATION - COPIES (OBLIGATOIRE)</h3>
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
                         <input
@@ -38002,7 +38002,7 @@ FIN DE LA CONVENTION
                 <div className="space-y-6">
                   {/* SECTION 1: TYPE DE MANDAT */}
                   <div className="space-y-4 p-4 border rounded-lg bg-orange-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Type de mandat</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Type de mandat</h3>
                     
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">Sélectionnez le(s) type(s) de mandat <span className="text-red-500">*</span></Label>
@@ -38071,7 +38071,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 2: IDENTITÉ DU MANDANT */}
                   <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité complète du MANDANT (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète du MANDANT (OBLIGATOIRE)</h3>
                     
                     {/* Sélection client existant */}
                     <div className="space-y-2">
@@ -38467,7 +38467,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 3: MANDATAIRE PRINCIPAL */}
                   <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Identité complète du MANDATAIRE PRINCIPAL (OBLIGATOIRE)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Identité complète du MANDATAIRE PRINCIPAL (OBLIGATOIRE)</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -38772,7 +38772,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 4: MANDATAIRE SUBSTITUT */}
                   <div className="space-y-4 p-4 border rounded-lg bg-yellow-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Mandataire substitut (optionnel)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Mandataire substitut (optionnel)</h3>
                     
                     <div className="flex items-center space-x-2">
                       <input
@@ -38934,7 +38934,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 5: POUVOIRS SUR LA PERSONNE */}
                   <div className="space-y-4 p-4 border rounded-lg bg-green-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ A. Pouvoirs sur la personne du mandant</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">A. Pouvoirs sur la personne du mandant</h3>
                     
                     <p className="text-sm text-gray-600">
                       Sélectionnez les actes que le mandataire pourra accomplir pour la protection de la personne :
@@ -39060,7 +39060,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 5B: POUVOIRS SUR LE PATRIMOINE - ADMINISTRATION */}
                   <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ B. Pouvoirs sur le patrimoine - Actes d'administration</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">B. Pouvoirs sur le patrimoine - Actes d'administration</h3>
                     
                     <p className="text-sm text-gray-600">
                       Ces actes sont généralement autorisés dans un mandat :
@@ -39167,7 +39167,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 5C: POUVOIRS SUR LE PATRIMOINE - DISPOSITION */}
                   <div className="space-y-4 p-4 border rounded-lg bg-orange-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ C. Pouvoirs sur le patrimoine - Actes de disposition</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">C. Pouvoirs sur le patrimoine - Actes de disposition</h3>
                     
                     <div className="p-3 bg-orange-100 border border-orange-300 rounded-lg mb-4">
                       <p className="text-xs text-orange-800">
@@ -39372,7 +39372,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 6: LISTE DES BIENS */}
                   <div className="space-y-4 p-4 border rounded-lg bg-indigo-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Liste des biens du mandant (patrimoine)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Liste des biens du mandant (patrimoine)</h3>
                     
                     <p className="text-sm text-gray-600">
                       Indispensable pour déterminer l'étendue du mandat :
@@ -39487,7 +39487,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 7: LIMITES DU MANDAT */}
                   <div className="space-y-4 p-4 border rounded-lg bg-red-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Limites du mandat (si nécessaire)</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Limites du mandat (si nécessaire)</h3>
                     
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
@@ -39610,7 +39610,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 8: CONTRÔLE DU MANDATAIRE */}
                   <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Contrôle du mandataire</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Contrôle du mandataire</h3>
                     
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
@@ -39748,7 +39748,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 9: CONDITIONS DE MISE EN ŒUVRE */}
                   <div className="space-y-4 p-4 border rounded-lg bg-yellow-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Conditions de mise en œuvre du mandat</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Conditions de mise en œuvre du mandat</h3>
                     
                     <p className="text-sm text-gray-600 mb-4">
                       Le mandat ne prend effet qu'en cas d'incapacité du mandant.
@@ -39929,7 +39929,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 11: DÉCLARATIONS OBLIGATOIRES */}
                   <div className="space-y-4 p-4 border rounded-lg bg-orange-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Déclarations obligatoires du mandant</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Déclarations obligatoires du mandant</h3>
                     
                     <p className="text-sm text-red-600 mb-4">
                       <strong>⚠️ Ces déclarations sont OBLIGATOIRES pour la validité du mandat :</strong>
@@ -40036,7 +40036,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 12: FORME DU MANDAT */}
                   <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ Forme du mandat</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Forme du mandat</h3>
                     
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -40155,7 +40155,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 13: JURIDICTION ET CONSERVATION */}
                   <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Juridiction et conservation</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Juridiction et conservation</h3>
                     
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -40225,7 +40225,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 14: FRAIS ET RÉMUNÉRATION */}
                   <div className="space-y-4 p-4 border rounded-lg bg-amber-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣4️⃣ Frais et rémunération</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Frais et rémunération</h3>
                     
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -40314,7 +40314,7 @@ FIN DE LA CONVENTION
 
                   {/* SECTION 15: CLAUSES SPÉCIALES */}
                   <div className="space-y-4 p-4 border rounded-lg bg-indigo-50/30">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ Clauses spéciales</h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">Clauses spéciales</h3>
                     
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
@@ -46588,7 +46588,7 @@ FIN DE LA CONVENTION
                 
                 {/* 1. IDENTIFICATION DES PARTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Identification des parties</h4>
                   
                   {/* PRESTATAIRE */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
@@ -46704,7 +46704,7 @@ FIN DE LA CONVENTION
                 
                 {/* 2. OBJET DU CONTRAT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du contrat — Définition du service</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Objet du contrat — Définition du service</h4>
                   <div className="space-y-3">
                     <div><Label>Nature exacte de la prestation *</Label><Input value={prestationData.naturePrestation} onChange={(e) => setPrestationData({...prestationData, naturePrestation: e.target.value})} placeholder="Ex: Développement web, Conseil juridique, Formation..." /></div>
                     <div><Label>Description détaillée du service *</Label><Textarea value={prestationData.descriptionDetaillee} onChange={(e) => setPrestationData({...prestationData, descriptionDetaillee: e.target.value})} className="min-h-[100px]" placeholder="Décrivez précisément le service fourni..." /></div>
@@ -46729,7 +46729,7 @@ FIN DE LA CONVENTION
 
                 {/* 3. DURÉE DU CONTRAT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Durée du contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Durée du contrat</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Type de durée *</Label>
@@ -46758,7 +46758,7 @@ FIN DE LA CONVENTION
 
                 {/* 4. MODALITÉS DE RÉALISATION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Modalités de réalisation</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Modalités de réalisation</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Lieu d'exécution *</Label>
@@ -46793,7 +46793,7 @@ FIN DE LA CONVENTION
 
                 {/* 5. PRIX ET CONDITIONS FINANCIÈRES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Prix et conditions financières</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Prix et conditions financières</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Mode de facturation *</Label>
@@ -46850,7 +46850,7 @@ FIN DE LA CONVENTION
 
                 {/* 6. PROPRIÉTÉ INTELLECTUELLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Propriété intellectuelle</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Propriété intellectuelle</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Droits sur les créations du prestataire *</Label>
@@ -46879,7 +46879,7 @@ FIN DE LA CONVENTION
 
                 {/* 7. CONFIDENTIALITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Confidentialité</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Confidentialité</h4>
                   <div className="space-y-3">
                     <div><Label>Définition des informations confidentielles</Label><Textarea value={prestationData.definitionInfosConfidentielles} onChange={(e) => setPrestationData({...prestationData, definitionInfosConfidentielles: e.target.value})} placeholder="Toutes informations commerciales, techniques, financières..." /></div>
                     <div><Label>Durée de confidentialité (années)</Label><Input type="number" value={prestationData.dureeConfidentialite} onChange={(e) => setPrestationData({...prestationData, dureeConfidentialite: e.target.value})} placeholder="5" /></div>
@@ -46890,7 +46890,7 @@ FIN DE LA CONVENTION
 
                 {/* 8. DONNÉES PERSONNELLES / RGPD */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Données personnelles / RGPD</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Données personnelles / RGPD</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Le prestataire agit-il en tant que sous-traitant ?</Label>
@@ -46923,7 +46923,7 @@ FIN DE LA CONVENTION
 
                 {/* 9. SOUS-TRAITANCE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Sous-traitance</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Sous-traitance</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Sous-traitance autorisée ?</Label>
@@ -46963,7 +46963,7 @@ FIN DE LA CONVENTION
 
                 {/* 11. RÉSILIATION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Résiliation anticipée</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Résiliation anticipée</h4>
                   <div className="space-y-3">
                     <div><Label>Préavis de résiliation</Label><Input value={prestationData.resiliationPreavis} onChange={(e) => setPrestationData({...prestationData, resiliationPreavis: e.target.value})} placeholder="Ex: 3 mois, 30 jours..." /></div>
                     <div>
@@ -46984,7 +46984,7 @@ FIN DE LA CONVENTION
 
                 {/* 12. RÉVERSIBILITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Réversibilité / Fin de contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Réversibilité / Fin de contrat</h4>
                   <div className="space-y-3">
                     <div><Label>Restitution des données</Label><Textarea value={prestationData.restitutionDonnees} onChange={(e) => setPrestationData({...prestationData, restitutionDonnees: e.target.value})} placeholder="Format, délai..." /></div>
                     <div><Label>Restitution des documents</Label><Textarea value={prestationData.restitutionDocuments} onChange={(e) => setPrestationData({...prestationData, restitutionDocuments: e.target.value})} /></div>
@@ -46996,7 +46996,7 @@ FIN DE LA CONVENTION
 
                 {/* 13. LITIGES / LOI APPLICABLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Litiges / Loi applicable</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Litiges / Loi applicable</h4>
                   <div className="space-y-3">
                     <div><Label>Loi applicable</Label><Input value={prestationData.loiApplicable} onChange={(e) => setPrestationData({...prestationData, loiApplicable: e.target.value})} placeholder="France" /></div>
                     <div><Label>Tribunal compétent</Label><Input value={prestationData.tribunalCompetent} onChange={(e) => setPrestationData({...prestationData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunal de Commerce de Paris" /></div>
@@ -47019,7 +47019,7 @@ FIN DE LA CONVENTION
 
                 {/* 14. DATE D'EFFET & INDÉPENDANCE DES PARTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Date d'effet & Indépendance des parties</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Date d'effet & Indépendance des parties</h4>
                   <div className="space-y-3">
                     <div><Label>Date d'entrée en vigueur du contrat *</Label><Input type="date" value={prestationData.dateEffetContrat} onChange={(e) => setPrestationData({...prestationData, dateEffetContrat: e.target.value})} /></div>
                     
@@ -47059,7 +47059,7 @@ FIN DE LA CONVENTION
 
                 {/* 15. CLAUSE DE NON-SOLLICITATION / NON-DÉBAUCHAGE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Clause de non-sollicitation / non-débauchage</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Clause de non-sollicitation / non-débauchage</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Clause de non-débauchage des salariés / sous-traitants</Label>
@@ -47080,7 +47080,7 @@ FIN DE LA CONVENTION
 
                 {/* 16. MODIFICATION DU CONTRAT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Modification du contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Modification du contrat</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Toute modification doit faire l'objet d'un avenant écrit et signé</Label>
@@ -47095,7 +47095,7 @@ FIN DE LA CONVENTION
 
                 {/* 17. CLAUSES JURIDIQUES STANDARDS */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Clauses juridiques standards</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Clauses juridiques standards</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Clause de tolérance / non-renonciation</Label>
@@ -47119,7 +47119,7 @@ FIN DE LA CONVENTION
 
                 {/* 18. ANNEXES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Annexes et pièces justificatives</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Annexes et pièces justificatives</h4>
                   <div className="space-y-3">
                     <SingleFileUpload
                       label="Cahier des charges / Description du projet"
@@ -47161,7 +47161,7 @@ FIN DE LA CONVENTION
                 
                 {/* 1. IDENTIFICATION DES PARTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Identification des parties</h4>
                   
                   {/* FOURNISSEUR / VENDEUR */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
@@ -47289,7 +47289,7 @@ FIN DE LA CONVENTION
                 
                 {/* 2. OBJET DU CONTRAT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Objet du contrat</h4>
                   <div className="space-y-3">
                     <div><Label>Nature des produits vendus *</Label><Textarea value={venteB2BData.natureProduits} onChange={(e) => setVenteB2BData({...venteB2BData, natureProduits: e.target.value})} placeholder="Détail, référence, gamme..." className="min-h-[80px]" /></div>
                     <div><Label>Catégories de produits concernées</Label><Input value={venteB2BData.categoriesProduits} onChange={(e) => setVenteB2BData({...venteB2BData, categoriesProduits: e.target.value})} placeholder="Ex: Électronique, Textile, Alimentaire..." /></div>
@@ -47313,7 +47313,7 @@ FIN DE LA CONVENTION
 
                 {/* 3. CONDITIONS DE VENTE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Conditions de vente (Terms & Conditions)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Conditions de vente (Terms & Conditions)</h4>
                   
                   {/* 3A. TARIFS */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
@@ -47414,7 +47414,7 @@ FIN DE LA CONVENTION
                 
                 {/* 4. OBLIGATIONS DU FOURNISSEUR */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Obligations du fournisseur</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Obligations du fournisseur</h4>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <input type="checkbox" checked={venteB2BData.obligationConformite} onChange={(e) => setVenteB2BData({...venteB2BData, obligationConformite: e.target.checked})} id="oblig-conf" className="rounded" />
@@ -47459,7 +47459,7 @@ FIN DE LA CONVENTION
 
                 {/* 5. OBLIGATIONS DE L'ACHETEUR / DISTRIBUTEUR */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Obligations de l'acheteur / distributeur</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Obligations de l'acheteur / distributeur</h4>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <input type="checkbox" checked={venteB2BData.commercialisationImageMarque} onChange={(e) => setVenteB2BData({...venteB2BData, commercialisationImageMarque: e.target.checked})} id="comm-image" className="rounded" />
@@ -47501,7 +47501,7 @@ FIN DE LA CONVENTION
 
                 {/* 6. EXCLUSIVITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Exclusivité (si applicable)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Exclusivité (si applicable)</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Exclusivité territoriale</Label>
@@ -47537,7 +47537,7 @@ FIN DE LA CONVENTION
 
                 {/* 7. DISTRIBUTION SÉLECTIVE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Distribution sélective (si applicable)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Distribution sélective (si applicable)</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Distribution sélective</Label>
@@ -47567,7 +47567,7 @@ FIN DE LA CONVENTION
                 
                 {/* 8. PROPRIÉTÉ INTELLECTUELLE & MARQUE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Propriété intellectuelle & Marque</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Propriété intellectuelle & Marque</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Droit d'utiliser la marque du fournisseur</Label>
@@ -47605,7 +47605,7 @@ FIN DE LA CONVENTION
 
                 {/* 9. GARANTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Garanties</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Garanties</h4>
                   <div className="space-y-3">
                     <div className="p-3 bg-white rounded border border-blue-100">
                       <h5 className="font-medium text-blue-600 mb-2">A. Garantie légale</h5>
@@ -47660,7 +47660,7 @@ FIN DE LA CONVENTION
 
                 {/* 11. NON-CONCURRENCE & CONFIDENTIALITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Non-concurrence & Confidentialité</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Non-concurrence & Confidentialité</h4>
                   <div className="space-y-3">
                     <div className="p-3 bg-white rounded border border-blue-100">
                       <h5 className="font-medium text-blue-600 mb-2">Non-concurrence</h5>
@@ -47693,7 +47693,7 @@ FIN DE LA CONVENTION
                 
                 {/* 12. DURÉE & RÉSILIATION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Durée & Résiliation</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Durée & Résiliation</h4>
                   <div className="space-y-3">
                     <div className="p-3 bg-white rounded border border-blue-100">
                       <h5 className="font-medium text-blue-600 mb-2">Durée du contrat</h5>
@@ -47758,7 +47758,7 @@ FIN DE LA CONVENTION
 
                 {/* 13. CLAUSES SPÉCIFIQUES B2B */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Clauses spécifiques B2B</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Clauses spécifiques B2B</h4>
                   <div className="space-y-4">
                     {/* Réserve de propriété */}
                     <div className="p-3 bg-white rounded border border-blue-100">
@@ -47838,7 +47838,7 @@ FIN DE LA CONVENTION
 
                 {/* 13. CLAUSES SPÉCIFIQUES B2B */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Clauses spécifiques B2B</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Clauses spécifiques B2B</h4>
                   <div className="space-y-4">
                     {/* Réserve de propriété */}
                     <div className="p-3 bg-white rounded border border-blue-100">
@@ -47918,7 +47918,7 @@ FIN DE LA CONVENTION
 
                 {/* 14. COMPLIANCE / DROIT APPLICABLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Compliance / Droit applicable</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Compliance / Droit applicable</h4>
                   <div className="space-y-3">
                     <div><Label>Loi applicable</Label><Input value={venteB2BData.loiApplicable} onChange={(e) => setVenteB2BData({...venteB2BData, loiApplicable: e.target.value})} placeholder="France" /></div>
                     <div><Label>Tribunal compétent</Label><Input value={venteB2BData.tribunalCompetent} onChange={(e) => setVenteB2BData({...venteB2BData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunal de Commerce de Paris" /></div>
@@ -47949,7 +47949,7 @@ FIN DE LA CONVENTION
 
                 {/* 15. ANNEXES ET PIÈCES JUSTIFICATIVES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Annexes et pièces justificatives</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Annexes et pièces justificatives</h4>
                   <div className="space-y-3">
                     <SingleFileUpload
                       label="CGV B2B / Conditions commerciales"
@@ -47986,7 +47986,7 @@ FIN DE LA CONVENTION
                 
                 {/* 1. IDENTIFICATION DU VENDEUR */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification du vendeur</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Identification du vendeur</h4>
                   <div className="space-y-3">
                     <ClientSelector 
                       clients={clients} 
@@ -48047,7 +48047,7 @@ FIN DE LA CONVENTION
                 
                 {/* 2. CHAMP D'APPLICATION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Champ d'application des CGV</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Champ d'application des CGV</h4>
                   <div className="space-y-3">
                     <div><Label>Types de produits / services vendus *</Label><Textarea value={cgvData.typesProduitsServices} onChange={(e) => setCgvData({...cgvData, typesProduitsServices: e.target.value})} placeholder="Décrivez les produits et services couverts par ces CGV..." className="min-h-[80px]" /></div>
                     <div>
@@ -48076,7 +48076,7 @@ FIN DE LA CONVENTION
                 
                 {/* 3. DÉFINITIONS */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Définitions indispensables</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Définitions indispensables</h4>
                   <p className="text-sm text-gray-600">Définissez les termes clés utilisés dans vos CGV</p>
                   <div className="space-y-3">
                     <div><Label>Produit</Label><Textarea value={cgvData.definitionProduit} onChange={(e) => setCgvData({...cgvData, definitionProduit: e.target.value})} placeholder="Ex: Désigne tout bien meuble proposé à la vente..." className="min-h-[60px]" /></div>
@@ -48094,7 +48094,7 @@ FIN DE LA CONVENTION
                 
                 {/* 4. CARACTÉRISTIQUES DES PRODUITS/SERVICES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Caractéristiques des produits / services</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Caractéristiques des produits / services</h4>
                   <div className="space-y-3">
                     <div><Label>Description précise des produits/services *</Label><Textarea value={cgvData.descriptionProduits} onChange={(e) => setCgvData({...cgvData, descriptionProduits: e.target.value})} placeholder="Décrivez précisément les caractéristiques, spécifications, qualités..." className="min-h-[100px]" /></div>
                     <div>
@@ -48115,7 +48115,7 @@ FIN DE LA CONVENTION
                 
                 {/* 5. PROCESSUS DE COMMANDE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Processus de commande</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Processus de commande</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Création d'un compte client obligatoire ?</Label>
@@ -48152,7 +48152,7 @@ FIN DE LA CONVENTION
                 
                 {/* 6. PRIX */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Prix</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Prix</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Prix affichés *</Label>
@@ -48175,7 +48175,7 @@ FIN DE LA CONVENTION
                 
                 {/* 7. CONDITIONS DE PAIEMENT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Conditions de paiement</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Conditions de paiement</h4>
                   <div className="space-y-3">
                     <div>
                       <Label className="font-medium">Modes de paiement acceptés</Label>
@@ -48233,7 +48233,7 @@ FIN DE LA CONVENTION
                 
                 {/* 8. LIVRAISON */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Livraison</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Livraison</h4>
                   <div className="space-y-3">
                     <div><Label>Zones livrées</Label><Input value={cgvData.zonesLivrees} onChange={(e) => setCgvData({...cgvData, zonesLivrees: e.target.value})} placeholder="France métropolitaine, Europe, International..." /></div>
                     <div><Label>Mode de livraison</Label><Input value={cgvData.modeLivraison} onChange={(e) => setCgvData({...cgvData, modeLivraison: e.target.value})} placeholder="Colissimo, transporteur, retrait magasin..." /></div>
@@ -48253,7 +48253,7 @@ FIN DE LA CONVENTION
                 
                 {/* 9. EXÉCUTION DU SERVICE (SI PRESTATION) */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Exécution du service (si prestation)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Exécution du service (si prestation)</h4>
                   <p className="text-sm text-gray-600">Remplir uniquement si vous vendez des services/prestations</p>
                   <div className="space-y-3">
                     <div><Label>Calendrier d'exécution</Label><Textarea value={cgvData.calendrierService} onChange={(e) => setCgvData({...cgvData, calendrierService: e.target.value})} placeholder="Délais, planning, phases..." className="min-h-[60px]" /></div>
@@ -48305,7 +48305,7 @@ FIN DE LA CONVENTION
                 
                 {/* 11. RETOURS & REMBOURSEMENTS */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Retours & Remboursements</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Retours & Remboursements</h4>
                   <div className="space-y-3">
                     <div><Label>Conditions de retour</Label><Textarea value={cgvData.conditionsRetour} onChange={(e) => setCgvData({...cgvData, conditionsRetour: e.target.value})} placeholder="Dans quels cas un retour est accepté..." className="min-h-[60px]" /></div>
                     <div><Label>Frais de retour</Label><Input value={cgvData.fraisRetour} onChange={(e) => setCgvData({...cgvData, fraisRetour: e.target.value})} placeholder="À la charge du client ou du vendeur" /></div>
@@ -48319,7 +48319,7 @@ FIN DE LA CONVENTION
                 {/* 12. GARANTIES LÉGALES (OBLIGATOIRE B2C) */}
                 {cgvData.typesClients.includes("B2C") && (
                   <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                    <h4 className="font-semibold text-lg text-green-700">1️⃣2️⃣ Garanties légales (obligatoire B2C)</h4>
+                    <h4 className="font-semibold text-lg text-green-700">Garanties légales (obligatoire B2C)</h4>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2">
                         <Checkbox checked={cgvData.garantieLegaleConformite} onCheckedChange={(v) => setCgvData({...cgvData, garantieLegaleConformite: !!v})} id="gar-conf" disabled />
@@ -48348,7 +48348,7 @@ FIN DE LA CONVENTION
                 
                 {/* 13. TRANSFERT DE PROPRIÉTÉ & DES RISQUES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Transfert de propriété & des risques</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Transfert de propriété & des risques</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Transfert de propriété</Label>
@@ -48373,7 +48373,7 @@ FIN DE LA CONVENTION
                 
                 {/* 14. RESPONSABILITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Responsabilité</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Responsabilité</h4>
                   <div className="space-y-3">
                     <div><Label>Limitation de responsabilité</Label><Textarea value={cgvData.limitationResponsabilite} onChange={(e) => setCgvData({...cgvData, limitationResponsabilite: e.target.value})} placeholder="Plafond, exclusions, restrictions..." className="min-h-[80px]" /></div>
                     <div>
@@ -48391,7 +48391,7 @@ FIN DE LA CONVENTION
                 
                 {/* 15. PROPRIÉTÉ INTELLECTUELLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Propriété intellectuelle</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Propriété intellectuelle</h4>
                   <div className="space-y-3">
                     <div><Label>Marques & logos</Label><Textarea value={cgvData.marquesLogos} onChange={(e) => setCgvData({...cgvData, marquesLogos: e.target.value})} placeholder="Titularité, protection..." className="min-h-[60px]" /></div>
                     <div>
@@ -48410,7 +48410,7 @@ FIN DE LA CONVENTION
                 
                 {/* 16. RGPD & DONNÉES PERSONNELLES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ RGPD & Données personnelles</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">RGPD & Données personnelles</h4>
                   <div className="space-y-3">
                     <div><Label>Nature des données collectées *</Label><Textarea value={cgvData.natureDonneesCollectees} onChange={(e) => setCgvData({...cgvData, natureDonneesCollectees: e.target.value})} placeholder="Identité, coordonnées, données bancaires..." className="min-h-[80px]" /></div>
                     <div><Label>Finalités du traitement *</Label><Textarea value={cgvData.finalitesTraitement} onChange={(e) => setCgvData({...cgvData, finalitesTraitement: e.target.value})} placeholder="Gestion commandes, facturation, livraison, marketing..." className="min-h-[80px]" /></div>
@@ -48434,7 +48434,7 @@ FIN DE LA CONVENTION
                 
                 {/* 17. SERVICE CLIENT & MÉDIATION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Service client & Médiation</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Service client & Médiation</h4>
                   <div className="space-y-3">
                     <div><Label>Contact service client *</Label><Textarea value={cgvData.contactServiceClient} onChange={(e) => setCgvData({...cgvData, contactServiceClient: e.target.value})} placeholder="Email, téléphone, horaires, adresse postale..." className="min-h-[80px]" /></div>
                     <div><Label>Procédure de réclamation</Label><Textarea value={cgvData.procedureReclamation} onChange={(e) => setCgvData({...cgvData, procedureReclamation: e.target.value})} placeholder="Étapes, délais de réponse..." className="min-h-[80px]" /></div>
@@ -48451,7 +48451,7 @@ FIN DE LA CONVENTION
                 
                 {/* 18. RÉSILIATION ABONNEMENTS (si applicable) */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Résiliation abonnements (si applicable)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Résiliation abonnements (si applicable)</h4>
                   <div className="space-y-3">
                     <div><Label>Durée de l'abonnement</Label><Input value={cgvData.dureeAbonnement} onChange={(e) => setCgvData({...cgvData, dureeAbonnement: e.target.value})} placeholder="Ex: 1 mois, 1 an..." /></div>
                     <div>
@@ -48473,7 +48473,7 @@ FIN DE LA CONVENTION
                 
                 {/* 19. LOI APPLICABLE & TRIBUNAL COMPÉTENT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣9️⃣ Loi applicable & Tribunal compétent</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Loi applicable & Tribunal compétent</h4>
                   <div className="space-y-3">
                     <div><Label>Loi applicable *</Label><Input value={cgvData.loiApplicable} onChange={(e) => setCgvData({...cgvData, loiApplicable: e.target.value})} placeholder="Ex: Droit français" /></div>
                     <div><Label>Tribunal compétent</Label><Textarea value={cgvData.tribunalCompetent} onChange={(e) => setCgvData({...cgvData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunaux du ressort de Paris" className="min-h-[60px]" /></div>
@@ -48498,7 +48498,7 @@ FIN DE LA CONVENTION
                 
                 {/* 20. ANNEXES (upload individuel par document) */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Annexes à joindre</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Annexes à joindre</h4>
                   <div className="space-y-3">
                     <SingleFileUpload
                       label="Formulaire de rétractation (B2C)"
@@ -48562,7 +48562,7 @@ FIN DE LA CONVENTION
                 
                 {/* 1. IDENTIFICATION DES PARTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Identification des parties</h4>
                   
                   {/* FRANCHISEUR */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
@@ -48679,7 +48679,7 @@ FIN DE LA CONVENTION
 
                 {/* 2. DOCUMENT D'INFORMATION PRÉCONTRACTUELLE (DIP) */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Document d'Information Précontractuelle (DIP)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Document d'Information Précontractuelle (DIP)</h4>
                   <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 text-sm">
                     <p className="font-semibold text-amber-800">⚖️ Obligation légale (Loi Doubin)</p>
                     <p className="text-amber-700 mt-1">Le DIP doit être remis au moins 20 jours avant la signature du contrat ou le versement de toute somme.</p>
@@ -48703,7 +48703,7 @@ FIN DE LA CONVENTION
 
                 {/* 3. OBJET DU CONTRAT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Objet du contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Objet du contrat</h4>
                   
                   <div><Label>Concept de franchise *</Label><Textarea value={franchiseData.objetConcept} onChange={(e) => setFranchiseData({...franchiseData, objetConcept: e.target.value})} placeholder="Description détaillée du concept franchisé..." className="min-h-[100px]" /></div>
                   
@@ -48723,7 +48723,7 @@ FIN DE LA CONVENTION
 
                 {/* 4. DROITS ACCORDÉS */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Droits accordés au franchisé</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Droits accordés au franchisé</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div><Label>Type de licence *</Label><Select value={franchiseData.droitsTypeLicence} onValueChange={(val) => setFranchiseData({...franchiseData, droitsTypeLicence: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="exclusive">Exclusive</SelectItem><SelectItem value="semi_exclusive">Semi-exclusive</SelectItem><SelectItem value="non_exclusive">Non exclusive</SelectItem></SelectContent></Select></div>
@@ -48748,7 +48748,7 @@ FIN DE LA CONVENTION
 
                 {/* 5. OBLIGATIONS DU FRANCHISEUR */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Obligations du franchiseur</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Obligations du franchiseur</h4>
                   
                   <div><Label>Formation initiale *</Label><Textarea value={franchiseData.obligFranchiseurFormationInitiale} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseurFormationInitiale: e.target.value})} placeholder="Détail du programme de formation (durée, contenu, lieu...)" className="min-h-[80px]" /></div>
                   
@@ -48769,7 +48769,7 @@ FIN DE LA CONVENTION
 
                 {/* 6. OBLIGATIONS DU FRANCHISÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Obligations du franchisé</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Obligations du franchisé</h4>
                   
                   <div><Label>Respect du concept *</Label><Textarea value={franchiseData.obligFranchiseRespectConcept} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseRespectConcept: e.target.value})} placeholder="Appliquer le concept, les méthodes, l'image de marque..." className="min-h-[80px]" /></div>
                   
@@ -48796,7 +48796,7 @@ FIN DE LA CONVENTION
 
                 {/* 7. REDEVANCES - SECTION CENTRALE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Redevances (élément central du contrat)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Redevances (élément central du contrat)</h4>
                   
                   <div className="bg-blue-100/50 border border-blue-300 rounded-lg p-3 text-sm">
                     <p className="font-semibold text-blue-800">💶 Structure financière du contrat</p>
@@ -48841,7 +48841,7 @@ FIN DE LA CONVENTION
 
                 {/* 8. CONDITIONS FINANCIÈRES ANNEXES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Conditions financières annexes</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Conditions financières annexes</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div><Label>Investissement initial estimé</Label><Input value={franchiseData.conditionsInvestissementInitial} onChange={(e) => setFranchiseData({...franchiseData, conditionsInvestissementInitial: e.target.value})} placeholder="Ex: 150 000 € (travaux, stock, matériel...)" /></div>
@@ -48858,7 +48858,7 @@ FIN DE LA CONVENTION
 
                 {/* 9. LOCAL COMMERCIAL */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Local commercial et aménagement</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Local commercial et aménagement</h4>
                   
                   <div><Label>Adresse du local</Label><Input value={franchiseData.localAdresse} onChange={(e) => setFranchiseData({...franchiseData, localAdresse: e.target.value})} placeholder="Adresse complète du point de vente..." /></div>
                   
@@ -48891,7 +48891,7 @@ FIN DE LA CONVENTION
 
                 {/* 11. SAVOIR-FAIRE & MANUEL OPÉRATOIRE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Savoir-faire et manuel opératoire</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Savoir-faire et manuel opératoire</h4>
                   
                   <div><Label>Description détaillée du savoir-faire *</Label><Textarea value={franchiseData.savoirFaireDescription} onChange={(e) => setFranchiseData({...franchiseData, savoirFaireDescription: e.target.value})} placeholder="Techniques, procédés, méthodes commerciales..." className="min-h-[100px]" /></div>
                   
@@ -48914,7 +48914,7 @@ FIN DE LA CONVENTION
 
                 {/* 12. PROPRIÉTÉ INTELLECTUELLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Propriété intellectuelle</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Propriété intellectuelle</h4>
                   
                   <div><Label>Marques, logos, signes distinctifs *</Label><Textarea value={franchiseData.piMarques} onChange={(e) => setFranchiseData({...franchiseData, piMarques: e.target.value})} placeholder="Liste des marques déposées, n° INPI..." className="min-h-[80px]" /></div>
                   
@@ -48929,7 +48929,7 @@ FIN DE LA CONVENTION
 
                 {/* 13. CONFIDENTIALITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Confidentialité</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Confidentialité</h4>
                   
                   <div><Label>Informations confidentielles *</Label><Textarea value={franchiseData.confidentialiteInformations} onChange={(e) => setFranchiseData({...franchiseData, confidentialiteInformations: e.target.value})} placeholder="Savoir-faire, données commerciales, fichiers clients, fournisseurs..." className="min-h-[80px]" /></div>
                   
@@ -48942,7 +48942,7 @@ FIN DE LA CONVENTION
 
                 {/* 14. NON-CONCURRENCE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Non-concurrence</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Non-concurrence</h4>
                   
                   <div><Label>Clause de non-concurrence pendant le contrat *</Label><Textarea value={franchiseData.nonConcurrencePendant} onChange={(e) => setFranchiseData({...franchiseData, nonConcurrencePendant: e.target.value})} placeholder="Interdiction d'exploiter un concept concurrent, périmètre..." className="min-h-[80px]" /></div>
                   
@@ -48959,7 +48959,7 @@ FIN DE LA CONVENTION
 
                 {/* 15. RESPONSABILITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Responsabilité</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Responsabilité</h4>
                   
                   <div><Label>Responsabilité du franchiseur</Label><Textarea value={franchiseData.responsabiliteFranchiseur} onChange={(e) => setFranchiseData({...franchiseData, responsabiliteFranchiseur: e.target.value})} placeholder="Limites, exclusions (ex: actes du franchisé)..." className="min-h-[80px]" /></div>
                   
@@ -48972,7 +48972,7 @@ FIN DE LA CONVENTION
 
                 {/* 16. DURÉE DU CONTRAT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Durée du contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Durée du contrat</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div><Label>Date de prise d'effet *</Label><Input type="date" value={franchiseData.dureeDateDebut} onChange={(e) => setFranchiseData({...franchiseData, dureeDateDebut: e.target.value})} /></div>
@@ -48985,7 +48985,7 @@ FIN DE LA CONVENTION
 
                 {/* 17. RÉSILIATION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Résiliation et rupture</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Résiliation et rupture</h4>
                   
                   <div><Label>Résiliation pour faute grave *</Label><Textarea value={franchiseData.resiliationFauteGrave} onChange={(e) => setFranchiseData({...franchiseData, resiliationFauteGrave: e.target.value})} placeholder="Cas de résiliation immédiate : non-paiement, manquement grave..." className="min-h-[80px]" /></div>
                   
@@ -49010,7 +49010,7 @@ FIN DE LA CONVENTION
 
                 {/* 18. VENTE / CESSION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Cession du contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Cession du contrat</h4>
                   
                   <div><Label>Possibilité de cession *</Label><RadioGroup value={franchiseData.cessionPossibilite} onValueChange={(val) => setFranchiseData({...franchiseData, cessionPossibilite: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="accord_franchiseur" />Avec accord du franchiseur</label><label className="flex items-center gap-2"><RadioGroupItem value="libre" />Libre</label><label className="flex items-center gap-2"><RadioGroupItem value="interdite" />Interdite</label></div></RadioGroup></div>
                   
@@ -49023,7 +49023,7 @@ FIN DE LA CONVENTION
 
                 {/* 19. DROIT APPLICABLE & LITIGES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣9️⃣ Droit applicable et litiges</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Droit applicable et litiges</h4>
                   
                   <div><Label>Droit applicable *</Label><Select value={franchiseData.droitApplicable} onValueChange={(val) => setFranchiseData({...franchiseData, droitApplicable: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="francais">Droit français</SelectItem><SelectItem value="autre">Autre droit</SelectItem></SelectContent></Select></div>
                   
@@ -49040,7 +49040,7 @@ FIN DE LA CONVENTION
 
                 {/* 20. ANNEXES OBLIGATOIRES - 14 UPLOAD ZONES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Annexes obligatoires</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Annexes obligatoires</h4>
                   
                   <div className="space-y-3">
                     <SingleFileUpload
@@ -49079,7 +49079,7 @@ FIN DE LA CONVENTION
 
                 {/* 21. OBSERVATIONS FINALES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣1️⃣ Observations finales</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Observations finales</h4>
                   
                   <div><Label>Observations finales / clauses particulières</Label><Textarea value={franchiseData.observationsFinales} onChange={(e) => setFranchiseData({...franchiseData, observationsFinales: e.target.value})} placeholder="Remarques, conditions suspensives, clauses spécifiques..." className="min-h-[100px]" /></div>
                 </div>
@@ -49103,7 +49103,7 @@ FIN DE LA CONVENTION
                 
                 {/* 1. IDENTIFICATION DES PARTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Identification des parties</h4>
                   
                   {/* Partie 1 */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
@@ -49348,7 +49348,7 @@ FIN DE LA CONVENTION
 
                 {/* 2. OBJET DU PARTENARIAT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du partenariat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Objet du partenariat</h4>
                   <div>
                     <Label>Nature du partenariat * (sélection multiple possible)</Label>
                     <div className="grid grid-cols-2 gap-2 mt-2">
@@ -49403,7 +49403,7 @@ FIN DE LA CONVENTION
 
                 {/* 3. RÔLES PARTIE 1 */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Rôles et responsabilités — Partie 1</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Rôles et responsabilités — Partie 1</h4>
                   <div>
                     <Label>Responsabilités</Label>
                     <Textarea value={partenariatData.partie1Responsabilites} onChange={(e) => setPartenariatData({...partenariatData, partie1Responsabilites: e.target.value})} placeholder="Décrire les responsabilités de la partie 1..." rows={2} />
@@ -49436,7 +49436,7 @@ FIN DE LA CONVENTION
 
                 {/* 4. RÔLES PARTIE 2 */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Rôles et responsabilités — Partie 2</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Rôles et responsabilités — Partie 2</h4>
                   <div>
                     <Label>Responsabilités</Label>
                     <Textarea value={partenariatData.partie2Responsabilites} onChange={(e) => setPartenariatData({...partenariatData, partie2Responsabilites: e.target.value})} placeholder="Décrire les responsabilités de la partie 2..." rows={2} />
@@ -49469,7 +49469,7 @@ FIN DE LA CONVENTION
 
                 {/* 5. GOUVERNANCE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Gouvernance du partenariat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Gouvernance du partenariat</h4>
                   <div>
                     <Label>Comité de pilotage ?</Label>
                     <Select value={partenariatData.gouvernanceComitePilotage} onValueChange={(val) => setPartenariatData({...partenariatData, gouvernanceComitePilotage: val})}>
@@ -49520,7 +49520,7 @@ FIN DE LA CONVENTION
 
                 {/* 6. CONTRIBUTIONS FINANCIÈRES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Contributions financières</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Contributions financières</h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label>Investissement initial — Partie 1</Label>
@@ -49569,7 +49569,7 @@ FIN DE LA CONVENTION
 
                 {/* 7. PARTAGE DES RESSOURCES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Partage des ressources</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Partage des ressources</h4>
                   <div>
                     <Label>Mise à disposition de personnel</Label>
                     <Textarea value={partenariatData.ressourcesPersonnel} onChange={(e) => setPartenariatData({...partenariatData, ressourcesPersonnel: e.target.value})} placeholder="Ex: 1 développeur à temps partiel, 1 commercial..." rows={2} />
@@ -49602,7 +49602,7 @@ FIN DE LA CONVENTION
 
                 {/* 8. DURÉE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Durée du partenariat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Durée du partenariat</h4>
                   <div>
                     <Label>Durée déterminée ou indéterminée ?</Label>
                     <Select value={partenariatData.dureeDeterminee} onValueChange={(val) => setPartenariatData({...partenariatData, dureeDeterminee: val})}>
@@ -49643,7 +49643,7 @@ FIN DE LA CONVENTION
 
                 {/* 9. CONFIDENTIALITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Confidentialité</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Confidentialité</h4>
                   <div>
                     <Label>Définition de l'information confidentielle *</Label>
                     <Textarea value={partenariatData.confidentialiteDefinition} onChange={(e) => setPartenariatData({...partenariatData, confidentialiteDefinition: e.target.value})} placeholder="Ex: Toute information technique, commerciale, financière échangée dans le cadre du partenariat..." rows={3} />
@@ -49676,7 +49676,7 @@ FIN DE LA CONVENTION
 
                 {/* 10. PROPRIÉTÉ INTELLECTUELLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Propriété intellectuelle</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Propriété intellectuelle</h4>
                   <div>
                     <Label>PI Antérieure (Background IP)</Label>
                     <Textarea value={partenariatData.piAnterieure} onChange={(e) => setPartenariatData({...partenariatData, piAnterieure: e.target.value})} placeholder="Décrire les éléments de PI existants avant le partenariat..." rows={2} />
@@ -49815,7 +49815,7 @@ FIN DE LA CONVENTION
 
                 {/* 12. COMMUNICATION & MARKETING */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Communication &amp; marketing commun</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Communication &amp; marketing commun</h4>
                   <div>
                     <Label>Usage des logos / marques</Label>
                     <Textarea value={partenariatData.communicationUsageLogos} onChange={(e) => setPartenariatData({...partenariatData, communicationUsageLogos: e.target.value})} placeholder="Ex: Autorisation d'usage réciproque des logos sur supports marketing..." rows={2} />
@@ -49840,7 +49840,7 @@ FIN DE LA CONVENTION
 
                 {/* 13. EXCLUSIVITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Exclusivité (optionnelle)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Exclusivité (optionnelle)</h4>
                   <div>
                     <Label>Partenariat exclusif ?</Label>
                     <Select value={partenariatData.exclusiviteApplicable} onValueChange={(val) => setPartenariatData({...partenariatData, exclusiviteApplicable: val})}>
@@ -49875,7 +49875,7 @@ FIN DE LA CONVENTION
 
                 {/* 14. RESPONSABILITÉ & GARANTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Responsabilité &amp; garanties</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Responsabilité &amp; garanties</h4>
                   <div>
                     <Label>Responsabilité contractuelle</Label>
                     <Textarea value={partenariatData.responsabiliteContractuelle} onChange={(e) => setPartenariatData({...partenariatData, responsabiliteContractuelle: e.target.value})} placeholder="Chaque partie est responsable de ses obligations..." rows={2} />
@@ -49928,7 +49928,7 @@ FIN DE LA CONVENTION
 
                 {/* 15. MODIFICATIONS */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Modifications du partenariat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Modifications du partenariat</h4>
                   <div>
                     <Label>Amendements possibles ?</Label>
                     <Select value={partenariatData.modificationsAmendementsAutorise} onValueChange={(val) => setPartenariatData({...partenariatData, modificationsAmendementsAutorise: val})}>
@@ -49961,7 +49961,7 @@ FIN DE LA CONVENTION
 
                 {/* 16. RÉSILIATION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Résiliation du contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Résiliation du contrat</h4>
                   <div>
                     <Label>Durée du préavis (en jours)</Label>
                     <Select value={partenariatData.resiliationPreavisDuree} onValueChange={(val) => setPartenariatData({...partenariatData, resiliationPreavisDuree: val})}>
@@ -50006,7 +50006,7 @@ FIN DE LA CONVENTION
 
                 {/* 17. RÈGLEMENT DES LITIGES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Règlement des litiges</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Règlement des litiges</h4>
                   <div>
                     <Label>Loi applicable</Label>
                     <Select value={partenariatData.litigesLoiApplicable} onValueChange={(val) => setPartenariatData({...partenariatData, litigesLoiApplicable: val})}>
@@ -50051,7 +50051,7 @@ FIN DE LA CONVENTION
 
                 {/* 18. CLAUSES GÉNÉRALES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Clauses générales</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Clauses générales</h4>
                   <div className="flex items-center gap-2 p-3 bg-white rounded border border-blue-100">
                     <input
                       type="checkbox"
@@ -50140,7 +50140,7 @@ FIN DE LA CONVENTION
 
                 {/* 19. ANNEXES POSSIBLES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣9️⃣ Annexes possibles</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Annexes possibles</h4>
                   <div>
                     <Label>Description des annexes</Label>
                     <Textarea value={partenariatData.annexesDescriptions} onChange={(e) => setPartenariatData({...partenariatData, annexesDescriptions: e.target.value})} placeholder="Lister les annexes prévues : cahier des charges, planning, budget..." rows={3} />
@@ -50209,7 +50209,7 @@ FIN DE LA CONVENTION
 
                 {/* Observations finales */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Observations finales</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Observations finales</h4>
                   <div>
                     <Label>Observations finales / clauses particulières</Label>
                     <Textarea value={partenariatData.observationsFinales} onChange={(e) => setPartenariatData({...partenariatData, observationsFinales: e.target.value})} placeholder="Précisions complémentaires..." rows={4} />
@@ -50244,7 +50244,7 @@ FIN DE LA CONVENTION
                 
                 {/* 1. IDENTIFICATION DE L'ÉDITEUR */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification de l'éditeur du site / application</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Identification de l'éditeur du site / application</h4>
                   <div className="p-3 bg-orange-50 rounded border border-orange-200">
                     <p className="text-xs text-orange-700">⚠️ Obligatoire par la LCEN (Loi pour la Confiance dans l'Économie Numérique)</p>
                   </div>
@@ -50302,7 +50302,7 @@ FIN DE LA CONVENTION
                 
                 {/* 2. OBJET DES CGU */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet des CGU</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Objet des CGU</h4>
                   <div className="space-y-3">
                     <div><Label>Service fourni *</Label><Textarea value={cguData.serviceFourni} onChange={(e) => setCguData({...cguData, serviceFourni: e.target.value})} placeholder="Description détaillée du service..." className="min-h-[100px]" /></div>
                     <div>
@@ -50341,7 +50341,7 @@ FIN DE LA CONVENTION
                 
                 {/* 3. DÉFINITIONS INDISPENSABLES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Définitions indispensables</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Définitions indispensables</h4>
                   <div className="space-y-3">
                     <div><Label>Utilisateur</Label><Textarea value={cguData.defUtilisateur} onChange={(e) => setCguData({...cguData, defUtilisateur: e.target.value})} placeholder="Ex: Toute personne qui accède au service..." className="min-h-[60px]" /></div>
                     <div><Label>Compte utilisateur</Label><Textarea value={cguData.defCompteUtilisateur} onChange={(e) => setCguData({...cguData, defCompteUtilisateur: e.target.value})} placeholder="Ex: Espace personnel créé par l'utilisateur..." className="min-h-[60px]" /></div>
@@ -50359,7 +50359,7 @@ FIN DE LA CONVENTION
                 
                 {/* 4. ACCÈS AU SITE / COMPTE UTILISATEUR */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Accès au site / Compte utilisateur</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Accès au site / Compte utilisateur</h4>
                   <div className="space-y-4">
                     <div>
                       <Label className="font-medium">A. Création de compte - Champs collectés</Label>
@@ -50423,7 +50423,7 @@ FIN DE LA CONVENTION
                 
                 {/* 5. FONCTIONNEMENT DU SERVICE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Fonctionnement du service</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Fonctionnement du service</h4>
                   <div className="space-y-3">
                     <div><Label>Fonctionnalités disponibles *</Label><Textarea value={cguData.fonctionnalitesDisponibles} onChange={(e) => setCguData({...cguData, fonctionnalitesDisponibles: e.target.value})} placeholder="Liste des fonctionnalités offertes..." className="min-h-[100px]" /></div>
                     <div><Label>Limitations du service</Label><Textarea value={cguData.limitationsService} onChange={(e) => setCguData({...cguData, limitationsService: e.target.value})} placeholder="Limites techniques, quotas, restrictions..." className="min-h-[80px]" /></div>
@@ -50436,7 +50436,7 @@ FIN DE LA CONVENTION
                 
                 {/* 6. RÈGLES D'UTILISATION / COMPORTEMENTS INTERDITS */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Règles d'utilisation / Comportements interdits</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Règles d'utilisation / Comportements interdits</h4>
                   <div className="space-y-4">
                     <div>
                       <Label className="font-medium">A. Interdictions générales</Label>
@@ -50476,7 +50476,7 @@ FIN DE LA CONVENTION
                 
                 {/* 7. CONTENUS UTILISATEURS (UGC) */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Contenus utilisateurs (UGC)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Contenus utilisateurs (UGC)</h4>
                   <div className="space-y-3">
                     <div><Label>Définition du contenu utilisateur</Label><Textarea value={cguData.definitionContenuUGC} onChange={(e) => setCguData({...cguData, definitionContenuUGC: e.target.value})} placeholder="Tout contenu publié, partagé ou transmis par l'utilisateur..." className="min-h-[60px]" /></div>
                     <div><Label>Droits concédés par l'utilisateur à la plateforme</Label><Textarea value={cguData.droitsConcedes} onChange={(e) => setCguData({...cguData, droitsConcedes: e.target.value})} placeholder="Licence d'utilisation, droits de reproduction..." className="min-h-[80px]" /></div>
@@ -50499,7 +50499,7 @@ FIN DE LA CONVENTION
                 
                 {/* 8. PROPRIÉTÉ INTELLECTUELLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Propriété intellectuelle</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Propriété intellectuelle</h4>
                   <div className="space-y-3">
                     <div><Label>Titularité des droits du site / application</Label><Textarea value={cguData.titulariteDroits} onChange={(e) => setCguData({...cguData, titulariteDroits: e.target.value})} placeholder="Tous les éléments du service sont protégés..." className="min-h-[60px]" /></div>
                     <div><Label>Marques, logos, design</Label><Textarea value={cguData.marquesLogosDesign} onChange={(e) => setCguData({...cguData, marquesLogosDesign: e.target.value})} placeholder="Protection des marques et éléments graphiques..." className="min-h-[60px]" /></div>
@@ -50512,7 +50512,7 @@ FIN DE LA CONVENTION
                 
                 {/* 9. DONNÉES PERSONNELLES / RGPD */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Données personnelles / RGPD</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Données personnelles / RGPD</h4>
                   <div className="space-y-4">
                     <div>
                       <Label className="font-medium">A. Données collectées</Label>
@@ -50585,7 +50585,7 @@ FIN DE LA CONVENTION
                 
                 {/* 11. RESPONSABILITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Responsabilité</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Responsabilité</h4>
                   <div className="space-y-4">
                     <div>
                       <Label className="font-medium">Engagements du fournisseur</Label>
@@ -50612,7 +50612,7 @@ FIN DE LA CONVENTION
                 
                 {/* 12. SUSPENSION / SUPPRESSION DU COMPTE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Suspension / Suppression du compte</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Suspension / Suppression du compte</h4>
                   <div className="space-y-3">
                     <div>
                       <Label className="font-medium">Cas de suspension/suppression</Label>
@@ -50631,7 +50631,7 @@ FIN DE LA CONVENTION
                 
                 {/* 13. MODIFICATION DES CGU */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Modification des CGU</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Modification des CGU</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Notification de la modification</Label>
@@ -50660,7 +50660,7 @@ FIN DE LA CONVENTION
                 
                 {/* 14. RÉSILIATION DU SERVICE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Résiliation du service</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Résiliation du service</h4>
                   <div className="space-y-3">
                     <div><Label>Résiliation par l'utilisateur</Label><Textarea value={cguData.resiliationParUtilisateur} onChange={(e) => setCguData({...cguData, resiliationParUtilisateur: e.target.value})} placeholder="Modalités de résiliation à l'initiative de l'utilisateur..." className="min-h-[80px]" /></div>
                     <div><Label>Résiliation par la plateforme</Label><Textarea value={cguData.resiliationParPlateforme} onChange={(e) => setCguData({...cguData, resiliationParPlateforme: e.target.value})} placeholder="Cas de résiliation par la plateforme..." className="min-h-[80px]" /></div>
@@ -50677,7 +50677,7 @@ FIN DE LA CONVENTION
                 
                 {/* 15. LITIGES / DROIT APPLICABLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Litiges / Droit applicable</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Litiges / Droit applicable</h4>
                   <div className="space-y-3">
                     <div><Label>Droit applicable *</Label><Input value={cguData.droitApplicable} onChange={(e) => setCguData({...cguData, droitApplicable: e.target.value})} placeholder="Ex: Droit français" /></div>
                     <div><Label>Tribunal compétent</Label><Textarea value={cguData.tribunalCompetent} onChange={(e) => setCguData({...cguData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunaux de Paris" className="min-h-[60px]" /></div>
@@ -50700,7 +50700,7 @@ FIN DE LA CONVENTION
                 
                 {/* 15bis. HIÉRARCHIE DES DOCUMENTS */}
                 <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">1️⃣5️⃣bis Clause de hiérarchie des documents</h4>
+                  <h4 className="font-semibold text-lg text-green-700">bis Clause de hiérarchie des documents</h4>
                   <div className="p-3 bg-green-100 rounded border border-green-300">
                     <p className="text-xs text-green-800">💡 Utile si CGU + CGV + contrats particuliers coexistent</p>
                   </div>
@@ -50717,7 +50717,7 @@ FIN DE LA CONVENTION
                 
                 {/* 15ter. NULLITÉ PARTIELLE */}
                 <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">1️⃣5️⃣ter Clause de nullité partielle (séparabilité)</h4>
+                  <h4 className="font-semibold text-lg text-green-700">ter Clause de nullité partielle (séparabilité)</h4>
                   <div className="p-3 bg-green-100 rounded border border-green-300">
                     <p className="text-xs text-green-800">💡 Standard juridique : si une clause est annulée, les autres restent valables</p>
                   </div>
@@ -50734,7 +50734,7 @@ FIN DE LA CONVENTION
                 
                 {/* 15quater. PREUVE ÉLECTRONIQUE */}
                 <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">1️⃣5️⃣quater Clause de preuve électronique</h4>
+                  <h4 className="font-semibold text-lg text-green-700">quater Clause de preuve électronique</h4>
                   <div className="p-3 bg-green-100 rounded border border-green-300">
                     <p className="text-xs text-green-800">💡 Essentiel en SaaS : logs, horodatage, données informatiques font foi</p>
                   </div>
@@ -50751,7 +50751,7 @@ FIN DE LA CONVENTION
                 
                 {/* 16. ANNEXES TECHNIQUES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Annexes techniques possibles</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Annexes techniques possibles</h4>
                   <div className="space-y-3">
                     <SingleFileUpload label="Politique de confidentialité" files={cguPolitiqueConfidentialiteFiles} onFilesChange={setCguPolitiqueConfidentialiteFiles} role="avocat" />
                     <SingleFileUpload label="Politique cookies" files={cguPolitiqueCookiesFiles} onFilesChange={setCguPolitiqueCookiesFiles} role="avocat" />
@@ -50763,7 +50763,7 @@ FIN DE LA CONVENTION
                 
                 {/* 17. PIÈCES JUSTIFICATIVES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Pièces justificatives (liste)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Pièces justificatives (liste)</h4>
                   <div className="space-y-3">
                     <SingleFileUpload label="Mentions légales (Kbis, statuts...)" files={cguMentionsLegalesFiles} onFilesChange={setCguMentionsLegalesFiles} role="avocat" />
                     <SingleFileUpload label="Politique de confidentialité" files={cguPolitiqueConfidentialite2Files} onFilesChange={setCguPolitiqueConfidentialite2Files} role="avocat" />
@@ -50782,7 +50782,7 @@ FIN DE LA CONVENTION
                 
                 {/* 1. IDENTIFICATION DES PARTIES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Identification des parties</h4>
                   
                   {/* MANDANT */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
@@ -50871,7 +50871,7 @@ FIN DE LA CONVENTION
                 
                 {/* 2. OBJET DU CONTRAT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du contrat</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Objet du contrat</h4>
                   <div className="space-y-3">
                     <div><Label>Produits ou services à promouvoir *</Label><Textarea value={agenceData.produits} onChange={(e) => setAgenceData({...agenceData, produits: e.target.value})} placeholder="Description des produits/services..." className="min-h-[80px]" /></div>
                     <div><Label>Marchés cibles</Label><Input value={agenceData.marchesCibles} onChange={(e) => setAgenceData({...agenceData, marchesCibles: e.target.value})} placeholder="B2B, B2C, secteur industriel..." /></div>
@@ -50883,7 +50883,7 @@ FIN DE LA CONVENTION
                 
                 {/* 3. NATURE JURIDIQUE */}
                 <div className="space-y-4 p-4 bg-orange-50/50 rounded-lg border border-orange-200">
-                  <h4 className="font-semibold text-lg text-orange-700">3️⃣ Nature juridique — Rappels obligatoires</h4>
+                  <h4 className="font-semibold text-lg text-orange-700">Nature juridique — Rappels obligatoires</h4>
                   <div className="p-3 bg-orange-100 rounded border border-orange-300">
                     <p className="text-xs text-orange-800">⚠️ Articles L134-1 à L134-17 du Code de commerce</p>
                   </div>
@@ -50897,7 +50897,7 @@ FIN DE LA CONVENTION
                 
                 {/* 4. MANDAT & POUVOIRS */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Mandat & Pouvoirs de l'agent</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Mandat & Pouvoirs de l'agent</h4>
                   <div className="space-y-3">
                     <div>
                       <Label className="font-medium">Pouvoirs accordés</Label>
@@ -50940,7 +50940,7 @@ FIN DE LA CONVENTION
                 
                 {/* 5. EXCLUSIVITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Exclusivité (si applicable)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Exclusivité (si applicable)</h4>
                   <div className="space-y-3">
                     <div>
                       <Label className="font-medium">Exclusivité accordée à l'agent</Label>
@@ -50975,7 +50975,7 @@ FIN DE LA CONVENTION
                 
                 {/* 6. OBLIGATIONS DE L'AGENT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Obligations de l'agent</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Obligations de l'agent</h4>
                   <div className="space-y-3">
                     <div><Label>Prospecter activement</Label><Textarea value={agenceData.obligationProspecter} onChange={(e) => setAgenceData({...agenceData, obligationProspecter: e.target.value})} placeholder="Modalités de prospection..." className="min-h-[60px]" /></div>
                     <div><Label>Promouvoir selon l'image de marque</Label><Textarea value={agenceData.obligationPromouvoir} onChange={(e) => setAgenceData({...agenceData, obligationPromouvoir: e.target.value})} placeholder="Respect de la charte graphique, communication..." className="min-h-[60px]" /></div>
@@ -50990,7 +50990,7 @@ FIN DE LA CONVENTION
                 
                 {/* 7. OBLIGATIONS DU MANDANT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Obligations du mandant</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Obligations du mandant</h4>
                   <div className="space-y-3">
                     <div><Label>Remettre catalogues, tarifs, documentation</Label><Textarea value={agenceData.obligationCatalogues} onChange={(e) => setAgenceData({...agenceData, obligationCatalogues: e.target.value})} placeholder="Documents fournis à l'agent..." className="min-h-[60px]" /></div>
                     <div><Label>Informer des modifications tarifaires</Label><Textarea value={agenceData.obligationInformerModifs} onChange={(e) => setAgenceData({...agenceData, obligationInformerModifs: e.target.value})} placeholder="Délai de notification..." className="min-h-[60px]" /></div>
@@ -51003,7 +51003,7 @@ FIN DE LA CONVENTION
                 
                 {/* 8. COMMISSIONNEMENT */}
                 <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">8️⃣ Commissionnement (POINT CLÉ)</h4>
+                  <h4 className="font-semibold text-lg text-green-700">Commissionnement (POINT CLÉ)</h4>
                   <div className="p-3 bg-green-100 rounded border border-green-300">
                     <p className="text-xs text-green-800">💰 Élément essentiel du contrat - définir précisément les modalités</p>
                   </div>
@@ -51054,7 +51054,7 @@ FIN DE LA CONVENTION
                 
                 {/* 9. NON-CONCURRENCE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Clause de non-concurrence (optionnelle mais fréquente)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Clause de non-concurrence (optionnelle mais fréquente)</h4>
                   <div className="space-y-3">
                     <div><Label>Avant résiliation (pendant le contrat)</Label><Textarea value={agenceData.nonConcurrenceAvant} onChange={(e) => setAgenceData({...agenceData, nonConcurrenceAvant: e.target.value})} placeholder="Interdiction de représenter des produits concurrents..." className="min-h-[60px]" /></div>
                     <div className="p-3 bg-orange-50 rounded border border-orange-200">
@@ -51079,7 +51079,7 @@ FIN DE LA CONVENTION
                 
                 {/* 11. CONFIDENTIALITÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Confidentialité</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Confidentialité</h4>
                   <div className="space-y-3">
                     <div><Label>Obligation pendant le contrat</Label><Textarea value={agenceData.confidentialitePendant} onChange={(e) => setAgenceData({...agenceData, confidentialitePendant: e.target.value})} placeholder="Non-divulgation des informations confidentielles..." className="min-h-[60px]" /></div>
                     <div><Label>Obligation après le contrat</Label><Textarea value={agenceData.confidentialiteApres} onChange={(e) => setAgenceData({...agenceData, confidentialiteApres: e.target.value})} placeholder="Durée de maintien de la confidentialité..." className="min-h-[60px]" /></div>
@@ -51089,7 +51089,7 @@ FIN DE LA CONVENTION
                 
                 {/* 12. PROPRIÉTÉ INTELLECTUELLE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Propriété intellectuelle</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Propriété intellectuelle</h4>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                       <Checkbox checked={agenceData.piInterdictionMarques} onCheckedChange={(v) => setAgenceData({...agenceData, piInterdictionMarques: !!v})} id="pi-marques" disabled />
@@ -51102,7 +51102,7 @@ FIN DE LA CONVENTION
                 
                 {/* 13. DONNÉES PERSONNELLES / RGPD */}
                 <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">1️⃣3️⃣ Données personnelles / RGPD</h4>
+                  <h4 className="font-semibold text-lg text-purple-700">Données personnelles / RGPD</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Statut de l'agent *</Label>
@@ -51121,7 +51121,7 @@ FIN DE LA CONVENTION
                 
                 {/* 14. DURÉE & RÉSILIATION */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Durée & Résiliation</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Durée & Résiliation</h4>
                   <div className="space-y-3">
                     <div>
                       <Label>Type de durée *</Label>
@@ -51178,7 +51178,7 @@ FIN DE LA CONVENTION
                 
                 {/* 15. INDEMNITÉ LÉGALE FIN DE CONTRAT */}
                 <div className="space-y-4 p-4 bg-orange-50 rounded-lg border border-orange-300">
-                  <h4 className="font-semibold text-lg text-orange-700">1️⃣5️⃣ Indemnité légale de fin de contrat ⚠️ OBLIGATOIRE !!!</h4>
+                  <h4 className="font-semibold text-lg text-orange-700">Indemnité légale de fin de contrat ⚠️ OBLIGATOIRE !!!</h4>
                   <div className="p-3 bg-orange-100 rounded border border-orange-400">
                     <p className="text-sm text-orange-800 font-semibold">🚨 ÉLÉMENT CLÉ du contrat d'agent commercial</p>
                     <p className="text-xs text-orange-700 mt-1">Indemnité généralement fixée à 2 années de commissions (sauf faute grave). C'est une obligation légale impérative (L134-12 Code de commerce).</p>
@@ -51195,7 +51195,7 @@ FIN DE LA CONVENTION
                 
                 {/* 16. FORMALITÉS & ANNEXES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Formalités & Annexes</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">Formalités & Annexes</h4>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <Checkbox checked={agenceData.annexeTarifs} onCheckedChange={(v) => setAgenceData({...agenceData, annexeTarifs: !!v})} id="ann-tarifs" />
@@ -51230,7 +51230,7 @@ FIN DE LA CONVENTION
                 
                 {/* 17. PIÈCES JUSTIFICATIVES */}
                 <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">1️⃣7️⃣ Pièces justificatives requises</h4>
+                  <h4 className="font-semibold text-lg text-green-700">Pièces justificatives requises</h4>
                   <div className="space-y-4">
                     <div className="space-y-3">
                       <p className="text-sm font-semibold">Côté mandant :</p>
