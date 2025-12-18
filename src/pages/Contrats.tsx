@@ -50209,16 +50209,6 @@ FIN DE LA CONVENTION
                     <Textarea value={partenariatData.observationsFinales} onChange={(e) => setPartenariatData({...partenariatData, observationsFinales: e.target.value})} placeholder="Précisions complémentaires..." rows={4} />
                   </div>
                 </div>
-
-                {/* Boutons d'action */}
-                <div className="flex gap-3 pt-4">
-                  <Button type="button" onClick={handleCreatePartenariatContract} disabled={!partenariatData.partie1Nom || !partenariatData.partie2Nom || partenariatData.objetNature.length === 0 || !partenariatData.objetFinalites}>
-                    Créer le contrat de partenariat
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setPendingContractType("")}>
-                    Annuler
-                  </Button>
-                </div>
               </div>
             )}
 
