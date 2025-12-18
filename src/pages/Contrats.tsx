@@ -53845,47 +53845,6 @@ FIN DE LA CONVENTION
               </div>
             )}
 
-            {/* Formulaire générique pour tous les autres types de contrats */}
-            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière", "Quitus / reconnaissance de dette", "Acte de cession de parts sociales", "Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "Accord de confidentialité (NDA)", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType) && !(pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) && !pendingContractType.includes("agence commerciale") && (
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b pb-2">👤 Client concerné</h3>
-                <div className="space-y-2">
-                  <Label>Sélectionner le client</Label>
-                  <Select 
-                    value={selectedClientId}
-                    onValueChange={(value) => {
-                      setSelectedClientId(value);
-                      const client = clients.find(c => c.id === value);
-                      if (client) {
-                        setGenericDescription(`Contrat pour ${client.prenom} ${client.nom}`);
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choisir un client" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {clients.map((client) => (
-                        <SelectItem key={client.id} value={client.id}>
-                          {client.prenom} {client.nom}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Description du contrat</Label>
-                  <textarea 
-                    value={genericDescription}
-                    onChange={(e) => setGenericDescription(e.target.value)}
-                    placeholder="Décrivez brièvement le contrat..."
-                    className="w-full min-h-[100px] p-2 border rounded-md"
-                  />
-                </div>
-              </div>
-            )}
-
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
