@@ -94,14 +94,13 @@ function ClientSelector({ clients, selectedClientId, onClientChange, label = "S�
   return (
     <div className="space-y-2">
       <Label htmlFor="client-select">
-        {label}
+        {label} <span className="text-red-500">*</span>
       </Label>
-      <Select value={selectedClientId || "none"} onValueChange={(val) => val !== "none" && onClientChange(val)}>
+      <Select value={selectedClientId} onValueChange={onClientChange}>
         <SelectTrigger id="client-select">
-          <SelectValue placeholder="Choisir un client (optionnel)" />
+          <SelectValue placeholder="Choisir un client" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
           {clients.map((client) => (
             <SelectItem key={client.id} value={client.id}>
               {client.prenom} {client.nom}
@@ -1939,8 +1938,8 @@ export default function Contrats() {
   const [sousTraitanceCharteSecuriteFiles, setSousTraitanceCharteSecuriteFiles] = useState<File[]>([]);
   
   // States pour NDA (Accord de confidentialité)
-  const [ndaClientId1, setNdaClientId1] = useState<string>("");
-  const [ndaClientId2, setNdaClientId2] = useState<string>("");
+  const [ndaClientId1, setNdaClientId1] = useState<string>("none");
+  const [ndaClientId2, setNdaClientId2] = useState<string>("none");
   const [ndaData, setNdaData] = useState({
     // Type de NDA
     typeNda: "bilateral", // bilateral ou unilateral
@@ -7153,8 +7152,8 @@ export default function Contrats() {
         .from('contrats')
         .insert({
           avocat_id: user.id,
-          client_id_1: ndaClientId1 || null,
-          client_id_2: ndaClientId2 || null,
+          client_id_1: ndaClientId1 && ndaClientId1 !== "none" ? ndaClientId1 : null,
+          client_id_2: ndaClientId2 && ndaClientId2 !== "none" ? ndaClientId2 : null,
           type: 'NDA (Accord de confidentialité)',
           statut: 'brouillon',
           donnees_formulaire: ndaData,
@@ -52165,12 +52164,22 @@ FIN DE LA CONVENTION
                 {/* PARTIE 1 */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">Partie 1</h4>
-                  <ClientSelector
-                    clients={clients}
-                    selectedClientId={ndaClientId1}
-                    onClientChange={setNdaClientId1}
-                    label="Sélectionner un client existant (optionnel) - Partie 1"
-                  />
+                  <div className="space-y-2">
+                    <Label>Sélectionner un client existant (optionnel) - Partie 1</Label>
+                    <Select value={ndaClientId1} onValueChange={setNdaClientId1}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisir un client" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.prenom} {client.nom}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div>
                     <Label>Dénomination sociale / Nom complet *</Label>
                     <Input value={ndaData.partie1Nom} onChange={(e) => setNdaData({...ndaData, partie1Nom: e.target.value})} placeholder="Ex: ACME SAS" />
@@ -52222,12 +52231,22 @@ FIN DE LA CONVENTION
                 {/* PARTIE 2 */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">Partie 2</h4>
-                  <ClientSelector
-                    clients={clients}
-                    selectedClientId={ndaClientId2}
-                    onClientChange={setNdaClientId2}
-                    label="Sélectionner un client existant (optionnel) - Partie 2"
-                  />
+                  <div className="space-y-2">
+                    <Label>Sélectionner un client existant (optionnel) - Partie 2</Label>
+                    <Select value={ndaClientId2} onValueChange={setNdaClientId2}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisir un client" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.prenom} {client.nom}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div>
                     <Label>Dénomination sociale / Nom complet *</Label>
                     <Input value={ndaData.partie2Nom} onChange={(e) => setNdaData({...ndaData, partie2Nom: e.target.value})} placeholder="Ex: TechCorp Inc" />
