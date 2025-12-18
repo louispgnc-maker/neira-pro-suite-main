@@ -230,27 +230,28 @@ function MultiFileUpload({ label, files, onFilesChange, required = false, accept
   );
 }
 
-// Composant SingleFileUpload pour un seul document avec bouton intégré
+// Composant SingleFileUpload pour un seul document avec bouton intégré (plusieurs fichiers possibles)
 interface SingleFileUploadProps {
   label: string;
-  file: File | null;
-  onFileChange: (file: File | null) => void;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
   required?: boolean;
   accept?: string;
   role?: 'notaire' | 'avocat';
 }
 
-function SingleFileUpload({ label, file, onFileChange, required = false, accept, role = 'notaire' }: SingleFileUploadProps) {
+function SingleFileUpload({ label, files, onFilesChange, required = false, accept, role = 'notaire' }: SingleFileUploadProps) {
   const inputId = `upload-single-${label.replace(/\s+/g, '-').toLowerCase()}`;
   
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      onFileChange(e.target.files[0]);
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      onFilesChange([...files, ...newFiles]);
     }
   };
   
-  const removeFile = () => {
-    onFileChange(null);
+  const removeFile = (index: number) => {
+    onFilesChange(files.filter((_, i) => i !== index));
   };
   
   return (
@@ -262,33 +263,29 @@ function SingleFileUpload({ label, file, onFileChange, required = false, accept,
         <input
           type="file"
           accept={accept}
+          multiple
           className="hidden"
           id={inputId}
           onChange={handleFileSelect}
         />
-        {file ? (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs bg-green-50 border border-green-200 p-2 rounded">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span className="truncate text-green-700 font-medium" title={file.name}>{file.name}</span>
+        <label htmlFor={inputId} className="cursor-pointer text-sm text-muted-foreground">
+          Cliquez pour joindre
+        </label>
+        {files.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {files.map((file, idx) => (
+              <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
+                <span className="truncate">{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(idx)}
+                  className="text-red-600 ml-2"
+                >
+                  ✕
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={removeFile}
-                className="ml-2 text-red-600 hover:bg-red-100 p-1 rounded flex-shrink-0"
-                title="Supprimer"
-              >
-                ✕
-              </button>
-            </div>
+            ))}
           </div>
-        ) : (
-          <label htmlFor={inputId} className="cursor-pointer text-sm text-muted-foreground block text-center">
-            Cliquez pour joindre {label.toLowerCase()}
-          </label>
         )}
       </div>
     </div>
@@ -1048,15 +1045,15 @@ export default function Contrats() {
   });
   
   // États individuels pour chaque annexe/pièce CGU
-  const [cguPolitiqueConfidentialiteFile, setCguPolitiqueConfidentialiteFile] = useState<File | null>(null);
-  const [cguPolitiqueCookiesFile, setCguPolitiqueCookiesFile] = useState<File | null>(null);
-  const [cguCharteUtilisationFile, setCguCharteUtilisationFile] = useState<File | null>(null);
-  const [cguDocumentationAPIFile, setCguDocumentationAPIFile] = useState<File | null>(null);
-  const [cguReglesModerationFile, setCguReglesModerationFile] = useState<File | null>(null);
-  const [cguMentionsLegalesFile, setCguMentionsLegalesFile] = useState<File | null>(null);
-  const [cguPolitiqueConfidentialite2File, setCguPolitiqueConfidentialite2File] = useState<File | null>(null);
-  const [cguPolitiqueCookies2File, setCguPolitiqueCookies2File] = useState<File | null>(null);
-  const [cguConditionsCommercialesFile, setCguConditionsCommercialesFile] = useState<File | null>(null);
+  const [cguPolitiqueConfidentialiteFiles, setCguPolitiqueConfidentialiteFiles] = useState<File[]>([]);
+  const [cguPolitiqueCookiesFiles, setCguPolitiqueCookiesFiles] = useState<File[]>([]);
+  const [cguCharteUtilisationFiles, setCguCharteUtilisationFiles] = useState<File[]>([]);
+  const [cguDocumentationAPIFiles, setCguDocumentationAPIFiles] = useState<File[]>([]);
+  const [cguReglesModerationFiles, setCguReglesModerationFiles] = useState<File[]>([]);
+  const [cguMentionsLegalesFiles, setCguMentionsLegalesFiles] = useState<File[]>([]);
+  const [cguPolitiqueConfidentialite2Files, setCguPolitiqueConfidentialite2Files] = useState<File[]>([]);
+  const [cguPolitiqueCookies2Files, setCguPolitiqueCookies2Files] = useState<File[]>([]);
+  const [cguConditionsCommercialesFiles, setCguConditionsCommercialesFiles] = useState<File[]>([]);
   
   // States pour Contrat d'agence commerciale
   const [agenceClientId, setAgenceClientId] = useState<string>("");
@@ -1221,13 +1218,13 @@ export default function Contrats() {
   });
   
   // États individuels pour chaque pièce justificative - agence commerciale
-  const [agenceMandantKbisFile, setAgenceMandantKbisFile] = useState<File | null>(null);
-  const [agenceMandantPolitiqueFile, setAgenceMandantPolitiqueFile] = useState<File | null>(null);
-  const [agenceMandantCatalogueFile, setAgenceMandantCatalogueFile] = useState<File | null>(null);
-  const [agenceMandantTarifsFile, setAgenceMandantTarifsFile] = useState<File | null>(null);
-  const [agenceAgentRSACFile, setAgenceAgentRSACFile] = useState<File | null>(null);
-  const [agenceAgentRCProFile, setAgenceAgentRCProFile] = useState<File | null>(null);
-  const [agenceAgentIdentiteFile, setAgenceAgentIdentiteFile] = useState<File | null>(null);
+  const [agenceMandantKbisFiles, setAgenceMandantKbisFiles] = useState<File[]>([]);
+  const [agenceMandantPolitiqueFiles, setAgenceMandantPolitiqueFiles] = useState<File[]>([]);
+  const [agenceMandantCatalogueFiles, setAgenceMandantCatalogueFiles] = useState<File[]>([]);
+  const [agenceMandantTarifsFiles, setAgenceMandantTarifsFiles] = useState<File[]>([]);
+  const [agenceAgentRSACFiles, setAgenceAgentRSACFiles] = useState<File[]>([]);
+  const [agenceAgentRCProFiles, setAgenceAgentRCProFiles] = useState<File[]>([]);
+  const [agenceAgentIdentiteFiles, setAgenceAgentIdentiteFiles] = useState<File[]>([]);
   const [agenceAnnexesFiles, setAgenceAnnexesFiles] = useState<File[]>([]);
   
   // States pour attestation de propriété immobilière
@@ -5794,51 +5791,51 @@ export default function Contrats() {
       if (error) throw error;
 
       // Upload des fichiers annexes CGU
-      if (cguPolitiqueConfidentialiteFile) {
-        const filePath = `${user.id}/${data.id}/annexes/politique_confidentialite_${cguPolitiqueConfidentialiteFile.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguPolitiqueConfidentialiteFile);
+      for (const file of cguPolitiqueConfidentialiteFiles) {
+        const filePath = `${user.id}/${data.id}/annexes/politique_confidentialite_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload politique confidentialité:', uploadError);
       }
-      if (cguPolitiqueCookiesFile) {
-        const filePath = `${user.id}/${data.id}/annexes/politique_cookies_${cguPolitiqueCookiesFile.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguPolitiqueCookiesFile);
+      for (const file of cguPolitiqueCookiesFiles) {
+        const filePath = `${user.id}/${data.id}/annexes/politique_cookies_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload politique cookies:', uploadError);
       }
-      if (cguCharteUtilisationFile) {
-        const filePath = `${user.id}/${data.id}/annexes/charte_utilisation_${cguCharteUtilisationFile.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguCharteUtilisationFile);
+      for (const file of cguCharteUtilisationFiles) {
+        const filePath = `${user.id}/${data.id}/annexes/charte_utilisation_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload charte:', uploadError);
       }
-      if (cguDocumentationAPIFile) {
-        const filePath = `${user.id}/${data.id}/annexes/documentation_api_${cguDocumentationAPIFile.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguDocumentationAPIFile);
+      for (const file of cguDocumentationAPIFiles) {
+        const filePath = `${user.id}/${data.id}/annexes/documentation_api_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload doc API:', uploadError);
       }
-      if (cguReglesModerationFile) {
-        const filePath = `${user.id}/${data.id}/annexes/regles_moderation_${cguReglesModerationFile.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguReglesModerationFile);
+      for (const file of cguReglesModerationFiles) {
+        const filePath = `${user.id}/${data.id}/annexes/regles_moderation_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload règles modération:', uploadError);
       }
 
       // Upload des pièces justificatives CGU
-      if (cguMentionsLegalesFile) {
-        const filePath = `${user.id}/${data.id}/pieces/mentions_legales_${cguMentionsLegalesFile.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguMentionsLegalesFile);
+      for (const file of cguMentionsLegalesFiles) {
+        const filePath = `${user.id}/${data.id}/pieces/mentions_legales_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload mentions légales:', uploadError);
       }
-      if (cguPolitiqueConfidentialite2File) {
-        const filePath = `${user.id}/${data.id}/pieces/politique_confidentialite_${cguPolitiqueConfidentialite2File.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguPolitiqueConfidentialite2File);
+      for (const file of cguPolitiqueConfidentialite2Files) {
+        const filePath = `${user.id}/${data.id}/pieces/politique_confidentialite_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload politique confid pièce:', uploadError);
       }
-      if (cguPolitiqueCookies2File) {
-        const filePath = `${user.id}/${data.id}/pieces/politique_cookies_${cguPolitiqueCookies2File.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguPolitiqueCookies2File);
+      for (const file of cguPolitiqueCookies2Files) {
+        const filePath = `${user.id}/${data.id}/pieces/politique_cookies_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload politique cookies pièce:', uploadError);
       }
-      if (cguConditionsCommercialesFile) {
-        const filePath = `${user.id}/${data.id}/pieces/conditions_commerciales_${cguConditionsCommercialesFile.name}`;
-        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguConditionsCommercialesFile);
+      for (const file of cguConditionsCommercialesFiles) {
+        const filePath = `${user.id}/${data.id}/pieces/conditions_commerciales_${file.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, file);
         if (uploadError) console.error('Erreur upload conditions commerciales:', uploadError);
       }
 
@@ -5920,55 +5917,55 @@ export default function Contrats() {
       if (error) throw error;
 
       // Upload des fichiers individuels mandant
-      if (agenceMandantKbisFile) {
-        const filePath = `${user.id}/${contrat.id}/mandant/kbis_${agenceMandantKbisFile.name}`;
+      for (const file of agenceMandantKbisFiles) {
+        const filePath = `${user.id}/${contrat.id}/mandant/kbis_${file.name}`;
         const { error: uploadError } = await supabase.storage
           .from('contrats')
-          .upload(filePath, agenceMandantKbisFile);
+          .upload(filePath, file);
         if (uploadError) console.error('Erreur upload Kbis mandant:', uploadError);
       }
-      if (agenceMandantPolitiqueFile) {
-        const filePath = `${user.id}/${contrat.id}/mandant/politique_${agenceMandantPolitiqueFile.name}`;
+      for (const file of agenceMandantPolitiqueFiles) {
+        const filePath = `${user.id}/${contrat.id}/mandant/politique_${file.name}`;
         const { error: uploadError } = await supabase.storage
           .from('contrats')
-          .upload(filePath, agenceMandantPolitiqueFile);
+          .upload(filePath, file);
         if (uploadError) console.error('Erreur upload politique mandant:', uploadError);
       }
-      if (agenceMandantCatalogueFile) {
-        const filePath = `${user.id}/${contrat.id}/mandant/catalogue_${agenceMandantCatalogueFile.name}`;
+      for (const file of agenceMandantCatalogueFiles) {
+        const filePath = `${user.id}/${contrat.id}/mandant/catalogue_${file.name}`;
         const { error: uploadError } = await supabase.storage
           .from('contrats')
-          .upload(filePath, agenceMandantCatalogueFile);
+          .upload(filePath, file);
         if (uploadError) console.error('Erreur upload catalogue mandant:', uploadError);
       }
-      if (agenceMandantTarifsFile) {
-        const filePath = `${user.id}/${contrat.id}/mandant/tarifs_${agenceMandantTarifsFile.name}`;
+      for (const file of agenceMandantTarifsFiles) {
+        const filePath = `${user.id}/${contrat.id}/mandant/tarifs_${file.name}`;
         const { error: uploadError } = await supabase.storage
           .from('contrats')
-          .upload(filePath, agenceMandantTarifsFile);
+          .upload(filePath, file);
         if (uploadError) console.error('Erreur upload tarifs mandant:', uploadError);
       }
 
       // Upload des fichiers individuels agent
-      if (agenceAgentRSACFile) {
-        const filePath = `${user.id}/${contrat.id}/agent/rsac_${agenceAgentRSACFile.name}`;
+      for (const file of agenceAgentRSACFiles) {
+        const filePath = `${user.id}/${contrat.id}/agent/rsac_${file.name}`;
         const { error: uploadError } = await supabase.storage
           .from('contrats')
-          .upload(filePath, agenceAgentRSACFile);
+          .upload(filePath, file);
         if (uploadError) console.error('Erreur upload RSAC agent:', uploadError);
       }
-      if (agenceAgentRCProFile) {
-        const filePath = `${user.id}/${contrat.id}/agent/rcpro_${agenceAgentRCProFile.name}`;
+      for (const file of agenceAgentRCProFiles) {
+        const filePath = `${user.id}/${contrat.id}/agent/rcpro_${file.name}`;
         const { error: uploadError } = await supabase.storage
           .from('contrats')
-          .upload(filePath, agenceAgentRCProFile);
+          .upload(filePath, file);
         if (uploadError) console.error('Erreur upload RC Pro agent:', uploadError);
       }
-      if (agenceAgentIdentiteFile) {
-        const filePath = `${user.id}/${contrat.id}/agent/identite_${agenceAgentIdentiteFile.name}`;
+      for (const file of agenceAgentIdentiteFiles) {
+        const filePath = `${user.id}/${contrat.id}/agent/identite_${file.name}`;
         const { error: uploadError } = await supabase.storage
           .from('contrats')
-          .upload(filePath, agenceAgentIdentiteFile);
+          .upload(filePath, file);
         if (uploadError) console.error('Erreur upload identité agent:', uploadError);
       }
 
@@ -48297,11 +48294,11 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Annexes techniques possibles</h4>
                   <div className="space-y-3">
-                    <SingleFileUpload label="Politique de confidentialité" file={cguPolitiqueConfidentialiteFile} onFileChange={setCguPolitiqueConfidentialiteFile} role="avocat" />
-                    <SingleFileUpload label="Politique cookies" file={cguPolitiqueCookiesFile} onFileChange={setCguPolitiqueCookiesFile} role="avocat" />
-                    <SingleFileUpload label="Charte d'utilisation" file={cguCharteUtilisationFile} onFileChange={setCguCharteUtilisationFile} role="avocat" />
-                    <SingleFileUpload label="Documentation API (si applicable)" file={cguDocumentationAPIFile} onFileChange={setCguDocumentationAPIFile} role="avocat" />
-                    <SingleFileUpload label="Règles de modération (DSA)" file={cguReglesModerationFile} onFileChange={setCguReglesModerationFile} role="avocat" />
+                    <SingleFileUpload label="Politique de confidentialité" files={cguPolitiqueConfidentialiteFiles} onFilesChange={setCguPolitiqueConfidentialiteFiles} role="avocat" />
+                    <SingleFileUpload label="Politique cookies" files={cguPolitiqueCookiesFiles} onFilesChange={setCguPolitiqueCookiesFiles} role="avocat" />
+                    <SingleFileUpload label="Charte d'utilisation" files={cguCharteUtilisationFiles} onFilesChange={setCguCharteUtilisationFiles} role="avocat" />
+                    <SingleFileUpload label="Documentation API (si applicable)" files={cguDocumentationAPIFiles} onFilesChange={setCguDocumentationAPIFiles} role="avocat" />
+                    <SingleFileUpload label="Règles de modération (DSA)" files={cguReglesModerationFiles} onFilesChange={setCguReglesModerationFiles} role="avocat" />
                   </div>
                 </div>
                 
@@ -48309,10 +48306,10 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Pièces justificatives (liste)</h4>
                   <div className="space-y-3">
-                    <SingleFileUpload label="Mentions légales (Kbis, statuts...)" file={cguMentionsLegalesFile} onFileChange={setCguMentionsLegalesFile} role="avocat" />
-                    <SingleFileUpload label="Politique de confidentialité" file={cguPolitiqueConfidentialite2File} onFileChange={setCguPolitiqueConfidentialite2File} role="avocat" />
-                    <SingleFileUpload label="Politique de cookies" file={cguPolitiqueCookies2File} onFileChange={setCguPolitiqueCookies2File} role="avocat" />
-                    <SingleFileUpload label="Conditions commerciales (si liées)" file={cguConditionsCommercialesFile} onFileChange={setCguConditionsCommercialesFile} role="avocat" />
+                    <SingleFileUpload label="Mentions légales (Kbis, statuts...)" files={cguMentionsLegalesFiles} onFilesChange={setCguMentionsLegalesFiles} role="avocat" />
+                    <SingleFileUpload label="Politique de confidentialité" files={cguPolitiqueConfidentialite2Files} onFilesChange={setCguPolitiqueConfidentialite2Files} role="avocat" />
+                    <SingleFileUpload label="Politique de cookies" files={cguPolitiqueCookies2Files} onFilesChange={setCguPolitiqueCookies2Files} role="avocat" />
+                    <SingleFileUpload label="Conditions commerciales (si liées)" files={cguConditionsCommercialesFiles} onFilesChange={setCguConditionsCommercialesFiles} role="avocat" />
                   </div>
                 </div>
                 
@@ -48778,20 +48775,20 @@ FIN DE LA CONVENTION
                   <div className="space-y-4">
                     <div className="space-y-3">
                       <p className="text-sm font-semibold">Côté mandant :</p>
-                      <SingleFileUpload label="Extrait Kbis" file={agenceMandantKbisFile} onFileChange={setAgenceMandantKbisFile} role="avocat" />
-                      <SingleFileUpload label="Politique commerciale" file={agenceMandantPolitiqueFile} onFileChange={setAgenceMandantPolitiqueFile} role="avocat" />
-                      <SingleFileUpload label="Catalogue" file={agenceMandantCatalogueFile} onFileChange={setAgenceMandantCatalogueFile} role="avocat" />
-                      <SingleFileUpload label="Grille tarifaire" file={agenceMandantTarifsFile} onFileChange={setAgenceMandantTarifsFile} role="avocat" />
+                      <SingleFileUpload label="Extrait Kbis" files={agenceMandantKbisFiles} onFilesChange={setAgenceMandantKbisFiles} role="avocat" />
+                      <SingleFileUpload label="Politique commerciale" files={agenceMandantPolitiqueFiles} onFilesChange={setAgenceMandantPolitiqueFiles} role="avocat" />
+                      <SingleFileUpload label="Catalogue" files={agenceMandantCatalogueFiles} onFilesChange={setAgenceMandantCatalogueFiles} role="avocat" />
+                      <SingleFileUpload label="Grille tarifaire" files={agenceMandantTarifsFiles} onFilesChange={setAgenceMandantTarifsFiles} role="avocat" />
                     </div>
                     <div className="space-y-3">
                       <p className="text-sm font-semibold">Côté agent commercial :</p>
-                      <SingleFileUpload label="Extrait Kbis RSAC (obligatoire)" file={agenceAgentRSACFile} onFileChange={setAgenceAgentRSACFile} role="avocat" required />
-                      <SingleFileUpload label="Attestation RC Pro" file={agenceAgentRCProFile} onFileChange={setAgenceAgentRCProFile} role="avocat" />
-                      <SingleFileUpload label="Pièce d'identité si personne physique" file={agenceAgentIdentiteFile} onFileChange={setAgenceAgentIdentiteFile} role="avocat" />
+                      <SingleFileUpload label="Extrait Kbis RSAC (obligatoire)" files={agenceAgentRSACFiles} onFilesChange={setAgenceAgentRSACFiles} role="avocat" required />
+                      <SingleFileUpload label="Attestation RC Pro" files={agenceAgentRCProFiles} onFilesChange={setAgenceAgentRCProFiles} role="avocat" />
+                      <SingleFileUpload label="Pièce d'identité si personne physique" files={agenceAgentIdentiteFiles} onFilesChange={setAgenceAgentIdentiteFiles} role="avocat" />
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-semibold">Annexes générales :</p>
-                      <MultiFileUpload files={agenceAnnexesFiles} setFiles={setAgenceAnnexesFiles} label="Autres annexes (plusieurs fichiers possibles)" role="avocat" />
+                      <MultiFileUpload files={agenceAnnexesFiles} onFilesChange={setAgenceAnnexesFiles} label="Autres annexes (plusieurs fichiers possibles)" role="avocat" />
                     </div>
                   </div>
                 </div>
