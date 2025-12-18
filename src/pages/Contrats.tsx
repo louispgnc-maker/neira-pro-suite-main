@@ -1435,9 +1435,17 @@ export default function Contrats() {
     
     // 19. Droit applicable
     loiApplicable: "francaise",
+    droitApplicable: "francais",
+    droitApplicableAutre: "",
+    droitModeResolution: "",
+    droitJuridiction: "",
+    droitAutres: "",
     tribunalCompetent: "",
     clauseMediation: "oui",
     clauseArbitrage: "",
+    
+    // 20-21. Divers
+    observationsFinales: "",
   });
   
   // États individuels pour fichiers Franchise
@@ -48690,6 +48698,10 @@ FIN DE LA CONVENTION
                   
                   <div><Label>Droit applicable *</Label><Select value={franchiseData.droitApplicable} onValueChange={(val) => setFranchiseData({...franchiseData, droitApplicable: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="francais">Droit français</SelectItem><SelectItem value="autre">Autre droit</SelectItem></SelectContent></Select></div>
                   
+                  {franchiseData.droitApplicable === "autre" && (
+                    <div><Label>Préciser le droit applicable</Label><Input value={franchiseData.droitApplicableAutre || ""} onChange={(e) => setFranchiseData({...franchiseData, droitApplicableAutre: e.target.value})} placeholder="Ex: Droit suisse, droit belge..." /></div>
+                  )}
+                  
                   <div><Label>Mode de résolution des litiges *</Label><Select value={franchiseData.droitModeResolution} onValueChange={(val) => setFranchiseData({...franchiseData, droitModeResolution: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="mediation">Médiation préalable</SelectItem><SelectItem value="conciliation">Conciliation</SelectItem><SelectItem value="arbitrage">Arbitrage</SelectItem><SelectItem value="tribunaux">Tribunaux compétents</SelectItem></SelectContent></Select></div>
                   
                   <div><Label>Juridiction compétente</Label><Input value={franchiseData.droitJuridiction} onChange={(e) => setFranchiseData({...franchiseData, droitJuridiction: e.target.value})} placeholder="Ex: Tribunal de commerce de Paris" /></div>
@@ -48700,11 +48712,6 @@ FIN DE LA CONVENTION
                 {/* 20. ANNEXES OBLIGATOIRES - 14 UPLOAD ZONES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Annexes obligatoires</h4>
-                  
-                  <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 text-sm mb-4">
-                    <p className="font-semibold text-amber-800">📎 Documents contractuels essentiels</p>
-                    <p className="text-amber-700 mt-1">Ces annexes font partie intégrante du contrat de franchise.</p>
-                  </div>
                   
                   <div className="space-y-3">
                     <SingleFileUpload
