@@ -2090,6 +2090,206 @@ export default function Contrats() {
   const [ndaDocumentRGPDFiles, setNdaDocumentRGPDFiles] = useState<File[]>([]);
   const [ndaCharteSecuriteFiles, setNdaCharteSecuriteFiles] = useState<File[]>([]);
   
+  // States pour Cession de marque / PI
+  const [cessionPiClientIdCedant, setCessionPiClientIdCedant] = useState<string>("none");
+  const [cessionPiClientIdCessionnaire, setCessionPiClientIdCessionnaire] = useState<string>("none");
+  const [cessionPiData, setCessionPiData] = useState({
+    // Type de cession
+    typeCession: "marque", // marque, brevet, dessin_modele, droit_auteur, logiciel, nom_domaine, savoir_faire, base_donnees, autre
+    
+    // CÉDANT (propriétaire actuel)
+    cedantNom: "",
+    cedantFormeJuridique: "",
+    cedantCapital: "",
+    cedantRCS: "",
+    cedantSiege: "",
+    cedantRepresentant: "",
+    cedantEmail: "",
+    cedantTelephone: "",
+    cedantPays: "France",
+    
+    // CESSIONNAIRE (acquéreur)
+    cessionnaireNom: "",
+    cessionnaireFormeJuridique: "",
+    cessionnaireCapital: "",
+    cessionnaireRCS: "",
+    cessionnaireSiege: "",
+    cessionnaireRepresentant: "",
+    cessionnaireEmail: "",
+    cessionnaireTelephone: "",
+    cessionnairePays: "France",
+    
+    // IDENTIFICATION DU DROIT CÉDÉ
+    // Pour MARQUE
+    marqueNom: "",
+    marqueNumeroDepot: "",
+    marqueDateDepot: "",
+    marqueClasses: "",
+    marqueOrganismeEnregistrement: "INPI",
+    marqueRenouvellementEcheance: "",
+    marqueEtendue: "nationale", // nationale, europeenne, internationale
+    marquePays: "",
+    
+    // Pour BREVET
+    brevetTitre: "",
+    brevetNumero: "",
+    brevetDateDepot: "",
+    brevetDateDelivrance: "",
+    brevetOrganisme: "INPI",
+    brevetDureeProtection: "",
+    brevetRevendications: "",
+    brevetEtendue: "nationale",
+    
+    // Pour DESSIN/MODÈLE
+    dessinsModeleDescription: "",
+    dessinsModeleNumero: "",
+    dessinsModeleDateDepot: "",
+    dessinsModeleOrganisme: "INPI",
+    dessinsModeleDureeProtection: "",
+    
+    // Pour DROIT D'AUTEUR
+    auteurOeuvreDescription: "",
+    auteurOeuvreNature: "", // littéraire, artistique, logiciel, etc.
+    auteurDateCreation: "",
+    auteurPreuvesAnteriorite: "",
+    auteurDroitsMoraux: "non_cedes", // non_cedes, cedes_limite, cedes_complet
+    
+    // Pour LOGICIEL
+    logicielNom: "",
+    logicielVersion: "",
+    logicielLanguages: "",
+    logicielCodeSource: "inclus", // inclus, exclu
+    logicielDocumentation: "incluse",
+    logicielDroitsMoraux: "conserves",
+    
+    // Pour NOM DE DOMAINE
+    nomDomaine: "",
+    nomDomaineExtension: "",
+    nomDomaineRegistrar: "",
+    nomDomaineDateExpiration: "",
+    
+    // Pour SAVOIR-FAIRE
+    savoirFaireDescription: "",
+    savoirFaireNature: "", // technique, commercial, industriel
+    savoirFaireConfidentiel: true,
+    savoirFaireDocumente: true,
+    
+    // Pour BASE DE DONNÉES
+    baseDonneesNom: "",
+    baseDonneesContenu: "",
+    baseDonneesStructure: "",
+    baseDonneesRGPD: "non_applicable",
+    
+    // NATURE DE LA CESSION
+    natureCession: "totale", // totale, partielle
+    cessionExclusive: true,
+    territoireCession: "mondial", // mondial, france, UE, liste_pays
+    territoirePaysListe: "",
+    secteurActiviteLimite: "non", // non, oui
+    secteurActiviteDescription: "",
+    droitsCedes: {
+      exploitation: true,
+      reproduction: true,
+      representation: true,
+      adaptation: true,
+      traduction: true,
+      distribution: true,
+      modification: true,
+      sousLicence: false,
+      cessionTiers: false,
+    },
+    
+    // PRIX ET MODALITÉS DE PAIEMENT
+    prixCession: "",
+    prixDevise: "EUR",
+    modalitePaiement: "comptant", // comptant, echelonne, royalties, mixte
+    echelonnementDescription: "",
+    royaltiesTaux: "",
+    royaltiesBase: "",
+    royaltiesDuree: "",
+    royaltiesMinimum: "",
+    royaltiesComptabilite: false,
+    paiementDateLimite: "",
+    paiementModalites: "", // virement, chèque, séquestre
+    
+    // GARANTIES DU CÉDANT
+    garantieTitulaire: true,
+    garantieLibreCharges: true,
+    garantieNonContrefacon: true,
+    garantieValidite: true,
+    garantieExploitabilite: true,
+    garantieAucunLitige: true,
+    garantieConnaissanceAnterioritesConnues: true,
+    garantieDuree: "permanente", // permanente, limitee
+    garantieDureeLimitee: "",
+    
+    // OBLIGATIONS POST-CESSION
+    obligationTransfertDocuments: true,
+    obligationFormationCessionnaire: "non",
+    obligationFormationDuree: "",
+    obligationAssistanceTechnique: "non",
+    obligationAssistanceDuree: "",
+    obligationNonConcurrence: "non",
+    obligationNonConcurrenceDuree: "",
+    obligationNonConcurrenceTerritoire: "",
+    obligationNonConcurrenceSecteur: "",
+    obligationConfidentialite: true,
+    obligationConfidentialiteDuree: "",
+    
+    // FORMALITÉS D'ENREGISTREMENT
+    enregistrementNecessaire: true,
+    enregistrementOrganisme: "", // INPI, EUIPO, OMPI, etc.
+    enregistrementFrais: "cessionnaire", // cedant, cessionnaire, partages
+    enregistrementDelai: "",
+    
+    // PROPRIÉTÉ INTELLECTUELLE ANTÉRIEURE
+    piAnterieureLicencesExistantes: "non",
+    piAnterieureDescription: "",
+    piAnterieureEffetsSurCession: "",
+    
+    // RESPONSABILITÉ ET GARANTIES
+    responsabilitePlafond: "",
+    responsabiliteExclusionDommagesIndirects: false,
+    responsabiliteAssuranceObligatoire: "non",
+    
+    // CONDITIONS SUSPENSIVES
+    conditionsSuspensives: "non",
+    conditionsSuspensivesDescription: "",
+    conditionsSuspensivesDateLimite: "",
+    
+    // DURÉE ET RÉSILIATION
+    dureeProtection: "", // durée restante du droit
+    resiliationPossible: "non",
+    resiliationMotifs: "",
+    resiliationPreavis: "",
+    resiliationConsequences: "",
+    
+    // LITIGES
+    droitApplicable: "français",
+    tribunalCompetent: "",
+    mediationPrealable: "non",
+    arbitrage: "non",
+    
+    // ANNEXES
+    annexesDescriptions: "",
+  });
+  
+  // File states pour Cession PI
+  const [cessionPiCedantKbisFiles, setCessionPiCedantKbisFiles] = useState<File[]>([]);
+  const [cessionPiCedantIdentiteFiles, setCessionPiCedantIdentiteFiles] = useState<File[]>([]);
+  const [cessionPiCedantPouvoirFiles, setCessionPiCedantPouvoirFiles] = useState<File[]>([]);
+  const [cessionPiCessionnaireKbisFiles, setCessionPiCessionnaireKbisFiles] = useState<File[]>([]);
+  const [cessionPiCessionnaireIdentiteFiles, setCessionPiCessionnaireIdentiteFiles] = useState<File[]>([]);
+  const [cessionPiCessionnairePouvoirFiles, setCessionPiCessionnairePouvoirFiles] = useState<File[]>([]);
+  const [cessionPiCertificatEnregistrementFiles, setCessionPiCertificatEnregistrementFiles] = useState<File[]>([]);
+  const [cessionPiPreuvesAnterioriteFiles, setCessionPiPreuvesAnterioriteFiles] = useState<File[]>([]);
+  const [cessionPiDocumentsTechniquesFiles, setCessionPiDocumentsTechniquesFiles] = useState<File[]>([]);
+  const [cessionPiCodeSourceFiles, setCessionPiCodeSourceFiles] = useState<File[]>([]);
+  const [cessionPiDocumentationFiles, setCessionPiDocumentationFiles] = useState<File[]>([]);
+  const [cessionPiLicencesExistantesFiles, setCessionPiLicencesExistantesFiles] = useState<File[]>([]);
+  const [cessionPiRapportValuationFiles, setCessionPiRapportValuationFiles] = useState<File[]>([]);
+  const [cessionPiAnnexesFiles, setCessionPiAnnexesFiles] = useState<File[]>([]);
+  
   // States pour convention d'indivision
   const [indivisairesIdentiteUrls, setIndivisairesIdentiteUrls] = useState<Record<number, string | null>>({}); // URLs des documents identité indivisaires clients
   const [indivisairesIdentiteFiles, setIndivisairesIdentiteFiles] = useState<Record<number, File[]>>({}); // Fichiers identité indivisaires non-clients
@@ -7228,6 +7428,124 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création NDA:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour Cession de marque / PI
+  const handleCreateCessionPiContract = async () => {
+    if (!user) return;
+    
+    // Validation
+    if (!cessionPiData.cedantNom || !cessionPiData.cessionnaireNom) {
+      toast.error("Champs obligatoires manquants", { description: "Nom du cédant et du cessionnaire requis" });
+      return;
+    }
+    
+    // Validation selon type de cession
+    if (cessionPiData.typeCession === "marque" && !cessionPiData.marqueNom) {
+      toast.error("Nom de la marque requis");
+      return;
+    }
+    if (cessionPiData.typeCession === "brevet" && !cessionPiData.brevetTitre) {
+      toast.error("Titre du brevet requis");
+      return;
+    }
+    
+    if (!cessionPiData.prixCession) {
+      toast.error("Prix de cession requis");
+      return;
+    }
+    
+    try {
+      // 1. Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          avocat_id: user.id,
+          client_id_1: cessionPiClientIdCedant && cessionPiClientIdCedant !== "none" ? cessionPiClientIdCedant : null,
+          client_id_2: cessionPiClientIdCessionnaire && cessionPiClientIdCessionnaire !== "none" ? cessionPiClientIdCessionnaire : null,
+          type: 'Cession de marque / cession de droits de propriété intellectuelle',
+          statut: 'brouillon',
+          donnees_formulaire: cessionPiData,
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      if (!contrat) throw new Error("Contrat non créé");
+      
+      // 2. Upload documents cédant
+      for (const file of cessionPiCedantKbisFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/cedant/kbis_${file.name}`, file);
+      }
+      for (const file of cessionPiCedantIdentiteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/cedant/identite_${file.name}`, file);
+      }
+      for (const file of cessionPiCedantPouvoirFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/cedant/pouvoir_${file.name}`, file);
+      }
+      
+      // 3. Upload documents cessionnaire
+      for (const file of cessionPiCessionnaireKbisFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/cessionnaire/kbis_${file.name}`, file);
+      }
+      for (const file of cessionPiCessionnaireIdentiteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/cessionnaire/identite_${file.name}`, file);
+      }
+      for (const file of cessionPiCessionnairePouvoirFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/cessionnaire/pouvoir_${file.name}`, file);
+      }
+      
+      // 4. Upload documents du droit cédé
+      for (const file of cessionPiCertificatEnregistrementFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/droit_cede/certificat_${file.name}`, file);
+      }
+      for (const file of cessionPiPreuvesAnterioriteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/droit_cede/preuves_${file.name}`, file);
+      }
+      for (const file of cessionPiDocumentsTechniquesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/droit_cede/techniques_${file.name}`, file);
+      }
+      for (const file of cessionPiCodeSourceFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/droit_cede/code_source_${file.name}`, file);
+      }
+      for (const file of cessionPiDocumentationFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/droit_cede/documentation_${file.name}`, file);
+      }
+      
+      // 5. Upload autres documents
+      for (const file of cessionPiLicencesExistantesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/licences_${file.name}`, file);
+      }
+      for (const file of cessionPiRapportValuationFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/valuation_${file.name}`, file);
+      }
+      for (const file of cessionPiAnnexesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes_${file.name}`, file);
+      }
+      
+      toast.success("Contrat de cession créé avec succès");
+      setPendingContractType("");
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création cession PI:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -52818,6 +53136,314 @@ FIN DE LA CONVENTION
               </div>
             )}
 
+            {/* Formulaire Cession de marque / PI */}
+            {pendingContractType === "Cession de marque / cession de droits de propriété intellectuelle" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-purple-300 pb-2 text-purple-700">🏷️ Cession de marque / Propriété intellectuelle</h3>
+                
+                {/* CLIENT CONCERNÉ */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">👤 Clients concernés</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Cédant (vendeur) - Optionnel</Label>
+                      <Select value={cessionPiClientIdCedant} onValueChange={setCessionPiClientIdCedant}>
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Cessionnaire (acquéreur) - Optionnel</Label>
+                      <Select value={cessionPiClientIdCessionnaire} onValueChange={setCessionPiClientIdCessionnaire}>
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* TYPE DE CESSION */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Type de droit cédé *</h4>
+                  <Select value={cessionPiData.typeCession} onValueChange={(val) => setCessionPiData({...cessionPiData, typeCession: val})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="marque">Marque</SelectItem>
+                      <SelectItem value="brevet">Brevet</SelectItem>
+                      <SelectItem value="dessin_modele">Dessin / Modèle</SelectItem>
+                      <SelectItem value="droit_auteur">Droit d'auteur</SelectItem>
+                      <SelectItem value="logiciel">Logiciel</SelectItem>
+                      <SelectItem value="nom_domaine">Nom de domaine</SelectItem>
+                      <SelectItem value="savoir_faire">Savoir-faire</SelectItem>
+                      <SelectItem value="base_donnees">Base de données</SelectItem>
+                      <SelectItem value="autre">Autre</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* CÉDANT */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Cédant (propriétaire actuel) *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Nom / Dénomination sociale *</Label><Input value={cessionPiData.cedantNom} onChange={(e) => setCessionPiData({...cessionPiData, cedantNom: e.target.value})} /></div>
+                    <div><Label>Forme juridique</Label><Input value={cessionPiData.cedantFormeJuridique} onChange={(e) => setCessionPiData({...cessionPiData, cedantFormeJuridique: e.target.value})} placeholder="SARL, SAS, SA, EI..." /></div>
+                    <div><Label>Capital (si société)</Label><Input value={cessionPiData.cedantCapital} onChange={(e) => setCessionPiData({...cessionPiData, cedantCapital: e.target.value})} placeholder="Ex: 10000 EUR" /></div>
+                    <div><Label>RCS / SIREN</Label><Input value={cessionPiData.cedantRCS} onChange={(e) => setCessionPiData({...cessionPiData, cedantRCS: e.target.value})} /></div>
+                    <div><Label>Adresse du siège</Label><Input value={cessionPiData.cedantSiege} onChange={(e) => setCessionPiData({...cessionPiData, cedantSiege: e.target.value})} /></div>
+                    <div><Label>Représentant légal</Label><Input value={cessionPiData.cedantRepresentant} onChange={(e) => setCessionPiData({...cessionPiData, cedantRepresentant: e.target.value})} placeholder="Nom + fonction" /></div>
+                    <div><Label>Email</Label><Input value={cessionPiData.cedantEmail} onChange={(e) => setCessionPiData({...cessionPiData, cedantEmail: e.target.value})} type="email" /></div>
+                    <div><Label>Téléphone</Label><Input value={cessionPiData.cedantTelephone} onChange={(e) => setCessionPiData({...cessionPiData, cedantTelephone: e.target.value})} /></div>
+                    <div><Label>Pays</Label><Input value={cessionPiData.cedantPays} onChange={(e) => setCessionPiData({...cessionPiData, cedantPays: e.target.value})} /></div>
+                  </div>
+                  <h5 className="font-medium text-purple-600 mt-4">Pièces justificatives cédant</h5>
+                  <SingleFileUpload label="Kbis / Extrait RCS" files={cessionPiCedantKbisFiles} onFilesChange={setCessionPiCedantKbisFiles} role="avocat" />
+                  <SingleFileUpload label="Pièce d'identité du représentant" files={cessionPiCedantIdentiteFiles} onFilesChange={setCessionPiCedantIdentiteFiles} role="avocat" />
+                  <SingleFileUpload label="Pouvoir de signature" files={cessionPiCedantPouvoirFiles} onFilesChange={setCessionPiCedantPouvoirFiles} role="avocat" />
+                </div>
+
+                {/* CESSIONNAIRE */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Cessionnaire (acquéreur) *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Nom / Dénomination sociale *</Label><Input value={cessionPiData.cessionnaireNom} onChange={(e) => setCessionPiData({...cessionPiData, cessionnaireNom: e.target.value})} /></div>
+                    <div><Label>Forme juridique</Label><Input value={cessionPiData.cessionnaireFormeJuridique} onChange={(e) => setCessionPiData({...cessionPiData, cessionnaireFormeJuridique: e.target.value})} /></div>
+                    <div><Label>Capital (si société)</Label><Input value={cessionPiData.cessionnaireCapital} onChange={(e) => setCessionPiData({...cessionPiData, cessionnaireCapital: e.target.value})} /></div>
+                    <div><Label>RCS / SIREN</Label><Input value={cessionPiData.cessionnaireRCS} onChange={(e) => setCessionPiData({...cessionPiData, cessionnaireRCS: e.target.value})} /></div>
+                    <div><Label>Adresse du siège</Label><Input value={cessionPiData.cessionnaireSiege} onChange={(e) => setCessionPiData({...cessionPiData, cessionnaireSiege: e.target.value})} /></div>
+                    <div><Label>Représentant légal</Label><Input value={cessionPiData.cessionnaireRepresentant} onChange={(e) => setCessionPiData({...cessionPiData, cessionnaireRepresentant: e.target.value})} /></div>
+                    <div><Label>Email</Label><Input value={cessionPiData.cessionnaireEmail} onChange={(e) => setCessionPiData({...cessionPiData, cessionnaireEmail: e.target.value})} type="email" /></div>
+                    <div><Label>Téléphone</Label><Input value={cessionPiData.cessionnaireTelephone} onChange={(e) => setCessionPiData({...cessionPiData, cessionnaireTelephone: e.target.value})} /></div>
+                    <div><Label>Pays</Label><Input value={cessionPiData.cessionnairePays} onChange={(e) => setCessionPiData({...cessionPiData, cessionnairePays: e.target.value})} /></div>
+                  </div>
+                  <h5 className="font-medium text-purple-600 mt-4">Pièces justificatives cessionnaire</h5>
+                  <SingleFileUpload label="Kbis / Extrait RCS" files={cessionPiCessionnaireKbisFiles} onFilesChange={setCessionPiCessionnaireKbisFiles} role="avocat" />
+                  <SingleFileUpload label="Pièce d'identité du représentant" files={cessionPiCessionnaireIdentiteFiles} onFilesChange={setCessionPiCessionnaireIdentiteFiles} role="avocat" />
+                  <SingleFileUpload label="Pouvoir de signature" files={cessionPiCessionnairePouvoirFiles} onFilesChange={setCessionPiCessionnairePouvoirFiles} role="avocat" />
+                </div>
+
+                {/* IDENTIFICATION DU DROIT - MARQUE */}
+                {cessionPiData.typeCession === "marque" && (
+                  <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                    <h4 className="font-semibold text-lg text-purple-700">Identification de la marque *</h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Nom de la marque *</Label><Input value={cessionPiData.marqueNom} onChange={(e) => setCessionPiData({...cessionPiData, marqueNom: e.target.value})} /></div>
+                      <div><Label>Numéro de dépôt</Label><Input value={cessionPiData.marqueNumeroDepot} onChange={(e) => setCessionPiData({...cessionPiData, marqueNumeroDepot: e.target.value})} /></div>
+                      <div><Label>Date de dépôt</Label><Input value={cessionPiData.marqueDateDepot} onChange={(e) => setCessionPiData({...cessionPiData, marqueDateDepot: e.target.value})} type="date" /></div>
+                      <div><Label>Classes (Nice)</Label><Input value={cessionPiData.marqueClasses} onChange={(e) => setCessionPiData({...cessionPiData, marqueClasses: e.target.value})} placeholder="Ex: 9, 35, 42" /></div>
+                      <div><Label>Organisme d'enregistrement</Label><Select value={cessionPiData.marqueOrganismeEnregistrement} onValueChange={(val) => setCessionPiData({...cessionPiData, marqueOrganismeEnregistrement: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="INPI">INPI (France)</SelectItem><SelectItem value="EUIPO">EUIPO (UE)</SelectItem><SelectItem value="OMPI">OMPI (International)</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select></div>
+                      <div><Label>Échéance renouvellement</Label><Input value={cessionPiData.marqueRenouvellementEcheance} onChange={(e) => setCessionPiData({...cessionPiData, marqueRenouvellementEcheance: e.target.value})} type="date" /></div>
+                      <div><Label>Étendue</Label><Select value={cessionPiData.marqueEtendue} onValueChange={(val) => setCessionPiData({...cessionPiData, marqueEtendue: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="nationale">Nationale</SelectItem><SelectItem value="europeenne">Européenne</SelectItem><SelectItem value="internationale">Internationale</SelectItem></SelectContent></Select></div>
+                      {cessionPiData.marqueEtendue === "internationale" && <div><Label>Pays couvert s</Label><Textarea value={cessionPiData.marquePays} onChange={(e) => setCessionPiData({...cessionPiData, marquePays: e.target.value})} placeholder="Liste des pays" rows={2} /></div>}
+                    </div>
+                  </div>
+                )}
+
+                {/* IDENTIFICATION DU DROIT - BREVET */}
+                {cessionPiData.typeCession === "brevet" && (
+                  <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                    <h4 className="font-semibold text-lg text-purple-700">Identification du brevet *</h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Titre du brevet *</Label><Input value={cessionPiData.brevetTitre} onChange={(e) => setCessionPiData({...cessionPiData, brevetTitre: e.target.value})} /></div>
+                      <div><Label>Numéro de brevet</Label><Input value={cessionPiData.brevetNumero} onChange={(e) => setCessionPiData({...cessionPiData, brevetNumero: e.target.value})} /></div>
+                      <div><Label>Date de dépôt</Label><Input value={cessionPiData.brevetDateDepot} onChange={(e) => setCessionPiData({...cessionPiData, brevetDateDepot: e.target.value})} type="date" /></div>
+                      <div><Label>Date de délivrance</Label><Input value={cessionPiData.brevetDateDelivrance} onChange={(e) => setCessionPiData({...cessionPiData, brevetDateDelivrance: e.target.value})} type="date" /></div>
+                      <div><Label>Organisme</Label><Select value={cessionPiData.brevetOrganisme} onValueChange={(val) => setCessionPiData({...cessionPiData, brevetOrganisme: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="INPI">INPI</SelectItem><SelectItem value="OEB">OEB (Européen)</SelectItem><SelectItem value="USPTO">USPTO (USA)</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select></div>
+                      <div><Label>Durée de protection</Label><Input value={cessionPiData.brevetDureeProtection} onChange={(e) => setCessionPiData({...cessionPiData, brevetDureeProtection: e.target.value})} placeholder="Ex: 20 ans" /></div>
+                    </div>
+                    <div><Label>Revendications</Label><Textarea value={cessionPiData.brevetRevendications} onChange={(e) => setCessionPiData({...cessionPiData, brevetRevendications: e.target.value})} rows={3} /></div>
+                    <div><Label>Étendue</Label><Select value={cessionPiData.brevetEtendue} onValueChange={(val) => setCessionPiData({...cessionPiData, brevetEtendue: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="nationale">Nationale</SelectItem><SelectItem value="europeenne">Européenne</SelectItem><SelectItem value="internationale">Internationale</SelectItem></SelectContent></Select></div>
+                  </div>
+                )}
+
+                {/* IDENTIFICATION DU DROIT - LOGICIEL */}
+                {cessionPiData.typeCession === "logiciel" && (
+                  <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                    <h4 className="font-semibold text-lg text-purple-700">Identification du logiciel *</h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Nom du logiciel *</Label><Input value={cessionPiData.logicielNom} onChange={(e) => setCessionPiData({...cessionPiData, logicielNom: e.target.value})} /></div>
+                      <div><Label>Version</Label><Input value={cessionPiData.logicielVersion} onChange={(e) => setCessionPiData({...cessionPiData, logicielVersion: e.target.value})} /></div>
+                      <div><Label>Langages de programmation</Label><Input value={cessionPiData.logicielLanguages} onChange={(e) => setCessionPiData({...cessionPiData, logicielLanguages: e.target.value})} placeholder="Ex: Python, JavaScript" /></div>
+                      <div><Label>Code source</Label><Select value={cessionPiData.logicielCodeSource} onValueChange={(val) => setCessionPiData({...cessionPiData, logicielCodeSource: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="inclus">Inclus dans la cession</SelectItem><SelectItem value="exclu">Exclu</SelectItem></SelectContent></Select></div>
+                      <div><Label>Documentation</Label><Select value={cessionPiData.logicielDocumentation} onValueChange={(val) => setCessionPiData({...cessionPiData, logicielDocumentation: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="incluse">Incluse</SelectItem><SelectItem value="exclue">Exclue</SelectItem></SelectContent></Select></div>
+                      <div><Label>Droits moraux</Label><Select value={cessionPiData.logicielDroitsMoraux} onValueChange={(val) => setCessionPiData({...cessionPiData, logicielDroitsMoraux: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="conserves">Conservés par le cédant</SelectItem><SelectItem value="cedes">Cédés</SelectItem></SelectContent></Select></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* IDENTIFICATION - NOM DE DOMAINE */}
+                {cessionPiData.typeCession === "nom_domaine" && (
+                  <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                    <h4 className="font-semibold text-lg text-purple-700">Identification du nom de domaine *</h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Nom de domaine *</Label><Input value={cessionPiData.nomDomaine} onChange={(e) => setCessionPiData({...cessionPiData, nomDomaine: e.target.value})} placeholder="example.com" /></div>
+                      <div><Label>Extension</Label><Input value={cessionPiData.nomDomaineExtension} onChange={(e) => setCessionPiData({...cessionPiData, nomDomaineExtension: e.target.value})} placeholder=".com, .fr, .eu" /></div>
+                      <div><Label>Registrar actuel</Label><Input value={cessionPiData.nomDomaineRegistrar} onChange={(e) => setCessionPiData({...cessionPiData, nomDomaineRegistrar: e.target.value})} /></div>
+                      <div><Label>Date d'expiration</Label><Input value={cessionPiData.nomDomaineDateExpiration} onChange={(e) => setCessionPiData({...cessionPiData, nomDomaineDateExpiration: e.target.value})} type="date" /></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* NATURE DE LA CESSION */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Nature de la cession *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Type de cession</Label><Select value={cessionPiData.natureCession} onValueChange={(val) => setCessionPiData({...cessionPiData, natureCession: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="totale">Totale</SelectItem><SelectItem value="partielle">Partielle</SelectItem></SelectContent></Select></div>
+                    <div className="flex items-center gap-2 pt-6"><input type="checkbox" checked={cessionPiData.cessionExclusive} onChange={(e) => setCessionPiData({...cessionPiData, cessionExclusive: e.target.checked})} id="excl" /><Label htmlFor="excl">Cession exclusive</Label></div>
+                  </div>
+                  <div><Label>Territoire de la cession</Label><Select value={cessionPiData.territoireCession} onValueChange={(val) => setCessionPiData({...cessionPiData, territoireCession: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="mondial">Mondial</SelectItem><SelectItem value="france">France uniquement</SelectItem><SelectItem value="UE">Union Européenne</SelectItem><SelectItem value="liste_pays">Liste de pays spécifique</SelectItem></SelectContent></Select></div>
+                  {cessionPiData.territoireCession === "liste_pays" && <div><Label>Liste des pays couverts</Label><Textarea value={cessionPiData.territoirePaysListe} onChange={(e) => setCessionPiData({...cessionPiData, territoirePaysListe: e.target.value})} rows={2} /></div>}
+                  <div><Label>Secteur d'activité limité ?</Label><Select value={cessionPiData.secteurActiviteLimite} onValueChange={(val) => setCessionPiData({...cessionPiData, secteurActiviteLimite: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non, tous secteurs</SelectItem><SelectItem value="oui">Oui, secteur limité</SelectItem></SelectContent></Select></div>
+                  {cessionPiData.secteurActiviteLimite === "oui" && <div><Label>Description du secteur limité</Label><Textarea value={cessionPiData.secteurActiviteDescription} onChange={(e) => setCessionPiData({...cessionPiData, secteurActiviteDescription: e.target.value})} rows={2} /></div>}
+                  
+                  <div className="space-y-3 mt-4">
+                    <h5 className="font-medium">Droits cédés :</h5>
+                    <div className="grid md:grid-cols-3 gap-2">
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.exploitation} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, exploitation: e.target.checked}})} id="droit-exp" /><Label htmlFor="droit-exp">Exploitation</Label></div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.reproduction} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, reproduction: e.target.checked}})} id="droit-rep" /><Label htmlFor="droit-rep">Reproduction</Label></div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.representation} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, representation: e.target.checked}})} id="droit-repr" /><Label htmlFor="droit-repr">Représentation</Label></div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.adaptation} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, adaptation: e.target.checked}})} id="droit-ada" /><Label htmlFor="droit-ada">Adaptation</Label></div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.traduction} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, traduction: e.target.checked}})} id="droit-tra" /><Label htmlFor="droit-tra">Traduction</Label></div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.distribution} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, distribution: e.target.checked}})} id="droit-dis" /><Label htmlFor="droit-dis">Distribution</Label></div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.modification} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, modification: e.target.checked}})} id="droit-mod" /><Label htmlFor="droit-mod">Modification</Label></div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.sousLicence} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, sousLicence: e.target.checked}})} id="droit-sous" /><Label htmlFor="droit-sous">Accorder des sous-licences</Label></div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.droitsCedes.cessionTiers} onChange={(e) => setCessionPiData({...cessionPiData, droitsCedes: {...cessionPiData.droitsCedes, cessionTiers: e.target.checked}})} id="droit-ces" /><Label htmlFor="droit-ces">Céder à des tiers</Label></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* PRIX ET PAIEMENT */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Prix et modalités de paiement *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Prix de la cession *</Label><Input value={cessionPiData.prixCession} onChange={(e) => setCessionPiData({...cessionPiData, prixCession: e.target.value})} placeholder="Ex: 50000" /></div>
+                    <div><Label>Devise</Label><Select value={cessionPiData.prixDevise} onValueChange={(val) => setCessionPiData({...cessionPiData, prixDevise: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="EUR">EUR (€)</SelectItem><SelectItem value="USD">USD ($)</SelectItem><SelectItem value="GBP">GBP (£)</SelectItem></SelectContent></Select></div>
+                  </div>
+                  <div><Label>Modalité de paiement</Label><Select value={cessionPiData.modalitePaiement} onValueChange={(val) => setCessionPiData({...cessionPiData, modalitePaiement: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="comptant">Comptant</SelectItem><SelectItem value="echelonne">Échelonné</SelectItem><SelectItem value="royalties">Royalties</SelectItem><SelectItem value="mixte">Mixte (fixe + royalties)</SelectItem></SelectContent></Select></div>
+                  
+                  {cessionPiData.modalitePaiement === "echelonne" && <div><Label>Description de l'échéancier</Label><Textarea value={cessionPiData.echelonnementDescription} onChange={(e) => setCessionPiData({...cessionPiData, echelonnementDescription: e.target.value})} placeholder="Ex: 30% à la signature, 70% à J+90" rows={3} /></div>}
+                  
+                  {(cessionPiData.modalitePaiement === "royalties" || cessionPiData.modalitePaiement === "mixte") && (
+                    <div className="space-y-3 p-3 bg-white rounded border">
+                      <h5 className="font-medium">Royalties</h5>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div><Label>Taux (%)</Label><Input value={cessionPiData.royaltiesTaux} onChange={(e) => setCessionPiData({...cessionPiData, royaltiesTaux: e.target.value})} placeholder="Ex: 5%" /></div>
+                        <div><Label>Base de calcul</Label><Input value={cessionPiData.royaltiesBase} onChange={(e) => setCessionPiData({...cessionPiData, royaltiesBase: e.target.value})} placeholder="CA HT, bénéfice..." /></div>
+                        <div><Label>Durée</Label><Input value={cessionPiData.royaltiesDuree} onChange={(e) => setCessionPiData({...cessionPiData, royaltiesDuree: e.target.value})} placeholder="Ex: 5 ans" /></div>
+                        <div><Label>Minimum garanti</Label><Input value={cessionPiData.royaltiesMinimum} onChange={(e) => setCessionPiData({...cessionPiData, royaltiesMinimum: e.target.value})} placeholder="Optionnel" /></div>
+                      </div>
+                      <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.royaltiesComptabilite} onChange={(e) => setCessionPiData({...cessionPiData, royaltiesComptabilite: e.target.checked})} id="compta" /><Label htmlFor="compta">Audit comptable autorisé</Label></div>
+                    </div>
+                  )}
+                  
+                  <div><Label>Date limite de paiement</Label><Input value={cessionPiData.paiementDateLimite} onChange={(e) => setCessionPiData({...cessionPiData, paiementDateLimite: e.target.value})} type="date" /></div>
+                  <div><Label>Modalités pratiques</Label><Textarea value={cessionPiData.paiementModalites} onChange={(e) => setCessionPiData({...cessionPiData, paiementModalites: e.target.value})} placeholder="Virement, chèque, séquestre..." rows={2} /></div>
+                </div>
+
+                {/* GARANTIES DU CÉDANT */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Garanties du cédant</h4>
+                  <div className="grid md:grid-cols-2 gap-2">
+                    <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieTitulaire} onChange={(e) => setCessionPiData({...cessionPiData, garantieTitulaire: e.target.checked})} id="g1" /><Label htmlFor="g1">Titulaire légitime du droit</Label></div>
+                    <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieLibreCharges} onChange={(e) => setCessionPiData({...cessionPiData, garantieLibreCharges: e.target.checked})} id="g2" /><Label htmlFor="g2">Libre de toute charge</Label></div>
+                    <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieNonContrefacon} onChange={(e) => setCessionPiData({...cessionPiData, garantieNonContrefacon: e.target.checked})} id="g3" /><Label htmlFor="g3">Non contrefaçon</Label></div>
+                    <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieValidite} onChange={(e) => setCessionPiData({...cessionPiData, garantieValidite: e.target.checked})} id="g4" /><Label htmlFor="g4">Validité du droit</Label></div>
+                    <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieExploitabilite} onChange={(e) => setCessionPiData({...cessionPiData, garantieExploitabilite: e.target.checked})} id="g5" /><Label htmlFor="g5">Exploitabilité</Label></div>
+                    <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieAucunLitige} onChange={(e) => setCessionPiData({...cessionPiData, garantieAucunLitige: e.target.checked})} id="g6" /><Label htmlFor="g6">Aucun litige en cours</Label></div>
+                  </div>
+                  <div><Label>Durée des garanties</Label><Select value={cessionPiData.garantieDuree} onValueChange={(val) => setCessionPiData({...cessionPiData, garantieDuree: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="permanente">Permanente</SelectItem><SelectItem value="limitee">Limitée dans le temps</SelectItem></SelectContent></Select></div>
+                  {cessionPiData.garantieDuree === "limitee" && <div><Label>Durée limite</Label><Input value={cessionPiData.garantieDureeLimitee} onChange={(e) => setCessionPiData({...cessionPiData, garantieDureeLimitee: e.target.value})} placeholder="Ex: 3 ans" /></div>}
+                </div>
+
+                {/* OBLIGATIONS POST-CESSION */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Obligations post-cession</h4>
+                  <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.obligationTransfertDocuments} onChange={(e) => setCessionPiData({...cessionPiData, obligationTransfertDocuments: e.target.checked})} id="ob1" /><Label htmlFor="ob1">Transfert de tous les documents</Label></div>
+                  
+                  <div><Label>Formation du cessionnaire ?</Label><Select value={cessionPiData.obligationFormationCessionnaire} onValueChange={(val) => setCessionPiData({...cessionPiData, obligationFormationCessionnaire: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non</SelectItem><SelectItem value="oui">Oui</SelectItem></SelectContent></Select></div>
+                  {cessionPiData.obligationFormationCessionnaire === "oui" && <div><Label>Durée de formation</Label><Input value={cessionPiData.obligationFormationDuree} onChange={(e) => setCessionPiData({...cessionPiData, obligationFormationDuree: e.target.value})} placeholder="Ex: 2 jours" /></div>}
+                  
+                  <div><Label>Assistance technique ?</Label><Select value={cessionPiData.obligationAssistanceTechnique} onValueChange={(val) => setCessionPiData({...cessionPiData, obligationAssistanceTechnique: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non</SelectItem><SelectItem value="oui">Oui</SelectItem></SelectContent></Select></div>
+                  {cessionPiData.obligationAssistanceTechnique === "oui" && <div><Label>Durée d'assistance</Label><Input value={cessionPiData.obligationAssistanceDuree} onChange={(e) => setCessionPiData({...cessionPiData, obligationAssistanceDuree: e.target.value})} placeholder="Ex: 6 mois" /></div>}
+                  
+                  <div><Label>Clause de non-concurrence ?</Label><Select value={cessionPiData.obligationNonConcurrence} onValueChange={(val) => setCessionPiData({...cessionPiData, obligationNonConcurrence: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non</SelectItem><SelectItem value="oui">Oui</SelectItem></SelectContent></Select></div>
+                  {cessionPiData.obligationNonConcurrence === "oui" && (
+                    <div className="grid md:grid-cols-3 gap-4 p-3 bg-white rounded border">
+                      <div><Label>Durée</Label><Input value={cessionPiData.obligationNonConcurrenceDuree} onChange={(e) => setCessionPiData({...cessionPiData, obligationNonConcurrenceDuree: e.target.value})} placeholder="Ex: 2 ans" /></div>
+                      <div><Label>Territoire</Label><Input value={cessionPiData.obligationNonConcurrenceTerritoire} onChange={(e) => setCessionPiData({...cessionPiData, obligationNonConcurrenceTerritoire: e.target.value})} /></div>
+                      <div><Label>Secteur</Label><Input value={cessionPiData.obligationNonConcurrenceSecteur} onChange={(e) => setCessionPiData({...cessionPiData, obligationNonConcurrenceSecteur: e.target.value})} /></div>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.obligationConfidentialite} onChange={(e) => setCessionPiData({...cessionPiData, obligationConfidentialite: e.target.checked})} id="conf" /><Label htmlFor="conf">Obligation de confidentialité</Label></div>
+                  {cessionPiData.obligationConfidentialite && <div><Label>Durée de confidentialité</Label><Input value={cessionPiData.obligationConfidentialiteDuree} onChange={(e) => setCessionPiData({...cessionPiData, obligationConfidentialiteDuree: e.target.value})} placeholder="Ex: 5 ans ou illimitée" /></div>}
+                </div>
+
+                {/* FORMALITÉS D'ENREGISTREMENT */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Formalités d'enregistrement</h4>
+                  <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.enregistrementNecessaire} onChange={(e) => setCessionPiData({...cessionPiData, enregistrementNecessaire: e.target.checked})} id="enreg" /><Label htmlFor="enreg">Enregistrement nécessaire</Label></div>
+                  {cessionPiData.enregistrementNecessaire && (
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div><Label>Organisme</Label><Input value={cessionPiData.enregistrementOrganisme} onChange={(e) => setCessionPiData({...cessionPiData, enregistrementOrganisme: e.target.value})} placeholder="INPI, EUIPO, OMPI..." /></div>
+                      <div><Label>Frais à la charge de</Label><Select value={cessionPiData.enregistrementFrais} onValueChange={(val) => setCessionPiData({...cessionPiData, enregistrementFrais: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="cedant">Cédant</SelectItem><SelectItem value="cessionnaire">Cessionnaire</SelectItem><SelectItem value="partages">Partagés 50/50</SelectItem></SelectContent></Select></div>
+                      <div><Label>Délai d'enregistrement</Label><Input value={cessionPiData.enregistrementDelai} onChange={(e) => setCessionPiData({...cessionPiData, enregistrementDelai: e.target.value})} placeholder="Ex: 30 jours" /></div>
+                    </div>
+                  )}
+                </div>
+
+                {/* RESPONSABILITÉ */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Responsabilité</h4>
+                  <div><Label>Plafond de responsabilité (optionnel)</Label><Input value={cessionPiData.responsabilitePlafond} onChange={(e) => setCessionPiData({...cessionPiData, responsabilitePlafond: e.target.value})} placeholder="Ex: 100000 EUR" /></div>
+                  <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.responsabiliteExclusionDommagesIndirects} onChange={(e) => setCessionPiData({...cessionPiData, responsabiliteExclusionDommagesIndirects: e.target.checked})} id="excl-dom" /><Label htmlFor="excl-dom">Exclusion des dommages indirects</Label></div>
+                  <div><Label>Assurance obligatoire ?</Label><Select value={cessionPiData.responsabiliteAssuranceObligatoire} onValueChange={(val) => setCessionPiData({...cessionPiData, responsabiliteAssuranceObligatoire: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non</SelectItem><SelectItem value="oui">Oui</SelectItem></SelectContent></Select></div>
+                </div>
+
+                {/* LITIGES */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Litiges et juridiction</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Droit applicable</Label><Select value={cessionPiData.droitApplicable} onValueChange={(val) => setCessionPiData({...cessionPiData, droitApplicable: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="français">Droit français</SelectItem><SelectItem value="europeen">Droit européen</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select></div>
+                    <div><Label>Tribunal compétent</Label><Input value={cessionPiData.tribunalCompetent} onChange={(e) => setCessionPiData({...cessionPiData, tribunalCompetent: e.target.value})} placeholder="Ex: Paris" /></div>
+                    <div><Label>Médiation préalable</Label><Select value={cessionPiData.mediationPrealable} onValueChange={(val) => setCessionPiData({...cessionPiData, mediationPrealable: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                    <div><Label>Arbitrage</Label><Select value={cessionPiData.arbitrage} onValueChange={(val) => setCessionPiData({...cessionPiData, arbitrage: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                  </div>
+                </div>
+
+                {/* PIÈCES JUSTIFICATIVES ET ANNEXES */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Documents du droit cédé</h4>
+                  <SingleFileUpload label="Certificat d'enregistrement" files={cessionPiCertificatEnregistrementFiles} onFilesChange={setCessionPiCertificatEnregistrementFiles} role="avocat" required />
+                  <SingleFileUpload label="Preuves d'antériorité" files={cessionPiPreuvesAnterioriteFiles} onFilesChange={setCessionPiPreuvesAnterioriteFiles} role="avocat" />
+                  <SingleFileUpload label="Documents techniques" files={cessionPiDocumentsTechniquesFiles} onFilesChange={setCessionPiDocumentsTechniquesFiles} role="avocat" />
+                  {cessionPiData.typeCession === "logiciel" && (
+                    <>
+                      <SingleFileUpload label="Code source" files={cessionPiCodeSourceFiles} onFilesChange={setCessionPiCodeSourceFiles} role="avocat" />
+                      <SingleFileUpload label="Documentation" files={cessionPiDocumentationFiles} onFilesChange={setCessionPiDocumentationFiles} role="avocat" />
+                    </>
+                  )}
+                  <SingleFileUpload label="Licences existantes" files={cessionPiLicencesExistantesFiles} onFilesChange={setCessionPiLicencesExistantesFiles} role="avocat" />
+                  <SingleFileUpload label="Rapport de valuation (optionnel)" files={cessionPiRapportValuationFiles} onFilesChange={setCessionPiRapportValuationFiles} role="avocat" />
+                  <MultiFileUpload label="Autres annexes" files={cessionPiAnnexesFiles} onFilesChange={setCessionPiAnnexesFiles} role="avocat" />
+                  <div><Label>Descriptions annexes supplémentaires</Label><Textarea value={cessionPiData.annexesDescriptions} onChange={(e) => setCessionPiData({...cessionPiData, annexesDescriptions: e.target.value})} placeholder="Listez d'autres annexes si nécessaire..." rows={3} /></div>
+                </div>
+              </div>
+            )}
+
             {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
             {(() => {
               console.log('🔍 DEBUG CGU - pendingContractType:', JSON.stringify(pendingContractType));
@@ -53912,7 +54538,9 @@ FIN DE LA CONVENTION
                   handleAgenceCommercialeSubmit();
                 } else if (pendingContractType === "NDA (Accord de confidentialité)") {
                   handleCreateNdaContract();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Cession de marque / cession de droits de propriété intellectuelle") {
+                  handleCreateCessionPiContract();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
