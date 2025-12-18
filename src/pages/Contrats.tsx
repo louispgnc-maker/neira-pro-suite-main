@@ -1265,6 +1265,197 @@ export default function Contrats() {
   const [agenceAgentIdentiteFiles, setAgenceAgentIdentiteFiles] = useState<File[]>([]);
   const [agenceAnnexesFiles, setAgenceAnnexesFiles] = useState<File[]>([]);
   
+  // States pour Contrat de franchise
+  const [franchiseClientId, setFranchiseClientId] = useState<string>("");
+  const [franchiseData, setFranchiseData] = useState({
+    // 1. Franchiseur
+    franchiseurDenomination: "",
+    franchiseurFormeJuridique: "",
+    franchiseurCapital: "",
+    franchiseurRCS: "",
+    franchiseurSIREN: "",
+    franchiseurSiege: "",
+    franchiseurRepresentant: "",
+    franchiseurDescriptionReseau: "",
+    franchiseurDateCreationMarque: "",
+    franchiseurNombreFranchises: "",
+    franchiseurAssurancePro: "",
+    franchiseurEmail: "",
+    franchiseurTelephone: "",
+    
+    // 1. Franchisé
+    franchiseNom: "",
+    franchiseFormeJuridique: "",
+    franchiseAdresse: "",
+    franchiseRCS: "",
+    franchiseSIREN: "",
+    franchiseActivitePrevue: "",
+    franchiseRepresentant: "",
+    franchiseSituationFinanciere: "",
+    franchiseEmail: "",
+    franchiseTelephone: "",
+    
+    // 2. DIP (Document d'Information Précontractuelle)
+    dipRemis: "non", // oui/non
+    dipDateRemise: "",
+    dipDelai20jours: "oui",
+    
+    // 3. Objet du contrat
+    conceptFranchise: "",
+    typeActivite: "",
+    savoirFaireSpecifique: "",
+    droitMarque: "oui",
+    droitEnseigne: "oui",
+    droitConcept: "oui",
+    droitLogiciels: "",
+    droitMethodes: "",
+    
+    // 4. Droits accordés
+    licenceMarque: "oui",
+    licenceEnseigne: "oui",
+    licenceSignes: "oui",
+    manuelOperatoire: "oui",
+    territoireExclusivite: "", // exclusif/non-exclusif
+    zoneProtegee: "",
+    approvisionnementObligatoire: "", // oui/non
+    listeFournisseursAgrees: "",
+    
+    // 5. Obligations franchiseur
+    formationInitialeDuree: "",
+    formationInitialeContenu: "",
+    formationContinue: "oui",
+    assistanceOuverture: "oui",
+    supportMarketing: "oui",
+    accompagnementCommercial: "oui",
+    campagnesNationales: "oui",
+    campagnesLocales: "",
+    protectionTerritoriale: "",
+    
+    // 6. Obligations franchisé
+    respectConcept: "oui",
+    respectManuel: "oui",
+    respectNormes: "oui",
+    achatProduits: "",
+    utilisationMarque: "oui",
+    participationFormations: "oui",
+    participationReunions: "oui",
+    comptabiliteSeparee: "oui",
+    reportingRegulier: "oui",
+    respectTerritoire: "oui",
+    paiementRedevances: "oui",
+    
+    // 7. Redevances
+    redevanceEntreeMontant: "",
+    redevanceEntreePaiement: "", // une_fois/echelonne
+    redevancePeriodique: "", // pourcentage/fixe/mixte
+    redevancePourcentageCA: "",
+    redevanceFixeMensuelle: "",
+    redevanceMinimale: "",
+    redevanceMarketing: "",
+    redevanceMarketingType: "", // pourcentage/fixe
+    paiementPeriodicite: "",
+    
+    // 8. Conditions financières annexes
+    fondsRoulement: "",
+    investissementsInitiaux: "",
+    fraisAmenagement: "",
+    stockInitial: "",
+    coutLogiciel: "",
+    
+    // 9. Local commercial
+    adresseLocal: "",
+    statutLocal: "", // bail/propriete
+    approbationFranchiseur: "oui",
+    normesAgencement: "",
+    travauxChargeFranchise: "",
+    controleConformite: "oui",
+    
+    // 10. Marketing
+    charteGraphique: "oui",
+    supportsObligatoires: "oui",
+    participationCampagnesLocales: "",
+    interdictionSupportsNonValides: "oui",
+    gestionReseauxSociaux: "",
+    
+    // 11. Savoir-faire
+    existenceManuel: "oui",
+    confidentialiteManuel: "oui",
+    miseAJourManuel: "oui",
+    retourManuelRupture: "oui",
+    
+    // 12. Propriété intellectuelle
+    marquePropriete: "franchiseur",
+    licenceLimitee: "oui",
+    interdictionMarqueSimilaire: "oui",
+    interdictionReproduction: "oui",
+    restitutionPI: "oui",
+    
+    // 13. Confidentialité
+    secretSavoirFaire: "oui",
+    secretManuel: "oui",
+    secretMethodes: "oui",
+    confidentialiteApresContrat: "5 ans",
+    
+    // 14. Non-concurrence
+    nonConcurrencePendant: "oui",
+    nonConcurrenceApres: "oui",
+    nonConcurrenceDuree: "1 an",
+    nonConcurrenceZone: "",
+    nonConcurrenceSecteur: "",
+    
+    // 15. Responsabilité
+    responsabiliteFranchise: "oui",
+    responsabiliteFranchiseurLimitee: "oui",
+    exclusionsDommages: "oui",
+    assuranceRCObligatoire: "oui",
+    
+    // 16. Durée
+    dureeContrat: "",
+    datePriseEffet: "",
+    conditionsRenouvellement: "",
+    
+    // 17. Résiliation
+    resiliationNonPaiement: "oui",
+    resiliationDegradationImage: "oui",
+    resiliationManquementGrave: "oui",
+    resiliationNonRespectManuel: "oui",
+    resiliationCondamnation: "oui",
+    resiliationConflitInterets: "oui",
+    resiliationPreavis: "",
+    arrêtMarque: "immediat",
+    restitutionManuel: "immediat",
+    restitutionMateriel: "immediat",
+    fermeturePointVente: "oui",
+    
+    // 18. Vente/Cession
+    droitAgrementFranchiseur: "oui",
+    conditionsReprise: "",
+    formationRepreneur: "oui",
+    redevanceCession: "",
+    
+    // 19. Droit applicable
+    loiApplicable: "francaise",
+    tribunalCompetent: "",
+    clauseMediation: "oui",
+    clauseArbitrage: "",
+  });
+  
+  // États individuels pour fichiers Franchise
+  const [franchiseurKbisFiles, setFranchiseurKbisFiles] = useState<File[]>([]);
+  const [franchiseurDocumentsFinanciersFiles, setFranchiseurDocumentsFinanciersFiles] = useState<File[]>([]);
+  const [franchiseurDepotMarqueFiles, setFranchiseurDepotMarqueFiles] = useState<File[]>([]);
+  const [franchiseDIPFiles, setFranchiseDIPFiles] = useState<File[]>([]);
+  const [franchiseKbisFiles, setFranchiseKbisFiles] = useState<File[]>([]);
+  const [franchiseIdentiteFiles, setFranchiseIdentiteFiles] = useState<File[]>([]);
+  const [franchiseBusinessPlanFiles, setFranchiseBusinessPlanFiles] = useState<File[]>([]);
+  const [franchiseCapaciteFinanciereFiles, setFranchiseCapaciteFinanciereFiles] = useState<File[]>([]);
+  const [franchiseRCProFiles, setFranchiseRCProFiles] = useState<File[]>([]);
+  const [franchiseManuelOperatoireFiles, setFranchiseManuelOperatoireFiles] = useState<File[]>([]);
+  const [franchiseCharteGraphiqueFiles, setFranchiseCharteGraphiqueFiles] = useState<File[]>([]);
+  const [franchisePlansAgencementFiles, setFranchisePlansAgencementFiles] = useState<File[]>([]);
+  const [franchiseTarifsFiles, setFranchiseTarifsFiles] = useState<File[]>([]);
+  const [franchiseAttestationFormationFiles, setFranchiseAttestationFormationFiles] = useState<File[]>([]);
+  
   // States pour attestation de propriété immobilière
   const [attestationActeDecesFiles, setAttestationActeDecesFiles] = useState<File[]>([]);
   const [attestationIdentiteHeritiers, setAttestationIdentiteHeritiers] = useState<File[]>([]);
@@ -6025,6 +6216,103 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création agence commerciale:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour le contrat de franchise
+  const handleCreateFranchiseContract = async () => {
+    if (!user) return;
+
+    try {
+      const description = `Contrat de franchise - Franchiseur: ${franchiseData.franchiseurDenomination} / Franchisé: ${franchiseData.franchiseNom}`;
+
+      // 1. Créer l'enregistrement du contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          avocat_id: user.id,
+          type: "Contrat de franchise",
+          statut: 'brouillon',
+          client_id: franchiseClientId || null,
+          description: description,
+          contenu_json: franchiseData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // 2. Upload fichiers franchiseur
+      for (const file of franchiseurKbisFiles) {
+        const filePath = `${user.id}/${contrat.id}/franchiseur/kbis_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseurDocumentsFinanciersFiles) {
+        const filePath = `${user.id}/${contrat.id}/franchiseur/financiers_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseurDepotMarqueFiles) {
+        const filePath = `${user.id}/${contrat.id}/franchiseur/marque_inpi_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+
+      // 3. Upload fichiers franchisé
+      for (const file of franchiseIdentiteFiles) {
+        const filePath = `${user.id}/${contrat.id}/franchise/identite_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseKbisFiles) {
+        const filePath = `${user.id}/${contrat.id}/franchise/kbis_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseBusinessPlanFiles) {
+        const filePath = `${user.id}/${contrat.id}/franchise/business_plan_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseCapaciteFinanciereFiles) {
+        const filePath = `${user.id}/${contrat.id}/franchise/capacite_financiere_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseRCProFiles) {
+        const filePath = `${user.id}/${contrat.id}/franchise/rc_pro_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+
+      // 4. Upload annexes
+      for (const file of franchiseDIPFiles) {
+        const filePath = `${user.id}/${contrat.id}/annexes/dip_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseManuelOperatoireFiles) {
+        const filePath = `${user.id}/${contrat.id}/annexes/manuel_operatoire_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseCharteGraphiqueFiles) {
+        const filePath = `${user.id}/${contrat.id}/annexes/charte_graphique_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchisePlansAgencementFiles) {
+        const filePath = `${user.id}/${contrat.id}/annexes/plans_agencement_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseTarifsFiles) {
+        const filePath = `${user.id}/${contrat.id}/annexes/tarifs_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of franchiseAttestationFormationFiles) {
+        const filePath = `${user.id}/${contrat.id}/annexes/attestation_formation_${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+
+      toast.success("Contrat de franchise créé", { 
+        description: "Tous les documents et annexes ont été enregistrés" 
+      });
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création contrat franchise:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -47927,6 +48215,580 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
                 
+              </div>
+            )}
+
+            {/* Formulaire complet pour Contrat de franchise */}
+            {pendingContractType === "Contrat de franchise" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">🏪 Contrat de franchise</h3>
+                
+                {/* 1. IDENTIFICATION DES PARTIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  
+                  {/* FRANCHISEUR */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">🏢 Franchiseur</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Dénomination sociale *</Label><Input value={franchiseData.franchiseurDenomination} onChange={(e) => setFranchiseData({...franchiseData, franchiseurDenomination: e.target.value})} /></div>
+                      <div><Label>Forme juridique</Label><Input value={franchiseData.franchiseurFormeJuridique} onChange={(e) => setFranchiseData({...franchiseData, franchiseurFormeJuridique: e.target.value})} placeholder="SARL, SAS..." /></div>
+                      <div><Label>Capital social</Label><Input value={franchiseData.franchiseurCapital} onChange={(e) => setFranchiseData({...franchiseData, franchiseurCapital: e.target.value})} placeholder="Ex: 50 000 €" /></div>
+                      <div><Label>RCS / SIREN *</Label><Input value={franchiseData.franchiseurRCS} onChange={(e) => setFranchiseData({...franchiseData, franchiseurRCS: e.target.value})} /></div>
+                      <div className="md:col-span-2"><Label>Adresse du siège *</Label><Input value={franchiseData.franchiseurSiege} onChange={(e) => setFranchiseData({...franchiseData, franchiseurSiege: e.target.value})} /></div>
+                      <div><Label>Représentant légal</Label><Input value={franchiseData.franchiseurRepresentant} onChange={(e) => setFranchiseData({...franchiseData, franchiseurRepresentant: e.target.value})} /></div>
+                      <div><Label>Date de création de la marque</Label><Input type="date" value={franchiseData.franchiseurDateCreationMarque} onChange={(e) => setFranchiseData({...franchiseData, franchiseurDateCreationMarque: e.target.value})} /></div>
+                      <div><Label>Nombre de franchisés existants</Label><Input type="number" value={franchiseData.franchiseurNombreFranchises} onChange={(e) => setFranchiseData({...franchiseData, franchiseurNombreFranchises: e.target.value})} /></div>
+                      <div><Label>Assurance professionnelle</Label><Input value={franchiseData.franchiseurAssurancePro} onChange={(e) => setFranchiseData({...franchiseData, franchiseurAssurancePro: e.target.value})} placeholder="Nom assureur + n° police" /></div>
+                      <div><Label>Email *</Label><Input type="email" value={franchiseData.franchiseurEmail} onChange={(e) => setFranchiseData({...franchiseData, franchiseurEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone</Label><Input value={franchiseData.franchiseurTelephone} onChange={(e) => setFranchiseData({...franchiseData, franchiseurTelephone: e.target.value})} /></div>
+                      <div className="md:col-span-2"><Label>Description du réseau</Label><Textarea value={franchiseData.franchiseurDescriptionReseau} onChange={(e) => setFranchiseData({...franchiseData, franchiseurDescriptionReseau: e.target.value})} placeholder="Histoire, valeurs, positionnement du réseau..." className="min-h-[80px]" /></div>
+                    </div>
+                    
+                    <div className="space-y-3 mt-4">
+                      <h6 className="text-sm font-semibold text-blue-600">Pièces justificatives franchiseur</h6>
+                      <SingleFileUpload
+                        label="Extrait Kbis"
+                        files={franchiseurKbisFiles}
+                        onFilesChange={setFranchiseurKbisFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Documents financiers (2 derniers exercices)"
+                        files={franchiseurDocumentsFinanciersFiles}
+                        onFilesChange={setFranchiseurDocumentsFinanciersFiles}
+                        accept=".pdf,.xls,.xlsx"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Preuve dépôt marque INPI"
+                        files={franchiseurDepotMarqueFiles}
+                        onFilesChange={setFranchiseurDepotMarqueFiles}
+                        accept=".pdf"
+                        role="avocat"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* FRANCHISÉ */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">👤 Franchisé</h5>
+                    <ClientSelector clients={clients} selectedClientId={franchiseClientId} onClientChange={(id) => {
+                      setFranchiseClientId(id);
+                      const client = clients.find(c => c.id === id);
+                      if (client) {
+                        setFranchiseData({
+                          ...franchiseData,
+                          franchiseNom: client.nom || "",
+                          franchiseEmail: client.email || "",
+                          franchiseTelephone: client.telephone || ""
+                        });
+                      }
+                    }} label="Sélectionner le franchisé (optionnel)" />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                      <div><Label>Nom / Dénomination *</Label><Input value={franchiseData.franchiseNom} onChange={(e) => setFranchiseData({...franchiseData, franchiseNom: e.target.value})} /></div>
+                      <div><Label>Forme juridique</Label><Input value={franchiseData.franchiseFormeJuridique} onChange={(e) => setFranchiseData({...franchiseData, franchiseFormeJuridique: e.target.value})} /></div>
+                      <div className="md:col-span-2"><Label>Adresse complète *</Label><Input value={franchiseData.franchiseAdresse} onChange={(e) => setFranchiseData({...franchiseData, franchiseAdresse: e.target.value})} /></div>
+                      <div><Label>RCS / SIREN</Label><Input value={franchiseData.franchiseRCS} onChange={(e) => setFranchiseData({...franchiseData, franchiseRCS: e.target.value})} /></div>
+                      <div><Label>Activité prévue</Label><Input value={franchiseData.franchiseActivitePrevue} onChange={(e) => setFranchiseData({...franchiseData, franchiseActivitePrevue: e.target.value})} placeholder="Ex: Restauration rapide..." /></div>
+                      <div><Label>Représentant légal</Label><Input value={franchiseData.franchiseRepresentant} onChange={(e) => setFranchiseData({...franchiseData, franchiseRepresentant: e.target.value})} /></div>
+                      <div><Label>Situation financière (optionnel)</Label><Input value={franchiseData.franchiseSituationFinanciere} onChange={(e) => setFranchiseData({...franchiseData, franchiseSituationFinanciere: e.target.value})} placeholder="Capitaux disponibles..." /></div>
+                      <div><Label>Email *</Label><Input type="email" value={franchiseData.franchiseEmail} onChange={(e) => setFranchiseData({...franchiseData, franchiseEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone</Label><Input value={franchiseData.franchiseTelephone} onChange={(e) => setFranchiseData({...franchiseData, franchiseTelephone: e.target.value})} /></div>
+                    </div>
+                    
+                    <div className="space-y-3 mt-4">
+                      <h6 className="text-sm font-semibold text-blue-600">Pièces justificatives franchisé</h6>
+                      <SingleFileUpload
+                        label="Justificatifs d'identité"
+                        files={franchiseIdentiteFiles}
+                        onFilesChange={setFranchiseIdentiteFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Extrait Kbis franchisé"
+                        files={franchiseKbisFiles}
+                        onFilesChange={setFranchiseKbisFiles}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Business plan"
+                        files={franchiseBusinessPlanFiles}
+                        onFilesChange={setFranchiseBusinessPlanFiles}
+                        accept=".pdf,.doc,.docx,.xls,.xlsx"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Preuve capacité financière"
+                        files={franchiseCapaciteFinanciereFiles}
+                        onFilesChange={setFranchiseCapaciteFinanciereFiles}
+                        accept=".pdf"
+                        role="avocat"
+                      />
+                      <SingleFileUpload
+                        label="Attestation RC Professionnelle"
+                        files={franchiseRCProFiles}
+                        onFilesChange={setFranchiseRCProFiles}
+                        accept=".pdf"
+                        role="avocat"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. DOCUMENT D'INFORMATION PRÉCONTRACTUELLE (DIP) */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Document d'Information Précontractuelle (DIP)</h4>
+                  <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 text-sm">
+                    <p className="font-semibold text-amber-800">⚖️ Obligation légale (Loi Doubin)</p>
+                    <p className="text-amber-700 mt-1">Le DIP doit être remis au moins 20 jours avant la signature du contrat ou le versement de toute somme.</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Date de remise du DIP *</Label><Input type="date" value={franchiseData.dipDateRemise} onChange={(e) => setFranchiseData({...franchiseData, dipDateRemise: e.target.value})} /></div>
+                    <div><Label>Mode de remise</Label><Select value={franchiseData.dipModeRemise} onValueChange={(val) => setFranchiseData({...franchiseData, dipModeRemise: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="remise_main_propre">Remise en main propre</SelectItem><SelectItem value="recommande_ar">Recommandé AR</SelectItem><SelectItem value="email_accuse">Email avec accusé réception</SelectItem></SelectContent></Select></div>
+                    <div className="md:col-span-2"><Label>Observations sur le DIP</Label><Textarea value={franchiseData.dipObservations} onChange={(e) => setFranchiseData({...franchiseData, dipObservations: e.target.value})} placeholder="Remarques éventuelles..." className="min-h-[60px]" /></div>
+                  </div>
+                  
+                  <SingleFileUpload
+                    label="Document d'Information Précontractuelle (DIP) *"
+                    files={franchiseDIPFiles}
+                    onFilesChange={setFranchiseDIPFiles}
+                    accept=".pdf"
+                    required
+                    role="avocat"
+                  />
+                </div>
+
+                {/* 3. OBJET DU CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Objet du contrat</h4>
+                  
+                  <div><Label>Concept de franchise *</Label><Textarea value={franchiseData.objetConcept} onChange={(e) => setFranchiseData({...franchiseData, objetConcept: e.target.value})} placeholder="Description détaillée du concept franchisé..." className="min-h-[100px]" /></div>
+                  
+                  <div><Label>Signes distinctifs (marque, enseigne)</Label><Textarea value={franchiseData.objetSignesDistinctifs} onChange={(e) => setFranchiseData({...franchiseData, objetSignesDistinctifs: e.target.value})} placeholder="Ex: Marque 'XYZ' n° INPI 123456..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Savoir-faire transmis *</Label><Textarea value={franchiseData.objetSavoirFaire} onChange={(e) => setFranchiseData({...franchiseData, objetSavoirFaire: e.target.value})} placeholder="Description du savoir-faire (méthodes, techniques, expérience...)" className="min-h-[100px]" /></div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Caractère secret du savoir-faire</Label><RadioGroup value={franchiseData.objetCaractereSecret} onValueChange={(val) => setFranchiseData({...franchiseData, objetCaractereSecret: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="oui" />Oui</label><label className="flex items-center gap-2"><RadioGroupItem value="non" />Non</label><label className="flex items-center gap-2"><RadioGroupItem value="partiel" />Partiel</label></div></RadioGroup></div>
+                    <div><Label>Caractère substantiel</Label><RadioGroup value={franchiseData.objetCaractereSubstantiel} onValueChange={(val) => setFranchiseData({...franchiseData, objetCaractereSubstantiel: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="oui" />Oui</label><label className="flex items-center gap-2"><RadioGroupItem value="non" />Non</label></div></RadioGroup></div>
+                  </div>
+                  
+                  <div><Label>Formation initiale prévue</Label><Input value={franchiseData.objetFormationInitiale} onChange={(e) => setFranchiseData({...franchiseData, objetFormationInitiale: e.target.value})} placeholder="Ex: 3 semaines au siège + 1 semaine sur site" /></div>
+                  
+                  <div><Label>Assistance continue prévue</Label><Textarea value={franchiseData.objetAssistanceContinue} onChange={(e) => setFranchiseData({...franchiseData, objetAssistanceContinue: e.target.value})} placeholder="Description de l'assistance (technique, commerciale, marketing...)" className="min-h-[80px]" /></div>
+                </div>
+
+                {/* 4. DROITS ACCORDÉS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Droits accordés au franchisé</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Type de licence *</Label><Select value={franchiseData.droitsTypeLicence} onValueChange={(val) => setFranchiseData({...franchiseData, droitsTypeLicence: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="exclusive">Exclusive</SelectItem><SelectItem value="semi_exclusive">Semi-exclusive</SelectItem><SelectItem value="non_exclusive">Non exclusive</SelectItem></SelectContent></Select></div>
+                    
+                    <div><Label>Territoire attribué *</Label><Input value={franchiseData.droitsTerritoire} onChange={(e) => setFranchiseData({...franchiseData, droitsTerritoire: e.target.value})} placeholder="Ex: Ville de Paris, département 75..." /></div>
+                  </div>
+                  
+                  <div><Label>Zone d'exclusivité (le cas échéant)</Label><Textarea value={franchiseData.droitsZoneExclusivite} onChange={(e) => setFranchiseData({...franchiseData, droitsZoneExclusivite: e.target.value})} placeholder="Définition précise des limites géographiques..." className="min-h-[60px]" /></div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Protection territoriale</Label><RadioGroup value={franchiseData.droitsProtectionTerritoriale} onValueChange={(val) => setFranchiseData({...franchiseData, droitsProtectionTerritoriale: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="oui" />Oui</label><label className="flex items-center gap-2"><RadioGroupItem value="non" />Non</label></div></RadioGroup></div>
+                    
+                    <div><Label>Clause d'approvisionnement exclusif</Label><RadioGroup value={franchiseData.droitsApproExclusif} onValueChange={(val) => setFranchiseData({...franchiseData, droitsApproExclusif: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="oui" />Oui</label><label className="flex items-center gap-2"><RadioGroupItem value="non" />Non</label><label className="flex items-center gap-2"><RadioGroupItem value="partiel" />Partiel</label></div></RadioGroup></div>
+                  </div>
+                  
+                  <div><Label>Droits sur internet / e-commerce</Label><Textarea value={franchiseData.droitsInternet} onChange={(e) => setFranchiseData({...franchiseData, droitsInternet: e.target.value})} placeholder="Définir si le franchisé peut vendre en ligne, dans quelle zone..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Droit de transmission / sous-franchise</Label><Select value={franchiseData.droitsTransmission} onValueChange={(val) => setFranchiseData({...franchiseData, droitsTransmission: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="interdit">Interdit</SelectItem><SelectItem value="accord_prealable">Avec accord préalable</SelectItem><SelectItem value="libre">Libre</SelectItem></SelectContent></Select></div>
+                  
+                  <div><Label>Autres droits spécifiques</Label><Textarea value={franchiseData.droitsAutres} onChange={(e) => setFranchiseData({...franchiseData, droitsAutres: e.target.value})} placeholder="Droits particuliers, options..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 5. OBLIGATIONS DU FRANCHISEUR */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Obligations du franchiseur</h4>
+                  
+                  <div><Label>Formation initiale *</Label><Textarea value={franchiseData.obligFranchiseurFormationInitiale} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseurFormationInitiale: e.target.value})} placeholder="Détail du programme de formation (durée, contenu, lieu...)" className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Formation continue</Label><Textarea value={franchiseData.obligFranchiseurFormationContinue} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseurFormationContinue: e.target.value})} placeholder="Sessions de mise à jour, nouvelles techniques..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Assistance technique *</Label><Textarea value={franchiseData.obligFranchiseurAssistanceTechnique} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseurAssistanceTechnique: e.target.value})} placeholder="Hotline, visites sur site, fréquence..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Assistance commerciale</Label><Textarea value={franchiseData.obligFranchiseurAssistanceCommerciale} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseurAssistanceCommerciale: e.target.value})} placeholder="Aide au lancement, outils marketing..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Actions publicitaires nationales</Label><Textarea value={franchiseData.obligFranchiseurPubliciteNationale} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseurPubliciteNationale: e.target.value})} placeholder="Campagnes prévues, budget, médias..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Recherche & développement</Label><Textarea value={franchiseData.obligFranchiseurRD} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseurRD: e.target.value})} placeholder="Innovation, nouveaux produits/services..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Manuel opératoire</Label><RadioGroup value={franchiseData.obligFranchiseurManuelOperatoire} onValueChange={(val) => setFranchiseData({...franchiseData, obligFranchiseurManuelOperatoire: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="fourni" />Fourni</label><label className="flex items-center gap-2"><RadioGroupItem value="en_cours" />En cours d'élaboration</label></div></RadioGroup></div>
+                  
+                  <div><Label>Autres obligations du franchiseur</Label><Textarea value={franchiseData.obligFranchiseurAutres} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseurAutres: e.target.value})} placeholder="Obligations spécifiques..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 6. OBLIGATIONS DU FRANCHISÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Obligations du franchisé</h4>
+                  
+                  <div><Label>Respect du concept *</Label><Textarea value={franchiseData.obligFranchiseRespectConcept} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseRespectConcept: e.target.value})} placeholder="Appliquer le concept, les méthodes, l'image de marque..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Utilisation des signes distinctifs</Label><Textarea value={franchiseData.obligFranchiseSignesDistinctifs} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseSignesDistinctifs: e.target.value})} placeholder="Modalités d'usage de la marque, enseigne, logos..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Respect des normes de qualité *</Label><Textarea value={franchiseData.obligFranchiseNormesQualite} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseNormesQualite: e.target.value})} placeholder="Standards de produits, services, accueil client..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Approvisionnement</Label><Textarea value={franchiseData.obligFranchiseApprovisionnement} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseApprovisionnement: e.target.value})} placeholder="Fournisseurs imposés, centrales d'achat..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Participation aux actions marketing</Label><Textarea value={franchiseData.obligFranchiseMarketing} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseMarketing: e.target.value})} placeholder="Campagnes locales, promotions, événements..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Communication d'informations *</Label><Textarea value={franchiseData.obligFranchiseCommunicationInfos} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseCommunicationInfos: e.target.value})} placeholder="Rapports mensuels, CA, stocks, incidents..." className="min-h-[80px]" /></div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Fréquence des rapports</Label><Select value={franchiseData.obligFranchiseFrequenceRapports} onValueChange={(val) => setFranchiseData({...franchiseData, obligFranchiseFrequenceRapports: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="mensuelle">Mensuelle</SelectItem><SelectItem value="trimestrielle">Trimestrielle</SelectItem><SelectItem value="annuelle">Annuelle</SelectItem></SelectContent></Select></div>
+                    
+                    <div><Label>Contrôles / audits</Label><RadioGroup value={franchiseData.obligFranchiseControles} onValueChange={(val) => setFranchiseData({...franchiseData, obligFranchiseControles: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="annonces" />Annoncés</label><label className="flex items-center gap-2"><RadioGroupItem value="surprises" />Surprises</label><label className="flex items-center gap-2"><RadioGroupItem value="mixte" />Mixte</label></div></RadioGroup></div>
+                  </div>
+                  
+                  <div><Label>Formation du personnel</Label><Textarea value={franchiseData.obligFranchiseFormationPersonnel} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseFormationPersonnel: e.target.value})} placeholder="Obligation de former le personnel aux standards du réseau..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Autres obligations du franchisé</Label><Textarea value={franchiseData.obligFranchiseAutres} onChange={(e) => setFranchiseData({...franchiseData, obligFranchiseAutres: e.target.value})} placeholder="Obligations spécifiques..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 7. REDEVANCES - SECTION CENTRALE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Redevances (élément central du contrat)</h4>
+                  
+                  <div className="bg-blue-100/50 border border-blue-300 rounded-lg p-3 text-sm">
+                    <p className="font-semibold text-blue-800">💶 Structure financière du contrat</p>
+                    <p className="text-blue-700 mt-1">Les redevances constituent la contrepartie des droits et de l'assistance fournis par le franchiseur.</p>
+                  </div>
+                  
+                  {/* Droit d'entrée */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">💰 Droit d'entrée (redevance initiale forfaitaire)</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Montant du droit d'entrée HT *</Label><Input value={franchiseData.redevanceDroitEntree} onChange={(e) => setFranchiseData({...franchiseData, redevanceDroitEntree: e.target.value})} placeholder="Ex: 30 000 €" /></div>
+                      <div><Label>Conditions de paiement</Label><Select value={franchiseData.redevanceDroitEntreeConditions} onValueChange={(val) => setFranchiseData({...franchiseData, redevanceDroitEntreeConditions: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="comptant_signature">Comptant à la signature</SelectItem><SelectItem value="echelonne">Paiement échelonné</SelectItem><SelectItem value="avant_formation">Avant la formation initiale</SelectItem></SelectContent></Select></div>
+                      <div className="md:col-span-2"><Label>Ce que couvre le droit d'entrée</Label><Textarea value={franchiseData.redevanceDroitEntreeCouvre} onChange={(e) => setFranchiseData({...franchiseData, redevanceDroitEntreeCouvre: e.target.value})} placeholder="Ex: Formation initiale, assistance au lancement, manuel opératoire..." className="min-h-[60px]" /></div>
+                    </div>
+                  </div>
+                  
+                  {/* Redevances périodiques */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">🔄 Redevances périodiques (royalties)</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Type de redevance *</Label><Select value={franchiseData.redevancePeriodiqueType} onValueChange={(val) => setFranchiseData({...franchiseData, redevancePeriodiqueType: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pourcentage_ca">% du CA HT</SelectItem><SelectItem value="forfaitaire">Forfaitaire</SelectItem><SelectItem value="mixte">Mixte</SelectItem></SelectContent></Select></div>
+                      
+                      <div><Label>Montant / Pourcentage *</Label><Input value={franchiseData.redevancePeriodiqueMontant} onChange={(e) => setFranchiseData({...franchiseData, redevancePeriodiqueMontant: e.target.value})} placeholder="Ex: 5% ou 1000 € / mois" /></div>
+                      
+                      <div><Label>Fréquence de paiement</Label><Select value={franchiseData.redevancePeriodiqueFrequence} onValueChange={(val) => setFranchiseData({...franchiseData, redevancePeriodiqueFrequence: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="mensuelle">Mensuelle</SelectItem><SelectItem value="trimestrielle">Trimestrielle</SelectItem><SelectItem value="annuelle">Annuelle</SelectItem></SelectContent></Select></div>
+                      
+                      <div><Label>Minimum garanti (le cas échéant)</Label><Input value={franchiseData.redevancePeriodiqueMinimum} onChange={(e) => setFranchiseData({...franchiseData, redevancePeriodiqueMinimum: e.target.value})} placeholder="Ex: 500 € minimum même si CA faible" /></div>
+                      
+                      <div className="md:col-span-2"><Label>Base de calcul (si % du CA)</Label><Textarea value={franchiseData.redevancePeriodiqueBaseCalcul} onChange={(e) => setFranchiseData({...franchiseData, redevancePeriodiqueBaseCalcul: e.target.value})} placeholder="Ex: CA HT, toutes activités confondues..." className="min-h-[60px]" /></div>
+                    </div>
+                  </div>
+                  
+                  {/* Redevances marketing */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <h5 className="font-medium text-blue-600">📢 Redevance marketing / publicité</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div><Label>Redevance marketing</Label><Input value={franchiseData.redevanceMarketing} onChange={(e) => setFranchiseData({...franchiseData, redevanceMarketing: e.target.value})} placeholder="Ex: 2% du CA HT" /></div>
+                      <div><Label>Destination des fonds</Label><Input value={franchiseData.redevanceMarketingDestination} onChange={(e) => setFranchiseData({...franchiseData, redevanceMarketingDestination: e.target.value})} placeholder="Ex: Fonds commun publicitaire" /></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 8. CONDITIONS FINANCIÈRES ANNEXES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Conditions financières annexes</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Investissement initial estimé</Label><Input value={franchiseData.conditionsInvestissementInitial} onChange={(e) => setFranchiseData({...franchiseData, conditionsInvestissementInitial: e.target.value})} placeholder="Ex: 150 000 € (travaux, stock, matériel...)" /></div>
+                    
+                    <div><Label>Cautionnement / garantie bancaire</Label><Input value={franchiseData.conditionsCautionnement} onChange={(e) => setFranchiseData({...franchiseData, conditionsCautionnement: e.target.value})} placeholder="Ex: 20 000 €" /></div>
+                  </div>
+                  
+                  <div><Label>Conditions de révision des redevances</Label><Textarea value={franchiseData.conditionsRevision} onChange={(e) => setFranchiseData({...franchiseData, conditionsRevision: e.target.value})} placeholder="Indexation, révision annuelle, conditions..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Pénalités de retard</Label><Textarea value={franchiseData.conditionsPenalites} onChange={(e) => setFranchiseData({...franchiseData, conditionsPenalites: e.target.value})} placeholder="Ex: Intérêts de retard à 10% + indemnité forfaitaire..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Autres conditions financières</Label><Textarea value={franchiseData.conditionsAutres} onChange={(e) => setFranchiseData({...franchiseData, conditionsAutres: e.target.value})} placeholder="Frais divers, contributions..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 9. LOCAL COMMERCIAL */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Local commercial et aménagement</h4>
+                  
+                  <div><Label>Adresse du local</Label><Input value={franchiseData.localAdresse} onChange={(e) => setFranchiseData({...franchiseData, localAdresse: e.target.value})} placeholder="Adresse complète du point de vente..." /></div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Superficie (m²)</Label><Input type="number" value={franchiseData.localSuperficie} onChange={(e) => setFranchiseData({...franchiseData, localSuperficie: e.target.value})} placeholder="Ex: 120" /></div>
+                    <div><Label>Type de bail</Label><Select value={franchiseData.localTypeBail} onValueChange={(val) => setFranchiseData({...franchiseData, localTypeBail: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="commercial_3_6_9">Commercial 3-6-9</SelectItem><SelectItem value="precaire">Précaire</SelectItem><SelectItem value="propriete">Propriété</SelectItem></SelectContent></Select></div>
+                  </div>
+                  
+                  <div><Label>Approbation du local par franchiseur</Label><RadioGroup value={franchiseData.localApprobationFranchiseur} onValueChange={(val) => setFranchiseData({...franchiseData, localApprobationFranchiseur: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="obligatoire" />Obligatoire</label><label className="flex items-center gap-2"><RadioGroupItem value="conseille" />Conseillée</label><label className="flex items-center gap-2"><RadioGroupItem value="non_requise" />Non requise</label></div></RadioGroup></div>
+                  
+                  <div><Label>Normes d'aménagement *</Label><Textarea value={franchiseData.localNormesAmenagement} onChange={(e) => setFranchiseData({...franchiseData, localNormesAmenagement: e.target.value})} placeholder="Standards d'aménagement, charte architecturale, signalétique..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Travaux à la charge du franchisé</Label><Textarea value={franchiseData.localTravauxCharge} onChange={(e) => setFranchiseData({...franchiseData, localTravauxCharge: e.target.value})} placeholder="Aménagement, mise aux normes, décoration..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 10. MARKETING & COMMUNICATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔟 Marketing et communication</h4>
+                  
+                  <div><Label>Actions marketing nationales *</Label><Textarea value={franchiseData.marketingActionsNationales} onChange={(e) => setFranchiseData({...franchiseData, marketingActionsNationales: e.target.value})} placeholder="Campagnes TV, radio, digitales prévues par le franchiseur..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Actions marketing locales</Label><Textarea value={franchiseData.marketingActionsLocales} onChange={(e) => setFranchiseData({...franchiseData, marketingActionsLocales: e.target.value})} placeholder="Liberté ou obligations du franchisé en matière de marketing local..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Supports fournis</Label><Textarea value={franchiseData.marketingSupports} onChange={(e) => setFranchiseData({...franchiseData, marketingSupports: e.target.value})} placeholder="PLV, affiches, flyers, réseaux sociaux..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Contrôle de la communication</Label><RadioGroup value={franchiseData.marketingControle} onValueChange={(val) => setFranchiseData({...franchiseData, marketingControle: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="validation_prealable" />Validation préalable</label><label className="flex items-center gap-2"><RadioGroupItem value="respect_charte" />Respect de la charte</label><label className="flex items-center gap-2"><RadioGroupItem value="libre" />Libre</label></div></RadioGroup></div>
+                  
+                  <div><Label>Présence digitale (site web, réseaux sociaux)</Label><Textarea value={franchiseData.marketingDigital} onChange={(e) => setFranchiseData({...franchiseData, marketingDigital: e.target.value})} placeholder="Site propre autorisé ? Page franchiseur ? Présence réseaux sociaux..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 11. SAVOIR-FAIRE & MANUEL OPÉRATOIRE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Savoir-faire et manuel opératoire</h4>
+                  
+                  <div><Label>Description détaillée du savoir-faire *</Label><Textarea value={franchiseData.savoirFaireDescription} onChange={(e) => setFranchiseData({...franchiseData, savoirFaireDescription: e.target.value})} placeholder="Techniques, procédés, méthodes commerciales..." className="min-h-[100px]" /></div>
+                  
+                  <div><Label>Contenu du manuel opératoire *</Label><Textarea value={franchiseData.savoirFaireManuel} onChange={(e) => setFranchiseData({...franchiseData, savoirFaireManuel: e.target.value})} placeholder="Procédures, process, standards..." className="min-h-[80px]" /></div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Mise à jour du manuel</Label><Select value={franchiseData.savoirFaireMiseAJour} onValueChange={(val) => setFranchiseData({...franchiseData, savoirFaireMiseAJour: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="annuelle">Annuelle</SelectItem><SelectItem value="semestrielle">Semestrielle</SelectItem><SelectItem value="au_besoin">Au besoin</SelectItem></SelectContent></Select></div>
+                    
+                    <div><Label>Support du manuel</Label><Select value={franchiseData.savoirFaireSupport} onValueChange={(val) => setFranchiseData({...franchiseData, savoirFaireSupport: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="papier">Papier</SelectItem><SelectItem value="numerique">Numérique</SelectItem><SelectItem value="plateforme">Plateforme en ligne</SelectItem></SelectContent></Select></div>
+                  </div>
+                  
+                  <SingleFileUpload
+                    label="Manuel opératoire"
+                    files={franchiseManuelOperatoireFiles}
+                    onFilesChange={setFranchiseManuelOperatoireFiles}
+                    accept=".pdf,.doc,.docx"
+                    role="avocat"
+                  />
+                </div>
+
+                {/* 12. PROPRIÉTÉ INTELLECTUELLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Propriété intellectuelle</h4>
+                  
+                  <div><Label>Marques, logos, signes distinctifs *</Label><Textarea value={franchiseData.piMarques} onChange={(e) => setFranchiseData({...franchiseData, piMarques: e.target.value})} placeholder="Liste des marques déposées, n° INPI..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Droits d'utilisation accordés *</Label><Textarea value={franchiseData.piDroitsUtilisation} onChange={(e) => setFranchiseData({...franchiseData, piDroitsUtilisation: e.target.value})} placeholder="Licence d'utilisation, limites, conditions..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Protection des créations du franchisé</Label><Textarea value={franchiseData.piProtectionCreations} onChange={(e) => setFranchiseData({...franchiseData, piProtectionCreations: e.target.value})} placeholder="Qui détient la PI sur les créations réalisées durant l'exploitation ?" className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Droit de suite (après contrat)</Label><Textarea value={franchiseData.piDroitSuite} onChange={(e) => setFranchiseData({...franchiseData, piDroitSuite: e.target.value})} placeholder="Utilisation de la marque après la fin du contrat..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Sanctions en cas d'usage non autorisé</Label><Textarea value={franchiseData.piSanctions} onChange={(e) => setFranchiseData({...franchiseData, piSanctions: e.target.value})} placeholder="Résiliation, dommages et intérêts..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 13. CONFIDENTIALITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Confidentialité</h4>
+                  
+                  <div><Label>Informations confidentielles *</Label><Textarea value={franchiseData.confidentialiteInformations} onChange={(e) => setFranchiseData({...franchiseData, confidentialiteInformations: e.target.value})} placeholder="Savoir-faire, données commerciales, fichiers clients, fournisseurs..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Durée de l'obligation de confidentialité *</Label><Select value={franchiseData.confidentialiteDuree} onValueChange={(val) => setFranchiseData({...franchiseData, confidentialiteDuree: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="duree_contrat">Pendant la durée du contrat uniquement</SelectItem><SelectItem value="duree_contrat_plus_2">Pendant + 2 ans après</SelectItem><SelectItem value="duree_contrat_plus_5">Pendant + 5 ans après</SelectItem><SelectItem value="perpetuelle">Perpétuelle</SelectItem></SelectContent></Select></div>
+                  
+                  <div><Label>Sanctions en cas de violation *</Label><Textarea value={franchiseData.confidentialiteSanctions} onChange={(e) => setFranchiseData({...franchiseData, confidentialiteSanctions: e.target.value})} placeholder="Résiliation, dommages et intérêts..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Exceptions à la confidentialité</Label><Textarea value={franchiseData.confidentialiteExceptions} onChange={(e) => setFranchiseData({...franchiseData, confidentialiteExceptions: e.target.value})} placeholder="Informations déjà publiques, obligations légales..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 14. NON-CONCURRENCE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Non-concurrence</h4>
+                  
+                  <div><Label>Clause de non-concurrence pendant le contrat *</Label><Textarea value={franchiseData.nonConcurrencePendant} onChange={(e) => setFranchiseData({...franchiseData, nonConcurrencePendant: e.target.value})} placeholder="Interdiction d'exploiter un concept concurrent, périmètre..." className="min-h-[80px]" /></div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Clause post-contractuelle</Label><RadioGroup value={franchiseData.nonConcurrencePost} onValueChange={(val) => setFranchiseData({...franchiseData, nonConcurrencePost: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="oui" />Oui</label><label className="flex items-center gap-2"><RadioGroupItem value="non" />Non</label></div></RadioGroup></div>
+                    
+                    <div><Label>Durée post-contractuelle</Label><Select value={franchiseData.nonConcurrenceDureePost} onValueChange={(val) => setFranchiseData({...franchiseData, nonConcurrenceDureePost: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="1_an">1 an</SelectItem><SelectItem value="2_ans">2 ans</SelectItem><SelectItem value="3_ans">3 ans</SelectItem></SelectContent></Select></div>
+                  </div>
+                  
+                  <div><Label>Zone géographique de non-concurrence post-contrat</Label><Input value={franchiseData.nonConcurrenceZone} onChange={(e) => setFranchiseData({...franchiseData, nonConcurrenceZone: e.target.value})} placeholder="Ex: Rayon de 50 km autour du local..." /></div>
+                  
+                  <div><Label>Contrepartie financière (le cas échéant)</Label><Input value={franchiseData.nonConcurrenceContrepartie} onChange={(e) => setFranchiseData({...franchiseData, nonConcurrenceContrepartie: e.target.value})} placeholder="Indemnité versée au franchisé en échange de la clause..." /></div>
+                </div>
+
+                {/* 15. RESPONSABILITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Responsabilité</h4>
+                  
+                  <div><Label>Responsabilité du franchiseur</Label><Textarea value={franchiseData.responsabiliteFranchiseur} onChange={(e) => setFranchiseData({...franchiseData, responsabiliteFranchiseur: e.target.value})} placeholder="Limites, exclusions (ex: actes du franchisé)..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Responsabilité du franchisé *</Label><Textarea value={franchiseData.responsabiliteFranchise} onChange={(e) => setFranchiseData({...franchiseData, responsabiliteFranchise: e.target.value})} placeholder="Engagement du franchisé comme entrepreneur indépendant..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Assurance responsabilité civile professionnelle *</Label><RadioGroup value={franchiseData.responsabiliteAssurance} onValueChange={(val) => setFranchiseData({...franchiseData, responsabiliteAssurance: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="obligatoire" />Obligatoire</label><label className="flex items-center gap-2"><RadioGroupItem value="recommandee" />Recommandée</label></div></RadioGroup></div>
+                  
+                  <div><Label>Autres dispositions sur la responsabilité</Label><Textarea value={franchiseData.responsabiliteAutres} onChange={(e) => setFranchiseData({...franchiseData, responsabiliteAutres: e.target.value})} placeholder="Clauses limitatives, responsabilité solidaire..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 16. DURÉE DU CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Durée du contrat</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Date de prise d'effet *</Label><Input type="date" value={franchiseData.dureeDateDebut} onChange={(e) => setFranchiseData({...franchiseData, dureeDateDebut: e.target.value})} /></div>
+                    
+                    <div><Label>Durée initiale *</Label><Input value={franchiseData.dureeDureeInitiale} onChange={(e) => setFranchiseData({...franchiseData, dureeDureeInitiale: e.target.value})} placeholder="Ex: 5 ans, 7 ans..." /></div>
+                  </div>
+                  
+                  <div><Label>Renouvellement *</Label><RadioGroup value={franchiseData.dureeRenouvellement} onValueChange={(val) => setFranchiseData({...franchiseData, dureeRenouvellement: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="tacite" />Tacite (reconduction automatique)</label><label className="flex items-center gap-2"><RadioGroupItem value="expres" />Exprès (accord des parties)</label><label className="flex items-center gap-2"><RadioGroupItem value="non_renouvelable" />Non renouvelable</label></div></RadioGroup></div>
+                </div>
+
+                {/* 17. RÉSILIATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Résiliation et rupture</h4>
+                  
+                  <div><Label>Résiliation pour faute grave *</Label><Textarea value={franchiseData.resiliationFauteGrave} onChange={(e) => setFranchiseData({...franchiseData, resiliationFauteGrave: e.target.value})} placeholder="Cas de résiliation immédiate : non-paiement, manquement grave..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Résiliation pour manquement non grave</Label><Textarea value={franchiseData.resiliationManquement} onChange={(e) => setFranchiseData({...franchiseData, resiliationManquement: e.target.value})} placeholder="Mise en demeure, délai de régularisation..." className="min-h-[60px]" /></div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div><Label>Résiliation amiable</Label><RadioGroup value={franchiseData.resiliationAmiable} onValueChange={(val) => setFranchiseData({...franchiseData, resiliationAmiable: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="possible" />Possible</label><label className="flex items-center gap-2"><RadioGroupItem value="conditions" />Sous conditions</label><label className="flex items-center gap-2"><RadioGroupItem value="non" />Non prévue</label></div></RadioGroup></div>
+                    
+                    <div><Label>Préavis de résiliation</Label><Input value={franchiseData.resiliationPreavis} onChange={(e) => setFranchiseData({...franchiseData, resiliationPreavis: e.target.value})} placeholder="Ex: 6 mois, 1 an..." /></div>
+                  </div>
+                  
+                  <div><Label>Effets de la résiliation *</Label><Textarea value={franchiseData.resiliationEffets} onChange={(e) => setFranchiseData({...franchiseData, resiliationEffets: e.target.value})} placeholder="Cessation immédiate usage marque, restitution manuel, désaffiliation..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Indemnités en cas de résiliation</Label><Textarea value={franchiseData.resiliationIndemnites} onChange={(e) => setFranchiseData({...franchiseData, resiliationIndemnites: e.target.value})} placeholder="Dommages et intérêts, pénalités..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Sort des stocks et matériel</Label><Textarea value={franchiseData.resiliationStocksMateriel} onChange={(e) => setFranchiseData({...franchiseData, resiliationStocksMateriel: e.target.value})} placeholder="Rachat par franchiseur ? Écoulement des stocks ?" className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Désidentification *</Label><Textarea value={franchiseData.resiliationDesidentification} onChange={(e) => setFranchiseData({...franchiseData, resiliationDesidentification: e.target.value})} placeholder="Obligation de retirer enseigne, logos, tout signe distinctif..." className="min-h-[60px]" /></div>
+                  
+                  <div><Label>Autres conditions de résiliation</Label><Textarea value={franchiseData.resiliationAutres} onChange={(e) => setFranchiseData({...franchiseData, resiliationAutres: e.target.value})} placeholder="Conditions spécifiques..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 18. VENTE / CESSION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Cession du contrat</h4>
+                  
+                  <div><Label>Possibilité de cession *</Label><RadioGroup value={franchiseData.cessionPossibilite} onValueChange={(val) => setFranchiseData({...franchiseData, cessionPossibilite: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="accord_franchiseur" />Avec accord du franchiseur</label><label className="flex items-center gap-2"><RadioGroupItem value="libre" />Libre</label><label className="flex items-center gap-2"><RadioGroupItem value="interdite" />Interdite</label></div></RadioGroup></div>
+                  
+                  <div><Label>Procédure d'agrément du cessionnaire</Label><Textarea value={franchiseData.cessionProcedure} onChange={(e) => setFranchiseData({...franchiseData, cessionProcedure: e.target.value})} placeholder="Dossier à fournir, entretien, formation préalable..." className="min-h-[80px]" /></div>
+                  
+                  <div><Label>Droit de préemption du franchiseur</Label><RadioGroup value={franchiseData.cessionPreemption} onValueChange={(val) => setFranchiseData({...franchiseData, cessionPreemption: val})}><div className="flex gap-4"><label className="flex items-center gap-2"><RadioGroupItem value="oui" />Oui</label><label className="flex items-center gap-2"><RadioGroupItem value="non" />Non</label></div></RadioGroup></div>
+                  
+                  <div><Label>Frais de cession</Label><Input value={franchiseData.cessionFrais} onChange={(e) => setFranchiseData({...franchiseData, cessionFrais: e.target.value})} placeholder="Ex: 5000 € de frais d'agrément..." /></div>
+                </div>
+
+                {/* 19. DROIT APPLICABLE & LITIGES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣9️⃣ Droit applicable et litiges</h4>
+                  
+                  <div><Label>Droit applicable *</Label><Select value={franchiseData.droitApplicable} onValueChange={(val) => setFranchiseData({...franchiseData, droitApplicable: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="francais">Droit français</SelectItem><SelectItem value="autre">Autre droit</SelectItem></SelectContent></Select></div>
+                  
+                  <div><Label>Mode de résolution des litiges *</Label><Select value={franchiseData.droitModeResolution} onValueChange={(val) => setFranchiseData({...franchiseData, droitModeResolution: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="mediation">Médiation préalable</SelectItem><SelectItem value="conciliation">Conciliation</SelectItem><SelectItem value="arbitrage">Arbitrage</SelectItem><SelectItem value="tribunaux">Tribunaux compétents</SelectItem></SelectContent></Select></div>
+                  
+                  <div><Label>Juridiction compétente</Label><Input value={franchiseData.droitJuridiction} onChange={(e) => setFranchiseData({...franchiseData, droitJuridiction: e.target.value})} placeholder="Ex: Tribunal de commerce de Paris" /></div>
+                  
+                  <div><Label>Autres clauses juridiques</Label><Textarea value={franchiseData.droitAutres} onChange={(e) => setFranchiseData({...franchiseData, droitAutres: e.target.value})} placeholder="Clauses diverses..." className="min-h-[60px]" /></div>
+                </div>
+
+                {/* 20. ANNEXES OBLIGATOIRES - 14 UPLOAD ZONES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Annexes obligatoires</h4>
+                  
+                  <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 text-sm mb-4">
+                    <p className="font-semibold text-amber-800">📎 Documents contractuels essentiels</p>
+                    <p className="text-amber-700 mt-1">Ces annexes font partie intégrante du contrat de franchise.</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <SingleFileUpload
+                      label="Charte graphique et identité visuelle"
+                      files={franchiseCharteGraphiqueFiles}
+                      onFilesChange={setFranchiseCharteGraphiqueFiles}
+                      accept=".pdf,.zip"
+                      role="avocat"
+                    />
+                    
+                    <SingleFileUpload
+                      label="Plans et normes d'agencement du local"
+                      files={franchisePlansAgencementFiles}
+                      onFilesChange={setFranchisePlansAgencementFiles}
+                      accept=".pdf,.dwg,.zip"
+                      role="avocat"
+                    />
+                    
+                    <SingleFileUpload
+                      label="Grilles tarifaires et barèmes"
+                      files={franchiseTarifsFiles}
+                      onFilesChange={setFranchiseTarifsFiles}
+                      accept=".pdf,.xls,.xlsx"
+                      role="avocat"
+                    />
+                    
+                    <SingleFileUpload
+                      label="Attestations de formation"
+                      files={franchiseAttestationFormationFiles}
+                      onFilesChange={setFranchiseAttestationFormationFiles}
+                      accept=".pdf"
+                      role="avocat"
+                    />
+                  </div>
+                </div>
+
+                {/* 21. PIÈCES À JOINDRE - RÉSUMÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣1️⃣ Synthèse et validation</h4>
+                  
+                  <div className="bg-blue-100/50 border border-blue-300 rounded-lg p-3 text-sm">
+                    <p className="font-semibold text-blue-800">✅ Pièces à joindre au contrat</p>
+                    <div className="mt-2 space-y-1 text-sm text-blue-700">
+                      <p><strong>Franchiseur :</strong></p>
+                      <ul className="list-disc list-inside ml-2">
+                        <li>Extrait Kbis (moins de 3 mois)</li>
+                        <li>Documents financiers (2 derniers exercices)</li>
+                        <li>Preuve dépôt marque INPI</li>
+                      </ul>
+                      
+                      <p className="mt-3"><strong>Franchisé :</strong></p>
+                      <ul className="list-disc list-inside ml-2">
+                        <li>Justificatifs d'identité</li>
+                        <li>Extrait Kbis franchisé (si société)</li>
+                        <li>Business plan</li>
+                        <li>Preuve capacité financière</li>
+                        <li>Attestation RC Professionnelle</li>
+                        <li>DIP signé et daté</li>
+                      </ul>
+                      
+                      <p className="mt-3"><strong>Annexes :</strong></p>
+                      <ul className="list-disc list-inside ml-2">
+                        <li>DIP complet</li>
+                        <li>Manuel opératoire</li>
+                        <li>Charte graphique</li>
+                        <li>Plans d'agencement</li>
+                        <li>Grilles tarifaires</li>
+                        <li>Attestations de formation</li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4"><Label>Observations finales / clauses particulières</Label><Textarea value={franchiseData.observationsFinales} onChange={(e) => setFranchiseData({...franchiseData, observationsFinales: e.target.value})} placeholder="Remarques, conditions suspensives, clauses spécifiques..." className="min-h-[100px]" /></div>
+                </div>
+                
+                {/* Boutons d'action */}
+                <div className="flex gap-3 pt-4">
+                  <Button type="button" onClick={handleCreateFranchiseContract} disabled={!franchiseData.franchiseurDenomination || !franchiseData.franchiseNom || !franchiseData.redevanceDroitEntree || !franchiseData.objetConcept}>
+                    Créer le contrat de franchise
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setPendingContractType("")}>
+                    Annuler
+                  </Button>
+                </div>
               </div>
             )}
 
