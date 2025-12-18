@@ -52741,7 +52741,7 @@ FIN DE LA CONVENTION
                     <Select value={ndaData.contexteSpecial} onValueChange={(val) => setNdaData({...ndaData, contexteSpecial: val})}>
                       <SelectTrigger><SelectValue placeholder="Aucun" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Aucun</SelectItem>
+                        <SelectItem value="aucun">Aucun</SelectItem>
                         <SelectItem value="M&A">Fusion-acquisition (M&A)</SelectItem>
                         <SelectItem value="technique">NDA technique / informatique</SelectItem>
                         <SelectItem value="RH">NDA RH</SelectItem>
