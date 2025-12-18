@@ -1576,6 +1576,7 @@ export default function Contrats() {
     financeModalitesPaiement: "",
     financeFinancementExterne: "",
     financeRepartitionBenefices: "",
+    financeAbsenceFlux: "non",
     
     // Partage ressources
     ressourcesPersonnel: "",
@@ -1612,10 +1613,13 @@ export default function Contrats() {
     
     // RGPD
     rgpdApplicable: "non",
+    rgpdRoleParties: "",
+    rgpdBaseLegale: "",
     rgpdResponsable: "",
     rgpdSousTraitant: "",
     rgpdFinalites: "",
     rgpdConservation: "",
+    rgpdSortDonneesFin: "",
     rgpdMesuresSecurite: "",
     rgpdTransfertHorsUE: "non",
     rgpdDPA: "non",
@@ -1638,6 +1642,7 @@ export default function Contrats() {
     responsabiliteContractuelle: "",
     responsabiliteRetard: "",
     responsabiliteDommagesIndirects: "exclus",
+    responsabiliteExclusionPertesIndirectes: true,
     responsabilitePlafond: "",
     responsabiliteAssuranceObligatoire: "non",
     responsabiliteAssuranceSpecifique: "",
@@ -1664,6 +1669,17 @@ export default function Contrats() {
     litigesMediation: "oui",
     litigesArbitrage: "non",
     
+    // Clauses générales
+    clauseIndependanceParties: true,
+    clauseNonCreationSociete: true,
+    clauseForceMajeureDefinition: "",
+    clauseForceMajeureSuspension: "",
+    clauseForceMajeureResiliation: "",
+    clauseCessionInterdite: true,
+    clauseCessionConditions: "",
+    clauseNullitePartielle: true,
+    clauseIntegraliteAccord: true,
+    
     // Annexes / Observations
     annexesDescriptions: "",
     observationsFinales: "",
@@ -1689,6 +1705,7 @@ export default function Contrats() {
   const [partenariatPlanMarketingFiles, setPartenariatPlanMarketingFiles] = useState<File[]>([]);
   const [partenariatContratLicenceFiles, setPartenariatContratLicenceFiles] = useState<File[]>([]);
   const [partenariatConditionsFinancieresFiles, setPartenariatConditionsFinancieresFiles] = useState<File[]>([]);
+  const [partenariatProtocoleReversibiliteFiles, setPartenariatProtocoleReversibiliteFiles] = useState<File[]>([]);
   
   // States pour convention d'indivision
   const [indivisairesIdentiteUrls, setIndivisairesIdentiteUrls] = useState<Record<number, string | null>>({}); // URLs des documents identité indivisaires clients
@@ -6620,6 +6637,10 @@ export default function Contrats() {
       for (const file of partenariatConditionsFinancieresFiles) {
         await supabase.storage.from('contrats')
           .upload(`${user.id}/${contrat.id}/annexes/conditions_financieres_${file.name}`, file);
+      }
+      for (const file of partenariatProtocoleReversibiliteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/protocole_reversibilite_${file.name}`, file);
       }
       
       toast.success("Contrat de partenariat créé", { 
@@ -49534,6 +49555,16 @@ FIN DE LA CONVENTION
                     <Label>Répartition des bénéfices économiques</Label>
                     <Textarea value={partenariatData.financeRepartitionBenefices} onChange={(e) => setPartenariatData({...partenariatData, financeRepartitionBenefices: e.target.value})} placeholder="Ex: 60/40, selon apport de chaque partie..." rows={2} />
                   </div>
+                  <div>
+                    <Label>Absence de flux financier entre les parties ?</Label>
+                    <Select value={partenariatData.financeAbsenceFlux} onValueChange={(val) => setPartenariatData({...partenariatData, financeAbsenceFlux: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* 7. PARTAGE DES RESSOURCES */}
@@ -49712,6 +49743,29 @@ FIN DE LA CONVENTION
                   {partenariatData.rgpdApplicable === "oui" && (
                     <>
                       <div>
+                        <Label>Rôle des parties</Label>
+                        <Select value={partenariatData.rgpdRoleParties} onValueChange={(val) => setPartenariatData({...partenariatData, rgpdRoleParties: val})}>
+                          <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="responsable_unique">Responsable de traitement unique</SelectItem>
+                            <SelectItem value="coresponsables">Co-responsables de traitement</SelectItem>
+                            <SelectItem value="responsable_soustraitant">Responsable + Sous-traitant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Base légale du traitement</Label>
+                        <Select value={partenariatData.rgpdBaseLegale} onValueChange={(val) => setPartenariatData({...partenariatData, rgpdBaseLegale: val})}>
+                          <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="consentement">Consentement</SelectItem>
+                            <SelectItem value="contrat">Exécution du contrat</SelectItem>
+                            <SelectItem value="obligation_legale">Obligation légale</SelectItem>
+                            <SelectItem value="interet_legitime">Intérêt légitime</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
                         <Label>Responsable de traitement</Label>
                         <Input value={partenariatData.rgpdResponsable} onChange={(e) => setPartenariatData({...partenariatData, rgpdResponsable: e.target.value})} placeholder="Quelle partie ?" />
                       </div>
@@ -49726,6 +49780,10 @@ FIN DE LA CONVENTION
                       <div>
                         <Label>Durée de conservation</Label>
                         <Input value={partenariatData.rgpdConservation} onChange={(e) => setPartenariatData({...partenariatData, rgpdConservation: e.target.value})} placeholder="Ex: 3 ans après fin du partenariat" />
+                      </div>
+                      <div>
+                        <Label>Sort des données en fin de contrat</Label>
+                        <Textarea value={partenariatData.rgpdSortDonneesFin} onChange={(e) => setPartenariatData({...partenariatData, rgpdSortDonneesFin: e.target.value})} placeholder="Ex: Restitution, suppression, anonymisation..." rows={2} />
                       </div>
                       <div>
                         <Label>Mesures de sécurité</Label>
@@ -49835,6 +49893,18 @@ FIN DE LA CONVENTION
                         <SelectItem value="inclus">Inclus</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 bg-amber-50 rounded border border-amber-200">
+                    <input
+                      type="checkbox"
+                      id="exclusionPertes"
+                      checked={partenariatData.responsabiliteExclusionPertesIndirectes}
+                      onChange={(e) => setPartenariatData({...partenariatData, responsabiliteExclusionPertesIndirectes: e.target.checked})}
+                      className="rounded"
+                    />
+                    <Label htmlFor="exclusionPertes" className="cursor-pointer text-sm">
+                      Exclusion des pertes indirectes, perte de chance, perte de chiffre d'affaires
+                    </Label>
                   </div>
                   <div>
                     <Label>Plafond de responsabilité</Label>
@@ -49979,9 +50049,98 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* 18. ANNEXES POSSIBLES */}
+                {/* 18. CLAUSES GÉNÉRALES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Annexes possibles</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Clauses générales</h4>
+                  <div className="flex items-center gap-2 p-3 bg-white rounded border border-blue-100">
+                    <input
+                      type="checkbox"
+                      id="clauseIndependance"
+                      checked={partenariatData.clauseIndependanceParties}
+                      onChange={(e) => setPartenariatData({...partenariatData, clauseIndependanceParties: e.target.checked})}
+                      className="rounded"
+                    />
+                    <Label htmlFor="clauseIndependance" className="cursor-pointer text-sm">
+                      <strong>Clause d'indépendance des parties</strong> — Les parties agissent en toute indépendance, sans lien de subordination ni pouvoir de représentation
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 bg-white rounded border border-blue-100">
+                    <input
+                      type="checkbox"
+                      id="clauseNonSociete"
+                      checked={partenariatData.clauseNonCreationSociete}
+                      onChange={(e) => setPartenariatData({...partenariatData, clauseNonCreationSociete: e.target.checked})}
+                      className="rounded"
+                    />
+                    <Label htmlFor="clauseNonSociete" className="cursor-pointer text-sm">
+                      <strong>Clause de non-création de société / joint-venture</strong> — Le contrat ne constitue ni société créée de fait, ni GIE, ni joint-venture
+                    </Label>
+                  </div>
+                  <div className="space-y-2 p-3 bg-white rounded border border-blue-100">
+                    <Label className="font-semibold">Clause de force majeure</Label>
+                    <div>
+                      <Label>Définition des événements de force majeure</Label>
+                      <Textarea value={partenariatData.clauseForceMajeureDefinition} onChange={(e) => setPartenariatData({...partenariatData, clauseForceMajeureDefinition: e.target.value})} placeholder="Ex: Guerre, catastrophe naturelle, pandémie, grève générale..." rows={2} />
+                    </div>
+                    <div>
+                      <Label>Suspension des obligations</Label>
+                      <Input value={partenariatData.clauseForceMajeureSuspension} onChange={(e) => setPartenariatData({...partenariatData, clauseForceMajeureSuspension: e.target.value})} placeholder="Ex: Suspension automatique pendant l'événement" />
+                    </div>
+                    <div>
+                      <Label>Résiliation si prolongée</Label>
+                      <Input value={partenariatData.clauseForceMajeureResiliation} onChange={(e) => setPartenariatData({...partenariatData, clauseForceMajeureResiliation: e.target.value})} placeholder="Ex: Au-delà de 3 mois" />
+                    </div>
+                  </div>
+                  <div className="space-y-2 p-3 bg-white rounded border border-blue-100">
+                    <Label className="font-semibold">Clause de cession du contrat</Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="clauseCessionInterdite"
+                        checked={partenariatData.clauseCessionInterdite}
+                        onChange={(e) => setPartenariatData({...partenariatData, clauseCessionInterdite: e.target.checked})}
+                        className="rounded"
+                      />
+                      <Label htmlFor="clauseCessionInterdite" className="cursor-pointer text-sm">
+                        Interdiction de cession sans accord écrit préalable
+                      </Label>
+                    </div>
+                    {!partenariatData.clauseCessionInterdite && (
+                      <div>
+                        <Label>Conditions de cession autorisée</Label>
+                        <Textarea value={partenariatData.clauseCessionConditions} onChange={(e) => setPartenariatData({...partenariatData, clauseCessionConditions: e.target.value})} placeholder="Préciser les conditions..." rows={2} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 p-3 bg-white rounded border border-blue-100">
+                    <input
+                      type="checkbox"
+                      id="clauseNullite"
+                      checked={partenariatData.clauseNullitePartielle}
+                      onChange={(e) => setPartenariatData({...partenariatData, clauseNullitePartielle: e.target.checked})}
+                      className="rounded"
+                    />
+                    <Label htmlFor="clauseNullite" className="cursor-pointer text-sm">
+                      <strong>Clause de nullité partielle</strong> — La nullité d'une clause n'entraîne pas la nullité du contrat
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 bg-white rounded border border-blue-100">
+                    <input
+                      type="checkbox"
+                      id="clauseIntegralite"
+                      checked={partenariatData.clauseIntegraliteAccord}
+                      onChange={(e) => setPartenariatData({...partenariatData, clauseIntegraliteAccord: e.target.checked})}
+                      className="rounded"
+                    />
+                    <Label htmlFor="clauseIntegralite" className="cursor-pointer text-sm">
+                      <strong>Clause d'intégralité de l'accord</strong> — Le contrat prévaut sur tout échange antérieur (emails, discussions...)
+                    </Label>
+                  </div>
+                </div>
+
+                {/* 19. ANNEXES POSSIBLES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣9️⃣ Annexes possibles</h4>
                   <div>
                     <Label>Description des annexes</Label>
                     <Textarea value={partenariatData.annexesDescriptions} onChange={(e) => setPartenariatData({...partenariatData, annexesDescriptions: e.target.value})} placeholder="Lister les annexes prévues : cahier des charges, planning, budget..." rows={3} />
@@ -50040,11 +50199,17 @@ FIN DE LA CONVENTION
                     onFilesChange={setPartenariatConditionsFinancieresFiles}
                     role="avocat"
                   />
+                  <SingleFileUpload
+                    label="Protocole de réversibilité (données / livrables / accès)"
+                    files={partenariatProtocoleReversibiliteFiles}
+                    onFilesChange={setPartenariatProtocoleReversibiliteFiles}
+                    role="avocat"
+                  />
                 </div>
 
                 {/* Observations finales */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Observations finales</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣0️⃣ Observations finales</h4>
                   <div>
                     <Label>Observations finales / clauses particulières</Label>
                     <Textarea value={partenariatData.observationsFinales} onChange={(e) => setPartenariatData({...partenariatData, observationsFinales: e.target.value})} placeholder="Précisions complémentaires..." rows={4} />
