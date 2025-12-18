@@ -1500,6 +1500,196 @@ export default function Contrats() {
   const [garantDocsFiles, setGarantDocsFiles] = useState<File[]>([]);
   const [bailDiagnosticsFiles, setBailDiagnosticsFiles] = useState<File[]>([]);
   
+  // États pour le Contrat de Partenariat / Coopération
+  const [partenariatClientId1, setPartenariatClientId1] = useState<string>("");
+  const [partenariatClientId2, setPartenariatClientId2] = useState<string>("");
+  const [partenariatData, setPartenariatData] = useState({
+    // Partie 1
+    partie1Nom: "",
+    partie1FormeJuridique: "",
+    partie1Capital: "",
+    partie1Siege: "",
+    partie1RCS: "",
+    partie1RepresentantNom: "",
+    partie1RepresentantFonction: "",
+    partie1Coordonnees: "",
+    partie1Secteur: "",
+    partie1SiteWeb: "",
+    partie1Assurance: "",
+    
+    // Partie 2
+    partie2Nom: "",
+    partie2FormeJuridique: "",
+    partie2Capital: "",
+    partie2Siege: "",
+    partie2RCS: "",
+    partie2RepresentantNom: "",
+    partie2RepresentantFonction: "",
+    partie2Coordonnees: "",
+    partie2Secteur: "",
+    partie2SiteWeb: "",
+    partie2Assurance: "",
+    
+    // Objet du partenariat
+    objetNature: [] as string[],
+    objetFinalites: "",
+    objetResultatsAttendus: "",
+    objetLivrables: "",
+    objetLimites: "",
+    objetExclusions: "",
+    
+    // Rôles partie 1
+    partie1Responsabilites: "",
+    partie1Missions: "",
+    partie1Taches: "",
+    partie1RessourcesMises: "",
+    partie1EngagementsOperationnels: "",
+    partie1Delais: "",
+    partie1Referent: "",
+    
+    // Rôles partie 2
+    partie2Responsabilites: "",
+    partie2Missions: "",
+    partie2Taches: "",
+    partie2RessourcesMises: "",
+    partie2EngagementsOperationnels: "",
+    partie2Delais: "",
+    partie2Referent: "",
+    
+    // Gouvernance
+    gouvernanceComitePilotage: "non",
+    gouvernanceComposition: "",
+    gouvernanceFrequence: "",
+    gouvernanceDecisionsCommunes: "",
+    gouvernanceProcessusDecisionnel: "",
+    gouvernanceDroitVeto: "",
+    gouvernanceRapports: "",
+    gouvernanceKPI: "",
+    gouvernanceRevues: "",
+    
+    // Contributions financières
+    financeInvestissementPartie1: "",
+    financeInvestissementPartie2: "",
+    financeBudgetCommun: "",
+    financeRepartitionCouts: "",
+    financeFacturation: "",
+    financeModalitesPaiement: "",
+    financeFinancementExterne: "",
+    financeRepartitionBenefices: "",
+    
+    // Partage ressources
+    ressourcesPersonnel: "",
+    ressourcesMateriel: "",
+    ressourcesLicences: "",
+    ressourcesBaseDonnees: "",
+    ressourcesEspaceTravail: "",
+    ressourcesConditionsUtilisation: "",
+    ressourcesRestrictions: "",
+    
+    // Durée
+    dureeDeterminee: "oui",
+    dureeDebut: "",
+    dureeFin: "",
+    dureeReconduction: "non",
+    dureeEvaluationIntermediaire: "",
+    
+    // Confidentialité
+    confidentialiteDefinition: "",
+    confidentialiteDuree: "5",
+    confidentialiteExceptions: "",
+    confidentialiteMesuresSecurite: "",
+    confidentialiteConsequences: "",
+    
+    // Propriété intellectuelle
+    piAnterieure: "",
+    piAnterieureRegime: "",
+    piCreeRegime: "",
+    piCreeProprietaire: "",
+    piCreeExploitation: "",
+    piCreeProtection: "",
+    piDocumentsTitularite: "",
+    piDocumentsRestrictions: "",
+    
+    // RGPD
+    rgpdApplicable: "non",
+    rgpdResponsable: "",
+    rgpdSousTraitant: "",
+    rgpdFinalites: "",
+    rgpdConservation: "",
+    rgpdMesuresSecurite: "",
+    rgpdTransfertHorsUE: "non",
+    rgpdDPA: "non",
+    
+    // Communication
+    communicationUsageLogos: "",
+    communicationCommuniques: "",
+    communicationReseauxSociaux: "",
+    communicationConfidentialiteChiffres: "",
+    communicationProcessusValidation: "",
+    
+    // Exclusivité
+    exclusiviteApplicable: "non",
+    exclusiviteZone: "",
+    exclusiviteSecteur: "",
+    exclusiviteDuree: "",
+    exclusiviteEngagementsMin: "",
+    
+    // Responsabilité
+    responsabiliteContractuelle: "",
+    responsabiliteRetard: "",
+    responsabiliteDommagesIndirects: "exclus",
+    responsabilitePlafond: "",
+    responsabiliteAssuranceObligatoire: "non",
+    responsabiliteAssuranceSpecifique: "",
+    
+    // Modifications
+    modificationsAmendementsAutorise: "oui",
+    modificationsProcedure: "",
+    modificationsSignature: "oui",
+    
+    // Résiliation
+    resiliationPreavisDuree: "60",
+    resiliationPreavisCondition: "",
+    resiliationImmediateCauses: "",
+    resiliationEffetsRestitution: "",
+    resiliationEffetsMateriel: "",
+    resiliationEffetsDroitsUsage: "",
+    resiliationEffetsRapport: "",
+    resiliationEffetsDestruction: "",
+    
+    // Litiges
+    litigesLoiApplicable: "francaise",
+    litigesLoiAutre: "",
+    litigesTribunal: "",
+    litigesMediation: "oui",
+    litigesArbitrage: "non",
+    
+    // Annexes / Observations
+    annexesDescriptions: "",
+    observationsFinales: "",
+  });
+  
+  // États individuels pour fichiers Partenariat
+  const [partenariat1KbisFiles, setPartenariat1KbisFiles] = useState<File[]>([]);
+  const [partenariat1IdentiteFiles, setPartenariat1IdentiteFiles] = useState<File[]>([]);
+  const [partenariat1StatutsFiles, setPartenariat1StatutsFiles] = useState<File[]>([]);
+  const [partenariat1PouvoirFiles, setPartenariat1PouvoirFiles] = useState<File[]>([]);
+  const [partenariat1AssuranceFiles, setPartenariat1AssuranceFiles] = useState<File[]>([]);
+  const [partenariat2KbisFiles, setPartenariat2KbisFiles] = useState<File[]>([]);
+  const [partenariat2IdentiteFiles, setPartenariat2IdentiteFiles] = useState<File[]>([]);
+  const [partenariat2StatutsFiles, setPartenariat2StatutsFiles] = useState<File[]>([]);
+  const [partenariat2PouvoirFiles, setPartenariat2PouvoirFiles] = useState<File[]>([]);
+  const [partenariat2AssuranceFiles, setPartenariat2AssuranceFiles] = useState<File[]>([]);
+  const [partenariatCahierChargesFiles, setPartenariatCahierChargesFiles] = useState<File[]>([]);
+  const [partenariatPlanningFiles, setPartenariatPlanningFiles] = useState<File[]>([]);
+  const [partenariatBudgetFiles, setPartenariatBudgetFiles] = useState<File[]>([]);
+  const [partenariatCharteGraphiqueFiles, setPartenariatCharteGraphiqueFiles] = useState<File[]>([]);
+  const [partenariatProtocoleRGPDFiles, setPartenariatProtocoleRGPDFiles] = useState<File[]>([]);
+  const [partenariatDescriptionTechniqueFiles, setPartenariatDescriptionTechniqueFiles] = useState<File[]>([]);
+  const [partenariatPlanMarketingFiles, setPartenariatPlanMarketingFiles] = useState<File[]>([]);
+  const [partenariatContratLicenceFiles, setPartenariatContratLicenceFiles] = useState<File[]>([]);
+  const [partenariatConditionsFinancieresFiles, setPartenariatConditionsFinancieresFiles] = useState<File[]>([]);
+  
   // States pour convention d'indivision
   const [indivisairesIdentiteUrls, setIndivisairesIdentiteUrls] = useState<Record<number, string | null>>({}); // URLs des documents identité indivisaires clients
   const [indivisairesIdentiteFiles, setIndivisairesIdentiteFiles] = useState<Record<number, File[]>>({}); // Fichiers identité indivisaires non-clients
@@ -6321,6 +6511,124 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création contrat franchise:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour le contrat de partenariat / coopération
+  const handleCreatePartenariatContract = async () => {
+    if (!user) return;
+    
+    try {
+      const description = `Contrat de partenariat - ${partenariatData.partie1Nom} / ${partenariatData.partie2Nom}`;
+      
+      // 1. Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          avocat_id: user.id,
+          type: "Contrat de partenariat / coopération",
+          statut: 'brouillon',
+          client_id: partenariatClientId1 || null,
+          description,
+          contenu_json: partenariatData
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      if (!contrat) throw new Error("Contrat non créé");
+      
+      // 2. Upload documents partie 1
+      for (const file of partenariat1KbisFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/kbis_${file.name}`, file);
+      }
+      for (const file of partenariat1IdentiteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/identite_${file.name}`, file);
+      }
+      for (const file of partenariat1StatutsFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/statuts_${file.name}`, file);
+      }
+      for (const file of partenariat1PouvoirFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/pouvoir_${file.name}`, file);
+      }
+      for (const file of partenariat1AssuranceFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/assurance_${file.name}`, file);
+      }
+      
+      // 3. Upload documents partie 2
+      for (const file of partenariat2KbisFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/kbis_${file.name}`, file);
+      }
+      for (const file of partenariat2IdentiteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/identite_${file.name}`, file);
+      }
+      for (const file of partenariat2StatutsFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/statuts_${file.name}`, file);
+      }
+      for (const file of partenariat2PouvoirFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/pouvoir_${file.name}`, file);
+      }
+      for (const file of partenariat2AssuranceFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/assurance_${file.name}`, file);
+      }
+      
+      // 4. Upload annexes
+      for (const file of partenariatCahierChargesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/cahier_charges_${file.name}`, file);
+      }
+      for (const file of partenariatPlanningFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/planning_${file.name}`, file);
+      }
+      for (const file of partenariatBudgetFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/budget_${file.name}`, file);
+      }
+      for (const file of partenariatCharteGraphiqueFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/charte_graphique_${file.name}`, file);
+      }
+      for (const file of partenariatProtocoleRGPDFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/protocole_rgpd_${file.name}`, file);
+      }
+      for (const file of partenariatDescriptionTechniqueFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/description_technique_${file.name}`, file);
+      }
+      for (const file of partenariatPlanMarketingFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/plan_marketing_${file.name}`, file);
+      }
+      for (const file of partenariatContratLicenceFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/contrat_licence_${file.name}`, file);
+      }
+      for (const file of partenariatConditionsFinancieresFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/conditions_financieres_${file.name}`, file);
+      }
+      
+      toast.success("Contrat de partenariat créé", { 
+        description: "Tous les documents et annexes ont été enregistrés" 
+      });
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création contrat partenariat:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -48759,6 +49067,994 @@ FIN DE LA CONVENTION
                 <div className="flex gap-3 pt-4">
                   <Button type="button" onClick={handleCreateFranchiseContract} disabled={!franchiseData.franchiseurDenomination || !franchiseData.franchiseNom || !franchiseData.redevanceDroitEntree || !franchiseData.objetConcept}>
                     Créer le contrat de franchise
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setPendingContractType("")}>
+                    Annuler
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Formulaire complet pour Contrat de partenariat / coopération */}
+            {pendingContractType === "Contrat de partenariat / coopération" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">🤝 Contrat de partenariat / coopération</h3>
+                
+                {/* 1. IDENTIFICATION DES PARTIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣ Identification des parties</h4>
+                  
+                  {/* Partie 1 */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">1</div>
+                      <h5 className="font-semibold text-blue-700">Première partie</h5>
+                    </div>
+                    <ClientSelector
+                      value={partenariatClientId1}
+                      onChange={(clientId) => {
+                        setPartenariatClientId1(clientId);
+                        if (clientId) {
+                          const client = clients.find(c => c.id === clientId);
+                          if (client) {
+                            setPartenariatData({
+                              ...partenariatData,
+                              partie1Nom: client.prenom && client.nom ? `${client.prenom} ${client.nom}` : (client.denomination_sociale || ""),
+                              partie1Coordonnees: client.email || "",
+                            });
+                          }
+                        }
+                      }}
+                      placeholder="Sélectionner un client existant (optionnel)"
+                      role="avocat"
+                    />
+                    <div>
+                      <Label>Nom / Dénomination sociale *</Label>
+                      <Input value={partenariatData.partie1Nom} onChange={(e) => setPartenariatData({...partenariatData, partie1Nom: e.target.value})} placeholder="Ex: Société ABC, Jean Dupont..." />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Forme juridique</Label>
+                        <Select value={partenariatData.partie1FormeJuridique} onValueChange={(val) => setPartenariatData({...partenariatData, partie1FormeJuridique: val})}>
+                          <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="SAS">SAS</SelectItem>
+                            <SelectItem value="SARL">SARL</SelectItem>
+                            <SelectItem value="SA">SA</SelectItem>
+                            <SelectItem value="EURL">EURL</SelectItem>
+                            <SelectItem value="SCI">SCI</SelectItem>
+                            <SelectItem value="Association">Association</SelectItem>
+                            <SelectItem value="Entrepreneur individuel">Entrepreneur individuel</SelectItem>
+                            <SelectItem value="Autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Capital social</Label>
+                        <Input value={partenariatData.partie1Capital} onChange={(e) => setPartenariatData({...partenariatData, partie1Capital: e.target.value})} placeholder="Ex: 10 000 €" />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Adresse du siège social</Label>
+                      <Input value={partenariatData.partie1Siege} onChange={(e) => setPartenariatData({...partenariatData, partie1Siege: e.target.value})} placeholder="Adresse complète" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>RCS / SIREN</Label>
+                        <Input value={partenariatData.partie1RCS} onChange={(e) => setPartenariatData({...partenariatData, partie1RCS: e.target.value})} placeholder="Ex: RCS Paris 123 456 789" />
+                      </div>
+                      <div>
+                        <Label>Secteur d'activité</Label>
+                        <Input value={partenariatData.partie1Secteur} onChange={(e) => setPartenariatData({...partenariatData, partie1Secteur: e.target.value})} placeholder="Ex: Tech, Industrie..." />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Nom du représentant légal</Label>
+                        <Input value={partenariatData.partie1RepresentantNom} onChange={(e) => setPartenariatData({...partenariatData, partie1RepresentantNom: e.target.value})} placeholder="Nom complet" />
+                      </div>
+                      <div>
+                        <Label>Fonction du représentant</Label>
+                        <Input value={partenariatData.partie1RepresentantFonction} onChange={(e) => setPartenariatData({...partenariatData, partie1RepresentantFonction: e.target.value})} placeholder="Ex: Président, Gérant..." />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Coordonnées professionnelles</Label>
+                        <Input value={partenariatData.partie1Coordonnees} onChange={(e) => setPartenariatData({...partenariatData, partie1Coordonnees: e.target.value})} placeholder="Email, téléphone..." />
+                      </div>
+                      <div>
+                        <Label>Site web (optionnel)</Label>
+                        <Input value={partenariatData.partie1SiteWeb} onChange={(e) => setPartenariatData({...partenariatData, partie1SiteWeb: e.target.value})} placeholder="https://..." />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Assurance RC Pro</Label>
+                      <Input value={partenariatData.partie1Assurance} onChange={(e) => setPartenariatData({...partenariatData, partie1Assurance: e.target.value})} placeholder="N° de police, assureur..." />
+                    </div>
+                    <SingleFileUpload
+                      label="Kbis (partie 1)"
+                      files={partenariat1KbisFiles}
+                      onFilesChange={setPartenariat1KbisFiles}
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Pièce d'identité du signataire (partie 1)"
+                      files={partenariat1IdentiteFiles}
+                      onFilesChange={setPartenariat1IdentiteFiles}
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Statuts (partie 1)"
+                      files={partenariat1StatutsFiles}
+                      onFilesChange={setPartenariat1StatutsFiles}
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Pouvoir de signature (partie 1)"
+                      files={partenariat1PouvoirFiles}
+                      onFilesChange={setPartenariat1PouvoirFiles}
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Attestation d'assurance (partie 1)"
+                      files={partenariat1AssuranceFiles}
+                      onFilesChange={setPartenariat1AssuranceFiles}
+                      role="avocat"
+                    />
+                  </div>
+                  
+                  {/* Partie 2 */}
+                  <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">2</div>
+                      <h5 className="font-semibold text-blue-700">Seconde partie</h5>
+                    </div>
+                    <ClientSelector
+                      value={partenariatClientId2}
+                      onChange={(clientId) => {
+                        setPartenariatClientId2(clientId);
+                        if (clientId) {
+                          const client = clients.find(c => c.id === clientId);
+                          if (client) {
+                            setPartenariatData({
+                              ...partenariatData,
+                              partie2Nom: client.prenom && client.nom ? `${client.prenom} ${client.nom}` : (client.denomination_sociale || ""),
+                              partie2Coordonnees: client.email || "",
+                            });
+                          }
+                        }
+                      }}
+                      placeholder="Sélectionner un client existant (optionnel)"
+                      role="avocat"
+                    />
+                    <div>
+                      <Label>Nom / Dénomination sociale *</Label>
+                      <Input value={partenariatData.partie2Nom} onChange={(e) => setPartenariatData({...partenariatData, partie2Nom: e.target.value})} placeholder="Ex: Société XYZ, Marie Martin..." />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Forme juridique</Label>
+                        <Select value={partenariatData.partie2FormeJuridique} onValueChange={(val) => setPartenariatData({...partenariatData, partie2FormeJuridique: val})}>
+                          <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="SAS">SAS</SelectItem>
+                            <SelectItem value="SARL">SARL</SelectItem>
+                            <SelectItem value="SA">SA</SelectItem>
+                            <SelectItem value="EURL">EURL</SelectItem>
+                            <SelectItem value="SCI">SCI</SelectItem>
+                            <SelectItem value="Association">Association</SelectItem>
+                            <SelectItem value="Entrepreneur individuel">Entrepreneur individuel</SelectItem>
+                            <SelectItem value="Autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Capital social</Label>
+                        <Input value={partenariatData.partie2Capital} onChange={(e) => setPartenariatData({...partenariatData, partie2Capital: e.target.value})} placeholder="Ex: 50 000 €" />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Adresse du siège social</Label>
+                      <Input value={partenariatData.partie2Siege} onChange={(e) => setPartenariatData({...partenariatData, partie2Siege: e.target.value})} placeholder="Adresse complète" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>RCS / SIREN</Label>
+                        <Input value={partenariatData.partie2RCS} onChange={(e) => setPartenariatData({...partenariatData, partie2RCS: e.target.value})} placeholder="Ex: RCS Lyon 987 654 321" />
+                      </div>
+                      <div>
+                        <Label>Secteur d'activité</Label>
+                        <Input value={partenariatData.partie2Secteur} onChange={(e) => setPartenariatData({...partenariatData, partie2Secteur: e.target.value})} placeholder="Ex: Marketing, Finance..." />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Nom du représentant légal</Label>
+                        <Input value={partenariatData.partie2RepresentantNom} onChange={(e) => setPartenariatData({...partenariatData, partie2RepresentantNom: e.target.value})} placeholder="Nom complet" />
+                      </div>
+                      <div>
+                        <Label>Fonction du représentant</Label>
+                        <Input value={partenariatData.partie2RepresentantFonction} onChange={(e) => setPartenariatData({...partenariatData, partie2RepresentantFonction: e.target.value})} placeholder="Ex: Directeur général..." />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Coordonnées professionnelles</Label>
+                        <Input value={partenariatData.partie2Coordonnees} onChange={(e) => setPartenariatData({...partenariatData, partie2Coordonnees: e.target.value})} placeholder="Email, téléphone..." />
+                      </div>
+                      <div>
+                        <Label>Site web (optionnel)</Label>
+                        <Input value={partenariatData.partie2SiteWeb} onChange={(e) => setPartenariatData({...partenariatData, partie2SiteWeb: e.target.value})} placeholder="https://..." />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Assurance RC Pro</Label>
+                      <Input value={partenariatData.partie2Assurance} onChange={(e) => setPartenariatData({...partenariatData, partie2Assurance: e.target.value})} placeholder="N° de police, assureur..." />
+                    </div>
+                    <SingleFileUpload
+                      label="Kbis (partie 2)"
+                      files={partenariat2KbisFiles}
+                      onFilesChange={setPartenariat2KbisFiles}
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Pièce d'identité du signataire (partie 2)"
+                      files={partenariat2IdentiteFiles}
+                      onFilesChange={setPartenariat2IdentiteFiles}
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Statuts (partie 2)"
+                      files={partenariat2StatutsFiles}
+                      onFilesChange={setPartenariat2StatutsFiles}
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Pouvoir de signature (partie 2)"
+                      files={partenariat2PouvoirFiles}
+                      onFilesChange={setPartenariat2PouvoirFiles}
+                      role="avocat"
+                    />
+                    <SingleFileUpload
+                      label="Attestation d'assurance (partie 2)"
+                      files={partenariat2AssuranceFiles}
+                      onFilesChange={setPartenariat2AssuranceFiles}
+                      role="avocat"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. OBJET DU PARTENARIAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du partenariat</h4>
+                  <div>
+                    <Label>Nature du partenariat * (sélection multiple possible)</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[
+                        "Co-développement",
+                        "Coopération commerciale",
+                        "Partenariat marketing",
+                        "Développement territorial",
+                        "Partage de ressources / compétences",
+                        "Innovation / R&D",
+                        "Partenariat institutionnel",
+                        "Autre"
+                      ].map((nature) => (
+                        <label key={nature} className="flex items-center gap-2 p-2 border border-blue-200 rounded hover:bg-blue-50 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={partenariatData.objetNature.includes(nature)}
+                            onChange={(e) => {
+                              const newNatures = e.target.checked
+                                ? [...partenariatData.objetNature, nature]
+                                : partenariatData.objetNature.filter(n => n !== nature);
+                              setPartenariatData({...partenariatData, objetNature: newNatures});
+                            }}
+                            className="rounded"
+                          />
+                          <span className="text-sm">{nature}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Finalités exactes du partenariat *</Label>
+                    <Textarea value={partenariatData.objetFinalites} onChange={(e) => setPartenariatData({...partenariatData, objetFinalites: e.target.value})} placeholder="Décrire les objectifs précis du partenariat..." rows={3} />
+                  </div>
+                  <div>
+                    <Label>Résultats attendus</Label>
+                    <Textarea value={partenariatData.objetResultatsAttendus} onChange={(e) => setPartenariatData({...partenariatData, objetResultatsAttendus: e.target.value})} placeholder="Ex: Augmentation CA de 20%, lancement de 3 produits..." rows={3} />
+                  </div>
+                  <div>
+                    <Label>Livrables éventuels</Label>
+                    <Textarea value={partenariatData.objetLivrables} onChange={(e) => setPartenariatData({...partenariatData, objetLivrables: e.target.value})} placeholder="Ex: Rapport mensuel, prototype, application..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Limites du partenariat</Label>
+                    <Textarea value={partenariatData.objetLimites} onChange={(e) => setPartenariatData({...partenariatData, objetLimites: e.target.value})} placeholder="Préciser les limites géographiques, sectorielles, temporelles..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Ce qui est expressément exclu</Label>
+                    <Textarea value={partenariatData.objetExclusions} onChange={(e) => setPartenariatData({...partenariatData, objetExclusions: e.target.value})} placeholder="Ex: Pas de transfert de personnel, pas de garantie financière..." rows={2} />
+                  </div>
+                </div>
+
+                {/* 3. RÔLES PARTIE 1 */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Rôles et responsabilités — Partie 1</h4>
+                  <div>
+                    <Label>Responsabilités</Label>
+                    <Textarea value={partenariatData.partie1Responsabilites} onChange={(e) => setPartenariatData({...partenariatData, partie1Responsabilites: e.target.value})} placeholder="Décrire les responsabilités de la partie 1..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Missions précises</Label>
+                    <Textarea value={partenariatData.partie1Missions} onChange={(e) => setPartenariatData({...partenariatData, partie1Missions: e.target.value})} placeholder="Lister les missions confiées..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Tâches à réaliser</Label>
+                    <Textarea value={partenariatData.partie1Taches} onChange={(e) => setPartenariatData({...partenariatData, partie1Taches: e.target.value})} placeholder="Détailler les tâches opérationnelles..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Ressources mises à disposition</Label>
+                    <Textarea value={partenariatData.partie1RessourcesMises} onChange={(e) => setPartenariatData({...partenariatData, partie1RessourcesMises: e.target.value})} placeholder="Ex: 2 développeurs, locaux 100m², serveurs..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Engagements opérationnels</Label>
+                    <Textarea value={partenariatData.partie1EngagementsOperationnels} onChange={(e) => setPartenariatData({...partenariatData, partie1EngagementsOperationnels: e.target.value})} placeholder="Ex: Disponibilité 24/7, délai de réponse 48h..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Délais / Calendrier</Label>
+                    <Textarea value={partenariatData.partie1Delais} onChange={(e) => setPartenariatData({...partenariatData, partie1Delais: e.target.value})} placeholder="Planning prévisionnel des actions..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Personne référente (contact dédié)</Label>
+                    <Input value={partenariatData.partie1Referent} onChange={(e) => setPartenariatData({...partenariatData, partie1Referent: e.target.value})} placeholder="Nom, fonction, contact..." />
+                  </div>
+                </div>
+
+                {/* 4. RÔLES PARTIE 2 */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Rôles et responsabilités — Partie 2</h4>
+                  <div>
+                    <Label>Responsabilités</Label>
+                    <Textarea value={partenariatData.partie2Responsabilites} onChange={(e) => setPartenariatData({...partenariatData, partie2Responsabilites: e.target.value})} placeholder="Décrire les responsabilités de la partie 2..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Missions précises</Label>
+                    <Textarea value={partenariatData.partie2Missions} onChange={(e) => setPartenariatData({...partenariatData, partie2Missions: e.target.value})} placeholder="Lister les missions confiées..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Tâches à réaliser</Label>
+                    <Textarea value={partenariatData.partie2Taches} onChange={(e) => setPartenariatData({...partenariatData, partie2Taches: e.target.value})} placeholder="Détailler les tâches opérationnelles..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Ressources mises à disposition</Label>
+                    <Textarea value={partenariatData.partie2RessourcesMises} onChange={(e) => setPartenariatData({...partenariatData, partie2RessourcesMises: e.target.value})} placeholder="Ex: Budget marketing 50k€, base clients 10000..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Engagements opérationnels</Label>
+                    <Textarea value={partenariatData.partie2EngagementsOperationnels} onChange={(e) => setPartenariatData({...partenariatData, partie2EngagementsOperationnels: e.target.value})} placeholder="Ex: Livraisons mensuelles, reporting hebdomadaire..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Délais / Calendrier</Label>
+                    <Textarea value={partenariatData.partie2Delais} onChange={(e) => setPartenariatData({...partenariatData, partie2Delais: e.target.value})} placeholder="Planning prévisionnel des actions..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Personne référente (contact dédié)</Label>
+                    <Input value={partenariatData.partie2Referent} onChange={(e) => setPartenariatData({...partenariatData, partie2Referent: e.target.value})} placeholder="Nom, fonction, contact..." />
+                  </div>
+                </div>
+
+                {/* 5. GOUVERNANCE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Gouvernance du partenariat</h4>
+                  <div>
+                    <Label>Comité de pilotage ?</Label>
+                    <Select value={partenariatData.gouvernanceComitePilotage} onValueChange={(val) => setPartenariatData({...partenariatData, gouvernanceComitePilotage: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {partenariatData.gouvernanceComitePilotage === "oui" && (
+                    <>
+                      <div>
+                        <Label>Composition du comité</Label>
+                        <Textarea value={partenariatData.gouvernanceComposition} onChange={(e) => setPartenariatData({...partenariatData, gouvernanceComposition: e.target.value})} placeholder="Ex: 2 représentants par partie, présidence alternée..." rows={2} />
+                      </div>
+                      <div>
+                        <Label>Fréquence des réunions</Label>
+                        <Input value={partenariatData.gouvernanceFrequence} onChange={(e) => setPartenariatData({...partenariatData, gouvernanceFrequence: e.target.value})} placeholder="Ex: Trimestrielle, mensuelle..." />
+                      </div>
+                      <div>
+                        <Label>Décisions à prendre en commun</Label>
+                        <Textarea value={partenariatData.gouvernanceDecisionsCommunes} onChange={(e) => setPartenariatData({...partenariatData, gouvernanceDecisionsCommunes: e.target.value})} placeholder="Ex: Budget >10k€, embauche, stratégie marketing..." rows={2} />
+                      </div>
+                    </>
+                  )}
+                  <div>
+                    <Label>Processus décisionnel</Label>
+                    <Textarea value={partenariatData.gouvernanceProcessusDecisionnel} onChange={(e) => setPartenariatData({...partenariatData, gouvernanceProcessusDecisionnel: e.target.value})} placeholder="Ex: Unanimité pour décisions stratégiques, majorité pour décisions courantes..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Droit de veto sur certains sujets ?</Label>
+                    <Textarea value={partenariatData.gouvernanceDroitVeto} onChange={(e) => setPartenariatData({...partenariatData, gouvernanceDroitVeto: e.target.value})} placeholder="Préciser les sujets donnant droit de veto..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Rapports d'avancement</Label>
+                    <Input value={partenariatData.gouvernanceRapports} onChange={(e) => setPartenariatData({...partenariatData, gouvernanceRapports: e.target.value})} placeholder="Ex: Rapport mensuel écrit, présentation trimestrielle..." />
+                  </div>
+                  <div>
+                    <Label>KPI / Indicateurs de performance</Label>
+                    <Textarea value={partenariatData.gouvernanceKPI} onChange={(e) => setPartenariatData({...partenariatData, gouvernanceKPI: e.target.value})} placeholder="Ex: Chiffre d'affaires commun, nombre de clients, satisfaction..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Revues périodiques</Label>
+                    <Input value={partenariatData.gouvernanceRevues} onChange={(e) => setPartenariatData({...partenariatData, gouvernanceRevues: e.target.value})} placeholder="Ex: Revue annuelle stratégique..." />
+                  </div>
+                </div>
+
+                {/* 6. CONTRIBUTIONS FINANCIÈRES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Contributions financières</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Investissement initial — Partie 1</Label>
+                      <Input value={partenariatData.financeInvestissementPartie1} onChange={(e) => setPartenariatData({...partenariatData, financeInvestissementPartie1: e.target.value})} placeholder="Montant en €" />
+                    </div>
+                    <div>
+                      <Label>Investissement initial — Partie 2</Label>
+                      <Input value={partenariatData.financeInvestissementPartie2} onChange={(e) => setPartenariatData({...partenariatData, financeInvestissementPartie2: e.target.value})} placeholder="Montant en €" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Budget commun</Label>
+                    <Input value={partenariatData.financeBudgetCommun} onChange={(e) => setPartenariatData({...partenariatData, financeBudgetCommun: e.target.value})} placeholder="Ex: 100 000 € annuels" />
+                  </div>
+                  <div>
+                    <Label>Répartition des coûts</Label>
+                    <Textarea value={partenariatData.financeRepartitionCouts} onChange={(e) => setPartenariatData({...partenariatData, financeRepartitionCouts: e.target.value})} placeholder="Ex: 50/50, au prorata du CA généré..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Règles de facturation interne</Label>
+                    <Textarea value={partenariatData.financeFacturation} onChange={(e) => setPartenariatData({...partenariatData, financeFacturation: e.target.value})} placeholder="Ex: Facturation mensuelle des prestations réciproques..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Modalités de paiement</Label>
+                    <Input value={partenariatData.financeModalitesPaiement} onChange={(e) => setPartenariatData({...partenariatData, financeModalitesPaiement: e.target.value})} placeholder="Ex: Virement, 30 jours fin de mois..." />
+                  </div>
+                  <div>
+                    <Label>Financement externe</Label>
+                    <Textarea value={partenariatData.financeFinancementExterne} onChange={(e) => setPartenariatData({...partenariatData, financeFinancementExterne: e.target.value})} placeholder="Subventions, prêts bancaires, levée de fonds..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Répartition des bénéfices économiques</Label>
+                    <Textarea value={partenariatData.financeRepartitionBenefices} onChange={(e) => setPartenariatData({...partenariatData, financeRepartitionBenefices: e.target.value})} placeholder="Ex: 60/40, selon apport de chaque partie..." rows={2} />
+                  </div>
+                </div>
+
+                {/* 7. PARTAGE DES RESSOURCES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Partage des ressources</h4>
+                  <div>
+                    <Label>Mise à disposition de personnel</Label>
+                    <Textarea value={partenariatData.ressourcesPersonnel} onChange={(e) => setPartenariatData({...partenariatData, ressourcesPersonnel: e.target.value})} placeholder="Ex: 1 développeur à temps partiel, 1 commercial..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Mise à disposition de matériel</Label>
+                    <Textarea value={partenariatData.ressourcesMateriel} onChange={(e) => setPartenariatData({...partenariatData, ressourcesMateriel: e.target.value})} placeholder="Ex: Ordinateurs, véhicules, machines..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Mise à disposition de licences ou logiciels</Label>
+                    <Textarea value={partenariatData.ressourcesLicences} onChange={(e) => setPartenariatData({...partenariatData, ressourcesLicences: e.target.value})} placeholder="Ex: Licence CRM, accès plateforme SaaS..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Accès à des bases de données</Label>
+                    <Textarea value={partenariatData.ressourcesBaseDonnees} onChange={(e) => setPartenariatData({...partenariatData, ressourcesBaseDonnees: e.target.value})} placeholder="Ex: Base clients, données marché..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Accès à un espace de travail</Label>
+                    <Input value={partenariatData.ressourcesEspaceTravail} onChange={(e) => setPartenariatData({...partenariatData, ressourcesEspaceTravail: e.target.value})} placeholder="Ex: Bureau partagé, salle de réunion..." />
+                  </div>
+                  <div>
+                    <Label>Conditions d'utilisation</Label>
+                    <Textarea value={partenariatData.ressourcesConditionsUtilisation} onChange={(e) => setPartenariatData({...partenariatData, ressourcesConditionsUtilisation: e.target.value})} placeholder="Usage exclusif au partenariat, respect des procédures..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Restrictions</Label>
+                    <Textarea value={partenariatData.ressourcesRestrictions} onChange={(e) => setPartenariatData({...partenariatData, ressourcesRestrictions: e.target.value})} placeholder="Pas de sous-location, pas de cession à des tiers..." rows={2} />
+                  </div>
+                </div>
+
+                {/* 8. DURÉE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Durée du partenariat</h4>
+                  <div>
+                    <Label>Durée déterminée ou indéterminée ?</Label>
+                    <Select value={partenariatData.dureeDeterminee} onValueChange={(val) => setPartenariatData({...partenariatData, dureeDeterminee: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Durée déterminée</SelectItem>
+                        <SelectItem value="non">Durée indéterminée</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {partenariatData.dureeDeterminee === "oui" && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Date de début</Label>
+                        <Input type="date" value={partenariatData.dureeDebut} onChange={(e) => setPartenariatData({...partenariatData, dureeDebut: e.target.value})} />
+                      </div>
+                      <div>
+                        <Label>Date de fin</Label>
+                        <Input type="date" value={partenariatData.dureeFin} onChange={(e) => setPartenariatData({...partenariatData, dureeFin: e.target.value})} />
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <Label>Reconduction tacite ?</Label>
+                    <Select value={partenariatData.dureeReconduction} onValueChange={(val) => setPartenariatData({...partenariatData, dureeReconduction: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Clause d'évaluation intermédiaire</Label>
+                    <Input value={partenariatData.dureeEvaluationIntermediaire} onChange={(e) => setPartenariatData({...partenariatData, dureeEvaluationIntermediaire: e.target.value})} placeholder="Ex: Évaluation à mi-parcours (12 mois)" />
+                  </div>
+                </div>
+
+                {/* 9. CONFIDENTIALITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Confidentialité</h4>
+                  <div>
+                    <Label>Définition de l'information confidentielle *</Label>
+                    <Textarea value={partenariatData.confidentialiteDefinition} onChange={(e) => setPartenariatData({...partenariatData, confidentialiteDefinition: e.target.value})} placeholder="Ex: Toute information technique, commerciale, financière échangée dans le cadre du partenariat..." rows={3} />
+                  </div>
+                  <div>
+                    <Label>Durée de confidentialité (en années)</Label>
+                    <Select value={partenariatData.confidentialiteDuree} onValueChange={(val) => setPartenariatData({...partenariatData, confidentialiteDuree: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="3">3 ans</SelectItem>
+                        <SelectItem value="5">5 ans</SelectItem>
+                        <SelectItem value="7">7 ans</SelectItem>
+                        <SelectItem value="10">10 ans</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Exceptions (informations non confidentielles)</Label>
+                    <Textarea value={partenariatData.confidentialiteExceptions} onChange={(e) => setPartenariatData({...partenariatData, confidentialiteExceptions: e.target.value})} placeholder="Ex: Informations publiques, déjà connues, obtenues légalement d'un tiers..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Mesures de sécurité à respecter</Label>
+                    <Textarea value={partenariatData.confidentialiteMesuresSecurite} onChange={(e) => setPartenariatData({...partenariatData, confidentialiteMesuresSecurite: e.target.value})} placeholder="Ex: Chiffrement des données, accès restreint, classification des documents..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Conséquences en cas de violation</Label>
+                    <Textarea value={partenariatData.confidentialiteConsequences} onChange={(e) => setPartenariatData({...partenariatData, confidentialiteConsequences: e.target.value})} placeholder="Ex: Dommages-intérêts, résiliation immédiate..." rows={2} />
+                  </div>
+                </div>
+
+                {/* 10. PROPRIÉTÉ INTELLECTUELLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Propriété intellectuelle</h4>
+                  <div>
+                    <Label>PI Antérieure (Background IP)</Label>
+                    <Textarea value={partenariatData.piAnterieure} onChange={(e) => setPartenariatData({...partenariatData, piAnterieure: e.target.value})} placeholder="Décrire les éléments de PI existants avant le partenariat..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Régime de la PI antérieure</Label>
+                    <Textarea value={partenariatData.piAnterieureRegime} onChange={(e) => setPartenariatData({...partenariatData, piAnterieureRegime: e.target.value})} placeholder="Ex: Reste propriété exclusive, licence d'utilisation accordée pour le partenariat..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Régime de la PI créée pendant le partenariat (Foreground IP)</Label>
+                    <Select value={partenariatData.piCreeRegime} onValueChange={(val) => setPartenariatData({...partenariatData, piCreeRegime: val})}>
+                      <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="copropriete">Copropriété (propriété partagée)</SelectItem>
+                        <SelectItem value="partie1">Propriété exclusive à la partie 1</SelectItem>
+                        <SelectItem value="partie2">Propriété exclusive à la partie 2</SelectItem>
+                        <SelectItem value="licence">Propriété à une partie avec licence à l'autre</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {partenariatData.piCreeRegime === "licence" && (
+                    <div>
+                      <Label>Qui est propriétaire ?</Label>
+                      <Select value={partenariatData.piCreeProprietaire} onValueChange={(val) => setPartenariatData({...partenariatData, piCreeProprietaire: val})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="partie1">Partie 1</SelectItem>
+                          <SelectItem value="partie2">Partie 2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  <div>
+                    <Label>Modalités d'exploitation commune</Label>
+                    <Textarea value={partenariatData.piCreeExploitation} onChange={(e) => setPartenariatData({...partenariatData, piCreeExploitation: e.target.value})} placeholder="Ex: Accord préalable requis, répartition des revenus de licence..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Protection (brevets, droits d'auteur, marques)</Label>
+                    <Textarea value={partenariatData.piCreeProtection} onChange={(e) => setPartenariatData({...partenariatData, piCreeProtection: e.target.value})} placeholder="Ex: Dépôt de brevet conjoint, enregistrement marque..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Titularité des livrables / documentation</Label>
+                    <Input value={partenariatData.piDocumentsTitularite} onChange={(e) => setPartenariatData({...partenariatData, piDocumentsTitularite: e.target.value})} placeholder="Ex: Propriété conjointe, cession à la partie 1..." />
+                  </div>
+                  <div>
+                    <Label>Restrictions d'usage des livrables</Label>
+                    <Textarea value={partenariatData.piDocumentsRestrictions} onChange={(e) => setPartenariatData({...partenariatData, piDocumentsRestrictions: e.target.value})} placeholder="Usage limité au partenariat, pas de revente..." rows={2} />
+                  </div>
+                </div>
+
+                {/* 11. RGPD */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔟 Traitement des données &amp; RGPD</h4>
+                  <div>
+                    <Label>Données personnelles impliquées dans le partenariat ?</Label>
+                    <Select value={partenariatData.rgpdApplicable} onValueChange={(val) => setPartenariatData({...partenariatData, rgpdApplicable: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {partenariatData.rgpdApplicable === "oui" && (
+                    <>
+                      <div>
+                        <Label>Responsable de traitement</Label>
+                        <Input value={partenariatData.rgpdResponsable} onChange={(e) => setPartenariatData({...partenariatData, rgpdResponsable: e.target.value})} placeholder="Quelle partie ?" />
+                      </div>
+                      <div>
+                        <Label>Sous-traitant</Label>
+                        <Input value={partenariatData.rgpdSousTraitant} onChange={(e) => setPartenariatData({...partenariatData, rgpdSousTraitant: e.target.value})} placeholder="Quelle partie ?" />
+                      </div>
+                      <div>
+                        <Label>Finalités du traitement</Label>
+                        <Textarea value={partenariatData.rgpdFinalites} onChange={(e) => setPartenariatData({...partenariatData, rgpdFinalites: e.target.value})} placeholder="Ex: Gestion clients communs, marketing..." rows={2} />
+                      </div>
+                      <div>
+                        <Label>Durée de conservation</Label>
+                        <Input value={partenariatData.rgpdConservation} onChange={(e) => setPartenariatData({...partenariatData, rgpdConservation: e.target.value})} placeholder="Ex: 3 ans après fin du partenariat" />
+                      </div>
+                      <div>
+                        <Label>Mesures de sécurité</Label>
+                        <Textarea value={partenariatData.rgpdMesuresSecurite} onChange={(e) => setPartenariatData({...partenariatData, rgpdMesuresSecurite: e.target.value})} placeholder="Chiffrement, pseudonymisation, contrôle d'accès..." rows={2} />
+                      </div>
+                      <div>
+                        <Label>Transfert hors UE ?</Label>
+                        <Select value={partenariatData.rgpdTransfertHorsUE} onValueChange={(val) => setPartenariatData({...partenariatData, rgpdTransfertHorsUE: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>DPA (Data Processing Agreement) à joindre ?</Label>
+                        <Select value={partenariatData.rgpdDPA} onValueChange={(val) => setPartenariatData({...partenariatData, rgpdDPA: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* 12. COMMUNICATION & MARKETING */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣1️⃣ Communication &amp; marketing commun</h4>
+                  <div>
+                    <Label>Usage des logos / marques</Label>
+                    <Textarea value={partenariatData.communicationUsageLogos} onChange={(e) => setPartenariatData({...partenariatData, communicationUsageLogos: e.target.value})} placeholder="Ex: Autorisation d'usage réciproque des logos sur supports marketing..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Communiqués de presse conjoints</Label>
+                    <Textarea value={partenariatData.communicationCommuniques} onChange={(e) => setPartenariatData({...partenariatData, communicationCommuniques: e.target.value})} placeholder="Processus de validation, fréquence..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Présence sur les réseaux sociaux</Label>
+                    <Textarea value={partenariatData.communicationReseauxSociaux} onChange={(e) => setPartenariatData({...partenariatData, communicationReseauxSociaux: e.target.value})} placeholder="Ex: Mentions mutuelles, partage de contenus..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Confidentialité sur les chiffres</Label>
+                    <Input value={partenariatData.communicationConfidentialiteChiffres} onChange={(e) => setPartenariatData({...partenariatData, communicationConfidentialiteChiffres: e.target.value})} placeholder="Ex: Pas de divulgation de CA, volumes..." />
+                  </div>
+                  <div>
+                    <Label>Processus de validation des communications</Label>
+                    <Textarea value={partenariatData.communicationProcessusValidation} onChange={(e) => setPartenariatData({...partenariatData, communicationProcessusValidation: e.target.value})} placeholder="Ex: Validation par les 2 parties avant publication..." rows={2} />
+                  </div>
+                </div>
+
+                {/* 13. EXCLUSIVITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣2️⃣ Exclusivité (optionnelle)</h4>
+                  <div>
+                    <Label>Partenariat exclusif ?</Label>
+                    <Select value={partenariatData.exclusiviteApplicable} onValueChange={(val) => setPartenariatData({...partenariatData, exclusiviteApplicable: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui, exclusif</SelectItem>
+                        <SelectItem value="non">Non, non exclusif</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {partenariatData.exclusiviteApplicable === "oui" && (
+                    <>
+                      <div>
+                        <Label>Zone géographique d'exclusivité</Label>
+                        <Input value={partenariatData.exclusiviteZone} onChange={(e) => setPartenariatData({...partenariatData, exclusiviteZone: e.target.value})} placeholder="Ex: France, Europe, Mondial..." />
+                      </div>
+                      <div>
+                        <Label>Secteur d'activité concerné</Label>
+                        <Input value={partenariatData.exclusiviteSecteur} onChange={(e) => setPartenariatData({...partenariatData, exclusiviteSecteur: e.target.value})} placeholder="Ex: SaaS B2B, retail..." />
+                      </div>
+                      <div>
+                        <Label>Durée de l'exclusivité</Label>
+                        <Input value={partenariatData.exclusiviteDuree} onChange={(e) => setPartenariatData({...partenariatData, exclusiviteDuree: e.target.value})} placeholder="Ex: 2 ans renouvelables" />
+                      </div>
+                      <div>
+                        <Label>Engagements minimaux requis</Label>
+                        <Textarea value={partenariatData.exclusiviteEngagementsMin} onChange={(e) => setPartenariatData({...partenariatData, exclusiviteEngagementsMin: e.target.value})} placeholder="Ex: CA minimum 100k€/an, 50 clients..." rows={2} />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* 14. RESPONSABILITÉ & GARANTIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣3️⃣ Responsabilité &amp; garanties</h4>
+                  <div>
+                    <Label>Responsabilité contractuelle</Label>
+                    <Textarea value={partenariatData.responsabiliteContractuelle} onChange={(e) => setPartenariatData({...partenariatData, responsabiliteContractuelle: e.target.value})} placeholder="Chaque partie est responsable de ses obligations..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Responsabilité en cas de retard</Label>
+                    <Textarea value={partenariatData.responsabiliteRetard} onChange={(e) => setPartenariatData({...partenariatData, responsabiliteRetard: e.target.value})} placeholder="Pénalités de retard, astreintes..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Dommages indirects</Label>
+                    <Select value={partenariatData.responsabiliteDommagesIndirects} onValueChange={(val) => setPartenariatData({...partenariatData, responsabiliteDommagesIndirects: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="exclus">Exclus</SelectItem>
+                        <SelectItem value="inclus">Inclus</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Plafond de responsabilité</Label>
+                    <Input value={partenariatData.responsabilitePlafond} onChange={(e) => setPartenariatData({...partenariatData, responsabilitePlafond: e.target.value})} placeholder="Ex: 100 000 €, montant du budget annuel..." />
+                  </div>
+                  <div>
+                    <Label>RC professionnelle obligatoire ?</Label>
+                    <Select value={partenariatData.responsabiliteAssuranceObligatoire} onValueChange={(val) => setPartenariatData({...partenariatData, responsabiliteAssuranceObligatoire: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Assurance spécifique au projet</Label>
+                    <Input value={partenariatData.responsabiliteAssuranceSpecifique} onChange={(e) => setPartenariatData({...partenariatData, responsabiliteAssuranceSpecifique: e.target.value})} placeholder="Ex: Assurance cyber-risque..." />
+                  </div>
+                </div>
+
+                {/* 15. MODIFICATIONS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣4️⃣ Modifications du partenariat</h4>
+                  <div>
+                    <Label>Amendements possibles ?</Label>
+                    <Select value={partenariatData.modificationsAmendementsAutorise} onValueChange={(val) => setPartenariatData({...partenariatData, modificationsAmendementsAutorise: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {partenariatData.modificationsAmendementsAutorise === "oui" && (
+                    <>
+                      <div>
+                        <Label>Procédure de modification</Label>
+                        <Textarea value={partenariatData.modificationsProcedure} onChange={(e) => setPartenariatData({...partenariatData, modificationsProcedure: e.target.value})} placeholder="Ex: Proposition écrite, délai de réponse 15 jours..." rows={2} />
+                      </div>
+                      <div>
+                        <Label>Signature obligatoire des avenants ?</Label>
+                        <Select value={partenariatData.modificationsSignature} onValueChange={(val) => setPartenariatData({...partenariatData, modificationsSignature: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* 16. RÉSILIATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣5️⃣ Résiliation du contrat</h4>
+                  <div>
+                    <Label>Durée du préavis (en jours)</Label>
+                    <Select value={partenariatData.resiliationPreavisDuree} onValueChange={(val) => setPartenariatData({...partenariatData, resiliationPreavisDuree: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="30">30 jours</SelectItem>
+                        <SelectItem value="60">60 jours</SelectItem>
+                        <SelectItem value="90">90 jours</SelectItem>
+                        <SelectItem value="120">120 jours</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Condition de résiliation avec préavis</Label>
+                    <Textarea value={partenariatData.resiliationPreavisCondition} onChange={(e) => setPartenariatData({...partenariatData, resiliationPreavisCondition: e.target.value})} placeholder="Ex: Simple volonté, motif légitime..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Causes de résiliation immédiate</Label>
+                    <Textarea value={partenariatData.resiliationImmediateCauses} onChange={(e) => setPartenariatData({...partenariatData, resiliationImmediateCauses: e.target.value})} placeholder="Ex: Faute grave, violation PI, non-respect obligations financières..." rows={3} />
+                  </div>
+                  <div>
+                    <Label>Restitution des données</Label>
+                    <Input value={partenariatData.resiliationEffetsRestitution} onChange={(e) => setPartenariatData({...partenariatData, resiliationEffetsRestitution: e.target.value})} placeholder="Ex: Sous 30 jours, format exploitable..." />
+                  </div>
+                  <div>
+                    <Label>Restitution du matériel</Label>
+                    <Input value={partenariatData.resiliationEffetsMateriel} onChange={(e) => setPartenariatData({...partenariatData, resiliationEffetsMateriel: e.target.value})} placeholder="Délai et modalités de restitution..." />
+                  </div>
+                  <div>
+                    <Label>Fin des droits d'usage</Label>
+                    <Input value={partenariatData.resiliationEffetsDroitsUsage} onChange={(e) => setPartenariatData({...partenariatData, resiliationEffetsDroitsUsage: e.target.value})} placeholder="Cessation immédiate des licences..." />
+                  </div>
+                  <div>
+                    <Label>Rapport final de clôture</Label>
+                    <Input value={partenariatData.resiliationEffetsRapport} onChange={(e) => setPartenariatData({...partenariatData, resiliationEffetsRapport: e.target.value})} placeholder="Ex: Rapport financier, bilan opérationnel..." />
+                  </div>
+                  <div>
+                    <Label>Destruction des informations confidentielles</Label>
+                    <Input value={partenariatData.resiliationEffetsDestruction} onChange={(e) => setPartenariatData({...partenariatData, resiliationEffetsDestruction: e.target.value})} placeholder="Délai et modalités..." />
+                  </div>
+                </div>
+
+                {/* 17. RÈGLEMENT DES LITIGES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Règlement des litiges</h4>
+                  <div>
+                    <Label>Loi applicable</Label>
+                    <Select value={partenariatData.litigesLoiApplicable} onValueChange={(val) => setPartenariatData({...partenariatData, litigesLoiApplicable: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="francaise">Droit français</SelectItem>
+                        <SelectItem value="autre">Autre droit</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {partenariatData.litigesLoiApplicable === "autre" && (
+                    <div>
+                      <Label>Préciser le droit applicable</Label>
+                      <Input value={partenariatData.litigesLoiAutre} onChange={(e) => setPartenariatData({...partenariatData, litigesLoiAutre: e.target.value})} placeholder="Ex: Droit suisse, droit belge..." />
+                    </div>
+                  )}
+                  <div>
+                    <Label>Tribunal compétent</Label>
+                    <Input value={partenariatData.litigesTribunal} onChange={(e) => setPartenariatData({...partenariatData, litigesTribunal: e.target.value})} placeholder="Ex: Tribunal de commerce de Paris" />
+                  </div>
+                  <div>
+                    <Label>Clause de médiation préalable ?</Label>
+                    <Select value={partenariatData.litigesMediation} onValueChange={(val) => setPartenariatData({...partenariatData, litigesMediation: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Arbitrage (optionnel)</Label>
+                    <Select value={partenariatData.litigesArbitrage} onValueChange={(val) => setPartenariatData({...partenariatData, litigesArbitrage: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* 18. ANNEXES POSSIBLES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Annexes possibles</h4>
+                  <div>
+                    <Label>Description des annexes</Label>
+                    <Textarea value={partenariatData.annexesDescriptions} onChange={(e) => setPartenariatData({...partenariatData, annexesDescriptions: e.target.value})} placeholder="Lister les annexes prévues : cahier des charges, planning, budget..." rows={3} />
+                  </div>
+                  <SingleFileUpload
+                    label="Cahier des charges"
+                    files={partenariatCahierChargesFiles}
+                    onFilesChange={setPartenariatCahierChargesFiles}
+                    role="avocat"
+                  />
+                  <SingleFileUpload
+                    label="Planning prévisionnel"
+                    files={partenariatPlanningFiles}
+                    onFilesChange={setPartenariatPlanningFiles}
+                    role="avocat"
+                  />
+                  <SingleFileUpload
+                    label="Budget prévisionnel"
+                    files={partenariatBudgetFiles}
+                    onFilesChange={setPartenariatBudgetFiles}
+                    role="avocat"
+                  />
+                  <SingleFileUpload
+                    label="Charte graphique"
+                    files={partenariatCharteGraphiqueFiles}
+                    onFilesChange={setPartenariatCharteGraphiqueFiles}
+                    role="avocat"
+                  />
+                  <SingleFileUpload
+                    label="Protocole RGPD"
+                    files={partenariatProtocoleRGPDFiles}
+                    onFilesChange={setPartenariatProtocoleRGPDFiles}
+                    role="avocat"
+                  />
+                  <SingleFileUpload
+                    label="Description technique du projet"
+                    files={partenariatDescriptionTechniqueFiles}
+                    onFilesChange={setPartenariatDescriptionTechniqueFiles}
+                    role="avocat"
+                  />
+                  <SingleFileUpload
+                    label="Plan marketing commun"
+                    files={partenariatPlanMarketingFiles}
+                    onFilesChange={setPartenariatPlanMarketingFiles}
+                    role="avocat"
+                  />
+                  <SingleFileUpload
+                    label="Contrat de licence PI"
+                    files={partenariatContratLicenceFiles}
+                    onFilesChange={setPartenariatContratLicenceFiles}
+                    role="avocat"
+                  />
+                  <SingleFileUpload
+                    label="Conditions financières détaillées"
+                    files={partenariatConditionsFinancieresFiles}
+                    onFilesChange={setPartenariatConditionsFinancieresFiles}
+                    role="avocat"
+                  />
+                </div>
+
+                {/* Observations finales */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣8️⃣ Observations finales</h4>
+                  <div>
+                    <Label>Observations finales / clauses particulières</Label>
+                    <Textarea value={partenariatData.observationsFinales} onChange={(e) => setPartenariatData({...partenariatData, observationsFinales: e.target.value})} placeholder="Précisions complémentaires..." rows={4} />
+                  </div>
+                </div>
+
+                {/* Boutons d'action */}
+                <div className="flex gap-3 pt-4">
+                  <Button type="button" onClick={handleCreatePartenariatContract} disabled={!partenariatData.partie1Nom || !partenariatData.partie2Nom || partenariatData.objetNature.length === 0 || !partenariatData.objetFinalites}>
+                    Créer le contrat de partenariat
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setPendingContractType("")}>
                     Annuler
