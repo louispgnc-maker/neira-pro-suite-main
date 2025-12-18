@@ -48741,43 +48741,11 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* 21. PIÈCES À JOINDRE - RÉSUMÉ */}
+                {/* 21. OBSERVATIONS FINALES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">2️⃣1️⃣ Synthèse et validation</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣1️⃣ Observations finales</h4>
                   
-                  <div className="bg-blue-100/50 border border-blue-300 rounded-lg p-3 text-sm">
-                    <p className="font-semibold text-blue-800">✅ Pièces à joindre au contrat</p>
-                    <div className="mt-2 space-y-1 text-sm text-blue-700">
-                      <p><strong>Franchiseur :</strong></p>
-                      <ul className="list-disc list-inside ml-2">
-                        <li>Extrait Kbis (moins de 3 mois)</li>
-                        <li>Documents financiers (2 derniers exercices)</li>
-                        <li>Preuve dépôt marque INPI</li>
-                      </ul>
-                      
-                      <p className="mt-3"><strong>Franchisé :</strong></p>
-                      <ul className="list-disc list-inside ml-2">
-                        <li>Justificatifs d'identité</li>
-                        <li>Extrait Kbis franchisé (si société)</li>
-                        <li>Business plan</li>
-                        <li>Preuve capacité financière</li>
-                        <li>Attestation RC Professionnelle</li>
-                        <li>DIP signé et daté</li>
-                      </ul>
-                      
-                      <p className="mt-3"><strong>Annexes :</strong></p>
-                      <ul className="list-disc list-inside ml-2">
-                        <li>DIP complet</li>
-                        <li>Manuel opératoire</li>
-                        <li>Charte graphique</li>
-                        <li>Plans d'agencement</li>
-                        <li>Grilles tarifaires</li>
-                        <li>Attestations de formation</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4"><Label>Observations finales / clauses particulières</Label><Textarea value={franchiseData.observationsFinales} onChange={(e) => setFranchiseData({...franchiseData, observationsFinales: e.target.value})} placeholder="Remarques, conditions suspensives, clauses spécifiques..." className="min-h-[100px]" /></div>
+                  <div><Label>Observations finales / clauses particulières</Label><Textarea value={franchiseData.observationsFinales} onChange={(e) => setFranchiseData({...franchiseData, observationsFinales: e.target.value})} placeholder="Remarques, conditions suspensives, clauses spécifiques..." className="min-h-[100px]" /></div>
                 </div>
                 
                 {/* Boutons d'action */}
