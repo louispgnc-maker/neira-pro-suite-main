@@ -1937,6 +1937,159 @@ export default function Contrats() {
   const [sousTraitanceDocTechniqueFiles, setSousTraitanceDocTechniqueFiles] = useState<File[]>([]);
   const [sousTraitanceCharteSecuriteFiles, setSousTraitanceCharteSecuriteFiles] = useState<File[]>([]);
   
+  // States pour NDA (Accord de confidentialité)
+  const [ndaClientId1, setNdaClientId1] = useState<string>("");
+  const [ndaClientId2, setNdaClientId2] = useState<string>("");
+  const [ndaData, setNdaData] = useState({
+    // Type de NDA
+    typeNda: "bilateral", // bilateral ou unilateral
+    partieEmettrice: "", // si unilatéral
+    
+    // Partie 1
+    partie1Nom: "",
+    partie1FormeJuridique: "",
+    partie1Capital: "",
+    partie1RCS: "",
+    partie1Siege: "",
+    partie1Representant: "",
+    partie1Email: "",
+    partie1Telephone: "",
+    partie1Pays: "France",
+    
+    // Partie 2
+    partie2Nom: "",
+    partie2FormeJuridique: "",
+    partie2Capital: "",
+    partie2RCS: "",
+    partie2Siege: "",
+    partie2Representant: "",
+    partie2Email: "",
+    partie2Telephone: "",
+    partie2Pays: "France",
+    
+    // Objet du NDA
+    projetConcerne: "",
+    butEchanges: "",
+    limitesNda: "",
+    dureeProjet: "",
+    typeProjet: "", // développement technologique, négociations commerciales, etc.
+    
+    // Définition information confidentielle
+    documentsEcrits: true,
+    informationsOrales: true,
+    echangesElectroniques: true,
+    maquettesPrototypes: true,
+    donneesCommerciales: true,
+    donneesFinancieres: true,
+    donneesRH: false,
+    secretsIndustriels: true,
+    plansAffaires: true,
+    codeSource: false,
+    basesDonnees: false,
+    infoNonMarqueeConfidentielle: true,
+    
+    // Exclusions
+    informationsPubliques: true,
+    informationsConnues: true,
+    informationsTiers: true,
+    informationsDeveloppees: true,
+    informationsPubliquesApres: true,
+    
+    // Obligations principales
+    utilisationProjetUniquement: true,
+    nonDivulgationTiers: true,
+    protectionDocuments: true,
+    restitutionDestruction: true,
+    limitationCopies: true,
+    interdictionReverseEngineering: true,
+    interdictionExtractionDonnees: true,
+    
+    // Obligations sécurité
+    stockageSecurise: true,
+    controleAcces: true,
+    needToKnow: true,
+    cryptageRecommande: false,
+    
+    // Sous-traitance
+    sousTraitantsAutorises: "non", // oui, non, validation
+    obligationNdaSousTraitants: true,
+    
+    // Durée
+    dureeContrat: "", // ex: 12 mois
+    dureeConfidentialite: "", // ex: 5 ans
+    confidentialiteIllimitee: false,
+    
+    // Propriété intellectuelle
+    proprieteDivulgateur: true,
+    aucuneLicenceImplicite: true,
+    interdictionCopie: true,
+    proprieteDeveloppementsUlterieurs: "divulgateur", // divulgateur, recepteur, copropriete
+    retourDocuments: true,
+    
+    // RGPD
+    rgpdApplicable: "non",
+    rgpdBaseLegale: "",
+    rgpdDureeConservation: "",
+    rgpdObligations: "",
+    rgpdTransfertHorsUE: "interdit",
+    rgpdNotificationFuite: true,
+    rgpdDPA: false,
+    
+    // Responsabilité
+    obligationPrudence: true,
+    responsabiliteDivulgation: true,
+    exclusionDommagesIndirects: false,
+    penalitesViolation: "",
+    plafondResponsabilite: "",
+    exceptionDemandeLegale: true,
+    
+    // Restitution/Destruction
+    retourDocumentsFin: true,
+    destructionCopies: true,
+    certificationDestruction: true,
+    suppressionDonneesElectroniques: true,
+    desactivationAcces: true,
+    
+    // Interdictions complémentaires
+    interdictionProspection: false,
+    interdictionContourner: false,
+    interdictionContactClients: false,
+    interdictionConcurrence: false,
+    
+    // Débauchage
+    interdictionDebauchage: false,
+    dureeInterdictionDebauchage: "12",
+    penaliteDebauchage: "",
+    
+    // Litiges
+    droitApplicable: "français",
+    tribunalCompetent: "",
+    mediationPrealable: "non",
+    arbitrage: "non",
+    
+    // Variations spéciales
+    contexteSpecial: "", // M&A, technique, RH, industriel, international
+    langueContrat: "français",
+    
+    // Annexes
+    annexesDescriptions: "",
+  });
+  
+  // File states pour NDA
+  const [ndaPartie1KbisFiles, setNdaPartie1KbisFiles] = useState<File[]>([]);
+  const [ndaPartie1IdentiteFiles, setNdaPartie1IdentiteFiles] = useState<File[]>([]);
+  const [ndaPartie1PouvoirFiles, setNdaPartie1PouvoirFiles] = useState<File[]>([]);
+  const [ndaPartie1OrganigrammeFiles, setNdaPartie1OrganigrammeFiles] = useState<File[]>([]);
+  const [ndaPartie2KbisFiles, setNdaPartie2KbisFiles] = useState<File[]>([]);
+  const [ndaPartie2IdentiteFiles, setNdaPartie2IdentiteFiles] = useState<File[]>([]);
+  const [ndaPartie2PouvoirFiles, setNdaPartie2PouvoirFiles] = useState<File[]>([]);
+  const [ndaPartie2OrganigrammeFiles, setNdaPartie2OrganigrammeFiles] = useState<File[]>([]);
+  const [ndaListeInfosDivulgueesFiles, setNdaListeInfosDivulgueesFiles] = useState<File[]>([]);
+  const [ndaSchemasTechniquesFiles, setNdaSchemasTechniquesFiles] = useState<File[]>([]);
+  const [ndaCahierChargesFiles, setNdaCahierChargesFiles] = useState<File[]>([]);
+  const [ndaDocumentRGPDFiles, setNdaDocumentRGPDFiles] = useState<File[]>([]);
+  const [ndaCharteSecuriteFiles, setNdaCharteSecuriteFiles] = useState<File[]>([]);
+  
   // States pour convention d'indivision
   const [indivisairesIdentiteUrls, setIndivisairesIdentiteUrls] = useState<Record<number, string | null>>({}); // URLs des documents identité indivisaires clients
   const [indivisairesIdentiteFiles, setIndivisairesIdentiteFiles] = useState<Record<number, File[]>>({}); // Fichiers identité indivisaires non-clients
@@ -6978,6 +7131,103 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création contrat sous-traitance:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour créer le NDA
+  const handleCreateNdaContract = async () => {
+    if (!user) return;
+    
+    // Validation
+    if (!ndaData.partie1Nom || !ndaData.partie2Nom || !ndaData.projetConcerne) {
+      toast.error("Champs obligatoires manquants", { description: "Nom des parties et projet concerné requis" });
+      return;
+    }
+    
+    try {
+      // 1. Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          avocat_id: user.id,
+          client_id_1: ndaClientId1 || null,
+          client_id_2: ndaClientId2 || null,
+          type: 'Accord de confidentialité (NDA)',
+          statut: 'brouillon',
+          donnees_formulaire: ndaData,
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      if (!contrat) throw new Error("Contrat non créé");
+      
+      // 2. Upload documents partie 1
+      for (const file of ndaPartie1KbisFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/kbis_${file.name}`, file);
+      }
+      for (const file of ndaPartie1IdentiteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/identite_${file.name}`, file);
+      }
+      for (const file of ndaPartie1PouvoirFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/pouvoir_${file.name}`, file);
+      }
+      for (const file of ndaPartie1OrganigrammeFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie1/organigramme_${file.name}`, file);
+      }
+      
+      // 3. Upload documents partie 2
+      for (const file of ndaPartie2KbisFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/kbis_${file.name}`, file);
+      }
+      for (const file of ndaPartie2IdentiteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/identite_${file.name}`, file);
+      }
+      for (const file of ndaPartie2PouvoirFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/pouvoir_${file.name}`, file);
+      }
+      for (const file of ndaPartie2OrganigrammeFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/partie2/organigramme_${file.name}`, file);
+      }
+      
+      // 4. Upload annexes
+      for (const file of ndaListeInfosDivulgueesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/liste_infos_${file.name}`, file);
+      }
+      for (const file of ndaSchemasTechniquesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/schemas_${file.name}`, file);
+      }
+      for (const file of ndaCahierChargesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/cahier_charges_${file.name}`, file);
+      }
+      for (const file of ndaDocumentRGPDFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/rgpd_${file.name}`, file);
+      }
+      for (const file of ndaCharteSecuriteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/charte_securite_${file.name}`, file);
+      }
+      
+      toast.success("Accord de confidentialité créé avec succès");
+      setPendingContractType("");
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création NDA:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -51879,6 +52129,646 @@ FIN DE LA CONVENTION
               </div>
             )}
 
+            {/* Formulaire NDA (Accord de confidentialité) */}
+            {pendingContractType === "Accord de confidentialité (NDA)" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">🔒 Accord de Confidentialité (NDA)</h3>
+                
+                {/* TYPE DE NDA */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Type de NDA</h4>
+                  <div>
+                    <Label>Type d'accord *</Label>
+                    <Select value={ndaData.typeNda} onValueChange={(val) => setNdaData({...ndaData, typeNda: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="bilateral">Bilatéral (échanges mutuels d'informations)</SelectItem>
+                        <SelectItem value="unilateral">Unilatéral (une seule partie divulgue)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {ndaData.typeNda === "unilateral" && (
+                    <div>
+                      <Label>Partie émettrice (qui divulgue) *</Label>
+                      <Select value={ndaData.partieEmettrice} onValueChange={(val) => setNdaData({...ndaData, partieEmettrice: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="partie1">Partie 1</SelectItem>
+                          <SelectItem value="partie2">Partie 2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
+
+                {/* PARTIE 1 */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Partie 1</h4>
+                  <ClientSelector
+                    value={ndaClientId1}
+                    onChange={setNdaClientId1}
+                    placeholder="Sélectionner un client existant (optionnel)"
+                    role="avocat"
+                  />
+                  <div>
+                    <Label>Dénomination sociale / Nom complet *</Label>
+                    <Input value={ndaData.partie1Nom} onChange={(e) => setNdaData({...ndaData, partie1Nom: e.target.value})} placeholder="Ex: ACME SAS" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Forme juridique</Label>
+                      <Input value={ndaData.partie1FormeJuridique} onChange={(e) => setNdaData({...ndaData, partie1FormeJuridique: e.target.value})} placeholder="Ex: SAS, SARL..." />
+                    </div>
+                    <div>
+                      <Label>Capital</Label>
+                      <Input value={ndaData.partie1Capital} onChange={(e) => setNdaData({...ndaData, partie1Capital: e.target.value})} placeholder="Ex: 10 000 €" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>RCS / SIREN</Label>
+                      <Input value={ndaData.partie1RCS} onChange={(e) => setNdaData({...ndaData, partie1RCS: e.target.value})} placeholder="Ex: 123 456 789" />
+                    </div>
+                    <div>
+                      <Label>Pays</Label>
+                      <Input value={ndaData.partie1Pays} onChange={(e) => setNdaData({...ndaData, partie1Pays: e.target.value})} placeholder="France" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Adresse du siège</Label>
+                    <Input value={ndaData.partie1Siege} onChange={(e) => setNdaData({...ndaData, partie1Siege: e.target.value})} placeholder="Adresse complète" />
+                  </div>
+                  <div>
+                    <Label>Représentant légal (nom + fonction)</Label>
+                    <Input value={ndaData.partie1Representant} onChange={(e) => setNdaData({...ndaData, partie1Representant: e.target.value})} placeholder="Ex: M. Dupont, Président" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Email</Label>
+                      <Input type="email" value={ndaData.partie1Email} onChange={(e) => setNdaData({...ndaData, partie1Email: e.target.value})} placeholder="contact@exemple.com" />
+                    </div>
+                    <div>
+                      <Label>Téléphone</Label>
+                      <Input type="tel" value={ndaData.partie1Telephone} onChange={(e) => setNdaData({...ndaData, partie1Telephone: e.target.value})} placeholder="01 23 45 67 89" />
+                    </div>
+                  </div>
+                  <SingleFileUpload label="Kbis Partie 1" files={ndaPartie1KbisFiles} onFilesChange={setNdaPartie1KbisFiles} role="avocat" />
+                  <SingleFileUpload label="Identité représentant Partie 1" files={ndaPartie1IdentiteFiles} onFilesChange={setNdaPartie1IdentiteFiles} role="avocat" />
+                  <SingleFileUpload label="Pouvoir de signature Partie 1" files={ndaPartie1PouvoirFiles} onFilesChange={setNdaPartie1PouvoirFiles} role="avocat" />
+                  <SingleFileUpload label="Organigramme Partie 1 (optionnel)" files={ndaPartie1OrganigrammeFiles} onFilesChange={setNdaPartie1OrganigrammeFiles} role="avocat" />
+                </div>
+
+                {/* PARTIE 2 */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Partie 2</h4>
+                  <ClientSelector
+                    value={ndaClientId2}
+                    onChange={setNdaClientId2}
+                    placeholder="Sélectionner un client existant (optionnel)"
+                    role="avocat"
+                  />
+                  <div>
+                    <Label>Dénomination sociale / Nom complet *</Label>
+                    <Input value={ndaData.partie2Nom} onChange={(e) => setNdaData({...ndaData, partie2Nom: e.target.value})} placeholder="Ex: TechCorp Inc" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Forme juridique</Label>
+                      <Input value={ndaData.partie2FormeJuridique} onChange={(e) => setNdaData({...ndaData, partie2FormeJuridique: e.target.value})} placeholder="Ex: SAS, SARL..." />
+                    </div>
+                    <div>
+                      <Label>Capital</Label>
+                      <Input value={ndaData.partie2Capital} onChange={(e) => setNdaData({...ndaData, partie2Capital: e.target.value})} placeholder="Ex: 50 000 €" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>RCS / SIREN</Label>
+                      <Input value={ndaData.partie2RCS} onChange={(e) => setNdaData({...ndaData, partie2RCS: e.target.value})} placeholder="Ex: 987 654 321" />
+                    </div>
+                    <div>
+                      <Label>Pays</Label>
+                      <Input value={ndaData.partie2Pays} onChange={(e) => setNdaData({...ndaData, partie2Pays: e.target.value})} placeholder="France" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Adresse du siège</Label>
+                    <Input value={ndaData.partie2Siege} onChange={(e) => setNdaData({...ndaData, partie2Siege: e.target.value})} placeholder="Adresse complète" />
+                  </div>
+                  <div>
+                    <Label>Représentant légal (nom + fonction)</Label>
+                    <Input value={ndaData.partie2Representant} onChange={(e) => setNdaData({...ndaData, partie2Representant: e.target.value})} placeholder="Ex: Mme Martin, Directrice Générale" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Email</Label>
+                      <Input type="email" value={ndaData.partie2Email} onChange={(e) => setNdaData({...ndaData, partie2Email: e.target.value})} placeholder="contact@exemple.com" />
+                    </div>
+                    <div>
+                      <Label>Téléphone</Label>
+                      <Input type="tel" value={ndaData.partie2Telephone} onChange={(e) => setNdaData({...ndaData, partie2Telephone: e.target.value})} placeholder="01 98 76 54 32" />
+                    </div>
+                  </div>
+                  <SingleFileUpload label="Kbis Partie 2" files={ndaPartie2KbisFiles} onFilesChange={setNdaPartie2KbisFiles} role="avocat" />
+                  <SingleFileUpload label="Identité représentant Partie 2" files={ndaPartie2IdentiteFiles} onFilesChange={setNdaPartie2IdentiteFiles} role="avocat" />
+                  <SingleFileUpload label="Pouvoir de signature Partie 2" files={ndaPartie2PouvoirFiles} onFilesChange={setNdaPartie2PouvoirFiles} role="avocat" />
+                  <SingleFileUpload label="Organigramme Partie 2 (optionnel)" files={ndaPartie2OrganigrammeFiles} onFilesChange={setNdaPartie2OrganigrammeFiles} role="avocat" />
+                </div>
+
+                {/* OBJET DU NDA */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Objet du NDA</h4>
+                  <div>
+                    <Label>Type de projet *</Label>
+                    <Select value={ndaData.typeProjet} onValueChange={(val) => setNdaData({...ndaData, typeProjet: val})}>
+                      <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="developpement">Développement technologique</SelectItem>
+                        <SelectItem value="negociations">Négociations commerciales</SelectItem>
+                        <SelectItem value="audit">Audit / Due diligence</SelectItem>
+                        <SelectItem value="partenariat">Partenariat stratégique</SelectItem>
+                        <SelectItem value="innovation">Innovation / Prototype</SelectItem>
+                        <SelectItem value="sourcing">Sourcing fournisseur</SelectItem>
+                        <SelectItem value="autre">Autre</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Projet concerné *</Label>
+                    <Textarea value={ndaData.projetConcerne} onChange={(e) => setNdaData({...ndaData, projetConcerne: e.target.value})} placeholder="Décrivez le projet..." rows={3} />
+                  </div>
+                  <div>
+                    <Label>But des échanges d'informations</Label>
+                    <Textarea value={ndaData.butEchanges} onChange={(e) => setNdaData({...ndaData, butEchanges: e.target.value})} placeholder="Ex: Évaluer la faisabilité d'un partenariat commercial..." rows={3} />
+                  </div>
+                  <div>
+                    <Label>Limites du NDA (ce qui n'est PAS couvert)</Label>
+                    <Textarea value={ndaData.limitesNda} onChange={(e) => setNdaData({...ndaData, limitesNda: e.target.value})} placeholder="Ex: Informations publiques, données marketing générales..." rows={2} />
+                  </div>
+                  <div>
+                    <Label>Durée du projet / collaboration</Label>
+                    <Input value={ndaData.dureeProjet} onChange={(e) => setNdaData({...ndaData, dureeProjet: e.target.value})} placeholder="Ex: 6 mois, 1 an..." />
+                  </div>
+                </div>
+
+                {/* DÉFINITION INFORMATION CONFIDENTIELLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Définition de "Information Confidentielle"</h4>
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded">
+                    <p className="text-sm text-amber-800">⚠️ Même une info non marquée "confidentielle" peut l'être selon le contexte</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.documentsEcrits} onChange={(e) => setNdaData({...ndaData, documentsEcrits: e.target.checked})} className="mr-2" />
+                      <Label>Documents écrits</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.informationsOrales} onChange={(e) => setNdaData({...ndaData, informationsOrales: e.target.checked})} className="mr-2" />
+                      <Label>Informations orales</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.echangesElectroniques} onChange={(e) => setNdaData({...ndaData, echangesElectroniques: e.target.checked})} className="mr-2" />
+                      <Label>Échanges électroniques</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.maquettesPrototypes} onChange={(e) => setNdaData({...ndaData, maquettesPrototypes: e.target.checked})} className="mr-2" />
+                      <Label>Maquettes / Prototypes / Logiciels</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.donneesCommerciales} onChange={(e) => setNdaData({...ndaData, donneesCommerciales: e.target.checked})} className="mr-2" />
+                      <Label>Données commerciales / stratégiques</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.donneesFinancieres} onChange={(e) => setNdaData({...ndaData, donneesFinancieres: e.target.checked})} className="mr-2" />
+                      <Label>Données financières</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.donneesRH} onChange={(e) => setNdaData({...ndaData, donneesRH: e.target.checked})} className="mr-2" />
+                      <Label>Données RH</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.secretsIndustriels} onChange={(e) => setNdaData({...ndaData, secretsIndustriels: e.target.checked})} className="mr-2" />
+                      <Label>Secrets industriels</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.plansAffaires} onChange={(e) => setNdaData({...ndaData, plansAffaires: e.target.checked})} className="mr-2" />
+                      <Label>Plans d'affaires</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.codeSource} onChange={(e) => setNdaData({...ndaData, codeSource: e.target.checked})} className="mr-2" />
+                      <Label>Code source</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.basesDonnees} onChange={(e) => setNdaData({...ndaData, basesDonnees: e.target.checked})} className="mr-2" />
+                      <Label>Bases de données</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.infoNonMarqueeConfidentielle} onChange={(e) => setNdaData({...ndaData, infoNonMarqueeConfidentielle: e.target.checked})} className="mr-2" />
+                      <Label>Info non marquée mais confidentielle par contexte</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* EXCLUSIONS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Exclusions (informations NON confidentielles)</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.informationsPubliques} onChange={(e) => setNdaData({...ndaData, informationsPubliques: e.target.checked})} className="mr-2" />
+                      <Label>Informations publiques</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.informationsConnues} onChange={(e) => setNdaData({...ndaData, informationsConnues: e.target.checked})} className="mr-2" />
+                      <Label>Informations déjà connues de la partie réceptrice</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.informationsTiers} onChange={(e) => setNdaData({...ndaData, informationsTiers: e.target.checked})} className="mr-2" />
+                      <Label>Informations obtenues légalement d'un tiers</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.informationsDeveloppees} onChange={(e) => setNdaData({...ndaData, informationsDeveloppees: e.target.checked})} className="mr-2" />
+                      <Label>Informations développées indépendamment</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.informationsPubliquesApres} onChange={(e) => setNdaData({...ndaData, informationsPubliquesApres: e.target.checked})} className="mr-2" />
+                      <Label>Informations rendues publiques sans faute</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* OBLIGATIONS DES PARTIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Obligations des parties</h4>
+                  
+                  <h5 className="font-medium text-blue-800">Obligations principales</h5>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.utilisationProjetUniquement} onChange={(e) => setNdaData({...ndaData, utilisationProjetUniquement: e.target.checked})} className="mr-2" />
+                      <Label>Utilisation uniquement pour le projet défini</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.nonDivulgationTiers} onChange={(e) => setNdaData({...ndaData, nonDivulgationTiers: e.target.checked})} className="mr-2" />
+                      <Label>Non-divulgation à des tiers</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.protectionDocuments} onChange={(e) => setNdaData({...ndaData, protectionDocuments: e.target.checked})} className="mr-2" />
+                      <Label>Protection des documents</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.restitutionDestruction} onChange={(e) => setNdaData({...ndaData, restitutionDestruction: e.target.checked})} className="mr-2" />
+                      <Label>Restitution ou destruction à la fin du contrat</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.limitationCopies} onChange={(e) => setNdaData({...ndaData, limitationCopies: e.target.checked})} className="mr-2" />
+                      <Label>Limitation de copies</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.interdictionReverseEngineering} onChange={(e) => setNdaData({...ndaData, interdictionReverseEngineering: e.target.checked})} className="mr-2" />
+                      <Label>Interdiction de reverse engineering</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.interdictionExtractionDonnees} onChange={(e) => setNdaData({...ndaData, interdictionExtractionDonnees: e.target.checked})} className="mr-2" />
+                      <Label>Interdiction d'extraction de données</Label>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-medium text-blue-800 mt-4">Obligations de sécurité</h5>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.stockageSecurise} onChange={(e) => setNdaData({...ndaData, stockageSecurise: e.target.checked})} className="mr-2" />
+                      <Label>Stockage sécurisé</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.controleAcces} onChange={(e) => setNdaData({...ndaData, controleAcces: e.target.checked})} className="mr-2" />
+                      <Label>Contrôle des accès</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.needToKnow} onChange={(e) => setNdaData({...ndaData, needToKnow: e.target.checked})} className="mr-2" />
+                      <Label>Communication interne limitée au "need to know"</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.cryptageRecommande} onChange={(e) => setNdaData({...ndaData, cryptageRecommande: e.target.checked})} className="mr-2" />
+                      <Label>Cryptage recommandé (optionnel)</Label>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-medium text-blue-800 mt-4">Sous-traitance</h5>
+                  <div>
+                    <Label>Sous-traitants autorisés ?</Label>
+                    <Select value={ndaData.sousTraitantsAutorises} onValueChange={(val) => setNdaData({...ndaData, sousTraitantsAutorises: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui, autorisés</SelectItem>
+                        <SelectItem value="non">Non, interdits</SelectItem>
+                        <SelectItem value="validation">Autorisés sous validation préalable</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {ndaData.sousTraitantsAutorises !== "non" && (
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.obligationNdaSousTraitants} onChange={(e) => setNdaData({...ndaData, obligationNdaSousTraitants: e.target.checked})} className="mr-2" />
+                      <Label>Obligation de NDA avec les sous-traitants</Label>
+                    </div>
+                  )}
+                </div>
+
+                {/* DURÉE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Durée du NDA</h4>
+                  <div>
+                    <Label>Durée du contrat</Label>
+                    <Input value={ndaData.dureeContrat} onChange={(e) => setNdaData({...ndaData, dureeContrat: e.target.value})} placeholder="Ex: 12 mois, 24 mois..." />
+                  </div>
+                  <div>
+                    <Label>Durée de la confidentialité</Label>
+                    <Input value={ndaData.dureeConfidentialite} onChange={(e) => setNdaData({...ndaData, dureeConfidentialite: e.target.value})} placeholder="Ex: 3 ans, 5 ans, 10 ans..." />
+                  </div>
+                  <div className="flex items-center">
+                    <input type="checkbox" checked={ndaData.confidentialiteIllimitee} onChange={(e) => setNdaData({...ndaData, confidentialiteIllimitee: e.target.checked})} className="mr-2" />
+                    <Label>Confidentialité illimitée (recommandé pour secrets industriels)</Label>
+                  </div>
+                </div>
+
+                {/* PROPRIÉTÉ INTELLECTUELLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Droits de propriété intellectuelle</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.proprieteDivulgateur} onChange={(e) => setNdaData({...ndaData, proprieteDivulgateur: e.target.checked})} className="mr-2" />
+                      <Label>Les informations restent la propriété du divulgateur</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.aucuneLicenceImplicite} onChange={(e) => setNdaData({...ndaData, aucuneLicenceImplicite: e.target.checked})} className="mr-2" />
+                      <Label>Aucune licence implicite n'est accordée</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.interdictionCopie} onChange={(e) => setNdaData({...ndaData, interdictionCopie: e.target.checked})} className="mr-2" />
+                      <Label>Interdiction de copier / reproduire / modifier</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.retourDocuments} onChange={(e) => setNdaData({...ndaData, retourDocuments: e.target.checked})} className="mr-2" />
+                      <Label>Retour des documents en fin de NDA</Label>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Propriété des développements ultérieurs</Label>
+                    <Select value={ndaData.proprieteDeveloppementsUlterieurs} onValueChange={(val) => setNdaData({...ndaData, proprieteDeveloppementsUlterieurs: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="divulgateur">Appartient au divulgateur</SelectItem>
+                        <SelectItem value="recepteur">Appartient au récepteur</SelectItem>
+                        <SelectItem value="copropriete">Copropriété</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* RGPD */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Données personnelles / RGPD</h4>
+                  <div>
+                    <Label>Traitement de données personnelles ?</Label>
+                    <Select value={ndaData.rgpdApplicable} onValueChange={(val) => setNdaData({...ndaData, rgpdApplicable: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {ndaData.rgpdApplicable === "oui" && (
+                    <>
+                      <div>
+                        <Label>Base légale</Label>
+                        <Input value={ndaData.rgpdBaseLegale} onChange={(e) => setNdaData({...ndaData, rgpdBaseLegale: e.target.value})} placeholder="Ex: consentement, intérêt légitime..." />
+                      </div>
+                      <div>
+                        <Label>Durée de conservation</Label>
+                        <Input value={ndaData.rgpdDureeConservation} onChange={(e) => setNdaData({...ndaData, rgpdDureeConservation: e.target.value})} placeholder="Ex: Durée du projet + 3 ans" />
+                      </div>
+                      <div>
+                        <Label>Obligations du récepteur en matière RGPD</Label>
+                        <Textarea value={ndaData.rgpdObligations} onChange={(e) => setNdaData({...ndaData, rgpdObligations: e.target.value})} placeholder="Décrivez les obligations..." rows={3} />
+                      </div>
+                      <div>
+                        <Label>Transfert hors UE</Label>
+                        <Select value={ndaData.rgpdTransfertHorsUE} onValueChange={(val) => setNdaData({...ndaData, rgpdTransfertHorsUE: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="interdit">Interdit sans autorisation</SelectItem>
+                            <SelectItem value="autorise">Autorisé avec garanties</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" checked={ndaData.rgpdNotificationFuite} onChange={(e) => setNdaData({...ndaData, rgpdNotificationFuite: e.target.checked})} className="mr-2" />
+                        <Label>Obligation de notifier en cas de fuite</Label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" checked={ndaData.rgpdDPA} onChange={(e) => setNdaData({...ndaData, rgpdDPA: e.target.checked})} className="mr-2" />
+                        <Label>Ajouter une DPA (Data Processing Agreement)</Label>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* RESPONSABILITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Responsabilité</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.obligationPrudence} onChange={(e) => setNdaData({...ndaData, obligationPrudence: e.target.checked})} className="mr-2" />
+                      <Label>Obligation de prudence du récepteur</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.responsabiliteDivulgation} onChange={(e) => setNdaData({...ndaData, responsabiliteDivulgation: e.target.checked})} className="mr-2" />
+                      <Label>Responsabilité en cas de divulgation</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.exclusionDommagesIndirects} onChange={(e) => setNdaData({...ndaData, exclusionDommagesIndirects: e.target.checked})} className="mr-2" />
+                      <Label>Exclusion des dommages indirects (optionnel)</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.exceptionDemandeLegale} onChange={(e) => setNdaData({...ndaData, exceptionDemandeLegale: e.target.checked})} className="mr-2" />
+                      <Label>Exception en cas de demande légale / judiciaire</Label>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Pénalités en cas de violation (optionnel)</Label>
+                    <Input value={ndaData.penalitesViolation} onChange={(e) => setNdaData({...ndaData, penalitesViolation: e.target.value})} placeholder="Ex: 50 000 € par violation" />
+                  </div>
+                  <div>
+                    <Label>Plafond de responsabilité (optionnel)</Label>
+                    <Input value={ndaData.plafondResponsabilite} onChange={(e) => setNdaData({...ndaData, plafondResponsabilite: e.target.value})} placeholder="Ex: 100 000 €" />
+                  </div>
+                </div>
+
+                {/* RESTITUTION/DESTRUCTION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Restitution / Destruction des informations</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.retourDocumentsFin} onChange={(e) => setNdaData({...ndaData, retourDocumentsFin: e.target.checked})} className="mr-2" />
+                      <Label>Retourner tous les documents</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.destructionCopies} onChange={(e) => setNdaData({...ndaData, destructionCopies: e.target.checked})} className="mr-2" />
+                      <Label>Détruire les copies</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.certificationDestruction} onChange={(e) => setNdaData({...ndaData, certificationDestruction: e.target.checked})} className="mr-2" />
+                      <Label>Certifier la destruction</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.suppressionDonneesElectroniques} onChange={(e) => setNdaData({...ndaData, suppressionDonneesElectroniques: e.target.checked})} className="mr-2" />
+                      <Label>Supprimer données électroniques</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.desactivationAcces} onChange={(e) => setNdaData({...ndaData, desactivationAcces: e.target.checked})} className="mr-2" />
+                      <Label>Désactiver les accès</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* INTERDICTIONS COMPLÉMENTAIRES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Interdictions complémentaires (optionnel)</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.interdictionProspection} onChange={(e) => setNdaData({...ndaData, interdictionProspection: e.target.checked})} className="mr-2" />
+                      <Label>Interdiction de prospection</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.interdictionContourner} onChange={(e) => setNdaData({...ndaData, interdictionContourner: e.target.checked})} className="mr-2" />
+                      <Label>Interdiction de contourner la partie divulgatrice</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.interdictionContactClients} onChange={(e) => setNdaData({...ndaData, interdictionContactClients: e.target.checked})} className="mr-2" />
+                      <Label>Interdiction de contacter directement clients / fournisseurs</Label>
+                    </div>
+                    <div className="flex items-center">
+                      <input type="checkbox" checked={ndaData.interdictionConcurrence} onChange={(e) => setNdaData({...ndaData, interdictionConcurrence: e.target.checked})} className="mr-2" />
+                      <Label>Interdiction d'utiliser les informations pour concurrencer</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DÉBAUCHAGE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Interdiction de débauchage (optionnel)</h4>
+                  <div className="flex items-center mb-3">
+                    <input type="checkbox" checked={ndaData.interdictionDebauchage} onChange={(e) => setNdaData({...ndaData, interdictionDebauchage: e.target.checked})} className="mr-2" />
+                    <Label>Interdiction d'embaucher les employés de l'autre partie</Label>
+                  </div>
+                  {ndaData.interdictionDebauchage && (
+                    <>
+                      <div>
+                        <Label>Durée (mois)</Label>
+                        <Input type="number" value={ndaData.dureeInterdictionDebauchage} onChange={(e) => setNdaData({...ndaData, dureeInterdictionDebauchage: e.target.value})} placeholder="12 ou 24" />
+                      </div>
+                      <div>
+                        <Label>Pénalité financière</Label>
+                        <Input value={ndaData.penaliteDebauchage} onChange={(e) => setNdaData({...ndaData, penaliteDebauchage: e.target.value})} placeholder="Ex: 50 000 € par personne" />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* LITIGES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Litiges & juridiction compétente</h4>
+                  <div>
+                    <Label>Droit applicable</Label>
+                    <Select value={ndaData.droitApplicable} onValueChange={(val) => setNdaData({...ndaData, droitApplicable: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="français">Droit français</SelectItem>
+                        <SelectItem value="autre">Autre droit</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Tribunal compétent</Label>
+                    <Input value={ndaData.tribunalCompetent} onChange={(e) => setNdaData({...ndaData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunal de commerce de Paris" />
+                  </div>
+                  <div>
+                    <Label>Clause de médiation préalable ?</Label>
+                    <Select value={ndaData.mediationPrealable} onValueChange={(val) => setNdaData({...ndaData, mediationPrealable: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Arbitrage ?</Label>
+                    <Select value={ndaData.arbitrage} onValueChange={(val) => setNdaData({...ndaData, arbitrage: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oui">Oui</SelectItem>
+                        <SelectItem value="non">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* VARIATIONS SPÉCIALES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Variations spéciales (optionnel)</h4>
+                  <div>
+                    <Label>Contexte spécial</Label>
+                    <Select value={ndaData.contexteSpecial} onValueChange={(val) => setNdaData({...ndaData, contexteSpecial: val})}>
+                      <SelectTrigger><SelectValue placeholder="Aucun" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Aucun</SelectItem>
+                        <SelectItem value="M&A">Fusion-acquisition (M&A)</SelectItem>
+                        <SelectItem value="technique">NDA technique / informatique</SelectItem>
+                        <SelectItem value="RH">NDA RH</SelectItem>
+                        <SelectItem value="industriel">NDA industriel (Code PI)</SelectItem>
+                        <SelectItem value="international">NDA international</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Langue du contrat</Label>
+                    <Select value={ndaData.langueContrat} onValueChange={(val) => setNdaData({...ndaData, langueContrat: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="français">Français</SelectItem>
+                        <SelectItem value="anglais">Anglais</SelectItem>
+                        <SelectItem value="bilingue">Bilingue (FR/EN)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* ANNEXES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Annexes possibles</h4>
+                  <SingleFileUpload label="Liste des informations déjà divulguées" files={ndaListeInfosDivulgueesFiles} onFilesChange={setNdaListeInfosDivulgueesFiles} role="avocat" />
+                  <SingleFileUpload label="Schémas techniques" files={ndaSchemasTechniquesFiles} onFilesChange={setNdaSchemasTechniquesFiles} role="avocat" />
+                  <SingleFileUpload label="Cahier des charges" files={ndaCahierChargesFiles} onFilesChange={setNdaCahierChargesFiles} role="avocat" />
+                  <SingleFileUpload label="Document RGPD" files={ndaDocumentRGPDFiles} onFilesChange={setNdaDocumentRGPDFiles} role="avocat" />
+                  <SingleFileUpload label="Charte sécurité informatique" files={ndaCharteSecuriteFiles} onFilesChange={setNdaCharteSecuriteFiles} role="avocat" />
+                  <div>
+                    <Label>Descriptions annexes supplémentaires</Label>
+                    <Textarea value={ndaData.annexesDescriptions} onChange={(e) => setNdaData({...ndaData, annexesDescriptions: e.target.value})} placeholder="Listez d'autres annexes si nécessaire..." rows={3} />
+                  </div>
+                </div>
+
+                {/* Boutons d'action */}
+                <div className="flex gap-3 justify-end pt-4">
+                  <Button variant="outline" onClick={() => { setPendingContractType(""); setShowQuestionDialog(false); }}>
+                    Annuler
+                  </Button>
+                  <Button onClick={handleCreateNdaContract} className="bg-blue-600 hover:bg-blue-700">
+                    Créer l'accord de confidentialité
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
             {(() => {
               console.log('🔍 DEBUG CGU - pendingContractType:', JSON.stringify(pendingContractType));
@@ -52907,7 +53797,7 @@ FIN DE LA CONVENTION
             )}
 
             {/* Formulaire générique pour tous les autres types de contrats */}
-            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière", "Quitus / reconnaissance de dette", "Acte de cession de parts sociales", "Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType) && !(pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) && !pendingContractType.includes("agence commerciale") && (
+            {!["Compromis de vente / Promesse unilatérale de vente", "Acte de vente immobilière", "Bail d'habitation vide", "Bail d'habitation meublé", "Bail commercial / professionnel", "Convention d'indivision", "Mainlevée d'hypothèque", "Contrat de mariage (régimes matrimoniaux)", "PACS (convention + enregistrement)", "Donation entre époux", "Donation simple (parent → enfant, etc.)", "Testament authentique ou mystique", "Changement de régime matrimonial", "Déclaration de succession", "Acte de notoriété", "Partage successoral", "Procuration authentique", "Mandat de protection future", "Attestation de propriété immobilière", "Quitus / reconnaissance de dette", "Acte de cession de parts sociales", "Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat d'agence commerciale", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "Accord de confidentialité (NDA)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType) && !(pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) && !pendingContractType.includes("agence commerciale") && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg border-b pb-2">👤 Client concerné</h3>
                 <div className="space-y-2">
@@ -53012,7 +53902,9 @@ FIN DE LA CONVENTION
                   handleCGUSubmit();
                 } else if (pendingContractType.includes("agence commerciale")) {
                   handleAgenceCommercialeSubmit();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de sous-traitance", "NDA (Accord de confidentialité)", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Accord de confidentialité (NDA)") {
+                  handleCreateNdaContract();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
