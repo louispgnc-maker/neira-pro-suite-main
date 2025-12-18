@@ -96,11 +96,12 @@ function ClientSelector({ clients, selectedClientId, onClientChange, label = "SÃ
       <Label htmlFor="client-select">
         {label}
       </Label>
-      <Select value={selectedClientId || undefined} onValueChange={onClientChange}>
+      <Select value={selectedClientId || "none"} onValueChange={(val) => val !== "none" && onClientChange(val)}>
         <SelectTrigger id="client-select">
           <SelectValue placeholder="Choisir un client (optionnel)" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
           {clients.map((client) => (
             <SelectItem key={client.id} value={client.id}>
               {client.prenom} {client.nom}
