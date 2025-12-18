@@ -52165,10 +52165,10 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">Partie 1</h4>
                   <ClientSelector
-                    value={ndaClientId1}
-                    onChange={setNdaClientId1}
-                    placeholder="Sélectionner un client existant (optionnel)"
-                    role="avocat"
+                    clients={clients}
+                    selectedClientId={ndaClientId1}
+                    onClientChange={setNdaClientId1}
+                    label="Sélectionner un client existant (optionnel) - Partie 1"
                   />
                   <div>
                     <Label>Dénomination sociale / Nom complet *</Label>
@@ -52222,10 +52222,10 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">Partie 2</h4>
                   <ClientSelector
-                    value={ndaClientId2}
-                    onChange={setNdaClientId2}
-                    placeholder="Sélectionner un client existant (optionnel)"
-                    role="avocat"
+                    clients={clients}
+                    selectedClientId={ndaClientId2}
+                    onClientChange={setNdaClientId2}
+                    label="Sélectionner un client existant (optionnel) - Partie 2"
                   />
                   <div>
                     <Label>Dénomination sociale / Nom complet *</Label>
