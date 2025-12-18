@@ -2199,6 +2199,10 @@ export default function Contrats() {
       cessionTiers: false,
     },
     
+    // EFFET DE LA CESSION (optionnel)
+    dateEffetCession: "signature", // signature, enregistrement, date_specifique
+    dateEffetCessionSpecifique: "",
+    
     // PRIX ET MODALITÉS DE PAIEMENT
     prixCession: "",
     prixDevise: "EUR",
@@ -2220,6 +2224,7 @@ export default function Contrats() {
     garantieExploitabilite: true,
     garantieAucunLitige: true,
     garantieConnaissanceAnterioritesConnues: true,
+    garantieEviction: true, // garantie contre revendication d'un tiers
     garantieDuree: "permanente", // permanente, limitee
     garantieDureeLimitee: "",
     
@@ -53325,6 +53330,34 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
+                {/* DATE D'EFFET DE LA CESSION (optionnel) */}
+                <div className="space-y-4 p-4 bg-yellow-50/50 rounded-lg border border-yellow-200">
+                  <h4 className="font-semibold text-lg text-yellow-700">📅 Date d'effet de la cession (optionnel)</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Effet de la cession</Label>
+                      <Select value={cessionPiData.dateEffetCession} onValueChange={(val) => setCessionPiData({...cessionPiData, dateEffetCession: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="signature">À la signature du contrat</SelectItem>
+                          <SelectItem value="enregistrement">À l'enregistrement INPI/EUIPO</SelectItem>
+                          <SelectItem value="date_specifique">À une date spécifique</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {cessionPiData.dateEffetCession === "date_specifique" && (
+                      <div>
+                        <Label>Date spécifique</Label>
+                        <Input 
+                          value={cessionPiData.dateEffetCessionSpecifique} 
+                          onChange={(e) => setCessionPiData({...cessionPiData, dateEffetCessionSpecifique: e.target.value})} 
+                          type="date" 
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* PRIX ET PAIEMENT */}
                 <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
                   <h4 className="font-semibold text-lg text-purple-700">Prix et modalités de paiement *</h4>
@@ -53363,6 +53396,7 @@ FIN DE LA CONVENTION
                     <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieValidite} onChange={(e) => setCessionPiData({...cessionPiData, garantieValidite: e.target.checked})} id="g4" /><Label htmlFor="g4">Validité du droit</Label></div>
                     <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieExploitabilite} onChange={(e) => setCessionPiData({...cessionPiData, garantieExploitabilite: e.target.checked})} id="g5" /><Label htmlFor="g5">Exploitabilité</Label></div>
                     <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieAucunLitige} onChange={(e) => setCessionPiData({...cessionPiData, garantieAucunLitige: e.target.checked})} id="g6" /><Label htmlFor="g6">Aucun litige en cours</Label></div>
+                    <div className="flex items-center gap-2"><input type="checkbox" checked={cessionPiData.garantieEviction} onChange={(e) => setCessionPiData({...cessionPiData, garantieEviction: e.target.checked})} id="g7" /><Label htmlFor="g7">Garantie d'éviction (contre revendication tiers)</Label></div>
                   </div>
                   <div><Label>Durée des garanties</Label><Select value={cessionPiData.garantieDuree} onValueChange={(val) => setCessionPiData({...cessionPiData, garantieDuree: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="permanente">Permanente</SelectItem><SelectItem value="limitee">Limitée dans le temps</SelectItem></SelectContent></Select></div>
                   {cessionPiData.garantieDuree === "limitee" && <div><Label>Durée limite</Label><Input value={cessionPiData.garantieDureeLimitee} onChange={(e) => setCessionPiData({...cessionPiData, garantieDureeLimitee: e.target.value})} placeholder="Ex: 3 ans" /></div>}
