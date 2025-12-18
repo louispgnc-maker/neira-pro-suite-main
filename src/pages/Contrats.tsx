@@ -1055,8 +1055,16 @@ export default function Contrats() {
     piecesConditionsCommerciales: false,
   });
   
-  const [cguMentionsLegalesFiles, setCguMentionsLegalesFiles] = useState<File[]>([]);
-  const [cguAnnexesFiles, setCguAnnexesFiles] = useState<File[]>([]);
+  // États individuels pour chaque annexe/pièce CGU
+  const [cguPolitiqueConfidentialiteFile, setCguPolitiqueConfidentialiteFile] = useState<File | null>(null);
+  const [cguPolitiqueCookiesFile, setCguPolitiqueCookiesFile] = useState<File | null>(null);
+  const [cguCharteUtilisationFile, setCguCharteUtilisationFile] = useState<File | null>(null);
+  const [cguDocumentationAPIFile, setCguDocumentationAPIFile] = useState<File | null>(null);
+  const [cguReglesModerationFile, setCguReglesModerationFile] = useState<File | null>(null);
+  const [cguMentionsLegalesFile, setCguMentionsLegalesFile] = useState<File | null>(null);
+  const [cguPolitiqueConfidentialite2File, setCguPolitiqueConfidentialite2File] = useState<File | null>(null);
+  const [cguPolitiqueCookies2File, setCguPolitiqueCookies2File] = useState<File | null>(null);
+  const [cguConditionsCommercialesFile, setCguConditionsCommercialesFile] = useState<File | null>(null);
   
   // States pour Contrat d'agence commerciale
   const [agenceClientId, setAgenceClientId] = useState<string>("");
@@ -5792,6 +5800,55 @@ export default function Contrats() {
         .single();
 
       if (error) throw error;
+
+      // Upload des fichiers annexes CGU
+      if (cguPolitiqueConfidentialiteFile) {
+        const filePath = `${user.id}/${data.id}/annexes/politique_confidentialite_${cguPolitiqueConfidentialiteFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguPolitiqueConfidentialiteFile);
+        if (uploadError) console.error('Erreur upload politique confidentialité:', uploadError);
+      }
+      if (cguPolitiqueCookiesFile) {
+        const filePath = `${user.id}/${data.id}/annexes/politique_cookies_${cguPolitiqueCookiesFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguPolitiqueCookiesFile);
+        if (uploadError) console.error('Erreur upload politique cookies:', uploadError);
+      }
+      if (cguCharteUtilisationFile) {
+        const filePath = `${user.id}/${data.id}/annexes/charte_utilisation_${cguCharteUtilisationFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguCharteUtilisationFile);
+        if (uploadError) console.error('Erreur upload charte:', uploadError);
+      }
+      if (cguDocumentationAPIFile) {
+        const filePath = `${user.id}/${data.id}/annexes/documentation_api_${cguDocumentationAPIFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguDocumentationAPIFile);
+        if (uploadError) console.error('Erreur upload doc API:', uploadError);
+      }
+      if (cguReglesModerationFile) {
+        const filePath = `${user.id}/${data.id}/annexes/regles_moderation_${cguReglesModerationFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguReglesModerationFile);
+        if (uploadError) console.error('Erreur upload règles modération:', uploadError);
+      }
+
+      // Upload des pièces justificatives CGU
+      if (cguMentionsLegalesFile) {
+        const filePath = `${user.id}/${data.id}/pieces/mentions_legales_${cguMentionsLegalesFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguMentionsLegalesFile);
+        if (uploadError) console.error('Erreur upload mentions légales:', uploadError);
+      }
+      if (cguPolitiqueConfidentialite2File) {
+        const filePath = `${user.id}/${data.id}/pieces/politique_confidentialite_${cguPolitiqueConfidentialite2File.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguPolitiqueConfidentialite2File);
+        if (uploadError) console.error('Erreur upload politique confid pièce:', uploadError);
+      }
+      if (cguPolitiqueCookies2File) {
+        const filePath = `${user.id}/${data.id}/pieces/politique_cookies_${cguPolitiqueCookies2File.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguPolitiqueCookies2File);
+        if (uploadError) console.error('Erreur upload politique cookies pièce:', uploadError);
+      }
+      if (cguConditionsCommercialesFile) {
+        const filePath = `${user.id}/${data.id}/pieces/conditions_commerciales_${cguConditionsCommercialesFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('contrats').upload(filePath, cguConditionsCommercialesFile);
+        if (uploadError) console.error('Erreur upload conditions commerciales:', uploadError);
+      }
 
       toast.success("CGU créées", { description: "Conditions Générales d'Utilisation enregistrées" });
       setShowQuestionDialog(false);
@@ -48247,43 +48304,24 @@ FIN DE LA CONVENTION
                 {/* 16. ANNEXES TECHNIQUES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Annexes techniques possibles</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexePolitiqueConfidentialite} onCheckedChange={(v) => setCguData({...cguData, annexePolitiqueConfidentialite: !!v})} id="ann-confid" /><Label htmlFor="ann-confid" className="font-normal">Politique de confidentialité</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexePolitiqueCookies} onCheckedChange={(v) => setCguData({...cguData, annexePolitiqueCookies: !!v})} id="ann-cook" /><Label htmlFor="ann-cook" className="font-normal">Politique cookies</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexeCharteUtilisation} onCheckedChange={(v) => setCguData({...cguData, annexeCharteUtilisation: !!v})} id="ann-charte" /><Label htmlFor="ann-charte" className="font-normal">Charte d'utilisation</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexeDocumentationAPI} onCheckedChange={(v) => setCguData({...cguData, annexeDocumentationAPI: !!v})} id="ann-api" /><Label htmlFor="ann-api" className="font-normal">Documentation API (si applicable)</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.annexeReglesModeration} onCheckedChange={(v) => setCguData({...cguData, annexeReglesModeration: !!v})} id="ann-mod" /><Label htmlFor="ann-mod" className="font-normal">Règles de modération (DSA)</Label></div>
+                  <div className="space-y-3">
+                    <SingleFileUpload label="Politique de confidentialité" file={cguPolitiqueConfidentialiteFile} onFileChange={setCguPolitiqueConfidentialiteFile} role="avocat" />
+                    <SingleFileUpload label="Politique cookies" file={cguPolitiqueCookiesFile} onFileChange={setCguPolitiqueCookiesFile} role="avocat" />
+                    <SingleFileUpload label="Charte d'utilisation" file={cguCharteUtilisationFile} onFileChange={setCguCharteUtilisationFile} role="avocat" />
+                    <SingleFileUpload label="Documentation API (si applicable)" file={cguDocumentationAPIFile} onFileChange={setCguDocumentationAPIFile} role="avocat" />
+                    <SingleFileUpload label="Règles de modération (DSA)" file={cguReglesModerationFile} onFileChange={setCguReglesModerationFile} role="avocat" />
                   </div>
                 </div>
                 
                 {/* 17. PIÈCES JUSTIFICATIVES */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">1️⃣7️⃣ Pièces justificatives (liste)</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.piecesMentionsLegales} onCheckedChange={(v) => setCguData({...cguData, piecesMentionsLegales: !!v})} id="pj-mentions" /><Label htmlFor="pj-mentions" className="font-normal">Mentions légales</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.piecesPolitiqueConfidentialite} onCheckedChange={(v) => setCguData({...cguData, piecesPolitiqueConfidentialite: !!v})} id="pj-confid" /><Label htmlFor="pj-confid" className="font-normal">Politique de confidentialité</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.piecesPolitiqueCookies} onCheckedChange={(v) => setCguData({...cguData, piecesPolitiqueCookies: !!v})} id="pj-cookies" /><Label htmlFor="pj-cookies" className="font-normal">Politique de cookies</Label></div>
-                    <div className="flex items-center space-x-2"><Checkbox checked={cguData.piecesConditionsCommerciales} onCheckedChange={(v) => setCguData({...cguData, piecesConditionsCommerciales: !!v})} id="pj-comm" /><Label htmlFor="pj-comm" className="font-normal">Conditions commerciales (si liées)</Label></div>
+                  <div className="space-y-3">
+                    <SingleFileUpload label="Mentions légales (Kbis, statuts...)" file={cguMentionsLegalesFile} onFileChange={setCguMentionsLegalesFile} role="avocat" />
+                    <SingleFileUpload label="Politique de confidentialité" file={cguPolitiqueConfidentialite2File} onFileChange={setCguPolitiqueConfidentialite2File} role="avocat" />
+                    <SingleFileUpload label="Politique de cookies" file={cguPolitiqueCookies2File} onFileChange={setCguPolitiqueCookies2File} role="avocat" />
+                    <SingleFileUpload label="Conditions commerciales (si liées)" file={cguConditionsCommercialesFile} onFileChange={setCguConditionsCommercialesFile} role="avocat" />
                   </div>
-                </div>
-                
-                {/* UPLOAD FICHIERS */}
-                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">📎 Pièces justificatives</h4>
-                  <MultiFileUpload 
-                    label="Mentions légales (Kbis, statuts...)" 
-                    files={cguMentionsLegalesFiles} 
-                    onFilesChange={setCguMentionsLegalesFiles} 
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    role="avocat"
-                  />
-                  <MultiFileUpload 
-                    label="Annexes (Politique confidentialité, politique cookies, charte utilisation, documentation API...)" 
-                    files={cguAnnexesFiles} 
-                    onFilesChange={setCguAnnexesFiles} 
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
-                    role="avocat"
-                  />
                 </div>
                 
               </div>
