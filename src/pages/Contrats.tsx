@@ -49091,8 +49091,9 @@ FIN DE LA CONVENTION
                       <h5 className="font-semibold text-blue-700">Première partie</h5>
                     </div>
                     <ClientSelector
-                      value={partenariatClientId1}
-                      onChange={(clientId) => {
+                      clients={clients}
+                      selectedClientId={partenariatClientId1}
+                      onClientChange={(clientId) => {
                         setPartenariatClientId1(clientId);
                         if (clientId) {
                           const client = clients.find(c => c.id === clientId);
@@ -49105,8 +49106,7 @@ FIN DE LA CONVENTION
                           }
                         }
                       }}
-                      placeholder="Sélectionner un client existant (optionnel)"
-                      role="avocat"
+                      label="Sélectionner un client existant (optionnel) - Partie 1"
                     />
                     <div>
                       <Label>Nom / Dénomination sociale *</Label>
@@ -49211,8 +49211,9 @@ FIN DE LA CONVENTION
                       <h5 className="font-semibold text-blue-700">Seconde partie</h5>
                     </div>
                     <ClientSelector
-                      value={partenariatClientId2}
-                      onChange={(clientId) => {
+                      clients={clients}
+                      selectedClientId={partenariatClientId2}
+                      onClientChange={(clientId) => {
                         setPartenariatClientId2(clientId);
                         if (clientId) {
                           const client = clients.find(c => c.id === clientId);
@@ -49225,8 +49226,7 @@ FIN DE LA CONVENTION
                           }
                         }
                       }}
-                      placeholder="Sélectionner un client existant (optionnel)"
-                      role="avocat"
+                      label="Sélectionner un client existant (optionnel) - Partie 2"
                     />
                     <div>
                       <Label>Nom / Dénomination sociale *</Label>
