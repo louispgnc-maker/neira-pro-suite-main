@@ -7154,7 +7154,7 @@ export default function Contrats() {
           avocat_id: user.id,
           client_id_1: ndaClientId1 || null,
           client_id_2: ndaClientId2 || null,
-          type: 'Accord de confidentialité (NDA)',
+          type: 'NDA (Accord de confidentialité)',
           statut: 'brouillon',
           donnees_formulaire: ndaData,
         })
@@ -52130,9 +52130,9 @@ FIN DE LA CONVENTION
             )}
 
             {/* Formulaire NDA (Accord de confidentialité) */}
-            {pendingContractType === "Accord de confidentialité (NDA)" && (
+            {pendingContractType === "NDA (Accord de confidentialité)" && (
               <div className="space-y-6">
-                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">🔒 Accord de Confidentialité (NDA)</h3>
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">🔒 NDA (Accord de Confidentialité)</h3>
                 
                 {/* TYPE DE NDA */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
@@ -53902,7 +53902,7 @@ FIN DE LA CONVENTION
                   handleCGUSubmit();
                 } else if (pendingContractType.includes("agence commerciale")) {
                   handleAgenceCommercialeSubmit();
-                } else if (pendingContractType === "Accord de confidentialité (NDA)") {
+                } else if (pendingContractType === "NDA (Accord de confidentialité)") {
                   handleCreateNdaContract();
                 } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Cession de marque / cession de droits de propriété intellectuelle", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
