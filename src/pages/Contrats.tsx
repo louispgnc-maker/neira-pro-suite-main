@@ -49107,10 +49107,7 @@ FIN DE LA CONVENTION
                   
                   {/* Partie 1 */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">1</div>
-                      <h5 className="font-semibold text-blue-700">Première partie</h5>
-                    </div>
+                    <h5 className="font-semibold text-blue-700 mb-3">Partie 1</h5>
                     <ClientSelector
                       clients={clients}
                       selectedClientId={partenariatClientId1}
@@ -49227,10 +49224,7 @@ FIN DE LA CONVENTION
                   
                   {/* Partie 2 */}
                   <div className="space-y-3 p-3 bg-white rounded border border-blue-100">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">2</div>
-                      <h5 className="font-semibold text-blue-700">Seconde partie</h5>
-                    </div>
+                    <h5 className="font-semibold text-blue-700 mb-3">Partie 2</h5>
                     <ClientSelector
                       clients={clients}
                       selectedClientId={partenariatClientId2}
