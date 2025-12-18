@@ -94,11 +94,11 @@ function ClientSelector({ clients, selectedClientId, onClientChange, label = "SÃ
   return (
     <div className="space-y-2">
       <Label htmlFor="client-select">
-        {label} <span className="text-red-500">*</span>
+        {label}
       </Label>
-      <Select value={selectedClientId} onValueChange={onClientChange}>
+      <Select value={selectedClientId || undefined} onValueChange={onClientChange}>
         <SelectTrigger id="client-select">
-          <SelectValue placeholder="Choisir un client" />
+          <SelectValue placeholder="Choisir un client (optionnel)" />
         </SelectTrigger>
         <SelectContent>
           {clients.map((client) => (
