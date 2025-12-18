@@ -230,6 +230,79 @@ function MultiFileUpload({ label, files, onFilesChange, required = false, accept
   );
 }
 
+// Composant SingleFileUpload pour un seul document avec bouton intégré
+interface SingleFileUploadProps {
+  label: string;
+  file: File | null;
+  onFileChange: (file: File | null) => void;
+  required?: boolean;
+  accept?: string;
+  role?: 'notaire' | 'avocat';
+}
+
+function SingleFileUpload({ label, file, onFileChange, required = false, accept, role = 'notaire' }: SingleFileUploadProps) {
+  const inputId = `upload-single-${label.replace(/\s+/g, '-').toLowerCase()}`;
+  
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      onFileChange(e.target.files[0]);
+    }
+  };
+  
+  const removeFile = () => {
+    onFileChange(null);
+  };
+  
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex-1">
+        <Label className="text-sm font-normal">
+          {label} {required && <span className="text-red-500">*</span>}
+        </Label>
+      </div>
+      <div className="flex items-center gap-2">
+        {file ? (
+          <>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded text-xs text-green-700">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="truncate max-w-[150px]" title={file.name}>{file.name}</span>
+              <button
+                type="button"
+                onClick={removeFile}
+                className="p-0.5 text-red-600 hover:bg-red-100 rounded"
+                title="Supprimer"
+              >
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => document.getElementById(inputId)?.click()}
+              className={`px-4 py-1.5 text-xs font-medium text-white rounded transition-colors ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-500 hover:bg-blue-600'}`}
+            >
+              📎 Ajouter
+            </button>
+          </>
+        )}
+        <Input
+          id={inputId}
+          type="file"
+          className="hidden"
+          accept={accept}
+          onChange={handleFileSelect}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function Contrats() {
   const { user } = useAuth();
   const location = useLocation();
@@ -1147,8 +1220,14 @@ export default function Contrats() {
     piecesAgentIdentite: false,
   });
   
-  const [agenceMandantFiles, setAgenceMandantFiles] = useState<File[]>([]);
-  const [agenceAgentFiles, setAgenceAgentFiles] = useState<File[]>([]);
+  // États individuels pour chaque pièce justificative - agence commerciale
+  const [agenceMandantKbisFile, setAgenceMandantKbisFile] = useState<File | null>(null);
+  const [agenceMandantPolitiqueFile, setAgenceMandantPolitiqueFile] = useState<File | null>(null);
+  const [agenceMandantCatalogueFile, setAgenceMandantCatalogueFile] = useState<File | null>(null);
+  const [agenceMandantTarifsFile, setAgenceMandantTarifsFile] = useState<File | null>(null);
+  const [agenceAgentRSACFile, setAgenceAgentRSACFile] = useState<File | null>(null);
+  const [agenceAgentRCProFile, setAgenceAgentRCProFile] = useState<File | null>(null);
+  const [agenceAgentIdentiteFile, setAgenceAgentIdentiteFile] = useState<File | null>(null);
   const [agenceAnnexesFiles, setAgenceAnnexesFiles] = useState<File[]>([]);
   
   // States pour attestation de propriété immobilière
@@ -5791,29 +5870,60 @@ export default function Contrats() {
 
       if (error) throw error;
 
-      // Upload des fichiers mandant
-      if (agenceMandantFiles.length > 0) {
-        for (const file of agenceMandantFiles) {
-          const filePath = `${user.id}/${contrat.id}/mandant/${file.name}`;
-          const { error: uploadError } = await supabase.storage
-            .from('contrats')
-            .upload(filePath, file);
-          if (uploadError) console.error('Erreur upload fichier mandant:', uploadError);
-        }
+      // Upload des fichiers individuels mandant
+      if (agenceMandantKbisFile) {
+        const filePath = `${user.id}/${contrat.id}/mandant/kbis_${agenceMandantKbisFile.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, agenceMandantKbisFile);
+        if (uploadError) console.error('Erreur upload Kbis mandant:', uploadError);
+      }
+      if (agenceMandantPolitiqueFile) {
+        const filePath = `${user.id}/${contrat.id}/mandant/politique_${agenceMandantPolitiqueFile.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, agenceMandantPolitiqueFile);
+        if (uploadError) console.error('Erreur upload politique mandant:', uploadError);
+      }
+      if (agenceMandantCatalogueFile) {
+        const filePath = `${user.id}/${contrat.id}/mandant/catalogue_${agenceMandantCatalogueFile.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, agenceMandantCatalogueFile);
+        if (uploadError) console.error('Erreur upload catalogue mandant:', uploadError);
+      }
+      if (agenceMandantTarifsFile) {
+        const filePath = `${user.id}/${contrat.id}/mandant/tarifs_${agenceMandantTarifsFile.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, agenceMandantTarifsFile);
+        if (uploadError) console.error('Erreur upload tarifs mandant:', uploadError);
       }
 
-      // Upload des fichiers agent
-      if (agenceAgentFiles.length > 0) {
-        for (const file of agenceAgentFiles) {
-          const filePath = `${user.id}/${contrat.id}/agent/${file.name}`;
-          const { error: uploadError } = await supabase.storage
-            .from('contrats')
-            .upload(filePath, file);
-          if (uploadError) console.error('Erreur upload fichier agent:', uploadError);
-        }
+      // Upload des fichiers individuels agent
+      if (agenceAgentRSACFile) {
+        const filePath = `${user.id}/${contrat.id}/agent/rsac_${agenceAgentRSACFile.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, agenceAgentRSACFile);
+        if (uploadError) console.error('Erreur upload RSAC agent:', uploadError);
+      }
+      if (agenceAgentRCProFile) {
+        const filePath = `${user.id}/${contrat.id}/agent/rcpro_${agenceAgentRCProFile.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, agenceAgentRCProFile);
+        if (uploadError) console.error('Erreur upload RC Pro agent:', uploadError);
+      }
+      if (agenceAgentIdentiteFile) {
+        const filePath = `${user.id}/${contrat.id}/agent/identite_${agenceAgentIdentiteFile.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, agenceAgentIdentiteFile);
+        if (uploadError) console.error('Erreur upload identité agent:', uploadError);
       }
 
-      // Upload des annexes
+      // Upload des annexes (plusieurs fichiers possibles)
       if (agenceAnnexesFiles.length > 0) {
         for (const file of agenceAnnexesFiles) {
           const filePath = `${user.id}/${contrat.id}/annexes/${file.name}`;
@@ -48636,45 +48746,22 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
                   <h4 className="font-semibold text-lg text-green-700">1️⃣7️⃣ Pièces justificatives requises</h4>
                   <div className="space-y-4">
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <p className="text-sm font-semibold">Côté mandant :</p>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={agenceData.pieceMandantKbis} onCheckedChange={(v) => setAgenceData({...agenceData, pieceMandantKbis: !!v})} id="piece-kbis" />
-                        <Label htmlFor="piece-kbis" className="font-normal">Extrait Kbis</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={agenceData.pieceMandantPolitique} onCheckedChange={(v) => setAgenceData({...agenceData, pieceMandantPolitique: !!v})} id="piece-pol" />
-                        <Label htmlFor="piece-pol" className="font-normal">Politique commerciale</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={agenceData.pieceMandantCatalogue} onCheckedChange={(v) => setAgenceData({...agenceData, pieceMandantCatalogue: !!v})} id="piece-cat" />
-                        <Label htmlFor="piece-cat" className="font-normal">Catalogue</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={agenceData.pieceMandantTarifs} onCheckedChange={(v) => setAgenceData({...agenceData, pieceMandantTarifs: !!v})} id="piece-tar" />
-                        <Label htmlFor="piece-tar" className="font-normal">Grille tarifaire</Label>
-                      </div>
-                      <MultiFileUpload files={agenceMandantFiles} setFiles={setAgenceMandantFiles} label="Documents mandant" theme="orange" />
+                      <SingleFileUpload label="Extrait Kbis" file={agenceMandantKbisFile} onFileChange={setAgenceMandantKbisFile} role="avocat" />
+                      <SingleFileUpload label="Politique commerciale" file={agenceMandantPolitiqueFile} onFileChange={setAgenceMandantPolitiqueFile} role="avocat" />
+                      <SingleFileUpload label="Catalogue" file={agenceMandantCatalogueFile} onFileChange={setAgenceMandantCatalogueFile} role="avocat" />
+                      <SingleFileUpload label="Grille tarifaire" file={agenceMandantTarifsFile} onFileChange={setAgenceMandantTarifsFile} role="avocat" />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <p className="text-sm font-semibold">Côté agent commercial :</p>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={agenceData.pieceAgentRSAC} onCheckedChange={(v) => setAgenceData({...agenceData, pieceAgentRSAC: !!v})} id="piece-rsac" />
-                        <Label htmlFor="piece-rsac" className="font-normal">Extrait Kbis RSAC (obligatoire)</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={agenceData.pieceAgentRCPro} onCheckedChange={(v) => setAgenceData({...agenceData, pieceAgentRCPro: !!v})} id="piece-rcpro" />
-                        <Label htmlFor="piece-rcpro" className="font-normal">Attestation RC Pro</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox checked={agenceData.pieceAgentIdentite} onCheckedChange={(v) => setAgenceData({...agenceData, pieceAgentIdentite: !!v})} id="piece-id" />
-                        <Label htmlFor="piece-id" className="font-normal">Pièce d'identité si personne physique</Label>
-                      </div>
-                      <MultiFileUpload files={agenceAgentFiles} setFiles={setAgenceAgentFiles} label="Documents agent" theme="orange" />
+                      <SingleFileUpload label="Extrait Kbis RSAC (obligatoire)" file={agenceAgentRSACFile} onFileChange={setAgenceAgentRSACFile} role="avocat" required />
+                      <SingleFileUpload label="Attestation RC Pro" file={agenceAgentRCProFile} onFileChange={setAgenceAgentRCProFile} role="avocat" />
+                      <SingleFileUpload label="Pièce d'identité si personne physique" file={agenceAgentIdentiteFile} onFileChange={setAgenceAgentIdentiteFile} role="avocat" />
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-semibold">Annexes générales :</p>
-                      <MultiFileUpload files={agenceAnnexesFiles} setFiles={setAgenceAnnexesFiles} label="Autres annexes" theme="orange" />
+                      <MultiFileUpload files={agenceAnnexesFiles} setFiles={setAgenceAnnexesFiles} label="Autres annexes (plusieurs fichiers possibles)" role="avocat" />
                     </div>
                   </div>
                 </div>
