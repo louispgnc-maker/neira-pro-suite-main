@@ -52134,6 +52134,45 @@ FIN DE LA CONVENTION
               <div className="space-y-6">
                 <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">🔒 NDA (Accord de Confidentialité)</h3>
                 
+                {/* CLIENT CONCERNÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">👤 Client concerné</h4>
+                  <div className="space-y-2">
+                    <Label>Sélectionner le client</Label>
+                    <Select 
+                      value={selectedClientId}
+                      onValueChange={(value) => {
+                        setSelectedClientId(value);
+                        const client = clients.find(c => c.id === value);
+                        if (client) {
+                          setGenericDescription(`Contrat NDA pour ${client.prenom} ${client.nom}`);
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisir un client" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.prenom} {client.nom}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Description du contrat</Label>
+                    <textarea 
+                      value={genericDescription}
+                      onChange={(e) => setGenericDescription(e.target.value)}
+                      placeholder="Décrivez brièvement le contrat NDA..."
+                      className="w-full min-h-[100px] p-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+
                 {/* TYPE DE NDA */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">Type de NDA</h4>
@@ -52775,16 +52814,6 @@ FIN DE LA CONVENTION
                     <Label>Descriptions annexes supplémentaires</Label>
                     <Textarea value={ndaData.annexesDescriptions} onChange={(e) => setNdaData({...ndaData, annexesDescriptions: e.target.value})} placeholder="Listez d'autres annexes si nécessaire..." rows={3} />
                   </div>
-                </div>
-
-                {/* Boutons d'action */}
-                <div className="flex gap-3 justify-end pt-4">
-                  <Button variant="outline" onClick={() => { setPendingContractType(""); setShowQuestionDialog(false); }}>
-                    Annuler
-                  </Button>
-                  <Button onClick={handleCreateNdaContract} className="bg-blue-600 hover:bg-blue-700">
-                    Créer l'accord de confidentialité
-                  </Button>
                 </div>
               </div>
             )}
