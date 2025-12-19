@@ -2295,6 +2295,185 @@ export default function Contrats() {
   const [cessionPiRapportValuationFiles, setCessionPiRapportValuationFiles] = useState<File[]>([]);
   const [cessionPiAnnexesFiles, setCessionPiAnnexesFiles] = useState<File[]>([]);
   
+  // States pour Contrat de travail (CDD/CDI)
+  const [contratTravailClientIdEmployeur, setContratTravailClientIdEmployeur] = useState<string>("none");
+  const [contratTravailClientIdSalarie, setContratTravailClientIdSalarie] = useState<string>("none");
+  const [contratTravailData, setContratTravailData] = useState({
+    // TYPE DE CONTRAT
+    typeContrat: "CDI", // CDI, CDD
+    
+    // EMPLOYEUR
+    employeurRaisonSociale: "",
+    employeurFormeJuridique: "",
+    employeurSiret: "",
+    employeurCodeNAF: "",
+    employeurSiege: "",
+    employeurEtablissement: "", // si différent du siège
+    employeurRepresentant: "",
+    employeurFonction: "",
+    employeurTelephone: "",
+    employeurEmail: "",
+    employeurNumeroUrssaf: "",
+    employeurConventionCollective: "",
+    employeurIdccNumero: "",
+    
+    // SALARIÉ
+    salarieNom: "",
+    salariePrenom: "",
+    salarieDateNaissance: "",
+    salarieLieuNaissance: "",
+    salarieNationalite: "",
+    salarieNumeroSecuSociale: "",
+    salarieAdresse: "",
+    salarieVille: "",
+    salarieCodePostal: "",
+    salarieTelephone: "",
+    salarieEmail: "",
+    salarieSituationFamiliale: "",
+    salarieNombreEnfants: "",
+    
+    // POSTE ET FONCTIONS
+    posteIntitule: "",
+    posteClassification: "", // selon convention collective
+    posteCoefficient: "",
+    posteCategorie: "employé", // employé, agent_maitrise, cadre
+    postePosition: "",
+    posteFonctions: "", // description détaillée
+    posteLieuTravail: "",
+    posteLieuTravailMobilite: "non", // oui, non
+    posteMobiliteDescription: "",
+    
+    // DURÉE DU CONTRAT
+    // Pour CDI
+    cdiDateEmbauche: "",
+    cdiPeriodeEssai: "oui", // oui, non
+    cdiPeriodeEssaiDuree: "2", // en mois
+    cdiPeriodeEssaiRenouvellement: "non",
+    cdiPeriodeEssaiRenouvellementDuree: "",
+    
+    // Pour CDD
+    cddMotifRecours: "", // remplacement, accroissement_activite, travaux_saisonniers, usage
+    cddMotifPrecisions: "",
+    cddDateDebut: "",
+    cddDateFin: "",
+    cddDuree: "", // si terme imprécis
+    cddRenouvellement: "non",
+    cddRenouvellementNombre: "",
+    cddRenouvellementDureeMax: "",
+    cddPeriodeEssai: "non",
+    cddPeriodeEssaiDuree: "",
+    
+    // TEMPS DE TRAVAIL
+    tempsTravailType: "temps_plein", // temps_plein, temps_partiel
+    tempsTravailDureeHebdo: "35", // heures
+    tempsTravailRepartition: "", // lundi-vendredi 9h-17h, etc.
+    tempsTravailHorairesVariables: "non",
+    tempsTravailHorairesDescription: "",
+    tempsTravailTeletravail: "non",
+    tempsTravailTeletravailJours: "",
+    tempsTravailHeuresSup: "possible", // possible, interdit, obligatoire
+    tempsTravailHeuresSupMajorations: "",
+    
+    // RÉMUNÉRATION
+    remunerationBruteMensuelle: "",
+    remunerationBruteAnnuelle: "",
+    remunerationMinimumConventionnel: "",
+    remunerationPrimes: "non",
+    remunerationPrimesDescription: "",
+    remunerationVariables: "non",
+    remunerationVariablesDescription: "",
+    remunerationAvantagesNature: "non",
+    remunerationAvantagesDescription: "", // véhicule, logement, etc.
+    remunerationTicketsRestaurant: "non",
+    remunerationTicketsRestaurantMontant: "",
+    remunerationMutuelle: "oui",
+    remunerationMutuelleDescription: "",
+    remunerationPrevoyance: "oui",
+    remunerationPrevoyanceDescription: "",
+    remunerationRetraiteComplementaire: "oui",
+    remunerationModalitePaiement: "virement", // virement, chèque
+    remunerationDatePaiement: "", // ex: dernier jour du mois
+    
+    // CONGÉS
+    congesPayes: "oui",
+    congesPayesDuree: "30", // jours ouvrables / an (5 semaines)
+    congesPayesAcquisition: "1er juin au 31 mai",
+    congesRTT: "non",
+    congesRTTNombre: "",
+    congesAnciennete: "non",
+    congesAncienneteDescription: "",
+    congesSpeciaux: "", // mariage, décès, déménagement
+    
+    // CLAUSE DE CONFIDENTIALITÉ
+    clauseConfidentialite: "oui",
+    clauseConfidentialiteDuree: "pendant et après le contrat",
+    clauseConfidentialiteDescription: "",
+    
+    // CLAUSE DE NON-CONCURRENCE
+    clauseNonConcurrence: "non",
+    clauseNonConcurrenceDuree: "", // mois après fin contrat
+    clauseNonConcurrenceTerritoire: "",
+    clauseNonConcurrenceActivites: "",
+    clauseNonConcurrenceContrepartieFinanciere: "",
+    clauseNonConcurrenceContrepartieMontant: "",
+    
+    // CLAUSE D'EXCLUSIVITÉ
+    clauseExclusivite: "oui",
+    clauseExclusiviteExceptions: "",
+    
+    // PROPRIÉTÉ INTELLECTUELLE
+    proprietéIntellectuelle: "employeur", // employeur, salarie, partage
+    proprietéIntellectuelleDescription: "",
+    
+    // FORMATION
+    formationObligatoire: "non",
+    formationDescription: "",
+    formationDuree: "",
+    formationClauseDedit: "non",
+    formationClauseDuree: "", // engagement de rester X mois
+    formationClauseMontant: "",
+    
+    // PROTECTION SOCIALE
+    protectionRegimeGeneral: "oui",
+    protectionCaisseRetraite: "",
+    protectionOrganismePrevoyance: "",
+    protectionMutuelle: "",
+    
+    // RUPTURE DU CONTRAT
+    // CDI
+    rupturePreaviscdi: "", // selon ancienneté et convention
+    ruptureIndemnites: "selon convention collective",
+    ruptureModalites: "",
+    
+    // CDD
+    ruptureAnticipeePossible: "non", // faute grave, accord mutuel, force majeure
+    ruptureAnticipeeConditions: "",
+    ruptureIndemniteFinContrat: "oui", // 10% de la rémunération brute totale
+    ruptureIndemnitePrecaire: "oui",
+    
+    // DIVERS
+    diversAutresClausesDescription: "",
+    diversMentionsLegales: "Convention collective applicable, visite médicale d'embauche, règlement intérieur",
+    
+    // DOCUMENTS ET ANNEXES
+    annexesFichesPoste: "",
+    annexesReglement: "",
+    annexesAutres: "",
+  });
+  
+  // File states pour Contrat de travail
+  const [contratTravailEmployeurKbisFiles, setContratTravailEmployeurKbisFiles] = useState<File[]>([]);
+  const [contratTravailEmployeurIdccFiles, setContratTravailEmployeurIdccFiles] = useState<File[]>([]);
+  const [contratTravailSalarieIdentiteFiles, setContratTravailSalarieIdentiteFiles] = useState<File[]>([]);
+  const [contratTravailSalarieSecuFiles, setContratTravailSalarieSecuFiles] = useState<File[]>([]);
+  const [contratTravailSalarieVitaleFiles, setContratTravailSalarieVitaleFiles] = useState<File[]>([]);
+  const [contratTravailSalarieRIBFiles, setContratTravailSalarieRIBFiles] = useState<File[]>([]);
+  const [contratTravailSalarieDiplomesFiles, setContratTravailSalarieDiplomesFiles] = useState<File[]>([]);
+  const [contratTravailSalarieCVFiles, setContratTravailSalarieCVFiles] = useState<File[]>([]);
+  const [contratTravailFichePosteFiles, setContratTravailFichePosteFiles] = useState<File[]>([]);
+  const [contratTravailReglementInterieurFiles, setContratTravailReglementInterieurFiles] = useState<File[]>([]);
+  const [contratTravailAnnexesFiles, setContratTravailAnnexesFiles] = useState<File[]>([]);
+  
   // States pour convention d'indivision
   const [indivisairesIdentiteUrls, setIndivisairesIdentiteUrls] = useState<Record<number, string | null>>({}); // URLs des documents identité indivisaires clients
   const [indivisairesIdentiteFiles, setIndivisairesIdentiteFiles] = useState<Record<number, File[]>>({}); // Fichiers identité indivisaires non-clients
@@ -7551,6 +7730,110 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création cession PI:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour Contrat de travail (CDD/CDI)
+  const handleCreateContratTravailContract = async () => {
+    if (!user) return;
+    
+    // Validation
+    if (!contratTravailData.employeurRaisonSociale || !contratTravailData.salarieNom || !contratTravailData.salariePrenom) {
+      toast.error("Champs obligatoires manquants", { description: "Employeur et identité du salarié requis" });
+      return;
+    }
+    
+    if (contratTravailData.typeContrat === "CDI" && !contratTravailData.cdiDateEmbauche) {
+      toast.error("Date d'embauche requise pour un CDI");
+      return;
+    }
+    
+    if (contratTravailData.typeContrat === "CDD" && (!contratTravailData.cddDateDebut || !contratTravailData.cddMotifRecours)) {
+      toast.error("Date de début et motif de recours requis pour un CDD");
+      return;
+    }
+    
+    if (!contratTravailData.posteIntitule || !contratTravailData.remunerationBruteMensuelle) {
+      toast.error("Intitulé du poste et rémunération requis");
+      return;
+    }
+    
+    try {
+      // 1. Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          avocat_id: user.id,
+          client_id_1: contratTravailClientIdEmployeur && contratTravailClientIdEmployeur !== "none" ? contratTravailClientIdEmployeur : null,
+          client_id_2: contratTravailClientIdSalarie && contratTravailClientIdSalarie !== "none" ? contratTravailClientIdSalarie : null,
+          type: 'Contrat de travail (CDD/CDI)',
+          statut: 'brouillon',
+          donnees_formulaire: contratTravailData,
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      if (!contrat) throw new Error("Contrat non créé");
+      
+      // 2. Upload documents employeur
+      for (const file of contratTravailEmployeurKbisFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/employeur/kbis_${file.name}`, file);
+      }
+      for (const file of contratTravailEmployeurIdccFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/employeur/idcc_${file.name}`, file);
+      }
+      
+      // 3. Upload documents salarié
+      for (const file of contratTravailSalarieIdentiteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/salarie/identite_${file.name}`, file);
+      }
+      for (const file of contratTravailSalarieSecuFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/salarie/secu_${file.name}`, file);
+      }
+      for (const file of contratTravailSalarieVitaleFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/salarie/vitale_${file.name}`, file);
+      }
+      for (const file of contratTravailSalarieRIBFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/salarie/rib_${file.name}`, file);
+      }
+      for (const file of contratTravailSalarieDiplomesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/salarie/diplomes_${file.name}`, file);
+      }
+      for (const file of contratTravailSalarieCVFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/salarie/cv_${file.name}`, file);
+      }
+      
+      // 4. Upload documents du contrat
+      for (const file of contratTravailFichePosteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/fiche_poste_${file.name}`, file);
+      }
+      for (const file of contratTravailReglementInterieurFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/reglement_${file.name}`, file);
+      }
+      for (const file of contratTravailAnnexesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes_${file.name}`, file);
+      }
+      
+      toast.success(`Contrat de travail ${contratTravailData.typeContrat} créé avec succès`);
+      setPendingContractType("");
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création contrat travail:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -53478,6 +53761,225 @@ FIN DE LA CONVENTION
               </div>
             )}
 
+            {/* Formulaire Contrat de travail (CDD/CDI) */}
+            {pendingContractType === "Contrat de travail (CDD/CDI)" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-green-300 pb-2 text-green-700">💼 Contrat de travail (CDD/CDI)</h3>
+                
+                {/* TYPE DE CONTRAT */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">Type de contrat *</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setContratTravailData({...contratTravailData, typeContrat: "CDI"})}
+                      className={`p-4 rounded-lg border-2 transition ${contratTravailData.typeContrat === "CDI" ? "border-green-600 bg-green-100" : "border-gray-300 bg-white"}`}
+                    >
+                      <div className="font-semibold text-lg">CDI</div>
+                      <div className="text-sm text-gray-600">Contrat à Durée Indéterminée</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setContratTravailData({...contratTravailData, typeContrat: "CDD"})}
+                      className={`p-4 rounded-lg border-2 transition ${contratTravailData.typeContrat === "CDD" ? "border-green-600 bg-green-100" : "border-gray-300 bg-white"}`}
+                    >
+                      <div className="font-semibold text-lg">CDD</div>
+                      <div className="text-sm text-gray-600">Contrat à Durée Déterminée</div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* CLIENTS CONCERNÉS */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">👤 Clients concernés (optionnel)</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Employeur</Label>
+                      <Select value={contratTravailClientIdEmployeur} onValueChange={setContratTravailClientIdEmployeur}>
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Salarié</Label>
+                      <Select value={contratTravailClientIdSalarie} onValueChange={setContratTravailClientIdSalarie}>
+                        <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
+                          {clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.prenom} {client.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* EMPLOYEUR */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">Employeur *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Raison sociale *</Label><Input value={contratTravailData.employeurRaisonSociale} onChange={(e) => setContratTravailData({...contratTravailData, employeurRaisonSociale: e.target.value})} /></div>
+                    <div><Label>Forme juridique</Label><Input value={contratTravailData.employeurFormeJuridique} onChange={(e) => setContratTravailData({...contratTravailData, employeurFormeJuridique: e.target.value})} placeholder="SARL, SAS, SA..." /></div>
+                    <div><Label>SIRET *</Label><Input value={contratTravailData.employeurSiret} onChange={(e) => setContratTravailData({...contratTravailData, employeurSiret: e.target.value})} /></div>
+                    <div><Label>Code NAF</Label><Input value={contratTravailData.employeurCodeNAF} onChange={(e) => setContratTravailData({...contratTravailData, employeurCodeNAF: e.target.value})} /></div>
+                    <div className="md:col-span-2"><Label>Adresse du siège</Label><Input value={contratTravailData.employeurSiege} onChange={(e) => setContratTravailData({...contratTravailData, employeurSiege: e.target.value})} /></div>
+                    <div><Label>Représentant légal</Label><Input value={contratTravailData.employeurRepresentant} onChange={(e) => setContratTravailData({...contratTravailData, employeurRepresentant: e.target.value})} /></div>
+                    <div><Label>Fonction</Label><Input value={contratTravailData.employeurFonction} onChange={(e) => setContratTravailData({...contratTravailData, employeurFonction: e.target.value})} placeholder="Ex: Directeur général" /></div>
+                    <div><Label>N° URSSAF</Label><Input value={contratTravailData.employeurNumeroUrssaf} onChange={(e) => setContratTravailData({...contratTravailData, employeurNumeroUrssaf: e.target.value})} /></div>
+                    <div><Label>Convention collective</Label><Input value={contratTravailData.employeurConventionCollective} onChange={(e) => setContratTravailData({...contratTravailData, employeurConventionCollective: e.target.value})} placeholder="Ex: Syntec" /></div>
+                    <div><Label>N° IDCC</Label><Input value={contratTravailData.employeurIdccNumero} onChange={(e) => setContratTravailData({...contratTravailData, employeurIdccNumero: e.target.value})} placeholder="Ex: 1486" /></div>
+                  </div>
+                  <h5 className="font-medium text-green-600 mt-4">Pièces justificatives employeur</h5>
+                  <SingleFileUpload label="Kbis / Extrait RCS" files={contratTravailEmployeurKbisFiles} onFilesChange={setContratTravailEmployeurKbisFiles} role="avocat" />
+                  <SingleFileUpload label="Convention collective (IDCC)" files={contratTravailEmployeurIdccFiles} onFilesChange={setContratTravailEmployeurIdccFiles} role="avocat" />
+                </div>
+
+                {/* SALARIÉ */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">Salarié *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Nom *</Label><Input value={contratTravailData.salarieNom} onChange={(e) => setContratTravailData({...contratTravailData, salarieNom: e.target.value})} /></div>
+                    <div><Label>Prénom *</Label><Input value={contratTravailData.salariePrenom} onChange={(e) => setContratTravailData({...contratTravailData, salariePrenom: e.target.value})} /></div>
+                    <div><Label>Date de naissance</Label><Input value={contratTravailData.salarieDateNaissance} onChange={(e) => setContratTravailData({...contratTravailData, salarieDateNaissance: e.target.value})} type="date" /></div>
+                    <div><Label>Lieu de naissance</Label><Input value={contratTravailData.salarieLieuNaissance} onChange={(e) => setContratTravailData({...contratTravailData, salarieLieuNaissance: e.target.value})} /></div>
+                    <div><Label>Nationalité</Label><Input value={contratTravailData.salarieNationalite} onChange={(e) => setContratTravailData({...contratTravailData, salarieNationalite: e.target.value})} placeholder="Française" /></div>
+                    <div><Label>N° Sécurité Sociale</Label><Input value={contratTravailData.salarieNumeroSecuSociale} onChange={(e) => setContratTravailData({...contratTravailData, salarieNumeroSecuSociale: e.target.value})} /></div>
+                    <div className="md:col-span-2"><Label>Adresse</Label><Input value={contratTravailData.salarieAdresse} onChange={(e) => setContratTravailData({...contratTravailData, salarieAdresse: e.target.value})} /></div>
+                    <div><Label>Code postal</Label><Input value={contratTravailData.salarieCodePostal} onChange={(e) => setContratTravailData({...contratTravailData, salarieCodePostal: e.target.value})} /></div>
+                    <div><Label>Ville</Label><Input value={contratTravailData.salarieVille} onChange={(e) => setContratTravailData({...contratTravailData, salarieVille: e.target.value})} /></div>
+                    <div><Label>Email</Label><Input value={contratTravailData.salarieEmail} onChange={(e) => setContratTravailData({...contratTravailData, salarieEmail: e.target.value})} type="email" /></div>
+                    <div><Label>Téléphone</Label><Input value={contratTravailData.salarieTelephone} onChange={(e) => setContratTravailData({...contratTravailData, salarieTelephone: e.target.value})} /></div>
+                  </div>
+                  <h5 className="font-medium text-green-600 mt-4">Pièces justificatives salarié</h5>
+                  <SingleFileUpload label="Pièce d'identité" files={contratTravailSalarieIdentiteFiles} onFilesChange={setContratTravailSalarieIdentiteFiles} role="avocat" required />
+                  <SingleFileUpload label="Carte Vitale / Attestation Sécurité Sociale" files={contratTravailSalarieVitaleFiles} onFilesChange={setContratTravailSalarieVitaleFiles} role="avocat" />
+                  <SingleFileUpload label="RIB" files={contratTravailSalarieRIBFiles} onFilesChange={setContratTravailSalarieRIBFiles} role="avocat" required />
+                  <SingleFileUpload label="Diplômes" files={contratTravailSalarieDiplomesFiles} onFilesChange={setContratTravailSalarieDiplomesFiles} role="avocat" />
+                  <SingleFileUpload label="CV" files={contratTravailSalarieCVFiles} onFilesChange={setContratTravailSalarieCVFiles} role="avocat" />
+                </div>
+
+                {/* POSTE */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">Poste et fonctions *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2"><Label>Intitulé du poste *</Label><Input value={contratTravailData.posteIntitule} onChange={(e) => setContratTravailData({...contratTravailData, posteIntitule: e.target.value})} placeholder="Ex: Développeur Full Stack" /></div>
+                    <div><Label>Classification</Label><Input value={contratTravailData.posteClassification} onChange={(e) => setContratTravailData({...contratTravailData, posteClassification: e.target.value})} placeholder="Selon convention collective" /></div>
+                    <div><Label>Coefficient</Label><Input value={contratTravailData.posteCoefficient} onChange={(e) => setContratTravailData({...contratTravailData, posteCoefficient: e.target.value})} /></div>
+                    <div><Label>Catégorie</Label><Select value={contratTravailData.posteCategorie} onValueChange={(val) => setContratTravailData({...contratTravailData, posteCategorie: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="employé">Employé</SelectItem><SelectItem value="agent_maitrise">Agent de maîtrise</SelectItem><SelectItem value="cadre">Cadre</SelectItem></SelectContent></Select></div>
+                    <div><Label>Position</Label><Input value={contratTravailData.postePosition} onChange={(e) => setContratTravailData({...contratTravailData, postePosition: e.target.value})} placeholder="Selon grille convention" /></div>
+                    <div className="md:col-span-2"><Label>Lieu de travail</Label><Input value={contratTravailData.posteLieuTravail} onChange={(e) => setContratTravailData({...contratTravailData, posteLieuTravail: e.target.value})} /></div>
+                  </div>
+                  <div><Label>Description des fonctions *</Label><Textarea value={contratTravailData.posteFonctions} onChange={(e) => setContratTravailData({...contratTravailData, posteFonctions: e.target.value})} placeholder="Missions principales du poste..." rows={4} /></div>
+                </div>
+
+                {/* DURÉE DU CONTRAT - CDI */}
+                {contratTravailData.typeContrat === "CDI" && (
+                  <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                    <h4 className="font-semibold text-lg text-blue-700">📅 Durée du contrat (CDI)</h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Date d'embauche *</Label><Input value={contratTravailData.cdiDateEmbauche} onChange={(e) => setContratTravailData({...contratTravailData, cdiDateEmbauche: e.target.value})} type="date" /></div>
+                      <div><Label>Période d'essai</Label><Select value={contratTravailData.cdiPeriodeEssai} onValueChange={(val) => setContratTravailData({...contratTravailData, cdiPeriodeEssai: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                      {contratTravailData.cdiPeriodeEssai === "oui" && (
+                        <>
+                          <div><Label>Durée période d'essai (mois)</Label><Input value={contratTravailData.cdiPeriodeEssaiDuree} onChange={(e) => setContratTravailData({...contratTravailData, cdiPeriodeEssaiDuree: e.target.value})} placeholder="2" /></div>
+                          <div><Label>Renouvellement possible</Label><Select value={contratTravailData.cdiPeriodeEssaiRenouvellement} onValueChange={(val) => setContratTravailData({...contratTravailData, cdiPeriodeEssaiRenouvellement: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* DURÉE DU CONTRAT - CDD */}
+                {contratTravailData.typeContrat === "CDD" && (
+                  <div className="space-y-4 p-4 bg-orange-50/50 rounded-lg border border-orange-200">
+                    <h4 className="font-semibold text-lg text-orange-700">📅 Durée du contrat (CDD)</h4>
+                    <div><Label>Motif de recours *</Label><Select value={contratTravailData.cddMotifRecours} onValueChange={(val) => setContratTravailData({...contratTravailData, cddMotifRecours: val})}><SelectTrigger><SelectValue placeholder="Choisir un motif" /></SelectTrigger><SelectContent><SelectItem value="remplacement">Remplacement d'un salarié absent</SelectItem><SelectItem value="accroissement_activite">Accroissement temporaire d'activité</SelectItem><SelectItem value="travaux_saisonniers">Travaux saisonniers</SelectItem><SelectItem value="usage">Emploi à caractère d'usage</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select></div>
+                    <div><Label>Précisions sur le motif</Label><Textarea value={contratTravailData.cddMotifPrecisions} onChange={(e) => setContratTravailData({...contratTravailData, cddMotifPrecisions: e.target.value})} rows={2} /></div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Date de début *</Label><Input value={contratTravailData.cddDateDebut} onChange={(e) => setContratTravailData({...contratTravailData, cddDateDebut: e.target.value})} type="date" /></div>
+                      <div><Label>Date de fin</Label><Input value={contratTravailData.cddDateFin} onChange={(e) => setContratTravailData({...contratTravailData, cddDateFin: e.target.value})} type="date" /></div>
+                      <div><Label>Durée (si terme imprécis)</Label><Input value={contratTravailData.cddDuree} onChange={(e) => setContratTravailData({...contratTravailData, cddDuree: e.target.value})} placeholder="Ex: Jusqu'au retour de M. X" /></div>
+                      <div><Label>Renouvellement</Label><Select value={contratTravailData.cddRenouvellement} onValueChange={(val) => setContratTravailData({...contratTravailData, cddRenouvellement: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui, possible</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TEMPS DE TRAVAIL */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">⏰ Temps de travail *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Type</Label><Select value={contratTravailData.tempsTravailType} onValueChange={(val) => setContratTravailData({...contratTravailData, tempsTravailType: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="temps_plein">Temps plein</SelectItem><SelectItem value="temps_partiel">Temps partiel</SelectItem></SelectContent></Select></div>
+                    <div><Label>Durée hebdomadaire (heures) *</Label><Input value={contratTravailData.tempsTravailDureeHebdo} onChange={(e) => setContratTravailData({...contratTravailData, tempsTravailDureeHebdo: e.target.value})} placeholder="35" /></div>
+                    <div className="md:col-span-2"><Label>Répartition horaire</Label><Input value={contratTravailData.tempsTravailRepartition} onChange={(e) => setContratTravailData({...contratTravailData, tempsTravailRepartition: e.target.value})} placeholder="Lundi-Vendredi 9h-17h" /></div>
+                    <div><Label>Télétravail</Label><Select value={contratTravailData.tempsTravailTeletravail} onValueChange={(val) => setContratTravailData({...contratTravailData, tempsTravailTeletravail: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                    {contratTravailData.tempsTravailTeletravail === "oui" && <div><Label>Jours de télétravail</Label><Input value={contratTravailData.tempsTravailTeletravailJours} onChange={(e) => setContratTravailData({...contratTravailData, tempsTravailTeletravailJours: e.target.value})} placeholder="Ex: 2 jours/semaine" /></div>}
+                  </div>
+                </div>
+
+                {/* RÉMUNÉRATION */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">💰 Rémunération *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Salaire brut mensuel * (€)</Label><Input value={contratTravailData.remunerationBruteMensuelle} onChange={(e) => setContratTravailData({...contratTravailData, remunerationBruteMensuelle: e.target.value})} placeholder="Ex: 3000" /></div>
+                    <div><Label>Salaire brut annuel (€)</Label><Input value={contratTravailData.remunerationBruteAnnuelle} onChange={(e) => setContratTravailData({...contratTravailData, remunerationBruteAnnuelle: e.target.value})} placeholder="Ex: 36000" /></div>
+                    <div><Label>Minimum conventionnel (€)</Label><Input value={contratTravailData.remunerationMinimumConventionnel} onChange={(e) => setContratTravailData({...contratTravailData, remunerationMinimumConventionnel: e.target.value})} /></div>
+                    <div><Label>Primes</Label><Select value={contratTravailData.remunerationPrimes} onValueChange={(val) => setContratTravailData({...contratTravailData, remunerationPrimes: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                    {contratTravailData.remunerationPrimes === "oui" && <div className="md:col-span-2"><Label>Description des primes</Label><Textarea value={contratTravailData.remunerationPrimesDescription} onChange={(e) => setContratTravailData({...contratTravailData, remunerationPrimesDescription: e.target.value})} placeholder="Ex: Prime sur objectifs, 13ème mois..." rows={2} /></div>}
+                    <div><Label>Date de paiement</Label><Input value={contratTravailData.remunerationDatePaiement} onChange={(e) => setContratTravailData({...contratTravailData, remunerationDatePaiement: e.target.value})} placeholder="Ex: Dernier jour du mois" /></div>
+                    <div><Label>Modalité paiement</Label><Select value={contratTravailData.remunerationModalitePaiement} onValueChange={(val) => setContratTravailData({...contratTravailData, remunerationModalitePaiement: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="virement">Virement bancaire</SelectItem><SelectItem value="cheque">Chèque</SelectItem></SelectContent></Select></div>
+                  </div>
+                </div>
+
+                {/* CONGÉS */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">🏖️ Congés</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Congés payés (jours/an)</Label><Input value={contratTravailData.congesPayesDuree} onChange={(e) => setContratTravailData({...contratTravailData, congesPayesDuree: e.target.value})} placeholder="30 jours ouvrables" /></div>
+                    <div><Label>Période d'acquisition</Label><Input value={contratTravailData.congesPayesAcquisition} onChange={(e) => setContratTravailData({...contratTravailData, congesPayesAcquisition: e.target.value})} placeholder="1er juin - 31 mai" /></div>
+                    <div><Label>RTT</Label><Select value={contratTravailData.congesRTT} onValueChange={(val) => setContratTravailData({...contratTravailData, congesRTT: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                    {contratTravailData.congesRTT === "oui" && <div><Label>Nombre de RTT</Label><Input value={contratTravailData.congesRTTNombre} onChange={(e) => setContratTravailData({...contratTravailData, congesRTTNombre: e.target.value})} placeholder="Ex: 10 jours" /></div>}
+                  </div>
+                </div>
+
+                {/* CLAUSES SPÉCIALES */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">📋 Clauses spéciales</h4>
+                  <div className="space-y-3">
+                    <div><Label>Confidentialité</Label><Select value={contratTravailData.clauseConfidentialite} onValueChange={(val) => setContratTravailData({...contratTravailData, clauseConfidentialite: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                    <div><Label>Non-concurrence</Label><Select value={contratTravailData.clauseNonConcurrence} onValueChange={(val) => setContratTravailData({...contratTravailData, clauseNonConcurrence: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                    {contratTravailData.clauseNonConcurrence === "oui" && (
+                      <div className="p-3 bg-white rounded border space-y-3">
+                        <div className="grid md:grid-cols-3 gap-4">
+                          <div><Label>Durée (mois)</Label><Input value={contratTravailData.clauseNonConcurrenceDuree} onChange={(e) => setContratTravailData({...contratTravailData, clauseNonConcurrenceDuree: e.target.value})} placeholder="12" /></div>
+                          <div><Label>Territoire</Label><Input value={contratTravailData.clauseNonConcurrenceTerritoire} onChange={(e) => setContratTravailData({...contratTravailData, clauseNonConcurrenceTerritoire: e.target.value})} placeholder="France" /></div>
+                          <div><Label>Contrepartie (€/mois)</Label><Input value={contratTravailData.clauseNonConcurrenceContrepartieMontant} onChange={(e) => setContratTravailData({...contratTravailData, clauseNonConcurrenceContrepartieMontant: e.target.value})} placeholder="500" /></div>
+                        </div>
+                      </div>
+                    )}
+                    <div><Label>Exclusivité</Label><Select value={contratTravailData.clauseExclusivite} onValueChange={(val) => setContratTravailData({...contratTravailData, clauseExclusivite: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                  </div>
+                </div>
+
+                {/* PIÈCES JUSTIFICATIVES */}
+                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-lg text-green-700">📄 Documents</h4>
+                  <SingleFileUpload label="Fiche de poste" files={contratTravailFichePosteFiles} onFilesChange={setContratTravailFichePosteFiles} role="avocat" />
+                  <SingleFileUpload label="Règlement intérieur" files={contratTravailReglementInterieurFiles} onFilesChange={setContratTravailReglementInterieurFiles} role="avocat" />
+                  <MultiFileUpload label="Autres annexes" files={contratTravailAnnexesFiles} onFilesChange={setContratTravailAnnexesFiles} role="avocat" />
+                </div>
+              </div>
+            )}
+
             {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
             {(() => {
               console.log('🔍 DEBUG CGU - pendingContractType:', JSON.stringify(pendingContractType));
@@ -54574,7 +55076,9 @@ FIN DE LA CONVENTION
                   handleCreateNdaContract();
                 } else if (pendingContractType === "Cession de marque / cession de droits de propriété intellectuelle") {
                   handleCreateCessionPiContract();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Contrat de travail (CDD/CDI)", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Contrat de travail (CDD/CDI)") {
+                  handleCreateContratTravailContract();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
