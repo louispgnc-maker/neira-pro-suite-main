@@ -54626,8 +54626,8 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-blue-200 bg-orange-50 -m-4 p-4 rounded">
-                    <h5 className="font-semibold text-orange-700 mb-3">⚠️ Assurances (OBLIGATOIRE)</h5>
+                  <div className="mt-4 pt-4 border-t border-blue-200 bg-white -m-4 p-4 rounded">
+                    <h5 className="font-semibold text-gray-700 mb-3">⚠️ Assurances (OBLIGATOIRE)</h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div><Label>Assurance responsabilité civile *</Label><Input value={conventionStageData.stagiaireAssuranceRC} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceRC: e.target.value})} placeholder="Nom de l'assurance" /></div>
                       <div><Label>Numéro de police RC *</Label><Input value={conventionStageData.stagiaireAssuranceRCNumero} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceRCNumero: e.target.value})} /></div>
@@ -54783,7 +54783,7 @@ FIN DE LA CONVENTION
                         onChange={(e) => setConventionStageData({...conventionStageData, stageNombreHeuresTotal: e.target.value})} 
                         placeholder="Ex: 420 heures" 
                       />
-                      <p className="text-xs text-orange-600 mt-1">⚠️ Si ≥ 308h (44 jours), gratification obligatoire</p>
+                      <p className="text-xs text-gray-600 mt-1">⚠️ Si ≥ 308h (44 jours), gratification obligatoire</p>
                     </div>
                     <div>
                       <Label>Volume horaire hebdomadaire</Label>
@@ -54881,9 +54881,9 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-gray-700">5️⃣ Gratification / Indemnisation</h4>
                   
-                  <div className="p-3 bg-orange-50 rounded border border-orange-200">
-                    <p className="text-sm font-semibold text-orange-700">⚠️ Gratification obligatoire dès 44 jours (308h) de stage</p>
-                    <p className="text-xs text-orange-600 mt-1">Minimum légal 2024 : 4,35€/heure (indexé chaque année)</p>
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700">⚠️ Gratification obligatoire dès 44 jours (308h) de stage</p>
+                    <p className="text-xs text-gray-600 mt-1">Minimum légal 2024 : 4,35€/heure (indexé chaque année)</p>
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-4">
@@ -55009,8 +55009,8 @@ FIN DE LA CONVENTION
                   <h4 className="font-semibold text-lg text-gray-700">7️⃣ Assurances (OBLIGATOIRES)</h4>
                   
                   <div className="space-y-4">
-                    <div className="p-3 bg-orange-50 rounded border border-orange-200">
-                      <h5 className="font-semibold text-orange-700 mb-2">Stagiaire</h5>
+                    <div className="p-3 bg-white rounded border border-gray-200">
+                      <h5 className="font-semibold text-gray-700 mb-2">Stagiaire</h5>
                       <div className="grid md:grid-cols-2 gap-4">
                         <div><Label>Assurance maladie</Label><Input value={conventionStageData.stagiaireAssuranceMaladie} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceMaladie: e.target.value})} placeholder="France ou étranger" /></div>
                         <div>
