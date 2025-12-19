@@ -2352,16 +2352,24 @@ export default function Contrats() {
     cdiPeriodeEssaiRenouvellementDuree: "",
     
     // Pour CDD
-    cddMotifRecours: "", // remplacement, accroissement_activite, travaux_saisonniers, usage
+    cddMotifRecours: "", // remplacement, accroissement_activite, travaux_saisonniers, usage, attente_cdi, autre
     cddMotifPrecisions: "",
+    cddMotifAbsence: "", // pour motif remplacement
+    cddTypeTerme: "precis", // precis, imprecis
     cddDateDebut: "",
     cddDateFin: "",
     cddDuree: "", // si terme imprécis
+    cddDureeMax: "", // durée max si terme imprécis
     cddRenouvellement: "non",
     cddRenouvellementNombre: "",
     cddRenouvellementDureeMax: "",
+    cddRenouvellementModalites: "",
     cddPeriodeEssai: "non",
     cddPeriodeEssaiDuree: "",
+    cddIndemniteFinContrat: "10%", // 10%, exoneration
+    cddIndemniteExonerationMotif: "", // saisonnier, usage, refus_cdi, contrat_aide, jeune_vacances
+    cddDelaiCarence: "non", // oui, non
+    cddDelaiCarencePrecisions: "",
     
     // TEMPS DE TRAVAIL
     tempsTravailType: "temps_plein", // temps_plein, temps_partiel
@@ -7750,9 +7758,46 @@ export default function Contrats() {
       return;
     }
     
-    if (contratTravailData.typeContrat === "CDD" && (!contratTravailData.cddDateDebut || !contratTravailData.cddMotifRecours)) {
-      toast.error("Date de début et motif de recours requis pour un CDD");
-      return;
+    if (contratTravailData.typeContrat === "CDD") {
+      if (!contratTravailData.cddDateDebut || !contratTravailData.cddMotifRecours) {
+        toast.error("Date de début et motif légal de recours requis pour un CDD");
+        return;
+      }
+      
+      // Validation motif remplacement
+      if (contratTravailData.cddMotifRecours === "remplacement" && (!contratTravailData.cddMotifPrecisions || !contratTravailData.cddMotifAbsence)) {
+        toast.error("Nom du salarié remplacé et motif d'absence requis");
+        return;
+      }
+      
+      // Validation terme précis
+      if (contratTravailData.cddTypeTerme === "precis" && !contratTravailData.cddDateFin) {
+        toast.error("Date de fin requise pour un CDD à terme précis");
+        return;
+      }
+      
+      // Validation terme imprécis
+      if (contratTravailData.cddTypeTerme === "imprecis" && !contratTravailData.cddDuree) {
+        toast.error("Durée minimale requise pour un CDD à terme imprécis");
+        return;
+      }
+      
+      // Validation renouvellement
+      if (contratTravailData.cddRenouvellement === "oui" && (!contratTravailData.cddRenouvellementNombre || !contratTravailData.cddRenouvellementDureeMax)) {
+        toast.error("Préciser le nombre de renouvellements et la durée maximale");
+        return;
+      }
+      
+      // Validation indemnité fin de contrat
+      if (!contratTravailData.cddIndemniteFinContrat) {
+        toast.error("Préciser si indemnité de fin de contrat applicable");
+        return;
+      }
+      
+      if (contratTravailData.cddIndemniteFinContrat === "exoneration" && !contratTravailData.cddIndemniteExonerationMotif) {
+        toast.error("Préciser le motif d'exonération de l'indemnité de fin de contrat");
+        return;
+      }
     }
     
     if (!contratTravailData.posteIntitule || !contratTravailData.remunerationBruteMensuelle) {
@@ -53922,13 +53967,131 @@ FIN DE LA CONVENTION
                 {contratTravailData.typeContrat === "CDD" && (
                   <div className="space-y-4 p-4 bg-orange-50/50 rounded-lg border border-orange-200">
                     <h4 className="font-semibold text-lg text-orange-700">📅 Durée du contrat (CDD)</h4>
-                    <div><Label>Motif de recours *</Label><Select value={contratTravailData.cddMotifRecours} onValueChange={(val) => setContratTravailData({...contratTravailData, cddMotifRecours: val})}><SelectTrigger><SelectValue placeholder="Choisir un motif" /></SelectTrigger><SelectContent><SelectItem value="remplacement">Remplacement d'un salarié absent</SelectItem><SelectItem value="accroissement_activite">Accroissement temporaire d'activité</SelectItem><SelectItem value="travaux_saisonniers">Travaux saisonniers</SelectItem><SelectItem value="usage">Emploi à caractère d'usage</SelectItem><SelectItem value="autre">Autre</SelectItem></SelectContent></Select></div>
-                    <div><Label>Précisions sur le motif</Label><Textarea value={contratTravailData.cddMotifPrecisions} onChange={(e) => setContratTravailData({...contratTravailData, cddMotifPrecisions: e.target.value})} rows={2} /></div>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div><Label>Date de début *</Label><Input value={contratTravailData.cddDateDebut} onChange={(e) => setContratTravailData({...contratTravailData, cddDateDebut: e.target.value})} type="date" /></div>
-                      <div><Label>Date de fin</Label><Input value={contratTravailData.cddDateFin} onChange={(e) => setContratTravailData({...contratTravailData, cddDateFin: e.target.value})} type="date" /></div>
-                      <div><Label>Durée (si terme imprécis)</Label><Input value={contratTravailData.cddDuree} onChange={(e) => setContratTravailData({...contratTravailData, cddDuree: e.target.value})} placeholder="Ex: Jusqu'au retour de M. X" /></div>
-                      <div><Label>Renouvellement</Label><Select value={contratTravailData.cddRenouvellement} onValueChange={(val) => setContratTravailData({...contratTravailData, cddRenouvellement: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui, possible</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
+                    
+                    {/* 1️⃣ MOTIF LÉGAL (OBLIGATOIRE) */}
+                    <div className="p-3 bg-red-50 border border-red-300 rounded">
+                      <p className="text-sm font-semibold text-red-700 mb-2">⚠️ Motif obligatoire - Risque de requalification en CDI si absent</p>
+                    </div>
+                    
+                    <div>
+                      <Label>Motif légal du recours au CDD *</Label>
+                      <Select value={contratTravailData.cddMotifRecours} onValueChange={(val) => setContratTravailData({...contratTravailData, cddMotifRecours: val})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir un motif légal" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="remplacement">Remplacement d'un salarié absent</SelectItem>
+                          <SelectItem value="accroissement_activite">Accroissement temporaire d'activité</SelectItem>
+                          <SelectItem value="travaux_saisonniers">Emploi saisonnier</SelectItem>
+                          <SelectItem value="usage">CDD d'usage</SelectItem>
+                          <SelectItem value="attente_cdi">Attente entrée en fonction CDI</SelectItem>
+                          <SelectItem value="autre">Autre motif légal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Détails selon le motif */}
+                    {contratTravailData.cddMotifRecours === "remplacement" && (
+                      <div className="p-3 bg-white rounded border space-y-3">
+                        <div><Label>Nom du salarié remplacé *</Label><Input value={contratTravailData.cddMotifPrecisions} onChange={(e) => setContratTravailData({...contratTravailData, cddMotifPrecisions: e.target.value})} placeholder="Ex: Jean Dupont" /></div>
+                        <div><Label>Motif de l'absence *</Label><Input value={contratTravailData.cddMotifAbsence} onChange={(e) => setContratTravailData({...contratTravailData, cddMotifAbsence: e.target.value})} placeholder="Ex: Congé maternité, arrêt maladie..." /></div>
+                      </div>
+                    )}
+                    
+                    {(contratTravailData.cddMotifRecours === "accroissement_activite" || contratTravailData.cddMotifRecours === "autre") && (
+                      <div><Label>Précisions sur le motif *</Label><Textarea value={contratTravailData.cddMotifPrecisions} onChange={(e) => setContratTravailData({...contratTravailData, cddMotifPrecisions: e.target.value})} placeholder="Détailler le motif légal du recours au CDD..." rows={2} /></div>
+                    )}
+                    
+                    {/* 2️⃣ DURÉE DU CDD */}
+                    <div className="space-y-3 mt-4">
+                      <h5 className="font-medium text-orange-600">Type de terme</h5>
+                      <Select value={contratTravailData.cddTypeTerme} onValueChange={(val) => setContratTravailData({...contratTravailData, cddTypeTerme: val})}>
+                        <SelectTrigger><SelectValue placeholder="Choisir le type de terme" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="precis">CDD à terme précis (dates définies)</SelectItem>
+                          <SelectItem value="imprecis">CDD à terme imprécis (retour salarié, fin chantier...)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {contratTravailData.cddTypeTerme === "precis" && (
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div><Label>Date de début du CDD *</Label><Input value={contratTravailData.cddDateDebut} onChange={(e) => setContratTravailData({...contratTravailData, cddDateDebut: e.target.value})} type="date" /></div>
+                        <div><Label>Date de fin du CDD *</Label><Input value={contratTravailData.cddDateFin} onChange={(e) => setContratTravailData({...contratTravailData, cddDateFin: e.target.value})} type="date" /></div>
+                      </div>
+                    )}
+                    
+                    {contratTravailData.cddTypeTerme === "imprecis" && (
+                      <div className="space-y-3">
+                        <div><Label>Date de début *</Label><Input value={contratTravailData.cddDateDebut} onChange={(e) => setContratTravailData({...contratTravailData, cddDateDebut: e.target.value})} type="date" /></div>
+                        <div><Label>Durée minimale *</Label><Input value={contratTravailData.cddDuree} onChange={(e) => setContratTravailData({...contratTravailData, cddDuree: e.target.value})} placeholder="Ex: Jusqu'au retour de M. X / Fin du chantier" /></div>
+                        <div><Label>Durée maximale estimée</Label><Input value={contratTravailData.cddDureeMax} onChange={(e) => setContratTravailData({...contratTravailData, cddDureeMax: e.target.value})} placeholder="Ex: 6 mois maximum" /></div>
+                      </div>
+                    )}
+                    
+                    {/* 3️⃣ RENOUVELLEMENT */}
+                    <div className="space-y-3 mt-4 p-3 bg-white rounded border">
+                      <h5 className="font-medium text-orange-600">Renouvellement du CDD</h5>
+                      <p className="text-xs text-gray-600">Mention obligatoire dans le contrat, même si aucun renouvellement prévu</p>
+                      
+                      <div><Label>Renouvellement possible ? *</Label><Select value={contratTravailData.cddRenouvellement} onValueChange={(val) => setContratTravailData({...contratTravailData, cddRenouvellement: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non - Pas de renouvellement</SelectItem><SelectItem value="oui">Oui - Renouvellement possible</SelectItem></SelectContent></Select></div>
+                      
+                      {contratTravailData.cddRenouvellement === "oui" && (
+                        <div className="space-y-3">
+                          <div><Label>Nombre maximum de renouvellements *</Label><Select value={contratTravailData.cddRenouvellementNombre} onValueChange={(val) => setContratTravailData({...contratTravailData, cddRenouvellementNombre: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="1">1 fois</SelectItem><SelectItem value="2">2 fois</SelectItem></SelectContent></Select></div>
+                          <div><Label>Durée totale maximale envisagée *</Label><Input value={contratTravailData.cddRenouvellementDureeMax} onChange={(e) => setContratTravailData({...contratTravailData, cddRenouvellementDureeMax: e.target.value})} placeholder="Ex: 18 mois maximum" /></div>
+                          <div><Label>Modalités du renouvellement</Label><Textarea value={contratTravailData.cddRenouvellementModalites} onChange={(e) => setContratTravailData({...contratTravailData, cddRenouvellementModalites: e.target.value})} placeholder="Préciser les conditions de renouvellement..." rows={2} /></div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* 4️⃣ PÉRIODE D'ESSAI CDD */}
+                    <div className="space-y-3 mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+                      <h5 className="font-medium text-blue-600">Période d'essai (CDD)</h5>
+                      <div className="text-xs text-blue-700 p-2 bg-blue-100 rounded">
+                        📚 Base légale :<br/>
+                        • CDD ≤ 6 mois : 1 jour par semaine (max 2 semaines)<br/>
+                        • CDD &gt; 6 mois : 1 mois maximum
+                      </div>
+                      
+                      <div><Label>Période d'essai ?</Label><Select value={contratTravailData.cddPeriodeEssai} onValueChange={(val) => setContratTravailData({...contratTravailData, cddPeriodeEssai: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non</SelectItem><SelectItem value="oui">Oui</SelectItem></SelectContent></Select></div>
+                      
+                      {contratTravailData.cddPeriodeEssai === "oui" && (
+                        <div><Label>Durée de la période d'essai</Label><Input value={contratTravailData.cddPeriodeEssaiDuree} onChange={(e) => setContratTravailData({...contratTravailData, cddPeriodeEssaiDuree: e.target.value})} placeholder="Ex: 2 semaines / 1 mois" /></div>
+                      )}
+                    </div>
+                    
+                    {/* 5️⃣ INDEMNITÉ DE FIN DE CONTRAT */}
+                    <div className="space-y-3 mt-4 p-3 bg-green-50 rounded border border-green-200">
+                      <h5 className="font-medium text-green-600">Indemnité de fin de contrat (prime de précarité)</h5>
+                      
+                      <div><Label>Indemnité de fin de contrat *</Label><Select value={contratTravailData.cddIndemniteFinContrat} onValueChange={(val) => setContratTravailData({...contratTravailData, cddIndemniteFinContrat: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="10%">Oui - 10% de la rémunération brute totale</SelectItem><SelectItem value="exoneration">Non - Exonération légale applicable</SelectItem></SelectContent></Select></div>
+                      
+                      {contratTravailData.cddIndemniteFinContrat === "exoneration" && (
+                        <div>
+                          <Label>Motif d'exonération *</Label>
+                          <Select value={contratTravailData.cddIndemniteExonerationMotif} onValueChange={(val) => setContratTravailData({...contratTravailData, cddIndemniteExonerationMotif: val})}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="saisonnier">CDD saisonnier</SelectItem>
+                              <SelectItem value="usage">CDD d'usage</SelectItem>
+                              <SelectItem value="refus_cdi">Refus de CDI par le salarié</SelectItem>
+                              <SelectItem value="contrat_aide">Contrat aidé</SelectItem>
+                              <SelectItem value="jeune_vacances">Contrat jeune pendant vacances scolaires/universitaires</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* 6️⃣ DÉLAI DE CARENCE */}
+                    <div className="space-y-3 mt-4 p-3 bg-gray-50 rounded border">
+                      <h5 className="font-medium text-gray-700">Délai de carence (information juridique)</h5>
+                      <p className="text-xs text-gray-600">En principe, un délai de carence s'applique entre deux CDD sur le même poste (1/3 ou 1/2 de la durée du CDD précédent)</p>
+                      
+                      <div><Label>Délai de carence applicable ?</Label><Select value={contratTravailData.cddDelaiCarence} onValueChange={(val) => setContratTravailData({...contratTravailData, cddDelaiCarence: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non (premier CDD ou exception)</SelectItem><SelectItem value="oui">Oui - Délai de carence respecté</SelectItem></SelectContent></Select></div>
+                      
+                      {contratTravailData.cddDelaiCarence === "oui" && (
+                        <div><Label>Précisions sur le délai</Label><Input value={contratTravailData.cddDelaiCarencePrecisions} onChange={(e) => setContratTravailData({...contratTravailData, cddDelaiCarencePrecisions: e.target.value})} placeholder="Durée du délai respecté..." /></div>
+                      )}
                     </div>
                   </div>
                 )}
