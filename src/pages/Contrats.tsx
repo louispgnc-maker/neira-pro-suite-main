@@ -53965,12 +53965,12 @@ FIN DE LA CONVENTION
 
                 {/* DURÉE DU CONTRAT - CDD */}
                 {contratTravailData.typeContrat === "CDD" && (
-                  <div className="space-y-4 p-4 bg-gray-50/50 rounded-lg border border-gray-200">
+                  <div className="space-y-4 p-4 bg-white/50 rounded-lg border border-gray-200">
                     <h4 className="font-semibold text-lg text-gray-700">📅 Durée du contrat (CDD)</h4>
                     
                     {/* 1️⃣ MOTIF LÉGAL (OBLIGATOIRE) */}
-                    <div className="p-3 bg-red-50 border border-red-300 rounded">
-                      <p className="text-sm font-semibold text-red-700 mb-2">⚠️ Motif obligatoire - Risque de requalification en CDI si absent</p>
+                    <div className="p-3 bg-white border border-gray-300 rounded">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">⚠️ Motif obligatoire - Risque de requalification en CDI si absent</p>
                     </div>
                     
                     <div>
@@ -54044,9 +54044,9 @@ FIN DE LA CONVENTION
                     </div>
                     
                     {/* 4️⃣ PÉRIODE D'ESSAI CDD */}
-                    <div className="space-y-3 mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-                      <h5 className="font-medium text-blue-600">Période d'essai (CDD)</h5>
-                      <div className="text-xs text-blue-700 p-2 bg-blue-100 rounded">
+                    <div className="space-y-3 mt-4 p-3 bg-white rounded border border-gray-300">
+                      <h5 className="font-medium text-gray-700">Période d'essai (CDD)</h5>
+                      <div className="text-xs text-gray-700 p-2 bg-gray-100 rounded">
                         📚 Base légale :<br/>
                         • CDD ≤ 6 mois : 1 jour par semaine (max 2 semaines)<br/>
                         • CDD &gt; 6 mois : 1 mois maximum
@@ -54060,8 +54060,8 @@ FIN DE LA CONVENTION
                     </div>
                     
                     {/* 5️⃣ INDEMNITÉ DE FIN DE CONTRAT */}
-                    <div className="space-y-3 mt-4 p-3 bg-green-50 rounded border border-green-200">
-                      <h5 className="font-medium text-green-600">Indemnité de fin de contrat (prime de précarité)</h5>
+                    <div className="space-y-3 mt-4 p-3 bg-white rounded border border-gray-300">
+                      <h5 className="font-medium text-gray-700">Indemnité de fin de contrat (prime de précarité)</h5>
                       
                       <div><Label>Indemnité de fin de contrat *</Label><Select value={contratTravailData.cddIndemniteFinContrat} onValueChange={(val) => setContratTravailData({...contratTravailData, cddIndemniteFinContrat: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="10%">Oui - 10% de la rémunération brute totale</SelectItem><SelectItem value="exoneration">Non - Exonération légale applicable</SelectItem></SelectContent></Select></div>
                       
@@ -54083,7 +54083,7 @@ FIN DE LA CONVENTION
                     </div>
                     
                     {/* 6️⃣ DÉLAI DE CARENCE */}
-                    <div className="space-y-3 mt-4 p-3 bg-gray-50 rounded border">
+                    <div className="space-y-3 mt-4 p-3 bg-white rounded border">
                       <h5 className="font-medium text-gray-700">Délai de carence (information juridique)</h5>
                       <p className="text-xs text-gray-600">En principe, un délai de carence s'applique entre deux CDD sur le même poste (1/3 ou 1/2 de la durée du CDD précédent)</p>
                       
@@ -54097,8 +54097,8 @@ FIN DE LA CONVENTION
                 )}
 
                 {/* TEMPS DE TRAVAIL */}
-                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">⏰ Temps de travail *</h4>
+                <div className="space-y-4 p-4 bg-white/50 rounded-lg border border-gray-300">
+                  <h4 className="font-semibold text-lg text-gray-700">⏰ Temps de travail *</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Type</Label><Select value={contratTravailData.tempsTravailType} onValueChange={(val) => setContratTravailData({...contratTravailData, tempsTravailType: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="temps_plein">Temps plein</SelectItem><SelectItem value="temps_partiel">Temps partiel</SelectItem></SelectContent></Select></div>
                     <div><Label>Durée hebdomadaire (heures) *</Label><Input value={contratTravailData.tempsTravailDureeHebdo} onChange={(e) => setContratTravailData({...contratTravailData, tempsTravailDureeHebdo: e.target.value})} placeholder="35" /></div>
