@@ -54508,11 +54508,11 @@ FIN DE LA CONVENTION
             {/* Formulaire Convention de stage */}
             {pendingContractType === "Convention de stage" && (
               <div className="space-y-6">
-                <h3 className="font-semibold text-xl border-b-2 border-purple-300 pb-2 text-gray-700">🎓 Convention de stage</h3>
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">🎓 Convention de stage</h3>
                 
                 {/* TYPE DE STAGE */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">Type de stage *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Type de stage *</h4>
                   <Select value={conventionStageData.stageType} onValueChange={(val) => setConventionStageData({...conventionStageData, stageType: val})}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -54527,8 +54527,8 @@ FIN DE LA CONVENTION
                 {/* 1️⃣ IDENTIFICATION DES PARTIES */}
                 
                 {/* A. ÉTABLISSEMENT D'ENSEIGNEMENT */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">🏫 A. Établissement d'enseignement *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🏫 A. Établissement d'enseignement *</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Nom de l'établissement *</Label><Input value={conventionStageData.etablissementNom} onChange={(e) => setConventionStageData({...conventionStageData, etablissementNom: e.target.value})} placeholder="Université / École" /></div>
                     <div><Label>Département / UFR / Pôle</Label><Input value={conventionStageData.etablissementDepartement} onChange={(e) => setConventionStageData({...conventionStageData, etablissementDepartement: e.target.value})} placeholder="Ex: UFR Droit" /></div>
@@ -54540,7 +54540,7 @@ FIN DE LA CONVENTION
                     <div><Label>Cachet</Label><Input value={conventionStageData.etablissementCachet} onChange={(e) => setConventionStageData({...conventionStageData, etablissementCachet: e.target.value})} placeholder="Optionnel" /></div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-purple-200">
+                  <div className="mt-4 pt-4 border-t border-blue-200">
                     <h5 className="font-semibold text-gray-700 mb-3">Responsable pédagogique</h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div><Label>Nom et prénom *</Label><Input value={conventionStageData.etablissementResponsablePedagogique} onChange={(e) => setConventionStageData({...conventionStageData, etablissementResponsablePedagogique: e.target.value})} /></div>
@@ -54552,8 +54552,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* B. STAGIAIRE */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">👤 B. Stagiaire *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">👤 B. Stagiaire *</h4>
                   
                   <div className="mb-4">
                     <Label>Sélectionner parmi vos clients (optionnel)</Label>
@@ -54602,7 +54602,7 @@ FIN DE LA CONVENTION
                     <div><Label>Téléphone *</Label><Input value={conventionStageData.stagiaireTelephone} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireTelephone: e.target.value})} /></div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-purple-200">
+                  <div className="mt-4 pt-4 border-t border-blue-200">
                     <h5 className="font-semibold text-gray-700 mb-3">Formation</h5>
                     <div className="grid md:grid-cols-3 gap-4">
                       <div><Label>Filière / Diplôme préparé *</Label><Input value={conventionStageData.stagiaireFiliere} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireFiliere: e.target.value})} placeholder="Ex: Master Droit des affaires" /></div>
@@ -54626,7 +54626,7 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-purple-200 bg-orange-50 -m-4 p-4 rounded">
+                  <div className="mt-4 pt-4 border-t border-blue-200 bg-orange-50 -m-4 p-4 rounded">
                     <h5 className="font-semibold text-orange-700 mb-3">⚠️ Assurances (OBLIGATOIRE)</h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div><Label>Assurance responsabilité civile *</Label><Input value={conventionStageData.stagiaireAssuranceRC} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceRC: e.target.value})} placeholder="Nom de l'assurance" /></div>
@@ -54638,8 +54638,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* C. ORGANISME D'ACCUEIL (ENTREPRISE) */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">🏢 C. Organisme d'accueil (Entreprise) *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🏢 C. Organisme d'accueil (Entreprise) *</h4>
                   
                   <div className="mb-4">
                     <Label>Sélectionner parmi vos clients (optionnel)</Label>
@@ -54665,7 +54665,7 @@ FIN DE LA CONVENTION
                     <div><Label>Convention collective</Label><Input value={conventionStageData.entrepriseConventionCollective} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseConventionCollective: e.target.value})} /></div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-purple-200">
+                  <div className="mt-4 pt-4 border-t border-blue-200">
                     <h5 className="font-semibold text-gray-700 mb-3">Siège social</h5>
                     <div className="grid md:grid-cols-3 gap-4">
                       <div><Label>Adresse *</Label><Input value={conventionStageData.entrepriseSiege} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseSiege: e.target.value})} /></div>
@@ -54674,7 +54674,7 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-purple-200">
+                  <div className="mt-4 pt-4 border-t border-blue-200">
                     <h5 className="font-semibold text-gray-700 mb-3">Lieu de stage (si différent du siège)</h5>
                     <div className="grid md:grid-cols-3 gap-4">
                       <div><Label>Adresse</Label><Input value={conventionStageData.entrepriseLieuStage} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseLieuStage: e.target.value})} /></div>
@@ -54683,7 +54683,7 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-purple-200">
+                  <div className="mt-4 pt-4 border-t border-blue-200">
                     <h5 className="font-semibold text-gray-700 mb-3">Représentant légal</h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div><Label>Nom et prénom *</Label><Input value={conventionStageData.entrepriseRepresentant} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseRepresentant: e.target.value})} /></div>
@@ -54691,7 +54691,7 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-purple-200 bg-blue-50 -m-4 p-4 rounded">
+                  <div className="mt-4 pt-4 border-t border-blue-200 bg-blue-50 -m-4 p-4 rounded">
                     <h5 className="font-semibold text-blue-700 mb-3">👔 Tuteur de stage (OBLIGATOIRE)</h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div><Label>Nom et prénom *</Label><Input value={conventionStageData.entrepriseTuteurNom} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseTuteurNom: e.target.value})} /></div>
@@ -54704,8 +54704,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 2️⃣ OBJET DU STAGE */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">2️⃣ Objet du stage *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">2️⃣ Objet du stage *</h4>
                   
                   <div className="p-3 bg-red-50 rounded border border-red-200">
                     <p className="text-sm font-semibold text-red-700">⚠️ IMPORTANT : Description détaillée des missions</p>
@@ -54765,8 +54765,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 3️⃣ DURÉE DU STAGE */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">3️⃣ Durée du stage *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">3️⃣ Durée du stage *</h4>
                   
                   <div className="grid md:grid-cols-3 gap-4">
                     <div><Label>Date de début *</Label><Input type="date" value={conventionStageData.stageDateDebut} onChange={(e) => setConventionStageData({...conventionStageData, stageDateDebut: e.target.value})} /></div>
@@ -54831,8 +54831,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 4️⃣ HORAIRES & ORGANISATION */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">4️⃣ Horaires & Organisation du temps</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">4️⃣ Horaires & Organisation du temps</h4>
                   
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Horaires journaliers</Label><Input value={conventionStageData.stageHorairesJournaliers} onChange={(e) => setConventionStageData({...conventionStageData, stageHorairesJournaliers: e.target.value})} placeholder="Ex: 9h-17h" /></div>
@@ -54878,8 +54878,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 5️⃣ GRATIFICATION / INDEMNISATION */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">5️⃣ Gratification / Indemnisation</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">5️⃣ Gratification / Indemnisation</h4>
                   
                   <div className="p-3 bg-orange-50 rounded border border-orange-200">
                     <p className="text-sm font-semibold text-orange-700">⚠️ Gratification obligatoire dès 44 jours (308h) de stage</p>
@@ -54925,7 +54925,7 @@ FIN DE LA CONVENTION
                     )}
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-purple-200">
+                  <div className="mt-4 pt-4 border-t border-blue-200">
                     <h5 className="font-semibold text-gray-700 mb-3">Avantages éventuels</h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
@@ -54969,8 +54969,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 6️⃣ ENCADREMENT PÉDAGOGIQUE */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">6️⃣ Encadrement pédagogique</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">6️⃣ Encadrement pédagogique</h4>
                   
                   <div className="space-y-4">
                     <div className="p-3 bg-blue-50 rounded border border-blue-200">
@@ -55005,8 +55005,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 7️⃣ ASSURANCES */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">7️⃣ Assurances (OBLIGATOIRES)</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">7️⃣ Assurances (OBLIGATOIRES)</h4>
                   
                   <div className="space-y-4">
                     <div className="p-3 bg-orange-50 rounded border border-orange-200">
@@ -55044,8 +55044,8 @@ FIN DE LA CONVENTION
                     </div>
                     
                     {conventionStageData.stageType === "etranger" && (
-                      <div className="p-3 bg-purple-50 rounded border border-purple-200">
-                        <h5 className="font-semibold text-purple-700 mb-2">Assurance à l'étranger</h5>
+                      <div className="p-3 bg-purple-50 rounded border border-blue-200">
+                        <h5 className="font-semibold text-blue-700 mb-2">Assurance à l'étranger</h5>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div><Label>Assistance rapatriement</Label><Input value={conventionStageData.stageAssuranceRapatriement} onChange={(e) => setConventionStageData({...conventionStageData, stageAssuranceRapatriement: e.target.value})} /></div>
                           <div><Label>Assurance santé internationale</Label><Input value={conventionStageData.stageAssuranceSanteInternationale} onChange={(e) => setConventionStageData({...conventionStageData, stageAssuranceSanteInternationale: e.target.value})} /></div>
@@ -55056,8 +55056,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 8️⃣ AVANTAGES, RÈGLES & MOYENS */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">8️⃣ Avantages, règles internes & moyens mis à disposition</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">8️⃣ Avantages, règles internes & moyens mis à disposition</h4>
                   
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="flex items-center space-x-2">
@@ -55106,8 +55106,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 9️⃣ CONFIDENTIALITÉ & PROPRIÉTÉ INTELLECTUELLE */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">9️⃣ Confidentialité & Propriété intellectuelle</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">9️⃣ Confidentialité & Propriété intellectuelle</h4>
                   
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
@@ -55165,8 +55165,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 🔟-1️⃣5️⃣ AUTRES SECTIONS */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">🔟-1️⃣5️⃣ Droits, obligations & modalités</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔟-1️⃣5️⃣ Droits, obligations & modalités</h4>
                   
                   <div className="space-y-3">
                     <div className="p-3 bg-green-50 rounded border border-green-200">
@@ -55226,8 +55226,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 1️⃣6️⃣ DROIT APPLICABLE */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">1️⃣6️⃣ Droit applicable & juridiction</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">1️⃣6️⃣ Droit applicable & juridiction</h4>
                   
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
@@ -55262,8 +55262,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* 1️⃣7️⃣-1️⃣8️⃣ DOCUMENTS & ANNEXES */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-lg text-purple-700">📄 Pièces justificatives & Annexes</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📄 Pièces justificatives & Annexes</h4>
                   
                   <div className="space-y-3">
                     <h5 className="font-semibold text-gray-700">Documents du stagiaire</h5>
