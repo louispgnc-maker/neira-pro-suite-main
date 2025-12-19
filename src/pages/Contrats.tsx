@@ -2481,6 +2481,220 @@ export default function Contrats() {
   const [contratTravailReglementInterieurFiles, setContratTravailReglementInterieurFiles] = useState<File[]>([]);
   const [contratTravailAnnexesFiles, setContratTravailAnnexesFiles] = useState<File[]>([]);
   
+  // States pour Convention de stage
+  const [conventionStageClientIdStagiaire, setConventionStageClientIdStagiaire] = useState<string>("none");
+  const [conventionStageClientIdEntreprise, setConventionStageClientIdEntreprise] = useState<string>("none");
+  const [conventionStageData, setConventionStageData] = useState({
+    // 1️⃣ IDENTIFICATION DES PARTIES
+    // A. Établissement d'enseignement
+    etablissementNom: "",
+    etablissementAdresse: "",
+    etablissementCodePostal: "",
+    etablissementVille: "",
+    etablissementRepresentant: "",
+    etablissementCachet: "",
+    etablissementSiret: "",
+    etablissementDepartement: "", // UFR / Pôle
+    etablissementResponsablePedagogique: "",
+    etablissementResponsableFonction: "",
+    etablissementResponsableEmail: "",
+    etablissementResponsableTelephone: "",
+    
+    // B. Stagiaire
+    stagiaireNom: "",
+    stagiairePrenom: "",
+    stagiaireDateNaissance: "",
+    stagiaireLieuNaissance: "",
+    stagiaireAdresse: "",
+    stagiaireCodePostal: "",
+    stagiaireVille: "",
+    stagiaireEmail: "",
+    stagiaireTelephone: "",
+    stagiaireNationalite: "",
+    stagiaireNumeroEtudiant: "",
+    stagiaireFiliere: "", // diplôme préparé
+    stagiaireNiveauEtudes: "", // L1, L2, L3, M1, M2, Doctorat
+    stagiaireAnneeUniversitaire: "", // ex: 2024-2025
+    stagiaireAssuranceRC: "", // nom assurance + numéro police
+    stagiaireAssuranceRCNumero: "",
+    stagiaireAssuranceScolaire: "", // optionnelle
+    stagiaireAssuranceScolaireNumero: "",
+    
+    // C. Organisme d'accueil (entreprise)
+    entrepriseDenomination: "",
+    entrepriseFormeJuridique: "",
+    entrepriseSiege: "",
+    entrepriseSiegeCodePostal: "",
+    entrepriseSiegeVille: "",
+    entrepriseLieuStage: "", // si différent
+    entrepriseLieuStageCodePostal: "",
+    entrepriseLieuStageVille: "",
+    entrepriseSiren: "",
+    entrepriseRCS: "",
+    entrepriseRepresentant: "",
+    entrepriseRepresentantFonction: "",
+    entrepriseServiceAccueil: "",
+    entrepriseTuteurNom: "",
+    entrepriseTuteurFonction: "",
+    entrepriseTuteurEmail: "",
+    entrepriseTuteurTelephone: "",
+    entrepriseTaille: "", // effectif
+    entrepriseConventionCollective: "",
+    
+    // 2️⃣ OBJET DU STAGE
+    stageType: "obligatoire", // obligatoire, optionnel, insertion_professionnelle, etranger
+    stageFinalites: "", // finalités pédagogiques
+    stageObjectifsCompetences: "", // objectifs d'acquisition
+    stageMissionsDetaillees: "", // IMPORTANT: description détaillée
+    stageInteretPedagogique: "",
+    stagePositionService: "", // position du stagiaire dans le service
+    
+    // 3️⃣ DURÉE DU STAGE
+    stageDateDebut: "",
+    stageDateFin: "",
+    stageNombreSemaines: "",
+    stageNombreHeuresTotal: "",
+    stageProlongationPossible: "non",
+    stageInterruptions: "", // vacances, examens
+    stageVolumeHebdomadaire: "35", // heures/semaine
+    stageTempsPartiel: "non",
+    
+    // 4️⃣ HORAIRES & ORGANISATION
+    stageHorairesJournaliers: "", // ex: 9h-17h
+    stageHorairesHebdomadaires: "", // ex: lundi-vendredi
+    stagePauses: "", // ex: 1h déjeuner
+    stageRythmeParticulier: "", // ex: soirée
+    stageTeletravail: "non",
+    stageDeplacementsPro: "non",
+    stageDeplacementsPriseEnCharge: "",
+    
+    // 5️⃣ GRATIFICATION / INDEMNISATION
+    stageGratification: "oui", // oui si >= 44 jours (308h)
+    stageGratificationMontantHoraire: "4.35", // minimum légal 2024
+    stageGratificationModalite: "mensuelle", // mensuelle, fin_stage, prorata
+    stageTicketsRestaurant: "non",
+    stagePriseEnChargeTransport: "50%", // minimum légal
+    stageIndemnitesDeplacement: "non",
+    stageAvantagesNature: "",
+    
+    // 6️⃣ ENCADREMENT PÉDAGOGIQUE
+    // Tuteur pédagogique (école)
+    tuteurPedagogiqueNom: "",
+    tuteurPedagogiqueFonction: "",
+    tuteurPedagogiqueEmail: "",
+    tuteurPedagogiqueTelephone: "",
+    tuteurPedagogiqueModalitesSuivi: "",
+    
+    // Tuteur professionnel (entreprise) - déjà dans section C
+    tuteurProfessionnelMissions: "", // accueil, supervision, évaluation
+    
+    // 7️⃣ ASSURANCES
+    // A. Assurance du stagiaire (déjà dans section B)
+    stagiaireAssuranceMaladie: "", // France ou étranger
+    stagiaireAccidentTravail: "etablissement", // etablissement, entreprise
+    
+    // B. Assurance organisme d'accueil
+    entrepriseAssuranceRCPro: "",
+    entrepriseAssuranceRCProNumero: "",
+    entrepriseAssuranceCouvertureRisques: "",
+    
+    // C. Assurance à l'étranger
+    stageAssuranceRapatriement: "",
+    stageAssuranceSanteInternationale: "",
+    
+    // 8️⃣ AVANTAGES, RÈGLES & MOYENS
+    stageAccesLocaux: "oui",
+    stageAccesOutils: "oui",
+    stageAccesMateriel: "oui",
+    stageReglementInterieurRemis: "oui",
+    stageCharteInformatique: "oui",
+    stageCharteCybersecurite: "oui",
+    stageCharteHarcelement: "oui",
+    stageCharteConfidentialite: "oui",
+    stageEquipementsSecurite: "",
+    
+    // 9️⃣ CONFIDENTIALITÉ & PROPRIÉTÉ INTELLECTUELLE
+    stageObligationNonDivulgation: "oui",
+    stageConfidentialiteDuree: "5", // années après fin stage
+    stageRestrictionsDocuments: "oui",
+    stageProprietéIntellectuelle: "entreprise", // entreprise, stagiaire, partage
+    stageExploitationPersonnelle: "interdite",
+    
+    // 🔟 DROITS DU STAGIAIRE
+    stageDroitRespectTemps: "oui",
+    stageDroitPause: "oui",
+    stageDroitGratification: "oui",
+    stageDroitValidationPedagogique: "oui",
+    stageDroitEnvironnementSain: "oui",
+    stageDroitRetrait: "oui",
+    
+    // 1️⃣1️⃣ OBLIGATIONS DU STAGIAIRE
+    stageObligationReglement: "oui",
+    stageObligationHoraires: "oui",
+    stageObligationDiscretion: "oui",
+    stageObligationSecurite: "oui",
+    stageObligationCompteRendu: "oui",
+    stageObligationParticipation: "oui",
+    
+    // 1️⃣2️⃣ CONGÉS & ABSENCES
+    stageAbsencesAutorisees: "", // examens, obligations académiques
+    stageAbsencesExceptionnelles: "", // famille, maladie
+    stageJustificatifsRequis: "oui",
+    stageImpactGratification: "prorata",
+    stagePossibiliteRecuperation: "oui",
+    
+    // 1️⃣3️⃣ ACCIDENT DU TRAVAIL
+    stageAccidentDeclaration: "etablissement", // etablissement, entreprise
+    stageAccidentInformations: "",
+    stageAccidentResponsabiliteEntreprise: "",
+    stageAccidentResponsabiliteTuteur: "",
+    
+    // 1️⃣4️⃣ RUPTURE ANTICIPÉE
+    stageRuptureStagiaire: "possible",
+    stageRuptureEntreprise: "possible",
+    stageRuptureEtablissement: "possible",
+    stageRuptureMotifs: "", // faute grave, inaptitude, santé, non-respect missions, cessation activité
+    stageRuptureProcedure: "entretien tripartite + notification écrite",
+    stageRuptureFormalites: "",
+    
+    // 1️⃣5️⃣ ÉVALUATION, RAPPORT & CERTIFICAT
+    stageEvaluationModalites: "",
+    stageEvaluationCompetences: "",
+    stageEvaluationGrille: "",
+    stageRapportObligatoire: "oui",
+    stageSuiviEtablissement: "",
+    stageAttestationRemise: "oui", // OBLIGATOIRE
+    
+    // 1️⃣6️⃣ DROIT APPLICABLE & JURIDICTION
+    stageDroitApplicable: "français",
+    stageTribunalCompetent: "",
+    stageMediation: "non",
+    
+    // 1️⃣7️⃣ ANNEXES
+    stageAnnexesFicheMissions: "",
+    stageAnnexesCharteInfo: "",
+    stageAnnexesReglement: "",
+    stageAnnexesPlanning: "",
+    stageAnnexesGrilleEvaluation: "",
+    stageAnnexesEngagementConfidentialite: "",
+  });
+  
+  // File states pour Convention de stage
+  const [conventionStageStagiaireCarteEtudianteFiles, setConventionStageStagiaireCarteEtudianteFiles] = useState<File[]>([]);
+  const [conventionStageStagiaireAssuranceRCFiles, setConventionStageStagiaireAssuranceRCFiles] = useState<File[]>([]);
+  const [conventionStageStagiaireRIBFiles, setConventionStageStagiaireRIBFiles] = useState<File[]>([]);
+  const [conventionStageEtablissementAffiliationSecu, setConventionStageEtablissementAffiliationSecu] = useState<File[]>([]);
+  const [conventionStageEtablissementJustificatifPedago, setConventionStageEtablissementJustificatifPedago] = useState<File[]>([]);
+  const [conventionStageEntrepriseKbisFiles, setConventionStageEntrepriseKbisFiles] = useState<File[]>([]);
+  const [conventionStageEntrepriseAssuranceRCProFiles, setConventionStageEntrepriseAssuranceRCProFiles] = useState<File[]>([]);
+  const [conventionStageFicheMissionsFiles, setConventionStageFicheMissionsFiles] = useState<File[]>([]);
+  const [conventionStageCharteInformatiqueFiles, setConventionStageCharteInformatiqueFiles] = useState<File[]>([]);
+  const [conventionStageReglementInterieurFiles, setConventionStageReglementInterieurFiles] = useState<File[]>([]);
+  const [conventionStagePlanningFiles, setConventionStagePlanningFiles] = useState<File[]>([]);
+  const [conventionStageGrilleEvaluationFiles, setConventionStageGrilleEvaluationFiles] = useState<File[]>([]);
+  const [conventionStageEngagementConfidentialiteFiles, setConventionStageEngagementConfidentialiteFiles] = useState<File[]>([]);
+  const [conventionStageAnnexesFiles, setConventionStageAnnexesFiles] = useState<File[]>([]);
+  
   // States pour convention d'indivision
   const [indivisairesIdentiteUrls, setIndivisairesIdentiteUrls] = useState<Record<number, string | null>>({}); // URLs des documents identité indivisaires clients
   const [indivisairesIdentiteFiles, setIndivisairesIdentiteFiles] = useState<Record<number, File[]>>({}); // Fichiers identité indivisaires non-clients
@@ -7878,6 +8092,136 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création contrat travail:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour Convention de stage
+  const handleCreateConventionStageContract = async () => {
+    if (!user) return;
+    
+    // Validation
+    if (!conventionStageData.etablissementNom || !conventionStageData.stagiaireNom || !conventionStageData.entrepriseDenomination) {
+      toast.error("Champs obligatoires manquants", { description: "Établissement, stagiaire et entreprise requis" });
+      return;
+    }
+    
+    if (!conventionStageData.stageDateDebut || !conventionStageData.stageDateFin) {
+      toast.error("Dates de début et fin de stage requises");
+      return;
+    }
+    
+    if (!conventionStageData.stageMissionsDetaillees) {
+      toast.error("Description détaillée des missions obligatoire", { description: "Important pour éviter la requalification en contrat de travail" });
+      return;
+    }
+    
+    if (!conventionStageData.stagiaireAssuranceRC) {
+      toast.error("Attestation d'assurance responsabilité civile du stagiaire obligatoire");
+      return;
+    }
+    
+    if (!conventionStageData.entrepriseTuteurNom) {
+      toast.error("Tuteur de stage obligatoire");
+      return;
+    }
+    
+    // Vérifier gratification si >= 44 jours
+    const heuresTotal = parseInt(conventionStageData.stageNombreHeuresTotal || "0");
+    if (heuresTotal >= 308 && conventionStageData.stageGratification === "non") {
+      toast.error("Gratification obligatoire pour un stage de 44 jours ou plus (308h)");
+      return;
+    }
+    
+    try {
+      // 1. Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          avocat_id: user.id,
+          client_id_1: conventionStageClientIdStagiaire && conventionStageClientIdStagiaire !== "none" ? conventionStageClientIdStagiaire : null,
+          client_id_2: conventionStageClientIdEntreprise && conventionStageClientIdEntreprise !== "none" ? conventionStageClientIdEntreprise : null,
+          type: 'Convention de stage',
+          statut: 'brouillon',
+          donnees_formulaire: conventionStageData,
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      if (!contrat) throw new Error("Contrat non créé");
+      
+      // 2. Upload documents stagiaire
+      for (const file of conventionStageStagiaireCarteEtudianteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/stagiaire/carte_etudiante_${file.name}`, file);
+      }
+      for (const file of conventionStageStagiaireAssuranceRCFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/stagiaire/assurance_rc_${file.name}`, file);
+      }
+      for (const file of conventionStageStagiaireRIBFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/stagiaire/rib_${file.name}`, file);
+      }
+      
+      // 3. Upload documents établissement
+      for (const file of conventionStageEtablissementAffiliationSecu) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/etablissement/affiliation_secu_${file.name}`, file);
+      }
+      for (const file of conventionStageEtablissementJustificatifPedago) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/etablissement/justificatif_pedago_${file.name}`, file);
+      }
+      
+      // 4. Upload documents entreprise
+      for (const file of conventionStageEntrepriseKbisFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/entreprise/kbis_${file.name}`, file);
+      }
+      for (const file of conventionStageEntrepriseAssuranceRCProFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/entreprise/assurance_rc_pro_${file.name}`, file);
+      }
+      
+      // 5. Upload annexes
+      for (const file of conventionStageFicheMissionsFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/fiche_missions_${file.name}`, file);
+      }
+      for (const file of conventionStageCharteInformatiqueFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/charte_info_${file.name}`, file);
+      }
+      for (const file of conventionStageReglementInterieurFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/reglement_${file.name}`, file);
+      }
+      for (const file of conventionStagePlanningFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/planning_${file.name}`, file);
+      }
+      for (const file of conventionStageGrilleEvaluationFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/grille_eval_${file.name}`, file);
+      }
+      for (const file of conventionStageEngagementConfidentialiteFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/engagement_conf_${file.name}`, file);
+      }
+      for (const file of conventionStageAnnexesFiles) {
+        await supabase.storage.from('contrats')
+          .upload(`${user.id}/${contrat.id}/annexes/autres_${file.name}`, file);
+      }
+      
+      toast.success("Convention de stage créée avec succès");
+      setPendingContractType("");
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création convention stage:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -54157,6 +54501,206 @@ FIN DE LA CONVENTION
                   <SingleFileUpload label="Fiche de poste" files={contratTravailFichePosteFiles} onFilesChange={setContratTravailFichePosteFiles} role="avocat" />
                   <SingleFileUpload label="Règlement intérieur" files={contratTravailReglementInterieurFiles} onFilesChange={setContratTravailReglementInterieurFiles} role="avocat" />
                   <MultiFileUpload label="Autres annexes" files={contratTravailAnnexesFiles} onFilesChange={setContratTravailAnnexesFiles} role="avocat" />
+                </div>
+              </div>
+            )}
+
+            {/* Formulaire Convention de stage */}
+            {pendingContractType === "Convention de stage" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-purple-300 pb-2 text-gray-700">🎓 Convention de stage</h3>
+                
+                {/* TYPE DE STAGE */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">Type de stage *</h4>
+                  <Select value={conventionStageData.stageType} onValueChange={(val) => setConventionStageData({...conventionStageData, stageType: val})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="obligatoire">☑️ Obligatoire (dans le cadre du cursus)</SelectItem>
+                      <SelectItem value="optionnel">📌 Optionnel</SelectItem>
+                      <SelectItem value="insertion_professionnelle">💼 Stage d'insertion professionnelle</SelectItem>
+                      <SelectItem value="etranger">🌍 Stage à l'étranger</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* 1️⃣ IDENTIFICATION DES PARTIES */}
+                
+                {/* A. ÉTABLISSEMENT D'ENSEIGNEMENT */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">🏫 A. Établissement d'enseignement *</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Nom de l'établissement *</Label><Input value={conventionStageData.etablissementNom} onChange={(e) => setConventionStageData({...conventionStageData, etablissementNom: e.target.value})} placeholder="Université / École" /></div>
+                    <div><Label>Département / UFR / Pôle</Label><Input value={conventionStageData.etablissementDepartement} onChange={(e) => setConventionStageData({...conventionStageData, etablissementDepartement: e.target.value})} placeholder="Ex: UFR Droit" /></div>
+                    <div><Label>Adresse *</Label><Input value={conventionStageData.etablissementAdresse} onChange={(e) => setConventionStageData({...conventionStageData, etablissementAdresse: e.target.value})} /></div>
+                    <div><Label>Code postal *</Label><Input value={conventionStageData.etablissementCodePostal} onChange={(e) => setConventionStageData({...conventionStageData, etablissementCodePostal: e.target.value})} /></div>
+                    <div><Label>Ville *</Label><Input value={conventionStageData.etablissementVille} onChange={(e) => setConventionStageData({...conventionStageData, etablissementVille: e.target.value})} /></div>
+                    <div><Label>SIRET (si applicable)</Label><Input value={conventionStageData.etablissementSiret} onChange={(e) => setConventionStageData({...conventionStageData, etablissementSiret: e.target.value})} /></div>
+                    <div><Label>Représentant légal *</Label><Input value={conventionStageData.etablissementRepresentant} onChange={(e) => setConventionStageData({...conventionStageData, etablissementRepresentant: e.target.value})} placeholder="Nom du président / directeur" /></div>
+                    <div><Label>Cachet</Label><Input value={conventionStageData.etablissementCachet} onChange={(e) => setConventionStageData({...conventionStageData, etablissementCachet: e.target.value})} placeholder="Optionnel" /></div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-purple-200">
+                    <h5 className="font-semibold text-gray-700 mb-3">Responsable pédagogique</h5>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Nom et prénom *</Label><Input value={conventionStageData.etablissementResponsablePedagogique} onChange={(e) => setConventionStageData({...conventionStageData, etablissementResponsablePedagogique: e.target.value})} /></div>
+                      <div><Label>Fonction</Label><Input value={conventionStageData.etablissementResponsableFonction} onChange={(e) => setConventionStageData({...conventionStageData, etablissementResponsableFonction: e.target.value})} placeholder="Ex: Professeur, Responsable formation" /></div>
+                      <div><Label>Email *</Label><Input type="email" value={conventionStageData.etablissementResponsableEmail} onChange={(e) => setConventionStageData({...conventionStageData, etablissementResponsableEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone *</Label><Input value={conventionStageData.etablissementResponsableTelephone} onChange={(e) => setConventionStageData({...conventionStageData, etablissementResponsableTelephone: e.target.value})} /></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* B. STAGIAIRE */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">👤 B. Stagiaire *</h4>
+                  
+                  <div className="mb-4">
+                    <Label>Sélectionner parmi vos clients (optionnel)</Label>
+                    <Select value={conventionStageClientIdStagiaire} onValueChange={(clientId) => {
+                      setConventionStageClientIdStagiaire(clientId);
+                      const client = clients.find(c => c.id === clientId);
+                      if (client && clientId !== "none") {
+                        setConventionStageData({
+                          ...conventionStageData,
+                          stagiaireNom: client.nom || "",
+                          stagiairePrenom: client.prenom || "",
+                          stagiaireDateNaissance: client.date_naissance || "",
+                          stagiaireLieuNaissance: client.lieu_naissance || "",
+                          stagiaireAdresse: client.adresse || "",
+                          stagiaireCodePostal: client.code_postal || "",
+                          stagiaireVille: client.ville || "",
+                          stagiaireEmail: client.email || "",
+                          stagiaireTelephone: client.telephone || "",
+                          stagiaireNationalite: client.nationalite || ""
+                        });
+                      }
+                    }}>
+                      <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.prenom} {client.nom}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Nom *</Label><Input value={conventionStageData.stagiaireNom} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireNom: e.target.value})} /></div>
+                    <div><Label>Prénom *</Label><Input value={conventionStageData.stagiairePrenom} onChange={(e) => setConventionStageData({...conventionStageData, stagiairePrenom: e.target.value})} /></div>
+                    <div><Label>Date de naissance *</Label><Input type="date" value={conventionStageData.stagiaireDateNaissance} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireDateNaissance: e.target.value})} /></div>
+                    <div><Label>Lieu de naissance</Label><Input value={conventionStageData.stagiaireLieuNaissance} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireLieuNaissance: e.target.value})} /></div>
+                    <div><Label>Nationalité</Label><Input value={conventionStageData.stagiaireNationalite} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireNationalite: e.target.value})} placeholder="Ex: Française" /></div>
+                    <div><Label>Numéro étudiant</Label><Input value={conventionStageData.stagiaireNumeroEtudiant} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireNumeroEtudiant: e.target.value})} /></div>
+                    <div><Label>Adresse *</Label><Input value={conventionStageData.stagiaireAdresse} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAdresse: e.target.value})} /></div>
+                    <div><Label>Code postal *</Label><Input value={conventionStageData.stagiaireCodePostal} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireCodePostal: e.target.value})} /></div>
+                    <div><Label>Ville *</Label><Input value={conventionStageData.stagiaireVille} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireVille: e.target.value})} /></div>
+                    <div><Label>Email *</Label><Input type="email" value={conventionStageData.stagiaireEmail} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireEmail: e.target.value})} /></div>
+                    <div><Label>Téléphone *</Label><Input value={conventionStageData.stagiaireTelephone} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireTelephone: e.target.value})} /></div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-purple-200">
+                    <h5 className="font-semibold text-gray-700 mb-3">Formation</h5>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div><Label>Filière / Diplôme préparé *</Label><Input value={conventionStageData.stagiaireFiliere} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireFiliere: e.target.value})} placeholder="Ex: Master Droit des affaires" /></div>
+                      <div>
+                        <Label>Niveau d'études *</Label>
+                        <Select value={conventionStageData.stagiaireNiveauEtudes} onValueChange={(val) => setConventionStageData({...conventionStageData, stagiaireNiveauEtudes: val})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="L1">L1</SelectItem>
+                            <SelectItem value="L2">L2</SelectItem>
+                            <SelectItem value="L3">L3</SelectItem>
+                            <SelectItem value="M1">M1</SelectItem>
+                            <SelectItem value="M2">M2</SelectItem>
+                            <SelectItem value="Doctorat">Doctorat</SelectItem>
+                            <SelectItem value="BTS">BTS</SelectItem>
+                            <SelectItem value="DUT">DUT</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div><Label>Année universitaire *</Label><Input value={conventionStageData.stagiaireAnneeUniversitaire} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAnneeUniversitaire: e.target.value})} placeholder="Ex: 2024-2025" /></div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-purple-200 bg-orange-50 -m-4 p-4 rounded">
+                    <h5 className="font-semibold text-orange-700 mb-3">⚠️ Assurances (OBLIGATOIRE)</h5>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Assurance responsabilité civile *</Label><Input value={conventionStageData.stagiaireAssuranceRC} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceRC: e.target.value})} placeholder="Nom de l'assurance" /></div>
+                      <div><Label>Numéro de police RC *</Label><Input value={conventionStageData.stagiaireAssuranceRCNumero} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceRCNumero: e.target.value})} /></div>
+                      <div><Label>Assurance scolaire (optionnelle)</Label><Input value={conventionStageData.stagiaireAssuranceScolaire} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceScolaire: e.target.value})} placeholder="Nom de l'assurance" /></div>
+                      <div><Label>Numéro de police scolaire</Label><Input value={conventionStageData.stagiaireAssuranceScolaireNumero} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceScolaireNumero: e.target.value})} /></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* C. ORGANISME D'ACCUEIL (ENTREPRISE) */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">🏢 C. Organisme d'accueil (Entreprise) *</h4>
+                  
+                  <div className="mb-4">
+                    <Label>Sélectionner parmi vos clients (optionnel)</Label>
+                    <Select value={conventionStageClientIdEntreprise} onValueChange={setConventionStageClientIdEntreprise}>
+                      <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
+                        {clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.prenom} {client.nom}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Dénomination sociale *</Label><Input value={conventionStageData.entrepriseDenomination} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseDenomination: e.target.value})} /></div>
+                    <div><Label>Forme juridique</Label><Input value={conventionStageData.entrepriseFormeJuridique} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseFormeJuridique: e.target.value})} placeholder="SARL, SAS, SA..." /></div>
+                    <div><Label>SIREN</Label><Input value={conventionStageData.entrepriseSiren} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseSiren: e.target.value})} /></div>
+                    <div><Label>RCS</Label><Input value={conventionStageData.entrepriseRCS} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseRCS: e.target.value})} /></div>
+                    <div><Label>Taille (effectif)</Label><Input value={conventionStageData.entrepriseTaille} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseTaille: e.target.value})} placeholder="Ex: 50 salariés" /></div>
+                    <div><Label>Convention collective</Label><Input value={conventionStageData.entrepriseConventionCollective} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseConventionCollective: e.target.value})} /></div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-purple-200">
+                    <h5 className="font-semibold text-gray-700 mb-3">Siège social</h5>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div><Label>Adresse *</Label><Input value={conventionStageData.entrepriseSiege} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseSiege: e.target.value})} /></div>
+                      <div><Label>Code postal *</Label><Input value={conventionStageData.entrepriseSiegeCodePostal} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseSiegeCodePostal: e.target.value})} /></div>
+                      <div><Label>Ville *</Label><Input value={conventionStageData.entrepriseSiegeVille} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseSiegeVille: e.target.value})} /></div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-purple-200">
+                    <h5 className="font-semibold text-gray-700 mb-3">Lieu de stage (si différent du siège)</h5>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div><Label>Adresse</Label><Input value={conventionStageData.entrepriseLieuStage} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseLieuStage: e.target.value})} /></div>
+                      <div><Label>Code postal</Label><Input value={conventionStageData.entrepriseLieuStageCodePostal} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseLieuStageCodePostal: e.target.value})} /></div>
+                      <div><Label>Ville</Label><Input value={conventionStageData.entrepriseLieuStageVille} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseLieuStageVille: e.target.value})} /></div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-purple-200">
+                    <h5 className="font-semibold text-gray-700 mb-3">Représentant légal</h5>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Nom et prénom *</Label><Input value={conventionStageData.entrepriseRepresentant} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseRepresentant: e.target.value})} /></div>
+                      <div><Label>Fonction</Label><Input value={conventionStageData.entrepriseRepresentantFonction} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseRepresentantFonction: e.target.value})} placeholder="Ex: Directeur général" /></div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-purple-200 bg-blue-50 -m-4 p-4 rounded">
+                    <h5 className="font-semibold text-blue-700 mb-3">👔 Tuteur de stage (OBLIGATOIRE)</h5>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Nom et prénom *</Label><Input value={conventionStageData.entrepriseTuteurNom} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseTuteurNom: e.target.value})} /></div>
+                      <div><Label>Fonction *</Label><Input value={conventionStageData.entrepriseTuteurFonction} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseTuteurFonction: e.target.value})} /></div>
+                      <div><Label>Email *</Label><Input type="email" value={conventionStageData.entrepriseTuteurEmail} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseTuteurEmail: e.target.value})} /></div>
+                      <div><Label>Téléphone *</Label><Input value={conventionStageData.entrepriseTuteurTelephone} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseTuteurTelephone: e.target.value})} /></div>
+                      <div className="md:col-span-2"><Label>Service d'accueil</Label><Input value={conventionStageData.entrepriseServiceAccueil} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseServiceAccueil: e.target.value})} placeholder="Ex: Direction juridique" /></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
