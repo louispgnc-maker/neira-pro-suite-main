@@ -54702,6 +54702,599 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                 </div>
+
+                {/* 2️⃣ OBJET DU STAGE */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">2️⃣ Objet du stage *</h4>
+                  
+                  <div className="p-3 bg-red-50 rounded border border-red-200">
+                    <p className="text-sm font-semibold text-red-700">⚠️ IMPORTANT : Description détaillée des missions</p>
+                    <p className="text-xs text-red-600 mt-1">La description doit être très précise pour éviter la requalification en contrat de travail.</p>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Finalités pédagogiques du stage *</Label>
+                      <Textarea 
+                        value={conventionStageData.stageFinalites} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageFinalites: e.target.value})} 
+                        placeholder="Ex: Mise en pratique des connaissances théoriques acquises en M2 Droit des affaires..." 
+                        className="min-h-[80px]" 
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label>Objectifs d'acquisition de compétences *</Label>
+                      <Textarea 
+                        value={conventionStageData.stageObjectifsCompetences} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageObjectifsCompetences: e.target.value})} 
+                        placeholder="Ex: Développer des compétences en rédaction d'actes, conseil juridique, négociation contractuelle..." 
+                        className="min-h-[80px]" 
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label>Description détaillée des missions confiées * (CRUCIAL)</Label>
+                      <Textarea 
+                        value={conventionStageData.stageMissionsDetaillees} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageMissionsDetaillees: e.target.value})} 
+                        placeholder="Ex: - Rédaction de notes juridiques\n- Recherches documentaires\n- Participation aux réunions clients\n- Rédaction de contrats sous supervision\n- Veille juridique..." 
+                        className="min-h-[120px]" 
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label>Intérêt pédagogique pour la formation</Label>
+                      <Textarea 
+                        value={conventionStageData.stageInteretPedagogique} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageInteretPedagogique: e.target.value})} 
+                        placeholder="Ex: Permet la validation du stage obligatoire de M2 et l'obtention du diplôme..." 
+                        className="min-h-[60px]" 
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label>Position du stagiaire dans le service</Label>
+                      <Input 
+                        value={conventionStageData.stagePositionService} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stagePositionService: e.target.value})} 
+                        placeholder="Ex: Au sein de l'équipe juridique, sous la supervision du tuteur" 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3️⃣ DURÉE DU STAGE */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">3️⃣ Durée du stage *</h4>
+                  
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div><Label>Date de début *</Label><Input type="date" value={conventionStageData.stageDateDebut} onChange={(e) => setConventionStageData({...conventionStageData, stageDateDebut: e.target.value})} /></div>
+                    <div><Label>Date de fin *</Label><Input type="date" value={conventionStageData.stageDateFin} onChange={(e) => setConventionStageData({...conventionStageData, stageDateFin: e.target.value})} /></div>
+                    <div><Label>Nombre de semaines</Label><Input type="number" value={conventionStageData.stageNombreSemaines} onChange={(e) => setConventionStageData({...conventionStageData, stageNombreSemaines: e.target.value})} placeholder="Ex: 12" /></div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Nombre d'heures total de présence</Label>
+                      <Input 
+                        type="number" 
+                        value={conventionStageData.stageNombreHeuresTotal} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageNombreHeuresTotal: e.target.value})} 
+                        placeholder="Ex: 420 heures" 
+                      />
+                      <p className="text-xs text-orange-600 mt-1">⚠️ Si ≥ 308h (44 jours), gratification obligatoire</p>
+                    </div>
+                    <div>
+                      <Label>Volume horaire hebdomadaire</Label>
+                      <Input 
+                        type="number" 
+                        value={conventionStageData.stageVolumeHebdomadaire} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageVolumeHebdomadaire: e.target.value})} 
+                        placeholder="Maximum 35h/semaine" 
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Prolongation possible ?</Label>
+                      <Select value={conventionStageData.stageProlongationPossible} onValueChange={(val) => setConventionStageData({...conventionStageData, stageProlongationPossible: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Temps partiel ?</Label>
+                      <Select value={conventionStageData.stageTempsPartiel} onValueChange={(val) => setConventionStageData({...conventionStageData, stageTempsPartiel: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non (temps plein)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label>Interruptions (vacances, période d'examens)</Label>
+                    <Textarea 
+                      value={conventionStageData.stageInterruptions} 
+                      onChange={(e) => setConventionStageData({...conventionStageData, stageInterruptions: e.target.value})} 
+                      placeholder="Ex: Pause du 1er au 15 février pour examens partiels" 
+                      className="min-h-[60px]" 
+                    />
+                  </div>
+                </div>
+
+                {/* 4️⃣ HORAIRES & ORGANISATION */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">4️⃣ Horaires & Organisation du temps</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Horaires journaliers</Label><Input value={conventionStageData.stageHorairesJournaliers} onChange={(e) => setConventionStageData({...conventionStageData, stageHorairesJournaliers: e.target.value})} placeholder="Ex: 9h-17h" /></div>
+                    <div><Label>Horaires hebdomadaires</Label><Input value={conventionStageData.stageHorairesHebdomadaires} onChange={(e) => setConventionStageData({...conventionStageData, stageHorairesHebdomadaires: e.target.value})} placeholder="Ex: Lundi-Vendredi" /></div>
+                    <div><Label>Pauses</Label><Input value={conventionStageData.stagePauses} onChange={(e) => setConventionStageData({...conventionStageData, stagePauses: e.target.value})} placeholder="Ex: 1h de pause déjeuner" /></div>
+                    <div><Label>Rythme particulier</Label><Input value={conventionStageData.stageRythmeParticulier} onChange={(e) => setConventionStageData({...conventionStageData, stageRythmeParticulier: e.target.value})} placeholder="Ex: travail en soirée occasionnel" /></div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Télétravail autorisé ?</Label>
+                      <Select value={conventionStageData.stageTeletravail} onValueChange={(val) => setConventionStageData({...conventionStageData, stageTeletravail: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui (exceptionnel pour stagiaires)</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Déplacements professionnels ?</Label>
+                      <Select value={conventionStageData.stageDeplacementsPro} onValueChange={(val) => setConventionStageData({...conventionStageData, stageDeplacementsPro: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  {conventionStageData.stageDeplacementsPro === "oui" && (
+                    <div>
+                      <Label>Prise en charge des déplacements</Label>
+                      <Textarea 
+                        value={conventionStageData.stageDeplacementsPriseEnCharge} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageDeplacementsPriseEnCharge: e.target.value})} 
+                        placeholder="Ex: Remboursement sur facture des frais de transport, hébergement pris en charge..." 
+                        className="min-h-[60px]" 
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 5️⃣ GRATIFICATION / INDEMNISATION */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">5️⃣ Gratification / Indemnisation</h4>
+                  
+                  <div className="p-3 bg-orange-50 rounded border border-orange-200">
+                    <p className="text-sm font-semibold text-orange-700">⚠️ Gratification obligatoire dès 44 jours (308h) de stage</p>
+                    <p className="text-xs text-orange-600 mt-1">Minimum légal 2024 : 4,35€/heure (indexé chaque année)</p>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Gratification prévue ?</Label>
+                      <Select value={conventionStageData.stageGratification} onValueChange={(val) => setConventionStageData({...conventionStageData, stageGratification: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non (stage &lt; 44 jours)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {conventionStageData.stageGratification === "oui" && (
+                      <>
+                        <div>
+                          <Label>Montant horaire exact *</Label>
+                          <Input 
+                            type="number" 
+                            step="0.01" 
+                            value={conventionStageData.stageGratificationMontantHoraire} 
+                            onChange={(e) => setConventionStageData({...conventionStageData, stageGratificationMontantHoraire: e.target.value})} 
+                            placeholder="Minimum : 4,35€" 
+                          />
+                        </div>
+                        <div>
+                          <Label>Modalité de versement</Label>
+                          <Select value={conventionStageData.stageGratificationModalite} onValueChange={(val) => setConventionStageData({...conventionStageData, stageGratificationModalite: val})}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="mensuelle">Mensuelle</SelectItem>
+                              <SelectItem value="fin_stage">En fin de stage</SelectItem>
+                              <SelectItem value="prorata">Au prorata si absence</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-purple-200">
+                    <h5 className="font-semibold text-gray-700 mb-3">Avantages éventuels</h5>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Tickets restaurant</Label>
+                        <Select value={conventionStageData.stageTicketsRestaurant} onValueChange={(val) => setConventionStageData({...conventionStageData, stageTicketsRestaurant: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Prise en charge transport</Label>
+                        <Input 
+                          value={conventionStageData.stagePriseEnChargeTransport} 
+                          onChange={(e) => setConventionStageData({...conventionStageData, stagePriseEnChargeTransport: e.target.value})} 
+                          placeholder="Minimum légal : 50%" 
+                        />
+                      </div>
+                      <div>
+                        <Label>Indemnités de déplacement</Label>
+                        <Select value={conventionStageData.stageIndemnitesDeplacement} onValueChange={(val) => setConventionStageData({...conventionStageData, stageIndemnitesDeplacement: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Autres avantages en nature</Label>
+                        <Input 
+                          value={conventionStageData.stageAvantagesNature} 
+                          onChange={(e) => setConventionStageData({...conventionStageData, stageAvantagesNature: e.target.value})} 
+                          placeholder="Ex: Ordinateur portable, téléphone..." 
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6️⃣ ENCADREMENT PÉDAGOGIQUE */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">6️⃣ Encadrement pédagogique</h4>
+                  
+                  <div className="space-y-4">
+                    <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                      <h5 className="font-semibold text-blue-700 mb-2">Tuteur pédagogique (école)</h5>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div><Label>Nom et prénom</Label><Input value={conventionStageData.tuteurPedagogiqueNom} onChange={(e) => setConventionStageData({...conventionStageData, tuteurPedagogiqueNom: e.target.value})} /></div>
+                        <div><Label>Fonction</Label><Input value={conventionStageData.tuteurPedagogiqueFonction} onChange={(e) => setConventionStageData({...conventionStageData, tuteurPedagogiqueFonction: e.target.value})} placeholder="Ex: Maître de conférences" /></div>
+                        <div><Label>Email</Label><Input type="email" value={conventionStageData.tuteurPedagogiqueEmail} onChange={(e) => setConventionStageData({...conventionStageData, tuteurPedagogiqueEmail: e.target.value})} /></div>
+                        <div><Label>Téléphone</Label><Input value={conventionStageData.tuteurPedagogiqueTelephone} onChange={(e) => setConventionStageData({...conventionStageData, tuteurPedagogiqueTelephone: e.target.value})} /></div>
+                        <div className="md:col-span-2">
+                          <Label>Modalités de suivi</Label>
+                          <Textarea 
+                            value={conventionStageData.tuteurPedagogiqueModalitesSuivi} 
+                            onChange={(e) => setConventionStageData({...conventionStageData, tuteurPedagogiqueModalitesSuivi: e.target.value})} 
+                            placeholder="Ex: Visite en entreprise, entretiens réguliers, suivi du rapport..." 
+                            className="min-h-[60px]" 
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label>Missions du tuteur professionnel (entreprise)</Label>
+                      <Textarea 
+                        value={conventionStageData.tuteurProfessionnelMissions} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, tuteurProfessionnelMissions: e.target.value})} 
+                        placeholder="Accueil du stagiaire, supervision quotidienne, évaluation des compétences, participation au rapport de stage..." 
+                        className="min-h-[80px]" 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 7️⃣ ASSURANCES */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">7️⃣ Assurances (OBLIGATOIRES)</h4>
+                  
+                  <div className="space-y-4">
+                    <div className="p-3 bg-orange-50 rounded border border-orange-200">
+                      <h5 className="font-semibold text-orange-700 mb-2">Stagiaire</h5>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div><Label>Assurance maladie</Label><Input value={conventionStageData.stagiaireAssuranceMaladie} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceMaladie: e.target.value})} placeholder="France ou étranger" /></div>
+                        <div>
+                          <Label>Accident du travail géré par</Label>
+                          <Select value={conventionStageData.stagiaireAccidentTravail} onValueChange={(val) => setConventionStageData({...conventionStageData, stagiaireAccidentTravail: val})}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="etablissement">Établissement d'enseignement</SelectItem>
+                              <SelectItem value="entreprise">Entreprise</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                      <h5 className="font-semibold text-blue-700 mb-2">Organisme d'accueil</h5>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div><Label>Assurance RC Pro</Label><Input value={conventionStageData.entrepriseAssuranceRCPro} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseAssuranceRCPro: e.target.value})} placeholder="Nom de l'assurance" /></div>
+                        <div><Label>Numéro de police</Label><Input value={conventionStageData.entrepriseAssuranceRCProNumero} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseAssuranceRCProNumero: e.target.value})} /></div>
+                        <div className="md:col-span-2">
+                          <Label>Couverture des risques liés aux missions</Label>
+                          <Textarea 
+                            value={conventionStageData.entrepriseAssuranceCouvertureRisques} 
+                            onChange={(e) => setConventionStageData({...conventionStageData, entrepriseAssuranceCouvertureRisques: e.target.value})} 
+                            placeholder="Détail de la couverture..." 
+                            className="min-h-[60px]" 
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {conventionStageData.stageType === "etranger" && (
+                      <div className="p-3 bg-purple-50 rounded border border-purple-200">
+                        <h5 className="font-semibold text-purple-700 mb-2">Assurance à l'étranger</h5>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div><Label>Assistance rapatriement</Label><Input value={conventionStageData.stageAssuranceRapatriement} onChange={(e) => setConventionStageData({...conventionStageData, stageAssuranceRapatriement: e.target.value})} /></div>
+                          <div><Label>Assurance santé internationale</Label><Input value={conventionStageData.stageAssuranceSanteInternationale} onChange={(e) => setConventionStageData({...conventionStageData, stageAssuranceSanteInternationale: e.target.value})} /></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 8️⃣ AVANTAGES, RÈGLES & MOYENS */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">8️⃣ Avantages, règles internes & moyens mis à disposition</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={conventionStageData.stageAccesLocaux === "oui"} onCheckedChange={(v) => setConventionStageData({...conventionStageData, stageAccesLocaux: v ? "oui" : "non"})} id="acces-locaux" />
+                      <Label htmlFor="acces-locaux" className="font-normal">Accès aux locaux</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={conventionStageData.stageAccesOutils === "oui"} onCheckedChange={(v) => setConventionStageData({...conventionStageData, stageAccesOutils: v ? "oui" : "non"})} id="acces-outils" />
+                      <Label htmlFor="acces-outils" className="font-normal">Accès aux outils informatiques</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={conventionStageData.stageAccesMateriel === "oui"} onCheckedChange={(v) => setConventionStageData({...conventionStageData, stageAccesMateriel: v ? "oui" : "non"})} id="acces-materiel" />
+                      <Label htmlFor="acces-materiel" className="font-normal">Accès au matériel</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={conventionStageData.stageReglementInterieurRemis === "oui"} onCheckedChange={(v) => setConventionStageData({...conventionStageData, stageReglementInterieurRemis: v ? "oui" : "non"})} id="reglement" />
+                      <Label htmlFor="reglement" className="font-normal">Règlement intérieur remis</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={conventionStageData.stageCharteInformatique === "oui"} onCheckedChange={(v) => setConventionStageData({...conventionStageData, stageCharteInformatique: v ? "oui" : "non"})} id="charte-info" />
+                      <Label htmlFor="charte-info" className="font-normal">Charte informatique</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={conventionStageData.stageCharteCybersecurite === "oui"} onCheckedChange={(v) => setConventionStageData({...conventionStageData, stageCharteCybersecurite: v ? "oui" : "non"})} id="charte-cyber" />
+                      <Label htmlFor="charte-cyber" className="font-normal">Charte cybersécurité</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={conventionStageData.stageCharteHarcelement === "oui"} onCheckedChange={(v) => setConventionStageData({...conventionStageData, stageCharteHarcelement: v ? "oui" : "non"})} id="charte-harcel" />
+                      <Label htmlFor="charte-harcel" className="font-normal">Charte harcèlement</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={conventionStageData.stageCharteConfidentialite === "oui"} onCheckedChange={(v) => setConventionStageData({...conventionStageData, stageCharteConfidentialite: v ? "oui" : "non"})} id="charte-conf" />
+                      <Label htmlFor="charte-conf" className="font-normal">Charte confidentialité</Label>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label>Équipements de sécurité (si applicable)</Label>
+                    <Textarea 
+                      value={conventionStageData.stageEquipementsSecurite} 
+                      onChange={(e) => setConventionStageData({...conventionStageData, stageEquipementsSecurite: e.target.value})} 
+                      placeholder="Ex: Chaussures de sécurité, casque, gilet..." 
+                      className="min-h-[60px]" 
+                    />
+                  </div>
+                </div>
+
+                {/* 9️⃣ CONFIDENTIALITÉ & PROPRIÉTÉ INTELLECTUELLE */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">9️⃣ Confidentialité & Propriété intellectuelle</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Obligation de non-divulgation</Label>
+                      <Select value={conventionStageData.stageObligationNonDivulgation} onValueChange={(val) => setConventionStageData({...conventionStageData, stageObligationNonDivulgation: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Durée (années après fin stage)</Label>
+                      <Input 
+                        type="number" 
+                        value={conventionStageData.stageConfidentialiteDuree} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageConfidentialiteDuree: e.target.value})} 
+                        placeholder="Ex: 5 ans" 
+                      />
+                    </div>
+                    <div>
+                      <Label>Restrictions sur documents</Label>
+                      <Select value={conventionStageData.stageRestrictionsDocuments} onValueChange={(val) => setConventionStageData({...conventionStageData, stageRestrictionsDocuments: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui (documents confidentiels à ne pas emporter)</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Propriété intellectuelle</Label>
+                      <Select value={conventionStageData.stageProprietéIntellectuelle} onValueChange={(val) => setConventionStageData({...conventionStageData, stageProprietéIntellectuelle: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="entreprise">Appartient à l'entreprise</SelectItem>
+                          <SelectItem value="stagiaire">Appartient au stagiaire</SelectItem>
+                          <SelectItem value="partage">Copropriété</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Exploitation personnelle</Label>
+                      <Select value={conventionStageData.stageExploitationPersonnelle} onValueChange={(val) => setConventionStageData({...conventionStageData, stageExploitationPersonnelle: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="interdite">Interdite</SelectItem>
+                          <SelectItem value="autorisee">Autorisée</SelectItem>
+                          <SelectItem value="sur_demande">Sur demande</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 🔟-1️⃣5️⃣ AUTRES SECTIONS */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">🔟-1️⃣5️⃣ Droits, obligations & modalités</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="p-3 bg-green-50 rounded border border-green-200">
+                      <h5 className="font-semibold text-green-700 mb-2">Droits du stagiaire</h5>
+                      <div className="text-sm text-green-600 space-y-1">
+                        <p>✓ Respect du temps de travail maximal (35h/semaine)</p>
+                        <p>✓ Droit à une pause quotidienne</p>
+                        <p>✓ Droit à gratification (si ≥ 44 jours)</p>
+                        <p>✓ Droit à validation pédagogique</p>
+                        <p>✓ Environnement sain et sécurisé</p>
+                        <p>✓ Droit de retrait si danger</p>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                      <h5 className="font-semibold text-blue-700 mb-2">Obligations du stagiaire</h5>
+                      <div className="text-sm text-blue-600 space-y-1">
+                        <p>• Respect du règlement intérieur</p>
+                        <p>• Respect des horaires</p>
+                        <p>• Obligation de discrétion et confidentialité</p>
+                        <p>• Respect des consignes sécurité</p>
+                        <p>• Compte rendu régulier au tuteur</p>
+                        <p>• Participation active aux missions</p>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label>Absences autorisées (examens, obligations académiques)</Label>
+                      <Textarea 
+                        value={conventionStageData.stageAbsencesAutorisees} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageAbsencesAutorisees: e.target.value})} 
+                        placeholder="Ex: Examens partiels et finaux, soutenance de mémoire..." 
+                        className="min-h-[60px]" 
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label>Conditions de rupture anticipée</Label>
+                      <Textarea 
+                        value={conventionStageData.stageRuptureProcedure} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageRuptureProcedure: e.target.value})} 
+                        placeholder="Entretien tripartite + notification écrite. Motifs: faute grave, inaptitude, problème de santé, non-respect missions, cessation activité..." 
+                        className="min-h-[80px]" 
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label>Modalités d'évaluation</Label>
+                      <Textarea 
+                        value={conventionStageData.stageEvaluationModalites} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageEvaluationModalites: e.target.value})} 
+                        placeholder="Évaluation par le tuteur professionnel, grille de compétences, rapport de stage obligatoire, attestation de stage (OBLIGATOIRE)..." 
+                        className="min-h-[80px]" 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1️⃣6️⃣ DROIT APPLICABLE */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">1️⃣6️⃣ Droit applicable & juridiction</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Droit applicable</Label>
+                      <Select value={conventionStageData.stageDroitApplicable} onValueChange={(val) => setConventionStageData({...conventionStageData, stageDroitApplicable: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="français">Droit français</SelectItem>
+                          <SelectItem value="local">Droit local (si stage à l'étranger)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Tribunal compétent</Label>
+                      <Input 
+                        value={conventionStageData.stageTribunalCompetent} 
+                        onChange={(e) => setConventionStageData({...conventionStageData, stageTribunalCompetent: e.target.value})} 
+                        placeholder="Ex: Tribunal administratif de Paris" 
+                      />
+                    </div>
+                    <div>
+                      <Label>Médiation préalable</Label>
+                      <Select value={conventionStageData.stageMediation} onValueChange={(val) => setConventionStageData({...conventionStageData, stageMediation: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="oui">Oui</SelectItem>
+                          <SelectItem value="non">Non</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1️⃣7️⃣-1️⃣8️⃣ DOCUMENTS & ANNEXES */}
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold text-lg text-purple-700">📄 Pièces justificatives & Annexes</h4>
+                  
+                  <div className="space-y-3">
+                    <h5 className="font-semibold text-gray-700">Documents du stagiaire</h5>
+                    <SingleFileUpload label="Carte étudiante (OBLIGATOIRE)" files={conventionStageStagiaireCarteEtudianteFiles} onFilesChange={setConventionStageStagiaireCarteEtudianteFiles} role="avocat" />
+                    <SingleFileUpload label="Attestation assurance RC (OBLIGATOIRE)" files={conventionStageStagiaireAssuranceRCFiles} onFilesChange={setConventionStageStagiaireAssuranceRCFiles} role="avocat" />
+                    <SingleFileUpload label="RIB (pour gratification)" files={conventionStageStagiaireRIBFiles} onFilesChange={setConventionStageStagiaireRIBFiles} role="avocat" />
+                  </div>
+                  
+                  <div className="space-y-3 mt-4">
+                    <h5 className="font-semibold text-gray-700">Documents de l'établissement</h5>
+                    <SingleFileUpload label="Attestation affiliation sécurité sociale étudiante" files={conventionStageEtablissementAffiliationSecu} onFilesChange={setConventionStageEtablissementAffiliationSecu} role="avocat" />
+                    <SingleFileUpload label="Justificatif pédagogique (obligation du stage)" files={conventionStageEtablissementJustificatifPedago} onFilesChange={setConventionStageEtablissementJustificatifPedago} role="avocat" />
+                  </div>
+                  
+                  <div className="space-y-3 mt-4">
+                    <h5 className="font-semibold text-gray-700">Documents de l'entreprise</h5>
+                    <SingleFileUpload label="Kbis" files={conventionStageEntrepriseKbisFiles} onFilesChange={setConventionStageEntrepriseKbisFiles} role="avocat" />
+                    <SingleFileUpload label="Attestation RC Pro" files={conventionStageEntrepriseAssuranceRCProFiles} onFilesChange={setConventionStageEntrepriseAssuranceRCProFiles} role="avocat" />
+                  </div>
+                  
+                  <div className="space-y-3 mt-4">
+                    <h5 className="font-semibold text-gray-700">Annexes</h5>
+                    <SingleFileUpload label="Fiche missions détaillées" files={conventionStageFicheMissionsFiles} onFilesChange={setConventionStageFicheMissionsFiles} role="avocat" />
+                    <SingleFileUpload label="Charte informatique" files={conventionStageCharteInformatiqueFiles} onFilesChange={setConventionStageCharteInformatiqueFiles} role="avocat" />
+                    <SingleFileUpload label="Règlement intérieur" files={conventionStageReglementInterieurFiles} onFilesChange={setConventionStageReglementInterieurFiles} role="avocat" />
+                    <SingleFileUpload label="Planning hebdomadaire" files={conventionStagePlanningFiles} onFilesChange={setConventionStagePlanningFiles} role="avocat" />
+                    <SingleFileUpload label="Grille d'évaluation" files={conventionStageGrilleEvaluationFiles} onFilesChange={setConventionStageGrilleEvaluationFiles} role="avocat" />
+                    <SingleFileUpload label="Engagement de confidentialité (séparé)" files={conventionStageEngagementConfidentialiteFiles} onFilesChange={setConventionStageEngagementConfidentialiteFiles} role="avocat" />
+                    <MultiFileUpload label="Autres annexes" files={conventionStageAnnexesFiles} onFilesChange={setConventionStageAnnexesFiles} role="avocat" />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -55803,7 +56396,9 @@ FIN DE LA CONVENTION
                   handleCreateCessionPiContract();
                 } else if (pendingContractType === "Contrat de travail (CDD/CDI)") {
                   handleCreateContratTravailContract();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Convention de stage", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Convention de stage") {
+                  handleCreateConventionStageContract();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
