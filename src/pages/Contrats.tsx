@@ -17741,9 +17741,10 @@ FIN DE LA CONVENTION
                             <>
                               <div className="space-y-2 md:col-span-2">
                                 <Label>Sélectionner le client *</Label>
-                                <Select
-                                  value={indivisaire.clientId}
-                                  onValueChange={async (value) => {
+                                <ClientSelector
+                                  clients={clients}
+                                  selectedClientId={indivisaire.clientId}
+                                  onClientChange={async (value) => {
                                     const selectedClient = clients.find(c => c.id === value);
                                     const newIndivisaires = [...indivisionData.indivisaires];
                                     const idx = newIndivisaires.findIndex(i => i.id === indivisaire.id);
@@ -17869,7 +17870,6 @@ FIN DE LA CONVENTION
                                         }
                                       }
                                       setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
-                                    }
                                   } else {
                                     newIndivisaires[idx] = {
                                       ...newIndivisaires[idx],
