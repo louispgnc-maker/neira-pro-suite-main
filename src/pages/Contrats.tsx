@@ -54626,7 +54626,7 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-blue-200 bg-white -m-4 p-4 rounded">
+                  <div className="mt-4 pt-4 border-t border-blue-200 bg-blue-50/50 -m-4 p-4 rounded">
                     <h5 className="font-semibold text-gray-700 mb-3">⚠️ Assurances (OBLIGATOIRE)</h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div><Label>Assurance responsabilité civile *</Label><Input value={conventionStageData.stagiaireAssuranceRC} onChange={(e) => setConventionStageData({...conventionStageData, stagiaireAssuranceRC: e.target.value})} placeholder="Nom de l'assurance" /></div>
