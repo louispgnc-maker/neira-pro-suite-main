@@ -2695,6 +2695,114 @@ export default function Contrats() {
   const [conventionStageEngagementConfidentialiteFiles, setConventionStageEngagementConfidentialiteFiles] = useState<File[]>([]);
   const [conventionStageAnnexesFiles, setConventionStageAnnexesFiles] = useState<File[]>([]);
   
+  // States pour Rupture conventionnelle
+  const [ruptureConventionnelleClientIdEmployeur, setRuptureConventionnelleClientIdEmployeur] = useState('');
+  const [ruptureConventionnelleClientIdSalarie, setRuptureConventionnelleClientIdSalarie] = useState('');
+  const [ruptureConventionnelleData, setRuptureConventionnelleData] = useState({
+    // 1️⃣ IDENTIFICATION - Employeur
+    employeurDenomination: '',
+    employeurFormeJuridique: '',
+    employeurAdresseSiege: '',
+    employeurAdresseTravail: '',
+    employeurSiret: '',
+    employeurCodeAPE: '',
+    employeurRepresentantNom: '',
+    employeurRepresentantFonction: '',
+    employeurConventionCollective: '',
+    employeurEffectif: '',
+    // 1️⃣ IDENTIFICATION - Salarié
+    salariNom: '',
+    salariPrenom: '',
+    salariAdresse: '',
+    salariDateNaissance: '',
+    salariNumSecu: '',
+    salariPoste: '',
+    salariCategorie: '',
+    salariDateEntree: '',
+    salariTypeContrat: 'CDI',
+    salariTempsPartiel: 'non',
+    // 2️⃣ VÉRIFICATIONS LÉGALES
+    verificationCDI: 'oui',
+    verificationAccidentTravail: 'non',
+    verificationArretMaladie: 'non',
+    verificationConflitGrave: 'non',
+    verificationAlerte: '',
+    // 3️⃣ DATE DE L'ENTRETIEN
+    entretienDate: '',
+    entretienLieu: '',
+    entretienPersonnesPresentes: '',
+    entretienAssistanceSalarie: 'non',
+    entretienAssistanceSalarieNom: '',
+    entretienAssistanceEmployeur: 'non',
+    entretienAssistanceEmployeurNom: '',
+    // 4️⃣ TYPE DE RUPTURE
+    typeRupture: 'simple',
+    // 5️⃣ INDEMNITÉ
+    indemniteCalculAuto: 'oui',
+    indemniteSalaireRef3Mois: '',
+    indemniteSalaireRef12Mois: '',
+    indemniteAnciennete: '',
+    indemniteLegaleCalculee: '',
+    indemniteSupraLegale: 'non',
+    indemniteMontantPropose: '',
+    indemniteCotisationsSociales: 'non',
+    indemniteModalitesPaiement: '',
+    // 6️⃣ DATES
+    dateSignature: '',
+    dateRuptureEffective: '',
+    // 7️⃣ CALENDRIER (calculé automatiquement)
+    dateFinRetractation: '',
+    dateEnvoiDREETS: '',
+    dateFinHomologation: '',
+    // 8️⃣ DROITS DU SALARIÉ
+    droitChomage: 'oui',
+    droitSoldeToutCompte: 'oui',
+    droitCongesPayes: 'oui',
+    droitCertificatTravail: 'oui',
+    droitAttestationPoleEmploi: 'oui',
+    droitRecuSolde: 'oui',
+    droitBulletinsPaie: 'oui',
+    // 9️⃣ CONFIDENTIALITÉ
+    confidentialiteMotifs: 'oui',
+    confidentialiteFinanciere: 'oui',
+    confidentialiteReciprocité: 'oui',
+    // 🔟 CLAUSES OPTIONNELLES
+    clauseNonConcurrence: 'non',
+    clauseNonConcurrenceMaintenue: '',
+    clauseNonConcurrenceIndemnite: '',
+    clauseConfidentialiteRenforcee: 'non',
+    clauseConfidentialiteDuree: '',
+    clauseNonDenigrement: 'non',
+    // 1️⃣1️⃣ CAS PARTICULIERS
+    casParticulierEnceinte: 'non',
+    casParticulierProtege: 'non',
+    casParticulierProtegeType: '',
+    casParticulierInaptitude: 'non',
+    casParticulierEtranger: 'non',
+    casParticulierAlerte: '',
+    // 1️⃣2️⃣ FORMALISATION
+    consentementLibre: 'oui',
+    absencePression: 'oui',
+    modalitesRetractation: '',
+    signatureElectronique: 'non',
+    // 1️⃣3️⃣ DREETS
+    dreetsCoordonnees: '',
+    dreetsTransmissionElectronique: 'oui',
+    // 1️⃣4️⃣ DOCUMENTS ANNEXES
+    documentsNotes: '',
+  });
+
+  // File states pour Rupture conventionnelle
+  const [ruptureConvEmployeurKbisFiles, setRuptureConvEmployeurKbisFiles] = useState<File[]>([]);
+  const [ruptureConvEmployeurJustifRepresentantFiles, setRuptureConvEmployeurJustifRepresentantFiles] = useState<File[]>([]);
+  const [ruptureConvSalariePieceIdentiteFiles, setRuptureConvSalariePieceIdentiteFiles] = useState<File[]>([]);
+  const [ruptureConvSalarieRIBFiles, setRuptureConvSalarieRIBFiles] = useState<File[]>([]);
+  const [ruptureConvFichePosteFiles, setRuptureConvFichePosteFiles] = useState<File[]>([]);
+  const [ruptureConvContratTravailFiles, setRuptureConvContratTravailFiles] = useState<File[]>([]);
+  const [ruptureConvBulletinsSalaireFiles, setRuptureConvBulletinsSalaireFiles] = useState<File[]>([]);
+  const [ruptureConvCalculIndemniteFiles, setRuptureConvCalculIndemniteFiles] = useState<File[]>([]);
+  const [ruptureConvAnnexesFiles, setRuptureConvAnnexesFiles] = useState<File[]>([]);
+  
   // States pour convention d'indivision
   const [indivisairesIdentiteUrls, setIndivisairesIdentiteUrls] = useState<Record<number, string | null>>({}); // URLs des documents identité indivisaires clients
   const [indivisairesIdentiteFiles, setIndivisairesIdentiteFiles] = useState<Record<number, File[]>>({}); // Fichiers identité indivisaires non-clients
@@ -8222,6 +8330,140 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création convention stage:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour Rupture conventionnelle
+  const handleCreateRuptureConventionnelleContract = async () => {
+    if (!user) return;
+    
+    // Validations obligatoires
+    if (!ruptureConventionnelleData.employeurDenomination || !ruptureConventionnelleData.salariNom || !ruptureConventionnelleData.salariPrenom) {
+      toast.error("Identification des parties obligatoire", { description: "Employeur et salarié requis" });
+      return;
+    }
+    
+    if (ruptureConventionnelleData.salariTypeContrat !== 'CDI') {
+      toast.error("Rupture conventionnelle réservée aux CDI uniquement", { description: "Impossible pour CDD, apprentissage, etc." });
+      return;
+    }
+    
+    if (!ruptureConventionnelleData.entretienDate) {
+      toast.error("Date d'entretien obligatoire", { description: "Au moins un entretien formel est requis" });
+      return;
+    }
+    
+    if (!ruptureConventionnelleData.dateSignature || !ruptureConventionnelleData.dateRuptureEffective) {
+      toast.error("Dates de signature et de rupture obligatoires");
+      return;
+    }
+    
+    // Vérification des situations à risque
+    if (ruptureConventionnelleData.verificationAccidentTravail === 'oui' || 
+        ruptureConventionnelleData.verificationArretMaladie === 'oui' || 
+        ruptureConventionnelleData.verificationConflitGrave === 'oui') {
+      toast.error("⚠️ Situation à risque détectée", { 
+        description: "La rupture peut être annulée. Conseil juridique recommandé." 
+      });
+    }
+    
+    // Alerte cas particuliers
+    if (ruptureConventionnelleData.casParticulierProtege === 'oui') {
+      toast.error("⚠️ Salarié protégé", { 
+        description: "Autorisation de l'Inspection du travail nécessaire" 
+      });
+    }
+    
+    if (ruptureConventionnelleData.casParticulierInaptitude === 'oui') {
+      toast.error("⚠️ Inaptitude détectée", { 
+        description: "Rupture conventionnelle déconseillée dans ce cas" 
+      });
+    }
+    
+    try {
+      // Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          user_id: user.id,
+          type: 'Rupture conventionnelle',
+          description: `${ruptureConventionnelleData.salariNom} ${ruptureConventionnelleData.salariPrenom} - ${ruptureConventionnelleData.employeurDenomination}`,
+          parties: [
+            ruptureConventionnelleClientIdEmployeur || ruptureConventionnelleData.employeurDenomination,
+            ruptureConventionnelleClientIdSalarie || `${ruptureConventionnelleData.salariNom} ${ruptureConventionnelleData.salariPrenom}`
+          ],
+          data: ruptureConventionnelleData,
+          status: 'draft'
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      // Upload des fichiers
+      if (ruptureConvEmployeurKbisFiles.length > 0) {
+        for (const file of ruptureConvEmployeurKbisFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/employeur/kbis_${file.name}`, file);
+        }
+      }
+      if (ruptureConvEmployeurJustifRepresentantFiles.length > 0) {
+        for (const file of ruptureConvEmployeurJustifRepresentantFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/employeur/justif_representant_${file.name}`, file);
+        }
+      }
+      if (ruptureConvSalariePieceIdentiteFiles.length > 0) {
+        for (const file of ruptureConvSalariePieceIdentiteFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/salarie/piece_identite_${file.name}`, file);
+        }
+      }
+      if (ruptureConvSalarieRIBFiles.length > 0) {
+        for (const file of ruptureConvSalarieRIBFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/salarie/rib_${file.name}`, file);
+        }
+      }
+      if (ruptureConvFichePosteFiles.length > 0) {
+        for (const file of ruptureConvFichePosteFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/fiche_poste_${file.name}`, file);
+        }
+      }
+      if (ruptureConvContratTravailFiles.length > 0) {
+        for (const file of ruptureConvContratTravailFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/contrat_travail_${file.name}`, file);
+        }
+      }
+      if (ruptureConvBulletinsSalaireFiles.length > 0) {
+        for (const file of ruptureConvBulletinsSalaireFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/bulletins_${file.name}`, file);
+        }
+      }
+      if (ruptureConvCalculIndemniteFiles.length > 0) {
+        for (const file of ruptureConvCalculIndemniteFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/calcul_indemnite_${file.name}`, file);
+        }
+      }
+      if (ruptureConvAnnexesFiles.length > 0) {
+        for (const file of ruptureConvAnnexesFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/annexes/${file.name}`, file);
+        }
+      }
+      
+      toast.success("Rupture conventionnelle créée avec succès");
+      setPendingContractType("");
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création rupture conventionnelle:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -55298,6 +55540,557 @@ FIN DE LA CONVENTION
               </div>
             )}
 
+            {/* Formulaire Rupture conventionnelle */}
+            {pendingContractType === "Rupture conventionnelle" && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">🤝 Rupture conventionnelle</h3>
+                
+                {/* 1️⃣ IDENTIFICATION DES PARTIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">1️⃣ Identification des parties</h4>
+                  
+                  {/* A. EMPLOYEUR */}
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-gray-700">🏢 Employeur</h5>
+                    <ClientSelector 
+                      clients={clients} 
+                      selectedClientId={ruptureConventionnelleClientIdEmployeur} 
+                      onClientChange={(clientId) => {
+                        setRuptureConventionnelleClientIdEmployeur(clientId);
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setRuptureConventionnelleData({
+                            ...ruptureConventionnelleData,
+                            employeurDenomination: `${client.prenom} ${client.nom}`,
+                            employeurAdresseSiege: client.adresse || "",
+                          });
+                        }
+                      }} 
+                      placeholder="Sélectionner l'employeur (entreprise)" 
+                      label="Client employeur (optionnel)"
+                    />
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Dénomination sociale *</Label><Input value={ruptureConventionnelleData.employeurDenomination} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurDenomination: e.target.value})} /></div>
+                      <div><Label>Forme juridique</Label><Input value={ruptureConventionnelleData.employeurFormeJuridique} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurFormeJuridique: e.target.value})} placeholder="Ex: SAS, SARL, SA" /></div>
+                      <div><Label>Adresse du siège</Label><Input value={ruptureConventionnelleData.employeurAdresseSiege} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurAdresseSiege: e.target.value})} /></div>
+                      <div><Label>Adresse du lieu de travail</Label><Input value={ruptureConventionnelleData.employeurAdresseTravail} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurAdresseTravail: e.target.value})} /></div>
+                      <div><Label>SIRET</Label><Input value={ruptureConventionnelleData.employeurSiret} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurSiret: e.target.value})} placeholder="14 chiffres" /></div>
+                      <div><Label>Code APE</Label><Input value={ruptureConventionnelleData.employeurCodeAPE} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurCodeAPE: e.target.value})} placeholder="Ex: 6201Z" /></div>
+                      <div><Label>Représentant légal (nom)</Label><Input value={ruptureConventionnelleData.employeurRepresentantNom} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurRepresentantNom: e.target.value})} /></div>
+                      <div><Label>Fonction du représentant</Label><Input value={ruptureConventionnelleData.employeurRepresentantFonction} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurRepresentantFonction: e.target.value})} placeholder="Ex: Directeur général" /></div>
+                      <div><Label>Convention collective applicable</Label><Input value={ruptureConventionnelleData.employeurConventionCollective} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurConventionCollective: e.target.value})} /></div>
+                      <div><Label>Effectif de l'entreprise</Label><Input value={ruptureConventionnelleData.employeurEffectif} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, employeurEffectif: e.target.value})} placeholder="Nombre de salariés" /></div>
+                    </div>
+                  </div>
+                  
+                  {/* B. SALARIÉ */}
+                  <div className="space-y-4 mt-6">
+                    <h5 className="font-semibold text-gray-700">👤 Salarié</h5>
+                    <ClientSelector 
+                      clients={clients} 
+                      selectedClientId={ruptureConventionnelleClientIdSalarie} 
+                      onClientChange={(clientId) => {
+                        setRuptureConventionnelleClientIdSalarie(clientId);
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setRuptureConventionnelleData({
+                            ...ruptureConventionnelleData,
+                            salariNom: client.nom,
+                            salariPrenom: client.prenom,
+                            salariAdresse: client.adresse || "",
+                            salariDateNaissance: client.date_naissance || "",
+                          });
+                        }
+                      }} 
+                      placeholder="Sélectionner le salarié" 
+                      label="Client salarié (optionnel)"
+                    />
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div><Label>Nom *</Label><Input value={ruptureConventionnelleData.salariNom} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariNom: e.target.value})} /></div>
+                      <div><Label>Prénom *</Label><Input value={ruptureConventionnelleData.salariPrenom} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariPrenom: e.target.value})} /></div>
+                      <div className="md:col-span-2"><Label>Adresse personnelle</Label><Input value={ruptureConventionnelleData.salariAdresse} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariAdresse: e.target.value})} /></div>
+                      <div><Label>Date de naissance</Label><Input type="date" value={ruptureConventionnelleData.salariDateNaissance} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariDateNaissance: e.target.value})} /></div>
+                      <div><Label>Numéro de sécurité sociale</Label><Input value={ruptureConventionnelleData.salariNumSecu} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariNumSecu: e.target.value})} placeholder="15 chiffres" /></div>
+                      <div><Label>Poste occupé</Label><Input value={ruptureConventionnelleData.salariPoste} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariPoste: e.target.value})} /></div>
+                      <div><Label>Catégorie / classification</Label><Input value={ruptureConventionnelleData.salariCategorie} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariCategorie: e.target.value})} placeholder="Ex: Cadre, Employé, Agent de maîtrise" /></div>
+                      <div><Label>Date d'entrée dans l'entreprise</Label><Input type="date" value={ruptureConventionnelleData.salariDateEntree} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariDateEntree: e.target.value})} /></div>
+                      <div>
+                        <Label>Type de contrat *</Label>
+                        <Select value={ruptureConventionnelleData.salariTypeContrat} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariTypeContrat: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CDI">CDI (uniquement)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-gray-600 mt-1">⚠️ Rupture conventionnelle réservée aux CDI</p>
+                      </div>
+                      <div>
+                        <Label>Temps plein / temps partiel</Label>
+                        <Select value={ruptureConventionnelleData.salariTempsPartiel} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, salariTempsPartiel: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Temps plein</SelectItem>
+                            <SelectItem value="oui">Temps partiel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2️⃣ VÉRIFICATIONS LÉGALES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">2️⃣ Vérifications légales obligatoires</h4>
+                  
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700 mb-3">⚠️ Situations rendant la rupture impossible ou risquée</p>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          checked={ruptureConventionnelleData.verificationAccidentTravail === 'oui'} 
+                          onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, verificationAccidentTravail: v ? 'oui' : 'non'})} 
+                          id="accident-travail" 
+                        />
+                        <Label htmlFor="accident-travail" className="font-normal">Accident du travail en cours</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          checked={ruptureConventionnelleData.verificationArretMaladie === 'oui'} 
+                          onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, verificationArretMaladie: v ? 'oui' : 'non'})} 
+                          id="arret-maladie" 
+                        />
+                        <Label htmlFor="arret-maladie" className="font-normal">Arrêt maladie lié à une faute de l'employeur</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          checked={ruptureConventionnelleData.verificationConflitGrave === 'oui'} 
+                          onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, verificationConflitGrave: v ? 'oui' : 'non'})} 
+                          id="conflit-grave" 
+                        />
+                        <Label htmlFor="conflit-grave" className="font-normal">Conflit grave empêchant un consentement libre</Label>
+                      </div>
+                    </div>
+                    {(ruptureConventionnelleData.verificationAccidentTravail === 'oui' || 
+                      ruptureConventionnelleData.verificationArretMaladie === 'oui' || 
+                      ruptureConventionnelleData.verificationConflitGrave === 'oui') && (
+                      <div className="mt-3 p-2 bg-red-50 rounded border border-red-200">
+                        <p className="text-sm text-red-700">⚠️ RISQUE D'ANNULATION : Ces situations peuvent entraîner la nullité de la rupture conventionnelle. Conseil juridique fortement recommandé.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 3️⃣ DATE DE L'ENTRETIEN */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">3️⃣ Date de l'entretien obligatoire</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Date de l'entretien *</Label><Input type="date" value={ruptureConventionnelleData.entretienDate} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, entretienDate: e.target.value})} /></div>
+                    <div><Label>Lieu de l'entretien</Label><Input value={ruptureConventionnelleData.entretienLieu} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, entretienLieu: e.target.value})} placeholder="Ex: Siège de l'entreprise" /></div>
+                    <div className="md:col-span-2"><Label>Personnes présentes</Label><Textarea value={ruptureConventionnelleData.entretienPersonnesPresentes} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, entretienPersonnesPresentes: e.target.value})} placeholder="Liste des participants" className="min-h-[60px]" /></div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <Label>Assistance du salarié</Label>
+                      <Select value={ruptureConventionnelleData.entretienAssistanceSalarie} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, entretienAssistanceSalarie: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {ruptureConventionnelleData.entretienAssistanceSalarie === 'oui' && (
+                        <Input className="mt-2" placeholder="Nom de la personne assistante" value={ruptureConventionnelleData.entretienAssistanceSalarieNom} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, entretienAssistanceSalarieNom: e.target.value})} />
+                      )}
+                    </div>
+                    <div>
+                      <Label>Assistance de l'employeur</Label>
+                      <Select value={ruptureConventionnelleData.entretienAssistanceEmployeur} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, entretienAssistanceEmployeur: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {ruptureConventionnelleData.entretienAssistanceEmployeur === 'oui' && (
+                        <Input className="mt-2" placeholder="Nom de la personne assistante" value={ruptureConventionnelleData.entretienAssistanceEmployeurNom} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, entretienAssistanceEmployeurNom: e.target.value})} />
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4️⃣ TYPE DE RUPTURE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">4️⃣ Type de rupture conventionnelle</h4>
+                  
+                  <div>
+                    <Label>Type de rupture</Label>
+                    <Select value={ruptureConventionnelleData.typeRupture} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, typeRupture: val})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="simple">Rupture conventionnelle simple</SelectItem>
+                        <SelectItem value="collective">Rupture conventionnelle collective (rare)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* 5️⃣ INDEMNITÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">5️⃣ Indemnité spécifique de rupture conventionnelle</h4>
+                  
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">A. Calcul de l'indemnité légale minimale</h5>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Salaire de référence (3 derniers mois)</Label>
+                        <Input type="number" value={ruptureConventionnelleData.indemniteSalaireRef3Mois} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, indemniteSalaireRef3Mois: e.target.value})} placeholder="Moyenne mensuelle brute" />
+                      </div>
+                      <div>
+                        <Label>Salaire de référence (12 derniers mois)</Label>
+                        <Input type="number" value={ruptureConventionnelleData.indemniteSalaireRef12Mois} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, indemniteSalaireRef12Mois: e.target.value})} placeholder="Moyenne mensuelle brute" />
+                      </div>
+                      <div>
+                        <Label>Ancienneté (années complètes)</Label>
+                        <Input type="number" value={ruptureConventionnelleData.indemniteAnciennete} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, indemniteAnciennete: e.target.value})} placeholder="Ex: 5.5" />
+                      </div>
+                      <div>
+                        <Label>Indemnité légale calculée</Label>
+                        <Input type="number" value={ruptureConventionnelleData.indemniteLegaleCalculee} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, indemniteLegaleCalculee: e.target.value})} placeholder="Montant minimum" />
+                        <p className="text-xs text-gray-600 mt-1">1/4 de mois × ancienneté ≤ 10 ans + 1/3 après</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">B. Indemnité supra-légale (négociée)</h5>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Indemnité supra-légale ?</Label>
+                        <Select value={ruptureConventionnelleData.indemniteSupraLegale} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, indemniteSupraLegale: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non (montant légal uniquement)</SelectItem>
+                            <SelectItem value="oui">Oui (montant supérieur négocié)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {ruptureConventionnelleData.indemniteSupraLegale === 'oui' && (
+                        <>
+                          <div>
+                            <Label>Montant proposé (total)</Label>
+                            <Input type="number" value={ruptureConventionnelleData.indemniteMontantPropose} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, indemniteMontantPropose: e.target.value})} placeholder="Montant en €" />
+                          </div>
+                          <div>
+                            <Label>Soumise aux cotisations sociales ?</Label>
+                            <Select value={ruptureConventionnelleData.indemniteCotisationsSociales} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, indemniteCotisationsSociales: val})}>
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="non">Non</SelectItem>
+                                <SelectItem value="oui">Oui</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="md:col-span-2">
+                            <Label>Modalités de paiement</Label>
+                            <Textarea value={ruptureConventionnelleData.indemniteModalitesPaiement} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, indemniteModalitesPaiement: e.target.value})} placeholder="Ex: Paiement unique à la rupture, versement échelonné..." className="min-h-[60px]" />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6️⃣ DATES DE RUPTURE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">6️⃣ Date de rupture du contrat</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Date de signature de la convention *</Label>
+                      <Input type="date" value={ruptureConventionnelleData.dateSignature} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, dateSignature: e.target.value})} />
+                      <p className="text-xs text-gray-600 mt-1">Point de départ du délai de rétractation (15 jours)</p>
+                    </div>
+                    <div>
+                      <Label>Date de rupture effective *</Label>
+                      <Input type="date" value={ruptureConventionnelleData.dateRuptureEffective} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, dateRuptureEffective: e.target.value})} />
+                      <p className="text-xs text-gray-600 mt-1">Après homologation DREETS</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 7️⃣ CALENDRIER LÉGAL */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">7️⃣ Calendrier légal obligatoire</h4>
+                  
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <div className="space-y-3">
+                      <div>
+                        <h5 className="font-semibold text-gray-700 text-sm">📅 Délai de rétractation</h5>
+                        <p className="text-sm text-gray-600">15 jours calendaires à partir de la signature</p>
+                        <p className="text-xs text-gray-600 mt-1">Rétractation possible par lettre remise ou envoyée à l'autre partie</p>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-700 text-sm">📅 Délai d'homologation DREETS</h5>
+                        <p className="text-sm text-gray-600">15 jours ouvrés après envoi du dossier CERFA</p>
+                        <p className="text-xs text-gray-600 mt-1">Absence de réponse = homologation tacite</p>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-700 text-sm">📅 Date de fin du contrat</h5>
+                        <p className="text-sm text-gray-600">Toujours postérieure à l'homologation</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <Label>Date fin rétractation (calculée)</Label>
+                      <Input type="date" value={ruptureConventionnelleData.dateFinRetractation} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, dateFinRetractation: e.target.value})} />
+                    </div>
+                    <div>
+                      <Label>Date envoi DREETS</Label>
+                      <Input type="date" value={ruptureConventionnelleData.dateEnvoiDREETS} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, dateEnvoiDREETS: e.target.value})} />
+                    </div>
+                    <div>
+                      <Label>Date fin homologation (calculée)</Label>
+                      <Input type="date" value={ruptureConventionnelleData.dateFinHomologation} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, dateFinHomologation: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 8️⃣ à 1️⃣5️⃣ DROITS, CONFIDENTIALITÉ & CLAUSES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">8️⃣-1️⃣5️⃣ Droits du salarié, confidentialité & clauses optionnelles</h4>
+                  
+                  {/* 8️⃣ DROITS DU SALARIÉ */}
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">8️⃣ Droits du salarié après la rupture</h5>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.droitChomage === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, droitChomage: v ? 'oui' : 'non'})} id="droit-chomage" />
+                        <Label htmlFor="droit-chomage" className="font-normal">Ouverture aux allocations chômage (ARE)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.droitSoldeToutCompte === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, droitSoldeToutCompte: v ? 'oui' : 'non'})} id="solde-compte" />
+                        <Label htmlFor="solde-compte" className="font-normal">Paiement solde de tout compte</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.droitCongesPayes === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, droitCongesPayes: v ? 'oui' : 'non'})} id="conges-payes" />
+                        <Label htmlFor="conges-payes" className="font-normal">Paiement prorata congés payés</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.droitCertificatTravail === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, droitCertificatTravail: v ? 'oui' : 'non'})} id="certificat-travail" />
+                        <Label htmlFor="certificat-travail" className="font-normal">Certificat de travail</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.droitAttestationPoleEmploi === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, droitAttestationPoleEmploi: v ? 'oui' : 'non'})} id="attestation-pole" />
+                        <Label htmlFor="attestation-pole" className="font-normal">Attestation Pôle emploi</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.droitRecuSolde === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, droitRecuSolde: v ? 'oui' : 'non'})} id="recu-solde" />
+                        <Label htmlFor="recu-solde" className="font-normal">Reçu pour solde de tout compte</Label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* 9️⃣ CONFIDENTIALITÉ */}
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">9️⃣ Confidentialité</h5>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.confidentialiteMotifs === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, confidentialiteMotifs: v ? 'oui' : 'non'})} id="conf-motifs" />
+                        <Label htmlFor="conf-motifs" className="font-normal">Interdiction de divulguer les motifs des négociations</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.confidentialiteFinanciere === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, confidentialiteFinanciere: v ? 'oui' : 'non'})} id="conf-financiere" />
+                        <Label htmlFor="conf-financiere" className="font-normal">Secret sur les conditions financières</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.confidentialiteReciprocité === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, confidentialiteReciprocité: v ? 'oui' : 'non'})} id="conf-reciprocite" />
+                        <Label htmlFor="conf-reciprocite" className="font-normal">Confidentialité réciproque</Label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* 🔟 CLAUSES OPTIONNELLES */}
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">🔟 Clauses optionnelles</h5>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Clause de non-concurrence existante ?</Label>
+                        <Select value={ruptureConventionnelleData.clauseNonConcurrence} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, clauseNonConcurrence: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="maintenue">Oui - Maintenue</SelectItem>
+                            <SelectItem value="levee">Oui - Levée</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {ruptureConventionnelleData.clauseNonConcurrence === 'maintenue' && (
+                          <Input className="mt-2" placeholder="Indemnité de non-concurrence (montant)" value={ruptureConventionnelleData.clauseNonConcurrenceIndemnite} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, clauseNonConcurrenceIndemnite: e.target.value})} />
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label>Clause de confidentialité renforcée ?</Label>
+                        <Select value={ruptureConventionnelleData.clauseConfidentialiteRenforcee} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, clauseConfidentialiteRenforcee: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="oui">Oui</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {ruptureConventionnelleData.clauseConfidentialiteRenforcee === 'oui' && (
+                          <Input className="mt-2" placeholder="Durée (ex: 2 ans)" value={ruptureConventionnelleData.clauseConfidentialiteDuree} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, clauseConfidentialiteDuree: e.target.value})} />
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.clauseNonDenigrement === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, clauseNonDenigrement: v ? 'oui' : 'non'})} id="non-denigrement" />
+                        <Label htmlFor="non-denigrement" className="font-normal">Clause de non-dénigrement (empêche communication négative)</Label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* 1️⃣1️⃣ CAS PARTICULIERS */}
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">1️⃣1️⃣ Cas particuliers à gérer</h5>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.casParticulierEnceinte === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, casParticulierEnceinte: v ? 'oui' : 'non'})} id="enceinte" />
+                        <Label htmlFor="enceinte" className="font-normal">Salariée enceinte (rupture possible mais encadrée)</Label>
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={ruptureConventionnelleData.casParticulierProtege === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, casParticulierProtege: v ? 'oui' : 'non'})} id="protege" />
+                          <Label htmlFor="protege" className="font-normal">Salarié protégé (CSE, DS, élu, RP...)</Label>
+                        </div>
+                        {ruptureConventionnelleData.casParticulierProtege === 'oui' && (
+                          <>
+                            <Input className="mt-2" placeholder="Type de protection (ex: Délégué syndical)" value={ruptureConventionnelleData.casParticulierProtegeType} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, casParticulierProtegeType: e.target.value})} />
+                            <div className="mt-2 p-2 bg-red-50 rounded border border-red-200">
+                              <p className="text-sm text-red-700">⚠️ AUTORISATION INSPECTION DU TRAVAIL NÉCESSAIRE</p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox checked={ruptureConventionnelleData.casParticulierInaptitude === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, casParticulierInaptitude: v ? 'oui' : 'non'})} id="inaptitude" />
+                          <Label htmlFor="inaptitude" className="font-normal">Inaptitude (à éviter)</Label>
+                        </div>
+                        {ruptureConventionnelleData.casParticulierInaptitude === 'oui' && (
+                          <div className="mt-2 p-2 bg-red-50 rounded border border-red-200">
+                            <p className="text-sm text-red-700">⚠️ Rupture conventionnelle déconseillée en cas d'inaptitude</p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.casParticulierEtranger === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, casParticulierEtranger: v ? 'oui' : 'non'})} id="etranger" />
+                        <Label htmlFor="etranger" className="font-normal">Rupture à l'étranger (règles locales à intégrer)</Label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1️⃣2️⃣ FORMALISATION & 1️⃣3️⃣ DREETS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">1️⃣2️⃣-1️⃣3️⃣ Formalisation & envoi à la DREETS</h4>
+                  
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">1️⃣2️⃣ Formalisation de la convention</h5>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.consentementLibre === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, consentementLibre: v ? 'oui' : 'non'})} id="consentement-libre" />
+                        <Label htmlFor="consentement-libre" className="font-normal">Liberté du consentement vérifiée</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox checked={ruptureConventionnelleData.absencePression === 'oui'} onCheckedChange={(v) => setRuptureConventionnelleData({...ruptureConventionnelleData, absencePression: v ? 'oui' : 'non'})} id="absence-pression" />
+                        <Label htmlFor="absence-pression" className="font-normal">Absence de pression / vice de consentement</Label>
+                      </div>
+                      <div>
+                        <Label>Modalités de rétractation</Label>
+                        <Textarea value={ruptureConventionnelleData.modalitesRetractation} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, modalitesRetractation: e.target.value})} placeholder="Préciser comment exercer le droit de rétractation..." className="min-h-[60px]" />
+                      </div>
+                      <div>
+                        <Label>Signature électronique (YouSign) ?</Label>
+                        <Select value={ruptureConventionnelleData.signatureElectronique} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, signatureElectronique: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non (signature manuscrite)</SelectItem>
+                            <SelectItem value="oui">Oui (signature électronique)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-3 bg-white rounded border border-gray-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">1️⃣3️⃣ Envoi à la DREETS (homologation)</h5>
+                    <div className="space-y-3">
+                      <div>
+                        <Label>Coordonnées DREETS compétente</Label>
+                        <Textarea value={ruptureConventionnelleData.dreetsCoordonnees} onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, dreetsCoordonnees: e.target.value})} placeholder="Adresse, email, téléphone..." className="min-h-[60px]" />
+                      </div>
+                      <div>
+                        <Label>Transmission électronique (TéléRC) ?</Label>
+                        <Select value={ruptureConventionnelleData.dreetsTransmissionElectronique} onValueChange={(val) => setRuptureConventionnelleData({...ruptureConventionnelleData, dreetsTransmissionElectronique: val})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (TéléRC - recommandé)</SelectItem>
+                            <SelectItem value="non">Non (courrier postal)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-gray-600 mt-1">Formulaire CERFA N°14598*01 à préparer</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1️⃣4️⃣-1️⃣5️⃣ DOCUMENTS & PIÈCES JUSTIFICATIVES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-gray-700">📄 Pièces justificatives & annexes</h4>
+                  
+                  <div className="space-y-3">
+                    <h5 className="font-semibold text-gray-700">Documents de l'employeur</h5>
+                    <SingleFileUpload label="Kbis (moins de 3 mois)" files={ruptureConvEmployeurKbisFiles} onFilesChange={setRuptureConvEmployeurKbisFiles} role="avocat" />
+                    <SingleFileUpload label="Justificatif du représentant légal" files={ruptureConvEmployeurJustifRepresentantFiles} onFilesChange={setRuptureConvEmployeurJustifRepresentantFiles} role="avocat" />
+                  </div>
+                  
+                  <div className="space-y-3 mt-4">
+                    <h5 className="font-semibold text-gray-700">Documents du salarié</h5>
+                    <SingleFileUpload label="Pièce d'identité" files={ruptureConvSalariePieceIdentiteFiles} onFilesChange={setRuptureConvSalariePieceIdentiteFiles} role="avocat" />
+                    <SingleFileUpload label="RIB" files={ruptureConvSalarieRIBFiles} onFilesChange={setRuptureConvSalarieRIBFiles} role="avocat" />
+                  </div>
+                  
+                  <div className="space-y-3 mt-4">
+                    <h5 className="font-semibold text-gray-700">Annexes et documents complémentaires</h5>
+                    <SingleFileUpload label="Fiche de poste" files={ruptureConvFichePosteFiles} onFilesChange={setRuptureConvFichePosteFiles} role="avocat" />
+                    <SingleFileUpload label="Contrat de travail initial" files={ruptureConvContratTravailFiles} onFilesChange={setRuptureConvContratTravailFiles} role="avocat" />
+                    <MultiFileUpload label="Derniers bulletins de salaire (3 ou 12 derniers)" files={ruptureConvBulletinsSalaireFiles} onFilesChange={setRuptureConvBulletinsSalaireFiles} role="avocat" />
+                    <SingleFileUpload label="Calcul détaillé de l'indemnité" files={ruptureConvCalculIndemniteFiles} onFilesChange={setRuptureConvCalculIndemniteFiles} role="avocat" />
+                    <MultiFileUpload label="Autres annexes" files={ruptureConvAnnexesFiles} onFilesChange={setRuptureConvAnnexesFiles} role="avocat" />
+                  </div>
+                  
+                  <div className="mt-4">
+                    <Label>Notes sur les documents annexes</Label>
+                    <Textarea 
+                      value={ruptureConventionnelleData.documentsNotes} 
+                      onChange={(e) => setRuptureConventionnelleData({...ruptureConventionnelleData, documentsNotes: e.target.value})} 
+                      placeholder="Historique d'ancienneté, notes complémentaires..." 
+                      className="min-h-[80px]" 
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
             {(() => {
               console.log('🔍 DEBUG CGU - pendingContractType:', JSON.stringify(pendingContractType));
@@ -56398,7 +57191,9 @@ FIN DE LA CONVENTION
                   handleCreateContratTravailContract();
                 } else if (pendingContractType === "Convention de stage") {
                   handleCreateConventionStageContract();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Rupture conventionnelle", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Rupture conventionnelle") {
+                  handleCreateRuptureConventionnelleContract();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
