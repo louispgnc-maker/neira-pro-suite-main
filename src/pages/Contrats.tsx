@@ -54691,7 +54691,7 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                   
-                  <div className="mt-4 pt-4 border-t border-blue-200 bg-blue-50 -m-4 p-4 rounded">
+                  <div className="mt-4 pt-4 border-t border-blue-200">
                     <h5 className="font-semibold text-gray-700 mb-3">👔 Tuteur de stage (OBLIGATOIRE)</h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div><Label>Nom et prénom *</Label><Input value={conventionStageData.entrepriseTuteurNom} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseTuteurNom: e.target.value})} /></div>
@@ -54973,7 +54973,7 @@ FIN DE LA CONVENTION
                   <h4 className="font-semibold text-lg text-gray-700">6️⃣ Encadrement pédagogique</h4>
                   
                   <div className="space-y-4">
-                    <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                    <div className="p-3 bg-white rounded border border-blue-200">
                       <h5 className="font-semibold text-gray-700 mb-2">Tuteur pédagogique (école)</h5>
                       <div className="grid md:grid-cols-2 gap-4">
                         <div><Label>Nom et prénom</Label><Input value={conventionStageData.tuteurPedagogiqueNom} onChange={(e) => setConventionStageData({...conventionStageData, tuteurPedagogiqueNom: e.target.value})} /></div>
@@ -55026,7 +55026,7 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                     
-                    <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                    <div className="p-3 bg-white rounded border border-blue-200">
                       <h5 className="font-semibold text-gray-700 mb-2">Organisme d'accueil</h5>
                       <div className="grid md:grid-cols-2 gap-4">
                         <div><Label>Assurance RC Pro</Label><Input value={conventionStageData.entrepriseAssuranceRCPro} onChange={(e) => setConventionStageData({...conventionStageData, entrepriseAssuranceRCPro: e.target.value})} placeholder="Nom de l'assurance" /></div>
@@ -55044,7 +55044,7 @@ FIN DE LA CONVENTION
                     </div>
                     
                     {conventionStageData.stageType === "etranger" && (
-                      <div className="p-3 bg-purple-50 rounded border border-blue-200">
+                      <div className="p-3 bg-white rounded border border-blue-200">
                         <h5 className="font-semibold text-gray-700 mb-2">Assurance à l'étranger</h5>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div><Label>Assistance rapatriement</Label><Input value={conventionStageData.stageAssuranceRapatriement} onChange={(e) => setConventionStageData({...conventionStageData, stageAssuranceRapatriement: e.target.value})} /></div>
@@ -55169,9 +55169,9 @@ FIN DE LA CONVENTION
                   <h4 className="font-semibold text-lg text-gray-700">🔟-1️⃣5️⃣ Droits, obligations & modalités</h4>
                   
                   <div className="space-y-3">
-                    <div className="p-3 bg-green-50 rounded border border-green-200">
-                      <h5 className="font-semibold text-green-700 mb-2">Droits du stagiaire</h5>
-                      <div className="text-sm text-green-600 space-y-1">
+                    <div className="p-3 bg-white rounded border border-blue-200">
+                      <h5 className="font-semibold text-gray-700 mb-2">Droits du stagiaire</h5>
+                      <div className="text-sm text-gray-600 space-y-1">
                         <p>✓ Respect du temps de travail maximal (35h/semaine)</p>
                         <p>✓ Droit à une pause quotidienne</p>
                         <p>✓ Droit à gratification (si ≥ 44 jours)</p>
@@ -55181,7 +55181,7 @@ FIN DE LA CONVENTION
                       </div>
                     </div>
                     
-                    <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                    <div className="p-3 bg-white rounded border border-blue-200">
                       <h5 className="font-semibold text-gray-700 mb-2">Obligations du stagiaire</h5>
                       <div className="text-sm text-gray-600 space-y-1">
                         <p>• Respect du règlement intérieur</p>
