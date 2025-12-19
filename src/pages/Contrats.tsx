@@ -53965,8 +53965,8 @@ FIN DE LA CONVENTION
 
                 {/* DURÉE DU CONTRAT - CDD */}
                 {contratTravailData.typeContrat === "CDD" && (
-                  <div className="space-y-4 p-4 bg-orange-50/50 rounded-lg border border-orange-200">
-                    <h4 className="font-semibold text-lg text-orange-700">📅 Durée du contrat (CDD)</h4>
+                  <div className="space-y-4 p-4 bg-gray-50/50 rounded-lg border border-gray-200">
+                    <h4 className="font-semibold text-lg text-gray-700">📅 Durée du contrat (CDD)</h4>
                     
                     {/* 1️⃣ MOTIF LÉGAL (OBLIGATOIRE) */}
                     <div className="p-3 bg-red-50 border border-red-300 rounded">
@@ -54002,7 +54002,7 @@ FIN DE LA CONVENTION
                     
                     {/* 2️⃣ DURÉE DU CDD */}
                     <div className="space-y-3 mt-4">
-                      <h5 className="font-medium text-orange-600">Type de terme</h5>
+                      <h5 className="font-medium text-gray-600">Type de terme</h5>
                       <Select value={contratTravailData.cddTypeTerme} onValueChange={(val) => setContratTravailData({...contratTravailData, cddTypeTerme: val})}>
                         <SelectTrigger><SelectValue placeholder="Choisir le type de terme" /></SelectTrigger>
                         <SelectContent>
@@ -54029,7 +54029,7 @@ FIN DE LA CONVENTION
                     
                     {/* 3️⃣ RENOUVELLEMENT */}
                     <div className="space-y-3 mt-4 p-3 bg-white rounded border">
-                      <h5 className="font-medium text-orange-600">Renouvellement du CDD</h5>
+                      <h5 className="font-medium text-gray-600">Renouvellement du CDD</h5>
                       <p className="text-xs text-gray-600">Mention obligatoire dans le contrat, même si aucun renouvellement prévu</p>
                       
                       <div><Label>Renouvellement possible ? *</Label><Select value={contratTravailData.cddRenouvellement} onValueChange={(val) => setContratTravailData({...contratTravailData, cddRenouvellement: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="non">Non - Pas de renouvellement</SelectItem><SelectItem value="oui">Oui - Renouvellement possible</SelectItem></SelectContent></Select></div>
