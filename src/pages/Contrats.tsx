@@ -53764,16 +53764,16 @@ FIN DE LA CONVENTION
             {/* Formulaire Contrat de travail (CDD/CDI) */}
             {pendingContractType === "Contrat de travail (CDD/CDI)" && (
               <div className="space-y-6">
-                <h3 className="font-semibold text-xl border-b-2 border-green-300 pb-2 text-green-700">💼 Contrat de travail (CDD/CDI)</h3>
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-blue-700">💼 Contrat de travail (CDD/CDI)</h3>
                 
                 {/* TYPE DE CONTRAT */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">Type de contrat *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Type de contrat *</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       type="button"
                       onClick={() => setContratTravailData({...contratTravailData, typeContrat: "CDI"})}
-                      className={`p-4 rounded-lg border-2 transition ${contratTravailData.typeContrat === "CDI" ? "border-green-600 bg-green-100" : "border-gray-300 bg-white"}`}
+                      className={`p-4 rounded-lg border-2 transition ${contratTravailData.typeContrat === "CDI" ? "border-blue-600 bg-blue-100" : "border-gray-300 bg-white"}`}
                     >
                       <div className="font-semibold text-lg">CDI</div>
                       <div className="text-sm text-gray-600">Contrat à Durée Indéterminée</div>
@@ -53781,7 +53781,7 @@ FIN DE LA CONVENTION
                     <button
                       type="button"
                       onClick={() => setContratTravailData({...contratTravailData, typeContrat: "CDD"})}
-                      className={`p-4 rounded-lg border-2 transition ${contratTravailData.typeContrat === "CDD" ? "border-green-600 bg-green-100" : "border-gray-300 bg-white"}`}
+                      className={`p-4 rounded-lg border-2 transition ${contratTravailData.typeContrat === "CDD" ? "border-blue-600 bg-blue-100" : "border-gray-300 bg-white"}`}
                     >
                       <div className="font-semibold text-lg">CDD</div>
                       <div className="text-sm text-gray-600">Contrat à Durée Déterminée</div>
@@ -53790,8 +53790,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* CLIENTS CONCERNÉS */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">👤 Clients concernés (optionnel)</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">👤 Clients concernés (optionnel)</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label>Employeur</Label>
@@ -53825,8 +53825,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* EMPLOYEUR */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">Employeur *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Employeur *</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Raison sociale *</Label><Input value={contratTravailData.employeurRaisonSociale} onChange={(e) => setContratTravailData({...contratTravailData, employeurRaisonSociale: e.target.value})} /></div>
                     <div><Label>Forme juridique</Label><Input value={contratTravailData.employeurFormeJuridique} onChange={(e) => setContratTravailData({...contratTravailData, employeurFormeJuridique: e.target.value})} placeholder="SARL, SAS, SA..." /></div>
@@ -53839,14 +53839,14 @@ FIN DE LA CONVENTION
                     <div><Label>Convention collective</Label><Input value={contratTravailData.employeurConventionCollective} onChange={(e) => setContratTravailData({...contratTravailData, employeurConventionCollective: e.target.value})} placeholder="Ex: Syntec" /></div>
                     <div><Label>N° IDCC</Label><Input value={contratTravailData.employeurIdccNumero} onChange={(e) => setContratTravailData({...contratTravailData, employeurIdccNumero: e.target.value})} placeholder="Ex: 1486" /></div>
                   </div>
-                  <h5 className="font-medium text-green-600 mt-4">Pièces justificatives employeur</h5>
+                  <h5 className="font-medium text-blue-600 mt-4">Pièces justificatives employeur</h5>
                   <SingleFileUpload label="Kbis / Extrait RCS" files={contratTravailEmployeurKbisFiles} onFilesChange={setContratTravailEmployeurKbisFiles} role="avocat" />
                   <SingleFileUpload label="Convention collective (IDCC)" files={contratTravailEmployeurIdccFiles} onFilesChange={setContratTravailEmployeurIdccFiles} role="avocat" />
                 </div>
 
                 {/* SALARIÉ */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">Salarié *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Salarié *</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Nom *</Label><Input value={contratTravailData.salarieNom} onChange={(e) => setContratTravailData({...contratTravailData, salarieNom: e.target.value})} /></div>
                     <div><Label>Prénom *</Label><Input value={contratTravailData.salariePrenom} onChange={(e) => setContratTravailData({...contratTravailData, salariePrenom: e.target.value})} /></div>
@@ -53860,7 +53860,7 @@ FIN DE LA CONVENTION
                     <div><Label>Email</Label><Input value={contratTravailData.salarieEmail} onChange={(e) => setContratTravailData({...contratTravailData, salarieEmail: e.target.value})} type="email" /></div>
                     <div><Label>Téléphone</Label><Input value={contratTravailData.salarieTelephone} onChange={(e) => setContratTravailData({...contratTravailData, salarieTelephone: e.target.value})} /></div>
                   </div>
-                  <h5 className="font-medium text-green-600 mt-4">Pièces justificatives salarié</h5>
+                  <h5 className="font-medium text-blue-600 mt-4">Pièces justificatives salarié</h5>
                   <SingleFileUpload label="Pièce d'identité" files={contratTravailSalarieIdentiteFiles} onFilesChange={setContratTravailSalarieIdentiteFiles} role="avocat" required />
                   <SingleFileUpload label="Carte Vitale / Attestation Sécurité Sociale" files={contratTravailSalarieVitaleFiles} onFilesChange={setContratTravailSalarieVitaleFiles} role="avocat" />
                   <SingleFileUpload label="RIB" files={contratTravailSalarieRIBFiles} onFilesChange={setContratTravailSalarieRIBFiles} role="avocat" required />
@@ -53869,8 +53869,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* POSTE */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">Poste et fonctions *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">Poste et fonctions *</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="md:col-span-2"><Label>Intitulé du poste *</Label><Input value={contratTravailData.posteIntitule} onChange={(e) => setContratTravailData({...contratTravailData, posteIntitule: e.target.value})} placeholder="Ex: Développeur Full Stack" /></div>
                     <div><Label>Classification</Label><Input value={contratTravailData.posteClassification} onChange={(e) => setContratTravailData({...contratTravailData, posteClassification: e.target.value})} placeholder="Selon convention collective" /></div>
@@ -53915,8 +53915,8 @@ FIN DE LA CONVENTION
                 )}
 
                 {/* TEMPS DE TRAVAIL */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">⏰ Temps de travail *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">⏰ Temps de travail *</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Type</Label><Select value={contratTravailData.tempsTravailType} onValueChange={(val) => setContratTravailData({...contratTravailData, tempsTravailType: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="temps_plein">Temps plein</SelectItem><SelectItem value="temps_partiel">Temps partiel</SelectItem></SelectContent></Select></div>
                     <div><Label>Durée hebdomadaire (heures) *</Label><Input value={contratTravailData.tempsTravailDureeHebdo} onChange={(e) => setContratTravailData({...contratTravailData, tempsTravailDureeHebdo: e.target.value})} placeholder="35" /></div>
@@ -53927,8 +53927,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* RÉMUNÉRATION */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">💰 Rémunération *</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">💰 Rémunération *</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Salaire brut mensuel * (€)</Label><Input value={contratTravailData.remunerationBruteMensuelle} onChange={(e) => setContratTravailData({...contratTravailData, remunerationBruteMensuelle: e.target.value})} placeholder="Ex: 3000" /></div>
                     <div><Label>Salaire brut annuel (€)</Label><Input value={contratTravailData.remunerationBruteAnnuelle} onChange={(e) => setContratTravailData({...contratTravailData, remunerationBruteAnnuelle: e.target.value})} placeholder="Ex: 36000" /></div>
@@ -53941,8 +53941,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* CONGÉS */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">🏖️ Congés</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🏖️ Congés</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Congés payés (jours/an)</Label><Input value={contratTravailData.congesPayesDuree} onChange={(e) => setContratTravailData({...contratTravailData, congesPayesDuree: e.target.value})} placeholder="30 jours ouvrables" /></div>
                     <div><Label>Période d'acquisition</Label><Input value={contratTravailData.congesPayesAcquisition} onChange={(e) => setContratTravailData({...contratTravailData, congesPayesAcquisition: e.target.value})} placeholder="1er juin - 31 mai" /></div>
@@ -53952,8 +53952,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* CLAUSES SPÉCIALES */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">📋 Clauses spéciales</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📋 Clauses spéciales</h4>
                   <div className="space-y-3">
                     <div><Label>Confidentialité</Label><Select value={contratTravailData.clauseConfidentialite} onValueChange={(val) => setContratTravailData({...contratTravailData, clauseConfidentialite: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
                     <div><Label>Non-concurrence</Label><Select value={contratTravailData.clauseNonConcurrence} onValueChange={(val) => setContratTravailData({...contratTravailData, clauseNonConcurrence: val})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="oui">Oui</SelectItem><SelectItem value="non">Non</SelectItem></SelectContent></Select></div>
@@ -53971,8 +53971,8 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* PIÈCES JUSTIFICATIVES */}
-                <div className="space-y-4 p-4 bg-green-50/50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-lg text-green-700">📄 Documents</h4>
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📄 Documents</h4>
                   <SingleFileUpload label="Fiche de poste" files={contratTravailFichePosteFiles} onFilesChange={setContratTravailFichePosteFiles} role="avocat" />
                   <SingleFileUpload label="Règlement intérieur" files={contratTravailReglementInterieurFiles} onFilesChange={setContratTravailReglementInterieurFiles} role="avocat" />
                   <MultiFileUpload label="Autres annexes" files={contratTravailAnnexesFiles} onFilesChange={setContratTravailAnnexesFiles} role="avocat" />
