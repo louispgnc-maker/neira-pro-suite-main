@@ -29262,226 +29262,48 @@ FIN DE LA CONVENTION
             {/* Formulaire Avenants au contrat de travail */}
             {pendingContractType === "Avenants au contrat de travail" && (
               <>
-                <div className="space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
-                  
-                  {/* 1. Identité de l'employeur */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">🏢 Identité de l'employeur</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Raison sociale <span className="text-red-500">*</span></Label>
-                        <Input
-                          value={avenantContratTravailData.employeur.raisonSociale}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            employeur: {...avenantContratTravailData.employeur, raisonSociale: e.target.value}
-                          })}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Forme juridique <span className="text-red-500">*</span></Label>
-                        <Select
-                          value={avenantContratTravailData.employeur.formeJuridique}
-                          onValueChange={(value) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            employeur: {...avenantContratTravailData.employeur, formeJuridique: value}
-                          })}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="SARL">SARL</SelectItem>
-                            <SelectItem value="SAS">SAS</SelectItem>
-                            <SelectItem value="SA">SA</SelectItem>
-                            <SelectItem value="SCI">SCI</SelectItem>
-                            <SelectItem value="EURL">EURL</SelectItem>
-                            <SelectItem value="SASU">SASU</SelectItem>
-                            <SelectItem value="Association">Association</SelectItem>
-                            <SelectItem value="Autre">Autre</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>SIRET <span className="text-red-500">*</span></Label>
-                        <Input
-                          value={avenantContratTravailData.employeur.siret}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            employeur: {...avenantContratTravailData.employeur, siret: e.target.value}
-                          })}
-                          placeholder="123 456 789 00012"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Code APE</Label>
-                        <Input
-                          value={avenantContratTravailData.employeur.codeAPE}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            employeur: {...avenantContratTravailData.employeur, codeAPE: e.target.value}
-                          })}
-                          placeholder="1234Z"
-                        />
-                      </div>
-
-                      <div className="space-y-2 md:col-span-2">
-                        <Label>Adresse du siège social <span className="text-red-500">*</span></Label>
-                        <Input
-                          value={avenantContratTravailData.employeur.adresseSiege}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            employeur: {...avenantContratTravailData.employeur, adresseSiege: e.target.value}
-                          })}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Représentant légal <span className="text-red-500">*</span></Label>
-                        <Input
-                          value={avenantContratTravailData.employeur.representantLegal}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            employeur: {...avenantContratTravailData.employeur, representantLegal: e.target.value}
-                          })}
-                          placeholder="Nom et prénom"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Qualité du représentant</Label>
-                        <Input
-                          value={avenantContratTravailData.employeur.qualiteRepresentant}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            employeur: {...avenantContratTravailData.employeur, qualiteRepresentant: e.target.value}
-                          })}
-                          placeholder="Ex: Gérant, Président..."
-                        />
-                      </div>
-                    </div>
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">💼 Avenants au contrat de travail</h3>
+                
+                {/* EMPLOYEUR */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🏢 Identité de l'employeur</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Raison sociale *</Label><Input value={avenantContratTravailData.employeur.raisonSociale} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, raisonSociale: e.target.value}})} /></div>
+                    <div><Label>Forme juridique *</Label><Select value={avenantContratTravailData.employeur.formeJuridique} onValueChange={(value) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, formeJuridique: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="SARL">SARL</SelectItem><SelectItem value="SAS">SAS</SelectItem><SelectItem value="SA">SA</SelectItem><SelectItem value="SCI">SCI</SelectItem><SelectItem value="EURL">EURL</SelectItem><SelectItem value="SASU">SASU</SelectItem><SelectItem value="Association">Association</SelectItem><SelectItem value="Autre">Autre</SelectItem></SelectContent></Select></div>
+                    <div><Label>SIRET *</Label><Input value={avenantContratTravailData.employeur.siret} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, siret: e.target.value}})} placeholder="123 456 789 00012" /></div>
+                    <div><Label>Code APE</Label><Input value={avenantContratTravailData.employeur.codeAPE} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, codeAPE: e.target.value}})} placeholder="1234Z" /></div>
+                    <div className="md:col-span-2"><Label>Adresse du siège social *</Label><Input value={avenantContratTravailData.employeur.adresseSiege} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, adresseSiege: e.target.value}})} /></div>
+                    <div><Label>Représentant légal *</Label><Input value={avenantContratTravailData.employeur.representantLegal} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, representantLegal: e.target.value}})} placeholder="Nom et prénom" /></div>
+                    <div><Label>Qualité du représentant</Label><Input value={avenantContratTravailData.employeur.qualiteRepresentant} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, qualiteRepresentant: e.target.value}})} placeholder="Ex: Gérant, Président..." /></div>
                   </div>
+                </div>
 
-                  {/* 2. Identité du salarié */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">👤 Identité du salarié</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Nom <span className="text-red-500">*</span></Label>
-                        <Input
-                          value={avenantContratTravailData.salarie.nom}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            salarie: {...avenantContratTravailData.salarie, nom: e.target.value}
-                          })}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Prénom <span className="text-red-500">*</span></Label>
-                        <Input
-                          value={avenantContratTravailData.salarie.prenom}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            salarie: {...avenantContratTravailData.salarie, prenom: e.target.value}
-                          })}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Date de naissance</Label>
-                        <Input
-                          type="date"
-                          value={avenantContratTravailData.salarie.dateNaissance}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            salarie: {...avenantContratTravailData.salarie, dateNaissance: e.target.value}
-                          })}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Numéro de sécurité sociale</Label>
-                        <Input
-                          value={avenantContratTravailData.salarie.numeroSecu}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            salarie: {...avenantContratTravailData.salarie, numeroSecu: e.target.value}
-                          })}
-                          placeholder="1 23 45 67 890 123 45"
-                        />
-                      </div>
-
-                      <div className="space-y-2 md:col-span-2">
-                        <Label>Adresse personnelle <span className="text-red-500">*</span></Label>
-                        <Input
-                          value={avenantContratTravailData.salarie.adresse}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            salarie: {...avenantContratTravailData.salarie, adresse: e.target.value}
-                          })}
-                        />
-                      </div>
-                    </div>
+                {/* SALARIÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">👤 Identité du salarié</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Nom *</Label><Input value={avenantContratTravailData.salarie.nom} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, nom: e.target.value}})} /></div>
+                    <div><Label>Prénom *</Label><Input value={avenantContratTravailData.salarie.prenom} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, prenom: e.target.value}})} /></div>
+                    <div><Label>Date de naissance</Label><Input type="date" value={avenantContratTravailData.salarie.dateNaissance} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, dateNaissance: e.target.value}})} /></div>
+                    <div><Label>Numéro de sécurité sociale</Label><Input value={avenantContratTravailData.salarie.numeroSecu} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, numeroSecu: e.target.value}})} placeholder="1 23 45 67 890 123 45" /></div>
+                    <div className="md:col-span-2"><Label>Adresse personnelle *</Label><Input value={avenantContratTravailData.salarie.adresse} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, adresse: e.target.value}})} /></div>
                   </div>
+                </div>
 
-                  {/* 3. Référence du contrat initial */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">📄 Référence du contrat initial</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Date du contrat initial <span className="text-red-500">*</span></Label>
-                        <Input
-                          type="date"
-                          value={avenantContratTravailData.contratInitial.dateContrat}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            contratInitial: {...avenantContratTravailData.contratInitial, dateContrat: e.target.value}
-                          })}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Type de contrat initial <span className="text-red-500">*</span></Label>
-                        <Select
-                          value={avenantContratTravailData.contratInitial.typeContrat}
-                          onValueChange={(value) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            contratInitial: {...avenantContratTravailData.contratInitial, typeContrat: value}
-                          })}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="CDI">CDI</SelectItem>
-                            <SelectItem value="CDD">CDD</SelectItem>
-                            <SelectItem value="CTT">CTT (intérim)</SelectItem>
-                            <SelectItem value="Alternance">Alternance</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2 md:col-span-2">
-                        <Label>Poste initial</Label>
-                        <Input
-                          value={avenantContratTravailData.contratInitial.posteInitial}
-                          onChange={(e) => setAvenantContratTravailData({
-                            ...avenantContratTravailData,
-                            contratInitial: {...avenantContratTravailData.contratInitial, posteInitial: e.target.value}
-                          })}
-                          placeholder="Intitulé du poste d'origine"
-                        />
-                      </div>
-                    </div>
+                {/* CONTRAT INITIAL */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📄 Référence du contrat initial</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Date du contrat initial *</Label><Input type="date" value={avenantContratTravailData.contratInitial.dateContrat} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, contratInitial: {...avenantContratTravailData.contratInitial, dateContrat: e.target.value}})} /></div>
+                    <div><Label>Type de contrat initial *</Label><Select value={avenantContratTravailData.contratInitial.typeContrat} onValueChange={(value) => setAvenantContratTravailData({...avenantContratTravailData, contratInitial: {...avenantContratTravailData.contratInitial, typeContrat: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="CDI">CDI</SelectItem><SelectItem value="CDD">CDD</SelectItem><SelectItem value="CTT">CTT (intérim)</SelectItem><SelectItem value="Alternance">Alternance</SelectItem></SelectContent></Select></div>
+                    <div className="md:col-span-2"><Label>Poste initial</Label><Input value={avenantContratTravailData.contratInitial.posteInitial} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, contratInitial: {...avenantContratTravailData.contratInitial, posteInitial: e.target.value}})} placeholder="Intitulé du poste d'origine" /></div>
                   </div>
+                </div>
 
-                  {/* 4. Objet de l'avenant */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">✏️ Objet de l'avenant</h3>
-                    <p className="text-sm text-muted-foreground">Sélectionnez le(s) élément(s) modifié(s) par cet avenant</p>
+                {/* MODIFICATIONS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">✏️ Objet de l'avenant</h4>
+                  <p className="text-sm text-gray-600">Sélectionnez le(s) élément(s) modifié(s) par cet avenant</p>
                     
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2">
@@ -29669,7 +29491,7 @@ FIN DE LA CONVENTION
 
                             <div className="space-y-2">
                               <Label>Nouvelles missions</Label>
-                              <textarea
+                              <Textarea
                                 value={avenantContratTravailData.modifications.fonctions.nouvellesMissions}
                                 onChange={(e) => setAvenantContratTravailData({
                                   ...avenantContratTravailData,
@@ -29678,8 +29500,8 @@ FIN DE LA CONVENTION
                                     fonctions: {...avenantContratTravailData.modifications.fonctions, nouvellesMissions: e.target.value}
                                   }
                                 })}
-                                className="w-full min-h-[100px] p-2 border rounded-md"
                                 placeholder="Description des nouvelles missions..."
+                                rows={4}
                               />
                             </div>
 
@@ -29854,8 +29676,8 @@ FIN DE LA CONVENTION
                       {avenantContratTravailData.modifications.autre.actif && (
                         <div className="ml-6 p-4 border rounded-lg space-y-3 bg-muted/10">
                           <div className="space-y-2">
-                            <Label>Description de la modification <span className="text-red-500">*</span></Label>
-                            <textarea
+                            <Label>Description de la modification *</Label>
+                            <Textarea
                               value={avenantContratTravailData.modifications.autre.description}
                               onChange={(e) => setAvenantContratTravailData({
                                 ...avenantContratTravailData,
@@ -29864,8 +29686,8 @@ FIN DE LA CONVENTION
                                   autre: {...avenantContratTravailData.modifications.autre, description: e.target.value}
                                 }
                               })}
-                              className="w-full min-h-[100px] p-2 border rounded-md"
                               placeholder="Décrivez la modification..."
+                              rows={4}
                             />
                           </div>
 
@@ -29886,28 +29708,19 @@ FIN DE LA CONVENTION
                         </div>
                       )}
                     </div>
-                  </div>
+                </div>
 
-                  {/* 5. Clauses maintenues */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">📋 Clauses maintenues</h3>
-                    <p className="text-sm text-muted-foreground">Toutes les autres clauses du contrat initial restent inchangées</p>
-                    
-                    <div className="space-y-2">
-                      <Label>Précisions sur les clauses maintenues (optionnel)</Label>
-                      <textarea
-                        value={avenantContratTravailData.clausesMaintenues}
-                        onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, clausesMaintenues: e.target.value})}
-                        className="w-full min-h-[100px] p-2 border rounded-md"
-                        placeholder="Ex: Convention collective, période d'essai, clause de non-concurrence..."
-                      />
-                    </div>
-                  </div>
+                {/* CLAUSES MAINTENUES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📋 Clauses maintenues</h4>
+                  <p className="text-sm text-gray-600">Toutes les autres clauses du contrat initial restent inchangées</p>
+                  <div><Label>Précisions sur les clauses maintenues (optionnel)</Label><Textarea value={avenantContratTravailData.clausesMaintenues} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, clausesMaintenues: e.target.value})} placeholder="Ex: Convention collective, période d'essai, clause de non-concurrence..." rows={4} /></div>
+                </div>
 
-                  {/* 6. Documents à joindre */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">📎 Documents à joindre</h3>
-                    
+                {/* DOCUMENTS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📎 Documents à joindre</h4>
+                  <h5 className="font-medium text-gray-700 mt-4">Pièces justificatives</h5>
                     <SingleFileUpload 
                       label="Copie du contrat initial" 
                       files={avenantContratInitialFiles} 
@@ -29939,8 +29752,6 @@ FIN DE LA CONVENTION
                       role="avocat"
                       accept="application/pdf,image/*"
                     />
-                  </div>
-
                 </div>
               </>
             )}
