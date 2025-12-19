@@ -17896,8 +17896,9 @@ FIN DE LA CONVENTION
                                   <p className="text-sm text-green-700 mt-1">{indivisaire.nom} {indivisaire.prenom} - {indivisaire.adresse}</p>
                                 </div>
                               )}
-                            </>
-                          ) : (
+                            </div>
+                          </>
+                        ) : (
                             <>
                               {/* Saisie manuelle pour non-client */}
                               <div className="space-y-2">
@@ -19981,9 +19982,8 @@ FIN DE LA CONVENTION
                                         console.error('Erreur recherche client_documents:', error);
                                       }
                                     }
-                                  }
                                   setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
-                                  } else {
+                              } else {
                                     newDebiteurs[idx] = {
                                       ...newDebiteurs[idx],
                                       clientId: "",
@@ -21187,9 +21187,10 @@ FIN DE LA CONVENTION
                           {/* Sélection client */}
                           <div className="space-y-2 md:col-span-2">
                             <Label>Sélectionner un client (optionnel)</Label>
-                            <Select 
-                              value={epoux.clientId} 
-                              onValueChange={async (value) => {
+                            <ClientSelector 
+                              clients={clients}
+                              selectedClientId={epoux.clientId}
+                              onClientChange={async (value) => {
                                 const newEpoux = [...contratMariageData.epoux];
                                 newEpoux[index] = {...newEpoux[index], clientId: value, isClient: !!value};
                                 
@@ -21237,7 +21238,6 @@ FIN DE LA CONVENTION
                                       }
                                     }
                                   }
-                                }
                                 setContratMariageData({...contratMariageData, epoux: newEpoux});
                               } else {
                                 newEpoux[index] = {
@@ -21452,7 +21452,8 @@ FIN DE LA CONVENTION
                           )}
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                   </div>
 
                   {/* 2bis. Choix de la loi applicable (cas internationaux) */}
@@ -27364,7 +27365,7 @@ FIN DE LA CONVENTION
                               donateur: {
                                 ...donationSimpleData.donateur,
                                 isClient: true,
-                                clientId: value,
+                                clientId: clientId,
                                 nom: client.nom || "",
                                 prenom: client.prenom || "",
                                 nomNaissance: client.nom || "",
@@ -27380,16 +27381,12 @@ FIN DE LA CONVENTION
                               }
                             });
                           }
-                        }}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>{c.nom} {c.prenom}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        }
+                      }}
+                      label="Lier à un client (optionnel)"
+                      placeholder="Sélectionner un client"
+                    />
+                  </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -27561,7 +27558,7 @@ FIN DE LA CONVENTION
                               donataire: {
                                 ...donationSimpleData.donataire,
                                 isClient: true,
-                                clientId: value,
+                                clientId: clientId,
                                 nom: client.nom || "",
                                 prenom: client.prenom || "",
                                 nomNaissance: client.nom || "",
@@ -27575,16 +27572,11 @@ FIN DE LA CONVENTION
                               }
                             });
                           }
-                        }}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>{c.nom} {c.prenom}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        }
+                      }}
+                      label="Lier à un client (optionnel)"
+                      placeholder="Sélectionner un client"
+                    />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -29182,10 +29174,8 @@ FIN DE LA CONVENTION
                             )}
                           </div>
                         </div>
-                      </div>
                     </div>
                   </div>
-
                 </div>
               </>
             )}
