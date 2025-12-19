@@ -157,10 +157,9 @@ function MultiFileUpload({ label, files, onFilesChange, required = false, accept
       <button
         type="button"
         onClick={() => document.getElementById(inputId)?.click()}
-        className={`w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 transition-colors ${role === 'notaire' ? 'hover:bg-orange-50' : 'hover:bg-blue-50'}`}
+        className={`w-full p-3 border-2 border-dashed rounded-lg text-sm flex items-center justify-center gap-2 bg-white transition-colors ${role === 'notaire' ? 'hover:bg-orange-50' : 'hover:bg-blue-50'}`}
         style={{
-          borderColor: files.length > 0 ? "#22c55e" : (role === 'notaire' ? "#fb923c" : "#3b82f6"),
-          backgroundColor: files.length > 0 ? "#f0fdf4" : "white"
+          borderColor: files.length > 0 ? "#22c55e" : (role === 'notaire' ? "#fb923c" : "#3b82f6")
         }}
       >
         {files.length > 0 ? (
@@ -278,7 +277,7 @@ function SingleFileUpload({ label, files, onFilesChange, required = false, accep
       
       <button
         type="button"
-        className={`w-full p-3 border-2 border-dashed ${borderColor} rounded-lg text-sm flex items-center justify-center gap-2 ${hoverBg} ${hoverBorder} transition-colors`}
+        className={`w-full p-3 border-2 border-dashed ${borderColor} rounded-lg text-sm flex items-center justify-center gap-2 bg-white ${hoverBg} ${hoverBorder} transition-colors`}
         onClick={() => document.getElementById(inputId)?.click()}
       >
         <svg className={`w-4 h-4 ${iconColor} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
