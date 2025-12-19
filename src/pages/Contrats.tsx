@@ -3541,6 +3541,85 @@ export default function Contrats() {
     },
   });
 
+  // State pour Avenants au contrat de travail (fichiers)
+  const [avenantContratInitialFiles, setAvenantContratInitialFiles] = useState<File[]>([]);
+  const [avenantPrecedentsFiles, setAvenantPrecedentsFiles] = useState<File[]>([]);
+  const [avenantJustificatifsFiles, setAvenantJustificatifsFiles] = useState<File[]>([]);
+  const [avenantAutresDocumentsFiles, setAvenantAutresDocumentsFiles] = useState<File[]>([]);
+
+  // State pour Avenants au contrat de travail
+  const [avenantContratTravailData, setAvenantContratTravailData] = useState({
+    // 1. Identité de l'employeur
+    employeur: {
+      raisonSociale: "",
+      formeJuridique: "",
+      siret: "",
+      codeAPE: "",
+      adresseSiege: "",
+      representantLegal: "",
+      qualiteRepresentant: "",
+    },
+    
+    // 2. Identité du salarié
+    salarie: {
+      nom: "",
+      prenom: "",
+      dateNaissance: "",
+      numeroSecu: "",
+      adresse: "",
+    },
+    
+    // 3. Référence du contrat initial
+    contratInitial: {
+      dateContrat: "",
+      typeContrat: "", // CDI / CDD / CTT / Alternance
+      posteInitial: "",
+    },
+    
+    // 4. Modifications
+    modifications: {
+      remuneration: {
+        actif: false,
+        ancienSalaire: "",
+        nouveauSalaire: "",
+        dateEffet: "",
+      },
+      tempsTravail: {
+        actif: false,
+        ancienneDuree: "",
+        nouvelleDuree: "",
+        dateEffet: "",
+      },
+      fonctions: {
+        actif: false,
+        ancienPoste: "",
+        nouveauPoste: "",
+        nouvellesMissions: "",
+        dateEffet: "",
+      },
+      lieuTravail: {
+        actif: false,
+        ancienLieu: "",
+        nouveauLieu: "",
+        dateEffet: "",
+      },
+      classification: {
+        actif: false,
+        ancienCoefficient: "",
+        nouveauCoefficient: "",
+        dateEffet: "",
+      },
+      autre: {
+        actif: false,
+        description: "",
+        dateEffet: "",
+      },
+    },
+    
+    // 5. Clauses maintenues
+    clausesMaintenues: "",
+  });
+
   // State pour Testament (fichiers)
   const [testamentIdentiteTestateur, setTestamentIdentiteTestateur] = useState<File[]>([]);
   const [testamentLivretFamille, setTestamentLivretFamille] = useState<File[]>([]);
