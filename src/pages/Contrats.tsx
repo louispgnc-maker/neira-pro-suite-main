@@ -53809,7 +53809,26 @@ FIN DE LA CONVENTION
                     </div>
                     <div>
                       <Label>Salarié</Label>
-                      <Select value={contratTravailClientIdSalarie} onValueChange={setContratTravailClientIdSalarie}>
+                      <Select value={contratTravailClientIdSalarie} onValueChange={(clientId) => {
+                        setContratTravailClientIdSalarie(clientId);
+                        const client = clients.find(c => c.id === clientId);
+                        if (client && clientId !== "none") {
+                          setContratTravailData({
+                            ...contratTravailData,
+                            salarieNom: client.nom || "",
+                            salariePrenom: client.prenom || "",
+                            salarieDateNaissance: client.date_naissance || "",
+                            salarieLieuNaissance: client.lieu_naissance || "",
+                            salarieNationalite: client.nationalite || "",
+                            salarieNumeroSecuSociale: client.numero_secu_sociale || "",
+                            salarieAdresse: client.adresse || "",
+                            salarieCodePostal: client.code_postal || "",
+                            salarieVille: client.ville || "",
+                            salarieEmail: client.email || "",
+                            salarieTelephone: client.telephone || ""
+                          });
+                        }
+                      }}>
                         <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">Aucun client (saisie manuelle)</SelectItem>
