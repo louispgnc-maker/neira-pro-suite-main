@@ -3582,12 +3582,14 @@ export default function Contrats() {
         actif: false,
         ancienSalaire: "",
         nouveauSalaire: "",
+        elementsModifies: "",
         dateEffet: "",
       },
       tempsTravail: {
         actif: false,
         ancienneDuree: "",
         nouvelleDuree: "",
+        repartitionHoraire: "",
         dateEffet: "",
       },
       fonctions: {
@@ -3601,6 +3603,7 @@ export default function Contrats() {
         actif: false,
         ancienLieu: "",
         nouveauLieu: "",
+        clauseMobilite: "",
         dateEffet: "",
       },
       classification: {
@@ -3618,6 +3621,21 @@ export default function Contrats() {
     
     // 5. Clauses maintenues
     clausesMaintenues: "",
+    
+    // 6. Date d'effet et signature
+    dateEffetAvenant: "",
+    effectImmediat: false,
+    dateEffetDifferee: "",
+    
+    // 7. Consentement du salarié
+    consentementExpres: false,
+    
+    // 8. Signature
+    dateLieuSignature: "",
+    villeSignature: "",
+    
+    // 9. Mention indivisible
+    mentionIndivisible: true,
   });
 
   // State pour Testament (fichiers)
@@ -29300,6 +29318,54 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
+                {/* DATE D'EFFET DE L'AVENANT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📅 Date d'effet de l'avenant</h4>
+                  <p className="text-sm text-red-600 font-medium">⚠️ Obligatoire - Sans date d'effet, l'avenant présente une ambiguïté juridique</p>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="effet_immediat"
+                        checked={avenantContratTravailData.effectImmediat}
+                        onChange={(e) => setAvenantContratTravailData({
+                          ...avenantContratTravailData,
+                          effectImmediat: e.target.checked,
+                          dateEffetDifferee: e.target.checked ? "" : avenantContratTravailData.dateEffetDifferee
+                        })}
+                      />
+                      <Label htmlFor="effet_immediat" className="cursor-pointer font-medium">Effet immédiat (à la signature)</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="effet_differe"
+                        checked={!avenantContratTravailData.effectImmediat}
+                        onChange={(e) => setAvenantContratTravailData({
+                          ...avenantContratTravailData,
+                          effectImmediat: !e.target.checked
+                        })}
+                      />
+                      <Label htmlFor="effet_differe" className="cursor-pointer font-medium">Effet différé (date précise)</Label>
+                    </div>
+                    
+                    {!avenantContratTravailData.effectImmediat && (
+                      <div className="ml-6">
+                        <Label>Date d'entrée en vigueur *</Label>
+                        <Input
+                          type="date"
+                          value={avenantContratTravailData.dateEffetDifferee}
+                          onChange={(e) => setAvenantContratTravailData({
+                            ...avenantContratTravailData,
+                            dateEffetDifferee: e.target.value
+                          })}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* MODIFICATIONS */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">✏️ Objet de l'avenant</h4>
@@ -29352,6 +29418,22 @@ FIN DE LA CONVENTION
                                   }
                                 })}
                                 placeholder="Ex: 2800 €"
+                              />
+                            </div>
+                            
+                            <div className="md:col-span-2 space-y-2">
+                              <Label>Éléments modifiés (fixe / variable / primes) *</Label>
+                              <Textarea
+                                rows={3}
+                                value={avenantContratTravailData.modifications.remuneration.elementsModifies}
+                                onChange={(e) => setAvenantContratTravailData({
+                                  ...avenantContratTravailData,
+                                  modifications: {
+                                    ...avenantContratTravailData.modifications,
+                                    remuneration: {...avenantContratTravailData.modifications.remuneration, elementsModifies: e.target.value}
+                                  }
+                                })}
+                                placeholder="Précisez si modification du salaire fixe, variable, primes, avantages en nature..."
                               />
                             </div>
 
@@ -29419,6 +29501,22 @@ FIN DE LA CONVENTION
                                   }
                                 })}
                                 placeholder="Ex: 28h"
+                              />
+                            </div>
+                            
+                            <div className="md:col-span-2 space-y-2">
+                              <Label>Répartition horaire</Label>
+                              <Textarea
+                                rows={3}
+                                value={avenantContratTravailData.modifications.tempsTravail.repartitionHoraire}
+                                onChange={(e) => setAvenantContratTravailData({
+                                  ...avenantContratTravailData,
+                                  modifications: {
+                                    ...avenantContratTravailData.modifications,
+                                    tempsTravail: {...avenantContratTravailData.modifications.tempsTravail, repartitionHoraire: e.target.value}
+                                  }
+                                })}
+                                placeholder="Ex: Lundi au jeudi 9h-17h, vendredi 9h-12h / Horaires variables / Planning tournant..."
                               />
                             </div>
 
@@ -29569,6 +29667,22 @@ FIN DE LA CONVENTION
                                   }
                                 })}
                                 placeholder="Nouvelle adresse"
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label>Clause de mobilité existante ?</Label>
+                              <Textarea
+                                rows={2}
+                                value={avenantContratTravailData.modifications.lieuTravail.clauseMobilite}
+                                onChange={(e) => setAvenantContratTravailData({
+                                  ...avenantContratTravailData,
+                                  modifications: {
+                                    ...avenantContratTravailData.modifications,
+                                    lieuTravail: {...avenantContratTravailData.modifications.lieuTravail, clauseMobilite: e.target.value}
+                                  }
+                                })}
+                                placeholder="Si une clause de mobilité est prévue dans le contrat initial, précisez-la ici..."
                               />
                             </div>
 
@@ -29752,6 +29866,68 @@ FIN DE LA CONVENTION
                       role="avocat"
                       accept="application/pdf,image/*"
                     />
+                </div>
+
+                {/* CONSENTEMENT DU SALARIÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">✅ Consentement exprès du salarié</h4>
+                  <p className="text-sm text-red-600 font-medium">⚠️ OBLIGATOIRE - Un avenant modifiant un élément essentiel nécessite l'accord du salarié</p>
+                  <div className="flex items-center space-x-3 p-4 bg-white rounded-lg border border-blue-300">
+                    <input
+                      type="checkbox"
+                      id="consentement_expres"
+                      checked={avenantContratTravailData.consentementExpres}
+                      onChange={(e) => setAvenantContratTravailData({
+                        ...avenantContratTravailData,
+                        consentementExpres: e.target.checked
+                      })}
+                      className="h-5 w-5"
+                    />
+                    <Label htmlFor="consentement_expres" className="cursor-pointer font-medium text-base">
+                      Le salarié accepte expressément et sans réserve les modifications apportées par le présent avenant
+                    </Label>
+                  </div>
+                  {!avenantContratTravailData.consentementExpres && (
+                    <p className="text-sm text-red-500 font-medium">⛔ Sans accord exprès, l'avenant n'est pas valide</p>
+                  )}
+                </div>
+
+                {/* DATE ET LIEU DE SIGNATURE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">✍️ Signature</h4>
+                  <p className="text-sm text-red-600 font-medium">⚠️ OBLIGATOIRE - Pour preuve, chronologie et validité probatoire</p>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Ville de signature *</Label><Input value={avenantContratTravailData.villeSignature} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, villeSignature: e.target.value})} placeholder="Ex: Paris" /></div>
+                    <div><Label>Date de signature *</Label><Input type="date" value={avenantContratTravailData.dateLieuSignature} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, dateLieuSignature: e.target.value})} /></div>
+                  </div>
+                </div>
+
+                {/* MENTION INDIVISIBLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔗 Indivisibilité de l'avenant</h4>
+                  <p className="text-sm text-gray-600">Clause recommandée pour la protection juridique en cas de litige</p>
+                  <div className="flex items-center space-x-3 p-4 bg-white rounded-lg border border-blue-300">
+                    <input
+                      type="checkbox"
+                      id="mention_indivisible"
+                      checked={avenantContratTravailData.mentionIndivisible}
+                      onChange={(e) => setAvenantContratTravailData({
+                        ...avenantContratTravailData,
+                        mentionIndivisible: e.target.checked
+                      })}
+                      className="h-5 w-5"
+                    />
+                    <Label htmlFor="mention_indivisible" className="cursor-pointer">
+                      Inclure la mention : "Le présent avenant constitue un tout indivisible avec le contrat initial"
+                    </Label>
+                  </div>
+                  {avenantContratTravailData.mentionIndivisible && (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-sm text-green-700">
+                        💡 Cette clause renforce la sécurité juridique en précisant que l'avenant et le contrat initial forment un ensemble cohérent
+                      </p>
+                    </div>
+                  )}
                 </div>
               </>
             )}
