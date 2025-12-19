@@ -29908,155 +29908,37 @@ FIN DE LA CONVENTION
                   <div className="space-y-4">
                     <h3 className="font-semibold text-lg border-b pb-2">📎 Documents à joindre</h3>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Contrat initial */}
-                      <div className="space-y-2">
-                        <Label>Copie du contrat initial</Label>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
-                          <input
-                            type="file"
-                            accept="application/pdf"
-                            multiple
-                            className="hidden"
-                            id="avenant_contrat_initial"
-                            onChange={(e) => {
-                              const files = Array.from(e.target.files || []);
-                              setAvenantContratInitialFiles(prev => [...prev, ...files]);
-                            }}
-                          />
-                          <label htmlFor="avenant_contrat_initial" className="cursor-pointer text-sm text-muted-foreground">
-                            Cliquez pour joindre
-                          </label>
-                          {avenantContratInitialFiles.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {avenantContratInitialFiles.map((file, idx) => (
-                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
-                                  <span className="truncate">{file.name}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => setAvenantContratInitialFiles(prev => prev.filter((_, i) => i !== idx))}
-                                    className="text-red-600 ml-2"
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Avenants précédents */}
-                      <div className="space-y-2">
-                        <Label>Avenants précédents (si existants)</Label>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
-                          <input
-                            type="file"
-                            accept="application/pdf"
-                            multiple
-                            className="hidden"
-                            id="avenant_precedents"
-                            onChange={(e) => {
-                              const files = Array.from(e.target.files || []);
-                              setAvenantPrecedentsFiles(prev => [...prev, ...files]);
-                            }}
-                          />
-                          <label htmlFor="avenant_precedents" className="cursor-pointer text-sm text-muted-foreground">
-                            Cliquez pour joindre
-                          </label>
-                          {avenantPrecedentsFiles.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {avenantPrecedentsFiles.map((file, idx) => (
-                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
-                                  <span className="truncate">{file.name}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => setAvenantPrecedentsFiles(prev => prev.filter((_, i) => i !== idx))}
-                                    className="text-red-600 ml-2"
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Justificatifs */}
-                      <div className="space-y-2">
-                        <Label>Justificatifs (diplômes, certificats...)</Label>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
-                          <input
-                            type="file"
-                            accept="application/pdf,image/*"
-                            multiple
-                            className="hidden"
-                            id="avenant_justificatifs"
-                            onChange={(e) => {
-                              const files = Array.from(e.target.files || []);
-                              setAvenantJustificatifsFiles(prev => [...prev, ...files]);
-                            }}
-                          />
-                          <label htmlFor="avenant_justificatifs" className="cursor-pointer text-sm text-muted-foreground">
-                            Cliquez pour joindre
-                          </label>
-                          {avenantJustificatifsFiles.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {avenantJustificatifsFiles.map((file, idx) => (
-                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
-                                  <span className="truncate">{file.name}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => setAvenantJustificatifsFiles(prev => prev.filter((_, i) => i !== idx))}
-                                    className="text-red-600 ml-2"
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Autres documents */}
-                      <div className="space-y-2">
-                        <Label>Autres documents</Label>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-3">
-                          <input
-                            type="file"
-                            accept="application/pdf,image/*"
-                            multiple
-                            className="hidden"
-                            id="avenant_autres"
-                            onChange={(e) => {
-                              const files = Array.from(e.target.files || []);
-                              setAvenantAutresDocumentsFiles(prev => [...prev, ...files]);
-                            }}
-                          />
-                          <label htmlFor="avenant_autres" className="cursor-pointer text-sm text-muted-foreground">
-                            Cliquez pour joindre
-                          </label>
-                          {avenantAutresDocumentsFiles.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {avenantAutresDocumentsFiles.map((file, idx) => (
-                                <div key={idx} className="flex items-center justify-between text-xs bg-muted p-1 rounded">
-                                  <span className="truncate">{file.name}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => setAvenantAutresDocumentsFiles(prev => prev.filter((_, i) => i !== idx))}
-                                    className="text-red-600 ml-2"
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <SingleFileUpload 
+                      label="Copie du contrat initial" 
+                      files={avenantContratInitialFiles} 
+                      onFilesChange={setAvenantContratInitialFiles} 
+                      role="avocat" 
+                      accept="application/pdf"
+                    />
+                    
+                    <SingleFileUpload 
+                      label="Avenants précédents (si existants)" 
+                      files={avenantPrecedentsFiles} 
+                      onFilesChange={setAvenantPrecedentsFiles} 
+                      role="avocat"
+                      accept="application/pdf"
+                    />
+                    
+                    <SingleFileUpload 
+                      label="Justificatifs (diplômes, certificats...)" 
+                      files={avenantJustificatifsFiles} 
+                      onFilesChange={setAvenantJustificatifsFiles} 
+                      role="avocat"
+                      accept="application/pdf,image/*"
+                    />
+                    
+                    <SingleFileUpload 
+                      label="Autres documents" 
+                      files={avenantAutresDocumentsFiles} 
+                      onFilesChange={setAvenantAutresDocumentsFiles} 
+                      role="avocat"
+                      accept="application/pdf,image/*"
+                    />
                   </div>
 
                 </div>
