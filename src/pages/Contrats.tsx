@@ -12641,24 +12641,15 @@ FIN DE LA CONVENTION
                 {questionnaireData.clientRole === "vendeur" ? (
                   <>
                     {/* Le client est le vendeur */}
-                    <div className="space-y-2">
-                      <Label htmlFor="clientId">Sélectionner votre client *</Label>
-                      <Select 
-                        value={questionnaireData.clientId}
-                        onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientId: value})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choisir un client" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.nom} {client.prenom}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <ClientSelector 
+                      clients={clients}
+                      selectedClientId={questionnaireData.clientId}
+                      onClientChange={(clientId) => {
+                        setQuestionnaireData({...questionnaireData, clientId: clientId});
+                      }}
+                      label="Sélectionner votre client"
+                      placeholder="Choisir un client"
+                    />
 
                     {/* Afficher les informations du client sélectionné */}
                     {questionnaireData.clientId && clients.find(c => c.id === questionnaireData.clientId) && (
@@ -12840,24 +12831,15 @@ FIN DE LA CONVENTION
                 {questionnaireData.clientRole === "acheteur" ? (
                   <>
                     {/* Le client est l'acheteur */}
-                    <div className="space-y-2">
-                      <Label htmlFor="clientId">Sélectionner votre client *</Label>
-                      <Select 
-                        value={questionnaireData.clientId}
-                        onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientId: value})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choisir un client" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.nom} {client.prenom}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <ClientSelector 
+                      clients={clients}
+                      selectedClientId={questionnaireData.clientId}
+                      onClientChange={(clientId) => {
+                        setQuestionnaireData({...questionnaireData, clientId: clientId});
+                      }}
+                      label="Sélectionner votre client"
+                      placeholder="Choisir un client"
+                    />
 
                     {/* Afficher les informations du client sélectionné */}
                     {questionnaireData.clientId && clients.find(c => c.id === questionnaireData.clientId) && (
@@ -13497,24 +13479,15 @@ FIN DE LA CONVENTION
                     {acteVenteData.clientRole === "vendeur" ? (
                       <>
                         {/* Le client est le vendeur */}
-                        <div className="space-y-2">
-                          <Label htmlFor="acte_clientId">Sélectionner votre client *</Label>
-                          <Select 
-                            value={acteVenteData.clientId}
-                            onValueChange={(value) => setActeVenteData({...acteVenteData, clientId: value})}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Choisir un client" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {clients.map((client) => (
-                                <SelectItem key={client.id} value={client.id}>
-                                  {client.nom} {client.prenom}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        <ClientSelector 
+                          clients={clients}
+                          selectedClientId={acteVenteData.clientId}
+                          onClientChange={(clientId) => {
+                            setActeVenteData({...acteVenteData, clientId: clientId});
+                          }}
+                          label="Sélectionner votre client"
+                          placeholder="Choisir un client"
+                        />
 
                         {/* Afficher les informations du client sélectionné */}
                         {acteVenteData.clientId && clients.find(c => c.id === acteVenteData.clientId) && (
@@ -13873,24 +13846,15 @@ FIN DE LA CONVENTION
                     {acteVenteData.clientRole === "acheteur" ? (
                       <>
                         {/* Le client est l'acheteur */}
-                        <div className="space-y-2">
-                          <Label htmlFor="acte_clientId_acheteur">Sélectionner votre client *</Label>
-                          <Select 
-                            value={acteVenteData.clientId}
-                            onValueChange={(value) => setActeVenteData({...acteVenteData, clientId: value})}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Choisir un client" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {clients.map((client) => (
-                                <SelectItem key={client.id} value={client.id}>
-                                  {client.nom} {client.prenom}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        <ClientSelector 
+                          clients={clients}
+                          selectedClientId={acteVenteData.clientId}
+                          onClientChange={(clientId) => {
+                            setActeVenteData({...acteVenteData, clientId: clientId});
+                          }}
+                          label="Sélectionner votre client"
+                          placeholder="Choisir un client"
+                        />
 
                         {/* Afficher les informations du client sélectionné */}
                         {acteVenteData.clientId && clients.find(c => c.id === acteVenteData.clientId) && (
