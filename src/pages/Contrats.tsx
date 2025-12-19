@@ -7554,9 +7554,12 @@ export default function Contrats() {
       const { data: contrat, error } = await supabase
         .from('contrats')
         .insert({
-          avocat_id: user.id,
-          type: "Contrat de franchise",
-          statut: 'brouillon',
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: description,
           client_id: franchiseClientId || null,
           description: description,
           contenu_json: franchiseData
@@ -7651,9 +7654,11 @@ export default function Contrats() {
       const { data: contrat, error } = await supabase
         .from('contrats')
         .insert({
-          avocat_id: user.id,
-          type: "Contrat de partenariat / coopération",
-          statut: 'brouillon',
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
           client_id: partenariatClientId1 || null,
           description,
           contenu_json: partenariatData
@@ -7777,9 +7782,12 @@ export default function Contrats() {
       const { data: contrat, error: createError } = await supabase
         .from('contrats')
         .insert({
-          avocat_id: user.id,
-          type: 'Contrat de sous-traitance',
-          statut: 'brouillon',
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `Contrat de sous-traitance - Donneur d'ordre: ${sousTraitanceData.donneurOrdreDenomination} / Sous-traitant: ${sousTraitanceData.sousTraitantDenomination}`,
           donnees_formulaire: sousTraitanceData,
         })
         .select()
@@ -7875,11 +7883,14 @@ export default function Contrats() {
       const { data: contrat, error } = await supabase
         .from('contrats')
         .insert({
-          avocat_id: user.id,
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `NDA - ${ndaData.partie1Denomination} ⇄ ${ndaData.partie2Denomination}`,
           client_id_1: ndaClientId1 && ndaClientId1 !== "none" ? ndaClientId1 : null,
           client_id_2: ndaClientId2 && ndaClientId2 !== "none" ? ndaClientId2 : null,
-          type: 'NDA (Accord de confidentialité)',
-          statut: 'brouillon',
           donnees_formulaire: ndaData,
         })
         .select()
@@ -7987,11 +7998,14 @@ export default function Contrats() {
       const { data: contrat, error } = await supabase
         .from('contrats')
         .insert({
-          avocat_id: user.id,
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `Cession PI - Cédant: ${cessionPiData.cedantNom} → Cessionnaire: ${cessionPiData.cessionnaireNom}`,
           client_id_1: cessionPiClientIdCedant && cessionPiClientIdCedant !== "none" ? cessionPiClientIdCedant : null,
           client_id_2: cessionPiClientIdCessionnaire && cessionPiClientIdCessionnaire !== "none" ? cessionPiClientIdCessionnaire : null,
-          type: 'Cession de marque / cession de droits de propriété intellectuelle',
-          statut: 'brouillon',
           donnees_formulaire: cessionPiData,
         })
         .select()
@@ -8142,11 +8156,14 @@ export default function Contrats() {
       const { data: contrat, error } = await supabase
         .from('contrats')
         .insert({
-          avocat_id: user.id,
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `Contrat de travail ${contratTravailData.typeContrat} - ${contratTravailData.employeurDenomination} / ${contratTravailData.salariNom} ${contratTravailData.salariPrenom}`,
           client_id_1: contratTravailClientIdEmployeur && contratTravailClientIdEmployeur !== "none" ? contratTravailClientIdEmployeur : null,
           client_id_2: contratTravailClientIdSalarie && contratTravailClientIdSalarie !== "none" ? contratTravailClientIdSalarie : null,
-          type: 'Contrat de travail (CDD/CDI)',
-          statut: 'brouillon',
           donnees_formulaire: contratTravailData,
         })
         .select()
@@ -8258,11 +8275,14 @@ export default function Contrats() {
       const { data: contrat, error } = await supabase
         .from('contrats')
         .insert({
-          avocat_id: user.id,
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `Convention de stage - ${conventionStageData.stagiaireNom} ${conventionStageData.stagiairePrenom} chez ${conventionStageData.entrepriseDenomination}`,
           client_id_1: conventionStageClientIdStagiaire && conventionStageClientIdStagiaire !== "none" ? conventionStageClientIdStagiaire : null,
           client_id_2: conventionStageClientIdEntreprise && conventionStageClientIdEntreprise !== "none" ? conventionStageClientIdEntreprise : null,
-          type: 'Convention de stage',
-          statut: 'brouillon',
           donnees_formulaire: conventionStageData,
         })
         .select()
@@ -8398,15 +8418,15 @@ export default function Contrats() {
       const { data: contrat, error } = await supabase
         .from('contrats')
         .insert({
-          user_id: user.id,
-          type: 'Rupture conventionnelle',
-          description: `${ruptureConventionnelleData.salariNom} ${ruptureConventionnelleData.salariPrenom} - ${ruptureConventionnelleData.employeurDenomination}`,
-          parties: [
-            ruptureConventionnelleClientIdEmployeur || ruptureConventionnelleData.employeurDenomination,
-            ruptureConventionnelleClientIdSalarie || `${ruptureConventionnelleData.salariNom} ${ruptureConventionnelleData.salariPrenom}`
-          ],
-          data: ruptureConventionnelleData,
-          status: 'draft'
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `Rupture conventionnelle - ${ruptureConventionnelleData.salariNom} ${ruptureConventionnelleData.salariPrenom} - ${ruptureConventionnelleData.employeurDenomination}`,
+          client_id_1: ruptureConventionnelleClientIdEmployeur || null,
+          client_id_2: ruptureConventionnelleClientIdSalarie || null,
+          donnees_formulaire: ruptureConventionnelleData
         })
         .select()
         .single();
@@ -8475,6 +8495,147 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création rupture conventionnelle:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour le formulaire d'avenant au contrat de travail
+  const handleCreateAvenantContratTravailContract = async () => {
+    if (!user) return;
+    
+    // Validations obligatoires
+    if (!avenantContratTravailData.employeurDenomination || !avenantContratTravailData.salarieNom || !avenantContratTravailData.salariePrenom) {
+      toast.error("Identification des parties obligatoire", { description: "Employeur et salarié requis" });
+      return;
+    }
+    
+    if (!avenantContratTravailData.contratInitialReference || !avenantContratTravailData.contratInitialDateSignature) {
+      toast.error("Référence au contrat initial obligatoire", { description: "Numéro et date de signature requis" });
+      return;
+    }
+    
+    if (!avenantContratTravailData.objetAvenant) {
+      toast.error("Objet de l'avenant obligatoire", { description: "Veuillez décrire l'objet de l'avenant" });
+      return;
+    }
+    
+    if (!avenantContratTravailData.typeAvenant) {
+      toast.error("Type d'avenant obligatoire", { description: "Veuillez sélectionner le type d'avenant" });
+      return;
+    }
+    
+    if (!avenantContratTravailData.dateSignature || !avenantContratTravailData.dateEffet) {
+      toast.error("Dates obligatoires", { description: "Date de signature et date d'effet requises" });
+      return;
+    }
+    
+    try {
+      // Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `Avenant au contrat de travail - ${avenantContratTravailData.salarieNom} ${avenantContratTravailData.salariePrenom} - ${avenantContratTravailData.employeurDenomination} - ${avenantContratTravailData.typeAvenant}`,
+          client_id_1: avenantContratTravailClientIdEmployeur || null,
+          client_id_2: avenantContratTravailClientIdSalarie || null,
+          donnees_formulaire: avenantContratTravailData
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      // Upload des fichiers
+      if (avenantCtEmployeurKbisFiles.length > 0) {
+        for (const file of avenantCtEmployeurKbisFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/employeur/kbis_${file.name}`, file);
+        }
+      }
+      if (avenantCtEmployeurJustifRepresentantFiles.length > 0) {
+        for (const file of avenantCtEmployeurJustifRepresentantFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/employeur/justif_representant_${file.name}`, file);
+        }
+      }
+      if (avenantCtSalariePieceIdentiteFiles.length > 0) {
+        for (const file of avenantCtSalariePieceIdentiteFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/salarie/piece_identite_${file.name}`, file);
+        }
+      }
+      if (avenantCtContratInitialFiles.length > 0) {
+        for (const file of avenantCtContratInitialFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/contrat_initial_${file.name}`, file);
+        }
+      }
+      if (avenantCtAvenantsPrecedentsFiles.length > 0) {
+        for (const file of avenantCtAvenantsPrecedentsFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/avenants_precedents_${file.name}`, file);
+        }
+      }
+      if (avenantCtJustificatifsModificationsFiles.length > 0) {
+        for (const file of avenantCtJustificatifsModificationsFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/justificatifs_${file.name}`, file);
+        }
+      }
+      if (avenantCtFichesPostesFiles.length > 0) {
+        for (const file of avenantCtFichesPostesFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/fiches_postes_${file.name}`, file);
+        }
+      }
+      if (avenantCtBulletinsSalaireFiles.length > 0) {
+        for (const file of avenantCtBulletinsSalaireFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/bulletins_${file.name}`, file);
+        }
+      }
+      if (avenantCtConsentementSalarieFiles.length > 0) {
+        for (const file of avenantCtConsentementSalarieFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/consentement_${file.name}`, file);
+        }
+      }
+      if (avenantCtAccordSyndicalFiles.length > 0) {
+        for (const file of avenantCtAccordSyndicalFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/accord_syndical_${file.name}`, file);
+        }
+      }
+      if (avenantCtInformationCseFiles.length > 0) {
+        for (const file of avenantCtInformationCseFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/information_cse_${file.name}`, file);
+        }
+      }
+      if (avenantCtCalculsImpactsFiles.length > 0) {
+        for (const file of avenantCtCalculsImpactsFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/calculs_impacts_${file.name}`, file);
+        }
+      }
+      if (avenantCtAnnexesFiles.length > 0) {
+        for (const file of avenantCtAnnexesFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/annexes/${file.name}`, file);
+        }
+      }
+      
+      toast.success("Avenant au contrat de travail créé avec succès");
+      setPendingContractType("");
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création avenant contrat de travail:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -11266,10 +11427,11 @@ FIN DE LA CONVENTION
 `;
 
       await supabase.from('contrats').insert({
+        owner_id: user.id,
+        role: role,
         name: `Donation entre époux - ${donationEntreEpouxData.epoux[0].nom} ${donationEntreEpouxData.epoux[0].prenom} & ${donationEntreEpouxData.epoux[1].nom} ${donationEntreEpouxData.epoux[1].prenom}`,
-        user_id: user.id,
-        status: 'draft',
         type: 'Donation entre époux',
+        category: pendingCategory,
         description: descriptionData,
       });
 
@@ -16167,12 +16329,12 @@ FIN DE LA CONVENTION
                     
                     {/* Sélection du client si bailleur */}
                     {bailCommercialData.clientRole === "bailleur" && (
-                      <div className="space-y-2">
-                        <Label>Sélectionner le client bailleur *</Label>
-                        <Select 
-                          value={bailCommercialData.clientId} 
-                          onValueChange={(value) => {
-                            const selectedClient = clients.find(c => c.id === value);
+                      <ClientSelector
+                        clients={clients}
+                        selectedClientId={bailCommercialData.clientId}
+                        onClientChange={(clientId) => {
+                          if (clientId) {
+                            const selectedClient = clients.find(c => c.id === clientId);
                             if (selectedClient) {
                               console.log('🔍 BAILLEUR - Client:', selectedClient);
                               console.log('🔍 BAILLEUR - situation_matrimoniale:', selectedClient.situation_matrimoniale);
@@ -16231,8 +16393,8 @@ FIN DE LA CONVENTION
                               
                               setBailCommercialData({
                                 ...bailCommercialData,
-                                clientId: value,
-                                bailleurClientId: value,
+                                clientId: clientId,
+                                bailleurClientId: clientId,
                                 statutBailleur: "physique",
                                 bailleurNom: selectedClient.nom || "",
                                 bailleurPrenom: selectedClient.prenom || "",
@@ -16245,16 +16407,26 @@ FIN DE LA CONVENTION
                                 bailleurProfession: selectedClient.profession || "",
                               });
                             }
-                          }}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
-                          <SelectContent>
-                            {clients.map((client) => (
-                              <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                          } else {
+                            setBailCommercialData({
+                              ...bailCommercialData,
+                              clientId: "",
+                              bailleurClientId: "",
+                              bailleurNom: "",
+                              bailleurPrenom: "",
+                              bailleurAdresse: "",
+                              bailleurDateNaissance: "",
+                              bailleurLieuNaissance: "",
+                              bailleurNationalite: "",
+                              bailleurSituationFamiliale: "",
+                              bailleurRegimeMatrimonial: "",
+                              bailleurProfession: "",
+                            });
+                          }
+                        }}
+                        label="Sélectionner le client bailleur *"
+                        placeholder="Choisir un client"
+                      />
                     )}
                     
                     {bailCommercialData.clientRole === "preneur" && (
@@ -16495,12 +16667,12 @@ FIN DE LA CONVENTION
                     
                     {/* Sélection du client si preneur */}
                     {bailCommercialData.clientRole === "preneur" && (
-                      <div className="space-y-2">
-                        <Label>Sélectionner le client preneur *</Label>
-                        <Select 
-                          value={bailCommercialData.clientId} 
-                          onValueChange={(value) => {
-                            const selectedClient = clients.find(c => c.id === value);
+                      <ClientSelector
+                        clients={clients}
+                        selectedClientId={bailCommercialData.clientId}
+                        onClientChange={(clientId) => {
+                          if (clientId) {
+                            const selectedClient = clients.find(c => c.id === clientId);
                             if (selectedClient) {
                               let situationFamiliale = "";
                               let regimeMatrimonial = "";
@@ -16547,8 +16719,8 @@ FIN DE LA CONVENTION
                               
                               setBailCommercialData({
                                 ...bailCommercialData,
-                                clientId: value,
-                                locataireClientId: value,
+                                clientId: clientId,
+                                locataireClientId: clientId,
                                 statutLocataire: "physique",
                                 locataireNom: selectedClient.nom || "",
                                 locatairePrenom: selectedClient.prenom || "",
@@ -16563,16 +16735,28 @@ FIN DE LA CONVENTION
                                 locataireEmail: selectedClient.email || "",
                               });
                             }
-                          }}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Choisir un client" /></SelectTrigger>
-                          <SelectContent>
-                            {clients.map((client) => (
-                              <SelectItem key={client.id} value={client.id}>{client.nom} {client.prenom}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                          } else {
+                            setBailCommercialData({
+                              ...bailCommercialData,
+                              clientId: "",
+                              locataireClientId: "",
+                              locataireNom: "",
+                              locatairePrenom: "",
+                              locataireAdresse: "",
+                              locataireDateNaissance: "",
+                              locataireLieuNaissance: "",
+                              locataireNationalite: "",
+                              locataireSituationFamiliale: "",
+                              locataireRegimeMatrimonial: "",
+                              locataireProfession: "",
+                              locataireTelephone: "",
+                              locataireEmail: "",
+                            });
+                          }
+                        }}
+                        label="Sélectionner le client preneur *"
+                        placeholder="Choisir un client"
+                      />
                     )}
                     
                     {bailCommercialData.clientRole === "bailleur" && (
@@ -17684,20 +17868,26 @@ FIN DE LA CONVENTION
                                           console.error('❌ Erreur recherche client_documents:', error);
                                         }
                                       }
+                                      setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
                                     }
+                                  } else {
+                                    newIndivisaires[idx] = {
+                                      ...newIndivisaires[idx],
+                                      clientId: "",
+                                      nom: "",
+                                      prenom: "",
+                                      dateNaissance: "",
+                                      lieuNaissance: "",
+                                      adresse: "",
+                                      nationalite: "",
+                                      profession: "",
+                                    };
                                     setIndivisionData({...indivisionData, indivisaires: newIndivisaires});
-                                  }}
-                                >
-                                  <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                                  <SelectContent>
-                                    {clients.map((client) => (
-                                      <SelectItem key={client.id} value={client.id}>
-                                        {client.nom} {client.prenom}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                                  }
+                                }}
+                                label="Lier à un client existant (optionnel)"
+                                placeholder="Choisir un client"
+                              />
 
                               {/* Affichage des infos du client */}
                               {indivisaire.clientId && (
@@ -19793,17 +19983,24 @@ FIN DE LA CONVENTION
                                     }
                                   }
                                   setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                                  } else {
+                                    newDebiteurs[idx] = {
+                                      ...newDebiteurs[idx],
+                                      clientId: "",
+                                      nom: "",
+                                      prenom: "",
+                                      dateNaissance: "",
+                                      lieuNaissance: "",
+                                      adresse: "",
+                                      nationalite: "",
+                                      profession: "",
+                                    };
+                                    setMainleveeData({...mainleveeData, debiteurs: newDebiteurs});
+                                  }
                                 }}
-                              >
-                                <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                                <SelectContent>
-                                  {clients.map((client) => (
-                                    <SelectItem key={client.id} value={client.id}>
-                                      {client.nom} {client.prenom}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                                label="Sélectionner un client"
+                                placeholder="Choisir un client"
+                              />
 
                               {debiteur.clientId && (
                                 <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800">
@@ -21042,18 +21239,24 @@ FIN DE LA CONVENTION
                                   }
                                 }
                                 setContratMariageData({...contratMariageData, epoux: newEpoux});
-                              }}
-                            >
-                              <SelectTrigger><SelectValue placeholder="Sélectionner un client..." /></SelectTrigger>
-                              <SelectContent>
-                                {clients.map(client => (
-                                  <SelectItem key={client.id} value={client.id}>
-                                    {client.nom} {client.prenom}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+                              } else {
+                                newEpoux[index] = {
+                                  ...newEpoux[index],
+                                  clientId: "",
+                                  nom: "",
+                                  prenom: "",
+                                  dateNaissance: "",
+                                  lieuNaissance: "",
+                                  adresse: "",
+                                  nationalite: "",
+                                  profession: "",
+                                };
+                                setContratMariageData({...contratMariageData, epoux: newEpoux});
+                              }
+                            }}
+                            label="Lier à un client (optionnel)"
+                            placeholder="Sélectionner un client"
+                          />
 
                           <div className="space-y-2">
                             <Label>Nom *</Label>
@@ -23062,15 +23265,15 @@ FIN DE LA CONVENTION
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Sélection client */}
                           <div className="space-y-2 md:col-span-2">
-                            <Label>Sélectionner un client (optionnel)</Label>
-                            <Select 
-                              value={partenaire.clientId} 
-                              onValueChange={async (value) => {
+                            <ClientSelector
+                              clients={clients}
+                              selectedClientId={partenaire.clientId || ""}
+                              onClientChange={async (clientId) => {
                                 const newPartenaires = [...pacsData.partenaires];
-                                newPartenaires[index] = {...newPartenaires[index], clientId: value, isClient: !!value};
+                                newPartenaires[index] = {...newPartenaires[index], clientId: clientId, isClient: !!clientId};
                                 
-                                if (value) {
-                                  const client = clients.find(c => c.id === value);
+                                if (clientId) {
+                                  const client = clients.find(c => c.id === clientId);
                                   if (client) {
                                     newPartenaires[index].nom = client.nom || "";
                                     newPartenaires[index].prenom = client.prenom || "";
@@ -23094,19 +23297,31 @@ FIN DE LA CONVENTION
                                     }
                                     newPartenaires[index].situationFamiliale = situationFamiliale || client.situation_matrimoniale || "";
                                   }
+                                  setPacsData({...pacsData, partenaires: newPartenaires});
+                                } else {
+                                  newPartenaires[index] = {
+                                    ...newPartenaires[index],
+                                    clientId: "",
+                                    nom: "",
+                                    prenom: "",
+                                    nomNaissance: "",
+                                    adresseActuelle: "",
+                                    dateNaissance: "",
+                                    lieuNaissance: "",
+                                    nationalite: "",
+                                    profession: "",
+                                    telephone: "",
+                                    email: "",
+                                    typeIdentite: "",
+                                    numeroIdentite: "",
+                                    situationFamiliale: "",
+                                  };
+                                  setPacsData({...pacsData, partenaires: newPartenaires});
                                 }
-                                setPacsData({...pacsData, partenaires: newPartenaires});
                               }}
-                            >
-                              <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                              <SelectContent>
-                                {clients.map((c) => (
-                                  <SelectItem key={c.id} value={c.id}>
-                                    {c.nom} {c.prenom}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              label="Sélectionner un client (optionnel)"
+                              placeholder="Choisir un client"
+                            />
                           </div>
 
                           {/* Informations civiles */}
@@ -24540,15 +24755,15 @@ FIN DE LA CONVENTION
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Sélection client */}
                           <div className="space-y-2 md:col-span-2">
-                            <Label>Sélectionner un client (optionnel)</Label>
-                            <Select 
-                              value={epoux.clientId} 
-                              onValueChange={async (value) => {
+                            <ClientSelector
+                              clients={clients}
+                              selectedClientId={epoux.clientId || ""}
+                              onClientChange={async (clientId) => {
                                 const newEpoux = [...donationEntreEpouxData.epoux];
-                                newEpoux[index] = {...newEpoux[index], clientId: value, isClient: !!value};
+                                newEpoux[index] = {...newEpoux[index], clientId: clientId, isClient: !!clientId};
                                 
-                                if (value) {
-                                  const client = clients.find(c => c.id === value);
+                                if (clientId) {
+                                  const client = clients.find(c => c.id === clientId);
                                   if (client) {
                                     newEpoux[index].nom = client.nom || "";
                                     newEpoux[index].prenom = client.prenom || "";
@@ -24596,19 +24811,33 @@ FIN DE LA CONVENTION
                                     newEpoux[index].regimeMatrimonial = regimeMatrimonial || "";
                                     newEpoux[index].dateMariage = client.date_mariage || "";
                                   }
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
+                                } else {
+                                  newEpoux[index] = {
+                                    ...newEpoux[index],
+                                    clientId: "",
+                                    nom: "",
+                                    prenom: "",
+                                    nomNaissance: "",
+                                    adresseComplete: "",
+                                    dateNaissance: "",
+                                    lieuNaissance: "",
+                                    nationalite: "",
+                                    profession: "",
+                                    telephone: "",
+                                    email: "",
+                                    typeIdentite: "",
+                                    numeroIdentite: "",
+                                    situationMatrimoniale: "",
+                                    regimeMatrimonial: "",
+                                    dateMariage: "",
+                                  };
+                                  setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
                                 }
-                                setDonationEntreEpouxData({...donationEntreEpouxData, epoux: newEpoux});
                               }}
-                            >
-                              <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                              <SelectContent>
-                                {clients.map((c) => (
-                                  <SelectItem key={c.id} value={c.id}>
-                                    {c.nom} {c.prenom}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              label="Sélectionner un client (optionnel)"
+                              placeholder="Choisir un client"
+                            />
                           </div>
 
                           {/* Informations civiles */}
@@ -27097,12 +27326,12 @@ FIN DE LA CONVENTION
                   <div className="space-y-4">
                     <h3 className="font-semibold text-lg border-b pb-2">Identité complète du donateur</h3>
                     
-                    <div className="space-y-2">
-                      <Label>Sélectionner un client (optionnel)</Label>
-                      <Select
-                        value={donationSimpleData.donateur.clientId}
-                        onValueChange={(value) => {
-                          const client = clients.find(c => c.id === value);
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={donationSimpleData.donateur.clientId || ""}
+                      onClientChange={(clientId) => {
+                        if (clientId) {
+                          const client = clients.find(c => c.id === clientId);
                           if (client) {
                             // Extraire situation familiale
                             let situationFam = "";
@@ -27320,12 +27549,12 @@ FIN DE LA CONVENTION
                     <h3 className="font-semibold text-lg border-b pb-2">Identité complète du donataire</h3>
                     <p className="text-sm text-muted-foreground">Personne qui reçoit la donation</p>
                     
-                    <div className="space-y-2">
-                      <Label>Sélectionner un client (optionnel)</Label>
-                      <Select
-                        value={donationSimpleData.donataire.clientId}
-                        onValueChange={(value) => {
-                          const client = clients.find(c => c.id === value);
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={donationSimpleData.donataire.clientId || ""}
+                      onClientChange={(clientId) => {
+                        if (clientId) {
+                          const client = clients.find(c => c.id === clientId);
                           if (client) {
                             setDonationSimpleData({
                               ...donationSimpleData,
@@ -33005,18 +33234,18 @@ FIN DE LA CONVENTION
                   <div className="space-y-4 p-4 border rounded-lg bg-blue-50/30">
                     <h3 className="font-semibold text-lg border-b pb-2">Identité complète de l'époux 1</h3>
                     
-                    <div className="space-y-2">
-                      <Label>Sélectionner le client (Époux 1)</Label>
-                      <Select
-                        value={changementRegimeData.epoux1.clientId || undefined}
-                        onValueChange={(value) => {
-                          const client = clients.find(c => c.id === value);
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={changementRegimeData.epoux1.clientId || ""}
+                      onClientChange={(clientId) => {
+                        if (clientId) {
+                          const client = clients.find(c => c.id === clientId);
                           if (client) {
                             setChangementRegimeData({
                               ...changementRegimeData,
                               epoux1: {
                                 ...changementRegimeData.epoux1,
-                                clientId: value,
+                                clientId: clientId,
                                 nom: client.nom,
                                 prenom: client.prenom,
                                 dateNaissance: client.date_naissance || "",
@@ -33031,18 +33260,30 @@ FIN DE LA CONVENTION
                               }
                             });
                           }
-                        }}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Sélectionner un client..." /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.prenom} {client.nom}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        } else {
+                          setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux1: {
+                              ...changementRegimeData.epoux1,
+                              clientId: "",
+                              nom: "",
+                              prenom: "",
+                              dateNaissance: "",
+                              lieuNaissance: "",
+                              nationalite: "",
+                              adresse: "",
+                              profession: "",
+                              telephone: "",
+                              email: "",
+                              typeIdentite: "",
+                              numeroIdentite: "",
+                            }
+                          });
+                        }
+                      }}
+                      label="Sélectionner le client (Époux 1)"
+                      placeholder="Sélectionner un client..."
+                    />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -33179,18 +33420,18 @@ FIN DE LA CONVENTION
                   <div className="space-y-4 p-4 border rounded-lg bg-purple-50/30">
                     <h3 className="font-semibold text-lg border-b pb-2">Identité complète de l'époux 2</h3>
                     
-                    <div className="space-y-2">
-                      <Label>Sélectionner le client (Époux 2)</Label>
-                      <Select
-                        value={changementRegimeData.epoux2.clientId || undefined}
-                        onValueChange={(value) => {
-                          const client = clients.find(c => c.id === value);
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={changementRegimeData.epoux2.clientId || ""}
+                      onClientChange={(clientId) => {
+                        if (clientId) {
+                          const client = clients.find(c => c.id === clientId);
                           if (client) {
                             setChangementRegimeData({
                               ...changementRegimeData,
                               epoux2: {
                                 ...changementRegimeData.epoux2,
-                                clientId: value,
+                                clientId: clientId,
                                 nom: client.nom,
                                 prenom: client.prenom,
                                 dateNaissance: client.date_naissance || "",
@@ -33205,18 +33446,30 @@ FIN DE LA CONVENTION
                               }
                             });
                           }
-                        }}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Sélectionner un client..." /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.prenom} {client.nom}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        } else {
+                          setChangementRegimeData({
+                            ...changementRegimeData,
+                            epoux2: {
+                              ...changementRegimeData.epoux2,
+                              clientId: "",
+                              nom: "",
+                              prenom: "",
+                              dateNaissance: "",
+                              lieuNaissance: "",
+                              nationalite: "",
+                              adresse: "",
+                              profession: "",
+                              telephone: "",
+                              email: "",
+                              typeIdentite: "",
+                              numeroIdentite: "",
+                            }
+                          });
+                        }
+                      }}
+                      label="Sélectionner le client (Époux 2)"
+                      placeholder="Sélectionner un client..."
+                    />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -44241,12 +44494,12 @@ FIN DE LA CONVENTION
                   </div>
 
                   {quitusDetteData.creancier.isClient && (
-                    <div className="space-y-2">
-                      <Label>Sélectionner le client créancier</Label>
-                      <Select 
-                        value={quitusDetteData.creancier.clientId}
-                        onValueChange={(value) => {
-                          const selectedClient = clients.find(c => c.id === value);
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={quitusDetteData.creancier.clientId}
+                      onClientChange={(clientId) => {
+                        if (clientId) {
+                          const selectedClient = clients.find(c => c.id === clientId);
                           if (selectedClient) {
                             // Extraire la situation familiale de l'objet JSON
                             let situationFamiliale = "";
@@ -44260,7 +44513,7 @@ FIN DE LA CONVENTION
                               ...quitusDetteData,
                               creancier: {
                                 ...quitusDetteData.creancier,
-                                clientId: value,
+                                clientId: clientId,
                                 nom: selectedClient.nom,
                                 prenom: selectedClient.prenom,
                                 dateNaissance: selectedClient.date_naissance || "",
@@ -44276,18 +44529,31 @@ FIN DE LA CONVENTION
                               }
                             });
                           }
-                        }}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.prenom} {client.nom}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        } else {
+                          setQuitusDetteData({
+                            ...quitusDetteData,
+                            creancier: {
+                              ...quitusDetteData.creancier,
+                              clientId: "",
+                              nom: "",
+                              prenom: "",
+                              dateNaissance: "",
+                              lieuNaissance: "",
+                              nationalite: "",
+                              profession: "",
+                              adresseComplete: "",
+                              telephone: "",
+                              email: "",
+                              typeIdentite: "",
+                              numeroIdentite: "",
+                              situationMatrimoniale: "",
+                            }
+                          });
+                        }
+                      }}
+                      label="Sélectionner le client créancier"
+                      placeholder="Choisir un client..."
+                    />
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -44489,12 +44755,12 @@ FIN DE LA CONVENTION
                   </div>
 
                   {quitusDetteData.debiteur.isClient && (
-                    <div className="space-y-2">
-                      <Label>Sélectionner le client débiteur</Label>
-                      <Select 
-                        value={quitusDetteData.debiteur.clientId}
-                        onValueChange={(value) => {
-                          const selectedClient = clients.find(c => c.id === value);
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={quitusDetteData.debiteur.clientId}
+                      onClientChange={(clientId) => {
+                        if (clientId) {
+                          const selectedClient = clients.find(c => c.id === clientId);
                           if (selectedClient) {
                             // Extraire la situation familiale de l'objet JSON
                             let situationFamiliale = "";
@@ -44508,7 +44774,7 @@ FIN DE LA CONVENTION
                               ...quitusDetteData,
                               debiteur: {
                                 ...quitusDetteData.debiteur,
-                                clientId: value,
+                                clientId: clientId,
                                 nom: selectedClient.nom,
                                 prenom: selectedClient.prenom,
                                 dateNaissance: selectedClient.date_naissance || "",
@@ -44524,18 +44790,31 @@ FIN DE LA CONVENTION
                               }
                             });
                           }
-                        }}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.prenom} {client.nom}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        } else {
+                          setQuitusDetteData({
+                            ...quitusDetteData,
+                            debiteur: {
+                              ...quitusDetteData.debiteur,
+                              clientId: "",
+                              nom: "",
+                              prenom: "",
+                              dateNaissance: "",
+                              lieuNaissance: "",
+                              nationalite: "",
+                              profession: "",
+                              adresseComplete: "",
+                              telephone: "",
+                              email: "",
+                              typeIdentite: "",
+                              numeroIdentite: "",
+                              situationMatrimoniale: "",
+                            }
+                          });
+                        }
+                      }}
+                      label="Sélectionner le client débiteur"
+                      placeholder="Choisir un client..."
+                    />
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -46527,12 +46806,12 @@ FIN DE LA CONVENTION
                 <div>
                   <h3 className="font-semibold text-lg border-b pb-2 mb-4">Identité complète du cédant (vendeur des parts)</h3>
                   {clients && clients.length > 0 && (
-                    <div className="space-y-2">
-                      <Label>Lier à un client existant (facultatif)</Label>
-                      <Select
-                        value={cessionPartsData.cedant.clientId}
-                        onValueChange={(value) => {
-                          const selectedClient = clients.find(c => c.id === value);
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={cessionPartsData.cedant.clientId}
+                      onClientChange={(clientId) => {
+                        if (clientId) {
+                          const selectedClient = clients.find(c => c.id === clientId);
                           if (selectedClient) {
                             // Extraire la situation familiale de l'objet JSON
                             let situationFamiliale = "";
@@ -46557,7 +46836,7 @@ FIN DE LA CONVENTION
                               ...cessionPartsData,
                               cedant: {
                                 ...cessionPartsData.cedant,
-                                clientId: value,
+                                clientId: clientId,
                                 nom: selectedClient.nom,
                                 prenom: selectedClient.prenom,
                                 dateNaissance: selectedClient.date_naissance || "",
@@ -46573,18 +46852,31 @@ FIN DE LA CONVENTION
                               }
                             });
                           }
-                        }}
-                      >
-                        <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                        <SelectContent>
-                          {clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.prenom} {client.nom}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        } else {
+                          setCessionPartsData({
+                            ...cessionPartsData,
+                            cedant: {
+                              ...cessionPartsData.cedant,
+                              clientId: "",
+                              nom: "",
+                              prenom: "",
+                              dateNaissance: "",
+                              nationalite: "",
+                              profession: "",
+                              adresseComplete: "",
+                              telephone: "",
+                              email: "",
+                              typeIdentite: "",
+                              numeroIdentite: "",
+                              situationMatrimoniale: "",
+                              regimeMatrimonial: "",
+                            }
+                          });
+                        }
+                      }}
+                      label="Lier à un client existant (facultatif)"
+                      placeholder="Choisir un client..."
+                    />
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -46785,12 +47077,12 @@ FIN DE LA CONVENTION
                   {cessionPartsData.cessionnaire.typePersonne === "physique" && (
                     <>
                       {clients && clients.length > 0 && (
-                        <div className="space-y-2">
-                          <Label>Lier à un client existant (facultatif)</Label>
-                          <Select
-                            value={cessionPartsData.cessionnaire.clientId || ""}
-                            onValueChange={(value) => {
-                              const selectedClient = clients.find(c => c.id === value);
+                        <ClientSelector
+                          clients={clients}
+                          selectedClientId={cessionPartsData.cessionnaire.clientId || ""}
+                          onClientChange={(clientId) => {
+                            if (clientId) {
+                              const selectedClient = clients.find(c => c.id === clientId);
                               if (selectedClient) {
                                 // Extraire la situation familiale
                                 let situationFamiliale = "";
@@ -46804,7 +47096,7 @@ FIN DE LA CONVENTION
                                   ...cessionPartsData,
                                   cessionnaire: {
                                     ...cessionPartsData.cessionnaire,
-                                    clientId: value,
+                                    clientId: clientId,
                                     nom: selectedClient.nom,
                                     prenom: selectedClient.prenom,
                                     dateNaissance: selectedClient.date_naissance || "",
@@ -46819,18 +47111,30 @@ FIN DE LA CONVENTION
                                   }
                                 });
                               }
-                            }}
-                          >
-                            <SelectTrigger><SelectValue placeholder="Choisir un client..." /></SelectTrigger>
-                            <SelectContent>
-                              {clients.map((client) => (
-                                <SelectItem key={client.id} value={client.id}>
-                                  {client.prenom} {client.nom}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
+                            } else {
+                              setCessionPartsData({
+                                ...cessionPartsData,
+                                cessionnaire: {
+                                  ...cessionPartsData.cessionnaire,
+                                  clientId: "",
+                                  nom: "",
+                                  prenom: "",
+                                  dateNaissance: "",
+                                  nationalite: "",
+                                  profession: "",
+                                  adresseComplete: "",
+                                  telephone: "",
+                                  email: "",
+                                  typeIdentite: "",
+                                  numeroIdentite: "",
+                                  situationMatrimoniale: "",
+                                }
+                              });
+                            }
+                          }}
+                          label="Lier à un client existant (facultatif)"
+                          placeholder="Choisir un client..."
+                        />
                       )}
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -57266,7 +57570,9 @@ FIN DE LA CONVENTION
                   handleCreateConventionStageContract();
                 } else if (pendingContractType === "Rupture conventionnelle") {
                   handleCreateRuptureConventionnelleContract();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Avenants au contrat de travail", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Avenants au contrat de travail") {
+                  handleCreateAvenantContratTravailContract();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
