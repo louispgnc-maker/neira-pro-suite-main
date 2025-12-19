@@ -90,15 +90,26 @@ interface MultiFileUploadProps {
   role?: 'notaire' | 'avocat';
 }
 
-function ClientSelector({ clients, selectedClientId, onClientChange, label = "Sélectionner votre client" }: { clients: Array<{id: string, nom: string, prenom: string}>; selectedClientId: string; onClientChange: (clientId: string) => void; label?: string }) {
+function ClientSelector({ clients, selectedClientId, onClientChange, label = "Sélectionner votre client", placeholder }: { clients: Array<{id: string, nom: string, prenom: string}>; selectedClientId: string; onClientChange: (clientId: string) => void; label?: string; placeholder?: string }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor="client-select">
-        {label} <span className="text-red-500">*</span>
-      </Label>
+      <div className="flex items-center justify-between">
+        <Label htmlFor="client-select">
+          {label}
+        </Label>
+        {selectedClientId && (
+          <button
+            type="button"
+            onClick={() => onClientChange('')}
+            className="text-xs text-gray-500 hover:text-gray-700 underline"
+          >
+            Saisie manuelle
+          </button>
+        )}
+      </div>
       <Select value={selectedClientId} onValueChange={onClientChange}>
         <SelectTrigger id="client-select">
-          <SelectValue placeholder="Choisir un client" />
+          <SelectValue placeholder={placeholder || "Choisir un client"} />
         </SelectTrigger>
         <SelectContent>
           {clients.map((client) => (
@@ -48417,6 +48428,13 @@ FIN DE LA CONVENTION
                           prestataireEmail: client.email || "",
                           prestataireTelephone: client.telephone || "",
                         }));
+                      } else {
+                        setPrestationData(prev => ({
+                          ...prev,
+                          prestataireDenomination: "",
+                          prestataireEmail: "",
+                          prestataireTelephone: "",
+                        }));
                       }
                     }} label="Sélectionner le prestataire depuis vos clients" />
                     
@@ -48480,6 +48498,13 @@ FIN DE LA CONVENTION
                           clientDenomination: `${client.prenom} ${client.nom}`,
                           clientEmail: client.email || "",
                           clientTelephone: client.telephone || "",
+                        }));
+                      } else {
+                        setPrestationData(prev => ({
+                          ...prev,
+                          clientDenomination: "",
+                          clientEmail: "",
+                          clientTelephone: "",
                         }));
                       }
                     }} label="Sélectionner le client depuis vos clients" />
@@ -48990,6 +49015,13 @@ FIN DE LA CONVENTION
                           fournisseurEmail: client.email || "",
                           fournisseurTelephone: client.telephone || "",
                         }));
+                      } else {
+                        setVenteB2BData(prev => ({
+                          ...prev,
+                          fournisseurDenomination: "",
+                          fournisseurEmail: "",
+                          fournisseurTelephone: "",
+                        }));
                       }
                     }} label="Sélectionner le fournisseur depuis vos clients" />
                     
@@ -49052,6 +49084,13 @@ FIN DE LA CONVENTION
                           acheteurDenomination: `${client.prenom} ${client.nom}`,
                           acheteurEmail: client.email || "",
                           acheteurTelephone: client.telephone || "",
+                        }));
+                      } else {
+                        setVenteB2BData(prev => ({
+                          ...prev,
+                          acheteurDenomination: "",
+                          acheteurEmail: "",
+                          acheteurTelephone: "",
                         }));
                       }
                     }} label="Sélectionner le client (acheteur/distributeur)" />
@@ -49816,6 +49855,14 @@ FIN DE LA CONVENTION
                             vendeurEmail: client.email || "",
                             vendeurTelephone: client.telephone || ""
                           });
+                        } else {
+                          setCgvData({
+                            ...cgvData,
+                            vendeurDenomination: "",
+                            vendeurAdresseSiege: "",
+                            vendeurEmail: "",
+                            vendeurTelephone: ""
+                          });
                         }
                       }} 
                       label="Sélectionner un client comme vendeur" 
@@ -50435,6 +50482,13 @@ FIN DE LA CONVENTION
                           franchiseEmail: client.email || "",
                           franchiseTelephone: client.telephone || ""
                         });
+                      } else {
+                        setFranchiseData({
+                          ...franchiseData,
+                          franchiseNom: "",
+                          franchiseEmail: "",
+                          franchiseTelephone: ""
+                        });
                       }
                     }} label="Sélectionner le franchisé (optionnel)" />
                     
@@ -50936,6 +50990,12 @@ FIN DE LA CONVENTION
                               partie1Coordonnees: client.email || "",
                             });
                           }
+                        } else {
+                          setPartenariatData({
+                            ...partenariatData,
+                            partie1Nom: "",
+                            partie1Coordonnees: "",
+                          });
                         }
                       }}
                       label="Sélectionner un client existant (optionnel) - Partie 1"
@@ -51053,6 +51113,12 @@ FIN DE LA CONVENTION
                               partie2Coordonnees: client.email || "",
                             });
                           }
+                        } else {
+                          setPartenariatData({
+                            ...partenariatData,
+                            partie2Nom: "",
+                            partie2Coordonnees: "",
+                          });
                         }
                       }}
                       label="Sélectionner un client existant (optionnel) - Partie 2"
@@ -52052,6 +52118,12 @@ FIN DE LA CONVENTION
                               donneurSiege: client.adresse || "",
                             });
                           }
+                        } else {
+                          setSousTraitanceData({
+                            ...sousTraitanceData,
+                            donneurNom: "",
+                            donneurSiege: "",
+                          });
                         }
                       }}
                       label="Sélectionner un client existant (optionnel) - Donneur d'ordre"
@@ -52134,6 +52206,12 @@ FIN DE LA CONVENTION
                               sousTraitantSiege: client.adresse || "",
                             });
                           }
+                        } else {
+                          setSousTraitanceData({
+                            ...sousTraitanceData,
+                            sousTraitantNom: "",
+                            sousTraitantSiege: "",
+                          });
                         }
                       }}
                       label="Sélectionner un client existant (optionnel) - Sous-traitant"
@@ -55564,6 +55642,12 @@ FIN DE LA CONVENTION
                             employeurDenomination: `${client.prenom} ${client.nom}`,
                             employeurAdresseSiege: client.adresse || "",
                           });
+                        } else {
+                          setRuptureConventionnelleData({
+                            ...ruptureConventionnelleData,
+                            employeurDenomination: "",
+                            employeurAdresseSiege: "",
+                          });
                         }
                       }} 
                       placeholder="Sélectionner l'employeur (entreprise)" 
@@ -55599,6 +55683,14 @@ FIN DE LA CONVENTION
                             salariPrenom: client.prenom,
                             salariAdresse: client.adresse || "",
                             salariDateNaissance: client.date_naissance || "",
+                          });
+                        } else {
+                          setRuptureConventionnelleData({
+                            ...ruptureConventionnelleData,
+                            salariNom: "",
+                            salariPrenom: "",
+                            salariAdresse: "",
+                            salariDateNaissance: "",
                           });
                         }
                       }} 
@@ -56126,6 +56218,15 @@ FIN DE LA CONVENTION
                             editeurSiegeSocial: client.adresse || "",
                             editeurEmail: client.email || "",
                             editeurTelephone: client.telephone || ""
+                          });
+                        } else {
+                          setCguData({
+                            ...cguData,
+                            editeurNom: "",
+                            editeurDenomination: "",
+                            editeurSiegeSocial: "",
+                            editeurEmail: "",
+                            editeurTelephone: ""
                           });
                         }
                       }} 
@@ -56663,6 +56764,14 @@ FIN DE LA CONVENTION
                             mandantSiege: client.adresse || "",
                             mandantEmail: client.email || "",
                             mandantTelephone: client.telephone || "",
+                          });
+                        } else {
+                          setAgenceData({
+                            ...agenceData,
+                            mandantDenomination: "",
+                            mandantSiege: "",
+                            mandantEmail: "",
+                            mandantTelephone: "",
                           });
                         }
                       }}
