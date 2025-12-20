@@ -29289,11 +29289,11 @@ FIN DE LA CONVENTION
 
                   {/* Formulaire de saisie manuelle ou complémentaire */}
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div><Label>Raison sociale *</Label><Input value={avenantContratTravailData.employeur.raisonSociale} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, raisonSociale: e.target.value}})} /></div>
+                    <div><Label>Raison sociale</Label><Input value={avenantContratTravailData.employeur.raisonSociale} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, raisonSociale: e.target.value}})} /></div>
                     <div><Label>Forme juridique *</Label><Select value={avenantContratTravailData.employeur.formeJuridique} onValueChange={(value) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, formeJuridique: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="SARL">SARL</SelectItem><SelectItem value="SAS">SAS</SelectItem><SelectItem value="SA">SA</SelectItem><SelectItem value="SCI">SCI</SelectItem><SelectItem value="EURL">EURL</SelectItem><SelectItem value="SASU">SASU</SelectItem><SelectItem value="Association">Association</SelectItem><SelectItem value="Autre">Autre</SelectItem></SelectContent></Select></div>
                     <div><Label>SIRET *</Label><Input value={avenantContratTravailData.employeur.siret} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, siret: e.target.value}})} placeholder="123 456 789 00012" /></div>
                     <div><Label>Code APE</Label><Input value={avenantContratTravailData.employeur.codeAPE} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, codeAPE: e.target.value}})} placeholder="1234Z" /></div>
-                    <div className="md:col-span-2"><Label>Adresse du siège social *</Label><Input value={avenantContratTravailData.employeur.adresseSiege} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, adresseSiege: e.target.value}})} /></div>
+                    <div className="md:col-span-2"><Label>Adresse du siège social</Label><Input value={avenantContratTravailData.employeur.adresseSiege} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, adresseSiege: e.target.value}})} /></div>
                     <div><Label>Représentant légal *</Label><Input value={avenantContratTravailData.employeur.representantLegal} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, representantLegal: e.target.value}})} placeholder="Nom et prénom" /></div>
                     <div><Label>Qualité du représentant</Label><Input value={avenantContratTravailData.employeur.qualiteRepresentant} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, qualiteRepresentant: e.target.value}})} placeholder="Ex: Gérant, Président..." /></div>
                   </div>
@@ -29362,11 +29362,11 @@ FIN DE LA CONVENTION
 
                   {/* Formulaire de saisie manuelle ou complémentaire */}
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div><Label>Nom *</Label><Input value={avenantContratTravailData.salarie.nom} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, nom: e.target.value}})} /></div>
+                    <div><Label>Nom</Label><Input value={avenantContratTravailData.salarie.nom} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, nom: e.target.value}})} /></div>
                     <div><Label>Prénom *</Label><Input value={avenantContratTravailData.salarie.prenom} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, prenom: e.target.value}})} /></div>
                     <div><Label>Date de naissance</Label><Input type="date" value={avenantContratTravailData.salarie.dateNaissance} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, dateNaissance: e.target.value}})} /></div>
                     <div><Label>Numéro de sécurité sociale</Label><Input value={avenantContratTravailData.salarie.numeroSecu} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, numeroSecu: e.target.value}})} placeholder="1 23 45 67 890 123 45" /></div>
-                    <div className="md:col-span-2"><Label>Adresse personnelle *</Label><Input value={avenantContratTravailData.salarie.adresse} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, adresse: e.target.value}})} /></div>
+                    <div className="md:col-span-2"><Label>Adresse personnelle</Label><Input value={avenantContratTravailData.salarie.adresse} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, adresse: e.target.value}})} /></div>
                   </div>
                 </div>
 
@@ -29374,8 +29374,8 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">📄 Référence du contrat initial</h4>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div><Label>Date du contrat initial *</Label><Input type="date" value={avenantContratTravailData.contratInitial.dateContrat} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, contratInitial: {...avenantContratTravailData.contratInitial, dateContrat: e.target.value}})} /></div>
-                    <div><Label>Type de contrat initial *</Label><Select value={avenantContratTravailData.contratInitial.typeContrat} onValueChange={(value) => setAvenantContratTravailData({...avenantContratTravailData, contratInitial: {...avenantContratTravailData.contratInitial, typeContrat: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="CDI">CDI</SelectItem><SelectItem value="CDD">CDD</SelectItem><SelectItem value="CTT">CTT (intérim)</SelectItem><SelectItem value="Alternance">Alternance</SelectItem></SelectContent></Select></div>
+                    <div><Label>Date du contrat initial</Label><Input type="date" value={avenantContratTravailData.contratInitial.dateContrat} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, contratInitial: {...avenantContratTravailData.contratInitial, dateContrat: e.target.value}})} /></div>
+                    <div><Label>Type de contrat initial</Label><Select value={avenantContratTravailData.contratInitial.typeContrat} onValueChange={(value) => setAvenantContratTravailData({...avenantContratTravailData, contratInitial: {...avenantContratTravailData.contratInitial, typeContrat: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="CDI">CDI</SelectItem><SelectItem value="CDD">CDD</SelectItem><SelectItem value="CTT">CTT (intérim)</SelectItem><SelectItem value="Alternance">Alternance</SelectItem></SelectContent></Select></div>
                     <div className="md:col-span-2"><Label>Poste initial</Label><Input value={avenantContratTravailData.contratInitial.posteInitial} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, contratInitial: {...avenantContratTravailData.contratInitial, posteInitial: e.target.value}})} placeholder="Intitulé du poste d'origine" /></div>
                   </div>
                 </div>
@@ -29413,7 +29413,7 @@ FIN DE LA CONVENTION
                     
                     {!avenantContratTravailData.effectImmediat && (
                       <div className="ml-6">
-                        <Label>Date d'entrée en vigueur *</Label>
+                        <Label>Date d'entrée en vigueur</Label>
                         <Input
                           type="date"
                           value={avenantContratTravailData.dateEffetDifferee}
@@ -29468,7 +29468,7 @@ FIN DE LA CONVENTION
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Nouveau salaire brut mensuel <span className="text-red-500">*</span></Label>
+                              <Label>Nouveau salaire brut mensuel</Label>
                               <Input
                                 value={avenantContratTravailData.modifications.remuneration.nouveauSalaire}
                                 onChange={(e) => setAvenantContratTravailData({
@@ -29483,7 +29483,7 @@ FIN DE LA CONVENTION
                             </div>
                             
                             <div className="md:col-span-2 space-y-2">
-                              <Label>Éléments modifiés (fixe / variable / primes) *</Label>
+                              <Label>Éléments modifiés (fixe / variable / primes)</Label>
                               <Textarea
                                 rows={3}
                                 value={avenantContratTravailData.modifications.remuneration.elementsModifies}
@@ -29551,7 +29551,7 @@ FIN DE LA CONVENTION
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Nouvelle durée hebdomadaire <span className="text-red-500">*</span></Label>
+                              <Label>Nouvelle durée hebdomadaire</Label>
                               <Input
                                 value={avenantContratTravailData.modifications.tempsTravail.nouvelleDuree}
                                 onChange={(e) => setAvenantContratTravailData({
@@ -29634,7 +29634,7 @@ FIN DE LA CONVENTION
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Nouveau poste <span className="text-red-500">*</span></Label>
+                              <Label>Nouveau poste</Label>
                               <Input
                                 value={avenantContratTravailData.modifications.fonctions.nouveauPoste}
                                 onChange={(e) => setAvenantContratTravailData({
@@ -29717,7 +29717,7 @@ FIN DE LA CONVENTION
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Nouveau lieu <span className="text-red-500">*</span></Label>
+                              <Label>Nouveau lieu</Label>
                               <Input
                                 value={avenantContratTravailData.modifications.lieuTravail.nouveauLieu}
                                 onChange={(e) => setAvenantContratTravailData({
@@ -29800,7 +29800,7 @@ FIN DE LA CONVENTION
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Nouveau coefficient <span className="text-red-500">*</span></Label>
+                              <Label>Nouveau coefficient</Label>
                               <Input
                                 value={avenantContratTravailData.modifications.classification.nouveauCoefficient}
                                 onChange={(e) => setAvenantContratTravailData({
@@ -29851,7 +29851,7 @@ FIN DE LA CONVENTION
                       {avenantContratTravailData.modifications.autre.actif && (
                         <div className="ml-6 p-4 border rounded-lg space-y-3 bg-muted/10">
                           <div className="space-y-2">
-                            <Label>Description de la modification *</Label>
+                            <Label>Description de la modification</Label>
                             <Textarea
                               value={avenantContratTravailData.modifications.autre.description}
                               onChange={(e) => setAvenantContratTravailData({
@@ -29953,31 +29953,11 @@ FIN DE LA CONVENTION
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">✍️ Signature</h4>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div><Label>Ville de signature *</Label><Input value={avenantContratTravailData.villeSignature} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, villeSignature: e.target.value})} placeholder="Ex: Paris" /></div>
-                    <div><Label>Date de signature *</Label><Input type="date" value={avenantContratTravailData.dateLieuSignature} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, dateLieuSignature: e.target.value})} /></div>
+                    <div><Label>Ville de signature</Label><Input value={avenantContratTravailData.villeSignature} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, villeSignature: e.target.value})} placeholder="Ex: Paris" /></div>
+                    <div><Label>Date de signature</Label><Input type="date" value={avenantContratTravailData.dateLieuSignature} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, dateLieuSignature: e.target.value})} /></div>
                   </div>
                 </div>
 
-                {/* MENTION INDIVISIBLE */}
-                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">🔗 Indivisibilité de l'avenant</h4>
-                  <p className="text-sm text-gray-600">Clause recommandée pour la protection juridique en cas de litige</p>
-                  <div className="flex items-center space-x-3 p-4 bg-white rounded-lg border border-blue-300">
-                    <input
-                      type="checkbox"
-                      id="mention_indivisible"
-                      checked={avenantContratTravailData.mentionIndivisible}
-                      onChange={(e) => setAvenantContratTravailData({
-                        ...avenantContratTravailData,
-                        mentionIndivisible: e.target.checked
-                      })}
-                      className="h-5 w-5"
-                    />
-                    <Label htmlFor="mention_indivisible" className="cursor-pointer">
-                      Inclure la mention : "Le présent avenant constitue un tout indivisible avec le contrat initial"
-                    </Label>
-                  </div>
-                </div>
               </>
             )}
 
