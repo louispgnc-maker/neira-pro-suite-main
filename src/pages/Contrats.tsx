@@ -3547,6 +3547,10 @@ export default function Contrats() {
   const [avenantJustificatifsFiles, setAvenantJustificatifsFiles] = useState<File[]>([]);
   const [avenantAutresDocumentsFiles, setAvenantAutresDocumentsFiles] = useState<File[]>([]);
 
+  // State pour Avenants au contrat de travail (Client IDs)
+  const [avenantContratTravailClientIdEmployeur, setAvenantContratTravailClientIdEmployeur] = useState<string>("");
+  const [avenantContratTravailClientIdSalarie, setAvenantContratTravailClientIdSalarie] = useState<string>("");
+
   // State pour Avenants au contrat de travail
   const [avenantContratTravailData, setAvenantContratTravailData] = useState({
     // 1. Identité de l'employeur
@@ -8602,28 +8606,25 @@ export default function Contrats() {
     if (!user) return;
     
     // Validations obligatoires
-    if (!avenantContratTravailData.employeurDenomination || !avenantContratTravailData.salarieNom || !avenantContratTravailData.salariePrenom) {
+    if (!avenantContratTravailData.employeur.raisonSociale || !avenantContratTravailData.salarie.nom || !avenantContratTravailData.salarie.prenom) {
       toast.error("Identification des parties obligatoire", { description: "Employeur et salarié requis" });
       return;
     }
     
-    if (!avenantContratTravailData.contratInitialReference || !avenantContratTravailData.contratInitialDateSignature) {
-      toast.error("Référence au contrat initial obligatoire", { description: "Numéro et date de signature requis" });
+    if (!avenantContratTravailData.contratInitial.dateContrat || !avenantContratTravailData.contratInitial.typeContrat) {
+      toast.error("Référence au contrat initial obligatoire", { description: "Date et type du contrat initial requis" });
       return;
     }
     
-    if (!avenantContratTravailData.objetAvenant) {
-      toast.error("Objet de l'avenant obligatoire", { description: "Veuillez décrire l'objet de l'avenant" });
+    // Vérifier qu'au moins une modification est activée
+    const hasModification = Object.values(avenantContratTravailData.modifications).some((mod: any) => mod.actif);
+    if (!hasModification) {
+      toast.error("Objet de l'avenant obligatoire", { description: "Veuillez sélectionner au moins une modification" });
       return;
     }
     
-    if (!avenantContratTravailData.typeAvenant) {
-      toast.error("Type d'avenant obligatoire", { description: "Veuillez sélectionner le type d'avenant" });
-      return;
-    }
-    
-    if (!avenantContratTravailData.dateSignature || !avenantContratTravailData.dateEffet) {
-      toast.error("Dates obligatoires", { description: "Date de signature et date d'effet requises" });
+    if (!avenantContratTravailData.dateLieuSignature) {
+      toast.error("Date de signature obligatoire", { description: "Veuillez renseigner la date de signature" });
       return;
     }
     
@@ -8637,7 +8638,7 @@ export default function Contrats() {
           name: pendingContractType,
           type: pendingContractType,
           category: pendingCategory,
-          description: `Avenant au contrat de travail - ${avenantContratTravailData.salarieNom} ${avenantContratTravailData.salariePrenom} - ${avenantContratTravailData.employeurDenomination} - ${avenantContratTravailData.typeAvenant}`,
+          description: `Avenant au contrat de travail - ${avenantContratTravailData.salarie.nom} ${avenantContratTravailData.salarie.prenom} - ${avenantContratTravailData.employeur.raisonSociale}`,
           client_id_1: avenantContratTravailClientIdEmployeur || null,
           client_id_2: avenantContratTravailClientIdSalarie || null,
           donnees_formulaire: avenantContratTravailData
@@ -8648,82 +8649,28 @@ export default function Contrats() {
       if (error) throw error;
       
       // Upload des fichiers
-      if (avenantCtEmployeurKbisFiles.length > 0) {
-        for (const file of avenantCtEmployeurKbisFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/employeur/kbis_${file.name}`, file);
-        }
-      }
-      if (avenantCtEmployeurJustifRepresentantFiles.length > 0) {
-        for (const file of avenantCtEmployeurJustifRepresentantFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/employeur/justif_representant_${file.name}`, file);
-        }
-      }
-      if (avenantCtSalariePieceIdentiteFiles.length > 0) {
-        for (const file of avenantCtSalariePieceIdentiteFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/salarie/piece_identite_${file.name}`, file);
-        }
-      }
-      if (avenantCtContratInitialFiles.length > 0) {
-        for (const file of avenantCtContratInitialFiles) {
+      if (avenantContratInitialFiles.length > 0) {
+        for (const file of avenantContratInitialFiles) {
           await supabase.storage.from('contrats')
             .upload(`${user.id}/${contrat.id}/documents/contrat_initial_${file.name}`, file);
         }
       }
-      if (avenantCtAvenantsPrecedentsFiles.length > 0) {
-        for (const file of avenantCtAvenantsPrecedentsFiles) {
+      if (avenantPrecedentsFiles.length > 0) {
+        for (const file of avenantPrecedentsFiles) {
           await supabase.storage.from('contrats')
             .upload(`${user.id}/${contrat.id}/documents/avenants_precedents_${file.name}`, file);
         }
       }
-      if (avenantCtJustificatifsModificationsFiles.length > 0) {
-        for (const file of avenantCtJustificatifsModificationsFiles) {
+      if (avenantJustificatifsFiles.length > 0) {
+        for (const file of avenantJustificatifsFiles) {
           await supabase.storage.from('contrats')
             .upload(`${user.id}/${contrat.id}/documents/justificatifs_${file.name}`, file);
         }
       }
-      if (avenantCtFichesPostesFiles.length > 0) {
-        for (const file of avenantCtFichesPostesFiles) {
+      if (avenantAutresDocumentsFiles.length > 0) {
+        for (const file of avenantAutresDocumentsFiles) {
           await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/documents/fiches_postes_${file.name}`, file);
-        }
-      }
-      if (avenantCtBulletinsSalaireFiles.length > 0) {
-        for (const file of avenantCtBulletinsSalaireFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/documents/bulletins_${file.name}`, file);
-        }
-      }
-      if (avenantCtConsentementSalarieFiles.length > 0) {
-        for (const file of avenantCtConsentementSalarieFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/documents/consentement_${file.name}`, file);
-        }
-      }
-      if (avenantCtAccordSyndicalFiles.length > 0) {
-        for (const file of avenantCtAccordSyndicalFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/documents/accord_syndical_${file.name}`, file);
-        }
-      }
-      if (avenantCtInformationCseFiles.length > 0) {
-        for (const file of avenantCtInformationCseFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/documents/information_cse_${file.name}`, file);
-        }
-      }
-      if (avenantCtCalculsImpactsFiles.length > 0) {
-        for (const file of avenantCtCalculsImpactsFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/documents/calculs_impacts_${file.name}`, file);
-        }
-      }
-      if (avenantCtAnnexesFiles.length > 0) {
-        for (const file of avenantCtAnnexesFiles) {
-          await supabase.storage.from('contrats')
-            .upload(`${user.id}/${contrat.id}/annexes/${file.name}`, file);
+            .upload(`${user.id}/${contrat.id}/documents/autres_${file.name}`, file);
         }
       }
       
@@ -29285,6 +29232,62 @@ FIN DE LA CONVENTION
                 {/* EMPLOYEUR */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">🏢 Identité de l'employeur</h4>
+                  
+                  {/* ClientSelector pour l'employeur */}
+                  <ClientSelector 
+                    clients={clients}
+                    selectedClientId={avenantContratTravailClientIdEmployeur}
+                    onClientChange={(clientId) => {
+                      setAvenantContratTravailClientIdEmployeur(clientId);
+                      if (clientId) {
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setAvenantContratTravailData({
+                            ...avenantContratTravailData,
+                            employeur: {
+                              ...avenantContratTravailData.employeur,
+                              raisonSociale: `${client.prenom} ${client.nom}`,
+                              adresseSiege: client.adresse || "",
+                            }
+                          });
+                        }
+                      } else {
+                        // Reset pour saisie manuelle
+                        setAvenantContratTravailData({
+                          ...avenantContratTravailData,
+                          employeur: {
+                            raisonSociale: "",
+                            formeJuridique: "",
+                            siret: "",
+                            codeAPE: "",
+                            adresseSiege: "",
+                            representantLegal: "",
+                            qualiteRepresentant: "",
+                          }
+                        });
+                      }
+                    }}
+                    label="Sélectionner l'employeur dans vos clients"
+                    placeholder="Choisir un client"
+                  />
+
+                  {/* Afficher les infos si client sélectionné */}
+                  {avenantContratTravailClientIdEmployeur && clients.find(c => c.id === avenantContratTravailClientIdEmployeur) && (
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                      <p><strong>Nom:</strong> {clients.find(c => c.id === avenantContratTravailClientIdEmployeur)?.nom} {clients.find(c => c.id === avenantContratTravailClientIdEmployeur)?.prenom}</p>
+                      {clients.find(c => c.id === avenantContratTravailClientIdEmployeur)?.adresse && (
+                        <p><strong>Adresse:</strong> {clients.find(c => c.id === avenantContratTravailClientIdEmployeur)?.adresse}</p>
+                      )}
+                      {clients.find(c => c.id === avenantContratTravailClientIdEmployeur)?.telephone && (
+                        <p><strong>Téléphone:</strong> {clients.find(c => c.id === avenantContratTravailClientIdEmployeur)?.telephone}</p>
+                      )}
+                      {clients.find(c => c.id === avenantContratTravailClientIdEmployeur)?.email && (
+                        <p><strong>Email:</strong> {clients.find(c => c.id === avenantContratTravailClientIdEmployeur)?.email}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Formulaire de saisie manuelle ou complémentaire */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Raison sociale *</Label><Input value={avenantContratTravailData.employeur.raisonSociale} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, raisonSociale: e.target.value}})} /></div>
                     <div><Label>Forme juridique *</Label><Select value={avenantContratTravailData.employeur.formeJuridique} onValueChange={(value) => setAvenantContratTravailData({...avenantContratTravailData, employeur: {...avenantContratTravailData.employeur, formeJuridique: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="SARL">SARL</SelectItem><SelectItem value="SAS">SAS</SelectItem><SelectItem value="SA">SA</SelectItem><SelectItem value="SCI">SCI</SelectItem><SelectItem value="EURL">EURL</SelectItem><SelectItem value="SASU">SASU</SelectItem><SelectItem value="Association">Association</SelectItem><SelectItem value="Autre">Autre</SelectItem></SelectContent></Select></div>
@@ -29299,6 +29302,65 @@ FIN DE LA CONVENTION
                 {/* SALARIÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">👤 Identité du salarié</h4>
+                  
+                  {/* ClientSelector pour le salarié */}
+                  <ClientSelector 
+                    clients={clients}
+                    selectedClientId={avenantContratTravailClientIdSalarie}
+                    onClientChange={(clientId) => {
+                      setAvenantContratTravailClientIdSalarie(clientId);
+                      if (clientId) {
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setAvenantContratTravailData({
+                            ...avenantContratTravailData,
+                            salarie: {
+                              nom: client.nom || "",
+                              prenom: client.prenom || "",
+                              dateNaissance: client.date_naissance || "",
+                              numeroSecu: "",
+                              adresse: client.adresse || "",
+                            }
+                          });
+                        }
+                      } else {
+                        // Reset pour saisie manuelle
+                        setAvenantContratTravailData({
+                          ...avenantContratTravailData,
+                          salarie: {
+                            nom: "",
+                            prenom: "",
+                            dateNaissance: "",
+                            numeroSecu: "",
+                            adresse: "",
+                          }
+                        });
+                      }
+                    }}
+                    label="Sélectionner le salarié dans vos clients"
+                    placeholder="Choisir un client"
+                  />
+
+                  {/* Afficher les infos si client sélectionné */}
+                  {avenantContratTravailClientIdSalarie && clients.find(c => c.id === avenantContratTravailClientIdSalarie) && (
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                      <p><strong>Nom complet:</strong> {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.nom} {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.prenom}</p>
+                      {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.date_naissance && (
+                        <p><strong>Date de naissance:</strong> {new Date(clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.date_naissance).toLocaleDateString('fr-FR')}</p>
+                      )}
+                      {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.adresse && (
+                        <p><strong>Adresse:</strong> {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.adresse}</p>
+                      )}
+                      {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.telephone && (
+                        <p><strong>Téléphone:</strong> {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.telephone}</p>
+                      )}
+                      {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.email && (
+                        <p><strong>Email:</strong> {clients.find(c => c.id === avenantContratTravailClientIdSalarie)?.email}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Formulaire de saisie manuelle ou complémentaire */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Nom *</Label><Input value={avenantContratTravailData.salarie.nom} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, nom: e.target.value}})} /></div>
                     <div><Label>Prénom *</Label><Input value={avenantContratTravailData.salarie.prenom} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, salarie: {...avenantContratTravailData.salarie, prenom: e.target.value}})} /></div>
@@ -29321,7 +29383,6 @@ FIN DE LA CONVENTION
                 {/* DATE D'EFFET DE L'AVENANT */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">📅 Date d'effet de l'avenant</h4>
-                  <p className="text-sm text-red-600 font-medium">⚠️ Obligatoire - Sans date d'effet, l'avenant présente une ambiguïté juridique</p>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2">
                       <input
@@ -29871,7 +29932,6 @@ FIN DE LA CONVENTION
                 {/* CONSENTEMENT DU SALARIÉ */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">✅ Consentement exprès du salarié</h4>
-                  <p className="text-sm text-red-600 font-medium">⚠️ OBLIGATOIRE - Un avenant modifiant un élément essentiel nécessite l'accord du salarié</p>
                   <div className="flex items-center space-x-3 p-4 bg-white rounded-lg border border-blue-300">
                     <input
                       type="checkbox"
@@ -29887,15 +29947,11 @@ FIN DE LA CONVENTION
                       Le salarié accepte expressément et sans réserve les modifications apportées par le présent avenant
                     </Label>
                   </div>
-                  {!avenantContratTravailData.consentementExpres && (
-                    <p className="text-sm text-red-500 font-medium">⛔ Sans accord exprès, l'avenant n'est pas valide</p>
-                  )}
                 </div>
 
                 {/* DATE ET LIEU DE SIGNATURE */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-lg text-blue-700">✍️ Signature</h4>
-                  <p className="text-sm text-red-600 font-medium">⚠️ OBLIGATOIRE - Pour preuve, chronologie et validité probatoire</p>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Ville de signature *</Label><Input value={avenantContratTravailData.villeSignature} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, villeSignature: e.target.value})} placeholder="Ex: Paris" /></div>
                     <div><Label>Date de signature *</Label><Input type="date" value={avenantContratTravailData.dateLieuSignature} onChange={(e) => setAvenantContratTravailData({...avenantContratTravailData, dateLieuSignature: e.target.value})} /></div>
