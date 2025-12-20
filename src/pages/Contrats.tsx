@@ -29977,13 +29977,6 @@ FIN DE LA CONVENTION
                       Inclure la mention : "Le présent avenant constitue un tout indivisible avec le contrat initial"
                     </Label>
                   </div>
-                  {avenantContratTravailData.mentionIndivisible && (
-                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-sm text-green-700">
-                        💡 Cette clause renforce la sécurité juridique en précisant que l'avenant et le contrat initial forment un ensemble cohérent
-                      </p>
-                    </div>
-                  )}
                 </div>
               </>
             )}
