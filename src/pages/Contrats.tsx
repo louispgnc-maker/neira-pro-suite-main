@@ -3642,6 +3642,195 @@ export default function Contrats() {
     mentionIndivisible: true,
   });
 
+  // State pour Accord de confidentialité employé (fichiers)
+  const [accordConfidEmployeurKbisFiles, setAccordConfidEmployeurKbisFiles] = useState<File[]>([]);
+  const [accordConfidCharteInformatiqueFiles, setAccordConfidCharteInformatiqueFiles] = useState<File[]>([]);
+  const [accordConfidPolitiqueInterneFiles, setAccordConfidPolitiqueInterneFiles] = useState<File[]>([]);
+  const [accordConfidEmployeIdentiteFiles, setAccordConfidEmployeIdentiteFiles] = useState<File[]>([]);
+
+  // State pour Accord de confidentialité employé (Client IDs)
+  const [accordConfidClientIdEmployeur, setAccordConfidClientIdEmployeur] = useState<string>("");
+  const [accordConfidClientIdEmploye, setAccordConfidClientIdEmploye] = useState<string>("");
+
+  // State pour Accord de confidentialité employé
+  const [accordConfidentialiteData, setAccordConfidentialiteData] = useState({
+    // 1. Employeur
+    employeur: {
+      denominationSociale: "",
+      formeJuridique: "",
+      adresse: "",
+      siret: "",
+      representantLegal: "",
+      fonctionRepresentant: "",
+      conventionCollective: "",
+    },
+    
+    // 2. Employé
+    employe: {
+      nom: "",
+      prenom: "",
+      adresse: "",
+      dateNaissance: "",
+      posteOccupe: "",
+      serviceAffectation: "",
+      dateEntree: "",
+      typeContrat: "",
+    },
+    
+    // 3. Contexte
+    contexte: {
+      accesInfosSensibles: true,
+      secretProfessionnel: true,
+      applicablePendantContrat: true,
+      maintenueApresDepart: true,
+    },
+    
+    // 4. Définition informations confidentielles
+    informationsConfidentielles: {
+      documentsEcrits: true,
+      emailsCommunications: true,
+      logicielsCodesSources: true,
+      donneesCommerciales: true,
+      donneesFinancieres: true,
+      donneesClientsFournisseurs: true,
+      proceduresInternes: true,
+      donneesRH: true,
+      donneesJuridiques: true,
+      strategiesDeveloppement: true,
+      plansMarketing: true,
+      secretsIndustriels: true,
+      donneesCybersecurite: true,
+      savoirFaire: true,
+      informationsOrales: true,
+      accesOutilsInternes: true,
+    },
+    
+    // 5. Exclusions
+    exclusions: {
+      informationsPubliques: true,
+      informationsConnues: true,
+      informationsTiers: true,
+      informationsDeveloppees: true,
+      informationsPublieesLegalement: true,
+    },
+    
+    // 6. Obligations salarié pendant contrat
+    obligationsPendant: {
+      nePasDivulguer: true,
+      nePasCopier: true,
+      nePasTransferer: true,
+      nePasTelecharger: true,
+      nePasUtiliserHorsCadre: true,
+      nePasPublierReseaux: true,
+      protegerAcces: true,
+      signalerFuite: true,
+    },
+    
+    // 7. Obligations salarié après contrat
+    obligationsApres: {
+      confidentialiteMaintenue: true,
+      dureeConfidentialite: "",
+      restitutionDocuments: true,
+      interdictionUtilisationNouvelEmployeur: true,
+    },
+    
+    // 8. Interdictions spécifiques
+    interdictionsSpecifiques: {
+      aucunPartageCollegues: true,
+      aucunPartageProches: true,
+      aucunUsagePersonnel: true,
+    },
+    
+    // 9. Obligations employeur
+    obligationsEmployeur: {
+      informerConfidentiel: true,
+      fournirOutilsSecurises: true,
+      formerSecurite: true,
+      limiterAcces: true,
+      gererControleAcces: true,
+    },
+    
+    // 10. Sécurité informatique
+    securiteInformatique: {
+      respectCharteInfo: true,
+      utilisationStricteOutils: true,
+      interdictionClesUSB: true,
+      interdictionComptesPersonnels: true,
+      interdictionLogicielsNonAutorises: true,
+      teletravailVPN: false,
+      teletravailAccesChiffre: false,
+      teletravailMaterielSecurise: false,
+    },
+    
+    // 11. RGPD
+    rgpd: {
+      traitementDonneesPersonnelles: true,
+      confidentialiteRGPD: true,
+      securisationRGPD: true,
+      minimisationDonnees: true,
+      interdictionUsagePersonnel: true,
+      formationRGPD: false,
+      mentionDPO: "",
+    },
+    
+    // 12. Restitution documents
+    restitution: {
+      ordinateurPortable: true,
+      telephonePro: true,
+      accesLogiciels: true,
+      documentsImprimes: true,
+      carnetsNotes: true,
+      clesUSB: true,
+      badges: true,
+      documentsNumeriques: true,
+      basesDonnees: true,
+      tousSupports: true,
+    },
+    
+    // 13. Responsabilité et sanctions
+    responsabilite: {
+      responsabiliteCivile: true,
+      responsabilitePenale: true,
+      avertissement: true,
+      sanctionDisciplinaire: true,
+      licenciementFauteGrave: true,
+      clausePenalite: false,
+      montantPenalite: "",
+    },
+    
+    // 14. Compatibilité autres clauses
+    compatibilite: {
+      clauseConfidentialiteExistante: false,
+      clauseNonConcurrence: false,
+      clauseExclusivite: false,
+      clauseDeditFormation: false,
+      clauseObjectifs: false,
+      accordTeletravail: false,
+    },
+    
+    // 15. Droit applicable
+    droitApplicable: {
+      loiFrancaise: true,
+      tribunalCompetent: "",
+      clauseMediation: false,
+    },
+    
+    // 16. Annexes
+    annexes: {
+      charteInformatique: false,
+      politiqueConfidentialite: false,
+      politiqueCybersecurite: false,
+      fichePoste: false,
+      reglementInterieur: false,
+      charteTeletravail: false,
+      engagementRGPD: false,
+    },
+    
+    // 17. Signature
+    dateLieuSignature: "",
+    villeSignature: "",
+  });
+
   // State pour Testament (fichiers)
   const [testamentIdentiteTestateur, setTestamentIdentiteTestateur] = useState<File[]>([]);
   const [testamentLivretFamille, setTestamentLivretFamille] = useState<File[]>([]);
@@ -8680,6 +8869,88 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création avenant contrat de travail:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour le formulaire d'accord de confidentialité employé
+  const handleCreateAccordConfidentialiteContract = async () => {
+    if (!user) return;
+    
+    // Validations obligatoires
+    if (!accordConfidentialiteData.employeur.denominationSociale || !accordConfidentialiteData.employe.nom || !accordConfidentialiteData.employe.prenom) {
+      toast.error("Identification des parties obligatoire", { description: "Employeur et employé requis" });
+      return;
+    }
+    
+    if (!accordConfidentialiteData.employe.posteOccupe || !accordConfidentialiteData.employe.typeContrat) {
+      toast.error("Informations employé incomplètes", { description: "Poste et type de contrat requis" });
+      return;
+    }
+    
+    if (!accordConfidentialiteData.obligationsApres.dureeConfidentialite) {
+      toast.error("Durée de confidentialité requise", { description: "Veuillez préciser la durée de l'obligation après le contrat" });
+      return;
+    }
+    
+    if (!accordConfidentialiteData.dateLieuSignature) {
+      toast.error("Date de signature obligatoire", { description: "Veuillez renseigner la date de signature" });
+      return;
+    }
+    
+    try {
+      // Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `Accord de confidentialité - ${accordConfidentialiteData.employe.prenom} ${accordConfidentialiteData.employe.nom} - ${accordConfidentialiteData.employeur.denominationSociale}`,
+          client_id_1: accordConfidClientIdEmployeur || null,
+          client_id_2: accordConfidClientIdEmploye || null,
+          donnees_formulaire: accordConfidentialiteData
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      // Upload des fichiers
+      if (accordConfidEmployeurKbisFiles.length > 0) {
+        for (const file of accordConfidEmployeurKbisFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/kbis_${file.name}`, file);
+        }
+      }
+      if (accordConfidCharteInformatiqueFiles.length > 0) {
+        for (const file of accordConfidCharteInformatiqueFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/charte_informatique_${file.name}`, file);
+        }
+      }
+      if (accordConfidPolitiqueInterneFiles.length > 0) {
+        for (const file of accordConfidPolitiqueInterneFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/politique_interne_${file.name}`, file);
+        }
+      }
+      if (accordConfidEmployeIdentiteFiles.length > 0) {
+        for (const file of accordConfidEmployeIdentiteFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/identite_employe_${file.name}`, file);
+        }
+      }
+      
+      toast.success("Accord de confidentialité employé créé avec succès");
+      setPendingContractType("");
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création accord confidentialité:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -29958,6 +30229,298 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
+              </>
+            )}
+
+            {/* Formulaire Accords de confidentialité employé */}
+            {pendingContractType === "Accords de confidentialité employé" && (
+              <>
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">🔒 Accord de confidentialité employé</h3>
+                
+                {/* EMPLOYEUR */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🏢 Identité de l'employeur</h4>
+                  
+                  <ClientSelector 
+                    clients={clients}
+                    selectedClientId={accordConfidClientIdEmployeur}
+                    onClientChange={(clientId) => {
+                      setAccordConfidClientIdEmployeur(clientId);
+                      if (clientId) {
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setAccordConfidentialiteData({
+                            ...accordConfidentialiteData,
+                            employeur: {
+                              ...accordConfidentialiteData.employeur,
+                              denominationSociale: `${client.prenom} ${client.nom}`,
+                              adresse: client.adresse || "",
+                            }
+                          });
+                        }
+                      }
+                    }}
+                    label="Sélectionner l'employeur dans vos clients"
+                    placeholder="Choisir un client"
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Dénomination sociale</Label><Input value={accordConfidentialiteData.employeur.denominationSociale} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employeur: {...accordConfidentialiteData.employeur, denominationSociale: e.target.value}})} /></div>
+                    <div><Label>Forme juridique</Label><Select value={accordConfidentialiteData.employeur.formeJuridique} onValueChange={(value) => setAccordConfidentialiteData({...accordConfidentialiteData, employeur: {...accordConfidentialiteData.employeur, formeJuridique: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="SARL">SARL</SelectItem><SelectItem value="SAS">SAS</SelectItem><SelectItem value="SA">SA</SelectItem><SelectItem value="SCI">SCI</SelectItem><SelectItem value="EURL">EURL</SelectItem><SelectItem value="SASU">SASU</SelectItem><SelectItem value="Association">Association</SelectItem><SelectItem value="Autre">Autre</SelectItem></SelectContent></Select></div>
+                    <div className="md:col-span-2"><Label>Adresse</Label><Input value={accordConfidentialiteData.employeur.adresse} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employeur: {...accordConfidentialiteData.employeur, adresse: e.target.value}})} /></div>
+                    <div><Label>SIRET</Label><Input value={accordConfidentialiteData.employeur.siret} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employeur: {...accordConfidentialiteData.employeur, siret: e.target.value}})} placeholder="123 456 789 00012" /></div>
+                    <div><Label>Convention collective</Label><Input value={accordConfidentialiteData.employeur.conventionCollective} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employeur: {...accordConfidentialiteData.employeur, conventionCollective: e.target.value}})} placeholder="Ex: Convention collective nationale..." /></div>
+                    <div><Label>Représentant légal</Label><Input value={accordConfidentialiteData.employeur.representantLegal} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employeur: {...accordConfidentialiteData.employeur, representantLegal: e.target.value}})} placeholder="Nom et prénom" /></div>
+                    <div><Label>Fonction du représentant</Label><Input value={accordConfidentialiteData.employeur.fonctionRepresentant} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employeur: {...accordConfidentialiteData.employeur, fonctionRepresentant: e.target.value}})} placeholder="Ex: Gérant, Président..." /></div>
+                  </div>
+                </div>
+
+                {/* EMPLOYÉ */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">👤 Identité de l'employé</h4>
+                  
+                  <ClientSelector 
+                    clients={clients}
+                    selectedClientId={accordConfidClientIdEmploye}
+                    onClientChange={(clientId) => {
+                      setAccordConfidClientIdEmploye(clientId);
+                      if (clientId) {
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setAccordConfidentialiteData({
+                            ...accordConfidentialiteData,
+                            employe: {
+                              nom: client.nom || "",
+                              prenom: client.prenom || "",
+                              adresse: client.adresse || "",
+                              dateNaissance: client.date_naissance || "",
+                              posteOccupe: "",
+                              serviceAffectation: "",
+                              dateEntree: "",
+                              typeContrat: "",
+                            }
+                          });
+                        }
+                      }
+                    }}
+                    label="Sélectionner l'employé dans vos clients"
+                    placeholder="Choisir un client"
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Nom</Label><Input value={accordConfidentialiteData.employe.nom} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employe: {...accordConfidentialiteData.employe, nom: e.target.value}})} /></div>
+                    <div><Label>Prénom</Label><Input value={accordConfidentialiteData.employe.prenom} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employe: {...accordConfidentialiteData.employe, prenom: e.target.value}})} /></div>
+                    <div className="md:col-span-2"><Label>Adresse</Label><Input value={accordConfidentialiteData.employe.adresse} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employe: {...accordConfidentialiteData.employe, adresse: e.target.value}})} /></div>
+                    <div><Label>Date de naissance</Label><Input type="date" value={accordConfidentialiteData.employe.dateNaissance} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employe: {...accordConfidentialiteData.employe, dateNaissance: e.target.value}})} /></div>
+                    <div><Label>Poste occupé</Label><Input value={accordConfidentialiteData.employe.posteOccupe} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employe: {...accordConfidentialiteData.employe, posteOccupe: e.target.value}})} placeholder="Ex: Développeur, Commercial..." /></div>
+                    <div><Label>Service d'affectation</Label><Input value={accordConfidentialiteData.employe.serviceAffectation} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employe: {...accordConfidentialiteData.employe, serviceAffectation: e.target.value}})} placeholder="Ex: DSI, Marketing..." /></div>
+                    <div><Label>Date d'entrée dans l'entreprise</Label><Input type="date" value={accordConfidentialiteData.employe.dateEntree} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, employe: {...accordConfidentialiteData.employe, dateEntree: e.target.value}})} /></div>
+                    <div><Label>Type de contrat</Label><Select value={accordConfidentialiteData.employe.typeContrat} onValueChange={(value) => setAccordConfidentialiteData({...accordConfidentialiteData, employe: {...accordConfidentialiteData.employe, typeContrat: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="CDI">CDI</SelectItem><SelectItem value="CDD">CDD</SelectItem><SelectItem value="Alternance">Alternance</SelectItem><SelectItem value="Stage">Stage</SelectItem></SelectContent></Select></div>
+                  </div>
+                </div>
+
+                {/* DURÉE DE L'OBLIGATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">⏱️ Durée de l'obligation de confidentialité</h4>
+                  <p className="text-sm text-gray-600">Obligation maintenue après la fin du contrat</p>
+                  
+                  <div><Label>Durée après le contrat</Label><Select value={accordConfidentialiteData.obligationsApres.dureeConfidentialite} onValueChange={(value) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsApres: {...accordConfidentialiteData.obligationsApres, dureeConfidentialite: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="1_an">1 an</SelectItem><SelectItem value="3_ans">3 ans</SelectItem><SelectItem value="5_ans">5 ans</SelectItem><SelectItem value="10_ans">10 ans</SelectItem><SelectItem value="illimitee">Durée illimitée (secret des affaires)</SelectItem></SelectContent></Select></div>
+                </div>
+
+                {/* SÉCURITÉ INFORMATIQUE - TÉLÉTRAVAIL */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">💻 Règles télétravail (si applicable)</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="vpn_obligatoire" checked={accordConfidentialiteData.securiteInformatique.teletravailVPN} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, teletravailVPN: e.target.checked}})} />
+                      <Label htmlFor="vpn_obligatoire" className="cursor-pointer">VPN obligatoire</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="acces_chiffre" checked={accordConfidentialiteData.securiteInformatique.teletravailAccesChiffre} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, teletravailAccesChiffre: e.target.checked}})} />
+                      <Label htmlFor="acces_chiffre" className="cursor-pointer">Accès chiffré</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="materiel_securise" checked={accordConfidentialiteData.securiteInformatique.teletravailMaterielSecurise} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, teletravailMaterielSecurise: e.target.checked}})} />
+                      <Label htmlFor="materiel_securise" className="cursor-pointer">Matériel sécurisé</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* RGPD */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🛡️ Protection des données personnelles (RGPD)</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="formation_rgpd" checked={accordConfidentialiteData.rgpd.formationRGPD} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, rgpd: {...accordConfidentialiteData.rgpd, formationRGPD: e.target.checked}})} />
+                      <Label htmlFor="formation_rgpd" className="cursor-pointer">Formation RGPD dispensée</Label>
+                    </div>
+                    
+                    <div><Label>Délégué à la protection des données (DPO)</Label><Input value={accordConfidentialiteData.rgpd.mentionDPO} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, rgpd: {...accordConfidentialiteData.rgpd, mentionDPO: e.target.value}})} placeholder="Nom et contact du DPO" /></div>
+                  </div>
+                </div>
+
+                {/* RESPONSABILITÉ ET SANCTIONS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">⚖️ Responsabilité et sanctions</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="clause_penalite" checked={accordConfidentialiteData.responsabilite.clausePenalite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, responsabilite: {...accordConfidentialiteData.responsabilite, clausePenalite: e.target.checked}})} />
+                      <Label htmlFor="clause_penalite" className="cursor-pointer">Clause de pénalité financière</Label>
+                    </div>
+                    
+                    {accordConfidentialiteData.responsabilite.clausePenalite && (
+                      <div className="ml-6"><Label>Montant forfaitaire de la pénalité</Label><Input value={accordConfidentialiteData.responsabilite.montantPenalite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, responsabilite: {...accordConfidentialiteData.responsabilite, montantPenalite: e.target.value}})} placeholder="Ex: 5000 €" /></div>
+                    )}
+                  </div>
+                </div>
+
+                {/* COMPATIBILITÉ AUTRES CLAUSES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📋 Compatibilité avec d'autres clauses du contrat</h4>
+                  <p className="text-sm text-gray-600">Indiquez si d'autres clauses existent déjà dans le contrat de travail</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="clause_confid_existante" checked={accordConfidentialiteData.compatibilite.clauseConfidentialiteExistante} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, compatibilite: {...accordConfidentialiteData.compatibilite, clauseConfidentialiteExistante: e.target.checked}})} />
+                      <Label htmlFor="clause_confid_existante" className="cursor-pointer">Clause de confidentialité existante</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="clause_non_concurrence" checked={accordConfidentialiteData.compatibilite.clauseNonConcurrence} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, compatibilite: {...accordConfidentialiteData.compatibilite, clauseNonConcurrence: e.target.checked}})} />
+                      <Label htmlFor="clause_non_concurrence" className="cursor-pointer">Clause de non-concurrence</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="clause_exclusivite" checked={accordConfidentialiteData.compatibilite.clauseExclusivite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, compatibilite: {...accordConfidentialiteData.compatibilite, clauseExclusivite: e.target.checked}})} />
+                      <Label htmlFor="clause_exclusivite" className="cursor-pointer">Clause d'exclusivité</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="clause_dedit" checked={accordConfidentialiteData.compatibilite.clauseDeditFormation} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, compatibilite: {...accordConfidentialiteData.compatibilite, clauseDeditFormation: e.target.checked}})} />
+                      <Label htmlFor="clause_dedit" className="cursor-pointer">Clause de dédit-formation</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="clause_objectifs" checked={accordConfidentialiteData.compatibilite.clauseObjectifs} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, compatibilite: {...accordConfidentialiteData.compatibilite, clauseObjectifs: e.target.checked}})} />
+                      <Label htmlFor="clause_objectifs" className="cursor-pointer">Clause d'objectifs</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="accord_teletravail" checked={accordConfidentialiteData.compatibilite.accordTeletravail} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, compatibilite: {...accordConfidentialiteData.compatibilite, accordTeletravail: e.target.checked}})} />
+                      <Label htmlFor="accord_teletravail" className="cursor-pointer">Accord de télétravail</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DROIT APPLICABLE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">⚖️ Droit applicable et litiges</h4>
+                  
+                  <div className="space-y-3">
+                    <div><Label>Tribunal compétent</Label><Select value={accordConfidentialiteData.droitApplicable.tribunalCompetent} onValueChange={(value) => setAccordConfidentialiteData({...accordConfidentialiteData, droitApplicable: {...accordConfidentialiteData.droitApplicable, tribunalCompetent: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="tribunal_judiciaire">Tribunal judiciaire</SelectItem><SelectItem value="prudhommes">Conseil de prud'hommes</SelectItem></SelectContent></Select></div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="clause_mediation" checked={accordConfidentialiteData.droitApplicable.clauseMediation} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, droitApplicable: {...accordConfidentialiteData.droitApplicable, clauseMediation: e.target.checked}})} />
+                      <Label htmlFor="clause_mediation" className="cursor-pointer">Clause de médiation préalable</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ANNEXES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📎 Annexes jointes</h4>
+                  <p className="text-sm text-gray-600">Indiquez les documents annexés à l'accord</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_charte_info" checked={accordConfidentialiteData.annexes.charteInformatique} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, annexes: {...accordConfidentialiteData.annexes, charteInformatique: e.target.checked}})} />
+                      <Label htmlFor="annexe_charte_info" className="cursor-pointer">Charte informatique</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_politique_confid" checked={accordConfidentialiteData.annexes.politiqueConfidentialite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, annexes: {...accordConfidentialiteData.annexes, politiqueConfidentialite: e.target.checked}})} />
+                      <Label htmlFor="annexe_politique_confid" className="cursor-pointer">Politique de confidentialité interne</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_cyber" checked={accordConfidentialiteData.annexes.politiqueCybersecurite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, annexes: {...accordConfidentialiteData.annexes, politiqueCybersecurite: e.target.checked}})} />
+                      <Label htmlFor="annexe_cyber" className="cursor-pointer">Politique cybersécurité</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_fiche_poste" checked={accordConfidentialiteData.annexes.fichePoste} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, annexes: {...accordConfidentialiteData.annexes, fichePoste: e.target.checked}})} />
+                      <Label htmlFor="annexe_fiche_poste" className="cursor-pointer">Fiche de poste</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_reglement" checked={accordConfidentialiteData.annexes.reglementInterieur} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, annexes: {...accordConfidentialiteData.annexes, reglementInterieur: e.target.checked}})} />
+                      <Label htmlFor="annexe_reglement" className="cursor-pointer">Règlement intérieur</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_teletravail" checked={accordConfidentialiteData.annexes.charteTeletravail} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, annexes: {...accordConfidentialiteData.annexes, charteTeletravail: e.target.checked}})} />
+                      <Label htmlFor="annexe_teletravail" className="cursor-pointer">Charte télétravail</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_rgpd" checked={accordConfidentialiteData.annexes.engagementRGPD} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, annexes: {...accordConfidentialiteData.annexes, engagementRGPD: e.target.checked}})} />
+                      <Label htmlFor="annexe_rgpd" className="cursor-pointer">Engagement RGPD</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DOCUMENTS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📎 Pièces justificatives à joindre</h4>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">Employeur</h5>
+                  <SingleFileUpload 
+                    label="Kbis" 
+                    files={accordConfidEmployeurKbisFiles} 
+                    onFilesChange={setAccordConfidEmployeurKbisFiles} 
+                    role="avocat" 
+                    accept="application/pdf"
+                  />
+                  
+                  <SingleFileUpload 
+                    label="Charte informatique" 
+                    files={accordConfidCharteInformatiqueFiles} 
+                    onFilesChange={setAccordConfidCharteInformatiqueFiles} 
+                    role="avocat"
+                    accept="application/pdf"
+                  />
+                  
+                  <SingleFileUpload 
+                    label="Politique interne applicable" 
+                    files={accordConfidPolitiqueInterneFiles} 
+                    onFilesChange={setAccordConfidPolitiqueInterneFiles} 
+                    role="avocat"
+                    accept="application/pdf"
+                  />
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">Employé</h5>
+                  <SingleFileUpload 
+                    label="Pièce d'identité (optionnelle)" 
+                    files={accordConfidEmployeIdentiteFiles} 
+                    onFilesChange={setAccordConfidEmployeIdentiteFiles} 
+                    role="avocat"
+                    accept="application/pdf,image/*"
+                  />
+                </div>
+
+                {/* SIGNATURE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">✍️ Signature</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Ville de signature</Label><Input value={accordConfidentialiteData.villeSignature} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, villeSignature: e.target.value})} placeholder="Ex: Paris" /></div>
+                    <div><Label>Date de signature</Label><Input type="date" value={accordConfidentialiteData.dateLieuSignature} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, dateLieuSignature: e.target.value})} /></div>
+                  </div>
+                </div>
               </>
             )}
 
@@ -58343,7 +58906,9 @@ FIN DE LA CONVENTION
                   handleCreateRuptureConventionnelleContract();
                 } else if (pendingContractType === "Avenants au contrat de travail") {
                   handleCreateAvenantContratTravailContract();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Accords de confidentialité employé", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Accords de confidentialité employé") {
+                  handleCreateAccordConfidentialiteContract();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
