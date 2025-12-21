@@ -31213,7 +31213,7 @@ FIN DE LA CONVENTION
             )}
 
             {/* Formulaire Politique RGPD interne */}
-            {pendingContractType === "Politiques RGPD interne (annexes)" && (
+            {pendingContractType === "Politique RGPD interne (annexes)" && (
               <>
                 <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">🛡️ Politique RGPD Interne</h3>
                 
@@ -60300,7 +60300,7 @@ FIN DE LA CONVENTION
                   handleCreateAvenantContratTravailContract();
                 } else if (pendingContractType === "Accords de confidentialité employé") {
                   handleCreateAccordConfidentialiteContract();
-                } else if (pendingContractType === "Politiques RGPD interne (annexes)") {
+                } else if (pendingContractType === "Politique RGPD interne (annexes)") {
                   handleCreatePolitiqueRGPDContract();
                 } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
