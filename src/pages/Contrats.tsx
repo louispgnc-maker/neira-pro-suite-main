@@ -3679,84 +3679,86 @@ export default function Contrats() {
     
     // 3. Contexte
     contexte: {
-      accesInfosSensibles: true,
-      secretProfessionnel: true,
-      applicablePendantContrat: true,
-      maintenueApresDepart: true,
+      accesInfosSensibles: false,
+      secretProfessionnel: false,
+      donneesClients: false,
+      savoirFaire: false,
+      projetsDeveloppement: false,
+      strategieCommerciale: false,
     },
     
     // 4. Définition informations confidentielles
-    informationsConfidentielles: {
-      documentsEcrits: true,
-      emailsCommunications: true,
-      logicielsCodesSources: true,
-      donneesCommerciales: true,
-      donneesFinancieres: true,
-      donneesClientsFournisseurs: true,
-      proceduresInternes: true,
-      donneesRH: true,
-      donneesJuridiques: true,
-      strategiesDeveloppement: true,
-      plansMarketing: true,
-      secretsIndustriels: true,
-      donneesCybersecurite: true,
-      savoirFaire: true,
-      informationsOrales: true,
-      accesOutilsInternes: true,
+    definitionsInfosConfidentielles: {
+      donneesClients: false,
+      donneesFournisseurs: false,
+      infosFinancieres: false,
+      savoirFaireTechnique: false,
+      projetsRD: false,
+      codeSource: false,
+      documentsInternes: false,
+      methodesTravail: false,
+      strategiesCommerciales: false,
+      tarifsNegocies: false,
+      contrats: false,
+      donneesRH: false,
+      organigrammes: false,
+      rapportsActivite: false,
+      brevetsPropriete: false,
+      etudesMarche: false,
     },
     
     // 5. Exclusions
     exclusions: {
-      informationsPubliques: true,
-      informationsConnues: true,
-      informationsTiers: true,
-      informationsDeveloppees: true,
-      informationsPublieesLegalement: true,
+      domainePublic: false,
+      connuesAvant: false,
+      divulgueesParTiers: false,
+      obligationLegale: false,
     },
     
     // 6. Obligations salarié pendant contrat
     obligationsPendant: {
-      nePasDivulguer: true,
-      nePasCopier: true,
-      nePasTransferer: true,
-      nePasTelecharger: true,
-      nePasUtiliserHorsCadre: true,
-      nePasPublierReseaux: true,
-      protegerAcces: true,
-      signalerFuite: true,
+      secretAbsolu: false,
+      divulgationNecessaireUniquement: false,
+      mesuresSecurite: false,
+      copieInterdite: false,
+      supportPersonnelInterdit: false,
+      mailProUniquement: false,
+      reseauxSociauxInterdits: false,
+      alerteViolation: false,
     },
     
     // 7. Obligations salarié après contrat
     obligationsApres: {
-      confidentialiteMaintenue: true,
       dureeConfidentialite: "",
-      restitutionDocuments: true,
-      interdictionUtilisationNouvelEmployeur: true,
+      maintienConfidentialite: false,
+      restitutionDocuments: false,
+      destructionCopies: false,
+      interdictionUsage: false,
     },
     
     // 8. Interdictions spécifiques
-    interdictionsSpecifiques: {
-      aucunPartageCollegues: true,
-      aucunPartageProches: true,
-      aucunUsagePersonnel: true,
+    interdictions: {
+      divulgationConcurrents: false,
+      usagePersonnel: false,
+      publication: false,
+      reproductionNonAutorisee: false,
     },
     
     // 9. Obligations employeur
     obligationsEmployeur: {
-      informerConfidentiel: true,
-      fournirOutilsSecurises: true,
-      formerSecurite: true,
-      limiterAcces: true,
-      gererControleAcces: true,
+      identificationDocuments: false,
+      formationSecurite: false,
+      accesLimite: false,
     },
     
     // 10. Sécurité informatique
     securiteInformatique: {
-      respectCharteInfo: true,
-      utilisationStricteOutils: true,
-      interdictionClesUSB: true,
-      interdictionComptesPersonnels: true,
-      interdictionLogicielsNonAutorises: true,
+      charteInformatique: false,
+      motDePasseFort: false,
+      cleUSBInterdite: false,
+      cloudPersonnelInterdit: false,
+      chiffrementObligatoire: false,
+      antivirusMajours: false,
       teletravailVPN: false,
       teletravailAccesChiffre: false,
       teletravailMaterielSecurise: false,
@@ -3764,27 +3766,22 @@ export default function Contrats() {
     
     // 11. RGPD
     rgpd: {
-      traitementDonneesPersonnelles: true,
-      confidentialiteRGPD: true,
-      securisationRGPD: true,
-      minimisationDonnees: true,
-      interdictionUsagePersonnel: true,
       formationRGPD: false,
       mentionDPO: "",
     },
     
     // 12. Restitution documents
     restitution: {
-      ordinateurPortable: true,
-      telephonePro: true,
-      accesLogiciels: true,
-      documentsImprimes: true,
-      carnetsNotes: true,
-      clesUSB: true,
-      badges: true,
-      documentsNumeriques: true,
-      basesDonnees: true,
-      tousSupports: true,
+      documentsPapier: false,
+      fichiersNumeriques: false,
+      ordinateur: false,
+      telephone: false,
+      clesUSB: false,
+      disquesDurs: false,
+      badges: false,
+      cles: false,
+      manuels: false,
+      toutesLesCopies: false,
     },
     
     // 13. Responsabilité et sanctions
