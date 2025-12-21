@@ -30319,19 +30319,322 @@ FIN DE LA CONVENTION
                   </div>
                 </div>
 
-                {/* DURÉE DE L'OBLIGATION */}
+                {/* CONTEXTE DE L'ACCORD */}
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">⏱️ Durée de l'obligation de confidentialité</h4>
-                  <p className="text-sm text-gray-600">Obligation maintenue après la fin du contrat</p>
-                  
-                  <div><Label>Durée après le contrat</Label><Select value={accordConfidentialiteData.obligationsApres.dureeConfidentialite} onValueChange={(value) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsApres: {...accordConfidentialiteData.obligationsApres, dureeConfidentialite: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="1_an">1 an</SelectItem><SelectItem value="3_ans">3 ans</SelectItem><SelectItem value="5_ans">5 ans</SelectItem><SelectItem value="10_ans">10 ans</SelectItem><SelectItem value="illimitee">Durée illimitée (secret des affaires)</SelectItem></SelectContent></Select></div>
-                </div>
-
-                {/* SÉCURITÉ INFORMATIQUE - TÉLÉTRAVAIL */}
-                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-lg text-blue-700">💻 Règles télétravail (si applicable)</h4>
+                  <h4 className="font-semibold text-lg text-blue-700">📋 Contexte de l'accord</h4>
+                  <p className="text-sm text-gray-600">Raison de cet engagement de confidentialité</p>
                   
                   <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="acces_infos_sensibles" checked={accordConfidentialiteData.contexte.accesInfosSensibles} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, contexte: {...accordConfidentialiteData.contexte, accesInfosSensibles: e.target.checked}})} />
+                      <Label htmlFor="acces_infos_sensibles" className="cursor-pointer">Accès à des informations sensibles</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="secret_pro" checked={accordConfidentialiteData.contexte.secretProfessionnel} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, contexte: {...accordConfidentialiteData.contexte, secretProfessionnel: e.target.checked}})} />
+                      <Label htmlFor="secret_pro" className="cursor-pointer">Secret professionnel</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_clients" checked={accordConfidentialiteData.contexte.donneesClients} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, contexte: {...accordConfidentialiteData.contexte, donneesClients: e.target.checked}})} />
+                      <Label htmlFor="donnees_clients" className="cursor-pointer">Données clients</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="savoir_faire" checked={accordConfidentialiteData.contexte.savoirFaire} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, contexte: {...accordConfidentialiteData.contexte, savoirFaire: e.target.checked}})} />
+                      <Label htmlFor="savoir_faire" className="cursor-pointer">Savoir-faire propriétaire</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="projets_dev" checked={accordConfidentialiteData.contexte.projetsDeveloppement} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, contexte: {...accordConfidentialiteData.contexte, projetsDeveloppement: e.target.checked}})} />
+                      <Label htmlFor="projets_dev" className="cursor-pointer">Projets de développement</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="strat_commerciale" checked={accordConfidentialiteData.contexte.strategieCommerciale} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, contexte: {...accordConfidentialiteData.contexte, strategieCommerciale: e.target.checked}})} />
+                      <Label htmlFor="strat_commerciale" className="cursor-pointer">Stratégie commerciale</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DÉFINITION DES INFORMATIONS CONFIDENTIELLES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔐 Définition des informations confidentielles</h4>
+                  <p className="text-sm text-gray-600">Cochez toutes les catégories concernées</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_donnees_clients" checked={accordConfidentialiteData.definitionsInfosConfidentielles.donneesClients} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, donneesClients: e.target.checked}})} />
+                      <Label htmlFor="def_donnees_clients" className="cursor-pointer">Données clients</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_donnees_fournisseurs" checked={accordConfidentialiteData.definitionsInfosConfidentielles.donneesFournisseurs} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, donneesFournisseurs: e.target.checked}})} />
+                      <Label htmlFor="def_donnees_fournisseurs" className="cursor-pointer">Données fournisseurs</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_infos_financieres" checked={accordConfidentialiteData.definitionsInfosConfidentielles.infosFinancieres} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, infosFinancieres: e.target.checked}})} />
+                      <Label htmlFor="def_infos_financieres" className="cursor-pointer">Informations financières</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_savoir_faire" checked={accordConfidentialiteData.definitionsInfosConfidentielles.savoirFaireTechnique} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, savoirFaireTechnique: e.target.checked}})} />
+                      <Label htmlFor="def_savoir_faire" className="cursor-pointer">Savoir-faire technique</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_projets_rd" checked={accordConfidentialiteData.definitionsInfosConfidentielles.projetsRD} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, projetsRD: e.target.checked}})} />
+                      <Label htmlFor="def_projets_rd" className="cursor-pointer">Projets R&D</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_code_source" checked={accordConfidentialiteData.definitionsInfosConfidentielles.codeSource} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, codeSource: e.target.checked}})} />
+                      <Label htmlFor="def_code_source" className="cursor-pointer">Code source</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_documents_internes" checked={accordConfidentialiteData.definitionsInfosConfidentielles.documentsInternes} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, documentsInternes: e.target.checked}})} />
+                      <Label htmlFor="def_documents_internes" className="cursor-pointer">Documents internes</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_methodes_travail" checked={accordConfidentialiteData.definitionsInfosConfidentielles.methodesTravail} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, methodesTravail: e.target.checked}})} />
+                      <Label htmlFor="def_methodes_travail" className="cursor-pointer">Méthodes de travail</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_strategies_comm" checked={accordConfidentialiteData.definitionsInfosConfidentielles.strategiesCommerciales} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, strategiesCommerciales: e.target.checked}})} />
+                      <Label htmlFor="def_strategies_comm" className="cursor-pointer">Stratégies commerciales</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_tarifs" checked={accordConfidentialiteData.definitionsInfosConfidentielles.tarifsNegocies} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, tarifsNegocies: e.target.checked}})} />
+                      <Label htmlFor="def_tarifs" className="cursor-pointer">Tarifs négociés</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_contrats" checked={accordConfidentialiteData.definitionsInfosConfidentielles.contrats} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, contrats: e.target.checked}})} />
+                      <Label htmlFor="def_contrats" className="cursor-pointer">Contrats</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_donnees_rh" checked={accordConfidentialiteData.definitionsInfosConfidentielles.donneesRH} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, donneesRH: e.target.checked}})} />
+                      <Label htmlFor="def_donnees_rh" className="cursor-pointer">Données RH</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_organigrammes" checked={accordConfidentialiteData.definitionsInfosConfidentielles.organigrammes} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, organigrammes: e.target.checked}})} />
+                      <Label htmlFor="def_organigrammes" className="cursor-pointer">Organigrammes</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_rapports_activite" checked={accordConfidentialiteData.definitionsInfosConfidentielles.rapportsActivite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, rapportsActivite: e.target.checked}})} />
+                      <Label htmlFor="def_rapports_activite" className="cursor-pointer">Rapports d'activité</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_brevets" checked={accordConfidentialiteData.definitionsInfosConfidentielles.brevetsPropriete} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, brevetsPropriete: e.target.checked}})} />
+                      <Label htmlFor="def_brevets" className="cursor-pointer">Brevets et propriété intellectuelle</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="def_etudes_marche" checked={accordConfidentialiteData.definitionsInfosConfidentielles.etudesMarche} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, definitionsInfosConfidentielles: {...accordConfidentialiteData.definitionsInfosConfidentielles, etudesMarche: e.target.checked}})} />
+                      <Label htmlFor="def_etudes_marche" className="cursor-pointer">Études de marché</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* EXCLUSIONS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🚫 Exclusions des informations confidentielles</h4>
+                  <p className="text-sm text-gray-600">Ces informations ne sont PAS couvertes par l'obligation de confidentialité</p>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="excl_domaine_public" checked={accordConfidentialiteData.exclusions.domainePublic} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, exclusions: {...accordConfidentialiteData.exclusions, domainePublic: e.target.checked}})} />
+                      <Label htmlFor="excl_domaine_public" className="cursor-pointer">Informations dans le domaine public</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="excl_connues_avant" checked={accordConfidentialiteData.exclusions.connuesAvant} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, exclusions: {...accordConfidentialiteData.exclusions, connuesAvant: e.target.checked}})} />
+                      <Label htmlFor="excl_connues_avant" className="cursor-pointer">Informations connues avant la signature</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="excl_divulguees_tiers" checked={accordConfidentialiteData.exclusions.divulgueesParTiers} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, exclusions: {...accordConfidentialiteData.exclusions, divulgueesParTiers: e.target.checked}})} />
+                      <Label htmlFor="excl_divulguees_tiers" className="cursor-pointer">Informations divulguées légalement par un tiers</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="excl_obligation_legale" checked={accordConfidentialiteData.exclusions.obligationLegale} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, exclusions: {...accordConfidentialiteData.exclusions, obligationLegale: e.target.checked}})} />
+                      <Label htmlFor="excl_obligation_legale" className="cursor-pointer">Divulgation en raison d'une obligation légale</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* OBLIGATIONS DU SALARIÉ PENDANT LE CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">✅ Obligations du salarié pendant le contrat de travail</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="oblig_secret_absolu" checked={accordConfidentialiteData.obligationsPendant.secretAbsolu} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsPendant: {...accordConfidentialiteData.obligationsPendant, secretAbsolu: e.target.checked}})} />
+                      <Label htmlFor="oblig_secret_absolu" className="cursor-pointer">Secret absolu sur toute info confidentielle</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="oblig_divulgation_necessaire" checked={accordConfidentialiteData.obligationsPendant.divulgationNecessaireUniquement} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsPendant: {...accordConfidentialiteData.obligationsPendant, divulgationNecessaireUniquement: e.target.checked}})} />
+                      <Label htmlFor="oblig_divulgation_necessaire" className="cursor-pointer">Divulgation uniquement si nécessaire à la mission</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="oblig_mesures_securite" checked={accordConfidentialiteData.obligationsPendant.mesuresSecurite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsPendant: {...accordConfidentialiteData.obligationsPendant, mesuresSecurite: e.target.checked}})} />
+                      <Label htmlFor="oblig_mesures_securite" className="cursor-pointer">Mise en place de mesures de sécurité</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="oblig_copie_interdite" checked={accordConfidentialiteData.obligationsPendant.copieInterdite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsPendant: {...accordConfidentialiteData.obligationsPendant, copieInterdite: e.target.checked}})} />
+                      <Label htmlFor="oblig_copie_interdite" className="cursor-pointer">Interdiction de copier des infos sans autorisation</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="oblig_support_perso" checked={accordConfidentialiteData.obligationsPendant.supportPersonnelInterdit} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsPendant: {...accordConfidentialiteData.obligationsPendant, supportPersonnelInterdit: e.target.checked}})} />
+                      <Label htmlFor="oblig_support_perso" className="cursor-pointer">Interdiction d'utiliser un support personnel</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="oblig_mail_pro" checked={accordConfidentialiteData.obligationsPendant.mailProUniquement} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsPendant: {...accordConfidentialiteData.obligationsPendant, mailProUniquement: e.target.checked}})} />
+                      <Label htmlFor="oblig_mail_pro" className="cursor-pointer">Utilisation email professionnel uniquement</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="oblig_reseaux_sociaux" checked={accordConfidentialiteData.obligationsPendant.reseauxSociauxInterdits} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsPendant: {...accordConfidentialiteData.obligationsPendant, reseauxSociauxInterdits: e.target.checked}})} />
+                      <Label htmlFor="oblig_reseaux_sociaux" className="cursor-pointer">Interdiction de partage sur réseaux sociaux</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="oblig_alerte_violation" checked={accordConfidentialiteData.obligationsPendant.alerteViolation} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsPendant: {...accordConfidentialiteData.obligationsPendant, alerteViolation: e.target.checked}})} />
+                      <Label htmlFor="oblig_alerte_violation" className="cursor-pointer">Alerte immédiate en cas de violation</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* OBLIGATIONS DU SALARIÉ APRÈS LE CONTRAT */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">⏱️ Obligations du salarié après le contrat de travail</h4>
+                  
+                  <div className="space-y-3">
+                    <div><Label>Durée après le contrat</Label><Select value={accordConfidentialiteData.obligationsApres.dureeConfidentialite} onValueChange={(value) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsApres: {...accordConfidentialiteData.obligationsApres, dureeConfidentialite: value}})}><SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger><SelectContent><SelectItem value="1_an">1 an</SelectItem><SelectItem value="3_ans">3 ans</SelectItem><SelectItem value="5_ans">5 ans</SelectItem><SelectItem value="10_ans">10 ans</SelectItem><SelectItem value="illimitee">Durée illimitée (secret des affaires)</SelectItem></SelectContent></Select></div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="apres_maintien_confid" checked={accordConfidentialiteData.obligationsApres.maintienConfidentialite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsApres: {...accordConfidentialiteData.obligationsApres, maintienConfidentialite: e.target.checked}})} />
+                      <Label htmlFor="apres_maintien_confid" className="cursor-pointer">Maintien de la confidentialité</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="apres_restitution_docs" checked={accordConfidentialiteData.obligationsApres.restitutionDocuments} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsApres: {...accordConfidentialiteData.obligationsApres, restitutionDocuments: e.target.checked}})} />
+                      <Label htmlFor="apres_restitution_docs" className="cursor-pointer">Restitution de tous les documents</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="apres_destruction_copies" checked={accordConfidentialiteData.obligationsApres.destructionCopies} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsApres: {...accordConfidentialiteData.obligationsApres, destructionCopies: e.target.checked}})} />
+                      <Label htmlFor="apres_destruction_copies" className="cursor-pointer">Destruction de toutes les copies</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="apres_interdiction_usage" checked={accordConfidentialiteData.obligationsApres.interdictionUsage} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsApres: {...accordConfidentialiteData.obligationsApres, interdictionUsage: e.target.checked}})} />
+                      <Label htmlFor="apres_interdiction_usage" className="cursor-pointer">Interdiction d'usage à des fins personnelles</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* INTERDICTIONS SPÉCIFIQUES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🚫 Interdictions spécifiques</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="inter_concurrents" checked={accordConfidentialiteData.interdictions.divulgationConcurrents} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, interdictions: {...accordConfidentialiteData.interdictions, divulgationConcurrents: e.target.checked}})} />
+                      <Label htmlFor="inter_concurrents" className="cursor-pointer">Divulgation à des concurrents</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="inter_usage_perso" checked={accordConfidentialiteData.interdictions.usagePersonnel} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, interdictions: {...accordConfidentialiteData.interdictions, usagePersonnel: e.target.checked}})} />
+                      <Label htmlFor="inter_usage_perso" className="cursor-pointer">Usage personnel des informations</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="inter_publication" checked={accordConfidentialiteData.interdictions.publication} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, interdictions: {...accordConfidentialiteData.interdictions, publication: e.target.checked}})} />
+                      <Label htmlFor="inter_publication" className="cursor-pointer">Publication ou diffusion publique</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="inter_repro_non_auto" checked={accordConfidentialiteData.interdictions.reproductionNonAutorisee} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, interdictions: {...accordConfidentialiteData.interdictions, reproductionNonAutorisee: e.target.checked}})} />
+                      <Label htmlFor="inter_repro_non_auto" className="cursor-pointer">Reproduction non autorisée</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* OBLIGATIONS DE L'EMPLOYEUR */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🏢 Obligations de l'employeur</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="empl_identification_docs" checked={accordConfidentialiteData.obligationsEmployeur.identificationDocuments} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsEmployeur: {...accordConfidentialiteData.obligationsEmployeur, identificationDocuments: e.target.checked}})} />
+                      <Label htmlFor="empl_identification_docs" className="cursor-pointer">Identification claire des documents confidentiels</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="empl_formation" checked={accordConfidentialiteData.obligationsEmployeur.formationSecurite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsEmployeur: {...accordConfidentialiteData.obligationsEmployeur, formationSecurite: e.target.checked}})} />
+                      <Label htmlFor="empl_formation" className="cursor-pointer">Formation à la sécurité informatique</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="empl_acces_limite" checked={accordConfidentialiteData.obligationsEmployeur.accesLimite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, obligationsEmployeur: {...accordConfidentialiteData.obligationsEmployeur, accesLimite: e.target.checked}})} />
+                      <Label htmlFor="empl_acces_limite" className="cursor-pointer">Accès limité selon le besoin</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SÉCURITÉ INFORMATIQUE COMPLÈTE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔒 Sécurité informatique</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="secu_charte_info" checked={accordConfidentialiteData.securiteInformatique.charteInformatique} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, charteInformatique: e.target.checked}})} />
+                      <Label htmlFor="secu_charte_info" className="cursor-pointer">Charte informatique à respecter</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="secu_mdp_fort" checked={accordConfidentialiteData.securiteInformatique.motDePasseFort} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, motDePasseFort: e.target.checked}})} />
+                      <Label htmlFor="secu_mdp_fort" className="cursor-pointer">Mot de passe fort obligatoire</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="secu_cle_usb_interdite" checked={accordConfidentialiteData.securiteInformatique.cleUSBInterdite} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, cleUSBInterdite: e.target.checked}})} />
+                      <Label htmlFor="secu_cle_usb_interdite" className="cursor-pointer">Clés USB personnelles interdites</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="secu_cloud_perso_interdit" checked={accordConfidentialiteData.securiteInformatique.cloudPersonnelInterdit} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, cloudPersonnelInterdit: e.target.checked}})} />
+                      <Label htmlFor="secu_cloud_perso_interdit" className="cursor-pointer">Stockage cloud personnel interdit</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="secu_chiffrement" checked={accordConfidentialiteData.securiteInformatique.chiffrementObligatoire} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, chiffrementObligatoire: e.target.checked}})} />
+                      <Label htmlFor="secu_chiffrement" className="cursor-pointer">Chiffrement des données obligatoire</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="secu_antivirus" checked={accordConfidentialiteData.securiteInformatique.antivirusMajours} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, antivirusMajours: e.target.checked}})} />
+                      <Label htmlFor="secu_antivirus" className="cursor-pointer">Antivirus à jour obligatoire</Label>
+                    </div>
+                    
+                    <h5 className="font-medium text-gray-700 mt-4">Télétravail (si applicable)</h5>
+                    
                     <div className="flex items-center space-x-2">
                       <input type="checkbox" id="vpn_obligatoire" checked={accordConfidentialiteData.securiteInformatique.teletravailVPN} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, teletravailVPN: e.target.checked}})} />
                       <Label htmlFor="vpn_obligatoire" className="cursor-pointer">VPN obligatoire</Label>
@@ -30345,6 +30648,64 @@ FIN DE LA CONVENTION
                     <div className="flex items-center space-x-2">
                       <input type="checkbox" id="materiel_securise" checked={accordConfidentialiteData.securiteInformatique.teletravailMaterielSecurise} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, securiteInformatique: {...accordConfidentialiteData.securiteInformatique, teletravailMaterielSecurise: e.target.checked}})} />
                       <Label htmlFor="materiel_securise" className="cursor-pointer">Matériel sécurisé</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* RESTITUTION DES DOCUMENTS ET SUPPORTS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📦 Restitution des documents et supports (à la fin du contrat)</h4>
+                  <p className="text-sm text-gray-600">Éléments à restituer obligatoirement</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_documents_papier" checked={accordConfidentialiteData.restitution.documentsPapier} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, documentsPapier: e.target.checked}})} />
+                      <Label htmlFor="rest_documents_papier" className="cursor-pointer">Tous documents papier</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_fichiers_num" checked={accordConfidentialiteData.restitution.fichiersNumeriques} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, fichiersNumeriques: e.target.checked}})} />
+                      <Label htmlFor="rest_fichiers_num" className="cursor-pointer">Fichiers numériques</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_ordinateur" checked={accordConfidentialiteData.restitution.ordinateur} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, ordinateur: e.target.checked}})} />
+                      <Label htmlFor="rest_ordinateur" className="cursor-pointer">Ordinateur portable</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_telephone" checked={accordConfidentialiteData.restitution.telephone} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, telephone: e.target.checked}})} />
+                      <Label htmlFor="rest_telephone" className="cursor-pointer">Téléphone professionnel</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_cles_usb" checked={accordConfidentialiteData.restitution.clesUSB} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, clesUSB: e.target.checked}})} />
+                      <Label htmlFor="rest_cles_usb" className="cursor-pointer">Clés USB</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_disques_durs" checked={accordConfidentialiteData.restitution.disquesDurs} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, disquesDurs: e.target.checked}})} />
+                      <Label htmlFor="rest_disques_durs" className="cursor-pointer">Disques durs externes</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_badges" checked={accordConfidentialiteData.restitution.badges} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, badges: e.target.checked}})} />
+                      <Label htmlFor="rest_badges" className="cursor-pointer">Badges et cartes d'accès</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_cles" checked={accordConfidentialiteData.restitution.cles} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, cles: e.target.checked}})} />
+                      <Label htmlFor="rest_cles" className="cursor-pointer">Clés des locaux</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_manuels" checked={accordConfidentialiteData.restitution.manuels} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, manuels: e.target.checked}})} />
+                      <Label htmlFor="rest_manuels" className="cursor-pointer">Manuels et documentation</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="rest_copies" checked={accordConfidentialiteData.restitution.toutesLesCopies} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, restitution: {...accordConfidentialiteData.restitution, toutesLesCopies: e.target.checked}})} />
+                      <Label htmlFor="rest_copies" className="cursor-pointer">Toutes les copies (même personnelles)</Label>
                     </div>
                   </div>
                 </div>
