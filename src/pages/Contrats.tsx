@@ -3828,6 +3828,255 @@ export default function Contrats() {
     villeSignature: "",
   });
 
+  // State pour Politique RGPD interne (fichiers)
+  const [politiqueRGPDPreuveDesignationDPOFiles, setPolitiqueRGPDPreuveDesignationDPOFiles] = useState<File[]>([]);
+  const [politiqueRGPDContratsSousTraitanceFiles, setPolitiqueRGPDContratsSousTraitanceFiles] = useState<File[]>([]);
+  const [politiqueRGPDAttestationsSecuriteFiles, setPolitiqueRGPDAttestationsSecuriteFiles] = useState<File[]>([]);
+  const [politiqueRGPDDocumentationsInternesFiles, setPolitiqueRGPDDocumentationsInternesFiles] = useState<File[]>([]);
+
+  // State pour Politique RGPD interne (Client ID)
+  const [politiqueRGPDClientId, setPolitiqueRGPDClientId] = useState<string>("");
+
+  // State pour Politique RGPD interne
+  const [politiqueRGPDData, setPolitiqueRGPDData] = useState({
+    // 1. Identification de l'organisation
+    organisation: {
+      denominationSociale: "",
+      adresseSiege: "",
+      siret: "",
+      secteurActivite: "",
+      tailleEffectifs: "",
+      representantLegal: "",
+      contactGeneralRGPD: "",
+    },
+    
+    // 2. DPO
+    dpo: {
+      nom: "",
+      fonction: "",
+      emailDedie: "",
+      telephone: "",
+      designationCNIL: false,
+    },
+    
+    // 3. Objet de la politique RGPD
+    objet: {
+      objectifsConformite: "",
+      applicationInterne: true,
+      champApplicationSalaries: true,
+      champApplicationAdministrateurs: true,
+      champApplicationPrestataires: true,
+      champApplicationStagiaires: true,
+      champApplicationSousTraitants: true,
+    },
+    
+    // 4. Principes fondamentaux
+    principes: {
+      liceite: true,
+      transparence: true,
+      minimisation: true,
+      exactitude: true,
+      limitationFinalites: true,
+      limitationConservation: true,
+      integriteConfidentialite: true,
+      responsabilite: true,
+    },
+    
+    // 5. Types de données traitées
+    typesDonnees: {
+      // A. Données clients
+      clientsIdentite: false,
+      clientsCoordonnees: false,
+      clientsDocumentsContractuels: false,
+      clientsVerificationIdentite: false,
+      clientsSuiviDemandes: false,
+      
+      // B. Données employés
+      employesIdentite: false,
+      employesDossierRH: false,
+      employesPaie: false,
+      employesEvaluations: false,
+      employesAbsences: false,
+      employesFormations: false,
+      
+      // C. Données prospects
+      prospectsInfosCommerciales: false,
+      prospectsHistoriqueProspection: false,
+      
+      // D. Données partenaires/fournisseurs
+      partenairesFournisseursInfosContractuelles: false,
+      partenairesFournisseursPaiements: false,
+      partenairesFournisseursContactsInternes: false,
+      
+      // E. Données techniques
+      techniquesIP: false,
+      techniquesLogs: false,
+      techniquesCookies: false,
+      techniquesOutilsInternes: false,
+    },
+    
+    // 6. Finalités des traitements
+    finalites: {
+      gestionRH: false,
+      gestionPaies: false,
+      suiviClient: false,
+      gestionSiteWeb: false,
+      facturation: false,
+      contrats: false,
+      marketingProspection: false,
+      securiteInformatique: false,
+      gestionAccesInternes: false,
+      autresFinalites: "",
+    },
+    
+    // 7. Bases légales
+    basesLegales: {
+      executionContrat: false,
+      consentement: false,
+      obligationLegale: false,
+      interetLegitime: false,
+      missionInteretPublic: false,
+    },
+    
+    // 8. Durées de conservation
+    dureesConservation: {
+      // Clients
+      clientsDonneesContractuelles: "5 ans",
+      clientsFactures: "10 ans",
+      clientsDossiers: "durée relation + 5 ans",
+      
+      // Employés
+      employesDossierRH: "5 ans",
+      employesPaie: "5 ans",
+      employesCandidaturesNonRetenues: "2 ans",
+      
+      // Prospects
+      prospects: "3 ans après dernier contact",
+      
+      // Logs techniques
+      logsTechniques: "1 an",
+      
+      // Vidéosurveillance
+      videosurveillance: "30 jours",
+      
+      autresDurees: "",
+    },
+    
+    // 9. Catégories de destinataires
+    destinataires: {
+      salariesHabilites: false,
+      departementRH: false,
+      serviceClient: false,
+      sousTraitants: false,
+      hebergeurs: false,
+      prestatairiesTechniques: false,
+      autoritesPubliques: false,
+      autresDestinataires: "",
+    },
+    
+    // 10. Sous-traitants (liste dynamique)
+    sousTraitants: [] as Array<{
+      nom: string;
+      adresse: string;
+      typesDonneesManipulees: string;
+      finalite: string;
+      paysLocalisation: string;
+      contratCDPASigne: boolean;
+      mesuresSecurite: string;
+    }>,
+    
+    // 11. Transferts hors UE
+    transfertsHorsUE: {
+      presenceTransferts: false,
+      paysConcernes: "",
+      clausesContractuellesTypes: false,
+      niveauAdequation: "",
+      garantiesSupplementaires: "",
+    },
+    
+    // 12. Mesures techniques et organisationnelles
+    mesures: {
+      // Techniques
+      techniqueChiffrement: false,
+      techniqueSecurisationServeurs: false,
+      techniqueMotsDePasseComplexes: false,
+      techniqueDoubleAuthentification: false,
+      techniqueSauvegardes: false,
+      techniqueGestionAcces: false,
+      techniqueVPNPareFeu: false,
+      techniqueJournalisationActions: false,
+      
+      // Organisationnelles
+      orgaFormationEmployes: false,
+      orgaPolitiqueAccesParRole: false,
+      orgaControleSousTraitants: false,
+      orgaConfidentialiteRenforcee: false,
+      orgaProcessusFuite: false,
+    },
+    
+    // 13. Droits des personnes
+    droitsPersonnes: {
+      droitAcces: true,
+      droitRectification: true,
+      droitEffacement: true,
+      droitLimitation: true,
+      droitOpposition: true,
+      droitPortabilite: true,
+      droitRetraitConsentement: true,
+      droitDirectivesPostMortem: true,
+      emailContact: "",
+      delaiLegal: "1 mois",
+      processusInterne: "",
+    },
+    
+    // 14. Procédure violation de données
+    procedureViolation: {
+      etapesInternes: "",
+      notificationCNIL: "< 72h",
+      informationPersonnesConcernees: true,
+      documentationInterne: true,
+      analyseRisque: true,
+      actionsCorrectives: "",
+    },
+    
+    // 15. Politique cookies
+    politiqueCookies: {
+      cookiesTechniques: false,
+      cookiesStatistiques: false,
+      cookiesMesureAudience: false,
+      cookiesMarketing: false,
+      dureesConservationCookies: "",
+      bandeauConsentement: true,
+      gestionRefus: true,
+    },
+    
+    // 16. Mentions internes
+    mentionsInternes: {
+      obligationConfidentialite: true,
+      charteInformatique: true,
+      interdictionOutilsNonAutorises: true,
+      bonnesPratiquesCybersecurite: true,
+      gestionBYOD: false,
+      proceduresSortieEmploye: true,
+    },
+    
+    // 17. Annexes
+    annexes: {
+      registreTraitements: false,
+      listeSousTraitants: false,
+      politiqueCookiesAnnexe: false,
+      charteInformatiqueAnnexe: false,
+      modeleGestionDroitsRGPD: false,
+      procedureViolationDonnees: false,
+      ficheSensibilisationEmployes: false,
+      procedureConservationSuppression: false,
+    },
+    
+    // 18. Date et lieu
+    dateElaboration: "",
+    villeElaboration: "",
+  });
+
   // State pour Testament (fichiers)
   const [testamentIdentiteTestateur, setTestamentIdentiteTestateur] = useState<File[]>([]);
   const [testamentLivretFamille, setTestamentLivretFamille] = useState<File[]>([]);
@@ -8948,6 +9197,87 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création accord confidentialité:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur lors de la création', { description: message });
+    }
+  };
+
+  // Handler pour Politique RGPD interne
+  const handleCreatePolitiqueRGPDContract = async () => {
+    if (!user) return;
+    
+    // Validations obligatoires
+    if (!politiqueRGPDData.organisation.denominationSociale || !politiqueRGPDData.organisation.siret) {
+      toast.error("Identification de l'organisation obligatoire", { description: "Dénomination sociale et SIRET requis" });
+      return;
+    }
+    
+    if (!politiqueRGPDData.organisation.representantLegal) {
+      toast.error("Représentant légal requis", { description: "Veuillez renseigner le représentant légal" });
+      return;
+    }
+    
+    if (!politiqueRGPDData.objet.objectifsConformite) {
+      toast.error("Objectifs de conformité requis", { description: "Veuillez définir les objectifs de conformité RGPD" });
+      return;
+    }
+    
+    if (!politiqueRGPDData.dateElaboration) {
+      toast.error("Date d'élaboration requise", { description: "Veuillez renseigner la date d'élaboration" });
+      return;
+    }
+    
+    try {
+      // Créer le contrat
+      const { data: contrat, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          role: role,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          description: `Politique RGPD interne - ${politiqueRGPDData.organisation.denominationSociale}`,
+          client_id_1: politiqueRGPDClientId || null,
+          donnees_formulaire: politiqueRGPDData
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      // Upload des fichiers
+      if (politiqueRGPDPreuveDesignationDPOFiles.length > 0) {
+        for (const file of politiqueRGPDPreuveDesignationDPOFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/preuve_designation_dpo_${file.name}`, file);
+        }
+      }
+      if (politiqueRGPDContratsSousTraitanceFiles.length > 0) {
+        for (const file of politiqueRGPDContratsSousTraitanceFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/contrats_sous_traitance_${file.name}`, file);
+        }
+      }
+      if (politiqueRGPDAttestationsSecuriteFiles.length > 0) {
+        for (const file of politiqueRGPDAttestationsSecuriteFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/attestations_securite_${file.name}`, file);
+        }
+      }
+      if (politiqueRGPDDocumentationsInternesFiles.length > 0) {
+        for (const file of politiqueRGPDDocumentationsInternesFiles) {
+          await supabase.storage.from('contrats')
+            .upload(`${user.id}/${contrat.id}/documents/documentations_internes_${file.name}`, file);
+        }
+      }
+      
+      toast.success("Politique RGPD interne créée avec succès");
+      setPendingContractType("");
+      setShowQuestionDialog(false);
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création politique RGPD:', err);
       const message = err instanceof Error ? err.message : String(err);
       toast.error('Erreur lors de la création', { description: message });
     }
@@ -30877,6 +31207,710 @@ FIN DE LA CONVENTION
                   <div className="grid md:grid-cols-2 gap-4">
                     <div><Label>Ville de signature</Label><Input value={accordConfidentialiteData.villeSignature} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, villeSignature: e.target.value})} placeholder="Ex: Paris" /></div>
                     <div><Label>Date de signature</Label><Input type="date" value={accordConfidentialiteData.dateLieuSignature} onChange={(e) => setAccordConfidentialiteData({...accordConfidentialiteData, dateLieuSignature: e.target.value})} /></div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Formulaire Politique RGPD interne */}
+            {pendingContractType === "Politiques RGPD interne (annexes)" && (
+              <>
+                <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">🛡️ Politique RGPD Interne</h3>
+                
+                {/* 1. IDENTIFICATION DE L'ORGANISATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🏢 Identification de l'organisation</h4>
+                  
+                  <ClientSelector 
+                    clients={clients}
+                    selectedClientId={politiqueRGPDClientId}
+                    onClientChange={(clientId) => {
+                      setPolitiqueRGPDClientId(clientId);
+                      if (clientId) {
+                        const client = clients.find(c => c.id === clientId);
+                        if (client) {
+                          setPolitiqueRGPDData({
+                            ...politiqueRGPDData,
+                            organisation: {
+                              ...politiqueRGPDData.organisation,
+                              denominationSociale: `${client.prenom} ${client.nom}`,
+                              adresseSiege: client.adresse || "",
+                            }
+                          });
+                        }
+                      }
+                    }}
+                    label="Sélectionner l'organisation dans vos clients"
+                    placeholder="Choisir un client"
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Dénomination sociale</Label><Input value={politiqueRGPDData.organisation.denominationSociale} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, organisation: {...politiqueRGPDData.organisation, denominationSociale: e.target.value}})} /></div>
+                    <div><Label>SIRET</Label><Input value={politiqueRGPDData.organisation.siret} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, organisation: {...politiqueRGPDData.organisation, siret: e.target.value}})} placeholder="123 456 789 00012" /></div>
+                    <div className="md:col-span-2"><Label>Adresse siège</Label><Input value={politiqueRGPDData.organisation.adresseSiege} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, organisation: {...politiqueRGPDData.organisation, adresseSiege: e.target.value}})} /></div>
+                    <div><Label>Secteur d'activité</Label><Input value={politiqueRGPDData.organisation.secteurActivite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, organisation: {...politiqueRGPDData.organisation, secteurActivite: e.target.value}})} placeholder="Ex: Services juridiques" /></div>
+                    <div><Label>Taille (effectifs)</Label><Input value={politiqueRGPDData.organisation.tailleEffectifs} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, organisation: {...politiqueRGPDData.organisation, tailleEffectifs: e.target.value}})} placeholder="Ex: 10-50 salariés" /></div>
+                    <div><Label>Représentant légal</Label><Input value={politiqueRGPDData.organisation.representantLegal} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, organisation: {...politiqueRGPDData.organisation, representantLegal: e.target.value}})} placeholder="Nom et prénom" /></div>
+                    <div><Label>Contact général RGPD</Label><Input value={politiqueRGPDData.organisation.contactGeneralRGPD} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, organisation: {...politiqueRGPDData.organisation, contactGeneralRGPD: e.target.value}})} placeholder="email@entreprise.fr" /></div>
+                  </div>
+                </div>
+
+                {/* 2. DPO */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">👤 DPO (Délégué à la Protection des Données)</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Nom / Fonction</Label><Input value={politiqueRGPDData.dpo.nom} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dpo: {...politiqueRGPDData.dpo, nom: e.target.value}})} placeholder="Ex: Jean Dupont - DPO" /></div>
+                    <div><Label>Fonction</Label><Input value={politiqueRGPDData.dpo.fonction} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dpo: {...politiqueRGPDData.dpo, fonction: e.target.value}})} placeholder="Ex: Délégué à la Protection des Données" /></div>
+                    <div><Label>Email dédié</Label><Input type="email" value={politiqueRGPDData.dpo.emailDedie} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dpo: {...politiqueRGPDData.dpo, emailDedie: e.target.value}})} placeholder="dpo@entreprise.fr" /></div>
+                    <div><Label>Téléphone</Label><Input value={politiqueRGPDData.dpo.telephone} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dpo: {...politiqueRGPDData.dpo, telephone: e.target.value}})} placeholder="01 23 45 67 89" /></div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input type="checkbox" id="designation_cnil" checked={politiqueRGPDData.dpo.designationCNIL} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dpo: {...politiqueRGPDData.dpo, designationCNIL: e.target.checked}})} />
+                    <Label htmlFor="designation_cnil" className="cursor-pointer">Désignation CNIL effectuée</Label>
+                  </div>
+                </div>
+
+                {/* 3. OBJET DE LA POLITIQUE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🎯 Objet de la politique RGPD</h4>
+                  
+                  <div><Label>Objectifs de conformité</Label><Textarea value={politiqueRGPDData.objet.objectifsConformite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, objet: {...politiqueRGPDData.objet, objectifsConformite: e.target.value}})} placeholder="Décrire les objectifs de conformité RGPD..." rows={3} /></div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input type="checkbox" id="application_interne" checked={politiqueRGPDData.objet.applicationInterne} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, objet: {...politiqueRGPDData.objet, applicationInterne: e.target.checked}})} />
+                    <Label htmlFor="application_interne" className="cursor-pointer font-semibold">Application interne obligatoire</Label>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">Champ d'application :</h5>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="champ_salaries" checked={politiqueRGPDData.objet.champApplicationSalaries} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, objet: {...politiqueRGPDData.objet, champApplicationSalaries: e.target.checked}})} />
+                      <Label htmlFor="champ_salaries" className="cursor-pointer">Salariés</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="champ_admin" checked={politiqueRGPDData.objet.champApplicationAdministrateurs} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, objet: {...politiqueRGPDData.objet, champApplicationAdministrateurs: e.target.checked}})} />
+                      <Label htmlFor="champ_admin" className="cursor-pointer">Administrateurs</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="champ_presta" checked={politiqueRGPDData.objet.champApplicationPrestataires} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, objet: {...politiqueRGPDData.objet, champApplicationPrestataires: e.target.checked}})} />
+                      <Label htmlFor="champ_presta" className="cursor-pointer">Prestataires</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="champ_stagiaires" checked={politiqueRGPDData.objet.champApplicationStagiaires} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, objet: {...politiqueRGPDData.objet, champApplicationStagiaires: e.target.checked}})} />
+                      <Label htmlFor="champ_stagiaires" className="cursor-pointer">Stagiaires</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="champ_soustraitants" checked={politiqueRGPDData.objet.champApplicationSousTraitants} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, objet: {...politiqueRGPDData.objet, champApplicationSousTraitants: e.target.checked}})} />
+                      <Label htmlFor="champ_soustraitants" className="cursor-pointer">Sous-traitants</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. PRINCIPES FONDAMENTAUX */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">⚖️ Principes fondamentaux du RGPD</h4>
+                  <p className="text-sm text-gray-600">Ces principes sont obligatoires pour la validité juridique de la politique</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="principe_liceite" checked={politiqueRGPDData.principes.liceite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, principes: {...politiqueRGPDData.principes, liceite: e.target.checked}})} />
+                      <Label htmlFor="principe_liceite" className="cursor-pointer">Licéité</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="principe_transparence" checked={politiqueRGPDData.principes.transparence} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, principes: {...politiqueRGPDData.principes, transparence: e.target.checked}})} />
+                      <Label htmlFor="principe_transparence" className="cursor-pointer">Transparence</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="principe_minimisation" checked={politiqueRGPDData.principes.minimisation} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, principes: {...politiqueRGPDData.principes, minimisation: e.target.checked}})} />
+                      <Label htmlFor="principe_minimisation" className="cursor-pointer">Minimisation des données</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="principe_exactitude" checked={politiqueRGPDData.principes.exactitude} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, principes: {...politiqueRGPDData.principes, exactitude: e.target.checked}})} />
+                      <Label htmlFor="principe_exactitude" className="cursor-pointer">Exactitude</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="principe_limit_finalites" checked={politiqueRGPDData.principes.limitationFinalites} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, principes: {...politiqueRGPDData.principes, limitationFinalites: e.target.checked}})} />
+                      <Label htmlFor="principe_limit_finalites" className="cursor-pointer">Limitation des finalités</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="principe_limit_conservation" checked={politiqueRGPDData.principes.limitationConservation} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, principes: {...politiqueRGPDData.principes, limitationConservation: e.target.checked}})} />
+                      <Label htmlFor="principe_limit_conservation" className="cursor-pointer">Limitation de la conservation</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="principe_integrite" checked={politiqueRGPDData.principes.integriteConfidentialite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, principes: {...politiqueRGPDData.principes, integriteConfidentialite: e.target.checked}})} />
+                      <Label htmlFor="principe_integrite" className="cursor-pointer">Intégrité & confidentialité</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="principe_responsabilite" checked={politiqueRGPDData.principes.responsabilite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, principes: {...politiqueRGPDData.principes, responsabilite: e.target.checked}})} />
+                      <Label htmlFor="principe_responsabilite" className="cursor-pointer">Responsabilité (accountability)</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. TYPES DE DONNÉES TRAITÉES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📊 Types de données traitées par l'organisation</h4>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">A. Données des clients</h5>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_clients_identite" checked={politiqueRGPDData.typesDonnees.clientsIdentite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, clientsIdentite: e.target.checked}})} />
+                      <Label htmlFor="donnees_clients_identite" className="cursor-pointer">Identité</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_clients_coordonnees" checked={politiqueRGPDData.typesDonnees.clientsCoordonnees} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, clientsCoordonnees: e.target.checked}})} />
+                      <Label htmlFor="donnees_clients_coordonnees" className="cursor-pointer">Coordonnées</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_clients_contrats" checked={politiqueRGPDData.typesDonnees.clientsDocumentsContractuels} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, clientsDocumentsContractuels: e.target.checked}})} />
+                      <Label htmlFor="donnees_clients_contrats" className="cursor-pointer">Documents contractuels</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_clients_kyc" checked={politiqueRGPDData.typesDonnees.clientsVerificationIdentite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, clientsVerificationIdentite: e.target.checked}})} />
+                      <Label htmlFor="donnees_clients_kyc" className="cursor-pointer">Vérification identité (KYC)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_clients_suivi" checked={politiqueRGPDData.typesDonnees.clientsSuiviDemandes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, clientsSuiviDemandes: e.target.checked}})} />
+                      <Label htmlFor="donnees_clients_suivi" className="cursor-pointer">Suivi demandes/dossiers</Label>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">B. Données des employés</h5>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_employes_identite" checked={politiqueRGPDData.typesDonnees.employesIdentite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, employesIdentite: e.target.checked}})} />
+                      <Label htmlFor="donnees_employes_identite" className="cursor-pointer">Identité</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_employes_rh" checked={politiqueRGPDData.typesDonnees.employesDossierRH} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, employesDossierRH: e.target.checked}})} />
+                      <Label htmlFor="donnees_employes_rh" className="cursor-pointer">Dossier RH</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_employes_paie" checked={politiqueRGPDData.typesDonnees.employesPaie} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, employesPaie: e.target.checked}})} />
+                      <Label htmlFor="donnees_employes_paie" className="cursor-pointer">Paie</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_employes_eval" checked={politiqueRGPDData.typesDonnees.employesEvaluations} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, employesEvaluations: e.target.checked}})} />
+                      <Label htmlFor="donnees_employes_eval" className="cursor-pointer">Évaluations</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_employes_absences" checked={politiqueRGPDData.typesDonnees.employesAbsences} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, employesAbsences: e.target.checked}})} />
+                      <Label htmlFor="donnees_employes_absences" className="cursor-pointer">Absences/arrêts maladie</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_employes_formations" checked={politiqueRGPDData.typesDonnees.employesFormations} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, employesFormations: e.target.checked}})} />
+                      <Label htmlFor="donnees_employes_formations" className="cursor-pointer">Formations</Label>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">C. Données des prospects</h5>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_prospects_comm" checked={politiqueRGPDData.typesDonnees.prospectsInfosCommerciales} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, prospectsInfosCommerciales: e.target.checked}})} />
+                      <Label htmlFor="donnees_prospects_comm" className="cursor-pointer">Informations commerciales</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_prospects_histo" checked={politiqueRGPDData.typesDonnees.prospectsHistoriqueProspection} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, prospectsHistoriqueProspection: e.target.checked}})} />
+                      <Label htmlFor="donnees_prospects_histo" className="cursor-pointer">Historique de prospection</Label>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">D. Données des partenaires/fournisseurs</h5>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_part_contrats" checked={politiqueRGPDData.typesDonnees.partenairesFournisseursInfosContractuelles} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, partenairesFournisseursInfosContractuelles: e.target.checked}})} />
+                      <Label htmlFor="donnees_part_contrats" className="cursor-pointer">Informations contractuelles</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_part_paiements" checked={politiqueRGPDData.typesDonnees.partenairesFournisseursPaiements} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, partenairesFournisseursPaiements: e.target.checked}})} />
+                      <Label htmlFor="donnees_part_paiements" className="cursor-pointer">Paiements</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_part_contacts" checked={politiqueRGPDData.typesDonnees.partenairesFournisseursContactsInternes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, partenairesFournisseursContactsInternes: e.target.checked}})} />
+                      <Label htmlFor="donnees_part_contacts" className="cursor-pointer">Contacts internes</Label>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">E. Données techniques</h5>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_tech_ip" checked={politiqueRGPDData.typesDonnees.techniquesIP} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, techniquesIP: e.target.checked}})} />
+                      <Label htmlFor="donnees_tech_ip" className="cursor-pointer">Adresses IP</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_tech_logs" checked={politiqueRGPDData.typesDonnees.techniquesLogs} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, techniquesLogs: e.target.checked}})} />
+                      <Label htmlFor="donnees_tech_logs" className="cursor-pointer">Logs</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_tech_cookies" checked={politiqueRGPDData.typesDonnees.techniquesCookies} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, techniquesCookies: e.target.checked}})} />
+                      <Label htmlFor="donnees_tech_cookies" className="cursor-pointer">Cookies</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="donnees_tech_outils" checked={politiqueRGPDData.typesDonnees.techniquesOutilsInternes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, typesDonnees: {...politiqueRGPDData.typesDonnees, techniquesOutilsInternes: e.target.checked}})} />
+                      <Label htmlFor="donnees_tech_outils" className="cursor-pointer">Outils internes</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. FINALITÉS */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🎯 Finalités des traitements</h4>
+                  <p className="text-sm text-gray-600">Chaque traitement doit avoir une finalité définie</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_rh" checked={politiqueRGPDData.finalites.gestionRH} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, gestionRH: e.target.checked}})} />
+                      <Label htmlFor="finalite_rh" className="cursor-pointer">Gestion RH</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_paies" checked={politiqueRGPDData.finalites.gestionPaies} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, gestionPaies: e.target.checked}})} />
+                      <Label htmlFor="finalite_paies" className="cursor-pointer">Gestion des paies</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_client" checked={politiqueRGPDData.finalites.suiviClient} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, suiviClient: e.target.checked}})} />
+                      <Label htmlFor="finalite_client" className="cursor-pointer">Suivi client</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_site" checked={politiqueRGPDData.finalites.gestionSiteWeb} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, gestionSiteWeb: e.target.checked}})} />
+                      <Label htmlFor="finalite_site" className="cursor-pointer">Gestion du site web</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_facturation" checked={politiqueRGPDData.finalites.facturation} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, facturation: e.target.checked}})} />
+                      <Label htmlFor="finalite_facturation" className="cursor-pointer">Facturation</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_contrats" checked={politiqueRGPDData.finalites.contrats} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, contrats: e.target.checked}})} />
+                      <Label htmlFor="finalite_contrats" className="cursor-pointer">Contrats</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_marketing" checked={politiqueRGPDData.finalites.marketingProspection} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, marketingProspection: e.target.checked}})} />
+                      <Label htmlFor="finalite_marketing" className="cursor-pointer">Marketing/prospection</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_secu" checked={politiqueRGPDData.finalites.securiteInformatique} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, securiteInformatique: e.target.checked}})} />
+                      <Label htmlFor="finalite_secu" className="cursor-pointer">Sécurité informatique</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="finalite_acces" checked={politiqueRGPDData.finalites.gestionAccesInternes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, gestionAccesInternes: e.target.checked}})} />
+                      <Label htmlFor="finalite_acces" className="cursor-pointer">Gestion des accès internes</Label>
+                    </div>
+                  </div>
+                  
+                  <div><Label>Autres finalités personnalisées</Label><Textarea value={politiqueRGPDData.finalites.autresFinalites} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, finalites: {...politiqueRGPDData.finalites, autresFinalites: e.target.value}})} placeholder="Indiquer d'autres finalités spécifiques..." rows={2} /></div>
+                </div>
+
+                {/* 7. BASES LÉGALES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">⚖️ Bases légales</h4>
+                  <p className="text-sm text-gray-600">Obligatoire pour chaque traitement</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="base_contrat" checked={politiqueRGPDData.basesLegales.executionContrat} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, basesLegales: {...politiqueRGPDData.basesLegales, executionContrat: e.target.checked}})} />
+                      <Label htmlFor="base_contrat" className="cursor-pointer">Exécution du contrat</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="base_consentement" checked={politiqueRGPDData.basesLegales.consentement} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, basesLegales: {...politiqueRGPDData.basesLegales, consentement: e.target.checked}})} />
+                      <Label htmlFor="base_consentement" className="cursor-pointer">Consentement</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="base_obligation" checked={politiqueRGPDData.basesLegales.obligationLegale} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, basesLegales: {...politiqueRGPDData.basesLegales, obligationLegale: e.target.checked}})} />
+                      <Label htmlFor="base_obligation" className="cursor-pointer">Obligation légale</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="base_interet" checked={politiqueRGPDData.basesLegales.interetLegitime} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, basesLegales: {...politiqueRGPDData.basesLegales, interetLegitime: e.target.checked}})} />
+                      <Label htmlFor="base_interet" className="cursor-pointer">Intérêt légitime</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="base_mission" checked={politiqueRGPDData.basesLegales.missionInteretPublic} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, basesLegales: {...politiqueRGPDData.basesLegales, missionInteretPublic: e.target.checked}})} />
+                      <Label htmlFor="base_mission" className="cursor-pointer">Mission d'intérêt public</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 8. DURÉES DE CONSERVATION */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">⏱️ Durées de conservation (OBLIGATOIRE)</h4>
+                  
+                  <h5 className="font-medium text-gray-700">Clients</h5>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Données contractuelles</Label><Input value={politiqueRGPDData.dureesConservation.clientsDonneesContractuelles} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, clientsDonneesContractuelles: e.target.value}})} placeholder="Ex: 5 ans" /></div>
+                    <div><Label>Factures</Label><Input value={politiqueRGPDData.dureesConservation.clientsFactures} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, clientsFactures: e.target.value}})} placeholder="Ex: 10 ans" /></div>
+                    <div className="md:col-span-2"><Label>Dossiers</Label><Input value={politiqueRGPDData.dureesConservation.clientsDossiers} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, clientsDossiers: e.target.value}})} placeholder="Ex: durée relation + 5 ans" /></div>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">Employés</h5>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Dossier RH</Label><Input value={politiqueRGPDData.dureesConservation.employesDossierRH} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, employesDossierRH: e.target.value}})} placeholder="Ex: 5 ans" /></div>
+                    <div><Label>Paie</Label><Input value={politiqueRGPDData.dureesConservation.employesPaie} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, employesPaie: e.target.value}})} placeholder="Ex: 5 ans" /></div>
+                    <div><Label>Candidatures non retenues</Label><Input value={politiqueRGPDData.dureesConservation.employesCandidaturesNonRetenues} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, employesCandidaturesNonRetenues: e.target.value}})} placeholder="Ex: 2 ans" /></div>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">Autres</h5>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Prospects</Label><Input value={politiqueRGPDData.dureesConservation.prospects} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, prospects: e.target.value}})} placeholder="Ex: 3 ans après dernier contact" /></div>
+                    <div><Label>Logs techniques</Label><Input value={politiqueRGPDData.dureesConservation.logsTechniques} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, logsTechniques: e.target.value}})} placeholder="Ex: 1 an" /></div>
+                    <div><Label>Vidéosurveillance (si applicable)</Label><Input value={politiqueRGPDData.dureesConservation.videosurveillance} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, videosurveillance: e.target.value}})} placeholder="Ex: 30 jours" /></div>
+                  </div>
+                  
+                  <div><Label>Autres durées spécifiques</Label><Textarea value={politiqueRGPDData.dureesConservation.autresDurees} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dureesConservation: {...politiqueRGPDData.dureesConservation, autresDurees: e.target.value}})} placeholder="Préciser d'autres durées..." rows={2} /></div>
+                </div>
+
+                {/* 9. CATÉGORIES DE DESTINATAIRES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">👥 Catégories de destinataires</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="dest_salaries" checked={politiqueRGPDData.destinataires.salariesHabilites} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, destinataires: {...politiqueRGPDData.destinataires, salariesHabilites: e.target.checked}})} />
+                      <Label htmlFor="dest_salaries" className="cursor-pointer">Salariés habilités</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="dest_rh" checked={politiqueRGPDData.destinataires.departementRH} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, destinataires: {...politiqueRGPDData.destinataires, departementRH: e.target.checked}})} />
+                      <Label htmlFor="dest_rh" className="cursor-pointer">Département RH</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="dest_service_client" checked={politiqueRGPDData.destinataires.serviceClient} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, destinataires: {...politiqueRGPDData.destinataires, serviceClient: e.target.checked}})} />
+                      <Label htmlFor="dest_service_client" className="cursor-pointer">Service client</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="dest_soustraitants" checked={politiqueRGPDData.destinataires.sousTraitants} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, destinataires: {...politiqueRGPDData.destinataires, sousTraitants: e.target.checked}})} />
+                      <Label htmlFor="dest_soustraitants" className="cursor-pointer">Sous-traitants</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="dest_hebergeurs" checked={politiqueRGPDData.destinataires.hebergeurs} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, destinataires: {...politiqueRGPDData.destinataires, hebergeurs: e.target.checked}})} />
+                      <Label htmlFor="dest_hebergeurs" className="cursor-pointer">Hébergeurs</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="dest_presta_tech" checked={politiqueRGPDData.destinataires.prestatairiesTechniques} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, destinataires: {...politiqueRGPDData.destinataires, prestatairiesTechniques: e.target.checked}})} />
+                      <Label htmlFor="dest_presta_tech" className="cursor-pointer">Prestataires techniques</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="dest_autorites" checked={politiqueRGPDData.destinataires.autoritesPubliques} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, destinataires: {...politiqueRGPDData.destinataires, autoritesPubliques: e.target.checked}})} />
+                      <Label htmlFor="dest_autorites" className="cursor-pointer">Autorités publiques (URSSAF, fisc, etc.)</Label>
+                    </div>
+                  </div>
+                  
+                  <div><Label>Autres destinataires</Label><Textarea value={politiqueRGPDData.destinataires.autresDestinataires} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, destinataires: {...politiqueRGPDData.destinataires, autresDestinataires: e.target.value}})} placeholder="Préciser d'autres destinataires..." rows={2} /></div>
+                </div>
+
+                {/* 11. TRANSFERTS HORS UE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🌍 Transferts hors Union Européenne</h4>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input type="checkbox" id="transferts_hors_ue" checked={politiqueRGPDData.transfertsHorsUE.presenceTransferts} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, transfertsHorsUE: {...politiqueRGPDData.transfertsHorsUE, presenceTransferts: e.target.checked}})} />
+                    <Label htmlFor="transferts_hors_ue" className="cursor-pointer font-semibold">Présence de transferts hors UE</Label>
+                  </div>
+                  
+                  {politiqueRGPDData.transfertsHorsUE.presenceTransferts && (
+                    <div className="space-y-4 ml-6">
+                      <div><Label>Pays concernés</Label><Input value={politiqueRGPDData.transfertsHorsUE.paysConcernes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, transfertsHorsUE: {...politiqueRGPDData.transfertsHorsUE, paysConcernes: e.target.value}})} placeholder="Ex: États-Unis, Royaume-Uni" /></div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" id="scc" checked={politiqueRGPDData.transfertsHorsUE.clausesContractuellesTypes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, transfertsHorsUE: {...politiqueRGPDData.transfertsHorsUE, clausesContractuellesTypes: e.target.checked}})} />
+                        <Label htmlFor="scc" className="cursor-pointer">Clauses contractuelles types (SCC)</Label>
+                      </div>
+                      
+                      <div><Label>Niveau d'adéquation</Label><Input value={politiqueRGPDData.transfertsHorsUE.niveauAdequation} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, transfertsHorsUE: {...politiqueRGPDData.transfertsHorsUE, niveauAdequation: e.target.value}})} placeholder="Ex: Suisse, Japon" /></div>
+                      
+                      <div><Label>Garanties supplémentaires</Label><Textarea value={politiqueRGPDData.transfertsHorsUE.garantiesSupplementaires} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, transfertsHorsUE: {...politiqueRGPDData.transfertsHorsUE, garantiesSupplementaires: e.target.value}})} placeholder="Décrire les garanties..." rows={2} /></div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 12. MESURES TECHNIQUES ET ORGANISATIONNELLES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🔒 Mesures techniques & organisationnelles</h4>
+                  
+                  <h5 className="font-medium text-gray-700">Mesures techniques</h5>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mesure_chiffrement" checked={politiqueRGPDData.mesures.techniqueChiffrement} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, techniqueChiffrement: e.target.checked}})} />
+                      <Label htmlFor="mesure_chiffrement" className="cursor-pointer">Chiffrement</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mesure_serveurs" checked={politiqueRGPDData.mesures.techniqueSecurisationServeurs} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, techniqueSecurisationServeurs: e.target.checked}})} />
+                      <Label htmlFor="mesure_serveurs" className="cursor-pointer">Sécurisation serveurs</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mesure_mdp" checked={politiqueRGPDData.mesures.techniqueMotsDePasseComplexes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, techniqueMotsDePasseComplexes: e.target.checked}})} />
+                      <Label htmlFor="mesure_mdp" className="cursor-pointer">Mots de passe complexes</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mesure_2fa" checked={politiqueRGPDData.mesures.techniqueDoubleAuthentification} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, techniqueDoubleAuthentification: e.target.checked}})} />
+                      <Label htmlFor="mesure_2fa" className="cursor-pointer">Double authentification</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mesure_sauvegardes" checked={politiqueRGPDData.mesures.techniqueSauvegardes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, techniqueSauvegardes: e.target.checked}})} />
+                      <Label htmlFor="mesure_sauvegardes" className="cursor-pointer">Sauvegardes</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mesure_acces" checked={politiqueRGPDData.mesures.techniqueGestionAcces} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, techniqueGestionAcces: e.target.checked}})} />
+                      <Label htmlFor="mesure_acces" className="cursor-pointer">Gestion des accès</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mesure_vpn" checked={politiqueRGPDData.mesures.techniqueVPNPareFeu} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, techniqueVPNPareFeu: e.target.checked}})} />
+                      <Label htmlFor="mesure_vpn" className="cursor-pointer">VPN / pare-feu</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mesure_journalisation" checked={politiqueRGPDData.mesures.techniqueJournalisationActions} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, techniqueJournalisationActions: e.target.checked}})} />
+                      <Label htmlFor="mesure_journalisation" className="cursor-pointer">Journalisation des actions</Label>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">Mesures organisationnelles</h5>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="orga_formation" checked={politiqueRGPDData.mesures.orgaFormationEmployes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, orgaFormationEmployes: e.target.checked}})} />
+                      <Label htmlFor="orga_formation" className="cursor-pointer">Formation des employés</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="orga_politique_acces" checked={politiqueRGPDData.mesures.orgaPolitiqueAccesParRole} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, orgaPolitiqueAccesParRole: e.target.checked}})} />
+                      <Label htmlFor="orga_politique_acces" className="cursor-pointer">Politique d'accès par rôle</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="orga_controle" checked={politiqueRGPDData.mesures.orgaControleSousTraitants} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, orgaControleSousTraitants: e.target.checked}})} />
+                      <Label htmlFor="orga_controle" className="cursor-pointer">Contrôle des sous-traitants</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="orga_confid" checked={politiqueRGPDData.mesures.orgaConfidentialiteRenforcee} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, orgaConfidentialiteRenforcee: e.target.checked}})} />
+                      <Label htmlFor="orga_confid" className="cursor-pointer">Confidentialité renforcée</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="orga_processus_fuite" checked={politiqueRGPDData.mesures.orgaProcessusFuite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mesures: {...politiqueRGPDData.mesures, orgaProcessusFuite: e.target.checked}})} />
+                      <Label htmlFor="orga_processus_fuite" className="cursor-pointer">Processus internes en cas de fuite</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 13. DROITS DES PERSONNES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">✋ Droits des personnes</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="droit_acces" checked={politiqueRGPDData.droitsPersonnes.droitAcces} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, droitAcces: e.target.checked}})} />
+                      <Label htmlFor="droit_acces" className="cursor-pointer">Droit d'accès</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="droit_rectif" checked={politiqueRGPDData.droitsPersonnes.droitRectification} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, droitRectification: e.target.checked}})} />
+                      <Label htmlFor="droit_rectif" className="cursor-pointer">Droit de rectification</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="droit_effacement" checked={politiqueRGPDData.droitsPersonnes.droitEffacement} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, droitEffacement: e.target.checked}})} />
+                      <Label htmlFor="droit_effacement" className="cursor-pointer">Droit d'effacement</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="droit_limitation" checked={politiqueRGPDData.droitsPersonnes.droitLimitation} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, droitLimitation: e.target.checked}})} />
+                      <Label htmlFor="droit_limitation" className="cursor-pointer">Droit à la limitation</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="droit_opposition" checked={politiqueRGPDData.droitsPersonnes.droitOpposition} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, droitOpposition: e.target.checked}})} />
+                      <Label htmlFor="droit_opposition" className="cursor-pointer">Droit d'opposition</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="droit_portabilite" checked={politiqueRGPDData.droitsPersonnes.droitPortabilite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, droitPortabilite: e.target.checked}})} />
+                      <Label htmlFor="droit_portabilite" className="cursor-pointer">Droit à la portabilité</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="droit_retrait" checked={politiqueRGPDData.droitsPersonnes.droitRetraitConsentement} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, droitRetraitConsentement: e.target.checked}})} />
+                      <Label htmlFor="droit_retrait" className="cursor-pointer">Droit au retrait du consentement</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="droit_postmortem" checked={politiqueRGPDData.droitsPersonnes.droitDirectivesPostMortem} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, droitDirectivesPostMortem: e.target.checked}})} />
+                      <Label htmlFor="droit_postmortem" className="cursor-pointer">Droit de définir des directives post-mortem</Label>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-medium text-gray-700 mt-4">Modalités</h5>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Email contact</Label><Input type="email" value={politiqueRGPDData.droitsPersonnes.emailContact} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, emailContact: e.target.value}})} placeholder="droits@entreprise.fr" /></div>
+                    <div><Label>Délai légal</Label><Input value={politiqueRGPDData.droitsPersonnes.delaiLegal} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, delaiLegal: e.target.value}})} placeholder="1 mois" /></div>
+                    <div className="md:col-span-2"><Label>Processus interne</Label><Textarea value={politiqueRGPDData.droitsPersonnes.processusInterne} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, droitsPersonnes: {...politiqueRGPDData.droitsPersonnes, processusInterne: e.target.value}})} placeholder="Décrire le processus de traitement des demandes..." rows={3} /></div>
+                  </div>
+                </div>
+
+                {/* 14. PROCÉDURE VIOLATION DE DONNÉES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🚨 Procédure de gestion des violations de données</h4>
+                  
+                  <div><Label>Étapes internes en cas de fuite</Label><Textarea value={politiqueRGPDData.procedureViolation.etapesInternes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, procedureViolation: {...politiqueRGPDData.procedureViolation, etapesInternes: e.target.value}})} placeholder="Décrire les étapes..." rows={3} /></div>
+                  
+                  <div><Label>Notification CNIL</Label><Input value={politiqueRGPDData.procedureViolation.notificationCNIL} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, procedureViolation: {...politiqueRGPDData.procedureViolation, notificationCNIL: e.target.value}})} placeholder="< 72h" /></div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="proc_information" checked={politiqueRGPDData.procedureViolation.informationPersonnesConcernees} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, procedureViolation: {...politiqueRGPDData.procedureViolation, informationPersonnesConcernees: e.target.checked}})} />
+                      <Label htmlFor="proc_information" className="cursor-pointer">Information des personnes concernées</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="proc_documentation" checked={politiqueRGPDData.procedureViolation.documentationInterne} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, procedureViolation: {...politiqueRGPDData.procedureViolation, documentationInterne: e.target.checked}})} />
+                      <Label htmlFor="proc_documentation" className="cursor-pointer">Documentation interne</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="proc_analyse" checked={politiqueRGPDData.procedureViolation.analyseRisque} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, procedureViolation: {...politiqueRGPDData.procedureViolation, analyseRisque: e.target.checked}})} />
+                      <Label htmlFor="proc_analyse" className="cursor-pointer">Analyse du risque</Label>
+                    </div>
+                  </div>
+                  
+                  <div><Label>Actions correctives</Label><Textarea value={politiqueRGPDData.procedureViolation.actionsCorrectives} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, procedureViolation: {...politiqueRGPDData.procedureViolation, actionsCorrectives: e.target.value}})} placeholder="Décrire les actions correctives..." rows={2} /></div>
+                </div>
+
+                {/* 15. POLITIQUE COOKIES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">🍪 Politique cookies (annexe)</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="cookies_techniques" checked={politiqueRGPDData.politiqueCookies.cookiesTechniques} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, politiqueCookies: {...politiqueRGPDData.politiqueCookies, cookiesTechniques: e.target.checked}})} />
+                      <Label htmlFor="cookies_techniques" className="cursor-pointer">Cookies techniques/essentiels</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="cookies_stats" checked={politiqueRGPDData.politiqueCookies.cookiesStatistiques} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, politiqueCookies: {...politiqueRGPDData.politiqueCookies, cookiesStatistiques: e.target.checked}})} />
+                      <Label htmlFor="cookies_stats" className="cursor-pointer">Cookies statistiques</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="cookies_audience" checked={politiqueRGPDData.politiqueCookies.cookiesMesureAudience} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, politiqueCookies: {...politiqueRGPDData.politiqueCookies, cookiesMesureAudience: e.target.checked}})} />
+                      <Label htmlFor="cookies_audience" className="cursor-pointer">Cookies mesure d'audience</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="cookies_marketing" checked={politiqueRGPDData.politiqueCookies.cookiesMarketing} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, politiqueCookies: {...politiqueRGPDData.politiqueCookies, cookiesMarketing: e.target.checked}})} />
+                      <Label htmlFor="cookies_marketing" className="cursor-pointer">Cookies marketing</Label>
+                    </div>
+                  </div>
+                  
+                  <div><Label>Durées de conservation des cookies</Label><Input value={politiqueRGPDData.politiqueCookies.dureesConservationCookies} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, politiqueCookies: {...politiqueRGPDData.politiqueCookies, dureesConservationCookies: e.target.value}})} placeholder="Ex: 13 mois max pour les cookies non essentiels" /></div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="bandeau_consentement" checked={politiqueRGPDData.politiqueCookies.bandeauConsentement} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, politiqueCookies: {...politiqueRGPDData.politiqueCookies, bandeauConsentement: e.target.checked}})} />
+                      <Label htmlFor="bandeau_consentement" className="cursor-pointer">Bandeau de consentement obligatoire</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="gestion_refus" checked={politiqueRGPDData.politiqueCookies.gestionRefus} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, politiqueCookies: {...politiqueRGPDData.politiqueCookies, gestionRefus: e.target.checked}})} />
+                      <Label htmlFor="gestion_refus" className="cursor-pointer">Gestion du refus</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 16. MENTIONS INTERNES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📋 Mentions internes obligatoires</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mention_confid" checked={politiqueRGPDData.mentionsInternes.obligationConfidentialite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mentionsInternes: {...politiqueRGPDData.mentionsInternes, obligationConfidentialite: e.target.checked}})} />
+                      <Label htmlFor="mention_confid" className="cursor-pointer">Obligation de confidentialité pour tous les employés</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mention_charte" checked={politiqueRGPDData.mentionsInternes.charteInformatique} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mentionsInternes: {...politiqueRGPDData.mentionsInternes, charteInformatique: e.target.checked}})} />
+                      <Label htmlFor="mention_charte" className="cursor-pointer">Charte informatique interne</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mention_outils" checked={politiqueRGPDData.mentionsInternes.interdictionOutilsNonAutorises} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mentionsInternes: {...politiqueRGPDData.mentionsInternes, interdictionOutilsNonAutorises: e.target.checked}})} />
+                      <Label htmlFor="mention_outils" className="cursor-pointer">Interdiction d'utiliser des outils non autorisés</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mention_cyber" checked={politiqueRGPDData.mentionsInternes.bonnesPratiquesCybersecurite} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mentionsInternes: {...politiqueRGPDData.mentionsInternes, bonnesPratiquesCybersecurite: e.target.checked}})} />
+                      <Label htmlFor="mention_cyber" className="cursor-pointer">Bonnes pratiques cybersécurité</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mention_byod" checked={politiqueRGPDData.mentionsInternes.gestionBYOD} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mentionsInternes: {...politiqueRGPDData.mentionsInternes, gestionBYOD: e.target.checked}})} />
+                      <Label htmlFor="mention_byod" className="cursor-pointer">Gestion du BYOD (Bring Your Own Device)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="mention_sortie" checked={politiqueRGPDData.mentionsInternes.proceduresSortieEmploye} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, mentionsInternes: {...politiqueRGPDData.mentionsInternes, proceduresSortieEmploye: e.target.checked}})} />
+                      <Label htmlFor="mention_sortie" className="cursor-pointer">Procédures de sortie d'un employé (désactivation accès)</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 17. ANNEXES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📎 Annexes obligatoires à générer</h4>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_registre" checked={politiqueRGPDData.annexes.registreTraitements} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, annexes: {...politiqueRGPDData.annexes, registreTraitements: e.target.checked}})} />
+                      <Label htmlFor="annexe_registre" className="cursor-pointer">Registre des traitements (format CNIL)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_soustraitants" checked={politiqueRGPDData.annexes.listeSousTraitants} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, annexes: {...politiqueRGPDData.annexes, listeSousTraitants: e.target.checked}})} />
+                      <Label htmlFor="annexe_soustraitants" className="cursor-pointer">Liste des sous-traitants</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_cookies" checked={politiqueRGPDData.annexes.politiqueCookiesAnnexe} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, annexes: {...politiqueRGPDData.annexes, politiqueCookiesAnnexe: e.target.checked}})} />
+                      <Label htmlFor="annexe_cookies" className="cursor-pointer">Politique cookies</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_charte_info" checked={politiqueRGPDData.annexes.charteInformatiqueAnnexe} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, annexes: {...politiqueRGPDData.annexes, charteInformatiqueAnnexe: e.target.checked}})} />
+                      <Label htmlFor="annexe_charte_info" className="cursor-pointer">Charte informatique</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_modele_droits" checked={politiqueRGPDData.annexes.modeleGestionDroitsRGPD} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, annexes: {...politiqueRGPDData.annexes, modeleGestionDroitsRGPD: e.target.checked}})} />
+                      <Label htmlFor="annexe_modele_droits" className="cursor-pointer">Modèle de gestion des droits RGPD</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_proc_violation" checked={politiqueRGPDData.annexes.procedureViolationDonnees} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, annexes: {...politiqueRGPDData.annexes, procedureViolationDonnees: e.target.checked}})} />
+                      <Label htmlFor="annexe_proc_violation" className="cursor-pointer">Procédure violation de données</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_fiche_sensib" checked={politiqueRGPDData.annexes.ficheSensibilisationEmployes} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, annexes: {...politiqueRGPDData.annexes, ficheSensibilisationEmployes: e.target.checked}})} />
+                      <Label htmlFor="annexe_fiche_sensib" className="cursor-pointer">Fiche sensibilisation employés</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="annexe_proc_conservation" checked={politiqueRGPDData.annexes.procedureConservationSuppression} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, annexes: {...politiqueRGPDData.annexes, procedureConservationSuppression: e.target.checked}})} />
+                      <Label htmlFor="annexe_proc_conservation" className="cursor-pointer">Procédure conservation/suppression des données</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* PIÈCES JUSTIFICATIVES */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">📎 Pièces justificatives à joindre</h4>
+                  
+                  <SingleFileUpload 
+                    label="Preuve de désignation DPO (si applicable)" 
+                    files={politiqueRGPDPreuveDesignationDPOFiles} 
+                    onFilesChange={setPolitiqueRGPDPreuveDesignationDPOFiles} 
+                    role="avocat"
+                    accept="application/pdf"
+                  />
+                  
+                  <SingleFileUpload 
+                    label="Contrats de sous-traitance" 
+                    files={politiqueRGPDContratsSousTraitanceFiles} 
+                    onFilesChange={setPolitiqueRGPDContratsSousTraitanceFiles} 
+                    role="avocat"
+                    accept="application/pdf"
+                  />
+                  
+                  <SingleFileUpload 
+                    label="Attestations de sécurité des prestataires" 
+                    files={politiqueRGPDAttestationsSecuriteFiles} 
+                    onFilesChange={setPolitiqueRGPDAttestationsSecuriteFiles} 
+                    role="avocat"
+                    accept="application/pdf"
+                  />
+                  
+                  <SingleFileUpload 
+                    label="Documentations internes" 
+                    files={politiqueRGPDDocumentationsInternesFiles} 
+                    onFilesChange={setPolitiqueRGPDDocumentationsInternesFiles} 
+                    role="avocat"
+                    accept="application/pdf"
+                  />
+                </div>
+
+                {/* SIGNATURE */}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-lg text-blue-700">✍️ Date et lieu d'élaboration</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div><Label>Ville d'élaboration</Label><Input value={politiqueRGPDData.villeElaboration} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, villeElaboration: e.target.value})} placeholder="Ex: Paris" /></div>
+                    <div><Label>Date d'élaboration</Label><Input type="date" value={politiqueRGPDData.dateElaboration} onChange={(e) => setPolitiqueRGPDData({...politiqueRGPDData, dateElaboration: e.target.value})} /></div>
                   </div>
                 </div>
               </>
@@ -59266,7 +60300,9 @@ FIN DE LA CONVENTION
                   handleCreateAvenantContratTravailContract();
                 } else if (pendingContractType === "Accords de confidentialité employé") {
                   handleCreateAccordConfidentialiteContract();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Politique RGPD interne (annexes)", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Politiques RGPD interne (annexes)") {
+                  handleCreatePolitiqueRGPDContract();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
