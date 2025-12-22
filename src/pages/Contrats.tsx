@@ -5544,7 +5544,7 @@ export default function Contrats() {
     obligationPayerLoyer: "", // oui / non - Payer loyer et charges
     obligationEntretenir: "", // oui / non - Entretenir le local
     obligationRespecterActivite: "", // oui / non - Respecter activité autorisée
-    obligationNeP asTransformer: "", // oui / non - Ne pas transformer sans accord
+    obligationNePasTransformer: "", // oui / non - Ne pas transformer sans accord
     obligationAssurer: "", // oui / non - Assurer le local
     obligationAccesUrgent: "", // oui / non - Permettre accès pour travaux urgents
     
