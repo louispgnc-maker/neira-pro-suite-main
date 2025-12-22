@@ -69068,15 +69068,17 @@ FIN DE LA CONVENTION
 
             {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
             {(() => {
-              console.log('🔍 DEBUG CGU - pendingContractType:', JSON.stringify(pendingContractType));
-              console.log('🔍 DEBUG CGU - includes CGU:', pendingContractType.includes("CGU"));
-              console.log('🔍 DEBUG CGU - includes SaaS:', pendingContractType.includes("SaaS"));
-              console.log('🔍 DEBUG CGU - includes saas (lowercase):', pendingContractType.toLowerCase().includes("saas"));
-              console.log('🔍 DEBUG CGU - Match result:', pendingContractType.includes("CGU") && pendingContractType.includes("SaaS"));
-              console.log('🔍 DEBUG CGU - Char codes:', Array.from(pendingContractType).map(c => c.charCodeAt(0)).join(','));
+              if (pendingContractType) {
+                console.log('🔍 DEBUG CGU - pendingContractType:', JSON.stringify(pendingContractType));
+                console.log('🔍 DEBUG CGU - includes CGU:', pendingContractType.includes("CGU"));
+                console.log('🔍 DEBUG CGU - includes SaaS:', pendingContractType.includes("SaaS"));
+                console.log('🔍 DEBUG CGU - includes saas (lowercase):', pendingContractType.toLowerCase().includes("saas"));
+                console.log('🔍 DEBUG CGU - Match result:', pendingContractType.includes("CGU") && pendingContractType.includes("SaaS"));
+                console.log('🔍 DEBUG CGU - Char codes:', Array.from(pendingContractType).map(c => c.charCodeAt(0)).join(','));
+              }
               return null;
             })()}
-            {(pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) && (
+            {(pendingContractType && pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) && (
               <div className="space-y-6">
                 <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">📱 Conditions Générales d'Utilisation (CGU) — SaaS / Site Web</h3>
                 
