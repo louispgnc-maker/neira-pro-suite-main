@@ -16111,7 +16111,7 @@ FIN DE LA CONVENTION
             {(pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") && role === 'avocat' && (
               <>
                 {/* Sélection du rôle du client */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
                   <div className="space-y-2">
                     <Label>Votre client est le *</Label>
@@ -16161,7 +16161,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Bailleur */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">
                     {bailHabitationData.clientRole === "bailleur" ? "👤 Bailleur (votre client)" : "👤 Bailleur"}
                   </h3>
@@ -16262,7 +16262,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Locataire */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">
                     {bailHabitationData.clientRole === "locataire" ? "👥 Locataire (votre client)" : "👥 Locataire"}
                   </h3>
@@ -16499,7 +16499,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Logement */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🏠 Logement</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 md:col-span-2">
@@ -16613,7 +16613,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Spécificités du bail meublé */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🛋️ Spécificités du bail meublé</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Type et durée du bail meublé */}
@@ -16726,7 +16726,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Animaux */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🐾 Animaux domestiques</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -16756,7 +16756,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Nature du bailleur et durée */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">⚖️ Nature du bailleur et durée du bail</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -16783,7 +16783,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Garant */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">👥 Garant (si applicable)</h3>
                   <div className="space-y-2">
                     <Label>A-t-il un garant ?</Label>
@@ -16845,7 +16845,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Conditions financières */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">💶 Conditions financières</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -16948,7 +16948,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Dates */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">📅 Dates du bail</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -16972,7 +16972,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Caractéristiques techniques ALUR */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🔌 Caractéristiques techniques (obligatoires ALUR)</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -17005,7 +17005,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Travaux récents */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🔨 Travaux effectués</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -17036,7 +17036,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Diagnostics obligatoires */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">📁 Diagnostics obligatoires</h3>
                   <div className="space-y-2">
                     <Label>Diagnostics fournis ? *</Label>
@@ -17069,7 +17069,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* État des lieux */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🛠️ État des lieux</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -17086,7 +17086,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Assurance */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🛡️ Assurance habitation</h3>
                   <div className="space-y-2">
                     <Label>Attestation d'assurance fournie par le locataire ? *</Label>
@@ -17102,7 +17102,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Remise des clés */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🔑 Remise des clés et accès</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -17161,7 +17161,7 @@ FIN DE LA CONVENTION
                 </div>
 
                 {/* Informations complémentaires */}
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <h3 className="font-semibold text-lg border-b pb-2">🎯 Informations complémentaires</h3>
                   <div className="space-y-2">
                     <Label>Précisions, particularités...</Label>
@@ -17232,7 +17232,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Sélection du rôle du client */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
                     <div className="space-y-2">
                       <Label>Votre client est le *</Label>
@@ -17283,7 +17283,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Bailleur */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">
                       {bailCommercialData.clientRole === "bailleur" ? "🏢 Bailleur (votre client)" : "🏢 Bailleur"}
                     </h3>
@@ -17584,7 +17584,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Local commercial */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">🏪 Local commercial</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2 md:col-span-2">
@@ -17622,7 +17622,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Preneur (Locataire) */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">
                       {bailCommercialData.clientRole === "preneur" ? "🏢 Preneur (votre client)" : "🏢 Preneur (Locataire)"}
                     </h3>
@@ -17947,7 +17947,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Activité */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">💼 Activité</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
@@ -18038,7 +18038,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Conditions financières */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">💶 Conditions financières</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -18158,7 +18158,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Durée */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">📅 Durée du bail</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {bailCommercialData.typeBail === "commercial" ? (
@@ -18202,7 +18202,7 @@ FIN DE LA CONVENTION
 
                   {/* 4. Travaux et réparations (COMMERCIAL UNIQUEMENT) */}
                   {bailCommercialData.typeBail === "commercial" && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                       <h3 className="font-semibold text-lg border-b pb-2">🔧 Travaux et réparations</h3>
                       <div className="grid grid-cols-1 gap-4">
                         <div className="space-y-2">
@@ -18247,7 +18247,7 @@ FIN DE LA CONVENTION
 
                   {/* 5. Impôts et taxes (COMMERCIAL UNIQUEMENT) */}
                   {bailCommercialData.typeBail === "commercial" && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                       <h3 className="font-semibold text-lg border-b pb-2">💰 Impôts et taxes</h3>
                       <div className="grid grid-cols-1 gap-4">
                         <div className="space-y-2">
@@ -18277,7 +18277,7 @@ FIN DE LA CONVENTION
                   )}
 
                   {/* 6. État des lieux */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">📋 État des lieux</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
@@ -18308,7 +18308,7 @@ FIN DE LA CONVENTION
 
                   {/* 8. Sous-location & cession (COMMERCIAL UNIQUEMENT) */}
                   {bailCommercialData.typeBail === "commercial" && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                       <h3 className="font-semibold text-lg border-b pb-2">📄 Sous-location & Cession</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -18362,7 +18362,7 @@ FIN DE LA CONVENTION
                   )}
 
                   {/* 9. Garanties */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">🛡️ Garanties</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
@@ -18419,7 +18419,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 10. Assurance obligatoire */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">🏥 Assurance obligatoire</h3>
                     <div className="grid grid-cols-1 gap-4">
                       {bailCommercialData.typeBail === "commercial" ? (
