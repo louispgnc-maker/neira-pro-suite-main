@@ -24492,34 +24492,32 @@ FIN DE LA CONVENTION
                             if (selectedClient) {
                               let situationFamiliale = "";
                               
-                              // Essayer d'abord situation_matrimoniale
-                              if (selectedClient.situation_matrimoniale) {
+                              // 1. Essayer d'abord etat_civil (champ direct)
+                              if (selectedClient.etat_civil) {
+                                situationFamiliale = selectedClient.etat_civil;
+                                if (situationFamiliale) {
+                                  situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                }
+                              }
+                              // 2. Sinon essayer situation_matrimoniale
+                              else if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
-                                  // Cas 1: Objet JSON dans situation_matrimoniale
                                   situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  
-                                  // Capitaliser
                                   if (situationFamiliale) {
                                     situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                                   }
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
-                                  // Cas 2: Simple chaîne de texte
                                   situationFamiliale = selectedClient.situation_matrimoniale;
                                 }
                               }
-                              
-                              // Si pas trouvé, essayer situation_familiale
-                              if (!situationFamiliale && selectedClient.situation_familiale) {
+                              // 3. Sinon essayer situation_familiale
+                              else if (selectedClient.situation_familiale) {
                                 if (typeof selectedClient.situation_familiale === 'object') {
-                                  // Objet JSON dans situation_familiale
                                   situationFamiliale = selectedClient.situation_familiale.situation_familiale || '';
-                                  
-                                  // Capitaliser
                                   if (situationFamiliale) {
                                     situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                                   }
                                 } else if (typeof selectedClient.situation_familiale === 'string') {
-                                  // Simple chaîne
                                   situationFamiliale = selectedClient.situation_familiale;
                                 }
                               }
@@ -24625,34 +24623,32 @@ FIN DE LA CONVENTION
                             if (selectedClient) {
                               let situationFamiliale = "";
                               
-                              // Essayer d'abord situation_matrimoniale
-                              if (selectedClient.situation_matrimoniale) {
+                              // 1. Essayer d'abord etat_civil (champ direct)
+                              if (selectedClient.etat_civil) {
+                                situationFamiliale = selectedClient.etat_civil;
+                                if (situationFamiliale) {
+                                  situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                }
+                              }
+                              // 2. Sinon essayer situation_matrimoniale
+                              else if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
-                                  // Cas 1: Objet JSON dans situation_matrimoniale
                                   situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  
-                                  // Capitaliser
                                   if (situationFamiliale) {
                                     situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                                   }
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
-                                  // Cas 2: Simple chaîne de texte
                                   situationFamiliale = selectedClient.situation_matrimoniale;
                                 }
                               }
-                              
-                              // Si pas trouvé, essayer situation_familiale
-                              if (!situationFamiliale && selectedClient.situation_familiale) {
+                              // 3. Sinon essayer situation_familiale
+                              else if (selectedClient.situation_familiale) {
                                 if (typeof selectedClient.situation_familiale === 'object') {
-                                  // Objet JSON dans situation_familiale
                                   situationFamiliale = selectedClient.situation_familiale.situation_familiale || '';
-                                  
-                                  // Capitaliser
                                   if (situationFamiliale) {
                                     situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                                   }
                                 } else if (typeof selectedClient.situation_familiale === 'string') {
-                                  // Simple chaîne
                                   situationFamiliale = selectedClient.situation_familiale;
                                 }
                               }
