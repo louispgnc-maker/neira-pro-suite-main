@@ -24185,10 +24185,6 @@ FIN DE LA CONVENTION
                           />
                         </div>
                       )}
-                            label=""
-                          />
-                        </div>
-                      )}
                     </div>
                   </div>
 
