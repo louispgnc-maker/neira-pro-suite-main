@@ -6036,7 +6036,7 @@ export default function Contrats() {
     
     // 2️⃣ OBJET DU PACTE
     definitionConcubinage: "Union de fait, stable et continue entre deux personnes vivant en couple.",
-    aspectsCouvert: [] as string[], // Array pour les checkboxes
+    aspectsCouvert: [],
     
     // 3️⃣ ADRESSE RÉSIDENCE COMMUNE
     adresseResidenceCommune: "",
@@ -6049,7 +6049,7 @@ export default function Contrats() {
     partConcubin1Charges: "",
     partConcubin2Charges: "",
     detailsRepartitionPersonnalisee: "",
-    chargesConcernees: [] as string[], // Array pour les checkboxes
+    chargesConcernees: [],
     compteCommun: "",
     detailsCompteCommun: "",
     
@@ -6066,7 +6066,7 @@ export default function Contrats() {
     typesDepensesImportantes: "",
     
     // 7️⃣ OBLIGATIONS RESPECTIVES
-    obligationsRespectives: [] as string[], // Array pour les checkboxes
+    obligationsRespectives: [],
     autresEngagements: "",
     
     // 8️⃣ PRÉVOYANCE DONATIONS
