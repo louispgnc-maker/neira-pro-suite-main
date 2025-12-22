@@ -27467,6 +27467,7 @@ FIN DE LA CONVENTION
                               mandantPrenom: client.prenom || '',
                               mandantDateNaissance: client.date_naissance || '',
                               mandantAdresse: client.adresse || '',
+                              mandantNationalite: client.nationalite || '',
                             });
                           } else {
                             setMandatProtectionSousSeingData({
@@ -27568,6 +27569,7 @@ FIN DE LA CONVENTION
                               mandataireAdresse: client.adresse || '',
                               mandataireTelephone: client.telephone || '',
                               mandataireEmail: client.email || '',
+                              mandataireNationalite: client.nationalite || '',
                             });
                           } else {
                             setMandatProtectionSousSeingData({
@@ -27750,7 +27752,7 @@ FIN DE LA CONVENTION
                           </div>
                         ))}
                       </div>
-                      <div className="bg-yellow-50 dark:bg-yellow-950 p-3 rounded-lg mt-4">
+                      <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg mt-4">
                         <p className="text-sm font-medium">⚠️ Actes interdits au mandataire</p>
                         <p className="text-xs text-muted-foreground mt-1">Vente de biens immobiliers, donations, testaments, modification du régime matrimonial (nécessitent autorisation judiciaire)</p>
                       </div>
@@ -27790,7 +27792,7 @@ FIN DE LA CONVENTION
                   {/* 7️⃣ OBLIGATIONS DU MANDATAIRE */}
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Obligations du mandataire</h3>
-                    <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg space-y-2">
+                    <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg space-y-2">
                       <div className="flex items-center gap-2">
                         <input type="checkbox" checked disabled className="w-4 h-4" />
                         <span className="text-sm">Agir dans l'intérêt exclusif du mandant</span>
@@ -27926,11 +27928,11 @@ FIN DE LA CONVENTION
                           <span>Contrôle amiable par la famille autorisé</span>
                         </Label>
                       </div>
-                      <div className="bg-purple-50 dark:bg-purple-950 p-3 rounded-lg">
+                      <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg">
                         <p className="text-sm font-medium">⚖️ Saisine du juge des tutelles</p>
                         <p className="text-xs text-muted-foreground mt-1">Possibilité pour le mandant, la famille ou le procureur de saisir le juge en cas de difficulté</p>
                       </div>
-                      <div className="bg-purple-50 dark:bg-purple-950 p-3 rounded-lg">
+                      <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg">
                         <p className="text-sm font-medium">📊 Présentation des comptes annuelle obligatoire</p>
                         <p className="text-xs text-muted-foreground mt-1">Le mandataire doit présenter un compte de gestion chaque année</p>
                       </div>
@@ -27940,7 +27942,7 @@ FIN DE LA CONVENTION
                   {/* 1️⃣1️⃣ RÉVOCATION */}
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Modalités de révocation</h3>
-                    <div className="bg-red-50 dark:bg-red-950 p-4 rounded-lg space-y-3">
+                    <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg space-y-3">
                       <div>
                         <p className="font-medium text-sm">✅ Révocation par le mandant</p>
                         <p className="text-xs text-muted-foreground">Le mandant peut révoquer le mandat à tout moment s'il a conservé sa capacité</p>
@@ -28104,7 +28106,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 1️⃣5️⃣ MENTION MANUSCRITE */}
-                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg border-2 border-green-300 dark:border-green-700">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border-2 border-blue-300 dark:border-blue-700">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ Mention manuscrite (générée automatiquement)</h3>
                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
                       <p className="text-sm font-mono italic text-center">
