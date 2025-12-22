@@ -28113,9 +28113,12 @@ FIN DE LA CONVENTION
                         "Je soussigné(e) {mandatProtectionSousSeingData.mandantNom} {mandatProtectionSousSeingData.mandantPrenom}, établis le présent mandat de protection future et donne pouvoir à {mandatProtectionSousSeingData.mandataireNom} {mandatProtectionSousSeingData.mandatairePrenom} d'agir pour moi dans les conditions prévues ci-dessus."
                       </p>
                     </div>
-                    <p className="text-xs text-muted-foreground text-center">
-                      ✍️ Cette mention devra être recopiée à la main par le mandant lors de la signature du document final
-                    </p>
+                    <div className="bg-orange-50 dark:bg-orange-950 p-4 rounded-lg border-l-4 border-orange-500">
+                      <p className="text-sm font-semibold text-orange-800 dark:text-orange-200 mb-2">⚠️ IMPORTANT - Mention obligatoire manuscrite</p>
+                      <p className="text-xs text-orange-700 dark:text-orange-300">
+                        ✍️ Une fois le contrat rédigé, le mandant devra <span className="font-bold underline">obligatoirement recopier cette phrase entièrement à la main</span> sur le document final avant de le signer. Cette mention manuscrite est une exigence légale pour la validité du mandat de protection future sous seing privé.
+                      </p>
+                    </div>
                   </div>
 
                 </div>
