@@ -6445,7 +6445,7 @@ export default function Contrats() {
     pouvoirRenouvellementContrats: "non",
     pouvoirPlacementFinancier: "non",
     pouvoirDeclarationFiscale: "non",
-    pouvoirAssurances: "non",
+    pouvoirGestionAssurances: "non",
     pouvoirGestionAdministrative: "non",
     
     // Actes interdits (automatiquement exclus)
@@ -9501,7 +9501,7 @@ export default function Contrats() {
         medecinsHabilites: "", dateEffet: "Date mentionnée sur certificat médical",
         pouvoirPaiementFactures: "non", pouvoirGestionCompteCourant: "non", pouvoirSouscriptionContrats: "non",
         pouvoirGestionAidesSociales: "non", pouvoirGestionLoyers: "non", pouvoirRenouvellementContrats: "non",
-        pouvoirPlacementFinancier: "non", pouvoirDeclarationFiscale: "non", pouvoirAssurances: "non",
+        pouvoirPlacementFinancier: "non", pouvoirDeclarationFiscale: "non", pouvoirGestionAssurances: "non",
         pouvoirGestionAdministrative: "non", mentionActesInterdits: "oui",
         pouvoirRdvMedicaux: "non", pouvoirAccesDossiersMedicaux: "non", pouvoirChoixEtablissementMedical: "non",
         pouvoirChoixLogement: "non", pouvoirOrganisationQuotidien: "non", pouvoirRelationsAdministrations: "non",
