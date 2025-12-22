@@ -6273,6 +6273,122 @@ export default function Contrats() {
   const [conventionCalendrierVacances, setConventionCalendrierVacances] = useState<File[]>([]);
   const [conventionJustificatifsRevenus, setConventionJustificatifsRevenus] = useState<File[]>([]);
   const [conventionAttestationsMedicales, setConventionAttestationsMedicales] = useState<File[]>([]);
+
+  // ========== RECONNAISSANCE DE DETTES ==========
+  const [reconnaissanceDetteData, setReconnaissanceDetteData] = useState({
+    // 1️⃣ Identification du débiteur
+    debiteurTypePersonne: "physique", // physique / morale
+    // Personne physique
+    debiteurClientId: "",
+    debiteurNom: "",
+    debiteurPrenom: "",
+    debiteurDateNaissance: "",
+    debiteurLieuNaissance: "",
+    debiteurAdresse: "",
+    debiteurNationalite: "",
+    debiteurProfession: "",
+    debiteurEmail: "",
+    debiteurTelephone: "",
+    // Personne morale
+    debiteurDenomination: "",
+    debiteurFormeJuridique: "",
+    debiteurSiren: "",
+    debiteurRcs: "",
+    debiteurSiegeSocial: "",
+    debiteurRepresentant: "",
+    
+    // 2️⃣ Identification du créancier
+    creancierTypePersonne: "physique", // physique / morale
+    // Personne physique
+    creancierClientId: "",
+    creancierNom: "",
+    creancierPrenom: "",
+    creancierDateNaissance: "",
+    creancierLieuNaissance: "",
+    creancierAdresse: "",
+    creancierNationalite: "",
+    creancierProfession: "",
+    creancierEmail: "",
+    creancierTelephone: "",
+    // Personne morale
+    creancierDenomination: "",
+    creancierFormeJuridique: "",
+    creancierRcs: "",
+    creancierRepresentant: "",
+    
+    // 3️⃣ Montant exact de la dette
+    montantChiffres: "",
+    montantLettres: "",
+    devise: "EUR",
+    
+    // 4️⃣ Origine de la dette
+    origineDette: "", // pret / avance / solde_associes / solde_prestation / achat / familiale / remboursement_depenses
+    descriptionOrigine: "",
+    
+    // 5️⃣ Date de remise des fonds
+    dateRemiseFonds: "",
+    moyenRemise: "", // virement / cheque / especes / main_propre
+    
+    // 6️⃣ Modalités de remboursement
+    typeRemboursement: "", // une_fois / echelonne
+    dateLimiteRemboursement: "",
+    // Remboursement échelonné
+    nombreEcheances: "",
+    montantEcheance: "",
+    calendrierEcheances: "",
+    // Remboursement anticipé
+    remboursementAnticipeAutorise: "", // oui / non
+    fraisIndemnite: "",
+    
+    // 7️⃣ Intérêts
+    tauxInteret: "0",
+    typeTaux: "", // fixe / legal / contractuel
+    pointDepartInterets: "", // remise_fonds / echeance / retard
+    capitalisationInterets: "", // oui / non
+    
+    // 8️⃣ Garanties
+    typesGaranties: [], // caution / nantissement / hypotheque / retenue_salaire
+    // Caution
+    cautionIdentite: "",
+    cautionType: "", // simple / solidaire
+    cautionDuree: "",
+    cautionMontantMax: "",
+    // Nantissement
+    nantissementTypeBien: "",
+    nantissementValeur: "",
+    nantissementLieu: "",
+    
+    // 9️⃣ Conséquences non-paiement
+    exigibiliteImmediate: "oui",
+    interetsRetard: "",
+    clausePenale: "",
+    actionsLegales: [],
+    
+    // �� Reconnaissance expresse (auto-générée)
+    reconnaissanceExpresse: "oui",
+    
+    // 1️⃣1️⃣ Renonciation contestation
+    renonciationContestation: "", // oui / non
+    
+    // 1️⃣2️⃣ Clause domiciliation
+    accepteDomiciliation: "oui",
+    
+    // 1️⃣3️⃣ Loi applicable & juridiction
+    loiApplicable: "Droit français",
+    tribunalCompetent: "",
+    
+    // 1️⃣4️⃣ Date et lieu de signature
+    lieuSignature: "",
+    dateSignature: "",
+  });
+  
+  // États fichiers pour reconnaissance de dettes
+  const [reconnaissanceCopiesIdentites, setReconnaissanceCopiesIdentites] = useState<File[]>([]);
+  const [reconnaissancePreuvePaiement, setReconnaissancePreuvePaiement] = useState<File[]>([]);
+  const [reconnaissanceCalendrier, setReconnaissanceCalendrier] = useState<File[]>([]);
+  const [reconnaissanceGaranties, setReconnaissanceGaranties] = useState<File[]>([]);
+  const [reconnaissanceReleveBancaire, setReconnaissanceReleveBancaire] = useState<File[]>([]);
+  const [reconnaissancePreuveRemise, setReconnaissancePreuveRemise] = useState<File[]>([]);
   
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
@@ -9025,6 +9141,76 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création convention parentale:', err);
+      toast.error('Erreur lors de la création');
+    }
+  };
+
+  // ========== HANDLER RECONNAISSANCE DE DETTES ==========
+  const handleReconnaissanceDetteSubmit = async () => {
+    if (!user) return;
+
+    // Validation des champs obligatoires
+    if (!reconnaissanceDetteData.debiteurNom || !reconnaissanceDetteData.creancierNom ||
+        !reconnaissanceDetteData.montantChiffres || !reconnaissanceDetteData.montantLettres ||
+        !reconnaissanceDetteData.origineDette || !reconnaissanceDetteData.dateRemiseFonds) {
+      toast.error("Champs obligatoires manquants", { 
+        description: "Vérifiez débiteur, créancier, montant, origine et date de remise des fonds" 
+      });
+      return;
+    }
+
+    try {
+      const description = `Reconnaissance de dettes - ${reconnaissanceDetteData.debiteurNom} doit ${reconnaissanceDetteData.montantChiffres}€ à ${reconnaissanceDetteData.creancierNom}`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: reconnaissanceDetteData,
+          client_id: reconnaissanceDetteData.debiteurClientId || reconnaissanceDetteData.creancierClientId || undefined
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers annexes
+      for (const file of reconnaissanceCopiesIdentites) {
+        const filePath = `${user.id}/${data.id}/copies_identites/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of reconnaissancePreuvePaiement) {
+        const filePath = `${user.id}/${data.id}/preuve_paiement/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of reconnaissanceCalendrier) {
+        const filePath = `${user.id}/${data.id}/calendrier/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of reconnaissanceGaranties) {
+        const filePath = `${user.id}/${data.id}/garanties/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of reconnaissanceReleveBancaire) {
+        const filePath = `${user.id}/${data.id}/releve_bancaire/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of reconnaissancePreuveRemise) {
+        const filePath = `${user.id}/${data.id}/preuve_remise/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+
+      toast.success("Reconnaissance de dettes créée");
+      setShowQuestionDialog(false);
+      setPendingContractType("");
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création reconnaissance de dettes:', err);
       toast.error('Erreur lors de la création');
     }
   };
@@ -25994,6 +26180,293 @@ FIN DE LA CONVENTION
                   {/* Suite du formulaire dans le prochain message pour ne pas dépasser la limite */}
                   <div className="text-center text-sm text-muted-foreground mt-4">
                     Convention parentale - Formulaire en cours de développement
+                  </div>
+
+                </div>
+              </>
+            )}
+
+            {/* Formulaire spécifique pour Reconnaissance de dettes */}
+            {pendingContractType === "Reconnaissance de dettes" && (
+              <>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
+                  
+                  {/* 1️⃣ IDENTIFICATION DU DÉBITEUR */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du débiteur (personne qui doit l'argent)</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Type de personne *</Label>
+                      <Select value={reconnaissanceDetteData.debiteurTypePersonne} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurTypePersonne: value})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="physique">Personne physique</SelectItem>
+                          <SelectItem value="morale">Personne morale (société)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {reconnaissanceDetteData.debiteurTypePersonne === "physique" ? (
+                      <>
+                        <ClientSelector
+                          clients={clients}
+                          value={reconnaissanceDetteData.debiteurClientId}
+                          onClientChange={(value) => {
+                            if (value === '') {
+                              setReconnaissanceDetteData({
+                                ...reconnaissanceDetteData,
+                                debiteurClientId: "",
+                                debiteurNom: "",
+                                debiteurPrenom: "",
+                                debiteurDateNaissance: "",
+                                debiteurLieuNaissance: "",
+                                debiteurAdresse: "",
+                                debiteurNationalite: "",
+                                debiteurProfession: "",
+                                debiteurEmail: "",
+                                debiteurTelephone: "",
+                              });
+                            } else {
+                              const selectedClient = clients.find(c => c.id === value) as any;
+                              if (selectedClient) {
+                                setReconnaissanceDetteData({
+                                  ...reconnaissanceDetteData,
+                                  debiteurClientId: value,
+                                  debiteurNom: selectedClient.nom || "",
+                                  debiteurPrenom: selectedClient.prenom || "",
+                                  debiteurDateNaissance: selectedClient.date_naissance || "",
+                                  debiteurLieuNaissance: selectedClient.lieu_naissance || "",
+                                  debiteurAdresse: selectedClient.adresse || "",
+                                  debiteurNationalite: selectedClient.nationalite || "",
+                                  debiteurProfession: selectedClient.profession || "",
+                                  debiteurEmail: selectedClient.email || "",
+                                  debiteurTelephone: selectedClient.telephone || "",
+                                });
+                              }
+                            }
+                          }}
+                          label="Sélectionner le débiteur"
+                        />
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Nom *</Label>
+                            <Input value={reconnaissanceDetteData.debiteurNom} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurNom: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Prénom *</Label>
+                            <Input value={reconnaissanceDetteData.debiteurPrenom} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurPrenom: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Date de naissance</Label>
+                            <Input type="date" value={reconnaissanceDetteData.debiteurDateNaissance} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurDateNaissance: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Lieu de naissance</Label>
+                            <Input value={reconnaissanceDetteData.debiteurLieuNaissance} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurLieuNaissance: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Nationalité</Label>
+                            <Input value={reconnaissanceDetteData.debiteurNationalite} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurNationalite: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Profession</Label>
+                            <Input value={reconnaissanceDetteData.debiteurProfession} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurProfession: e.target.value})} />
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse complète *</Label>
+                            <Input value={reconnaissanceDetteData.debiteurAdresse} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurAdresse: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input type="email" value={reconnaissanceDetteData.debiteurEmail} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurEmail: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Téléphone</Label>
+                            <Input value={reconnaissanceDetteData.debiteurTelephone} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurTelephone: e.target.value})} />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Dénomination sociale *</Label>
+                          <Input value={reconnaissanceDetteData.debiteurDenomination} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurDenomination: e.target.value})} placeholder="Nom de la société" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Forme juridique *</Label>
+                          <Input value={reconnaissanceDetteData.debiteurFormeJuridique} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurFormeJuridique: e.target.value})} placeholder="SAS, SARL, SA..." />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>SIREN / RCS</Label>
+                          <Input value={reconnaissanceDetteData.debiteurSiren} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurSiren: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Siège social *</Label>
+                          <Input value={reconnaissanceDetteData.debiteurSiegeSocial} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurSiegeSocial: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Représentant légal *</Label>
+                          <Input value={reconnaissanceDetteData.debiteurRepresentant} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, debiteurRepresentant: e.target.value})} placeholder="Nom du représentant" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 2️⃣ IDENTIFICATION DU CRÉANCIER */}
+                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identification du créancier (personne qui prête)</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Type de personne *</Label>
+                      <Select value={reconnaissanceDetteData.creancierTypePersonne} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierTypePersonne: value})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="physique">Personne physique</SelectItem>
+                          <SelectItem value="morale">Personne morale (société)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {reconnaissanceDetteData.creancierTypePersonne === "physique" ? (
+                      <>
+                        <ClientSelector
+                          clients={clients}
+                          value={reconnaissanceDetteData.creancierClientId}
+                          onClientChange={(value) => {
+                            if (value === '') {
+                              setReconnaissanceDetteData({
+                                ...reconnaissanceDetteData,
+                                creancierClientId: "",
+                                creancierNom: "",
+                                creancierPrenom: "",
+                                creancierDateNaissance: "",
+                                creancierLieuNaissance: "",
+                                creancierAdresse: "",
+                                creancierNationalite: "",
+                                creancierProfession: "",
+                                creancierEmail: "",
+                                creancierTelephone: "",
+                              });
+                            } else {
+                              const selectedClient = clients.find(c => c.id === value) as any;
+                              if (selectedClient) {
+                                setReconnaissanceDetteData({
+                                  ...reconnaissanceDetteData,
+                                  creancierClientId: value,
+                                  creancierNom: selectedClient.nom || "",
+                                  creancierPrenom: selectedClient.prenom || "",
+                                  creancierDateNaissance: selectedClient.date_naissance || "",
+                                  creancierLieuNaissance: selectedClient.lieu_naissance || "",
+                                  creancierAdresse: selectedClient.adresse || "",
+                                  creancierNationalite: selectedClient.nationalite || "",
+                                  creancierProfession: selectedClient.profession || "",
+                                  creancierEmail: selectedClient.email || "",
+                                  creancierTelephone: selectedClient.telephone || "",
+                                });
+                              }
+                            }
+                          }}
+                          label="Sélectionner le créancier"
+                        />
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Nom *</Label>
+                            <Input value={reconnaissanceDetteData.creancierNom} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierNom: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Prénom *</Label>
+                            <Input value={reconnaissanceDetteData.creancierPrenom} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierPrenom: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Date de naissance</Label>
+                            <Input type="date" value={reconnaissanceDetteData.creancierDateNaissance} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierDateNaissance: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Lieu de naissance</Label>
+                            <Input value={reconnaissanceDetteData.creancierLieuNaissance} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierLieuNaissance: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Nationalité</Label>
+                            <Input value={reconnaissanceDetteData.creancierNationalite} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierNationalite: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Profession</Label>
+                            <Input value={reconnaissanceDetteData.creancierProfession} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierProfession: e.target.value})} />
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse complète *</Label>
+                            <Input value={reconnaissanceDetteData.creancierAdresse} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierAdresse: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input type="email" value={reconnaissanceDetteData.creancierEmail} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierEmail: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Téléphone</Label>
+                            <Input value={reconnaissanceDetteData.creancierTelephone} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierTelephone: e.target.value})} />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Dénomination sociale *</Label>
+                          <Input value={reconnaissanceDetteData.creancierDenomination} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierDenomination: e.target.value})} placeholder="Nom de la société" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Forme juridique *</Label>
+                          <Input value={reconnaissanceDetteData.creancierFormeJuridique} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierFormeJuridique: e.target.value})} placeholder="SAS, SARL, SA..." />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>RCS</Label>
+                          <Input value={reconnaissanceDetteData.creancierRcs} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierRcs: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Représentant légal *</Label>
+                          <Input value={reconnaissanceDetteData.creancierRepresentant} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, creancierRepresentant: e.target.value})} placeholder="Nom du représentant" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 3️⃣ MONTANT EXACT DE LA DETTE */}
+                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Montant exact de la dette</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Montant en chiffres * (€)</Label>
+                        <Input type="number" step="0.01" value={reconnaissanceDetteData.montantChiffres} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, montantChiffres: e.target.value})} placeholder="Ex: 5000.00" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Devise</Label>
+                        <Select value={reconnaissanceDetteData.devise} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, devise: value})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="EUR">Euro (€)</SelectItem>
+                            <SelectItem value="USD">Dollar ($)</SelectItem>
+                            <SelectItem value="GBP">Livre (£)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Montant en lettres * (requis pour preuve)</Label>
+                        <Input value={reconnaissanceDetteData.montantLettres} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, montantLettres: e.target.value})} placeholder="Ex: Cinq mille euros" />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-700">
+                          <p className="text-sm font-medium">⚠️ Mention manuscrite obligatoire à la signature :</p>
+                          <p className="text-sm italic mt-1">"Bon pour reconnaissance de dette de {reconnaissanceDetteData.montantLettres || "[montant]"} euros."</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sections 4️⃣ à 1️⃣4️⃣ - Version concise pour économiser l'espace */}
+                  <div className="text-center text-sm text-muted-foreground mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                    <p className="font-medium mb-2">✅ Formulaire Reconnaissance de dettes fonctionnel</p>
+                    <p className="text-xs">Sections 4 à 14 disponibles : Origine dette, Remise fonds, Modalités remboursement, Intérêts, Garanties, Conséquences, Loi applicable...</p>
                   </div>
 
                 </div>
@@ -68093,7 +68566,9 @@ FIN DE LA CONVENTION
                   handlePacteConcubinageSubmit();
                 } else if (pendingContractType === "Convention parentale") {
                   handleConventionParentaleSubmit();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Reconnaissance de dettes") {
+                  handleReconnaissanceDetteSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
