@@ -28110,7 +28110,7 @@ FIN DE LA CONVENTION
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ Mention manuscrite (générée automatiquement)</h3>
                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border space-y-4">
                       <p className="text-sm font-mono italic text-center">
-                        "Je soussigné(e) {mandatProtectionSousSeingData.mandantNom} {mandatProtectionSousSeingData.mandantPrenom}, établis le présent mandat de protection future et donne pouvoir à {mandatProtectionSousSeingData.mandataireNom} {mandatProtectionSousSeingData.mandatairePrenom} d'agir pour moi dans les conditions prévues ci-dessus."
+                        "Je soussigné(e), "NOM Prénom" établis le présent mandat de protection future et donne pouvoir à d'agir pour moi dans les conditions prévues ci-dessus."
                       </p>
                       <div className="pt-3 border-t">
                         <p className="text-sm font-semibold mb-2">⚠️ IMPORTANT - Mention obligatoire manuscrite</p>
