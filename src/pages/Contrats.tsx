@@ -9484,12 +9484,12 @@ export default function Contrats() {
 
       toast.success("Mandat de protection future créé avec succès");
 
-      setShowDialog(false);
-      setPendingContractType(null);
-      fetchContrats();
+      setShowQuestionDialog(false);
+      setPendingContractType("");
+      refreshContrats();
       
       // Réinitialiser le formulaire
-      setMandatProtectionData({
+      setMandatProtectionSousSeingData({
         mandantClientId: "", mandantNom: "", mandantPrenom: "", mandantDateNaissance: "", mandantLieuNaissance: "",
         mandantNationalite: "", mandantAdresse: "", mandantProfession: "", mandantSituationFamiliale: "",
         mandantCapaciteJuridique: "Pleine capacité", mandantTypeIdentite: "", mandantNumeroIdentite: "",
@@ -27450,7 +27450,7 @@ FIN DE LA CONVENTION
                         value={mandatProtectionSousSeingData.mandantClientId}
                         onClientSelect={(client) => {
                           if (client) {
-                            setMandatProtectionData({
+                            setMandatProtectionSousSeingData({
                               ...mandatProtectionSousSeingData,
                               mandantClientId: client.id,
                               mandantNom: client.nom || '',
@@ -27543,7 +27543,7 @@ FIN DE LA CONVENTION
                         value={mandatProtectionSousSeingData.mandataireClientId}
                         onClientSelect={(client) => {
                           if (client) {
-                            setMandatProtectionData({
+                            setMandatProtectionSousSeingData({
                               ...mandatProtectionSousSeingData,
                               mandataireClientId: client.id,
                               mandataireNom: client.nom || '',
