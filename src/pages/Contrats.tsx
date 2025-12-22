@@ -24490,30 +24490,39 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
-                              console.log('🔍 CLIENT CONCUBIN 1:', selectedClient);
-                              console.log('📋 etat_civil:', selectedClient.etat_civil);
-                              console.log('📋 situation_familiale:', selectedClient.situation_familiale);
+                              let situationFamiliale = "";
                               
-                              // Extraire situation familiale depuis etat_civil ou situation_familiale
-                              let situationFam = "";
-                              
-                              // 1. Essayer etat_civil en priorité (nouveau champ)
-                              if (selectedClient.etat_civil) {
-                                situationFam = selectedClient.etat_civil;
-                                console.log('✅ Trouvé dans etat_civil:', situationFam);
-                              }
-                              // 2. Sinon essayer situation_familiale.situation_familiale (ancien format)
-                              else if (selectedClient.situation_familiale && typeof selectedClient.situation_familiale === 'object') {
-                                situationFam = selectedClient.situation_familiale.situation_familiale || "";
-                                console.log('✅ Trouvé dans situation_familiale.situation_familiale:', situationFam);
-                              }
-                              // 3. Sinon essayer situation_matrimoniale.situation_familiale
-                              else if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
-                                situationFam = selectedClient.situation_matrimoniale.situation_familiale || "";
-                                console.log('✅ Trouvé dans situation_matrimoniale.situation_familiale:', situationFam);
+                              // Essayer d'abord situation_matrimoniale
+                              if (selectedClient.situation_matrimoniale) {
+                                if (typeof selectedClient.situation_matrimoniale === 'object') {
+                                  // Cas 1: Objet JSON dans situation_matrimoniale
+                                  situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                  
+                                  // Capitaliser
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
+                                } else if (typeof selectedClient.situation_matrimoniale === 'string') {
+                                  // Cas 2: Simple chaîne de texte
+                                  situationFamiliale = selectedClient.situation_matrimoniale;
+                                }
                               }
                               
-                              console.log('📤 Valeur finale situationFam:', situationFam);
+                              // Si pas trouvé, essayer situation_familiale
+                              if (!situationFamiliale && selectedClient.situation_familiale) {
+                                if (typeof selectedClient.situation_familiale === 'object') {
+                                  // Objet JSON dans situation_familiale
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || '';
+                                  
+                                  // Capitaliser
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
+                                } else if (typeof selectedClient.situation_familiale === 'string') {
+                                  // Simple chaîne
+                                  situationFamiliale = selectedClient.situation_familiale;
+                                }
+                              }
                               
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
@@ -24525,7 +24534,7 @@ FIN DE LA CONVENTION
                                 concubin1Nationalite: selectedClient.nationalite || "",
                                 concubin1Adresse: selectedClient.adresse || "",
                                 concubin1Profession: selectedClient.profession || "",
-                                concubin1SituationFamiliale: situationFam,
+                                concubin1SituationFamiliale: situationFamiliale,
                               });
                             }
                           }
@@ -24614,20 +24623,38 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
-                              // Extraire situation familiale depuis etat_civil ou situation_familiale
-                              let situationFam = "";
+                              let situationFamiliale = "";
                               
-                              // 1. Essayer etat_civil en priorité (nouveau champ)
-                              if (selectedClient.etat_civil) {
-                                situationFam = selectedClient.etat_civil;
+                              // Essayer d'abord situation_matrimoniale
+                              if (selectedClient.situation_matrimoniale) {
+                                if (typeof selectedClient.situation_matrimoniale === 'object') {
+                                  // Cas 1: Objet JSON dans situation_matrimoniale
+                                  situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                  
+                                  // Capitaliser
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
+                                } else if (typeof selectedClient.situation_matrimoniale === 'string') {
+                                  // Cas 2: Simple chaîne de texte
+                                  situationFamiliale = selectedClient.situation_matrimoniale;
+                                }
                               }
-                              // 2. Sinon essayer situation_familiale.situation_familiale (ancien format)
-                              else if (selectedClient.situation_familiale && typeof selectedClient.situation_familiale === 'object') {
-                                situationFam = selectedClient.situation_familiale.situation_familiale || "";
-                              }
-                              // 3. Sinon essayer situation_matrimoniale.situation_familiale
-                              else if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
-                                situationFam = selectedClient.situation_matrimoniale.situation_familiale || "";
+                              
+                              // Si pas trouvé, essayer situation_familiale
+                              if (!situationFamiliale && selectedClient.situation_familiale) {
+                                if (typeof selectedClient.situation_familiale === 'object') {
+                                  // Objet JSON dans situation_familiale
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || '';
+                                  
+                                  // Capitaliser
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
+                                } else if (typeof selectedClient.situation_familiale === 'string') {
+                                  // Simple chaîne
+                                  situationFamiliale = selectedClient.situation_familiale;
+                                }
                               }
                               
                               setPacteConcubinageData({
@@ -24640,7 +24667,7 @@ FIN DE LA CONVENTION
                                 concubin2Nationalite: selectedClient.nationalite || "",
                                 concubin2Adresse: selectedClient.adresse || "",
                                 concubin2Profession: selectedClient.profession || "",
-                                concubin2SituationFamiliale: situationFam,
+                                concubin2SituationFamiliale: situationFamiliale,
                               });
                             }
                           }
