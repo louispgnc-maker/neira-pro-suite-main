@@ -25979,7 +25979,31 @@ FIN DE LA CONVENTION
                     
                     {/* PARENT 1 */}
                     <div className="space-y-4">
-                      <h4 className="font-semibold">Parent 1</h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold">Parent 1</h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setConventionParentaleData({
+                              ...conventionParentaleData,
+                              parent1ClientId: "",
+                              parent1Nom: "",
+                              parent1Prenom: "",
+                              parent1DateNaissance: "",
+                              parent1LieuNaissance: "",
+                              parent1Nationalite: "",
+                              parent1Adresse: "",
+                              parent1Profession: "",
+                              parent1Telephone: "",
+                              parent1Email: "",
+                            });
+                          }}
+                        >
+                          Saisie manuelle
+                        </Button>
+                      </div>
                       
                       <ClientSelector
                         clients={clients}
@@ -26063,7 +26087,31 @@ FIN DE LA CONVENTION
 
                     {/* PARENT 2 */}
                     <div className="space-y-4">
-                      <h4 className="font-semibold">Parent 2</h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold">Parent 2</h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setConventionParentaleData({
+                              ...conventionParentaleData,
+                              parent2ClientId: "",
+                              parent2Nom: "",
+                              parent2Prenom: "",
+                              parent2DateNaissance: "",
+                              parent2LieuNaissance: "",
+                              parent2Nationalite: "",
+                              parent2Adresse: "",
+                              parent2Profession: "",
+                              parent2Telephone: "",
+                              parent2Email: "",
+                            });
+                          }}
+                        >
+                          Saisie manuelle
+                        </Button>
+                      </div>
                       
                       <ClientSelector
                         clients={clients}
@@ -26180,10 +26228,49 @@ FIN DE LA CONVENTION
                   {/* 2️⃣ IDENTITÉ DES ENFANTS */}
                   <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité de l'enfant / des enfants</h3>
-                    <div className="space-y-2">
-                      <Label>Nombre d'enfants</Label>
-                      <Input type="number" placeholder="Nombre d'enfants concernés" />
-                      <p className="text-sm text-muted-foreground">Pour chaque enfant : Nom, prénom, date naissance, établissement scolaire, situation médicale...</p>
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">Renseignez les informations de chaque enfant concerné par cette convention.</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom de l'enfant</Label>
+                          <Input placeholder="Nom" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom de l'enfant</Label>
+                          <Input placeholder="Prénom" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance</Label>
+                          <Input type="date" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de naissance</Label>
+                          <Input placeholder="Ville" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nationalité</Label>
+                          <Input placeholder="Française" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Numéro INE (si applicable)</Label>
+                          <Input placeholder="Identifiant national élève" />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Établissement scolaire</Label>
+                          <Input placeholder="Nom de l'école, collège ou lycée" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Classe actuelle</Label>
+                          <Input placeholder="Ex: CM2, 5ème" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Situation médicale particulière</Label>
+                          <Textarea rows={2} placeholder="Allergies, traitement, handicap..." />
+                        </div>
+                      </div>
+                      <Button type="button" variant="outline" size="sm" className="mt-2">
+                        + Ajouter un autre enfant
+                      </Button>
                     </div>
                   </div>
 
@@ -26213,6 +26300,10 @@ FIN DE LA CONVENTION
                           </Select>
                         </div>
                       )}
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Engagement intérêt supérieur de l'enfant</Label>
+                        <p className="text-sm text-muted-foreground">Les deux parents s'engagent à agir dans l'intérêt supérieur de l'enfant et à respecter ses besoins affectifs et matériels.</p>
+                      </div>
                     </div>
                   </div>
 
@@ -26322,8 +26413,36 @@ FIN DE LA CONVENTION
                         <Input type="number" value={conventionParentaleData.montantPension} onChange={(e) => setConventionParentaleData({...conventionParentaleData, montantPension: e.target.value})} placeholder="Ex: 300" />
                       </div>
                       <div className="space-y-2">
+                        <Label>Barème CAF utilisé</Label>
+                        <Select value={conventionParentaleData.baremeCafUtilise} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, baremeCafUtilise: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non (montant convenu librement)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Revenus Parent 1 (€/mois)</Label>
+                        <Input type="number" value={conventionParentaleData.revenusParent1} onChange={(e) => setConventionParentaleData({...conventionParentaleData, revenusParent1: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Revenus Parent 2 (€/mois)</Label>
+                        <Input type="number" value={conventionParentaleData.revenusParent2} onChange={(e) => setConventionParentaleData({...conventionParentaleData, revenusParent2: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
                         <Label>Jour de paiement</Label>
                         <Input type="number" min="1" max="31" value={conventionParentaleData.jourPaiement} onChange={(e) => setConventionParentaleData({...conventionParentaleData, jourPaiement: e.target.value})} placeholder="Ex: 5" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Mode de paiement</Label>
+                        <Select value={conventionParentaleData.modePaiement} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, modePaiement: value})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="virement">Virement bancaire</SelectItem>
+                            <SelectItem value="direct">Versement direct</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label>Indexation annuelle</Label>
@@ -26336,26 +26455,82 @@ FIN DE LA CONVENTION
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Répartition frais extraordinaires</Label>
-                        <Input value={conventionParentaleData.repartitionFrais} onChange={(e) => setConventionParentaleData({...conventionParentaleData, repartitionFrais: e.target.value})} placeholder="Ex: 50/50" />
+                        <Label>Frais médicaux</Label>
+                        <Input value={conventionParentaleData.fraisMedicaux} onChange={(e) => setConventionParentaleData({...conventionParentaleData, fraisMedicaux: e.target.value})} placeholder="Ex: Répartition 50/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Frais scolaires</Label>
+                        <Input value={conventionParentaleData.fraisScolaires} onChange={(e) => setConventionParentaleData({...conventionParentaleData, fraisScolaires: e.target.value})} placeholder="Ex: Répartition 50/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Frais périscolaires (cantine, garderie)</Label>
+                        <Input value={conventionParentaleData.fraisPeriscolaires} onChange={(e) => setConventionParentaleData({...conventionParentaleData, fraisPeriscolaires: e.target.value})} placeholder="Ex: Pris en charge par parent résidence" />
                       </div>
                     </div>
                   </div>
 
-                  {/* 8️⃣ à 1️⃣7️⃣ - Sections compactes */}
-                  <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <h3 className="font-semibold text-lg border-b pb-2">Sections complémentaires</h3>
+                  {/* 8️⃣ FRAIS EXTRAORDINAIRES */}
+                  <div className="space-y-4 p-4 bg-pink-50 dark:bg-pink-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Frais extraordinaires</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Définition des frais extraordinaires</Label>
+                        <Textarea value={conventionParentaleData.definitionFraisExtraordinaires} onChange={(e) => setConventionParentaleData({...conventionParentaleData, definitionFraisExtraordinaires: e.target.value})} rows={2} placeholder="Ex: Frais médicaux non remboursés > 100€, orthodontie, lunettes, activités exceptionnelles..." />
+                      </div>
                       <div className="space-y-2">
-                        <Label>8️⃣ Frais extraordinaires - Répartition</Label>
+                        <Label>Répartition</Label>
                         <Input value={conventionParentaleData.repartitionFraisExtra} onChange={(e) => setConventionParentaleData({...conventionParentaleData, repartitionFraisExtra: e.target.value})} placeholder="Ex: 50/50" />
                       </div>
                       <div className="space-y-2">
-                        <Label>9️⃣ Santé - Coordonnées pédiatre</Label>
-                        <Input value={conventionParentaleData.coordonneesPediatre} onChange={(e) => setConventionParentaleData({...conventionParentaleData, coordonneesPediatre: e.target.value})} />
+                        <Label>Accord préalable nécessaire</Label>
+                        <Select value={conventionParentaleData.accordPrealable} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, accordPrealable: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (sauf urgence)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>�� Communication - Mode</Label>
+                        <Label>Délai de paiement (jours)</Label>
+                        <Input type="number" value={conventionParentaleData.delaiPaiement} onChange={(e) => setConventionParentaleData({...conventionParentaleData, delaiPaiement: e.target.value})} placeholder="Ex: 30" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 9️⃣ SANTÉ ET ÉDUCATION */}
+                  <div className="space-y-4 p-4 bg-teal-50 dark:bg-teal-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Santé et éducation</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Coordonnées pédiatre/médecin traitant</Label>
+                        <Input value={conventionParentaleData.coordonneesPediatre} onChange={(e) => setConventionParentaleData({...conventionParentaleData, coordonneesPediatre: e.target.value})} placeholder="Nom, téléphone" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Suivi médical</Label>
+                        <Input value={conventionParentaleData.suiviMedical} onChange={(e) => setConventionParentaleData({...conventionParentaleData, suiviMedical: e.target.value})} placeholder="Ex: Traitement suivi, allergies" />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Décisions médicales importantes</Label>
+                        <Textarea value={conventionParentaleData.decisionsMedicalesImportantes} onChange={(e) => setConventionParentaleData({...conventionParentaleData, decisionsMedicalesImportantes: e.target.value})} rows={2} placeholder="Modalités de prise de décision pour interventions chirurgicales, vaccinations..." />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Établissement scolaire</Label>
+                        <Input value={conventionParentaleData.etablissementScolaire} onChange={(e) => setConventionParentaleData({...conventionParentaleData, etablissementScolaire: e.target.value})} placeholder="Nom de l'école" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Activités extra-scolaires</Label>
+                        <Input value={conventionParentaleData.activitesExtraScolaires} onChange={(e) => setConventionParentaleData({...conventionParentaleData, activitesExtraScolaires: e.target.value})} placeholder="Sport, musique..." />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* �� COMMUNICATION */}
+                  <div className="space-y-4 p-4 bg-cyan-50 dark:bg-cyan-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">�� Communication entre parents</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Mode de communication</Label>
                         <Select value={conventionParentaleData.modeCommunication} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, modeCommunication: value})}>
                           <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                           <SelectContent>
@@ -26366,8 +26541,86 @@ FIN DE LA CONVENTION
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>1️⃣1️⃣ Transports - Lieu d'échange</Label>
-                        <Input value={conventionParentaleData.lieuEchangeTransport} onChange={(e) => setConventionParentaleData({...conventionParentaleData, lieuEchangeTransport: e.target.value})} />
+                        <Label>Délais de réponse (heures)</Label>
+                        <Input type="number" value={conventionParentaleData.delaisReponse} onChange={(e) => setConventionParentaleData({...conventionParentaleData, delaisReponse: e.target.value})} placeholder="Ex: 48" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣1️⃣ TRANSPORTS */}
+                  <div className="space-y-4 p-4 bg-lime-50 dark:bg-lime-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Transports et déplacements</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Responsable transport aller</Label>
+                        <Select value={conventionParentaleData.responsableTransportAller} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, responsableTransportAller: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="parent1">Parent 1</SelectItem>
+                            <SelectItem value="parent2">Parent 2</SelectItem>
+                            <SelectItem value="partage">Partagé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Responsable transport retour</Label>
+                        <Select value={conventionParentaleData.responsableTransportRetour} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, responsableTransportRetour: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="parent1">Parent 1</SelectItem>
+                            <SelectItem value="parent2">Parent 2</SelectItem>
+                            <SelectItem value="partage">Partagé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Lieu d'échange</Label>
+                        <Input value={conventionParentaleData.lieuEchangeTransport} onChange={(e) => setConventionParentaleData({...conventionParentaleData, lieuEchangeTransport: e.target.value})} placeholder="Adresse précise" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Répartition coûts transport</Label>
+                        <Input value={conventionParentaleData.repartitionCoutsTransport} onChange={(e) => setConventionParentaleData({...conventionParentaleData, repartitionCoutsTransport: e.target.value})} placeholder="Ex: Chacun ses trajets" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Autorisation voyages hors France</Label>
+                        <Select value={conventionParentaleData.autorisationVoyageHorsFrance} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, autorisationVoyageHorsFrance: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (avec accord préalable)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣2️⃣ à 1️⃣5️⃣ - Sections compactes */}
+                  <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">Dispositions complémentaires</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>1️⃣2️⃣ Objets personnels - Gestion</Label>
+                        <Input value={conventionParentaleData.affairesChequeParent} onChange={(e) => setConventionParentaleData({...conventionParentaleData, affairesChequeParent: e.target.value})} placeholder="Ex: Chaque parent fournit affaires" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>1️⃣3️⃣ Relations famille élargie</Label>
+                        <Select value={conventionParentaleData.droitGrandsParents} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, droitGrandsParents: value})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Droit maintenu</SelectItem>
+                            <SelectItem value="non">Limité</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>1️⃣5️⃣ Recours médiation</Label>
+                        <Select value={conventionParentaleData.recoursMediation} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, recoursMediation: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, avant saisine JAF</SelectItem>
+                            <SelectItem value="non">Non obligatoire</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label>1️⃣6️⃣ Homologation JAF</Label>
