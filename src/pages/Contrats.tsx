@@ -27454,9 +27454,11 @@ FIN DE LA CONVENTION
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du Mandant</h3>
                     <div className="space-y-4">
                       <ClientSelector
+                        clients={clients}
                         label="Client (Mandant)"
                         value={mandatProtectionSousSeingData.mandantClientId}
-                        onClientSelect={(client) => {
+                        onClientChange={(clientId) => {
+                          const client = clients.find(c => c.id === clientId);
                           if (client) {
                             setMandatProtectionSousSeingData({
                               ...mandatProtectionSousSeingData,
@@ -27465,6 +27467,11 @@ FIN DE LA CONVENTION
                               mandantPrenom: client.prenom || '',
                               mandantDateNaissance: client.date_naissance || '',
                               mandantAdresse: client.adresse || '',
+                            });
+                          } else {
+                            setMandatProtectionSousSeingData({
+                              ...mandatProtectionSousSeingData,
+                              mandantClientId: '',
                             });
                           }
                         }}
@@ -27547,9 +27554,11 @@ FIN DE LA CONVENTION
                     <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identification du Mandataire</h3>
                     <div className="space-y-4">
                       <ClientSelector
+                        clients={clients}
                         label="Client (Mandataire)"
                         value={mandatProtectionSousSeingData.mandataireClientId}
-                        onClientSelect={(client) => {
+                        onClientChange={(clientId) => {
+                          const client = clients.find(c => c.id === clientId);
                           if (client) {
                             setMandatProtectionSousSeingData({
                               ...mandatProtectionSousSeingData,
@@ -27559,6 +27568,11 @@ FIN DE LA CONVENTION
                               mandataireAdresse: client.adresse || '',
                               mandataireTelephone: client.telephone || '',
                               mandataireEmail: client.email || '',
+                            });
+                          } else {
+                            setMandatProtectionSousSeingData({
+                              ...mandatProtectionSousSeingData,
+                              mandataireClientId: '',
                             });
                           }
                         }}
