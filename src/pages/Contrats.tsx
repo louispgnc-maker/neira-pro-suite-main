@@ -28108,16 +28108,16 @@ FIN DE LA CONVENTION
                   {/* 1️⃣5️⃣ MENTION MANUSCRITE */}
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border-2 border-blue-300 dark:border-blue-700">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ Mention manuscrite (générée automatiquement)</h3>
-                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
+                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border space-y-4">
                       <p className="text-sm font-mono italic text-center">
                         "Je soussigné(e) {mandatProtectionSousSeingData.mandantNom} {mandatProtectionSousSeingData.mandantPrenom}, établis le présent mandat de protection future et donne pouvoir à {mandatProtectionSousSeingData.mandataireNom} {mandatProtectionSousSeingData.mandatairePrenom} d'agir pour moi dans les conditions prévues ci-dessus."
                       </p>
-                    </div>
-                    <div className="bg-orange-50 dark:bg-orange-950 p-4 rounded-lg border-l-4 border-orange-500">
-                      <p className="text-sm font-semibold text-orange-800 dark:text-orange-200 mb-2">⚠️ IMPORTANT - Mention obligatoire manuscrite</p>
-                      <p className="text-xs text-orange-700 dark:text-orange-300">
-                        ✍️ Une fois le contrat rédigé, le mandant devra <span className="font-bold underline">obligatoirement recopier cette phrase entièrement à la main</span> sur le document final avant de le signer. Cette mention manuscrite est une exigence légale pour la validité du mandat de protection future sous seing privé.
-                      </p>
+                      <div className="pt-3 border-t">
+                        <p className="text-sm font-semibold mb-2">⚠️ IMPORTANT - Mention obligatoire manuscrite</p>
+                        <p className="text-xs text-muted-foreground">
+                          ✍️ Une fois le contrat rédigé, le mandant devra <span className="font-bold underline">obligatoirement recopier cette phrase entièrement à la main</span> sur le document final avant de le signer. Cette mention manuscrite est une exigence légale pour la validité du mandat de protection future sous seing privé.
+                        </p>
+                      </div>
                     </div>
                   </div>
 
