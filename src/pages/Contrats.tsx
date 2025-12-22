@@ -20454,11 +20454,6 @@ FIN DE LA CONVENTION
             {pendingContractType === "État des lieux (annexe)" && (
               <>
                 <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm font-medium text-blue-800">📋 État des lieux - Formulaire complet</p>
-                    <p className="text-xs text-blue-600 mt-1">Document obligatoire lors de l'entrée et la sortie du locataire</p>
-                  </div>
-
                   {/* 1️⃣ IDENTIFICATION DU DOCUMENT */}
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du document</h3>
