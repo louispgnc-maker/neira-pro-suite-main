@@ -24490,6 +24490,14 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
+                              // Extraire la situation familiale (peut être un objet ou une string)
+                              let situationFamiliale = "";
+                              if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                                situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                              } else if (typeof selectedClient.situation_familiale === 'string') {
+                                situationFamiliale = selectedClient.situation_familiale;
+                              }
+                              
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
                                 concubin1ClientId: value,
@@ -24500,7 +24508,7 @@ FIN DE LA CONVENTION
                                 concubin1Nationalite: selectedClient.nationalite || "",
                                 concubin1Adresse: selectedClient.adresse || "",
                                 concubin1Profession: selectedClient.profession || "",
-                                concubin1SituationFamiliale: selectedClient.situation_familiale || "",
+                                concubin1SituationFamiliale: situationFamiliale,
                               });
                             }
                           }
@@ -24589,6 +24597,14 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
+                              // Extraire la situation familiale (peut être un objet ou une string)
+                              let situationFamiliale = "";
+                              if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                                situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                              } else if (typeof selectedClient.situation_familiale === 'string') {
+                                situationFamiliale = selectedClient.situation_familiale;
+                              }
+                              
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
                                 concubin2ClientId: value,
@@ -24599,7 +24615,7 @@ FIN DE LA CONVENTION
                                 concubin2Nationalite: selectedClient.nationalite || "",
                                 concubin2Adresse: selectedClient.adresse || "",
                                 concubin2Profession: selectedClient.profession || "",
-                                concubin2SituationFamiliale: selectedClient.situation_familiale || "",
+                                concubin2SituationFamiliale: situationFamiliale,
                               });
                             }
                           }
