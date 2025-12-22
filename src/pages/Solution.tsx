@@ -94,7 +94,6 @@ export default function Solution() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
                 <div className="text-4xl font-bold text-blue-600 mb-2">39€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
-                <p className="text-sm text-gray-500 mt-2">Idéal pour avocats et notaires indépendants</p>
               </div>
               
               <div className="mb-4">
@@ -164,7 +163,6 @@ export default function Solution() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA PROFESSIONNEL</h3>
                 <div className="text-4xl font-bold text-purple-600 mb-2">59€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
-                <p className="text-sm text-gray-500 mt-2">Idéal pour cabinets de 2 à 10 utilisateurs</p>
               </div>
               
               <div className="mb-4">
@@ -220,7 +218,6 @@ export default function Solution() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
                 <div className="text-4xl font-bold text-orange-600 mb-2">89€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
-                <p className="text-sm text-gray-500 mt-2">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
               </div>
               
               <div className="mb-4">
