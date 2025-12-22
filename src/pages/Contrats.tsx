@@ -334,7 +334,7 @@ export default function Contrats() {
   const [pendingCategory, setPendingCategory] = useState<string>("");
   const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [genericDescription, setGenericDescription] = useState<string>("");
-  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string | {regime_matrimonial?: string, nombre_enfants?: string, personne_a_charge?: any}, type_identite?: string, numero_identite?: string, date_expiration_identite?: string, id_doc_path?: string}>>([]);
+  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string, adresse: string, telephone?: string, email?: string, date_naissance?: string, lieu_naissance?: string, nationalite?: string, profession?: string, situation_matrimoniale?: string, situation_familiale?: string | {regime_matrimonial?: string, nombre_enfants?: string, personne_a_charge?: any}, etat_civil?: string, type_identite?: string, numero_identite?: string, date_expiration_identite?: string, id_doc_path?: string}>>([]);
   
   // États séparés pour chaque partie des contrats
   const [prestationPrestataireClientId, setPrestationPrestataireClientId] = useState<string>("");
@@ -7928,7 +7928,7 @@ export default function Contrats() {
       if (!user) return;
       const { data, error } = await supabase
         .from('clients')
-        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession, situation_matrimoniale, situation_familiale, type_identite, numero_identite, date_expiration_identite, id_doc_path')
+        .select('id, nom, prenom, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession, situation_matrimoniale, situation_familiale, etat_civil, type_identite, numero_identite, date_expiration_identite, id_doc_path')
         .eq('owner_id', user.id)
         .eq('role', role)
         .order('nom', { ascending: true });
@@ -24490,6 +24490,22 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
+                              // Extraire situation familiale depuis etat_civil ou situation_familiale
+                              let situationFam = "";
+                              
+                              // 1. Essayer etat_civil en priorité (nouveau champ)
+                              if (selectedClient.etat_civil) {
+                                situationFam = selectedClient.etat_civil;
+                              }
+                              // 2. Sinon essayer situation_familiale.situation_familiale (ancien format)
+                              else if (selectedClient.situation_familiale && typeof selectedClient.situation_familiale === 'object') {
+                                situationFam = selectedClient.situation_familiale.situation_familiale || "";
+                              }
+                              // 3. Sinon essayer situation_matrimoniale.situation_familiale
+                              else if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
+                                situationFam = selectedClient.situation_matrimoniale.situation_familiale || "";
+                              }
+                              
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
                                 concubin1ClientId: value,
@@ -24500,7 +24516,7 @@ FIN DE LA CONVENTION
                                 concubin1Nationalite: selectedClient.nationalite || "",
                                 concubin1Adresse: selectedClient.adresse || "",
                                 concubin1Profession: selectedClient.profession || "",
-                                concubin1SituationFamiliale: "", // Champ à remplir manuellement
+                                concubin1SituationFamiliale: situationFam,
                               });
                             }
                           }
@@ -24589,6 +24605,22 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
+                              // Extraire situation familiale depuis etat_civil ou situation_familiale
+                              let situationFam = "";
+                              
+                              // 1. Essayer etat_civil en priorité (nouveau champ)
+                              if (selectedClient.etat_civil) {
+                                situationFam = selectedClient.etat_civil;
+                              }
+                              // 2. Sinon essayer situation_familiale.situation_familiale (ancien format)
+                              else if (selectedClient.situation_familiale && typeof selectedClient.situation_familiale === 'object') {
+                                situationFam = selectedClient.situation_familiale.situation_familiale || "";
+                              }
+                              // 3. Sinon essayer situation_matrimoniale.situation_familiale
+                              else if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
+                                situationFam = selectedClient.situation_matrimoniale.situation_familiale || "";
+                              }
+                              
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
                                 concubin2ClientId: value,
@@ -24599,7 +24631,7 @@ FIN DE LA CONVENTION
                                 concubin2Nationalite: selectedClient.nationalite || "",
                                 concubin2Adresse: selectedClient.adresse || "",
                                 concubin2Profession: selectedClient.profession || "",
-                                concubin2SituationFamiliale: "", // Champ à remplir manuellement
+                                concubin2SituationFamiliale: situationFam,
                               });
                             }
                           }
