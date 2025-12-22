@@ -24532,7 +24532,6 @@ FIN DE LA CONVENTION
                                 concubin1Nationalite: selectedClient.nationalite || "",
                                 concubin1Adresse: selectedClient.adresse || "",
                                 concubin1Profession: selectedClient.profession || "",
-                                concubin1SituationFamiliale: situationFamiliale,
                               });
                             }
                           }
@@ -24590,14 +24589,6 @@ FIN DE LA CONVENTION
                           <Input 
                             value={pacteConcubinageData.concubin1Adresse} 
                             onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1Adresse: e.target.value})} 
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Situation familiale</Label>
-                          <Input 
-                            value={pacteConcubinageData.concubin1SituationFamiliale} 
-                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1SituationFamiliale: e.target.value})}
-                            placeholder="Ex: Célibataire, Divorcé(e), Veuf/Veuve..."
                           />
                         </div>
                       </div>
@@ -24663,7 +24654,6 @@ FIN DE LA CONVENTION
                                 concubin2Nationalite: selectedClient.nationalite || "",
                                 concubin2Adresse: selectedClient.adresse || "",
                                 concubin2Profession: selectedClient.profession || "",
-                                concubin2SituationFamiliale: situationFamiliale,
                               });
                             }
                           }
@@ -24721,14 +24711,6 @@ FIN DE LA CONVENTION
                           <Input 
                             value={pacteConcubinageData.concubin2Adresse} 
                             onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2Adresse: e.target.value})} 
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Situation familiale</Label>
-                          <Input 
-                            value={pacteConcubinageData.concubin2SituationFamiliale} 
-                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2SituationFamiliale: e.target.value})}
-                            placeholder="Ex: Célibataire, Divorcé(e), Veuf/Veuve..."
                           />
                         </div>
                       </div>
