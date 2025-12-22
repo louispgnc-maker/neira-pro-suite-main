@@ -5707,243 +5707,117 @@ export default function Contrats() {
   
   // ========== ÉTAT DES LIEUX ==========
   const [etatLieuxData, setEtatLieuxData] = useState({
-    // ========== 1️⃣ IDENTIFICATION DU DOCUMENT ==========
-    typeEtatLieux: "", // "entree" ou "sortie"
+    // 1️⃣ IDENTIFICATION DU DOCUMENT
+    typeEtatLieux: "",
     adresseLogement: "",
     dateEtatLieux: "",
     heureEtatLieux: "",
-    
-    // Personne ayant réalisé
-    realisePar: "", // "bailleur", "locataire", "mandataire", "huissier"
-    
-    // Présence des parties
-    bailleurPresent: "", // oui / non
-    locatairePresent: "", // oui / non
+    realisePar: "",
+    bailleurPresent: "",
+    locatairePresent: "",
     temoinsRepresentants: "",
     
-    // ========== 2️⃣ IDENTITÉ DES PARTIES ==========
-    
-    // Bailleur
+    // 2️⃣ IDENTITÉ DES PARTIES
     bailleurNom: "",
     bailleurPrenom: "",
     bailleurAdresse: "",
     bailleurEmail: "",
     bailleurTelephone: "",
-    
-    // Locataire(s)
     locataireNom: "",
     locatairePrenom: "",
     locataireAdresse: "",
     locataireEmail: "",
     locataireTelephone: "",
-    
-    // Agence immobilière
-    agencePresente: "", // oui / non
+    agencePresente: "",
     agenceRaisonSociale: "",
     agenceCarteProf: "",
     agenceAdresse: "",
     agenceMandataireNom: "",
     agenceMandataireFonction: "",
     
-    // ========== 3️⃣ DESCRIPTION GÉNÉRALE DU LOGEMENT ==========
-    typeLogement: "", // studio, T1, T2, T3, T4, T5, maison, etc.
+    // 3️⃣ DESCRIPTION GÉNÉRALE DU LOGEMENT
+    typeLogement: "",
+    nombrePieces: "",
+    surfaceLogement: "",
     etage: "",
-    ascenseur: "", // oui / non
-    nombrePiecesPrincipales: "",
-    superficie: "",
-    orientation: "",
-    typeChauffage: "", // collectif / individuel
-    energieChauffage: "", // gaz, électricité, fioul, etc.
-    typeEauChaude: "", // chaudière, cumulus, etc.
-    detecteursFumee: "", // oui / non
-    ventilation: "", // oui / non (VMC)
+    ascenseur: "",
+    meuble: "",
+    typeChauffage: "",
+    eauChaude: "",
+    typeVentilation: "",
+    annexes: "",
+    observationsGenerales: "",
     
-    // ========== 4️⃣ RELEVÉS DES COMPTEURS ==========
+    // 4️⃣ RELEVÉS DE COMPTEURS
+    compteurEauFroide: "",
+    compteurEauChaude: "",
+    compteurElectricite: "",
+    compteurGaz: "",
+    compteurChauffage: "",
     
-    // Eau
-    eauNumeroCompteur: "",
-    eauIndex: "",
+    // 5️⃣ CLÉS REMISES
+    cles: [{type: '', quantite: '1', numero: ''}],
     
-    // Électricité
-    electriciteNumeroCompteur: "",
-    electriciteIndexHP: "",
-    electriciteIndexHC: "",
+    // 6️⃣ INVENTAIRE PIÈCE PAR PIÈCE
+    pieces: [{
+      nomPiece: '', surface: '',
+      solRevetement: '', solEtat: '', solObservations: '',
+      mursRevetement: '', mursEtat: '', mursObservations: '',
+      plafondsRevetement: '', plafondsEtat: '', plafondsObservations: '',
+      fenetresNombre: '', fenetresVitrage: '', fenetresEtat: '', fenetresVolets: '', fenetresObservations: '',
+      portesNombre: '', portesEtat: '', portesObservations: '',
+      eclairagePointsLumineux: '', eclairageInterrupteurs: '', eclairagePrises: '', eclairageEtat: '',
+      chauffageType: '', chauffageNombre: '', chauffageEtat: '',
+      cuisinePlaque: '', cuisineHotte: '', cuisineFour: '', cuisineFrigo: '', cuisineLaveVaisselle: '',
+      cuisineEvier: '', cuisineMeubles: '', cuisineObservations: '',
+      sdbBaignoire: '', sdbDouche: '', sdbLavabo: '', sdbMiroir: '', sdbMeubles: '', sdbEtat: '', sdbObservations: '',
+      wcType: '', wcEtat: '', wcLaveMains: '', wcObservations: '',
+      rangementsPlacards: '', rangementsEtat: '',
+      observationsGenerales: ''
+    }],
     
-    // Gaz
-    gazNumeroCompteur: "",
-    gazIndex: "",
+    // 7️⃣ INVENTAIRE MOBILIER
+    meubles: [{categorie: '', description: '', quantite: '1', etat: ''}],
     
-    // Chauffage collectif
-    chauffageCollectif: "", // oui / non
-    chauffageCalorimetres: "",
+    // 8️⃣ ANOMALIES ET DÉGRADATIONS
+    anomalies: [{localisation: '', type: '', gravite: '', description: ''}],
     
-    // ========== 5️⃣ CLÉS REMISES ==========
-    cles: [] as {
-      id: number;
-      type: string; // porte entrée, boite aux lettres, cave, garage, etc.
-      nombre: string;
-      numero: string;
-    }[],
-    badges: "",
+    // 9️⃣ OBSERVATIONS DES PARTIES
+    observationsBailleur: "",
+    observationsLocataire: "",
+    reserves: "",
     
-    // ========== 6️⃣ PIÈCES PAR PIÈCE — TABLEAU DÉTAILLÉ ==========
-    pieces: [] as {
-      id: number;
-      nom: string; // Entrée, Salon, Cuisine, Chambre 1, etc.
-      
-      // Sols
-      solType: string; // carrelage, parquet, moquette, lino
-      solEtat: string; // bon, moyen, mauvais
-      solProprete: string; // propre, à nettoyer
-      solCommentaire: string;
-      
-      // Murs
-      murType: string; // peinture, papier peint
-      murEtat: string;
-      murProprete: string;
-      murCommentaire: string; // traces, trous, impacts, humidité, moisissures
-      
-      // Plafond
-      plafondEtat: string;
-      plafondCommentaire: string; // fissures, auréoles
-      
-      // Fenêtres / Volets
-      fenetresMatériau: string; // PVC, bois, alu
-      fenetresFonctionnement: string; // bon, à réparer
-      fenetresEtancheite: string; // bon, mauvais
-      fenetresSerrures: string; // bon, défectueuses
-      fenetresOccultation: string; // volets, stores, rideaux
-      
-      // Portes
-      portesEtat: string;
-      portesSerrure: string;
-      portesPoignees: string;
-      
-      // Éclairage
-      eclairageAppliques: string;
-      eclairageDouilles: string;
-      eclairageFonctionnement: string;
-      
-      // Chauffage
-      chauffageRadiateurs: string;
-      chauffageThermostats: string;
-      chauffageFonctionnement: string;
-      
-      // Équipements cuisine (si applicable)
-      cuisineEvier: string;
-      cuisineMeublesHauts: string;
-      cuisineMeublesBas: string;
-      cuisineHotte: string;
-      cuisinePlaquesCuisson: string;
-      cuisineFour: string;
-      cuisineRefriger: string;
-      cuisinePlanTravail: string;
-      
-      // Salle de bain (si applicable)
-      sdbLavabo: string;
-      sdbVasque: string;
-      sdbRobinetterie: string;
-      sdbDouche: string;
-      sdbBaignoire: string;
-      sdbEtancheite: string;
-      sdbJointSilicone: string;
-      sdbMiroirs: string;
-      sdbVentilation: string;
-      
-      // Toilettes (si applicable)
-      wcCuvette: string;
-      wcReservoir: string;
-      wcAbattant: string;
-      wcVentilation: string;
-      
-      // Rangements
-      rangementsPortes: string;
-      rangementsInterieur: string;
-      
-      // Photos
-      photos: string; // Liste de chemins ou URLs
-      remarquesGenerales: string;
-    }[],
+    // 🔟 PHOTOS ET ANNEXES
+    nombrePhotos: "",
+    nombreAnnexes: "",
     
-    // ========== 7️⃣ ÉTAT DES MEUBLES (POUR MEUBLÉ) ==========
-    logementMeuble: "", // oui / non
-    meubles: [] as {
-      id: number;
-      categorie: string; // lit, table, chaises, etc.
-      description: string;
-      etat: string;
-      marque: string;
-      modele: string;
-      fonctionnement: string;
-      photos: string;
-    }[],
+    // 1️⃣1️⃣ COMPARATIF ENTRÉE/SORTIE
+    degradations: [{element: '', etatEntree: '', etatSortie: '', responsabilite: '', coutEstime: ''}],
     
-    // ========== 8️⃣ ANOMALIES / DÉGRADATIONS ==========
-    anomaliesEntree: [] as {
-      id: number;
-      piece: string;
-      description: string;
-      photo: string;
-    }[],
-    
-    degradationsSortie: [] as {
-      id: number;
-      piece: string;
-      description: string;
-      estimation: string;
-      origine: string; // vétusté, usage normal, dégradation
-      photo: string;
-    }[],
-    
-    grilleVetuste: "", // oui / non
-    
-    // ========== 9️⃣ OBSERVATIONS DES PARTIES ==========
-    remarquesBailleur: "",
-    remarquesLocataire: "",
-    desaccords: "",
-    pointsACorriger: "",
-    propositionsTravaux: "",
-    
-    // ========== 🔟 PHOTOS & ANNEXES ==========
-    photosGenerales: "",
-    photosDegradations: "",
-    planLogement: "",
-    listeMeubles: "",
-    facturesReparations: "",
-    
-    // ========== 1️⃣1️⃣ COMPARATIF ENTRÉE / SORTIE ==========
-    comparatif: [] as {
-      id: number;
-      element: string;
-      etatEntree: string;
-      etatSortie: string;
-      degradation: string; // oui / non
-      justification: string;
-      indemnite: string;
-    }[],
-    
-    // ========== 1️⃣2️⃣ RÉCAPITULATIF FINANCIER (SORTIE) ==========
+    // 1️⃣2️⃣ RÉCAPITULATIF FINANCIER
     depotGarantieVerse: "",
-    totalDegradations: "",
-    totalReparationsLocatives: "",
-    resteDuLocataire: "",
-    sommeConserveeBailleur: "",
-    delaiRestitution: "", // 1 mois ou 2 mois selon meublé/non meublé
+    totalReparations: "",
+    montantRestitue: "",
+    montantRetenu: "",
+    modalitesRestitution: "",
     
-    // ========== 1️⃣3️⃣ SIGNATURES ==========
-    signatureBailleur: "", // oui / non
-    signatureLocataire: "", // oui / non
-    signatureHuissier: "", // oui / non
-    signatureElectronique: "", // oui / non (YouSign)
+    // 1️⃣3️⃣ SIGNATURES
+    signatureBailleur: "",
+    signatureLocataire: "",
+    signatureAgence: "",
+    nombreExemplaires: "2",
+    observationsSignatures: ""
   });
   
   // États fichiers pour état des lieux
-  const [etatLieuxPhotosFiles, setEtatLieuxPhotosFiles] = useState<File[]>([]);
-  const [etatLieuxDegradationsFiles, setEtatLieuxDegradationsFiles] = useState<File[]>([]);
-  const [etatLieuxPlanFiles, setEtatLieuxPlanFiles] = useState<File[]>([]);
-  const [etatLieuxFacturesFiles, setEtatLieuxFacturesFiles] = useState<File[]>([]);
-  const [etatLieuxBailFiles, setEtatLieuxBailFiles] = useState<File[]>([]);
-  const [etatLieuxEntreeFiles, setEtatLieuxEntreeFiles] = useState<File[]>([]);
+  const [etatLieuxPhotosLogement, setEtatLieuxPhotosLogement] = useState<File[]>([]);
+  const [etatLieuxPhotosCompteurs, setEtatLieuxPhotosCompteurs] = useState<File[]>([]);
+  const [etatLieuxPlanLogement, setEtatLieuxPlanLogement] = useState<File[]>([]);
+  const [etatLieuxDiagnostics, setEtatLieuxDiagnostics] = useState<File[]>([]);
+  const [etatLieuxContratLocation, setEtatLieuxContratLocation] = useState<File[]>([]);
+  const [etatLieuxEntreeReference, setEtatLieuxEntreeReference] = useState<File[]>([]);
+  const [etatLieuxDevisReparation, setEtatLieuxDevisReparation] = useState<File[]>([]);
+  const [etatLieuxAutresDocuments, setEtatLieuxAutresDocuments] = useState<File[]>([]);
   const [etatLieuxInventaireFiles, setEtatLieuxInventaireFiles] = useState<File[]>([]);
   const [etatLieuxVetusteFiles, setEtatLieuxVetusteFiles] = useState<File[]>([]);
   
@@ -8697,7 +8571,6 @@ export default function Contrats() {
           category: pendingCategory,
           description: description,
           client_id: franchiseClientId || null,
-          description: description,
           contenu_json: franchiseData
         })
         .select()
