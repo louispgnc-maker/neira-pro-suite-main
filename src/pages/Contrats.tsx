@@ -5861,6 +5861,150 @@ export default function Contrats() {
   const [etatLieuxInventaireFiles, setEtatLieuxInventaireFiles] = useState<File[]>([]);
   const [etatLieuxVetusteFiles, setEtatLieuxVetusteFiles] = useState<File[]>([]);
   
+  // État pour Mise en demeure
+  const [miseEnDemeureData, setMiseEnDemeureData] = useState({
+    // 1️⃣ IDENTIFICATION DU DESTINATAIRE (LOCATAIRE OU DÉFAILLANT)
+    destinataireClientId: "",
+    destinataireNom: "",
+    destinatairePrenom: "",
+    destinataireAdresse: "",
+    destinataireEmail: "",
+    destinataireTelephone: "",
+    destinataireStatut: "", // "locataire" / "commercant_societe" / "garant"
+    // Si société
+    destinataireDenomination: "",
+    destinataireFormeJuridique: "",
+    destinataireSiren: "",
+    destinataireRcs: "",
+    destinataireRepresentantNom: "",
+    destinataireRepresentantPrenom: "",
+    
+    // 2️⃣ IDENTIFICATION DE L'ÉMETTEUR (BAILLEUR / PROPRIÉTAIRE)
+    emetteurClientId: "",
+    emetteurNom: "",
+    emetteurPrenom: "",
+    emetteurDenomination: "",
+    emetteurAdresse: "",
+    emetteurEmail: "",
+    emetteurTelephone: "",
+    emetteurRepresentantNom: "",
+    emetteurRepresentantPrenom: "",
+    emetteurMandataire: "", // "oui" / "non"
+    mandataireNom: "",
+    mandataireType: "", // "agence" / "administrateur"
+    mandataireAdresse: "",
+    
+    // 3️⃣ RAPPEL DU CONTRAT
+    typeBail: "", // "vide" / "meuble" / "commercial"
+    dateSignature: "",
+    adresseBien: "",
+    referenceContrat: "",
+    dureeBail: "",
+    montantLoyer: "",
+    montantCharges: "",
+    modalitesPaiement: "",
+    clauseResolutoire: "", // "oui" / "non"
+    garantieCaution: "", // "oui" / "non"
+    
+    // 4️⃣ TYPE DE MANQUEMENT
+    manquements: [] as string[], // Array de manquements sélectionnés
+    
+    // A. Impayés de loyers
+    impayesLoyers: [{
+      mois: '',
+      montantLoyer: '',
+      montantCharges: '',
+      montantTotal: '',
+      retardsCumules: '',
+      penalites: ''
+    }],
+    
+    // B. Charges impayées
+    chargesImpayees: "",
+    montantChargesDetails: "",
+    regularisationAnnuelleNonReglee: "",
+    
+    // C. Travaux non réalisés
+    travauxDescription: "",
+    reparationsNonEffectuees: "",
+    degradationsConstatees: "",
+    travauxUrgentsNecessaires: "",
+    
+    // D. Troubles du voisinage
+    troublesTypes: [] as string[], // "bruits" / "odeurs" / "degradations_communes" / "animaux"
+    troublesDescription: "",
+    
+    // E. Absence d'assurance
+    absenceAssurance: "",
+    dateResiliationAssurance: "",
+    
+    // F. Sous-location interdite
+    sousLocationDescription: "",
+    sousLocationAirbnb: "",
+    
+    // G. Occupation irrégulière
+    occupationIrreguliereDescription: "",
+    activiteNonAutorisee: "",
+    transformationLogement: "",
+    stockageDangereux: "",
+    
+    // H. Non-paiement dépôt de garantie
+    depotGarantieImpaye: "",
+    
+    // 5️⃣ RAPPEL LÉGAL (généré automatiquement selon type de bail)
+    // Géré automatiquement dans le template
+    
+    // 6️⃣ MONTANT TOTAL RÉCLAMÉ
+    arriereLoy: "",
+    arriereCharges: "",
+    provisionsDues: "",
+    interetsRetard: "",
+    tauxInterets: "",
+    fraisAnnexes: "",
+    totalDu: "",
+    
+    // 7️⃣ DÉLAI IMPARTI
+    delaiType: "", // "8_jours" / "30_jours" / "contractuel" / "libre"
+    delaiJours: "",
+    delaiContractuel: "",
+    
+    // 8️⃣ CONSÉQUENCES EN CAS D'INACTION
+    consequences: [] as string[], // Array de conséquences
+    
+    // 9️⃣ FORME D'ENVOI
+    formeEnvoi: "", // "lrar" / "huissier" / "electronique" / "double_garant"
+    envoiGarant: "", // "oui" / "non"
+    
+    // 🔟 PIÈCES ANNEXÉES (fichiers)
+    // Géré par des états séparés pour les fichiers
+    
+    // 1️⃣1️⃣ COORDONNÉES POUR RÈGLEMENT
+    iban: "",
+    adresseReglement: "",
+    modalitesAcceptees: "",
+    echelancierAutorise: "", // "oui" / "non"
+    conditionsEchelancier: "",
+    
+    // 1️⃣2️⃣ CLAUSE DE TOLÉRANCE
+    clauseToleranceActive: "oui",
+    clauseToleranceTexte: "La présente mise en demeure ne vaut pas renonciation aux droits du bailleur. Toute tolérance est ponctuelle et ne crée aucun droit pour l'avenir.",
+    
+    // 1️⃣3️⃣ SIGNATURES
+    signatureBailleur: "",
+    signatureElectronique: "", // "oui" / "non"
+    tamponProfessionnel: ""
+  });
+  
+  // États fichiers pour mise en demeure
+  const [medCopieBail, setMedCopieBail] = useState<File[]>([]);
+  const [medHistoriqueLoyers, setMedHistoriqueLoyers] = useState<File[]>([]);
+  const [medReleves, setMedReleves] = useState<File[]>([]);
+  const [medNotificationsPrecedentes, setMedNotificationsPrecedentes] = useState<File[]>([]);
+  const [medAttestationAssurance, setMedAttestationAssurance] = useState<File[]>([]);
+  const [medPhotos, setMedPhotos] = useState<File[]>([]);
+  const [medRapportHuissier, setMedRapportHuissier] = useState<File[]>([]);
+  const [medTableauCalcul, setMedTableauCalcul] = useState<File[]>([]);
+  
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
     typeContrat: "", // "compromis" ou "promesse_unilaterale"
@@ -8398,6 +8542,85 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création état des lieux:', err);
+      toast.error('Erreur lors de la création');
+    }
+  };
+
+  // Handler pour le formulaire Mise en demeure
+  const handleMiseEnDemeureSubmit = async () => {
+    if (!user) return;
+
+    // Validation des champs obligatoires
+    if (!miseEnDemeureData.destinataireNom || !miseEnDemeureData.destinataireAdresse ||
+        !miseEnDemeureData.emetteurNom || !miseEnDemeureData.emetteurAdresse ||
+        !miseEnDemeureData.typeBail || !miseEnDemeureData.adresseBien ||
+        miseEnDemeureData.manquements.length === 0 || !miseEnDemeureData.totalDu ||
+        !miseEnDemeureData.delaiType || !miseEnDemeureData.formeEnvoi) {
+      toast.error("Champs obligatoires manquants", { 
+        description: "Vérifiez destinataire, émetteur, type de bail, manquements, montant, délai et mode d'envoi" 
+      });
+      return;
+    }
+
+    try {
+      const description = `Mise en demeure - ${miseEnDemeureData.destinataireNom} - ${miseEnDemeureData.adresseBien}`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: miseEnDemeureData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers
+      for (const file of medCopieBail) {
+        const filePath = `${user.id}/${data.id}/copie_bail/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of medHistoriqueLoyers) {
+        const filePath = `${user.id}/${data.id}/historique_loyers/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of medReleves) {
+        const filePath = `${user.id}/${data.id}/releves/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of medNotificationsPrecedentes) {
+        const filePath = `${user.id}/${data.id}/notifications_precedentes/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of medAttestationAssurance) {
+        const filePath = `${user.id}/${data.id}/attestation_assurance/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of medPhotos) {
+        const filePath = `${user.id}/${data.id}/photos/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of medRapportHuissier) {
+        const filePath = `${user.id}/${data.id}/rapport_huissier/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of medTableauCalcul) {
+        const filePath = `${user.id}/${data.id}/tableau_calcul/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+
+      toast.success("Mise en demeure créée");
+      setShowQuestionDialog(false);
+      setPendingContractType("");
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création mise en demeure:', err);
       toast.error('Erreur lors de la création');
     }
   };
@@ -23171,6 +23394,903 @@ FIN DE LA CONVENTION
                       )}
                     </div>
                   </div>
+                </div>
+              </>
+            )}
+
+            {/* ========== FORMULAIRE MISE EN DEMEURE ========== */}
+            {pendingContractType === "Mise en demeure de payer le loyer / autres obligations" && (
+              <>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
+                  
+                  {/* 1️⃣ IDENTIFICATION DU DESTINATAIRE */}
+                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du destinataire (locataire ou défaillant)</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Statut du destinataire *</Label>
+                      <Select 
+                        value={miseEnDemeureData.destinataireStatut} 
+                        onValueChange={(value) => setMiseEnDemeureData({...miseEnDemeureData, destinataireStatut: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="locataire">Locataire (personne physique)</SelectItem>
+                          <SelectItem value="commercant_societe">Commerçant / Société</SelectItem>
+                          <SelectItem value="garant">Garant</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={miseEnDemeureData.destinataireClientId}
+                      onClientChange={(value) => {
+                        if (value === '') {
+                          setMiseEnDemeureData({
+                            ...miseEnDemeureData,
+                            destinataireClientId: "",
+                            destinataireNom: "",
+                            destinatairePrenom: "",
+                            destinataireAdresse: "",
+                            destinataireEmail: "",
+                            destinataireTelephone: "",
+                          });
+                        } else {
+                          const selectedClient = clients.find(c => c.id === value) as any;
+                          if (selectedClient) {
+                            setMiseEnDemeureData({
+                              ...miseEnDemeureData,
+                              destinataireClientId: value,
+                              destinataireNom: selectedClient.nom || "",
+                              destinatairePrenom: selectedClient.prenom || "",
+                              destinataireAdresse: selectedClient.adresse || "",
+                              destinataireEmail: selectedClient.email || "",
+                              destinataireTelephone: selectedClient.telephone || "",
+                            });
+                          }
+                        }
+                      }}
+                      label="Sélectionner le client destinataire"
+                      placeholder="Choisir un client"
+                    />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {miseEnDemeureData.destinataireStatut !== "commercant_societe" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Nom *</Label>
+                            <Input 
+                              value={miseEnDemeureData.destinataireNom} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireNom: e.target.value})} 
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Prénom *</Label>
+                            <Input 
+                              value={miseEnDemeureData.destinatairePrenom} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinatairePrenom: e.target.value})} 
+                            />
+                          </div>
+                        </>
+                      )}
+                      
+                      {miseEnDemeureData.destinataireStatut === "commercant_societe" && (
+                        <>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Dénomination sociale *</Label>
+                            <Input 
+                              value={miseEnDemeureData.destinataireDenomination} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireDenomination: e.target.value})} 
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Forme juridique</Label>
+                            <Input 
+                              value={miseEnDemeureData.destinataireFormeJuridique} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireFormeJuridique: e.target.value})} 
+                              placeholder="Ex: SARL, SAS..."
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>SIREN</Label>
+                            <Input 
+                              value={miseEnDemeureData.destinataireSiren} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireSiren: e.target.value})} 
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>RCS</Label>
+                            <Input 
+                              value={miseEnDemeureData.destinataireRcs} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireRcs: e.target.value})} 
+                              placeholder="Ex: RCS Paris 123 456 789"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Représentant légal - Nom</Label>
+                            <Input 
+                              value={miseEnDemeureData.destinataireRepresentantNom} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireRepresentantNom: e.target.value})} 
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Représentant légal - Prénom</Label>
+                            <Input 
+                              value={miseEnDemeureData.destinataireRepresentantPrenom} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireRepresentantPrenom: e.target.value})} 
+                            />
+                          </div>
+                        </>
+                      )}
+                      
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse complète *</Label>
+                        <Input 
+                          value={miseEnDemeureData.destinataireAdresse} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireAdresse: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input 
+                          type="email"
+                          value={miseEnDemeureData.destinataireEmail} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireEmail: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input 
+                          value={miseEnDemeureData.destinataireTelephone} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, destinataireTelephone: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2️⃣ IDENTIFICATION DE L'ÉMETTEUR */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identification de l'émetteur (bailleur / propriétaire)</h3>
+                    
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={miseEnDemeureData.emetteurClientId}
+                      onClientChange={(value) => {
+                        if (value === '') {
+                          setMiseEnDemeureData({
+                            ...miseEnDemeureData,
+                            emetteurClientId: "",
+                            emetteurNom: "",
+                            emetteurPrenom: "",
+                            emetteurDenomination: "",
+                            emetteurAdresse: "",
+                            emetteurEmail: "",
+                            emetteurTelephone: "",
+                          });
+                        } else {
+                          const selectedClient = clients.find(c => c.id === value) as any;
+                          if (selectedClient) {
+                            setMiseEnDemeureData({
+                              ...miseEnDemeureData,
+                              emetteurClientId: value,
+                              emetteurNom: selectedClient.nom || "",
+                              emetteurPrenom: selectedClient.prenom || "",
+                              emetteurAdresse: selectedClient.adresse || "",
+                              emetteurEmail: selectedClient.email || "",
+                              emetteurTelephone: selectedClient.telephone || "",
+                            });
+                          }
+                        }
+                      }}
+                      label="Sélectionner le client émetteur (bailleur)"
+                      placeholder="Choisir un client"
+                    />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom *</Label>
+                        <Input 
+                          value={miseEnDemeureData.emetteurNom} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, emetteurNom: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Prénom *</Label>
+                        <Input 
+                          value={miseEnDemeureData.emetteurPrenom} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, emetteurPrenom: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Dénomination sociale (si société)</Label>
+                        <Input 
+                          value={miseEnDemeureData.emetteurDenomination} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, emetteurDenomination: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Représentant légal (si société)</Label>
+                        <Input 
+                          value={miseEnDemeureData.emetteurRepresentantNom} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, emetteurRepresentantNom: e.target.value})} 
+                          placeholder="Nom Prénom"
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse *</Label>
+                        <Input 
+                          value={miseEnDemeureData.emetteurAdresse} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, emetteurAdresse: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input 
+                          type="email"
+                          value={miseEnDemeureData.emetteurEmail} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, emetteurEmail: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input 
+                          value={miseEnDemeureData.emetteurTelephone} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, emetteurTelephone: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 mt-4 pt-4 border-t">
+                      <Label>Mandataire (agence / administrateur de biens)</Label>
+                      <Select 
+                        value={miseEnDemeureData.emetteurMandataire} 
+                        onValueChange={(value) => setMiseEnDemeureData({...miseEnDemeureData, emetteurMandataire: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="non">Non</SelectItem>
+                          <SelectItem value="oui">Oui</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {miseEnDemeureData.emetteurMandataire === "oui" && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Nom du mandataire *</Label>
+                            <Input 
+                              value={miseEnDemeureData.mandataireNom} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, mandataireNom: e.target.value})} 
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Type</Label>
+                            <Select 
+                              value={miseEnDemeureData.mandataireType} 
+                              onValueChange={(value) => setMiseEnDemeureData({...miseEnDemeureData, mandataireType: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="agence">Agence immobilière</SelectItem>
+                                <SelectItem value="administrateur">Administrateur de biens</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse du mandataire</Label>
+                            <Input 
+                              value={miseEnDemeureData.mandataireAdresse} 
+                              onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, mandataireAdresse: e.target.value})} 
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 3️⃣ RAPPEL DU CONTRAT DE BAIL */}
+                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Rappel du contrat de bail</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de bail *</Label>
+                        <Select 
+                          value={miseEnDemeureData.typeBail} 
+                          onValueChange={(value) => setMiseEnDemeureData({...miseEnDemeureData, typeBail: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="habitation_vide">Bail d'habitation (vide)</SelectItem>
+                            <SelectItem value="habitation_meuble">Bail d'habitation (meublé)</SelectItem>
+                            <SelectItem value="commercial">Bail commercial</SelectItem>
+                            <SelectItem value="professionnel">Bail professionnel</SelectItem>
+                            <SelectItem value="rural">Bail rural</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de signature du bail *</Label>
+                        <Input 
+                          type="date"
+                          value={miseEnDemeureData.dateSignature} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, dateSignature: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Durée du bail</Label>
+                        <Input 
+                          value={miseEnDemeureData.dureeBail} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, dureeBail: e.target.value})} 
+                          placeholder="Ex: 3 ans, 9 ans..."
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse du bien loué *</Label>
+                        <Input 
+                          value={miseEnDemeureData.adresseBien} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, adresseBien: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Montant du loyer mensuel (€) *</Label>
+                        <Input 
+                          type="number"
+                          step="0.01"
+                          value={miseEnDemeureData.montantLoyer} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, montantLoyer: e.target.value})} 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Montant des charges mensuelles (€)</Label>
+                        <Input 
+                          type="number"
+                          step="0.01"
+                          value={miseEnDemeureData.montantCharges} 
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, montantCharges: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4️⃣ MANQUEMENTS CONSTATÉS */}
+                  <div className="space-y-4 p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Manquements constatés *</h3>
+                    <p className="text-sm text-muted-foreground">Sélectionnez un ou plusieurs manquements reprochés au locataire :</p>
+                    
+                    <div className="space-y-3">
+                      {[
+                        { value: "impayesLoyers", label: "Impayés de loyers" },
+                        { value: "impayesCharges", label: "Impayés de charges" },
+                        { value: "defautAssurance", label: "Défaut d'assurance habitation" },
+                        { value: "troublesVoisinage", label: "Troubles de voisinage" },
+                        { value: "defautEntretien", label: "Défaut d'entretien courant" },
+                        { value: "travauxNonAutorises", label: "Travaux non autorisés" },
+                        { value: "sousLocation", label: "Sous-location non autorisée" },
+                        { value: "degradations", label: "Dégradations" },
+                        { value: "nonRespectUsage", label: "Non-respect de l'usage du bien" },
+                        { value: "autre", label: "Autre manquement" },
+                      ].map(manquement => (
+                        <div key={manquement.value} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`manquement-${manquement.value}`}
+                            checked={miseEnDemeureData.manquements.includes(manquement.value)}
+                            onChange={(e) => {
+                              const updated = e.target.checked
+                                ? [...miseEnDemeureData.manquements, manquement.value]
+                                : miseEnDemeureData.manquements.filter(m => m !== manquement.value);
+                              setMiseEnDemeureData({...miseEnDemeureData, manquements: updated});
+                            }}
+                            className="h-4 w-4"
+                          />
+                          <label htmlFor={`manquement-${manquement.value}`} className="text-sm cursor-pointer">
+                            {manquement.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Détails des impayés de loyers */}
+                    {miseEnDemeureData.manquements.includes("impayesLoyers") && (
+                      <div className="space-y-4 mt-4 p-4 bg-white dark:bg-slate-900 rounded border">
+                        <h4 className="font-semibold">Détail des loyers impayés</h4>
+                        {miseEnDemeureData.impayesLoyers.map((impaye, index) => (
+                          <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                            <div className="space-y-2">
+                              <Label>Mois *</Label>
+                              <Input 
+                                type="month"
+                                value={impaye.mois} 
+                                onChange={(e) => {
+                                  const updated = [...miseEnDemeureData.impayesLoyers];
+                                  updated[index].mois = e.target.value;
+                                  setMiseEnDemeureData({...miseEnDemeureData, impayesLoyers: updated});
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Montant loyer (€) *</Label>
+                              <Input 
+                                type="number"
+                                step="0.01"
+                                value={impaye.montantLoyer} 
+                                onChange={(e) => {
+                                  const updated = [...miseEnDemeureData.impayesLoyers];
+                                  updated[index].montantLoyer = e.target.value;
+                                  setMiseEnDemeureData({...miseEnDemeureData, impayesLoyers: updated});
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Charges (€)</Label>
+                              <Input 
+                                type="number"
+                                step="0.01"
+                                value={impaye.montantCharges} 
+                                onChange={(e) => {
+                                  const updated = [...miseEnDemeureData.impayesLoyers];
+                                  updated[index].montantCharges = e.target.value;
+                                  setMiseEnDemeureData({...miseEnDemeureData, impayesLoyers: updated});
+                                }}
+                              />
+                            </div>
+                            <div className="flex items-end">
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => {
+                                  const updated = miseEnDemeureData.impayesLoyers.filter((_, i) => i !== index);
+                                  setMiseEnDemeureData({...miseEnDemeureData, impayesLoyers: updated});
+                                }}
+                              >
+                                Supprimer
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setMiseEnDemeureData({
+                              ...miseEnDemeureData,
+                              impayesLoyers: [...miseEnDemeureData.impayesLoyers, { mois: "", montantLoyer: "", montantCharges: "", montantTotal: "", retardsCumules: "", penalites: "" }]
+                            });
+                          }}
+                        >
+                          + Ajouter un mois impayé
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Autres manquements avec champ de détail */}
+                    {(miseEnDemeureData.manquements.includes("troublesVoisinage") ||
+                      miseEnDemeureData.manquements.includes("defautEntretien") ||
+                      miseEnDemeureData.manquements.includes("travauxNonAutorises") ||
+                      miseEnDemeureData.manquements.includes("sousLocation") ||
+                      miseEnDemeureData.manquements.includes("degradations") ||
+                      miseEnDemeureData.manquements.includes("autre")) && (
+                      <div className="space-y-2 mt-4">
+                        <Label>Description détaillée des manquements</Label>
+                        <Textarea
+                          value={miseEnDemeureData.descriptionManquements}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, descriptionManquements: e.target.value})}
+                          placeholder="Décrivez précisément les manquements constatés, les dates, les témoignages..."
+                          rows={5}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 5️⃣ BASES JURIDIQUES */}
+                  <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Bases juridiques (générées automatiquement)</h3>
+                    <div className="p-3 bg-white dark:bg-slate-900 rounded border text-sm">
+                      {miseEnDemeureData.typeBail === "habitation_vide" && (
+                        <p>
+                          <strong>Fondements légaux :</strong><br />
+                          • Loi n° 89-462 du 6 juillet 1989 (article 7 : clause résolutoire)<br />
+                          • Article 1728 du Code civil (paiement du loyer)<br />
+                          • Décret n° 87-713 du 26 août 1987 (procédure de résiliation)
+                        </p>
+                      )}
+                      {miseEnDemeureData.typeBail === "habitation_meuble" && (
+                        <p>
+                          <strong>Fondements légaux :</strong><br />
+                          • Loi n° 89-462 du 6 juillet 1989 (article 25-8 : meublé)<br />
+                          • Article 1728 du Code civil (paiement du loyer)<br />
+                          • Décret n° 2015-981 du 31 juillet 2015
+                        </p>
+                      )}
+                      {miseEnDemeureData.typeBail === "commercial" && (
+                        <p>
+                          <strong>Fondements légaux :</strong><br />
+                          • Code de commerce (articles L145-1 et suivants)<br />
+                          • Article 1728 du Code civil (paiement du loyer)<br />
+                          • Clause résolutoire contractuelle
+                        </p>
+                      )}
+                      {!miseEnDemeureData.typeBail && (
+                        <p className="text-muted-foreground italic">
+                          Les références juridiques s'afficheront une fois le type de bail sélectionné.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 6️⃣ MONTANT TOTAL RÉCLAMÉ */}
+                  <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Montant total réclamé</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Arriéré de loyers (€)</Label>
+                        <Input 
+                          type="number"
+                          step="0.01"
+                          value={miseEnDemeureData.arriereLoy}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, arriereLoy: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Arriéré de charges (€)</Label>
+                        <Input 
+                          type="number"
+                          step="0.01"
+                          value={miseEnDemeureData.arriereCharges}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, arriereCharges: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Intérêts de retard (€)</Label>
+                        <Input 
+                          type="number"
+                          step="0.01"
+                          value={miseEnDemeureData.interetsRetard}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, interetsRetard: e.target.value})}
+                        />
+                        <p className="text-xs text-muted-foreground">Selon le taux légal ou conventionnel</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Pénalités / frais (€)</Label>
+                        <Input 
+                          type="number"
+                          step="0.01"
+                          value={miseEnDemeureData.fraisAnnexes}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, fraisAnnexes: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label className="font-bold text-lg">TOTAL (€) *</Label>
+                        <Input 
+                          type="number"
+                          step="0.01"
+                          value={miseEnDemeureData.totalDu}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, totalDu: e.target.value})}
+                          className="font-bold text-lg"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7️⃣ DÉLAI ACCORDÉ */}
+                  <div className="space-y-4 p-4 bg-pink-50 dark:bg-pink-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Délai accordé pour régulariser *</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Type de délai *</Label>
+                      <Select 
+                        value={miseEnDemeureData.delaiType} 
+                        onValueChange={(value) => setMiseEnDemeureData({...miseEnDemeureData, delaiType: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="8_jours">8 jours (clause résolutoire)</SelectItem>
+                          <SelectItem value="30_jours">30 jours (usage courant)</SelectItem>
+                          <SelectItem value="contractuel">Selon clause contractuelle</SelectItem>
+                          <SelectItem value="libre">Délai personnalisé</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {miseEnDemeureData.delaiType === "libre" && (
+                      <div className="space-y-2">
+                        <Label>Nombre de jours *</Label>
+                        <Input 
+                          type="number"
+                          value={miseEnDemeureData.delaiJours}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, delaiJours: e.target.value})}
+                        />
+                      </div>
+                    )}
+
+                    {miseEnDemeureData.delaiType === "contractuel" && (
+                      <div className="space-y-2">
+                        <Label>Précision clause contractuelle</Label>
+                        <Input 
+                          value={miseEnDemeureData.delaiContractuel}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, delaiContractuel: e.target.value})}
+                          placeholder="Ex: Délai prévu à l'article 12 du bail..."
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 8️⃣ CONSÉQUENCES EN CAS DE NON-RÉGULARISATION */}
+                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Conséquences en cas de non-régularisation</h3>
+                    <p className="text-sm text-muted-foreground">Sélectionnez les conséquences qui seront mentionnées :</p>
+                    
+                    <div className="space-y-3">
+                      {[
+                        { value: "resiliation", label: "Résiliation du bail" },
+                        { value: "expulsion", label: "Procédure d'expulsion" },
+                        { value: "actionJustice", label: "Action en justice pour recouvrement" },
+                        { value: "clauseResolutoire", label: "Acquisition de la clause résolutoire" },
+                        { value: "commandementQuitter", label: "Délivrance d'un commandement de quitter les lieux" },
+                        { value: "interetsRetard", label: "Intérêts de retard majorés" },
+                        { value: "fraisProcedure", label: "Frais de procédure à votre charge" },
+                      ].map(consequence => (
+                        <div key={consequence.value} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`consequence-${consequence.value}`}
+                            checked={miseEnDemeureData.consequences.includes(consequence.value)}
+                            onChange={(e) => {
+                              const updated = e.target.checked
+                                ? [...miseEnDemeureData.consequences, consequence.value]
+                                : miseEnDemeureData.consequences.filter(c => c !== consequence.value);
+                              setMiseEnDemeureData({...miseEnDemeureData, consequences: updated});
+                            }}
+                            className="h-4 w-4"
+                          />
+                          <label htmlFor={`consequence-${consequence.value}`} className="text-sm cursor-pointer">
+                            {consequence.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 9️⃣ FORME D'ENVOI */}
+                  <div className="space-y-4 p-4 bg-teal-50 dark:bg-teal-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Forme d'envoi de la mise en demeure *</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Mode d'envoi *</Label>
+                      <Select 
+                        value={miseEnDemeureData.formeEnvoi} 
+                        onValueChange={(value) => setMiseEnDemeureData({...miseEnDemeureData, formeEnvoi: value})}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="lrar">Lettre recommandée avec accusé de réception (LRAR)</SelectItem>
+                          <SelectItem value="huissier">Signification par huissier de justice</SelectItem>
+                          <SelectItem value="electronique">Envoi électronique recommandé</SelectItem>
+                          <SelectItem value="double_garant">Envoi double (locataire + garant)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {(miseEnDemeureData.formeEnvoi === "double_garant" || miseEnDemeureData.destinataireStatut === "garant") && (
+                      <div className="space-y-2">
+                        <Label>Envoi également au garant</Label>
+                        <Select 
+                          value={miseEnDemeureData.envoiGarant} 
+                          onValueChange={(value) => setMiseEnDemeureData({...miseEnDemeureData, envoiGarant: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 🔟 PIÈCES JUSTIFICATIVES JOINTES */}
+                  <div className="space-y-4 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Pièces justificatives jointes</h3>
+                    <p className="text-sm text-muted-foreground">Joignez les documents prouvant vos allégations :</p>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Copie du bail</Label>
+                        <MultiFileUpload
+                          files={medCopieBail}
+                          setFiles={setMedCopieBail}
+                          label=""
+                        />
+                      </div>
+
+                      {miseEnDemeureData.manquements.includes("impayesLoyers") && (
+                        <>
+                          <div>
+                            <Label>Historique des loyers et paiements</Label>
+                            <MultiFileUpload
+                              files={medHistoriqueLoyers}
+                              setFiles={setMedHistoriqueLoyers}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Relevés bancaires / chèques impayés</Label>
+                            <MultiFileUpload
+                              files={medReleves}
+                              setFiles={setMedReleves}
+                              label=""
+                            />
+                          </div>
+                          <div>
+                            <Label>Tableau de calcul des impayés</Label>
+                            <MultiFileUpload
+                              files={medTableauCalcul}
+                              setFiles={setMedTableauCalcul}
+                              label=""
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      <div>
+                        <Label>Mises en demeure précédentes (le cas échéant)</Label>
+                        <MultiFileUpload
+                          files={medNotificationsPrecedentes}
+                          setFiles={setMedNotificationsPrecedentes}
+                          label=""
+                        />
+                      </div>
+
+                      {miseEnDemeureData.manquements.includes("defautAssurance") && (
+                        <div>
+                          <Label>Attestation d'assurance non fournie</Label>
+                          <MultiFileUpload
+                            files={medAttestationAssurance}
+                            setFiles={setMedAttestationAssurance}
+                            label=""
+                          />
+                        </div>
+                      )}
+
+                      {(miseEnDemeureData.manquements.includes("degradations") || 
+                        miseEnDemeureData.manquements.includes("defautEntretien")) && (
+                        <div>
+                          <Label>Photos des dégradations / manque d'entretien</Label>
+                          <MultiFileUpload
+                            files={medPhotos}
+                            setFiles={setMedPhotos}
+                            label=""
+                          />
+                        </div>
+                      )}
+
+                      {miseEnDemeureData.manquements.includes("troublesVoisinage") && (
+                        <div>
+                          <Label>Rapport d'huissier / constat</Label>
+                          <MultiFileUpload
+                            files={medRapportHuissier}
+                            setFiles={setMedRapportHuissier}
+                            label=""
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 1️⃣1️⃣ COORDONNÉES DE RÈGLEMENT */}
+                  <div className="space-y-4 p-4 bg-cyan-50 dark:bg-cyan-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Coordonnées de règlement</h3>
+                    <p className="text-sm text-muted-foreground">Indiquez comment le locataire peut régulariser sa situation :</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>IBAN *</Label>
+                        <Input 
+                          value={miseEnDemeureData.iban}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, iban: e.target.value})}
+                          placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX"
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse pour le règlement</Label>
+                        <Input 
+                          value={miseEnDemeureData.adresseReglement}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, adresseReglement: e.target.value})}
+                          placeholder="Adresse où envoyer le paiement"
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Modalités de paiement acceptées</Label>
+                        <Textarea
+                          value={miseEnDemeureData.modalitesAcceptees}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, modalitesAcceptees: e.target.value})}
+                          placeholder="Ex: Virement bancaire, chèque, espèces (si montant < 1000€)..."
+                          rows={3}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Échelancement autorisé ?</Label>
+                        <Select 
+                          value={miseEnDemeureData.echelancierAutorise} 
+                          onValueChange={(value) => setMiseEnDemeureData({...miseEnDemeureData, echelancierAutorise: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {miseEnDemeureData.echelancierAutorise === "oui" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Conditions de l'échelancement</Label>
+                          <Textarea
+                            value={miseEnDemeureData.conditionsEchelancier}
+                            onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, conditionsEchelancier: e.target.value})}
+                            placeholder="Ex: 3 versements mensuels, premier versement immédiat..."
+                            rows={2}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 1️⃣2️⃣ CLAUSE DE TOLÉRANCE */}
+                  <div className="space-y-4 p-4 bg-lime-50 dark:bg-lime-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ Clause de tolérance (facultatif)</h3>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="clause-tolerance"
+                        checked={miseEnDemeureData.clauseToleranceActive === "oui"}
+                        onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, clauseToleranceActive: e.target.checked ? "oui" : "non"})}
+                        className="h-4 w-4"
+                      />
+                      <label htmlFor="clause-tolerance" className="text-sm cursor-pointer">
+                        Inclure une clause de tolérance
+                      </label>
+                    </div>
+
+                    {miseEnDemeureData.clauseToleranceActive === "oui" && (
+                      <div className="space-y-2">
+                        <Label>Texte de la clause de tolérance</Label>
+                        <Textarea
+                          value={miseEnDemeureData.clauseToleranceTexte}
+                          onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, clauseToleranceTexte: e.target.value})}
+                          placeholder="Ex: La présente mise en demeure ne constitue pas une renonciation aux droits du bailleur et n'emporte aucune tolérance pour l'avenir..."
+                          rows={4}
+                        />
+                        <p className="text-xs text-muted-foreground italic">
+                          Cette clause rappelle que les manquements passés ne seront pas tolérés à l'avenir.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 1️⃣3️⃣ SIGNATURES */}
+                  <div className="space-y-4 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Signature du bailleur</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Nom du signataire (bailleur ou mandataire) *</Label>
+                      <Input 
+                        value={miseEnDemeureData.signatureBailleur}
+                        onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, signatureBailleur: e.target.value})}
+                        placeholder="Nom Prénom du signataire"
+                      />
+                    </div>
+
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded text-sm">
+                      ℹ️ La signature sera apposée lors de la génération du document PDF final.
+                    </div>
+                  </div>
+
+                  {/* À SUIVRE - Les sections finales seront ajoutées */}
+                  
                 </div>
               </>
             )}
@@ -65262,7 +66382,9 @@ FIN DE LA CONVENTION
                   handleCreatePolitiqueRGPDContract();
                 } else if (pendingContractType === "État des lieux (annexe)") {
                   handleEtatLieuxSubmit();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Mise en demeure de payer le loyer / autres obligations") {
+                  handleMiseEnDemeureSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
