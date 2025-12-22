@@ -24490,41 +24490,31 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
-                              console.log('🔍 CONCUBIN 1 - Client:', selectedClient);
-                              console.log('🔍 CONCUBIN 1 - situation_matrimoniale:', selectedClient.situation_matrimoniale);
-                              console.log('🔍 CONCUBIN 1 - situation_familiale:', selectedClient.situation_familiale);
-                              
-                              // Extraire la situation familiale
                               let situationFamiliale = "";
                               
                               // Essayer d'abord situation_matrimoniale
                               if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
                                   situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  console.log('🔍 CONCUBIN 1 - Extrait de situation_matrimoniale (objet):', situationFamiliale);
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   situationFamiliale = selectedClient.situation_matrimoniale;
-                                  console.log('🔍 CONCUBIN 1 - Extrait de situation_matrimoniale (string):', situationFamiliale);
                                 }
                               }
                               
                               // Si pas trouvé, essayer situation_familiale
                               if (!situationFamiliale && selectedClient.situation_familiale) {
-                                if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
-                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
-                                  console.log('🔍 CONCUBIN 1 - Extrait de situation_familiale (objet):', situationFamiliale);
+                                if (typeof selectedClient.situation_familiale === 'object') {
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || '';
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
                                 } else if (typeof selectedClient.situation_familiale === 'string') {
                                   situationFamiliale = selectedClient.situation_familiale;
-                                  console.log('🔍 CONCUBIN 1 - Extrait de situation_familiale (string):', situationFamiliale);
                                 }
                               }
-                              
-                              // Capitaliser
-                              if (situationFamiliale) {
-                                situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
-                              }
-                              
-                              console.log('🔍 CONCUBIN 1 - Situation finale:', situationFamiliale);
                               
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
@@ -24625,41 +24615,31 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
-                              console.log('🔍 CONCUBIN 2 - Client:', selectedClient);
-                              console.log('🔍 CONCUBIN 2 - situation_matrimoniale:', selectedClient.situation_matrimoniale);
-                              console.log('🔍 CONCUBIN 2 - situation_familiale:', selectedClient.situation_familiale);
-                              
-                              // Extraire la situation familiale
                               let situationFamiliale = "";
                               
                               // Essayer d'abord situation_matrimoniale
                               if (selectedClient.situation_matrimoniale) {
                                 if (typeof selectedClient.situation_matrimoniale === 'object') {
                                   situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
-                                  console.log('🔍 CONCUBIN 2 - Extrait de situation_matrimoniale (objet):', situationFamiliale);
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
                                 } else if (typeof selectedClient.situation_matrimoniale === 'string') {
                                   situationFamiliale = selectedClient.situation_matrimoniale;
-                                  console.log('🔍 CONCUBIN 2 - Extrait de situation_matrimoniale (string):', situationFamiliale);
                                 }
                               }
                               
                               // Si pas trouvé, essayer situation_familiale
                               if (!situationFamiliale && selectedClient.situation_familiale) {
-                                if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
-                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
-                                  console.log('🔍 CONCUBIN 2 - Extrait de situation_familiale (objet):', situationFamiliale);
+                                if (typeof selectedClient.situation_familiale === 'object') {
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || '';
+                                  if (situationFamiliale) {
+                                    situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
+                                  }
                                 } else if (typeof selectedClient.situation_familiale === 'string') {
                                   situationFamiliale = selectedClient.situation_familiale;
-                                  console.log('🔍 CONCUBIN 2 - Extrait de situation_familiale (string):', situationFamiliale);
                                 }
                               }
-                              
-                              // Capitaliser
-                              if (situationFamiliale) {
-                                situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
-                              }
-                              
-                              console.log('🔍 CONCUBIN 2 - Situation finale:', situationFamiliale);
                               
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
