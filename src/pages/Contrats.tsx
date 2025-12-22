@@ -17203,6 +17203,7 @@ FIN DE LA CONVENTION
                   {/* Sélection du type de bail */}
                   <div className="space-y-4 bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
                     <h3 className="font-semibold text-lg">📋 Type de bail *</h3>
+                    <p className="text-sm text-muted-foreground">Commencez par sélectionner le type de bail pour accéder au formulaire complet</p>
                     <div className="space-y-2">
                       <RadioGroup 
                         value={bailCommercialData.typeBail} 
