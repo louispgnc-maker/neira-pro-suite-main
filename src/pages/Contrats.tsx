@@ -16436,7 +16436,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Colocation */}
-                  <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h4 className="font-medium">Colocation</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -16595,7 +16595,7 @@ FIN DE LA CONVENTION
 
                   {/* Entretien jardin */}
                   {bailHabitationData.dependances.includes("Jardin") && (
-                    <div className="space-y-2 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                       <Label>Entretien du jardin à la charge de</Label>
                       <Select 
                         value={bailHabitationData.entretienJardin} 
@@ -16644,8 +16644,8 @@ FIN DE LA CONVENTION
                         )}
 
                         {/* Inventaire du mobilier */}
-                        <div className="md:col-span-2 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg space-y-3">
-                          <h4 className="font-medium text-orange-800 dark:text-orange-200">📋 Inventaire complet du mobilier (OBLIGATOIRE LÉGALEMENT)</h4>
+                        <div className="md:col-span-2 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg space-y-3">
+                          <h4 className="font-medium text-blue-800 dark:text-blue-200">📋 Inventaire complet du mobilier (OBLIGATOIRE LÉGALEMENT)</h4>
                           <div className="space-y-2">
                             <Label>Description détaillée pièce par pièce *</Label>
                             <Textarea 
@@ -16899,7 +16899,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Mode de paiement */}
-                  <div className="p-4 bg-emerald-50 dark:bg-emerald-950 rounded-lg space-y-4">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg space-y-4">
                     <h4 className="font-medium">Mode de paiement du loyer</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -16930,7 +16930,7 @@ FIN DE LA CONVENTION
 
                   {/* Régularisation des charges */}
                   {bailHabitationData.typeCharges === "provision" && (
-                    <div className="space-y-2 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg">
+                    <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                       <Label>Périodicité de régularisation des charges</Label>
                       <Select 
                         value={bailHabitationData.periodiciteRegularisationCharges} 
