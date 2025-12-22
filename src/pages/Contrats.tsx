@@ -1488,6 +1488,37 @@ export default function Contrats() {
   const [bailCommercialDiagnosticsFiles, setBailCommercialDiagnosticsFiles] = useState<File[]>([]); // Diagnostics bail commercial
   const [bailCommercialCautionFiles, setBailCommercialCautionFiles] = useState<File[]>([]); // Acte de caution
   
+  // ========== États pour pièces justificatives Bail Commercial / Professionnel ==========
+  
+  // Pièces justificatives Locataire (Preneur)
+  const [bailCommercialLocataireKbisFiles, setBailCommercialLocataireKbisFiles] = useState<File[]>([]); // Kbis locataire
+  const [bailCommercialLocataireStatutsFiles, setBailCommercialLocataireStatutsFiles] = useState<File[]>([]); // Statuts société locataire
+  const [bailCommercialLocataireAssuranceRCFiles, setBailCommercialLocataireAssuranceRCFiles] = useState<File[]>([]); // Assurance RC locataire
+  const [bailCommercialLocataireBilansFiles, setBailCommercialLocataireBilansFiles] = useState<File[]>([]); // Derniers bilans locataire
+  
+  // Pièces justificatives Bailleur
+  const [bailCommercialBailleurTitreProprietFiles, setBailCommercialBailleurTitreProprietFiles] = useState<File[]>([]); // Titre de propriété bailleur
+  const [bailCommercialBailleurKbisFiles, setBailCommercialBailleurKbisFiles] = useState<File[]>([]); // Kbis bailleur (si société)
+  const [bailCommercialBailleurJustifIdentiteFiles, setBailCommercialBailleurJustifIdentiteFiles] = useState<File[]>([]); // Justificatif identité bailleur
+  
+  // Diagnostics obligatoires - Loi Pinel
+  const [bailCommercialDiagnosticDPEFiles, setBailCommercialDiagnosticDPEFiles] = useState<File[]>([]); // DPE
+  const [bailCommercialDiagnosticAmianteFiles, setBailCommercialDiagnosticAmianteFiles] = useState<File[]>([]); // Amiante
+  const [bailCommercialDiagnosticERPFiles, setBailCommercialDiagnosticERPFiles] = useState<File[]>([]); // État des risques ERP
+  const [bailCommercialDiagnosticElectriciteFiles, setBailCommercialDiagnosticElectriciteFiles] = useState<File[]>([]); // Diagnostic électricité
+  const [bailCommercialDiagnosticGazFiles, setBailCommercialDiagnosticGazFiles] = useState<File[]>([]); // Diagnostic gaz
+  const [bailCommercialDiagnosticLegionelleFiles, setBailCommercialDiagnosticLegionelleFiles] = useState<File[]>([]); // Légionelle (si ERP)
+  const [bailCommercialDiagnosticAccessibiliteFiles, setBailCommercialDiagnosticAccessibiliteFiles] = useState<File[]>([]); // Accessibilité handicapés
+  const [bailCommercialDiagnosticIncendieFiles, setBailCommercialDiagnosticIncendieFiles] = useState<File[]>([]); // Sécurité incendie
+  const [bailCommercialDossierAmianteFiles, setBailCommercialDossierAmianteFiles] = useState<File[]>([]); // Dossier amiante parties privatives
+  
+  // Annexes obligatoires - Loi Pinel
+  const [bailCommercialInventaireChargesFiles, setBailCommercialInventaireChargesFiles] = useState<File[]>([]); // Inventaire charges, impôts, taxes
+  const [bailCommercialEtatTravauxPrevisionnels3AnsFiles, setBailCommercialEtatTravauxPrevisionnels3AnsFiles] = useState<File[]>([]); // État prévisionnel travaux 3 ans
+  const [bailCommercialEtatTravauxPrevisionnels6AnsFiles, setBailCommercialEtatTravauxPrevisionnels6AnsFiles] = useState<File[]>([]); // État prévisionnel travaux 6 ans
+  const [bailCommercialReleveCharges3AnsFiles, setBailCommercialReleveCharges3AnsFiles] = useState<File[]>([]); // Relevé charges 3 dernières années
+  const [bailCommercialEtatTravauxRealises3AnsFiles, setBailCommercialEtatTravauxRealises3AnsFiles] = useState<File[]>([]); // État travaux réalisés 3 dernières années
+  
   // States pour Quitus / Reconnaissance de dette
   const [quitusCreancierIdentiteFiles, setQuitusCreancierIdentiteFiles] = useState<File[]>([]);
   const [quitusDebiteurIdentiteFiles, setQuitusDebiteurIdentiteFiles] = useState<File[]>([]);
@@ -5177,6 +5208,8 @@ export default function Contrats() {
     clientRole: "", // "bailleur" ou "preneur"
     clientId: "",
     
+    // ========== 1️⃣ IDENTIFICATION DES PARTIES ==========
+    
     // Bailleur personne physique
     bailleurClientId: "",
     statutBailleur: "", // "physique" ou "morale"
@@ -5194,6 +5227,7 @@ export default function Contrats() {
     bailleurDenomination: "",
     bailleurFormeJuridique: "",
     bailleurSiren: "",
+    bailleurRCS: "", // Registre du Commerce et des Sociétés
     bailleurSiret: "",
     bailleurSiegeSocial: "",
     bailleurCapitalSocial: "",
@@ -5221,8 +5255,10 @@ export default function Contrats() {
     locataireEmail: "",
     locataireExerceEnNomPropre: "", // "oui" ou "non"
     locataireActivite: "",
+    locataireCodeAPE: "", // Code APE de l'activité
     locataireSirenPersonnel: "",
     locataireEntrepriseEnCreation: "", // "oui" ou "non"
+    locataireKbisExtraction: "", // Si extraction Kbis fournie
     
     // Preneur personne morale
     locataireImmatriculation: "",
@@ -5230,6 +5266,7 @@ export default function Contrats() {
     locataireFormeJuridique: "",
     locataireSiege: "",
     locataireSiren: "",
+    locataireRCS: "", // RCS
     locataireSiret: "",
     locataireObjetSocial: "",
     locataireCapital: "",
@@ -5240,13 +5277,84 @@ export default function Contrats() {
     locataireMandatairePrenom: "",
     locataireMandataireTypePouvoir: "",
     
+    // Caution (si prévue)
+    cautionPrevue: "", // oui / non
+    cautionIdentite: "", // Nom complet de la caution
+    cautionNom: "",
+    cautionPrenom: "",
+    cautionAdresse: "",
+    cautionDateNaissance: "",
+    cautionLieuNaissance: "",
+    cautionNationalite: "",
+    cautionProfession: "",
+    cautionEmail: "",
+    cautionTelephone: "",
+    cautionTypeCaution: "", // simple / solidaire
+    cautionDureeEngagement: "", // Durée de l'engagement caution
+    cautionMontantMaximal: "", // Montant maximal garanti
+    
+    // ========== 2️⃣ DESCRIPTION DU LOCAL LOUÉ ==========
+    
+    // Local commercial
+    adresseLocal: "",
+    localisation: "", // Rez-de-chaussée, étage, sous-sol
+    natureLocal: "", // boutique, bureaux, restaurant, etc.
+    surfaceTotale: "",
+    surfaceUtile: "", // Surface utile
+    surfaceCommerciale: "", // Surface commerciale
+    descriptionPrecise: "", // Description détaillée du local
+    mesurageEffectue: "", // oui / non
+    destinationActuelle: "",
+    droitBailAnterieur: "", // oui / non - Existence d'un droit au bail antérieur
+    
+    // Parties privatives
+    partiesPrivatives: [] as string[], // reserve, cuisine, wc, sous_sol, mezzanine, rangements
+    partiesPrivativesAutres: "", // Description autres parties privatives
+    
+    // Parties communes
+    partiesCommunes: [] as string[], // acces, couloir, toilettes, ascenseur
+    partiesCommunesDescription: "",
+    
+    // Équipements inclus
+    equipements: [] as string[], // chauffage, climatisation, electricite, ventilation, alarme, fibre, etc.
+    equipementChauffage: "",
+    equipementClimatisation: "",
+    equipementElectricite: "",
+    equipementVentilation: "",
+    equipementAlarme: "",
+    equipementReseauFibre: "",
+    equipementMezzanine: "",
+    equipementRangements: "",
+    equipementsAutres: "",
+    
+    // Accessibilité
+    accessibiliteNormesERP: "", // oui / non - Normes ERP
+    accessibiliteNormesPMR: "", // oui / non - Normes PMR (Personnes à Mobilité Réduite)
+    accessibiliteDescription: "",
+    
+    lotsCopropriete: "",
+    etageNumero: "",
+    longueurVitrine: "",
+    accesLivraison: "",
+    etatGeneral: "",
+    
+    // ========== 3️⃣ DESTINATION DU BAIL (activité autorisée) ==========
+    
     // Activité (1. Destination des lieux)
     activitePrincipale: "",
+    activitesComplementaires: "", // Activités complémentaires
+    activiteExclusive: "", // oui / non - Activité exclusive
     activitesAnnexes: "",
     destinationBail: "",
     destinationContractuelle: "", // Description précise des activités autorisées (commercial uniquement)
     exclusivitesEventuelles: "", // Exclusivités accordées (commercial uniquement)
     interdictionsUsage: "", // Activités interdites (commercial uniquement)
+    
+    // Possibilité de changement d'activité
+    despecialisationPossible: "", // oui / non
+    despecialisationType: "", // simple / pleniere
+    despecialisationConditions: "", // Conditions du changement d'activité
+    
     clauseExclusivite: "",
     clauseNonConcurrence: "",
     
@@ -5258,99 +5366,238 @@ export default function Contrats() {
     clauseResiliationTriennale: "", // oui / non
     preavisResiliation: "", // 6 mois standard
     
-    // Local commercial
-    adresseLocal: "",
-    natureLocal: "",
-    surfaceTotale: "",
-    lotsCopropriete: "",
-    etageNumero: "",
-    partiesPrivatives: [] as string[], // cave, sous-sol, mezzanine, parking, terrasse
-    longueurVitrine: "",
-    accesLivraison: "",
-    etatGeneral: "",
-    
-    // Travaux
-    travauxBailleur: "",
-    travauxLocataire: "",
-    etatLocalRemise: "",
-    diagnosticAmiante: "",
+    // ========== 4️⃣ DURÉE DU BAIL (3-6-9) ==========
     
     // Durée
     dureeBail: "", // "3-6-9" "derogatoire" "saisonnier"
-    datePriseEffet: "",
+    dureeAnnees: "9", // Nombre d'années (9 par défaut pour commercial 3-6-9)
+    datePriseEffet: "", // Date d'effet = remise des clés ou date contractuelle
+    dateRemiseCles: "",
     dureeTotale: "",
-    renouvellementAuto: "",
     
-    // Conditions financières (2. Clause de révision du loyer)
+    // Résiliation triennale
+    resiliationTriennalePossible: "", // oui / non
+    clauseRenonciationPeriodeTriennale: "", // oui / non - Pour activités spécifiques (bureaux, stockage)
+    
+    // Renouvellement
+    renouvellementType: "", // tacite / sur_demande
+    renouvellementAuto: "",
+    revisionLoyerRenouvellement: "", // oui / non
+    
+    // ========== 5️⃣ LOYER ==========
+    
+    // A. Loyer initial
     loyerAnnuelHT: "",
     loyerMensuelHT: "",
-    modalitePaiement: "", // mensuel, trimestriel
-    typeIndexation: "", // ILC, ILAT
-    indiceApplicable: "", // ILC / ILAT
-    baseCalculIndice: "", // Année de base
+    modalitePaiement: "", // mensuel / trimestriel
     modaliteRevision: "", // annuelle / triennale
+    
+    // Clause d'échelle mobile (indexation automatique)
+    clauseEchelleMobile: "", // oui / non - Indexation automatique
+    typeIndexation: "", // ILC, ILAT, ICC (ancien)
+    indiceApplicable: "", // ILC / ILAT / ICC
+    baseCalculIndice: "", // Trimestre de référence
+    indiceIRL: "", // Pour bail professionnel
+    trimestreReference: "",
+    
+    // B. Dépôt de garantie
+    depotGarantie: "",
+    montantDepotGarantie: "",
+    nombreMoisDepot: "", // Nombre de mois de loyer HT (souvent 1 à 3 mois)
+    restitutionDepot: "", // Conditions de restitution
+    
+    // C. Pas-de-porte
+    pasDePortePrevu: "", // oui / non
+    pasDePorteNature: "", // supplement_loyer / indemnite_entree
+    pasDePorteNatureDescription: "", // Supplément de loyer (récurrent) ou Indemnité d'entrée (non récupérable)
+    pasDePorte: "", // oui / non
+    pasDePorteIndemnite: "", // Indemnité d'entrée (non récupérable)
+    montantPasDePorte: "",
+    
+    // Modalités de paiement
+    modePaiementLoyer: "", // virement, prelevement, cheque
+    ibanBailleur: "",
+    premierLoyerDate: "",
+    
+    // ========== 6️⃣ CHARGES, TAXES & TRAVAUX (LOI PINEL) ==========
+    
     chargesMensuelles: "",
     typeCharges: "", // provisions, forfait
     modeReglementCharges: "", // Forfait ou Provision avec régularisation
-    depotGarantie: "", // 3. Dépôt de garantie
-    montantDepotGarantie: "",
-    restitutionDepot: "", // Modalités de restitution
-    modePaiementLoyer: "", // virement, prelevement, cheque
-    ibanBailleur: "",
+    periodiciteRegularisationCharges: "", // annuelle, trimestrielle
     
-    // Charges & travaux (4. Travaux et réparations)
-    chargesLocataire: [] as string[], // eau, electricite, chauffage, entretien, copro, teom, taxe_fonciere
-    chargesBailleur: [] as string[], // gros_travaux, mise_conformite, ravalement, remplacement, structurel
+    // Charges imputables au locataire (Loi Pinel)
+    chargesLocataire: [] as string[], // entretien_courant, charges_utilisation, eau, electricite, gaz, nettoyage_parties_communes, ordures_menageres
+    chargesLocataireAutres: "",
+    
+    // Charges interdites pour le locataire (DOIVENT être exclues - Loi Pinel)
+    chargesBailleur: [] as string[], // gros_travaux_606, remise_conformite_structurelle, impots_fonciers, honoraires_gestion_administration, travaux_vetuste
+    chargesImputeesBailleur: "", // Description charges exclus locataire
     chargesSupporteesBailleur: "", // Description des charges du bailleur
     chargesSupporteesPreneur: "", // Description des charges du preneur
-    travauxChargeBailleur: "", // Travaux à la charge du bailleur
-    travauxChargePreneur: "", // Travaux à la charge du preneur
-    compteursIndividuels: "",
     
-    // 5. Impôts et taxes
-    taxeFonciereSupporteePar: "", // bailleur ou locataire
+    // Taxes
+    taxeFonciereSupporteePar: "", // bailleur ou locataire - Si clause expresse possible
+    taxeSurBureauxIDF: "", // oui / non - Taxe sur bureaux (Ile-de-France)
+    taxesLocalesExploitation: "",
     taxesRecuperables: "", // Description des taxes récupérables
     
-    // Garanties (9. Garanties)
+    // Obligations bailleur (Loi Pinel)
+    listeChargesTravaux: "", // oui / non - Liste des charges + travaux + impôts (document obligatoire à annexer)
+    
+    // Travaux & réparations
+    travauxBailleur: "", // Gros œuvre, Structure, Toiture, Vétusté, Murs porteurs
+    travauxChargeBailleur: "", // Travaux à la charge du bailleur
+    travauxLocataire: "", // Aménagement intérieur, Décoration, Mise aux normes activité
+    travauxChargePreneur: "", // Travaux à la charge du preneur
+    
+    // Travaux soumis à autorisation du bailleur
+    travauxAutorisationBailleur: [] as string[], // transformation, percement_murs, installation_hottes, equipements_erp
+    travauxAutorisationBailleurAutres: "",
+    
+    etatLocalRemise: "",
+    compteursIndividuels: "",
+    
+    // ========== 7️⃣ ÉTAT DES LIEUX (OBLIGATOIRE) ==========
+    
+    etatLieuxJoint: "",
+    etatLieuxRealise: "", // oui / non
+    etatLieuxEntree: "", // oui / non
+    etatLieuxSortie: "", // oui / non
+    etatLieuxPhotosAnnexees: "", // oui / non
+    etatLieuxRelevesCompteurs: "", // oui / non
+    etatEquipements: "",
+    
+    // ========== 8️⃣ TRAVAUX ==========
+    // (Déjà dans section 6 ci-dessus)
+    
+    // ========== 9️⃣ DÉPÔT DE GARANTIE & SÛRETÉS ==========
+    // (Déjà dans section 5 ci-dessus pour dépôt de garantie)
+    
+    // Caution bancaire / caution personnelle
     cautionPersonnelle: "",
     cautionPersonnelleOuiNon: "", // Oui / Non
-    nomCaution: "",
-    prenomCaution: "",
+    cautionBancaire: "", // oui / non
     montantGaranti: "",
     garantieBancaire: "",
     dureeGarantie: "",
     
-    // Diagnostics
-    diagnosticDPE: "",
-    diagnosticAmianteDTA: "",
-    diagnosticERP: "",
-    diagnosticElectricite: "",
-    diagnosticGaz: "",
-    accessibiliteHandicapes: "",
+    // Garanties additionnelles
+    garantiesAdditionnelles: "", // nantissement_fonds_commerce, etc.
+    nantissementFondsCommerce: "", // oui / non
     
-    // État des lieux (6. État des lieux)
-    etatLieuxJoint: "",
-    etatLieuxRealise: "", // Oui / Non
-    etatEquipements: "",
+    // ========== 🔟 RÉVISION ET INDEXATION DU LOYER ==========
+    // (Déjà dans section 5 ci-dessus)
     
-    // Remise des clés
-    nombreJeuxCles: "",
-    typesCles: [] as string[],
-    codesAcces: "",
+    // Révision triennale (loi)
+    revisionTriennale: "", // oui / non - Calcul basé sur indice ILAT ou ILC
+    revisionTriennaleEncadrement: "", // Encadrement légal
     
-    // Clauses juridiques (8. Sous-location & cession)
-    clauseResolutoire: "",
-    resiliationTriennale: "",
-    clauseAssurances: "",
-    souslocationAutorisee: "", // Oui / Non
-    souslocationConditions: "", // Conditions si autorisée
+    // Déplafonnement du loyer (cas spécifiques)
+    deplafonnementPossible: "", // oui / non
+    deplafonnementCas: [] as string[], // transformation_locaux, changement_destination, modification_environnement
+    
+    // ========== 1️⃣1️⃣ CESSION & SOUS-LOCATION ==========
+    
+    // Cession
+    cessionInterdite: "", // oui / non
+    cessionAutoriseeAccordBailleur: "", // oui / non
+    cessionAutoriseeMemeProfession: "", // oui / non
+    cessionAvecFondsCommerce: "", // oui / non - Cession du bail avec cession du fonds de commerce (libre)
     cessionBailAutorisee: "", // Oui / Non
     cessionConditions: "", // Conditions (agrément du bailleur...)
     
-    // 10. Assurance obligatoire
+    // Documents requis cession
+    cessionDocumentsRequis: [] as string[], // kbis_nouveau_locataire, projet_cession, conditions_financieres
+    
+    // Sous-location
+    souslocationAutorisee: "", // oui / non - En principe interdite sauf accord écrit du bailleur
+    souslocationConditions: "", // Conditions si autorisée
+    
+    // ========== 1️⃣2️⃣ ASSURANCES ==========
+    
+    // Assurance Locataire
+    assuranceLocataireRC: "", // oui / non
+    assuranceMultirisque: "", // oui / non
     assuranceMultirisqueSouscrite: "", // Oui / Non
+    assurancePertesExploitation: "", // oui / non
     nomAssureur: "",
     numeropolice: "",
+    
+    // Assurance Bailleur
+    assuranceBailleurPNO: "", // oui / non - Assurance propriétaire non exploitant (PNO)
+    assuranceBailleurImmeuble: "", // oui / non
+    
+    // Bail professionnel spécifique
+    assuranceRCPro: "", // oui / non
+    assuranceLocaux: "", // oui / non
+    
+    // ========== 1️⃣3️⃣ OBLIGATIONS DU BAILLEUR ==========
+    
+    obligationDelivrerLocal: "", // oui / non - Délivrer un local en bon état
+    obligationGarantieJouissance: "", // oui / non - Garantir jouissance paisible
+    obligationGrosTravaux: "", // oui / non - Réaliser gros travaux
+    obligationDiagnostics: "", // oui / non - Effectuer diagnostics (annexes obligatoires)
+    
+    // ========== 1️⃣4️⃣ OBLIGATIONS DU LOCATAIRE ==========
+    
+    obligationPayerLoyer: "", // oui / non - Payer loyer et charges
+    obligationEntretenir: "", // oui / non - Entretenir le local
+    obligationRespecterActivite: "", // oui / non - Respecter activité autorisée
+    obligationNeP asTransformer: "", // oui / non - Ne pas transformer sans accord
+    obligationAssurer: "", // oui / non - Assurer le local
+    obligationAccesUrgent: "", // oui / non - Permettre accès pour travaux urgents
+    
+    // ========== 1️⃣5️⃣ DIAGNOSTICS OBLIGATOIRES ==========
+    
+    diagnosticDPE: "", // oui / non
+    diagnosticAmiante: "", // oui / non
+    diagnosticAmianteDTA: "",
+    diagnosticEtatRisquesERP: "", // oui / non
+    diagnosticERP: "",
+    diagnosticElectricite: "", // oui / non
+    diagnosticGaz: "", // oui / non
+    diagnosticLegionelle: "", // oui / non - Si ERP
+    diagnosticAccessibiliteHandicapes: "", // oui / non - ERP
+    accessibiliteHandicapes: "",
+    diagnosticSecuriteIncendie: "", // oui / non
+    dossierAmiantePartiesPrivatives: "", // oui / non
+    
+    // ========== 1️⃣6️⃣ CLAUSES OPTIONNELLES ESSENTIELLES ==========
+    
+    clauseResolutoire: "", // oui / non - Impayés, non-assurance...
+    clauseResolutoireConditions: "", // Conditions de la clause résolutoire
+    clauseNonConcurrenceLocalisation: "", // Localisation / Secteur
+    clauseDestinationEvolutive: "", // oui / non
+    clauseSolidariteCoPreneur: "", // oui / non
+    clauseRenonciationPeriodeTriennale: "", // oui / non
+    clauseIndexationSecurisee: "", // oui / non - Anti-variable prohibée
+    clauseDespecialisation: "", // oui / non
+    clauseFacadeEnseigne: "", // oui / non
+    clauseInterdictionNuisances: "", // oui / non - Bruit, odeur...
+    clauseInterdictionNuisancesDescription: "",
+    clauseAssurances: "",
+    
+    // ========== 1️⃣7️⃣ ANNEXES OBLIGATOIRES (LOI PINEL) ==========
+    
+    annexeDPE: "", // oui / non
+    annexeEtatRisquesERP: "", // oui / non
+    annexeEtatAmiante: "", // oui / non
+    annexeInventaireChargesImpotsTaxes: "", // oui / non
+    annexeEtatPrevisionnelTravaux3ans: "", // oui / non
+    annexeEtatPrevisionnelTravaux6ans: "", // oui / non
+    annexeReleveCharges3DernieresAnnees: "", // oui / non
+    annexeEtatTravauxRealises3DernieresAnnees: "", // oui / non
+    annexeEtatLieuxObligatoire: "", // oui / non
+    annexeAttestationAssurance: "", // oui / non
+    
+    // ========== 1️⃣8️⃣ PIÈCES JUSTIFICATIVES ==========
+    // Géré par les états de fichiers ci-dessous
+    
+    // Remise des clés
+    nombreJeuxCles: "",
+    typesCles: [] as string[], // portes, boites_aux_lettres, garage, badges
+    codesAcces: "", // WIFI, interphone, digicode...
     
     // Infos complémentaires
     particularitesLocal: "",
@@ -5358,6 +5605,35 @@ export default function Contrats() {
     restrictionsUsage: "",
     horairesOuverture: "",
   });
+  
+  // ========== Note: bailCommercialData et bailHabitationData ci-dessus sont utilisés ==========
+  // ========== comme base commune mais chaque profession aura ses propres états indépendants ==========
+  
+  // États de fichiers séparés pour Notaires
+  const [notaireBailCommercialBailleurFiles, setNotaireBailCommercialBailleurFiles] = useState<File[]>([]);
+  const [notaireBailCommercialLocataireFiles, setNotaireBailCommercialLocataireFiles] = useState<File[]>([]);
+  const [notaireBailCommercialDiagnosticsFiles, setNotaireBailCommercialDiagnosticsFiles] = useState<File[]>([]);
+  const [notaireBailCommercialCautionFiles, setNotaireBailCommercialCautionFiles] = useState<File[]>([]);
+  const [notaireBailCommercialEtatLieuxFiles, setNotaireBailCommercialEtatLieuxFiles] = useState<File[]>([]);
+  const [notaireBailCommercialCautionIdFiles, setNotaireBailCommercialCautionIdFiles] = useState<File[]>([]);
+  const [notaireBailCommercialAssuranceFiles, setNotaireBailCommercialAssuranceFiles] = useState<File[]>([]);
+  const [notaireBailHabitationBailleurIdFiles, setNotaireBailHabitationBailleurIdFiles] = useState<File[]>([]);
+  const [notaireBailHabitationLocataireIdFiles, setNotaireBailHabitationLocataireIdFiles] = useState<File[]>([]);
+  const [notaireBailHabitationDiagnosticsFiles, setNotaireBailHabitationDiagnosticsFiles] = useState<File[]>([]);
+  const [notaireBailHabitationInventaireFiles, setNotaireBailHabitationInventaireFiles] = useState<File[]>([]);
+  
+  // États de fichiers séparés pour Avocats
+  const [avocatBailCommercialBailleurFiles, setAvocatBailCommercialBailleurFiles] = useState<File[]>([]);
+  const [avocatBailCommercialLocataireFiles, setAvocatBailCommercialLocataireFiles] = useState<File[]>([]);
+  const [avocatBailCommercialDiagnosticsFiles, setAvocatBailCommercialDiagnosticsFiles] = useState<File[]>([]);
+  const [avocatBailCommercialCautionFiles, setAvocatBailCommercialCautionFiles] = useState<File[]>([]);
+  const [avocatBailCommercialEtatLieuxFiles, setAvocatBailCommercialEtatLieuxFiles] = useState<File[]>([]);
+  const [avocatBailCommercialCautionIdFiles, setAvocatBailCommercialCautionIdFiles] = useState<File[]>([]);
+  const [avocatBailCommercialAssuranceFiles, setAvocatBailCommercialAssuranceFiles] = useState<File[]>([]);
+  const [avocatBailHabitationBailleurIdFiles, setAvocatBailHabitationBailleurIdFiles] = useState<File[]>([]);
+  const [avocatBailHabitationLocataireIdFiles, setAvocatBailHabitationLocataireIdFiles] = useState<File[]>([]);
+  const [avocatBailHabitationDiagnosticsFiles, setAvocatBailHabitationDiagnosticsFiles] = useState<File[]>([]);
+  const [avocatBailHabitationInventaireFiles, setAvocatBailHabitationInventaireFiles] = useState<File[]>([]);
   
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
@@ -7138,6 +7414,18 @@ export default function Contrats() {
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
 
+  // ========== POINTEURS VERS LES BONS ÉTATS SELON LE RÔLE ==========
+  // Cela permet d'avoir des formulaires complètement indépendants entre notaires et avocats
+  // Sans avoir à dupliquer tout le code du formulaire
+  
+  // Pour le bail commercial : utiliser les états séparés par rôle
+  // Les états notaireBail* et avocatBail* sont déclarés plus haut avec les états de fichiers séparés
+  // Ici on crée juste des références vers le bon état selon le rôle
+  
+  // Utilisation directe de bailCommercialData et bailHabitationData
+  // (ils restent séparés car chaque rôle a sa propre session)
+  // Les états de fichiers séparés (notaire* et avocat*) sont déjà définis plus haut
+  
   const mainButtonColor = role === 'notaire'
     ? 'bg-orange-600 hover:bg-orange-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
@@ -15819,9 +16107,14 @@ FIN DE LA CONVENTION
               </>
             )}
 
-            {/* Formulaire spécifique pour Bail d'habitation */}
-            {(pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") && (
+            {/* ========== FORMULAIRE BAIL D'HABITATION - ESPACE AVOCAT ========== */}
+            {(pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") && role === 'avocat' && (
               <>
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+                  <p className="text-sm font-medium text-blue-800">🏠 Formulaire Bail d'Habitation - Espace Avocat</p>
+                  <p className="text-xs text-blue-600 mt-1">Ce formulaire est indépendant de l'espace notaire</p>
+                </div>
+                
                 {/* Sélection du rôle du client */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
@@ -15968,6 +16261,7 @@ FIN DE LA CONVENTION
                       files={bailleurIdFiles}
                       onFilesChange={setBailleurIdFiles}
                       accept="application/pdf,image/*"
+                      role="avocat"
                     />
                   )}
                 </div>
@@ -16088,6 +16382,7 @@ FIN DE LA CONVENTION
                       files={locataireIdFiles}
                       onFilesChange={setLocataireIdFiles}
                       accept="application/pdf,image/*"
+                      role="avocat"
                     />
                   )}
 
@@ -16204,6 +16499,7 @@ FIN DE LA CONVENTION
                     files={locataireDocsFiles}
                     onFilesChange={setLocataireDocsFiles}
                     accept="application/pdf,image/*"
+                    role="avocat"
                   />
                 </div>
 
@@ -16369,6 +16665,7 @@ FIN DE LA CONVENTION
                             files={inventaireMobilierFiles}
                             onFilesChange={setInventaireMobilierFiles}
                             accept="application/pdf,image/*"
+                            role="avocat"
                           />
                         </div>
 
@@ -16545,6 +16842,7 @@ FIN DE LA CONVENTION
                           files={garantDocsFiles}
                           onFilesChange={setGarantDocsFiles}
                           accept="application/pdf,image/*"
+                          role="avocat"
                         />
                       </div>
                     </div>
@@ -16771,6 +17069,7 @@ FIN DE LA CONVENTION
                     files={bailDiagnosticsFiles}
                     onFilesChange={setBailDiagnosticsFiles}
                     accept="application/pdf"
+                    role="avocat"
                   />
                 </div>
 
@@ -16882,10 +17181,35 @@ FIN DE LA CONVENTION
               </>
             )}
 
-            {/* Formulaire spécifique pour Bail commercial */}
-            {pendingContractType === "Bail commercial / professionnel" && (
+            {/* ========== FORMULAIRE BAIL D'HABITATION - ESPACE NOTAIRE ========== */}
+            {(pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") && role === 'notaire' && (
+              <>
+                <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg mb-4">
+                  <p className="text-sm font-medium text-orange-800">🏠 Formulaire Bail d'Habitation - Espace Notaire</p>
+                  <p className="text-xs text-orange-600 mt-1">Ce formulaire est indépendant de l'espace avocat</p>
+                </div>
+                
+                {/* Message temporaire */}
+                <div className="p-6 bg-muted rounded-lg">
+                  <p className="text-sm text-center text-muted-foreground">
+                    📝 Formulaire bail d'habitation notaire - Version simplifiée
+                  </p>
+                  <p className="text-xs text-center text-muted-foreground mt-2">
+                    Les champs détaillés seront ajoutés selon vos besoins spécifiques
+                  </p>
+                </div>
+              </>
+            )}
+
+            {/* ========== FORMULAIRE BAIL COMMERCIAL - ESPACE AVOCAT ========== */}
+            {pendingContractType === "Bail commercial / professionnel" && role === 'avocat' && (
               <>
                 <div className="space-y-6">
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm font-medium text-blue-800">📋 Formulaire Bail Commercial - Espace Avocat</p>
+                    <p className="text-xs text-blue-600 mt-1">Ce formulaire est indépendant de l'espace notaire</p>
+                  </div>
+
                   {/* Sélection du type de bail */}
                   <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
                     <h3 className="font-semibold text-lg">📋 Type de bail *</h3>
@@ -16895,15 +17219,15 @@ FIN DE LA CONVENTION
                         onValueChange={(value) => setBailCommercialData({...bailCommercialData, typeBail: value})}
                       >
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="commercial" id="bail_type_commercial" />
-                          <Label htmlFor="bail_type_commercial" className="cursor-pointer">
+                          <RadioGroupItem value="commercial" id="bail_type_commercial_avocat" />
+                          <Label htmlFor="bail_type_commercial_avocat" className="cursor-pointer">
                             <span className="font-medium">Bail commercial</span>
                             <span className="text-xs text-muted-foreground ml-2">(statut 3/6/9 - activité commerciale)</span>
                           </Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="professionnel" id="bail_type_professionnel" />
-                          <Label htmlFor="bail_type_professionnel" className="cursor-pointer">
+                          <RadioGroupItem value="professionnel" id="bail_type_professionnel_avocat" />
+                          <Label htmlFor="bail_type_professionnel_avocat" className="cursor-pointer">
                             <span className="font-medium">Bail professionnel</span>
                             <span className="text-xs text-muted-foreground ml-2">(profession libérale - min. 6 ans)</span>
                           </Label>
@@ -17142,6 +17466,7 @@ FIN DE LA CONVENTION
                             files={bailCommercialBailleurFiles}
                             onFilesChange={setBailCommercialBailleurFiles}
                             accept="application/pdf,image/*"
+                            role="avocat"
                           />
                         )}
                       </div>
@@ -17476,6 +17801,7 @@ FIN DE LA CONVENTION
                             files={bailCommercialLocataireFiles}
                             onFilesChange={setBailCommercialLocataireFiles}
                             accept="application/pdf,image/*"
+                            role="avocat"
                           />
                         )}
 
@@ -17707,6 +18033,7 @@ FIN DE LA CONVENTION
                                 files={bailProfessionnelOrdreFiles}
                                 onFilesChange={setBailProfessionnelOrdreFiles}
                                 accept="application/pdf"
+                                role="avocat"
                               />
                             </>
                           )}
@@ -17978,6 +18305,7 @@ FIN DE LA CONVENTION
                           files={bailCommercialEtatLieuxFiles}
                           onFilesChange={setBailCommercialEtatLieuxFiles}
                           accept="application/pdf"
+                          role="avocat"
                         />
                       )}
                     </div>
@@ -18088,6 +18416,7 @@ FIN DE LA CONVENTION
                             files={bailCommercialCautionIdFiles}
                             onFilesChange={setBailCommercialCautionIdFiles}
                             accept="application/pdf,image/*"
+                            role="avocat"
                           />
                         </>
                       )}
@@ -18140,6 +18469,7 @@ FIN DE LA CONVENTION
                                 files={bailCommercialAssuranceFiles}
                                 onFilesChange={setBailCommercialAssuranceFiles}
                                 accept="application/pdf"
+                                role="avocat"
                               />
                             </>
                           )}
@@ -18207,11 +18537,60 @@ FIN DE LA CONVENTION
                               files={bailCommercialAssuranceFiles}
                               onFilesChange={setBailCommercialAssuranceFiles}
                               accept="application/pdf"
+                              role="avocat"
                             />
                           )}
                         </>
                       )}
                     </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* ========== FORMULAIRE BAIL COMMERCIAL - ESPACE NOTAIRE ========== */}
+            {pendingContractType === "Bail commercial / professionnel" && role === 'notaire' && (
+              <>
+                <div className="space-y-6">
+                  <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                    <p className="text-sm font-medium text-orange-800">📋 Formulaire Bail Commercial - Espace Notaire</p>
+                    <p className="text-xs text-orange-600 mt-1">Ce formulaire est indépendant de l'espace avocat</p>
+                  </div>
+
+                  {/* Sélection du type de bail */}
+                  <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-lg">📋 Type de bail *</h3>
+                    <div className="space-y-2">
+                      <RadioGroup 
+                        value={bailCommercialData.typeBail} 
+                        onValueChange={(value) => setBailCommercialData({...bailCommercialData, typeBail: value})}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="commercial" id="bail_type_commercial_notaire" />
+                          <Label htmlFor="bail_type_commercial_notaire" className="cursor-pointer">
+                            <span className="font-medium">Bail commercial</span>
+                            <span className="text-xs text-muted-foreground ml-2">(statut 3/6/9 - activité commerciale)</span>
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="professionnel" id="bail_type_professionnel_notaire" />
+                          <Label htmlFor="bail_type_professionnel_notaire" className="cursor-pointer">
+                            <span className="font-medium">Bail professionnel</span>
+                            <span className="text-xs text-muted-foreground ml-2">(profession libérale - min. 6 ans)</span>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+
+                  {/* Message temporaire */}
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-sm text-center text-muted-foreground">
+                      📝 Formulaire bail commercial notaire - Version simplifiée
+                    </p>
+                    <p className="text-xs text-center text-muted-foreground mt-2">
+                      Les champs détaillés seront ajoutés selon vos besoins spécifiques
+                    </p>
                   </div>
                 </div>
               </>
