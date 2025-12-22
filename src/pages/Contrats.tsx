@@ -22344,39 +22344,39 @@ FIN DE LA CONVENTION
                     
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label>Photos du logement</Label>
                         <MultiFileUpload
+                          label="Photos du logement"
+                          files={etatLieuxPhotosLogement}
                           onFilesChange={(files) => setEtatLieuxPhotosLogement(files)}
-                          acceptedFileTypes="image/*"
-                          multiple
+                          accept="image/*"
                         />
                         <p className="text-xs text-muted-foreground">Joindre des photos de chaque pièce et des anomalies constatées</p>
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Photos des compteurs</Label>
                         <MultiFileUpload
+                          label="Photos des compteurs"
+                          files={etatLieuxPhotosCompteurs}
                           onFilesChange={(files) => setEtatLieuxPhotosCompteurs(files)}
-                          acceptedFileTypes="image/*"
-                          multiple
+                          accept="image/*"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Plan du logement</Label>
                         <MultiFileUpload
+                          label="Plan du logement"
+                          files={etatLieuxPlanLogement}
                           onFilesChange={(files) => setEtatLieuxPlanLogement(files)}
-                          acceptedFileTypes="image/*,application/pdf"
-                          multiple
+                          accept="image/*,application/pdf"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Diagnostics techniques (DPE, amiante, plomb...)</Label>
                         <MultiFileUpload
+                          label="Diagnostics techniques (DPE, amiante, plomb...)"
+                          files={etatLieuxDiagnostics}
                           onFilesChange={(files) => setEtatLieuxDiagnostics(files)}
-                          acceptedFileTypes="application/pdf,image/*"
-                          multiple
+                          accept="application/pdf,image/*"
                         />
                       </div>
 
@@ -22660,38 +22660,38 @@ FIN DE LA CONVENTION
                     
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label>Contrat de location</Label>
                         <MultiFileUpload
+                          label="Contrat de location"
+                          files={etatLieuxContratLocation}
                           onFilesChange={(files) => setEtatLieuxContratLocation(files)}
-                          acceptedFileTypes="application/pdf,image/*"
-                          multiple
+                          accept="application/pdf,image/*"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label>État des lieux d'entrée (si état de sortie)</Label>
                         <MultiFileUpload
+                          label="État des lieux d'entrée (si état de sortie)"
+                          files={etatLieuxEntreeReference}
                           onFilesChange={(files) => setEtatLieuxEntreeReference(files)}
-                          acceptedFileTypes="application/pdf,image/*"
-                          multiple
+                          accept="application/pdf,image/*"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Devis de réparation</Label>
                         <MultiFileUpload
+                          label="Devis de réparation"
+                          files={etatLieuxDevisReparation}
                           onFilesChange={(files) => setEtatLieuxDevisReparation(files)}
-                          acceptedFileTypes="application/pdf,image/*"
-                          multiple
+                          accept="application/pdf,image/*"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Autres documents</Label>
                         <MultiFileUpload
+                          label="Autres documents"
+                          files={etatLieuxAutresDocuments}
                           onFilesChange={(files) => setEtatLieuxAutresDocuments(files)}
-                          acceptedFileTypes="*"
-                          multiple
+                          accept="*"
                         />
                       </div>
                     </div>
