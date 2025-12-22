@@ -69067,17 +69067,6 @@ FIN DE LA CONVENTION
             )}
 
             {/* Formulaire complet pour CGU (Conditions Générales d'Utilisation) */}
-            {(() => {
-              if (pendingContractType) {
-                console.log('🔍 DEBUG CGU - pendingContractType:', JSON.stringify(pendingContractType));
-                console.log('🔍 DEBUG CGU - includes CGU:', pendingContractType.includes("CGU"));
-                console.log('🔍 DEBUG CGU - includes SaaS:', pendingContractType.includes("SaaS"));
-                console.log('🔍 DEBUG CGU - includes saas (lowercase):', pendingContractType.toLowerCase().includes("saas"));
-                console.log('🔍 DEBUG CGU - Match result:', pendingContractType.includes("CGU") && pendingContractType.includes("SaaS"));
-                console.log('🔍 DEBUG CGU - Char codes:', Array.from(pendingContractType).map(c => c.charCodeAt(0)).join(','));
-              }
-              return null;
-            })()}
             {(pendingContractType && pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) && (
               <div className="space-y-6">
                 <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">📱 Conditions Générales d'Utilisation (CGU) — SaaS / Site Web</h3>
@@ -69625,7 +69614,7 @@ FIN DE LA CONVENTION
             )}
 
             {/* Formulaire complet pour Contrat d'agence commerciale */}
-            {(pendingContractType.includes("agence commerciale") || pendingContractType.includes("Contrat d'agence commerciale")) && (
+            {(pendingContractType && (pendingContractType.includes("agence commerciale") || pendingContractType.includes("Contrat d'agence commerciale"))) && (
               <div className="space-y-6">
                 <h3 className="font-semibold text-xl border-b-2 border-blue-300 pb-2 text-gray-700">🤝 Contrat d'Agence Commerciale</h3>
                 
@@ -70173,9 +70162,9 @@ FIN DE LA CONVENTION
                   handleQuitusDetteSubmit();
                 } else if (pendingContractType === "Acte de cession de parts sociales") {
                   handleCessionPartsSubmit();
-                } else if (pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) {
+                } else if (pendingContractType && pendingContractType.includes("CGU") && pendingContractType.toLowerCase().includes("saas")) {
                   handleCGUSubmit();
-                } else if (pendingContractType.includes("agence commerciale")) {
+                } else if (pendingContractType && pendingContractType.includes("agence commerciale")) {
                   handleAgenceCommercialeSubmit();
                 } else if (pendingContractType === "NDA (Accord de confidentialité)") {
                   handleCreateNdaContract();
