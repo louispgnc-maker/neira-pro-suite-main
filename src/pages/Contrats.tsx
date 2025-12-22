@@ -5528,10 +5528,6 @@ export default function Contrats() {
     assuranceBailleurPNO: "", // oui / non - Assurance propriétaire non exploitant (PNO)
     assuranceBailleurImmeuble: "", // oui / non
     
-    // Bail professionnel spécifique
-    assuranceRCPro: "", // oui / non
-    assuranceLocaux: "", // oui / non
-    
     // ========== 1️⃣3️⃣ OBLIGATIONS DU BAILLEUR ==========
     
     obligationDelivrerLocal: "", // oui / non - Délivrer un local en bon état
@@ -5570,7 +5566,6 @@ export default function Contrats() {
     clauseNonConcurrenceLocalisation: "", // Localisation / Secteur
     clauseDestinationEvolutive: "", // oui / non
     clauseSolidariteCoPreneur: "", // oui / non
-    clauseRenonciationPeriodeTriennale: "", // oui / non
     clauseIndexationSecurisee: "", // oui / non - Anti-variable prohibée
     clauseDespecialisation: "", // oui / non
     clauseFacadeEnseigne: "", // oui / non
@@ -5604,6 +5599,81 @@ export default function Contrats() {
     conditionsSpecifiques: "",
     restrictionsUsage: "",
     horairesOuverture: "",
+    
+    // ========== 1️⃣ RENOUVELLEMENT & FIN DU BAIL ==========
+    droitRenouvellement: "", // oui / non
+    modaliteConge: "", // Forme du congé (RAR, huissier...)
+    delaiConge: "", // Délai (6 mois, 18 mois...)
+    acteHuissierObligatoire: "", // oui / non
+    indemniteEviction: "", // oui / non / exclusion / amenagement
+    indemniteEvictionMontant: "",
+    indemniteEvictionConditions: "",
+    renonciationPreneur: "", // oui / non
+    renonciationPreneurEncadrement: "", // Description encadrement
+    
+    // ========== 2️⃣ PLAFONNEMENT / DÉPLAFONNEMENT ==========
+    plafonnementLoyer: "", // oui / non
+    plafonnementPrincipe: "", // Description du principe
+    deplafonnementAutorise: "", // oui / non
+    deplafonnementModificationDestination: "", // oui / non
+    deplafonnementFacteursLocaux: "", // oui / non
+    deplafonnementFacteursLocauxDescription: "",
+    deplafonnementClauseAcceptation: "", // oui / non
+    deplafonnementConditions: "",
+    
+    // ========== 3️⃣ INDEXATION : SÉCURITÉ JURIDIQUE ==========
+    indexationClauseReciprocite: "", // oui / non (hausse ET baisse)
+    indexationClauseSauvegarde: "", // oui / non (si indice supprimé)
+    indexationDateAnniversaire: "", // Date exacte anniversaire
+    indexationIndiceSubstitution: "", // Indice de substitution si supprimé
+    
+    // ========== 4️⃣ GROS TRAVAUX & ARTICLE 606 ==========
+    travauxArticle606Reference: "", // oui / non
+    travauxGrossesReparationsExclusion: "", // oui / non
+    travauxGrossesReparationsTransfert: "", // oui / non (si transfert au preneur)
+    travauxGrossesReparationsEncadrement: "",
+    
+    // ========== 5️⃣ ANNEXES LÉGALES OBLIGATOIRES ==========
+    annexeDPEFourni: "", // oui / non
+    annexeEtatRisquesFourni: "", // oui / non (ERP / ERNMT)
+    annexeDiagnosticAmianteFourni: "", // oui / non
+    annexeInventaireChargesFourni: "", // oui / non (obligatoire L145-40-2)
+    annexeEtatRecapitulatifTriennal: "", // oui / non (L145-40-2)
+    
+    // ========== 6️⃣ CLAUSE RÉSOLUTOIRE ==========
+    clauseResolutoireActive: "", // oui / non
+    clauseResolutoireImpayeLoyers: "", // oui / non
+    clauseResolutoireDefautAssurance: "", // oui / non
+    clauseResolutoireNonRespectDestination: "", // oui / non
+    clauseResolutoireProcedure: "", // Description procédure (commandement, délai)
+    clauseResolutoireCommandement: "", // oui / non
+    clauseResolutoireDelai: "", // Délai avant résolution
+    clauseResolutoireAutresCas: "",
+    
+    // ========== 7️⃣ RÉSILIATION ANTICIPÉE ==========
+    resiliationTriennalePreneur: "", // oui / non
+    resiliationTriennalePreneurConditions: "",
+    resiliationRenonciationPreneur: "", // oui / non
+    resiliationRenonciationEncadrement: "",
+    resiliationConditionsSpecifiques: "", // Travaux, destruction...
+    resiliationTravaux: "", // oui / non
+    resiliationDestruction: "", // oui / non
+    
+    // ========== 8️⃣ TRAVAUX DU PRENEUR ==========
+    travauxPreneurAutorisationPrealable: "", // oui / non
+    travauxPreneurConformiteUrbanisme: "", // oui / non
+    travauxPreneurRemiseEtat: "", // oui / non (remise en état ou conservation)
+    travauxPreneurProprieteMeliorations: "", // bailleur / preneur / partage
+    travauxPreneurIndemnisationMeliorations: "", // oui / non
+    
+    // ========== 9️⃣ CLAUSES SENSIBLES (PROTECTION BAILLEUR) ==========
+    clauseSolidariteCession: "", // oui / non
+    clausePenale: "", // oui / non
+    clausePenaleMontant: "",
+    clauseInteretsRetard: "", // oui / non
+    clauseInteretsRetardTaux: "",
+    clauseElectionDomicile: "",
+    clauseAttributionCompetence: "", // Tribunal compétent
   });
   
   // ========== Note: bailCommercialData et bailHabitationData ci-dessus sont utilisés ==========
@@ -18535,6 +18605,854 @@ FIN DE LA CONVENTION
                       )}
                     </div>
                   </div>
+
+                  {/* ========== 1️⃣ RENOUVELLEMENT & FIN DU BAIL ========== */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔁 Renouvellement & Fin du bail</h3>
+                    <p className="text-xs text-muted-foreground">⚠️ Bloc fondamental en contentieux</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Droit au renouvellement *</Label>
+                        <Select 
+                          value={bailCommercialData.droitRenouvellement} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, droitRenouvellement: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (droit légal)</SelectItem>
+                            <SelectItem value="non">Non (bail dérogatoire ou renonciation)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Modalités de congé *</Label>
+                        <Select 
+                          value={bailCommercialData.modaliteConge} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, modaliteConge: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="rar">Lettre recommandée avec AR</SelectItem>
+                            <SelectItem value="huissier">Acte d'huissier</SelectItem>
+                            <SelectItem value="rar_ou_huissier">RAR ou acte d'huissier</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Délai de congé *</Label>
+                        <Input 
+                          value={bailCommercialData.delaiConge} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, delaiConge: e.target.value})} 
+                          placeholder="Ex: 6 mois avant échéance"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Acte d'huissier obligatoire ?</Label>
+                        <Select 
+                          value={bailCommercialData.acteHuissierObligatoire} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, acteHuissierObligatoire: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Indemnité d'éviction *</Label>
+                        <Select 
+                          value={bailCommercialData.indemniteEviction} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, indemniteEviction: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (droit légal)</SelectItem>
+                            <SelectItem value="exclusion">Exclusion (bail dérogatoire)</SelectItem>
+                            <SelectItem value="amenagement">Aménagement conventionnel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.indemniteEviction === "amenagement" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Montant de l'indemnité</Label>
+                            <Input 
+                              value={bailCommercialData.indemniteEvictionMontant} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, indemniteEvictionMontant: e.target.value})} 
+                              placeholder="Montant en €"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Conditions particulières</Label>
+                            <Input 
+                              value={bailCommercialData.indemniteEvictionConditions} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, indemniteEvictionConditions: e.target.value})} 
+                              placeholder="Préciser les conditions"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Renonciation éventuelle du preneur</Label>
+                        <Select 
+                          value={bailCommercialData.renonciationPreneur} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, renonciationPreneur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (⚠️ doit être encadrée)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.renonciationPreneur === "oui" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Encadrement de la renonciation</Label>
+                          <Textarea 
+                            value={bailCommercialData.renonciationPreneurEncadrement} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, renonciationPreneurEncadrement: e.target.value})} 
+                            placeholder="Décrire les conditions et limites de la renonciation..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ========== 2️⃣ PLAFONNEMENT / DÉPLAFONNEMENT ========== */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">📈 Plafonnement / Déplafonnement du loyer</h3>
+                    <p className="text-xs text-muted-foreground">⚠️ Très important pour investisseurs / centres-villes</p>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Principe de plafonnement du loyer *</Label>
+                        <Select 
+                          value={bailCommercialData.plafonnementLoyer} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, plafonnementLoyer: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (principe légal)</SelectItem>
+                            <SelectItem value="non">Non (dérogation conventionnelle)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Description du principe de plafonnement</Label>
+                        <Textarea 
+                          value={bailCommercialData.plafonnementPrincipe} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, plafonnementPrincipe: e.target.value})} 
+                          placeholder="Ex: Limitation de l'augmentation du loyer selon l'indice ILC..."
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Déplafonnement autorisé ? *</Label>
+                        <Select 
+                          value={bailCommercialData.deplafonnementAutorise} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, deplafonnementAutorise: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (cas légaux)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.deplafonnementAutorise === "oui" && (
+                        <>
+                          <div className="space-y-3 p-3 bg-white dark:bg-slate-900 rounded border">
+                            <h4 className="font-medium text-sm">Cas de déplafonnement :</h4>
+                            
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="deplafo_destination"
+                                checked={bailCommercialData.deplafonnementModificationDestination === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  deplafonnementModificationDestination: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="deplafo_destination" className="cursor-pointer font-normal">
+                                Modification notable de la destination
+                              </Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="deplafo_facteurs"
+                                checked={bailCommercialData.deplafonnementFacteursLocaux === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  deplafonnementFacteursLocaux: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="deplafo_facteurs" className="cursor-pointer font-normal">
+                                Facteurs locaux de commercialité
+                              </Label>
+                            </div>
+
+                            {bailCommercialData.deplafonnementFacteursLocaux === "oui" && (
+                              <div className="space-y-2 ml-6">
+                                <Label>Description des facteurs locaux</Label>
+                                <Textarea 
+                                  value={bailCommercialData.deplafonnementFacteursLocauxDescription} 
+                                  onChange={(e) => setBailCommercialData({...bailCommercialData, deplafonnementFacteursLocauxDescription: e.target.value})} 
+                                  placeholder="Ex: Nouvelle zone commerciale, ligne de métro..."
+                                  rows={2}
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Clause d'acceptation du déplafonnement</Label>
+                            <Select 
+                              value={bailCommercialData.deplafonnementClauseAcceptation} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, deplafonnementClauseAcceptation: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui (acceptation expresse)</SelectItem>
+                                <SelectItem value="non">Non</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Conditions du déplafonnement</Label>
+                            <Textarea 
+                              value={bailCommercialData.deplafonnementConditions} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, deplafonnementConditions: e.target.value})} 
+                              placeholder="Préciser les conditions et modalités..."
+                              rows={3}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ========== 3️⃣ INDEXATION : SÉCURITÉ JURIDIQUE (AMÉLIORATION) ========== */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">📊 Indexation : Sécurité juridique (compléments)</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Clause de réciprocité (hausse ET baisse) *</Label>
+                        <Select 
+                          value={bailCommercialData.indexationClauseReciprocite} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, indexationClauseReciprocite: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (indice à la hausse ET à la baisse)</SelectItem>
+                            <SelectItem value="non">Non (hausse uniquement)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clause de sauvegarde (indice supprimé) *</Label>
+                        <Select 
+                          value={bailCommercialData.indexationClauseSauvegarde} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, indexationClauseSauvegarde: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (indice de substitution prévu)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.indexationClauseSauvegarde === "oui" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Indice de substitution</Label>
+                          <Input 
+                            value={bailCommercialData.indexationIndiceSubstitution} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, indexationIndiceSubstitution: e.target.value})} 
+                            placeholder="Ex: Indice le plus proche en termes d'évolution..."
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Date anniversaire exacte de la révision *</Label>
+                        <Input 
+                          type="date"
+                          value={bailCommercialData.indexationDateAnniversaire} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, indexationDateAnniversaire: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ========== 4️⃣ GROS TRAVAUX & ARTICLE 606 ========== */}
+                  {bailCommercialData.typeBail === "commercial" && (
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">🧱 Gros travaux & Article 606 du Code civil</h3>
+                      <p className="text-xs text-muted-foreground">⚠️ Clause très contrôlée par les juges</p>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label>Référence à l'article 606 du Code civil *</Label>
+                          <Select 
+                            value={bailCommercialData.travauxArticle606Reference} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxArticle606Reference: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui (référence explicite)</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            L'article 606 définit les grosses réparations à la charge du bailleur (murs maîtres, voûtes, toiture, etc.)
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Exclusion explicite des grosses réparations (charge bailleur) *</Label>
+                          <Select 
+                            value={bailCommercialData.travauxGrossesReparationsExclusion} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxGrossesReparationsExclusion: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui (restent à la charge du bailleur)</SelectItem>
+                              <SelectItem value="non">Non (transfert au preneur)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {bailCommercialData.travauxGrossesReparationsExclusion === "non" && (
+                          <>
+                            <div className="p-3 bg-orange-50 border border-orange-200 rounded">
+                              <p className="text-sm text-orange-800">
+                                ⚠️ Attention : Le transfert des grosses réparations au preneur doit être encadré et justifié
+                              </p>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Transfert encadré au preneur</Label>
+                              <Select 
+                                value={bailCommercialData.travauxGrossesReparationsTransfert} 
+                                onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxGrossesReparationsTransfert: value})}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="oui">Oui (transfert encadré)</SelectItem>
+                                  <SelectItem value="non">Non</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {bailCommercialData.travauxGrossesReparationsTransfert === "oui" && (
+                              <div className="space-y-2">
+                                <Label>Encadrement du transfert (justification, limites, compensations...)</Label>
+                                <Textarea 
+                                  value={bailCommercialData.travauxGrossesReparationsEncadrement} 
+                                  onChange={(e) => setBailCommercialData({...bailCommercialData, travauxGrossesReparationsEncadrement: e.target.value})} 
+                                  placeholder="Ex: Contrepartie en termes de loyer, limitations de montant, nature des travaux..."
+                                  rows={4}
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ========== 5️⃣ ANNEXES LÉGALES OBLIGATOIRES ========== */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">📑 Annexes légales obligatoires</h3>
+                    <p className="text-xs text-muted-foreground">⚠️ Obligation légale du bailleur</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>DPE (Diagnostic de Performance Énergétique) *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeDPEFourni} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeDPEFourni: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (annexé)</SelectItem>
+                            <SelectItem value="non">Non (non applicable)</SelectItem>
+                            <SelectItem value="en_cours">En cours d'obtention</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>État des risques (ERP / ERNMT) *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeEtatRisquesFourni} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeEtatRisquesFourni: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (annexé)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="en_cours">En cours d'obtention</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Diagnostic amiante *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeDiagnosticAmianteFourni} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeDiagnosticAmianteFourni: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (annexé)</SelectItem>
+                            <SelectItem value="non">Non (permis postérieur à 1997)</SelectItem>
+                            <SelectItem value="en_cours">En cours d'obtention</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Inventaire des charges, impôts et taxes (L145-40-2) *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeInventaireChargesFourni} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeInventaireChargesFourni: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (obligatoire - annexé)</SelectItem>
+                            <SelectItem value="en_cours">En cours de préparation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>État récapitulatif triennal (L145-40-2) *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeEtatRecapitulatifTriennal} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeEtatRecapitulatifTriennal: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (annexé)</SelectItem>
+                            <SelectItem value="non">Non (premier bail)</SelectItem>
+                            <SelectItem value="en_cours">En cours de préparation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          État récapitulatif des charges, impôts, taxes et travaux des 3 dernières années
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ========== 6️⃣ CLAUSE RÉSOLUTOIRE ========== */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">⚖️ Clause résolutoire</h3>
+                    <p className="text-xs text-muted-foreground">⚠️ Indispensable : sans elle, procédure longue et risquée</p>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Clause résolutoire active ? *</Label>
+                        <Select 
+                          value={bailCommercialData.clauseResolutoireActive} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, clauseResolutoireActive: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (recommandé)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.clauseResolutoireActive === "oui" && (
+                        <>
+                          <div className="space-y-3 p-3 bg-white dark:bg-slate-900 rounded border">
+                            <h4 className="font-medium text-sm">Cas d'application de la clause :</h4>
+                            
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="resol_impaye"
+                                checked={bailCommercialData.clauseResolutoireImpayeLoyers === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  clauseResolutoireImpayeLoyers: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="resol_impaye" className="cursor-pointer font-normal">
+                                Impayé de loyers ou charges
+                              </Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="resol_assurance"
+                                checked={bailCommercialData.clauseResolutoireDefautAssurance === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  clauseResolutoireDefautAssurance: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="resol_assurance" className="cursor-pointer font-normal">
+                                Défaut d'assurance
+                              </Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="resol_destination"
+                                checked={bailCommercialData.clauseResolutoireNonRespectDestination === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  clauseResolutoireNonRespectDestination: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="resol_destination" className="cursor-pointer font-normal">
+                                Non-respect de la destination
+                              </Label>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Autres cas de résolution</Label>
+                            <Textarea 
+                              value={bailCommercialData.clauseResolutoireAutresCas} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, clauseResolutoireAutresCas: e.target.value})} 
+                              placeholder="Ex: Sous-location non autorisée, travaux sans accord..."
+                              rows={2}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Commandement de payer requis ? *</Label>
+                            <Select 
+                              value={bailCommercialData.clauseResolutoireCommandement} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, clauseResolutoireCommandement: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui (commandement préalable)</SelectItem>
+                                <SelectItem value="non">Non (résiliation immédiate)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Délai avant résolution *</Label>
+                            <Input 
+                              value={bailCommercialData.clauseResolutoireDelai} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, clauseResolutoireDelai: e.target.value})} 
+                              placeholder="Ex: 1 mois, 8 jours..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Procédure détaillée</Label>
+                            <Textarea 
+                              value={bailCommercialData.clauseResolutoireProcedure} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, clauseResolutoireProcedure: e.target.value})} 
+                              placeholder="Décrire la procédure (mise en demeure, commandement, délais, résiliation...)"
+                              rows={4}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ========== 7️⃣ RÉSILIATION ANTICIPÉE ========== */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🚪 Résiliation anticipée</h3>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Résiliation triennale par le preneur *</Label>
+                        <Select 
+                          value={bailCommercialData.resiliationTriennalePreneur} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, resiliationTriennalePreneur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (droit légal 3-6-9)</SelectItem>
+                            <SelectItem value="non">Non (renonciation ou bail dérogatoire)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.resiliationTriennalePreneur === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Conditions de la résiliation triennale</Label>
+                          <Textarea 
+                            value={bailCommercialData.resiliationTriennalePreneurConditions} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, resiliationTriennalePreneurConditions: e.target.value})} 
+                            placeholder="Ex: Préavis de 6 mois, lettre recommandée avec AR..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Renonciation possible du preneur ?</Label>
+                        <Select 
+                          value={bailCommercialData.resiliationRenonciationPreneur} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, resiliationRenonciationPreneur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (⚠️ doit être encadrée)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.resiliationRenonciationPreneur === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Encadrement de la renonciation</Label>
+                          <Textarea 
+                            value={bailCommercialData.resiliationRenonciationEncadrement} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, resiliationRenonciationEncadrement: e.target.value})} 
+                            placeholder="Décrire les conditions et limites de la renonciation à la résiliation triennale..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-3 p-3 bg-white dark:bg-slate-900 rounded border">
+                        <h4 className="font-medium text-sm">Conditions spécifiques de résiliation :</h4>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="resil_travaux"
+                            checked={bailCommercialData.resiliationTravaux === "oui"}
+                            onCheckedChange={(checked) => setBailCommercialData({
+                              ...bailCommercialData, 
+                              resiliationTravaux: checked ? "oui" : "non"
+                            })}
+                          />
+                          <Label htmlFor="resil_travaux" className="cursor-pointer font-normal">
+                            Travaux du bailleur empêchant l'exploitation
+                          </Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="resil_destruction"
+                            checked={bailCommercialData.resiliationDestruction === "oui"}
+                            onCheckedChange={(checked) => setBailCommercialData({
+                              ...bailCommercialData, 
+                              resiliationDestruction: checked ? "oui" : "non"
+                            })}
+                          />
+                          <Label htmlFor="resil_destruction" className="cursor-pointer font-normal">
+                            Destruction partielle ou totale du local
+                          </Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Autres conditions spécifiques</Label>
+                        <Textarea 
+                          value={bailCommercialData.resiliationConditionsSpecifiques} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, resiliationConditionsSpecifiques: e.target.value})} 
+                          placeholder="Ex: Force majeure, expropriation..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ========== 8️⃣ TRAVAUX DU PRENEUR ========== */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🏗️ Travaux du preneur</h3>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Autorisation préalable du bailleur requise ? *</Label>
+                        <Select 
+                          value={bailCommercialData.travauxPreneurAutorisationPrealable} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurAutorisationPrealable: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (autorisation écrite obligatoire)</SelectItem>
+                            <SelectItem value="partiel">Partiel (selon nature des travaux)</SelectItem>
+                            <SelectItem value="non">Non (liberté totale)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Conformité urbanisme *</Label>
+                        <Select 
+                          value={bailCommercialData.travauxPreneurConformiteUrbanisme} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurConformiteUrbanisme: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (obtention autorisations requise)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Remise en état en fin de bail *</Label>
+                        <Select 
+                          value={bailCommercialData.travauxPreneurRemiseEtat} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurRemiseEtat: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (remise en état initial)</SelectItem>
+                            <SelectItem value="conservation">Conservation des améliorations</SelectItem>
+                            <SelectItem value="negociation">À négocier en fin de bail</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Propriété des améliorations / méliorations *</Label>
+                        <Select 
+                          value={bailCommercialData.travauxPreneurProprieteMeliorations} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurProprieteMeliorations: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="bailleur">Propriété du bailleur (sans indemnité)</SelectItem>
+                            <SelectItem value="preneur">Propriété du preneur (démontables)</SelectItem>
+                            <SelectItem value="partage">Partage selon nature</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.travauxPreneurProprieteMeliorations !== "bailleur" && (
+                        <div className="space-y-2">
+                          <Label>Indemnisation des méliorations</Label>
+                          <Select 
+                            value={bailCommercialData.travauxPreneurIndemnisationMeliorations} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurIndemnisationMeliorations: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui (indemnisation en fin de bail)</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                              <SelectItem value="negociation">À négocier</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ========== 9️⃣ CLAUSES SENSIBLES (PROTECTION BAILLEUR) ========== */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">⚠️ Clauses sensibles (protection bailleur)</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Clause de solidarité en cas de cession</Label>
+                        <Select 
+                          value={bailCommercialData.clauseSolidariteCession} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, clauseSolidariteCession: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (cédant solidaire avec cessionnaire)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clause pénale</Label>
+                        <Select 
+                          value={bailCommercialData.clausePenale} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, clausePenale: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (pénalités prévues)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.clausePenale === "oui" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Montant de la clause pénale</Label>
+                          <Input 
+                            value={bailCommercialData.clausePenaleMontant} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, clausePenaleMontant: e.target.value})} 
+                            placeholder="Ex: 10% du loyer annuel, montant forfaitaire..."
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Intérêts de retard</Label>
+                        <Select 
+                          value={bailCommercialData.clauseInteretsRetard} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, clauseInteretsRetard: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (taux prévu)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.clauseInteretsRetard === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Taux des intérêts de retard *</Label>
+                          <Input 
+                            value={bailCommercialData.clauseInteretsRetardTaux} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, clauseInteretsRetardTaux: e.target.value})} 
+                            placeholder="Ex: Taux légal + 5 points, 12% annuel..."
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Élection de domicile</Label>
+                        <Input 
+                          value={bailCommercialData.clauseElectionDomicile} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, clauseElectionDomicile: e.target.value})} 
+                          placeholder="Ex: Adresse du bailleur, cabinet d'avocat..."
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Attribution de compétence territoriale</Label>
+                        <Input 
+                          value={bailCommercialData.clauseAttributionCompetence} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, clauseAttributionCompetence: e.target.value})} 
+                          placeholder="Ex: Tribunal de commerce de Paris..."
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Tribunal compétent en cas de litige
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </>
             )}
@@ -18574,14 +19492,879 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Message temporaire */}
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-center text-muted-foreground">
-                      📝 Formulaire bail commercial notaire - Version simplifiée
-                    </p>
-                    <p className="text-xs text-center text-muted-foreground mt-2">
-                      Les champs détaillés seront ajoutés selon vos besoins spécifiques
-                    </p>
+                  {/* Sélection du rôle du client */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
+                    <div className="space-y-2">
+                      <Label>Votre client est le *</Label>
+                      <RadioGroup 
+                        value={bailCommercialData.clientRole} 
+                        onValueChange={(value) => {
+                          setBailCommercialData({
+                            ...bailCommercialData, 
+                            clientRole: value,
+                            clientId: "",
+                          });
+                        }}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="bailleur" id="bc_role_bailleur_notaire" />
+                          <Label htmlFor="bc_role_bailleur_notaire" className="cursor-pointer">Bailleur (propriétaire)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="preneur" id="bc_role_preneur_notaire" />
+                          <Label htmlFor="bc_role_preneur_notaire" className="cursor-pointer">Preneur (locataire)</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+
+                  {/* ========== 1️⃣ RENOUVELLEMENT & FIN DU BAIL ========== */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔁 Renouvellement & Fin du bail</h3>
+                    <p className="text-xs text-muted-foreground">⚠️ Bloc fondamental en contentieux</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Droit au renouvellement *</Label>
+                        <Select 
+                          value={bailCommercialData.droitRenouvellement} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, droitRenouvellement: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (droit légal)</SelectItem>
+                            <SelectItem value="non">Non (bail dérogatoire ou renonciation)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Modalités de congé *</Label>
+                        <Select 
+                          value={bailCommercialData.modaliteConge} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, modaliteConge: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="rar">Lettre recommandée avec AR</SelectItem>
+                            <SelectItem value="huissier">Acte d'huissier</SelectItem>
+                            <SelectItem value="rar_ou_huissier">RAR ou acte d'huissier</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Délai de congé *</Label>
+                        <Input 
+                          value={bailCommercialData.delaiConge} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, delaiConge: e.target.value})} 
+                          placeholder="Ex: 6 mois avant échéance"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Acte d'huissier obligatoire ?</Label>
+                        <Select 
+                          value={bailCommercialData.acteHuissierObligatoire} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, acteHuissierObligatoire: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Indemnité d'éviction *</Label>
+                        <Select 
+                          value={bailCommercialData.indemniteEviction} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, indemniteEviction: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (droit légal)</SelectItem>
+                            <SelectItem value="exclusion">Exclusion (bail dérogatoire)</SelectItem>
+                            <SelectItem value="amenagement">Aménagement conventionnel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.indemniteEviction === "amenagement" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Montant de l'indemnité</Label>
+                            <Input 
+                              value={bailCommercialData.indemniteEvictionMontant} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, indemniteEvictionMontant: e.target.value})} 
+                              placeholder="Montant en €"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Conditions particulières</Label>
+                            <Input 
+                              value={bailCommercialData.indemniteEvictionConditions} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, indemniteEvictionConditions: e.target.value})} 
+                              placeholder="Préciser les conditions"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Renonciation éventuelle du preneur</Label>
+                        <Select 
+                          value={bailCommercialData.renonciationPreneur} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, renonciationPreneur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (⚠️ doit être encadrée)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.renonciationPreneur === "oui" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Encadrement de la renonciation</Label>
+                          <Textarea 
+                            value={bailCommercialData.renonciationPreneurEncadrement} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, renonciationPreneurEncadrement: e.target.value})} 
+                            placeholder="Décrire les conditions et limites de la renonciation..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ========== 2️⃣ PLAFONNEMENT / DÉPLAFONNEMENT ========== */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">📈 Plafonnement / Déplafonnement du loyer</h3>
+                    <p className="text-xs text-muted-foreground">⚠️ Très important pour investisseurs / centres-villes</p>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Principe de plafonnement du loyer *</Label>
+                        <Select 
+                          value={bailCommercialData.plafonnementLoyer} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, plafonnementLoyer: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (principe légal)</SelectItem>
+                            <SelectItem value="non">Non (dérogation conventionnelle)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Description du principe de plafonnement</Label>
+                        <Textarea 
+                          value={bailCommercialData.plafonnementPrincipe} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, plafonnementPrincipe: e.target.value})} 
+                          placeholder="Ex: Limitation de l'augmentation du loyer selon l'indice ILC..."
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Déplafonnement autorisé ? *</Label>
+                        <Select 
+                          value={bailCommercialData.deplafonnementAutorise} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, deplafonnementAutorise: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (cas légaux)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.deplafonnementAutorise === "oui" && (
+                        <>
+                          <div className="space-y-3 p-3 bg-white dark:bg-slate-900 rounded border">
+                            <h4 className="font-medium text-sm">Cas de déplafonnement :</h4>
+                            
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="deplafo_destination_notaire"
+                                checked={bailCommercialData.deplafonnementModificationDestination === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  deplafonnementModificationDestination: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="deplafo_destination_notaire" className="cursor-pointer font-normal">
+                                Modification notable de la destination
+                              </Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="deplafo_facteurs_notaire"
+                                checked={bailCommercialData.deplafonnementFacteursLocaux === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  deplafonnementFacteursLocaux: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="deplafo_facteurs_notaire" className="cursor-pointer font-normal">
+                                Facteurs locaux de commercialité
+                              </Label>
+                            </div>
+
+                            {bailCommercialData.deplafonnementFacteursLocaux === "oui" && (
+                              <div className="space-y-2 ml-6">
+                                <Label>Description des facteurs locaux</Label>
+                                <Textarea 
+                                  value={bailCommercialData.deplafonnementFacteursLocauxDescription} 
+                                  onChange={(e) => setBailCommercialData({...bailCommercialData, deplafonnementFacteursLocauxDescription: e.target.value})} 
+                                  placeholder="Ex: Nouvelle zone commerciale, ligne de métro..."
+                                  rows={2}
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Clause d'acceptation du déplafonnement</Label>
+                            <Select 
+                              value={bailCommercialData.deplafonnementClauseAcceptation} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, deplafonnementClauseAcceptation: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui (acceptation expresse)</SelectItem>
+                                <SelectItem value="non">Non</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Conditions du déplafonnement</Label>
+                            <Textarea 
+                              value={bailCommercialData.deplafonnementConditions} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, deplafonnementConditions: e.target.value})} 
+                              placeholder="Préciser les conditions et modalités..."
+                              rows={3}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ========== 3️⃣ INDEXATION : SÉCURITÉ JURIDIQUE (AMÉLIORATION) ========== */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">📊 Indexation : Sécurité juridique (compléments)</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Clause de réciprocité (hausse ET baisse) *</Label>
+                        <Select 
+                          value={bailCommercialData.indexationClauseReciprocite} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, indexationClauseReciprocite: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (indice à la hausse ET à la baisse)</SelectItem>
+                            <SelectItem value="non">Non (hausse uniquement)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clause de sauvegarde (indice supprimé) *</Label>
+                        <Select 
+                          value={bailCommercialData.indexationClauseSauvegarde} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, indexationClauseSauvegarde: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (indice de substitution prévu)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.indexationClauseSauvegarde === "oui" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Indice de substitution</Label>
+                          <Input 
+                            value={bailCommercialData.indexationIndiceSubstitution} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, indexationIndiceSubstitution: e.target.value})} 
+                            placeholder="Ex: Indice le plus proche en termes d'évolution..."
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Date anniversaire exacte de la révision *</Label>
+                        <Input 
+                          type="date"
+                          value={bailCommercialData.indexationDateAnniversaire} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, indexationDateAnniversaire: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ========== 4️⃣ GROS TRAVAUX & ARTICLE 606 ========== */}
+                  {bailCommercialData.typeBail === "commercial" && (
+                    <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">🧱 Gros travaux & Article 606 du Code civil</h3>
+                      <p className="text-xs text-muted-foreground">⚠️ Clause très contrôlée par les juges</p>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label>Référence à l'article 606 du Code civil *</Label>
+                          <Select 
+                            value={bailCommercialData.travauxArticle606Reference} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxArticle606Reference: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui (référence explicite)</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            L'article 606 définit les grosses réparations à la charge du bailleur (murs maîtres, voûtes, toiture, etc.)
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Exclusion explicite des grosses réparations (charge bailleur) *</Label>
+                          <Select 
+                            value={bailCommercialData.travauxGrossesReparationsExclusion} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxGrossesReparationsExclusion: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui (restent à la charge du bailleur)</SelectItem>
+                              <SelectItem value="non">Non (transfert au preneur)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {bailCommercialData.travauxGrossesReparationsExclusion === "non" && (
+                          <>
+                            <div className="p-3 bg-orange-50 border border-orange-200 rounded">
+                              <p className="text-sm text-orange-800">
+                                ⚠️ Attention : Le transfert des grosses réparations au preneur doit être encadré et justifié
+                              </p>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Transfert encadré au preneur</Label>
+                              <Select 
+                                value={bailCommercialData.travauxGrossesReparationsTransfert} 
+                                onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxGrossesReparationsTransfert: value})}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="oui">Oui (transfert encadré)</SelectItem>
+                                  <SelectItem value="non">Non</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {bailCommercialData.travauxGrossesReparationsTransfert === "oui" && (
+                              <div className="space-y-2">
+                                <Label>Encadrement du transfert (justification, limites, compensations...)</Label>
+                                <Textarea 
+                                  value={bailCommercialData.travauxGrossesReparationsEncadrement} 
+                                  onChange={(e) => setBailCommercialData({...bailCommercialData, travauxGrossesReparationsEncadrement: e.target.value})} 
+                                  placeholder="Ex: Contrepartie en termes de loyer, limitations de montant, nature des travaux..."
+                                  rows={4}
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ========== 5️⃣ ANNEXES LÉGALES OBLIGATOIRES ========== */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">📑 Annexes légales obligatoires</h3>
+                    <p className="text-xs text-muted-foreground">⚠️ Obligation légale du bailleur</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>DPE (Diagnostic de Performance Énergétique) *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeDPEFourni} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeDPEFourni: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (annexé)</SelectItem>
+                            <SelectItem value="non">Non (non applicable)</SelectItem>
+                            <SelectItem value="en_cours">En cours d'obtention</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>État des risques (ERP / ERNMT) *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeEtatRisquesFourni} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeEtatRisquesFourni: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (annexé)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="en_cours">En cours d'obtention</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Diagnostic amiante *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeDiagnosticAmianteFourni} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeDiagnosticAmianteFourni: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (annexé)</SelectItem>
+                            <SelectItem value="non">Non (permis postérieur à 1997)</SelectItem>
+                            <SelectItem value="en_cours">En cours d'obtention</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Inventaire des charges, impôts et taxes (L145-40-2) *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeInventaireChargesFourni} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeInventaireChargesFourni: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (obligatoire - annexé)</SelectItem>
+                            <SelectItem value="en_cours">En cours de préparation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>État récapitulatif triennal (L145-40-2) *</Label>
+                        <Select 
+                          value={bailCommercialData.annexeEtatRecapitulatifTriennal} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, annexeEtatRecapitulatifTriennal: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (annexé)</SelectItem>
+                            <SelectItem value="non">Non (premier bail)</SelectItem>
+                            <SelectItem value="en_cours">En cours de préparation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          État récapitulatif des charges, impôts, taxes et travaux des 3 dernières années
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ========== 6️⃣ CLAUSE RÉSOLUTOIRE ========== */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">⚖️ Clause résolutoire</h3>
+                    <p className="text-xs text-muted-foreground">⚠️ Indispensable : sans elle, procédure longue et risquée</p>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Clause résolutoire active ? *</Label>
+                        <Select 
+                          value={bailCommercialData.clauseResolutoireActive} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, clauseResolutoireActive: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (recommandé)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.clauseResolutoireActive === "oui" && (
+                        <>
+                          <div className="space-y-3 p-3 bg-white dark:bg-slate-900 rounded border">
+                            <h4 className="font-medium text-sm">Cas d'application de la clause :</h4>
+                            
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="resol_impaye_notaire"
+                                checked={bailCommercialData.clauseResolutoireImpayeLoyers === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  clauseResolutoireImpayeLoyers: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="resol_impaye_notaire" className="cursor-pointer font-normal">
+                                Impayé de loyers ou charges
+                              </Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="resol_assurance_notaire"
+                                checked={bailCommercialData.clauseResolutoireDefautAssurance === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  clauseResolutoireDefautAssurance: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="resol_assurance_notaire" className="cursor-pointer font-normal">
+                                Défaut d'assurance
+                              </Label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="resol_destination_notaire"
+                                checked={bailCommercialData.clauseResolutoireNonRespectDestination === "oui"}
+                                onCheckedChange={(checked) => setBailCommercialData({
+                                  ...bailCommercialData, 
+                                  clauseResolutoireNonRespectDestination: checked ? "oui" : "non"
+                                })}
+                              />
+                              <Label htmlFor="resol_destination_notaire" className="cursor-pointer font-normal">
+                                Non-respect de la destination
+                              </Label>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Autres cas de résolution</Label>
+                            <Textarea 
+                              value={bailCommercialData.clauseResolutoireAutresCas} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, clauseResolutoireAutresCas: e.target.value})} 
+                              placeholder="Ex: Sous-location non autorisée, travaux sans accord..."
+                              rows={2}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Commandement de payer requis ? *</Label>
+                            <Select 
+                              value={bailCommercialData.clauseResolutoireCommandement} 
+                              onValueChange={(value) => setBailCommercialData({...bailCommercialData, clauseResolutoireCommandement: value})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="oui">Oui (commandement préalable)</SelectItem>
+                                <SelectItem value="non">Non (résiliation immédiate)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Délai avant résolution *</Label>
+                            <Input 
+                              value={bailCommercialData.clauseResolutoireDelai} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, clauseResolutoireDelai: e.target.value})} 
+                              placeholder="Ex: 1 mois, 8 jours..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Procédure détaillée</Label>
+                            <Textarea 
+                              value={bailCommercialData.clauseResolutoireProcedure} 
+                              onChange={(e) => setBailCommercialData({...bailCommercialData, clauseResolutoireProcedure: e.target.value})} 
+                              placeholder="Décrire la procédure (mise en demeure, commandement, délais, résiliation...)"
+                              rows={4}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ========== 7️⃣ RÉSILIATION ANTICIPÉE ========== */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🚪 Résiliation anticipée</h3>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Résiliation triennale par le preneur *</Label>
+                        <Select 
+                          value={bailCommercialData.resiliationTriennalePreneur} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, resiliationTriennalePreneur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (droit légal 3-6-9)</SelectItem>
+                            <SelectItem value="non">Non (renonciation ou bail dérogatoire)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.resiliationTriennalePreneur === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Conditions de la résiliation triennale</Label>
+                          <Textarea 
+                            value={bailCommercialData.resiliationTriennalePreneurConditions} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, resiliationTriennalePreneurConditions: e.target.value})} 
+                            placeholder="Ex: Préavis de 6 mois, lettre recommandée avec AR..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Renonciation possible du preneur ?</Label>
+                        <Select 
+                          value={bailCommercialData.resiliationRenonciationPreneur} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, resiliationRenonciationPreneur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (⚠️ doit être encadrée)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.resiliationRenonciationPreneur === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Encadrement de la renonciation</Label>
+                          <Textarea 
+                            value={bailCommercialData.resiliationRenonciationEncadrement} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, resiliationRenonciationEncadrement: e.target.value})} 
+                            placeholder="Décrire les conditions et limites de la renonciation à la résiliation triennale..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-3 p-3 bg-white dark:bg-slate-900 rounded border">
+                        <h4 className="font-medium text-sm">Conditions spécifiques de résiliation :</h4>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="resil_travaux_notaire"
+                            checked={bailCommercialData.resiliationTravaux === "oui"}
+                            onCheckedChange={(checked) => setBailCommercialData({
+                              ...bailCommercialData, 
+                              resiliationTravaux: checked ? "oui" : "non"
+                            })}
+                          />
+                          <Label htmlFor="resil_travaux_notaire" className="cursor-pointer font-normal">
+                            Travaux du bailleur empêchant l'exploitation
+                          </Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="resil_destruction_notaire"
+                            checked={bailCommercialData.resiliationDestruction === "oui"}
+                            onCheckedChange={(checked) => setBailCommercialData({
+                              ...bailCommercialData, 
+                              resiliationDestruction: checked ? "oui" : "non"
+                            })}
+                          />
+                          <Label htmlFor="resil_destruction_notaire" className="cursor-pointer font-normal">
+                            Destruction partielle ou totale du local
+                          </Label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Autres conditions spécifiques</Label>
+                        <Textarea 
+                          value={bailCommercialData.resiliationConditionsSpecifiques} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, resiliationConditionsSpecifiques: e.target.value})} 
+                          placeholder="Ex: Force majeure, expropriation..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ========== 8️⃣ TRAVAUX DU PRENEUR ========== */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🏗️ Travaux du preneur</h3>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Autorisation préalable du bailleur requise ? *</Label>
+                        <Select 
+                          value={bailCommercialData.travauxPreneurAutorisationPrealable} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurAutorisationPrealable: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (autorisation écrite obligatoire)</SelectItem>
+                            <SelectItem value="partiel">Partiel (selon nature des travaux)</SelectItem>
+                            <SelectItem value="non">Non (liberté totale)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Conformité urbanisme *</Label>
+                        <Select 
+                          value={bailCommercialData.travauxPreneurConformiteUrbanisme} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurConformiteUrbanisme: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (obtention autorisations requise)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Remise en état en fin de bail *</Label>
+                        <Select 
+                          value={bailCommercialData.travauxPreneurRemiseEtat} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurRemiseEtat: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (remise en état initial)</SelectItem>
+                            <SelectItem value="conservation">Conservation des améliorations</SelectItem>
+                            <SelectItem value="negociation">À négocier en fin de bail</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Propriété des améliorations / méliorations *</Label>
+                        <Select 
+                          value={bailCommercialData.travauxPreneurProprieteMeliorations} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurProprieteMeliorations: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="bailleur">Propriété du bailleur (sans indemnité)</SelectItem>
+                            <SelectItem value="preneur">Propriété du preneur (démontables)</SelectItem>
+                            <SelectItem value="partage">Partage selon nature</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.travauxPreneurProprieteMeliorations !== "bailleur" && (
+                        <div className="space-y-2">
+                          <Label>Indemnisation des méliorations</Label>
+                          <Select 
+                            value={bailCommercialData.travauxPreneurIndemnisationMeliorations} 
+                            onValueChange={(value) => setBailCommercialData({...bailCommercialData, travauxPreneurIndemnisationMeliorations: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui (indemnisation en fin de bail)</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                              <SelectItem value="negociation">À négocier</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ========== 9️⃣ CLAUSES SENSIBLES (PROTECTION BAILLEUR) ========== */}
+                  <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">⚠️ Clauses sensibles (protection bailleur)</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Clause de solidarité en cas de cession</Label>
+                        <Select 
+                          value={bailCommercialData.clauseSolidariteCession} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, clauseSolidariteCession: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (cédant solidaire avec cessionnaire)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Clause pénale</Label>
+                        <Select 
+                          value={bailCommercialData.clausePenale} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, clausePenale: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (pénalités prévues)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.clausePenale === "oui" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Montant de la clause pénale</Label>
+                          <Input 
+                            value={bailCommercialData.clausePenaleMontant} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, clausePenaleMontant: e.target.value})} 
+                            placeholder="Ex: 10% du loyer annuel, montant forfaitaire..."
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Intérêts de retard</Label>
+                        <Select 
+                          value={bailCommercialData.clauseInteretsRetard} 
+                          onValueChange={(value) => setBailCommercialData({...bailCommercialData, clauseInteretsRetard: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (taux prévu)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {bailCommercialData.clauseInteretsRetard === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Taux des intérêts de retard *</Label>
+                          <Input 
+                            value={bailCommercialData.clauseInteretsRetardTaux} 
+                            onChange={(e) => setBailCommercialData({...bailCommercialData, clauseInteretsRetardTaux: e.target.value})} 
+                            placeholder="Ex: Taux légal + 5 points, 12% annuel..."
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Élection de domicile</Label>
+                        <Input 
+                          value={bailCommercialData.clauseElectionDomicile} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, clauseElectionDomicile: e.target.value})} 
+                          placeholder="Ex: Adresse du bailleur, cabinet de notaire..."
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Attribution de compétence territoriale</Label>
+                        <Input 
+                          value={bailCommercialData.clauseAttributionCompetence} 
+                          onChange={(e) => setBailCommercialData({...bailCommercialData, clauseAttributionCompetence: e.target.value})} 
+                          placeholder="Ex: Tribunal de commerce de Paris..."
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Tribunal compétent en cas de litige
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </>
