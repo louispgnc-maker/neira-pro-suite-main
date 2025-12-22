@@ -8286,6 +8286,82 @@ export default function Contrats() {
     setShowQuestionDialog(true);
   };
 
+  // Handler pour l'état des lieux
+  const handleEtatLieuxSubmit = async () => {
+    if (!user) return;
+
+    // Validation des champs obligatoires
+    if (!etatLieuxData.typeEtatLieux || !etatLieuxData.adresseLogement || !etatLieuxData.dateEtatLieux ||
+        !etatLieuxData.bailleurNom || !etatLieuxData.locataireNom) {
+      toast.error("Champs obligatoires manquants", { 
+        description: "Type, adresse, date, nom bailleur et locataire requis" 
+      });
+      return;
+    }
+
+    try {
+      const description = `État des lieux ${etatLieuxData.typeEtatLieux === "entree" ? "d'entrée" : "de sortie"} - ${etatLieuxData.adresseLogement}`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: etatLieuxData
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers
+      for (const file of etatLieuxPhotosLogement) {
+        const filePath = `${user.id}/${data.id}/photos_logement/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of etatLieuxPhotosCompteurs) {
+        const filePath = `${user.id}/${data.id}/photos_compteurs/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of etatLieuxPlanLogement) {
+        const filePath = `${user.id}/${data.id}/plan/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of etatLieuxDiagnostics) {
+        const filePath = `${user.id}/${data.id}/diagnostics/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of etatLieuxContratLocation) {
+        const filePath = `${user.id}/${data.id}/contrat_location/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of etatLieuxEntreeReference) {
+        const filePath = `${user.id}/${data.id}/edl_entree_reference/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of etatLieuxDevisReparation) {
+        const filePath = `${user.id}/${data.id}/devis_reparation/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of etatLieuxAutresDocuments) {
+        const filePath = `${user.id}/${data.id}/autres_documents/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+
+      toast.success("État des lieux créé");
+      setShowQuestionDialog(false);
+      setPendingContractType("");
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création état des lieux:', err);
+      toast.error('Erreur lors de la création');
+    }
+  };
+
   // Fonction pour créer un contrat générique (sans formulaire spécifique)
   const handleGenericContractSubmit = async () => {
     if (!user) return;
@@ -64709,7 +64785,9 @@ FIN DE LA CONVENTION
                   handleCreateAccordConfidentialiteContract();
                 } else if (pendingContractType === "Politique RGPD interne (annexes)") {
                   handleCreatePolitiqueRGPDContract();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "État des lieux (annexe)", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "État des lieux (annexe)") {
+                  handleEtatLieuxSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Mise en demeure de payer le loyer / autres obligations", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
