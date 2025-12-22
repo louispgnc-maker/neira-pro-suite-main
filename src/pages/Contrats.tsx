@@ -14006,27 +14006,6 @@ FIN DE LA CONVENTION
               </RadioGroup>
             </div>
 
-            {/* Sélection du rôle du client */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Rôle du client</h3>
-              <div className="space-y-2">
-                <Label>Votre client est : *</Label>
-                <RadioGroup 
-                  value={questionnaireData.clientRole}
-                  onValueChange={(value) => setQuestionnaireData({...questionnaireData, clientRole: value})}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="vendeur" id="vendeur" />
-                    <Label htmlFor="vendeur" className="cursor-pointer">Vendeur</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="acheteur" id="acheteur" />
-                    <Label htmlFor="acheteur" className="cursor-pointer">Acquéreur</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            </div>
-
             {/* Section Vendeur */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg border-b pb-2">👤 Vendeur</h3>
@@ -14844,27 +14823,6 @@ FIN DE LA CONVENTION
             {/* Formulaire spécifique pour Acte de vente immobilière */}
             {pendingContractType === "Acte de vente immobilière" && (
               <>
-                {/* Sélection du rôle du client */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg border-b pb-2">Rôle du client</h3>
-                  <div className="space-y-2">
-                    <Label>Votre client est : *</Label>
-                    <RadioGroup 
-                      value={acteVenteData.clientRole}
-                      onValueChange={(value) => setActeVenteData({...acteVenteData, clientRole: value})}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="vendeur" id="acte-vendeur" />
-                        <Label htmlFor="acte-vendeur" className="cursor-pointer">Vendeur</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="acheteur" id="acte-acheteur" />
-                        <Label htmlFor="acte-acheteur" className="cursor-pointer">Acquéreur</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-
                 {/* Vendeur - avec auto-fill si client sélectionné comme vendeur, sinon manuel */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-lg border-b pb-2">👤 Vendeur</h3>
@@ -16411,61 +16369,9 @@ FIN DE LA CONVENTION
             {/* ========== FORMULAIRE BAIL D'HABITATION - ESPACE AVOCAT ========== */}
             {(pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") && role === 'avocat' && (
               <>
-                {/* Sélection du rôle du client */}
-                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
-                  <div className="space-y-2">
-                    <Label>Votre client est le *</Label>
-                    <RadioGroup 
-                      value={bailHabitationData.clientRole} 
-                      onValueChange={(value) => {
-                        setBailHabitationData({
-                          ...bailHabitationData, 
-                          clientRole: value,
-                          clientId: "",
-                          // Reset des champs de l'autre partie
-                          ...(value === "bailleur" ? {
-                            locataireClientId: "",
-                            locataireNom: "",
-                            locatairePrenom: "",
-                            locataireAdresse: "",
-                            locataireDateNaissance: "",
-                            locataireLieuNaissance: "",
-                            locataireNationalite: "",
-                            locataireProfession: "",
-                            locataireStatutMatrimonial: "",
-                            nombreOccupants: "",
-                          } : {
-                            bailleurClientId: "",
-                            bailleurNom: "",
-                            bailleurPrenom: "",
-                            bailleurAdresse: "",
-                            bailleurDateNaissance: "",
-                            bailleurLieuNaissance: "",
-                            bailleurNationalite: "",
-                            bailleurProfession: "",
-                            bailleurStatutMatrimonial: "",
-                          })
-                        });
-                      }}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="bailleur" id="role_bailleur" />
-                        <Label htmlFor="role_bailleur" className="cursor-pointer">Bailleur (propriétaire)</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="locataire" id="role_locataire" />
-                        <Label htmlFor="role_locataire" className="cursor-pointer">Locataire</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-
                 {/* Bailleur */}
                 <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <h3 className="font-semibold text-lg border-b pb-2">
-                    {bailHabitationData.clientRole === "bailleur" ? "👤 Bailleur (votre client)" : "👤 Bailleur"}
-                  </h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">👤 Bailleur</h3>
                   
                   {/* Sélection du client si bailleur */}
                   {bailHabitationData.clientRole === "bailleur" ? (
@@ -16564,9 +16470,7 @@ FIN DE LA CONVENTION
 
                 {/* Locataire */}
                 <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <h3 className="font-semibold text-lg border-b pb-2">
-                    {bailHabitationData.clientRole === "locataire" ? "👥 Locataire (votre client)" : "👥 Locataire"}
-                  </h3>
+                  <h3 className="font-semibold text-lg border-b pb-2">👥 Locataire</h3>
                   
                   {/* Sélection du client si locataire */}
                   {bailHabitationData.clientRole === "locataire" ? (
@@ -17528,62 +17432,9 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Sélection du rôle du client */}
-                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
-                    <div className="space-y-2">
-                      <Label>Votre client est le *</Label>
-                          <RadioGroup 
-                            value={bailCommercialData.clientRole} 
-                            onValueChange={(value) => {
-                              setBailCommercialData({
-                                ...bailCommercialData, 
-                                clientRole: value,
-                                clientId: "",
-                                // Reset des champs de l'autre partie
-                                ...(value === "bailleur" ? {
-                                  locataireClientId: "",
-                                  statutLocataire: "",
-                                  locataireNom: "",
-                                  locatairePrenom: "",
-                                  locataireAdresse: "",
-                                  locataireImmatriculation: "",
-                                  locataireDenomination: "",
-                                  locataireFormeJuridique: "",
-                                  locataireSiege: "",
-                                  locataireSiren: "",
-                                  locataireSiret: "",
-                                } : {
-                                  bailleurClientId: "",
-                                  statutBailleur: "",
-                                  bailleurNom: "",
-                                  bailleurPrenom: "",
-                                  bailleurDenomination: "",
-                                  bailleurFormeJuridique: "",
-                                  bailleurAdresse: "",
-                                  bailleurSiren: "",
-                                  bailleurSiret: "",
-                                })
-                              });
-                            }}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="bailleur" id="bc_role_bailleur" />
-                              <Label htmlFor="bc_role_bailleur" className="cursor-pointer">Bailleur (propriétaire)</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="preneur" id="bc_role_preneur" />
-                          <Label htmlFor="bc_role_preneur" className="cursor-pointer">Preneur (locataire)</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                  </div>
-
                   {/* Bailleur */}
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <h3 className="font-semibold text-lg border-b pb-2">
-                      {bailCommercialData.clientRole === "bailleur" ? "🏢 Bailleur (votre client)" : "🏢 Bailleur"}
-                    </h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">🏢 Bailleur</h3>
                     
                     {/* Sélection du client si bailleur */}
                     {bailCommercialData.clientRole === "bailleur" && (
@@ -17920,9 +17771,7 @@ FIN DE LA CONVENTION
 
                   {/* Preneur (Locataire) */}
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <h3 className="font-semibold text-lg border-b pb-2">
-                      {bailCommercialData.clientRole === "preneur" ? "🏢 Preneur (votre client)" : "🏢 Preneur (Locataire)"}
-                    </h3>
+                    <h3 className="font-semibold text-lg border-b pb-2">🏢 Preneur (Locataire)</h3>
                     
                     {/* Sélection du client si preneur */}
                     {bailCommercialData.clientRole === "preneur" && (
@@ -20610,49 +20459,6 @@ FIN DE LA CONVENTION
                     <p className="text-xs text-blue-600 mt-1">Document obligatoire lors de l'entrée et la sortie du locataire</p>
                   </div>
 
-                  {/* RÔLE DU CLIENT */}
-                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <h3 className="font-semibold text-lg border-b pb-2">Votre client est :</h3>
-                    <RadioGroup 
-                      value={etatLieuxData.clientRole} 
-                      onValueChange={(value) => {
-                        setEtatLieuxData({
-                          ...etatLieuxData,
-                          clientRole: value,
-                          // Reset des champs client selon le rôle
-                          ...(value === "locataire" ? {
-                            bailleurClientId: "",
-                            bailleurNom: "",
-                            bailleurPrenom: "",
-                            bailleurAdresse: "",
-                            bailleurEmail: "",
-                            bailleurTelephone: "",
-                          } : value === "bailleur" ? {
-                            locataireClientId: "",
-                            locataireNom: "",
-                            locatairePrenom: "",
-                            locataireAdresse: "",
-                            locataireEmail: "",
-                            locataireTelephone: "",
-                          } : {})
-                        });
-                      }}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="bailleur" id="edl_role_bailleur" />
-                        <Label htmlFor="edl_role_bailleur" className="cursor-pointer">Bailleur (propriétaire)</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="locataire" id="edl_role_locataire" />
-                        <Label htmlFor="edl_role_locataire" className="cursor-pointer">Locataire</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="aucun" id="edl_role_aucun" />
-                        <Label htmlFor="edl_role_aucun" className="cursor-pointer">Aucun (saisie manuelle pour les deux parties)</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-
                   {/* 1️⃣ IDENTIFICATION DU DOCUMENT */}
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du document</h3>
@@ -20761,13 +20567,10 @@ FIN DE LA CONVENTION
                     
                     {/* Bailleur */}
                     <div className="space-y-3">
-                      <h4 className="font-medium">
-                        {etatLieuxData.clientRole === "bailleur" ? "A. Bailleur (votre client) 👤" : "A. Bailleur"}
-                      </h4>
+                      <h4 className="font-medium">A. Bailleur</h4>
                       
-                      {/* Sélection du client si bailleur */}
-                      {etatLieuxData.clientRole === "bailleur" && (
-                        <ClientSelector
+                      {/* Sélection du client bailleur */}
+                      <ClientSelector
                           clients={clients}
                           selectedClientId={etatLieuxData.bailleurClientId}
                           onClientChange={(value) => {
@@ -20800,7 +20603,6 @@ FIN DE LA CONVENTION
                           label="Sélectionner le client bailleur *"
                           placeholder="Choisir un client"
                         />
-                      )}
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -20845,13 +20647,10 @@ FIN DE LA CONVENTION
 
                     {/* Locataire */}
                     <div className="space-y-3">
-                      <h4 className="font-medium">
-                        {etatLieuxData.clientRole === "locataire" ? "B. Locataire (votre client) 👤" : "B. Locataire"}
-                      </h4>
+                      <h4 className="font-medium">B. Locataire</h4>
                       
-                      {/* Sélection du client si locataire */}
-                      {etatLieuxData.clientRole === "locataire" && (
-                        <ClientSelector
+                      {/* Sélection du client locataire */}
+                      <ClientSelector
                           clients={clients}
                           selectedClientId={etatLieuxData.locataireClientId}
                           onClientChange={(value) => {
@@ -20884,7 +20683,6 @@ FIN DE LA CONVENTION
                           label="Sélectionner le client locataire *"
                           placeholder="Choisir un client"
                         />
-                      )}
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
