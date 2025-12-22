@@ -5707,6 +5707,9 @@ export default function Contrats() {
   
   // ========== ÉTAT DES LIEUX ==========
   const [etatLieuxData, setEtatLieuxData] = useState({
+    // RÔLE DU CLIENT
+    clientRole: "", // "bailleur" ou "locataire" ou ""
+    
     // 1️⃣ IDENTIFICATION DU DOCUMENT
     typeEtatLieux: "",
     adresseLogement: "",
@@ -5718,11 +5721,13 @@ export default function Contrats() {
     temoinsRepresentants: "",
     
     // 2️⃣ IDENTITÉ DES PARTIES
+    bailleurClientId: "",
     bailleurNom: "",
     bailleurPrenom: "",
     bailleurAdresse: "",
     bailleurEmail: "",
     bailleurTelephone: "",
+    locataireClientId: "",
     locataireNom: "",
     locatairePrenom: "",
     locataireAdresse: "",
@@ -20605,6 +20610,49 @@ FIN DE LA CONVENTION
                     <p className="text-xs text-blue-600 mt-1">Document obligatoire lors de l'entrée et la sortie du locataire</p>
                   </div>
 
+                  {/* RÔLE DU CLIENT */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">Votre client est :</h3>
+                    <RadioGroup 
+                      value={etatLieuxData.clientRole} 
+                      onValueChange={(value) => {
+                        setEtatLieuxData({
+                          ...etatLieuxData,
+                          clientRole: value,
+                          // Reset des champs client selon le rôle
+                          ...(value === "locataire" ? {
+                            bailleurClientId: "",
+                            bailleurNom: "",
+                            bailleurPrenom: "",
+                            bailleurAdresse: "",
+                            bailleurEmail: "",
+                            bailleurTelephone: "",
+                          } : value === "bailleur" ? {
+                            locataireClientId: "",
+                            locataireNom: "",
+                            locatairePrenom: "",
+                            locataireAdresse: "",
+                            locataireEmail: "",
+                            locataireTelephone: "",
+                          } : {})
+                        });
+                      }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="bailleur" id="edl_role_bailleur" />
+                        <Label htmlFor="edl_role_bailleur" className="cursor-pointer">Bailleur (propriétaire)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="locataire" id="edl_role_locataire" />
+                        <Label htmlFor="edl_role_locataire" className="cursor-pointer">Locataire</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="aucun" id="edl_role_aucun" />
+                        <Label htmlFor="edl_role_aucun" className="cursor-pointer">Aucun (saisie manuelle pour les deux parties)</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
                   {/* 1️⃣ IDENTIFICATION DU DOCUMENT */}
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du document</h3>
@@ -20713,7 +20761,47 @@ FIN DE LA CONVENTION
                     
                     {/* Bailleur */}
                     <div className="space-y-3">
-                      <h4 className="font-medium">A. Bailleur</h4>
+                      <h4 className="font-medium">
+                        {etatLieuxData.clientRole === "bailleur" ? "A. Bailleur (votre client) 👤" : "A. Bailleur"}
+                      </h4>
+                      
+                      {/* Sélection du client si bailleur */}
+                      {etatLieuxData.clientRole === "bailleur" && (
+                        <ClientSelector
+                          clients={clients}
+                          selectedClientId={etatLieuxData.bailleurClientId}
+                          onClientChange={(value) => {
+                            if (value === '') {
+                              // Saisie manuelle
+                              setEtatLieuxData({
+                                ...etatLieuxData,
+                                bailleurClientId: "",
+                                bailleurNom: "",
+                                bailleurPrenom: "",
+                                bailleurAdresse: "",
+                                bailleurEmail: "",
+                                bailleurTelephone: "",
+                              });
+                            } else {
+                              const selectedClient = clients.find(c => c.id === value) as any;
+                              if (selectedClient) {
+                                setEtatLieuxData({
+                                  ...etatLieuxData,
+                                  bailleurClientId: value,
+                                  bailleurNom: selectedClient.nom || "",
+                                  bailleurPrenom: selectedClient.prenom || "",
+                                  bailleurAdresse: selectedClient.adresse || "",
+                                  bailleurEmail: selectedClient.email || "",
+                                  bailleurTelephone: selectedClient.telephone || "",
+                                });
+                              }
+                            }
+                          }}
+                          label="Sélectionner le client bailleur *"
+                          placeholder="Choisir un client"
+                        />
+                      )}
+                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Nom *</Label>
@@ -20757,7 +20845,47 @@ FIN DE LA CONVENTION
 
                     {/* Locataire */}
                     <div className="space-y-3">
-                      <h4 className="font-medium">B. Locataire</h4>
+                      <h4 className="font-medium">
+                        {etatLieuxData.clientRole === "locataire" ? "B. Locataire (votre client) 👤" : "B. Locataire"}
+                      </h4>
+                      
+                      {/* Sélection du client si locataire */}
+                      {etatLieuxData.clientRole === "locataire" && (
+                        <ClientSelector
+                          clients={clients}
+                          selectedClientId={etatLieuxData.locataireClientId}
+                          onClientChange={(value) => {
+                            if (value === '') {
+                              // Saisie manuelle
+                              setEtatLieuxData({
+                                ...etatLieuxData,
+                                locataireClientId: "",
+                                locataireNom: "",
+                                locatairePrenom: "",
+                                locataireAdresse: "",
+                                locataireEmail: "",
+                                locataireTelephone: "",
+                              });
+                            } else {
+                              const selectedClient = clients.find(c => c.id === value) as any;
+                              if (selectedClient) {
+                                setEtatLieuxData({
+                                  ...etatLieuxData,
+                                  locataireClientId: value,
+                                  locataireNom: selectedClient.nom || "",
+                                  locatairePrenom: selectedClient.prenom || "",
+                                  locataireAdresse: selectedClient.adresse || "",
+                                  locataireEmail: selectedClient.email || "",
+                                  locataireTelephone: selectedClient.telephone || "",
+                                });
+                              }
+                            }
+                          }}
+                          label="Sélectionner le client locataire *"
+                          placeholder="Choisir un client"
+                        />
+                      )}
+                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Nom *</Label>
