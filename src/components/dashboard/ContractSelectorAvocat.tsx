@@ -54,7 +54,7 @@ export const AVOCAT_CONTRACT_CATEGORIES = [
     contracts: [
       "Bail d'habitation vide",
       "Bail d'habitation meublé",
-      "Bail commercial",
+      "Bail commercial / professionnel",
       "État des lieux (annexe)",
       "Mise en demeure de payer le loyer / autres obligations",
     ],
