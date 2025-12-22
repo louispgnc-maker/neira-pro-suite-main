@@ -28,7 +28,7 @@ const plans = [
     description: 'Idéal pour avocats et notaires indépendants',
     summary: 'Conçu pour un seul professionnel qui travaille en autonomie.',
     features: [
-      '1 utilisateur',
+      'Idéal pour avocats et notaires indépendants',
       '20 Go de stockage',
       '100 dossiers actifs',
       '30 clients actifs',
@@ -36,7 +36,7 @@ const plans = [
       'Gestion documentaire',
       'Partage sécurisé client'
     ],
-    limits: '1 utilisateur • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois',
+    limits: 'Idéal pour avocats et notaires indépendants • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois',
     notIncluded: [
       'Espace collaboratif',
       'Données analysées'
@@ -79,7 +79,7 @@ const plans = [
     description: 'Idéal pour cabinets de 10 à 50+ utilisateurs',
     summary: 'Solution premium pour cabinets structurés avec tout illimité.',
     features: [
-      'Utilisateurs illimités',
+      'Idéal pour cabinets de 10 à 50+ utilisateurs',
       'Stockage illimité',
       'Dossiers illimités',
       'Clients illimités',

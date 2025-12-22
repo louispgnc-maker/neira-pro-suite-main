@@ -102,7 +102,7 @@ export default function Solution() {
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">1 utilisateur</span>
+                    <span className="text-sm text-gray-700">Idéal pour avocats et notaires indépendants</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -172,7 +172,7 @@ export default function Solution() {
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Jusqu'à 10 utilisateurs</span>
+                    <span className="text-sm text-gray-700">Idéal pour cabinets de 2 à 10 utilisateurs</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -228,7 +228,7 @@ export default function Solution() {
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Utilisateurs illimités</span>
+                    <span className="text-sm text-gray-700">Idéal pour cabinets de 10 à 50+ utilisateurs</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />

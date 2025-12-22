@@ -19,9 +19,9 @@ const planConfigs = {
     description: 'Idéal pour avocats et notaires indépendants',
     icon: Zap,
     color: 'blue',
-    limits: '1 utilisateur • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois',
+    limits: 'Idéal pour avocats et notaires indépendants • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois',
     features: [
-      { title: '1 utilisateur', description: 'Pour un professionnel indépendant' },
+      { title: 'Idéal pour avocats et notaires indépendants', description: 'Pour un professionnel indépendant' },
       { title: '20 Go de stockage', description: 'Espace pour vos documents' },
       { title: '100 dossiers actifs', description: 'Gérez vos dossiers en cours' },
       { title: '30 clients actifs', description: 'Jusqu\'à 30 clients simultanés' },
@@ -61,7 +61,7 @@ const planConfigs = {
     color: 'orange',
     limits: 'Tout illimité — aucune restriction',
     features: [
-      { title: 'Utilisateurs illimités', description: 'Aucune limite d\'équipe' },
+      { title: 'Idéal pour cabinets de 10 à 50+ utilisateurs', description: 'Aucune limite d\'équipe' },
       { title: 'Stockage illimité', description: 'Espace sans limite' },
       { title: 'Dossiers illimités', description: 'Gérez autant de dossiers que nécessaire' },
       { title: 'Clients illimités', description: 'Portefeuille client sans limite' },

@@ -83,7 +83,7 @@ export default function CheckoutEssentiel() {
             <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
               <CardContent className="p-6">
                 <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
-                <p className="text-sm text-gray-700">1 utilisateur • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois</p>
+                <p className="text-sm text-gray-700">Idéal pour avocats et notaires indépendants • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois</p>
               </CardContent>
             </Card>
           </div>
