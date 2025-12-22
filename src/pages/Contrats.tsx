@@ -26880,12 +26880,6 @@ FIN DE LA CONVENTION
                         <Label>Montant en lettres * (requis pour preuve)</Label>
                         <Input value={reconnaissanceDetteData.montantLettres} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, montantLettres: e.target.value})} placeholder="Ex: Cinq mille euros" />
                       </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-700">
-                          <p className="text-sm font-medium">⚠️ Mention manuscrite obligatoire à la signature :</p>
-                          <p className="text-sm italic mt-1">"Bon pour reconnaissance de dette de {reconnaissanceDetteData.montantLettres || "[montant]"} euros."</p>
-                        </div>
-                      </div>
                     </div>
                   </div>
 
