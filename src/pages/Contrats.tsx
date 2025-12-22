@@ -24103,6 +24103,7 @@ FIN DE LA CONVENTION
                           files={medCopieBail}
                           setFiles={setMedCopieBail}
                           label=""
+                          role="avocat"
                         />
                       </div>
 
@@ -24114,6 +24115,7 @@ FIN DE LA CONVENTION
                               files={medHistoriqueLoyers}
                               setFiles={setMedHistoriqueLoyers}
                               label=""
+                              role="avocat"
                             />
                           </div>
                           <div>
@@ -24122,6 +24124,7 @@ FIN DE LA CONVENTION
                               files={medReleves}
                               setFiles={setMedReleves}
                               label=""
+                              role="avocat"
                             />
                           </div>
                           <div>
@@ -24130,6 +24133,7 @@ FIN DE LA CONVENTION
                               files={medTableauCalcul}
                               setFiles={setMedTableauCalcul}
                               label=""
+                              role="avocat"
                             />
                           </div>
                         </>
@@ -24141,6 +24145,7 @@ FIN DE LA CONVENTION
                           files={medNotificationsPrecedentes}
                           setFiles={setMedNotificationsPrecedentes}
                           label=""
+                          role="avocat"
                         />
                       </div>
 
@@ -24151,6 +24156,7 @@ FIN DE LA CONVENTION
                             files={medAttestationAssurance}
                             setFiles={setMedAttestationAssurance}
                             label=""
+                            role="avocat"
                           />
                         </div>
                       )}
@@ -24163,6 +24169,7 @@ FIN DE LA CONVENTION
                             files={medPhotos}
                             setFiles={setMedPhotos}
                             label=""
+                            role="avocat"
                           />
                         </div>
                       )}
@@ -24173,6 +24180,11 @@ FIN DE LA CONVENTION
                           <MultiFileUpload
                             files={medRapportHuissier}
                             setFiles={setMedRapportHuissier}
+                            label=""
+                            role="avocat"
+                          />
+                        </div>
+                      )}
                             label=""
                           />
                         </div>
