@@ -6119,6 +6119,160 @@ export default function Contrats() {
   const [pacteJustificatifsAcquisitions, setPacteJustificatifsAcquisitions] = useState<File[]>([]);
   const [pacteTableauRepartition, setPacteTableauRepartition] = useState<File[]>([]);
   const [pacteAttestationVieCommune, setPacteAttestationVieCommune] = useState<File[]>([]);
+
+  // ========== CONVENTION PARENTALE ==========
+  const [conventionParentaleData, setConventionParentaleData] = useState({
+    // 1️⃣ Identification Parent 1
+    parent1ClientId: "",
+    parent1Nom: "",
+    parent1Prenom: "",
+    parent1DateNaissance: "",
+    parent1LieuNaissance: "",
+    parent1Nationalite: "",
+    parent1Adresse: "",
+    parent1Profession: "",
+    parent1Telephone: "",
+    parent1Email: "",
+    
+    // Identification Parent 2
+    parent2ClientId: "",
+    parent2Nom: "",
+    parent2Prenom: "",
+    parent2DateNaissance: "",
+    parent2LieuNaissance: "",
+    parent2Nationalite: "",
+    parent2Adresse: "",
+    parent2Profession: "",
+    parent2Telephone: "",
+    parent2Email: "",
+    
+    // Informations complémentaires
+    parentsSepares: "", // oui / non
+    divorceEnCours: "", // oui / non
+    adresseFutureApresSepar: "",
+    
+    // 2️⃣ Enfants (array)
+    enfants: [],
+    
+    // 3️⃣ Autorité parentale
+    typeAutoriteParentale: "conjointe", // conjointe / exclusive
+    parentAutoriteExclusive: "", // parent1 / parent2
+    engagementInteretSuperieur: "oui",
+    
+    // 4️⃣ Résidence habituelle
+    typeResidence: "", // parent1 / parent2 / alternee / alterneeAmenagee
+    adresseResidence: "",
+    // Résidence alternée
+    modaliteAlternance: "", // 1semaine / 2-2-3 / impaires-paires / personnalise
+    planningDetaille: "",
+    modalitesTransition: "",
+    
+    // 5️⃣ Droit de visite et hébergement
+    typeDVH: "", // classique / elargi / progressif / personnalise
+    // DVH classique
+    weekendsClassiques: "", // 1er-3eme / alternes
+    heureDebut: "",
+    heureFin: "",
+    lieuEchange: "",
+    // DVH progressif
+    visiteEnPresence: "", // oui / non
+    dureeLimitee: "",
+    progressionMois: "",
+    // DVH personnalisé
+    planningPersonnalise: "",
+    
+    // 6️⃣ Vacances scolaires
+    vacancesNoel: "",
+    vacancesHiver: "",
+    vacancesPrintemps: "",
+    vacancesEteJuillet: "",
+    vacancesEteAout: "",
+    pontsEtFeries: "",
+    modalitesAlternanceVacances: "", // alternance / quinzaine / choix
+    
+    // 7️⃣ Pension alimentaire
+    montantPension: "",
+    baremeCafUtilise: "", // oui / non
+    revenusParent1: "",
+    revenusParent2: "",
+    fraisEnfant: "",
+    jourPaiement: "",
+    modePaiement: "virement", // virement / direct
+    indexationAnnuelle: "", // oui / non
+    fraisMedicaux: "",
+    fraisScolaires: "",
+    fraisPeriscolaires: "",
+    fraisExceptionnels: "",
+    repartitionFrais: "50/50",
+    
+    // 8️⃣ Frais extraordinaires
+    definitionFraisExtraordinaires: "",
+    repartitionFraisExtra: "50/50",
+    accordPrealable: "", // oui / non
+    delaiPaiement: "",
+    justificatifsNecessaires: "", // oui / non
+    
+    // 9️⃣ Santé et éducation
+    suiviMedical: "",
+    decisionsMedicalesImportantes: "",
+    doubleInformation: "oui",
+    coordonneesPediatre: "",
+    etablissementScolaire: "",
+    activitesExtraScolaires: "",
+    orientationScolaire: "",
+    financementActivites: "",
+    
+    // �� Communication entre parents
+    modeCommunication: "", // email / sms / application
+    applicationUtilisee: "",
+    delaisReponse: "",
+    obligationInformation: [],
+    
+    // 1️⃣1️⃣ Transports et déplacements
+    responsableTransportAller: "",
+    responsableTransportRetour: "",
+    lieuEchangeTransport: "",
+    repartitionCoutsTransport: "",
+    toleranceRetards: "",
+    autorisationVoyageHorsFrance: "", // oui / non
+    dureeMaximaleVoyage: "",
+    
+    // 1️⃣2️⃣ Objets personnels
+    affairesChequeParent: "",
+    gestionVetements: "",
+    carnetSante: "",
+    cartableFournitures: "",
+    ordinateurScolaire: "",
+    
+    // 1️⃣3️⃣ Relations famille élargie
+    droitGrandsParents: "oui",
+    respectLiensFamiliaux: "oui",
+    
+    // 1️⃣4️⃣ Respect mutuel
+    engagementNonDenigrement: "oui",
+    engagementNonImplication: "oui",
+    
+    // 1️⃣5️⃣ Modification convention
+    modificationAccordEcrit: "oui",
+    obligationRenegociation: "oui",
+    recoursMediation: "", // oui / non
+    
+    // 1️⃣6️⃣ Homologation
+    souhaitHomologation: "", // oui / non
+    tribunalCompetent: "",
+    
+    // 1️⃣7️⃣ Date et lieu de signature
+    lieuSignature: "",
+    dateSignature: "",
+  });
+  
+  // États fichiers pour convention parentale
+  const [conventionPiecesIdentite, setConventionPiecesIdentite] = useState<File[]>([]);
+  const [conventionLivretFamille, setConventionLivretFamille] = useState<File[]>([]);
+  const [conventionCertificatsScolarite, setConventionCertificatsScolarite] = useState<File[]>([]);
+  const [conventionCalendrierVacances, setConventionCalendrierVacances] = useState<File[]>([]);
+  const [conventionJustificatifsRevenus, setConventionJustificatifsRevenus] = useState<File[]>([]);
+  const [conventionAttestationsMedicales, setConventionAttestationsMedicales] = useState<File[]>([]);
   
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
@@ -8801,6 +8955,76 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création pacte de concubinage:', err);
+      toast.error('Erreur lors de la création');
+    }
+  };
+
+  // ========== HANDLER CONVENTION PARENTALE ==========
+  const handleConventionParentaleSubmit = async () => {
+    if (!user) return;
+
+    // Validation des champs obligatoires
+    if (!conventionParentaleData.parent1Nom || !conventionParentaleData.parent1Prenom ||
+        !conventionParentaleData.parent2Nom || !conventionParentaleData.parent2Prenom ||
+        !conventionParentaleData.typeAutoriteParentale || !conventionParentaleData.typeResidence) {
+      toast.error("Champs obligatoires manquants", { 
+        description: "Vérifiez identités parents, autorité parentale et résidence habituelle" 
+      });
+      return;
+    }
+
+    try {
+      const description = `Convention parentale - ${conventionParentaleData.parent1Nom} ${conventionParentaleData.parent1Prenom} & ${conventionParentaleData.parent2Nom} ${conventionParentaleData.parent2Prenom}`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: conventionParentaleData,
+          client_id: conventionParentaleData.parent1ClientId || undefined
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers annexes
+      for (const file of conventionPiecesIdentite) {
+        const filePath = `${user.id}/${data.id}/pieces_identite/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of conventionLivretFamille) {
+        const filePath = `${user.id}/${data.id}/livret_famille/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of conventionCertificatsScolarite) {
+        const filePath = `${user.id}/${data.id}/certificats_scolarite/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of conventionCalendrierVacances) {
+        const filePath = `${user.id}/${data.id}/calendrier_vacances/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of conventionJustificatifsRevenus) {
+        const filePath = `${user.id}/${data.id}/justificatifs_revenus/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of conventionAttestationsMedicales) {
+        const filePath = `${user.id}/${data.id}/attestations_medicales/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+
+      toast.success("Convention parentale créée");
+      setShowQuestionDialog(false);
+      setPendingContractType("");
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création convention parentale:', err);
       toast.error('Erreur lors de la création');
     }
   };
@@ -25552,6 +25776,224 @@ FIN DE LA CONVENTION
                         />
                       </div>
                     </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
+            {/* Formulaire spécifique pour Convention parentale */}
+            {pendingContractType === "Convention parentale" && (
+              <>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
+                  
+                  {/* 1️⃣ IDENTIFICATION DES PARENTS */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification des parents</h3>
+                    
+                    {/* PARENT 1 */}
+                    <div className="space-y-4">
+                      <h4 className="font-semibold">Parent 1</h4>
+                      
+                      <ClientSelector
+                        clients={clients}
+                        value={conventionParentaleData.parent1ClientId}
+                        onClientChange={(value) => {
+                          if (value === '') {
+                            setConventionParentaleData({
+                              ...conventionParentaleData,
+                              parent1ClientId: "",
+                              parent1Nom: "",
+                              parent1Prenom: "",
+                              parent1DateNaissance: "",
+                              parent1LieuNaissance: "",
+                              parent1Nationalite: "",
+                              parent1Adresse: "",
+                              parent1Profession: "",
+                              parent1Telephone: "",
+                              parent1Email: "",
+                            });
+                          } else {
+                            const selectedClient = clients.find(c => c.id === value) as any;
+                            if (selectedClient) {
+                              setConventionParentaleData({
+                                ...conventionParentaleData,
+                                parent1ClientId: value,
+                                parent1Nom: selectedClient.nom || "",
+                                parent1Prenom: selectedClient.prenom || "",
+                                parent1DateNaissance: selectedClient.date_naissance || "",
+                                parent1LieuNaissance: selectedClient.lieu_naissance || "",
+                                parent1Nationalite: selectedClient.nationalite || "",
+                                parent1Adresse: selectedClient.adresse || "",
+                                parent1Profession: selectedClient.profession || "",
+                                parent1Telephone: selectedClient.telephone || "",
+                                parent1Email: selectedClient.email || "",
+                              });
+                            }
+                          }
+                        }}
+                        label="Sélectionner le parent 1"
+                      />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom *</Label>
+                          <Input value={conventionParentaleData.parent1Nom} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1Nom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom *</Label>
+                          <Input value={conventionParentaleData.parent1Prenom} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1Prenom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance *</Label>
+                          <Input type="date" value={conventionParentaleData.parent1DateNaissance} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1DateNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de naissance *</Label>
+                          <Input value={conventionParentaleData.parent1LieuNaissance} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1LieuNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nationalité *</Label>
+                          <Input value={conventionParentaleData.parent1Nationalite} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1Nationalite: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Profession</Label>
+                          <Input value={conventionParentaleData.parent1Profession} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1Profession: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse complète *</Label>
+                          <Input value={conventionParentaleData.parent1Adresse} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1Adresse: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Téléphone</Label>
+                          <Input value={conventionParentaleData.parent1Telephone} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1Telephone: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Email</Label>
+                          <Input type="email" value={conventionParentaleData.parent1Email} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent1Email: e.target.value})} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* PARENT 2 */}
+                    <div className="space-y-4">
+                      <h4 className="font-semibold">Parent 2</h4>
+                      
+                      <ClientSelector
+                        clients={clients}
+                        value={conventionParentaleData.parent2ClientId}
+                        onClientChange={(value) => {
+                          if (value === '') {
+                            setConventionParentaleData({
+                              ...conventionParentaleData,
+                              parent2ClientId: "",
+                              parent2Nom: "",
+                              parent2Prenom: "",
+                              parent2DateNaissance: "",
+                              parent2LieuNaissance: "",
+                              parent2Nationalite: "",
+                              parent2Adresse: "",
+                              parent2Profession: "",
+                              parent2Telephone: "",
+                              parent2Email: "",
+                            });
+                          } else {
+                            const selectedClient = clients.find(c => c.id === value) as any;
+                            if (selectedClient) {
+                              setConventionParentaleData({
+                                ...conventionParentaleData,
+                                parent2ClientId: value,
+                                parent2Nom: selectedClient.nom || "",
+                                parent2Prenom: selectedClient.prenom || "",
+                                parent2DateNaissance: selectedClient.date_naissance || "",
+                                parent2LieuNaissance: selectedClient.lieu_naissance || "",
+                                parent2Nationalite: selectedClient.nationalite || "",
+                                parent2Adresse: selectedClient.adresse || "",
+                                parent2Profession: selectedClient.profession || "",
+                                parent2Telephone: selectedClient.telephone || "",
+                                parent2Email: selectedClient.email || "",
+                              });
+                            }
+                          }
+                        }}
+                        label="Sélectionner le parent 2"
+                      />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom *</Label>
+                          <Input value={conventionParentaleData.parent2Nom} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2Nom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom *</Label>
+                          <Input value={conventionParentaleData.parent2Prenom} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2Prenom: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance *</Label>
+                          <Input type="date" value={conventionParentaleData.parent2DateNaissance} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2DateNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de naissance *</Label>
+                          <Input value={conventionParentaleData.parent2LieuNaissance} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2LieuNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nationalité *</Label>
+                          <Input value={conventionParentaleData.parent2Nationalite} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2Nationalite: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Profession</Label>
+                          <Input value={conventionParentaleData.parent2Profession} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2Profession: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse complète *</Label>
+                          <Input value={conventionParentaleData.parent2Adresse} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2Adresse: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Téléphone</Label>
+                          <Input value={conventionParentaleData.parent2Telephone} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2Telephone: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Email</Label>
+                          <Input type="email" value={conventionParentaleData.parent2Email} onChange={(e) => setConventionParentaleData({...conventionParentaleData, parent2Email: e.target.value})} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* INFORMATIONS COMPLÉMENTAIRES */}
+                    <div className="space-y-4 mt-4 pt-4 border-t">
+                      <h4 className="font-semibold">Informations complémentaires</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Parents séparés ?</Label>
+                          <Select value={conventionParentaleData.parentsSepares} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, parentsSepares: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Divorce en cours ?</Label>
+                          <Select value={conventionParentaleData.divorceEnCours} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, divorceEnCours: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse future après séparation (si applicable)</Label>
+                          <Textarea value={conventionParentaleData.adresseFutureApresSepar} onChange={(e) => setConventionParentaleData({...conventionParentaleData, adresseFutureApresSepar: e.target.value})} rows={2} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Suite du formulaire dans le prochain message pour ne pas dépasser la limite */}
+                  <div className="text-center text-sm text-muted-foreground mt-4">
+                    Convention parentale - Formulaire en cours de développement
                   </div>
 
                 </div>
@@ -67649,7 +68091,9 @@ FIN DE LA CONVENTION
                   handleMiseEnDemeureSubmit();
                 } else if (pendingContractType === "Pacte de concubinage") {
                   handlePacteConcubinageSubmit();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Convention parentale") {
+                  handleConventionParentaleSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
