@@ -24500,6 +24500,7 @@ FIN DE LA CONVENTION
                                 concubin1Nationalite: selectedClient.nationalite || "",
                                 concubin1Adresse: selectedClient.adresse || "",
                                 concubin1Profession: selectedClient.profession || "",
+                                concubin1SituationFamiliale: selectedClient.situation_familiale || "",
                               });
                             }
                           }
@@ -24605,6 +24606,7 @@ FIN DE LA CONVENTION
                                 concubin2Nationalite: selectedClient.nationalite || "",
                                 concubin2Adresse: selectedClient.adresse || "",
                                 concubin2Profession: selectedClient.profession || "",
+                                concubin2SituationFamiliale: selectedClient.situation_familiale || "",
                               });
                             }
                           }
