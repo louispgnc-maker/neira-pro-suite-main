@@ -101,7 +101,7 @@ function ClientSelector({ clients, selectedClientId, onClientChange, label = "S�
           <button
             type="button"
             onClick={() => onClientChange('')}
-            className="text-xs text-gray-500 hover:text-gray-700 underline"
+            className="text-xs text-blue-600 hover:text-blue-800 underline font-medium"
           >
             Saisie manuelle
           </button>
@@ -5806,7 +5806,42 @@ export default function Contrats() {
     signatureLocataire: "",
     signatureAgence: "",
     nombreExemplaires: "2",
-    observationsSignatures: ""
+    observationsSignatures: "",
+    
+    // 1️⃣5️⃣ DÉLAI DE CONTESTATION
+    delaiObservationsComplementaires: "10",
+    delaiChauffageCollectif: "1",
+    mentionDelaiContestationActivee: "oui",
+    precisionDelaiContestationSupplementaire: "",
+    
+    // 1️⃣6️⃣ COMPARAISON ENTRÉE/SORTIE DÉTAILLÉE
+    referenceEdlEntree: "",
+    dateEdlEntree: "",
+    comparatifAutomatiqueActif: "non",
+    syntheseEcarts: "",
+    
+    // 1️⃣7️⃣ USURE NORMALE VS DÉGRADATION
+    qualifications: [{element: '', qualification: '', justification: '', photos: ''}],
+    
+    // 1️⃣8️⃣ GRILLE DE VÉTUSTÉ
+    grilleVetuste: "aucune",
+    grilleVetusteReference: "",
+    equipements: [{nom: '', dateMiseEnService: '', dureVieTheorique: '', coefficientVetuste: ''}],
+    
+    // 1️⃣9️⃣ RACCORDEMENT AU DÉPÔT DE GARANTIE
+    degradationsRetenuesSurDG: "non",
+    estimationProvisoire: "",
+    devisJoints: "non",
+    montantEstimeDegradations: "",
+    detailRetenueDG: "",
+    
+    // 2️⃣0️⃣ HORODATAGE & INTÉGRITÉ
+    horodatageAutomatique: "oui",
+    hashIntegrite: "",
+    certificatIntegrite: "",
+    signatureElectronique: "non",
+    methodeSignature: "",
+    timestampCreation: ""
   });
   
   // États fichiers pour état des lieux
@@ -22349,6 +22384,7 @@ FIN DE LA CONVENTION
                           files={etatLieuxPhotosLogement}
                           onFilesChange={(files) => setEtatLieuxPhotosLogement(files)}
                           accept="image/*"
+                          role="avocat"
                         />
                         <p className="text-xs text-muted-foreground">Joindre des photos de chaque pièce et des anomalies constatées</p>
                       </div>
@@ -22359,6 +22395,7 @@ FIN DE LA CONVENTION
                           files={etatLieuxPhotosCompteurs}
                           onFilesChange={(files) => setEtatLieuxPhotosCompteurs(files)}
                           accept="image/*"
+                          role="avocat"
                         />
                       </div>
 
@@ -22368,6 +22405,7 @@ FIN DE LA CONVENTION
                           files={etatLieuxPlanLogement}
                           onFilesChange={(files) => setEtatLieuxPlanLogement(files)}
                           accept="image/*,application/pdf"
+                          role="avocat"
                         />
                       </div>
 
@@ -22377,6 +22415,7 @@ FIN DE LA CONVENTION
                           files={etatLieuxDiagnostics}
                           onFilesChange={(files) => setEtatLieuxDiagnostics(files)}
                           accept="application/pdf,image/*"
+                          role="avocat"
                         />
                       </div>
 
@@ -22665,6 +22704,7 @@ FIN DE LA CONVENTION
                           files={etatLieuxContratLocation}
                           onFilesChange={(files) => setEtatLieuxContratLocation(files)}
                           accept="application/pdf,image/*"
+                          role="avocat"
                         />
                       </div>
 
@@ -22674,6 +22714,7 @@ FIN DE LA CONVENTION
                           files={etatLieuxEntreeReference}
                           onFilesChange={(files) => setEtatLieuxEntreeReference(files)}
                           accept="application/pdf,image/*"
+                          role="avocat"
                         />
                       </div>
 
@@ -22683,6 +22724,7 @@ FIN DE LA CONVENTION
                           files={etatLieuxDevisReparation}
                           onFilesChange={(files) => setEtatLieuxDevisReparation(files)}
                           accept="application/pdf,image/*"
+                          role="avocat"
                         />
                       </div>
 
@@ -22692,8 +22734,520 @@ FIN DE LA CONVENTION
                           files={etatLieuxAutresDocuments}
                           onFilesChange={(files) => setEtatLieuxAutresDocuments(files)}
                           accept="*"
+                          role="avocat"
                         />
                       </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣5️⃣ DÉLAI DE CONTESTATION */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ ⏱️ Délai de contestation</h3>
+                    <p className="text-xs text-blue-600">Mention des délais légaux pour observations complémentaires</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Activer la mention des délais ?</Label>
+                        <Select 
+                          value={etatLieuxData.mentionDelaiContestationActivee} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, mentionDelaiContestationActivee: value})}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, inclure la mention</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {etatLieuxData.mentionDelaiContestationActivee === "oui" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Délai pour observations complémentaires (jours)</Label>
+                            <Input 
+                              type="number"
+                              value={etatLieuxData.delaiObservationsComplementaires} 
+                              onChange={(e) => setEtatLieuxData({...etatLieuxData, delaiObservationsComplementaires: e.target.value})} 
+                              placeholder="10 jours (défaut légal)"
+                            />
+                            <p className="text-xs text-muted-foreground">Délai légal d'entrée : 10 jours</p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Délai pour chauffage collectif (mois)</Label>
+                            <Input 
+                              type="number"
+                              value={etatLieuxData.delaiChauffageCollectif} 
+                              onChange={(e) => setEtatLieuxData({...etatLieuxData, delaiChauffageCollectif: e.target.value})} 
+                              placeholder="1 mois"
+                            />
+                            <p className="text-xs text-muted-foreground">Si chauffage collectif actif hors saison de chauffe</p>
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Précisions supplémentaires</Label>
+                            <Textarea 
+                              value={etatLieuxData.precisionDelaiContestationSupplementaire} 
+                              onChange={(e) => setEtatLieuxData({...etatLieuxData, precisionDelaiContestationSupplementaire: e.target.value})} 
+                              rows={2}
+                              placeholder="Modalités d'envoi des observations, mode de calcul du délai..."
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 1️⃣6️⃣ COMPARAISON ENTRÉE/SORTIE DÉTAILLÉE */}
+                  {etatLieuxData.typeEtatLieux === "sortie" && (
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">1️⃣6️⃣ 🔄 Comparaison entrée/sortie détaillée</h3>
+                      <p className="text-xs text-blue-600">Référence explicite à l'état des lieux d'entrée et analyse des écarts</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Référence de l'état des lieux d'entrée</Label>
+                          <Input 
+                            value={etatLieuxData.referenceEdlEntree} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, referenceEdlEntree: e.target.value})} 
+                            placeholder="N° de document ou référence interne"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Date de l'état des lieux d'entrée</Label>
+                          <Input 
+                            type="date"
+                            value={etatLieuxData.dateEdlEntree} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, dateEdlEntree: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Comparatif automatique activé ?</Label>
+                          <Select 
+                            value={etatLieuxData.comparatifAutomatiqueActif} 
+                            onValueChange={(value) => setEtatLieuxData({...etatLieuxData, comparatifAutomatiqueActif: value})}
+                          >
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non (saisie manuelle)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Synthèse des écarts constatés</Label>
+                          <Textarea 
+                            value={etatLieuxData.syntheseEcarts} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, syntheseEcarts: e.target.value})} 
+                            rows={4}
+                            placeholder="Résumé des différences entre l'état d'entrée et de sortie..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 1️⃣7️⃣ USURE NORMALE VS DÉGRADATION */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣7️⃣ ⚖️ Usure normale vs dégradation</h3>
+                    <p className="text-xs text-blue-600">Qualification juridique pour la retenue sur dépôt de garantie</p>
+                    
+                    {etatLieuxData.qualifications.map((qualification, index) => (
+                      <div key={index} className="p-3 border rounded-lg bg-white dark:bg-gray-800 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium text-sm">Qualification #{index + 1}</h4>
+                          {etatLieuxData.qualifications.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const newQualifications = etatLieuxData.qualifications.filter((_, i) => i !== index);
+                                setEtatLieuxData({...etatLieuxData, qualifications: newQualifications});
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label>Élément concerné</Label>
+                            <Input 
+                              value={qualification.element} 
+                              onChange={(e) => {
+                                const newQualifications = [...etatLieuxData.qualifications];
+                                newQualifications[index].element = e.target.value;
+                                setEtatLieuxData({...etatLieuxData, qualifications: newQualifications});
+                              }} 
+                              placeholder="Ex: Peinture salon, Parquet chambre..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Qualification juridique *</Label>
+                            <Select 
+                              value={qualification.qualification} 
+                              onValueChange={(value) => {
+                                const newQualifications = [...etatLieuxData.qualifications];
+                                newQualifications[index].qualification = value;
+                                setEtatLieuxData({...etatLieuxData, qualifications: newQualifications});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="usure_normale">Usure normale</SelectItem>
+                                <SelectItem value="degradation_imputable">Dégradation imputable au locataire</SelectItem>
+                                <SelectItem value="vetuste">Vétusté</SelectItem>
+                                <SelectItem value="vice_cache">Vice caché</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Justification</Label>
+                            <Textarea 
+                              value={qualification.justification} 
+                              onChange={(e) => {
+                                const newQualifications = [...etatLieuxData.qualifications];
+                                newQualifications[index].justification = e.target.value;
+                                setEtatLieuxData({...etatLieuxData, qualifications: newQualifications});
+                              }} 
+                              rows={2}
+                              placeholder="Arguments juridiques, circonstances, durée d'occupation..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Photos jointes (numéros ou références)</Label>
+                            <Input 
+                              value={qualification.photos} 
+                              onChange={(e) => {
+                                const newQualifications = [...etatLieuxData.qualifications];
+                                newQualifications[index].photos = e.target.value;
+                                setEtatLieuxData({...etatLieuxData, qualifications: newQualifications});
+                              }} 
+                              placeholder="Ex: Photos 15-18"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEtatLieuxData({
+                          ...etatLieuxData, 
+                          qualifications: [...etatLieuxData.qualifications, {element: '', qualification: '', justification: '', photos: ''}]
+                        });
+                      }}
+                      className="w-full"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Ajouter une qualification
+                    </Button>
+                  </div>
+
+                  {/* 1️⃣8️⃣ GRILLE DE VÉTUSTÉ */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣8️⃣ 📏 Grille de vétusté</h3>
+                    <p className="text-xs text-blue-600">Application d'une grille légale ou contractuelle pour le calcul de la vétusté</p>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Type de grille de vétusté appliquée</Label>
+                        <Select 
+                          value={etatLieuxData.grilleVetuste} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, grilleVetuste: value})}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="aucune">Aucune grille appliquée</SelectItem>
+                            <SelectItem value="legale">Grille légale de référence</SelectItem>
+                            <SelectItem value="contractuelle">Grille contractuelle (bail)</SelectItem>
+                            <SelectItem value="personnalisee">Grille personnalisée</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {etatLieuxData.grilleVetuste !== "aucune" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Référence de la grille utilisée</Label>
+                            <Input 
+                              value={etatLieuxData.grilleVetusteReference} 
+                              onChange={(e) => setEtatLieuxData({...etatLieuxData, grilleVetusteReference: e.target.value})} 
+                              placeholder="Ex: Décret n°..., Article du bail, Nom du barème..."
+                            />
+                          </div>
+
+                          <div className="space-y-3">
+                            <h4 className="font-medium text-sm">Équipements avec calcul de vétusté</h4>
+                            
+                            {etatLieuxData.equipements.map((equipement, index) => (
+                              <div key={index} className="p-3 border rounded-lg bg-white dark:bg-gray-800 space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <h5 className="font-medium text-xs">Équipement #{index + 1}</h5>
+                                  {etatLieuxData.equipements.length > 1 && (
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        const newEquipements = etatLieuxData.equipements.filter((_, i) => i !== index);
+                                        setEtatLieuxData({...etatLieuxData, equipements: newEquipements});
+                                      }}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  <div className="space-y-2">
+                                    <Label>Nom de l'équipement</Label>
+                                    <Input 
+                                      value={equipement.nom} 
+                                      onChange={(e) => {
+                                        const newEquipements = [...etatLieuxData.equipements];
+                                        newEquipements[index].nom = e.target.value;
+                                        setEtatLieuxData({...etatLieuxData, equipements: newEquipements});
+                                      }} 
+                                      placeholder="Ex: Chaudière, Peinture salon..."
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Date de mise en service</Label>
+                                    <Input 
+                                      type="date"
+                                      value={equipement.dateMiseEnService} 
+                                      onChange={(e) => {
+                                        const newEquipements = [...etatLieuxData.equipements];
+                                        newEquipements[index].dateMiseEnService = e.target.value;
+                                        setEtatLieuxData({...etatLieuxData, equipements: newEquipements});
+                                      }} 
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Durée de vie théorique (années)</Label>
+                                    <Input 
+                                      type="number"
+                                      value={equipement.dureVieTheorique} 
+                                      onChange={(e) => {
+                                        const newEquipements = [...etatLieuxData.equipements];
+                                        newEquipements[index].dureVieTheorique = e.target.value;
+                                        setEtatLieuxData({...etatLieuxData, equipements: newEquipements});
+                                      }} 
+                                      placeholder="Ex: 10"
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Coefficient de vétusté (%)</Label>
+                                    <Input 
+                                      type="number"
+                                      value={equipement.coefficientVetuste} 
+                                      onChange={(e) => {
+                                        const newEquipements = [...etatLieuxData.equipements];
+                                        newEquipements[index].coefficientVetuste = e.target.value;
+                                        setEtatLieuxData({...etatLieuxData, equipements: newEquipements});
+                                      }} 
+                                      placeholder="Ex: 50"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setEtatLieuxData({
+                                  ...etatLieuxData, 
+                                  equipements: [...etatLieuxData.equipements, {nom: '', dateMiseEnService: '', dureVieTheorique: '', coefficientVetuste: ''}]
+                                });
+                              }}
+                              className="w-full"
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Ajouter un équipement
+                            </Button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 1️⃣9️⃣ RACCORDEMENT AU DÉPÔT DE GARANTIE */}
+                  {etatLieuxData.typeEtatLieux === "sortie" && (
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">1️⃣9️⃣ 🧾 Raccordement au dépôt de garantie</h3>
+                      <p className="text-xs text-blue-600">Gestion des retenues sur le dépôt de garantie</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Dégradations retenues sur le dépôt de garantie ?</Label>
+                          <Select 
+                            value={etatLieuxData.degradationsRetenuesSurDG} 
+                            onValueChange={(value) => setEtatLieuxData({...etatLieuxData, degradationsRetenuesSurDG: value})}
+                          >
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui, retenue prévue</SelectItem>
+                              <SelectItem value="non">Non, restitution intégrale</SelectItem>
+                              <SelectItem value="a_determiner">À déterminer</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {etatLieuxData.degradationsRetenuesSurDG === "oui" && (
+                          <>
+                            <div className="space-y-2">
+                              <Label>Estimation provisoire</Label>
+                              <Select 
+                                value={etatLieuxData.estimationProvisoire} 
+                                onValueChange={(value) => setEtatLieuxData({...etatLieuxData, estimationProvisoire: value})}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="forfaitaire">Forfaitaire</SelectItem>
+                                  <SelectItem value="devis">Sur devis</SelectItem>
+                                  <SelectItem value="accord_parties">Accord amiable des parties</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Devis joints ?</Label>
+                              <Select 
+                                value={etatLieuxData.devisJoints} 
+                                onValueChange={(value) => setEtatLieuxData({...etatLieuxData, devisJoints: value})}
+                              >
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="oui">Oui</SelectItem>
+                                  <SelectItem value="non">Non</SelectItem>
+                                  <SelectItem value="a_fournir">À fournir</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Montant estimé des dégradations (€)</Label>
+                              <Input 
+                                type="number"
+                                value={etatLieuxData.montantEstimeDegradations} 
+                                onChange={(e) => setEtatLieuxData({...etatLieuxData, montantEstimeDegradations: e.target.value})} 
+                                placeholder="0.00"
+                              />
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Détail de la retenue sur DG</Label>
+                              <Textarea 
+                                value={etatLieuxData.detailRetenueDG} 
+                                onChange={(e) => setEtatLieuxData({...etatLieuxData, detailRetenueDG: e.target.value})} 
+                                rows={3}
+                                placeholder="Description détaillée des réparations, application de la vétusté..."
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 2️⃣0️⃣ HORODATAGE & INTÉGRITÉ */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣0️⃣ 🖥️ Horodatage & intégrité</h3>
+                    <p className="text-xs text-blue-600">Sécurisation de la preuve pour une valeur probante renforcée</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Horodatage automatique activé</Label>
+                        <Select 
+                          value={etatLieuxData.horodatageAutomatique} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, horodatageAutomatique: value})}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (recommandé)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {etatLieuxData.horodatageAutomatique === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Timestamp de création (lecture seule)</Label>
+                          <Input 
+                            value={etatLieuxData.timestampCreation || new Date().toISOString()} 
+                            readOnly
+                            className="bg-gray-100"
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Hash d'intégrité (SHA-256)</Label>
+                        <Input 
+                          value={etatLieuxData.hashIntegrite} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, hashIntegrite: e.target.value})} 
+                          placeholder="Généré automatiquement lors de la sauvegarde"
+                          className="font-mono text-xs"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Certificat d'intégrité</Label>
+                        <Input 
+                          value={etatLieuxData.certificatIntegrite} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, certificatIntegrite: e.target.value})} 
+                          placeholder="URL ou référence du certificat"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Signature électronique</Label>
+                        <Select 
+                          value={etatLieuxData.signatureElectronique} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, signatureElectronique: value})}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, signatures électroniques</SelectItem>
+                            <SelectItem value="non">Non, signatures manuscrites</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {etatLieuxData.signatureElectronique === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Méthode de signature électronique</Label>
+                          <Select 
+                            value={etatLieuxData.methodeSignature} 
+                            onValueChange={(value) => setEtatLieuxData({...etatLieuxData, methodeSignature: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="simple">Signature électronique simple</SelectItem>
+                              <SelectItem value="avancee">Signature électronique avancée</SelectItem>
+                              <SelectItem value="qualifiee">Signature électronique qualifiée (eIDAS)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
