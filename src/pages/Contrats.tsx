@@ -6035,108 +6035,83 @@ export default function Contrats() {
     gardeEnfants: "",
     
     // 2️⃣ OBJET DU PACTE
-    definitionConcubinage: "oui",
-    aspectsFinanciers: "oui",
-    aspectsMateriels: "oui",
-    proprieteBiens: "oui",
-    obligationsReciproques: "oui",
-    modalitesRupture: "oui",
+    definitionConcubinage: "Union de fait, stable et continue entre deux personnes vivant en couple.",
+    aspectsCouvert: [] as string[], // Array pour les checkboxes
     
     // 3️⃣ ADRESSE RÉSIDENCE COMMUNE
-    adresseResidence: "",
-    dateDebutCohabitation: "",
-    natureLogement: "", // "location" / "propriete" / "fonction"
-    identiteBailleur: "",
-    titulaireBail: "", // "concubin1" / "concubin2" / "les_deux"
-    repartitionLoyer: "",
-    proprietaireLogement: "", // "concubin1" / "concubin2" / "indivision"
-    quotePart1: "",
-    quotePart2: "",
-    clauseRemboursementCredit: "",
+    adresseResidenceCommune: "",
+    natureLogement: "",
+    titulaireBail: "",
+    detailsLogement: "",
     
     // 4️⃣ RÉPARTITION DES CHARGES
-    modalitesFinancieres: "", // "50_50" / "proportionnelle" / "personnalisee"
-    detailsPersonnalises: "",
-    chargesLoyer: "oui",
-    chargesLogement: "oui",
-    chargesAlimentation: "oui",
-    chargesTransport: "oui",
-    chargesEnfants: "oui",
-    chargesVoyages: "oui",
-    chargesSante: "oui",
-    autresDepenses: "",
-    compteCommun: "", // "oui" / "non"
-    pouvoirsCompte: "",
-    apportsMensuels: "",
+    modeRepartitionCharges: "",
+    partConcubin1Charges: "",
+    partConcubin2Charges: "",
+    detailsRepartitionPersonnalisee: "",
+    chargesConcernees: [] as string[], // Array pour les checkboxes
+    compteCommun: "",
+    detailsCompteCommun: "",
     
     // 5️⃣ PROPRIÉTÉ DES BIENS
-    biensAvantCommun: "propriete_exclusive",
-    biensPendantCommun: "", // "indivise" / "achats_ensemble" / "achats_separes"
-    quotepartIndivision: "",
-    inventaireMeubles: "",
-    repartitionMeubles: "",
+    principeBiens: "",
+    biensAvantVieCommune: "",
+    biensPendantVieCommune: "",
+    inventaireBiens: "",
     vehicules: "",
-    titulaireCarteGrise: "",
-    financementVehicule: "",
     
     // 6️⃣ GESTION DÉPENSES IMPORTANTES
-    decisionsCommunesMontant: "",
-    modalitesAccord: "", // "ecrit" / "oral"
-    remboursementBienCommun: "",
+    seuilDepenseImportante: "",
+    modaliteAccordDepense: "",
+    typesDepensesImportantes: "",
     
     // 7️⃣ OBLIGATIONS RESPECTIVES
-    vieComStable: "oui",
-    contributionCharges: "oui",
-    respectPropriete: "oui",
-    informationDifficultesFinancieres: "oui",
-    preservationViePrivee: "oui",
+    obligationsRespectives: [] as string[], // Array pour les checkboxes
+    autresEngagements: "",
     
-    // 8️⃣ PRÉVOYANCE DONATIONS PROTECTION
-    testamentExiste: "", // "oui" / "non"
-    typeTestament: "", // "olographe" / "notarie"
-    donationPrevue: "", // "oui" / "non"
-    typeDonation: "", // "present_usage" / "donation_simple" / "donation_charge"
-    assuranceVie: "", // "oui" / "non"
-    beneficiaireAssurance: "",
+    // 8️⃣ PRÉVOYANCE DONATIONS
+    testament: "",
+    detailsTestament: "",
+    donation: "",
+    detailsDonation: "",
+    assuranceVie: "",
+    detailsAssuranceVie: "",
+    autresPrevoyance: "",
     
     // 9️⃣ GESTION DES DETTES
     dettesCommunes: "",
     dettesPersonnelles: "",
-    absenceSolidarite: "oui",
+    nonSolidariteDettes: "",
+    precisionsSolidarite: "",
     
     // 🔟 SÉPARATION RUPTURE
-    ruptureLibre: "oui",
-    notificationRupture: "", // "recommande" / "accord_mutuel"
-    biensIndivis: "", // "rachat_parts" / "vente"
-    inventaireMeublesRupture: "",
-    vehiculesRupture: "",
-    departLogement: "", // "concubin1" / "concubin2"
-    preavisBailleur: "",
-    remboursementsAvances: "",
+    modalitesRupture: "",
+    dureePreavissRupture: "",
+    repartitionBiensRupture: "",
+    sortLogement: "",
+    remboursements: "",
+    autresModalitesSeparation: "",
     
     // 1️⃣1️⃣ ENFANTS
-    enfantsInclus: "", // "oui" / "non"
-    repartitionDepensesEnfants: "",
-    modalitesGarde: "",
+    inclureEnfants: "",
+    contributionEnfants: "",
+    gardeEnfantsSeparation: "",
     pensionAlimentaire: "",
+    autresDispositionsEnfants: "",
     
     // 1️⃣2️⃣ CONFIDENTIALITÉ
-    confidentialite: "oui",
-    reglementAmiable: "oui",
+    confidentialite: "",
+    reglementAmiable: "",
+    modalitesMediation: "",
     
     // 1️⃣3️⃣ LOI APPLICABLE
     loiApplicable: "Droit français",
     tribunalCompetent: "",
     
-    // 1️⃣4️⃣ ANNEXES
-    // Géré par états de fichiers séparés
-    
     // 1️⃣5️⃣ SIGNATURES
-    signatureConcubin1: "",
-    signatureConcubin2: "",
-    signatureElectronique: "oui",
+    modeSignature: "",
     lieuSignature: "",
-    dateSignature: ""
+    dateSignature: "",
   });
   
   // États fichiers pour pacte de concubinage
