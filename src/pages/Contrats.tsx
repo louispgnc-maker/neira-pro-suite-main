@@ -27999,48 +27999,76 @@ FIN DE LA CONVENTION
                   <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Annexes et documents justificatifs</h3>
                     <div className="space-y-4">
-                      <FileUploadAvocat
-                        label="Carte d'identité du mandant"
-                        file={mandatCarteIdentiteMandant}
-                        onFileChange={setMandatCarteIdentiteMandant}
-                        description="Copie recto-verso de la pièce d'identité"
-                      />
-                      <FileUploadAvocat
-                        label="Carte d'identité du mandataire"
-                        file={mandatCarteIdentiteMandataire}
-                        onFileChange={setMandatCarteIdentiteMandataire}
-                        description="Copie recto-verso de la pièce d'identité"
-                      />
-                      <FileUploadAvocat
-                        label="Justificatif de domicile"
-                        file={mandatJustificatifDomicile}
-                        onFileChange={setMandatJustificatifDomicile}
-                        description="Facture récente (moins de 3 mois)"
-                      />
-                      <FileUploadAvocat
-                        label="Certificat médical (si requis)"
-                        file={mandatCertificatMedical}
-                        onFileChange={setMandatCertificatMedical}
-                        description="Certificat établi par médecin inscrit sur liste du procureur"
-                      />
-                      <FileUploadAvocat
-                        label="Liste des comptes bancaires"
-                        file={mandatListeComptesBancaires}
-                        onFileChange={setMandatListeComptesBancaires}
-                        description="Liste complète des comptes, livrets, placements"
-                      />
-                      <FileUploadAvocat
-                        label="Inventaire des biens"
-                        file={mandatInventaireBiens}
-                        onFileChange={setMandatInventaireBiens}
-                        description="Inventaire détaillé du patrimoine (immobilier, mobilier, etc.)"
-                      />
-                      <FileUploadAvocat
-                        label="Coordonnées des proches"
-                        file={mandatCoordonneesProches}
-                        onFileChange={setMandatCoordonneesProches}
-                        description="Liste des personnes à contacter (famille, amis, médecins)"
-                      />
+                      <div>
+                        <Label>Carte d'identité du mandant</Label>
+                        <p className="text-xs text-muted-foreground mb-2">Copie recto-verso de la pièce d'identité</p>
+                        <MultiFileUpload
+                          label="Carte d'identité du mandant"
+                          files={mandatCarteIdentiteMandant}
+                          onFilesChange={setMandatCarteIdentiteMandant}
+                          role="avocat"
+                        />
+                      </div>
+                      <div>
+                        <Label>Carte d'identité du mandataire</Label>
+                        <p className="text-xs text-muted-foreground mb-2">Copie recto-verso de la pièce d'identité</p>
+                        <MultiFileUpload
+                          label="Carte d'identité du mandataire"
+                          files={mandatCarteIdentiteMandataire}
+                          onFilesChange={setMandatCarteIdentiteMandataire}
+                          role="avocat"
+                        />
+                      </div>
+                      <div>
+                        <Label>Justificatif de domicile</Label>
+                        <p className="text-xs text-muted-foreground mb-2">Facture récente (moins de 3 mois)</p>
+                        <MultiFileUpload
+                          label="Justificatif de domicile"
+                          files={mandatJustificatifDomicile}
+                          onFilesChange={setMandatJustificatifDomicile}
+                          role="avocat"
+                        />
+                      </div>
+                      <div>
+                        <Label>Certificat médical (si requis)</Label>
+                        <p className="text-xs text-muted-foreground mb-2">Certificat établi par médecin inscrit sur liste du procureur</p>
+                        <MultiFileUpload
+                          label="Certificat médical (si requis)"
+                          files={mandatCertificatMedical}
+                          onFilesChange={setMandatCertificatMedical}
+                          role="avocat"
+                        />
+                      </div>
+                      <div>
+                        <Label>Liste des comptes bancaires</Label>
+                        <p className="text-xs text-muted-foreground mb-2">Liste complète des comptes, livrets, placements</p>
+                        <MultiFileUpload
+                          label="Liste des comptes bancaires"
+                          files={mandatListeComptesBancaires}
+                          onFilesChange={setMandatListeComptesBancaires}
+                          role="avocat"
+                        />
+                      </div>
+                      <div>
+                        <Label>Inventaire des biens</Label>
+                        <p className="text-xs text-muted-foreground mb-2">Inventaire détaillé du patrimoine (immobilier, mobilier, etc.)</p>
+                        <MultiFileUpload
+                          label="Inventaire des biens"
+                          files={mandatInventaireBiens}
+                          onFilesChange={setMandatInventaireBiens}
+                          role="avocat"
+                        />
+                      </div>
+                      <div>
+                        <Label>Coordonnées des proches</Label>
+                        <p className="text-xs text-muted-foreground mb-2">Liste des personnes à contacter (famille, amis, médecins)</p>
+                        <MultiFileUpload
+                          label="Coordonnées des proches"
+                          files={mandatCoordonneesProches}
+                          onFilesChange={setMandatCoordonneesProches}
+                          role="avocat"
+                        />
+                      </div>
                     </div>
                   </div>
 
