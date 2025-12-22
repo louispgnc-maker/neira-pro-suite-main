@@ -23404,7 +23404,7 @@ FIN DE LA CONVENTION
                 <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
                   
                   {/* 1️⃣ IDENTIFICATION DU DESTINATAIRE */}
-                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du destinataire (locataire ou défaillant)</h3>
                     
                     <div className="space-y-2">
@@ -23689,7 +23689,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 3️⃣ RAPPEL DU CONTRAT DE BAIL */}
-                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Rappel du contrat de bail</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -23754,7 +23754,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 4️⃣ MANQUEMENTS CONSTATÉS */}
-                  <div className="space-y-4 p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Manquements constatés *</h3>
                     <p className="text-sm text-muted-foreground">Sélectionnez un ou plusieurs manquements reprochés au locataire :</p>
                     
@@ -23885,7 +23885,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 5️⃣ BASES JURIDIQUES */}
-                  <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Bases juridiques (générées automatiquement)</h3>
                     <div className="p-3 bg-white dark:bg-slate-900 rounded border text-sm">
                       {miseEnDemeureData.typeBail === "habitation_vide" && (
@@ -23921,7 +23921,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 6️⃣ MONTANT TOTAL RÉCLAMÉ */}
-                  <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Montant total réclamé</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -23976,7 +23976,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 7️⃣ DÉLAI ACCORDÉ */}
-                  <div className="space-y-4 p-4 bg-pink-50 dark:bg-pink-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Délai accordé pour régulariser *</h3>
                     
                     <div className="space-y-2">
@@ -24019,7 +24019,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 8️⃣ CONSÉQUENCES EN CAS DE NON-RÉGULARISATION */}
-                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Conséquences en cas de non-régularisation</h3>
                     <p className="text-sm text-muted-foreground">Sélectionnez les conséquences qui seront mentionnées :</p>
                     
@@ -24055,7 +24055,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 9️⃣ FORME D'ENVOI */}
-                  <div className="space-y-4 p-4 bg-teal-50 dark:bg-teal-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Forme d'envoi de la mise en demeure *</h3>
                     
                     <div className="space-y-2">
@@ -24092,7 +24092,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 🔟 PIÈCES JUSTIFICATIVES JOINTES */}
-                  <div className="space-y-4 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">🔟 Pièces justificatives jointes</h3>
                     <p className="text-sm text-muted-foreground">Joignez les documents prouvant vos allégations :</p>
                     
@@ -24181,7 +24181,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 1️⃣1️⃣ COORDONNÉES DE RÈGLEMENT */}
-                  <div className="space-y-4 p-4 bg-cyan-50 dark:bg-cyan-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Coordonnées de règlement</h3>
                     <p className="text-sm text-muted-foreground">Indiquez comment le locataire peut régulariser sa situation :</p>
                     
@@ -24239,7 +24239,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 1️⃣2️⃣ CLAUSE DE TOLÉRANCE */}
-                  <div className="space-y-4 p-4 bg-lime-50 dark:bg-lime-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ Clause de tolérance (facultatif)</h3>
                     
                     <div className="flex items-center space-x-2">
@@ -24272,7 +24272,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 1️⃣3️⃣ SIGNATURES */}
-                  <div className="space-y-4 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Signature du bailleur</h3>
                     
                     <div className="space-y-2">
