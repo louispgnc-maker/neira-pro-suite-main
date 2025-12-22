@@ -24490,21 +24490,30 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
+                              console.log('🔍 CLIENT CONCUBIN 1:', selectedClient);
+                              console.log('📋 etat_civil:', selectedClient.etat_civil);
+                              console.log('📋 situation_familiale:', selectedClient.situation_familiale);
+                              
                               // Extraire situation familiale depuis etat_civil ou situation_familiale
                               let situationFam = "";
                               
                               // 1. Essayer etat_civil en priorité (nouveau champ)
                               if (selectedClient.etat_civil) {
                                 situationFam = selectedClient.etat_civil;
+                                console.log('✅ Trouvé dans etat_civil:', situationFam);
                               }
                               // 2. Sinon essayer situation_familiale.situation_familiale (ancien format)
                               else if (selectedClient.situation_familiale && typeof selectedClient.situation_familiale === 'object') {
                                 situationFam = selectedClient.situation_familiale.situation_familiale || "";
+                                console.log('✅ Trouvé dans situation_familiale.situation_familiale:', situationFam);
                               }
                               // 3. Sinon essayer situation_matrimoniale.situation_familiale
                               else if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
                                 situationFam = selectedClient.situation_matrimoniale.situation_familiale || "";
+                                console.log('✅ Trouvé dans situation_matrimoniale.situation_familiale:', situationFam);
                               }
+                              
+                              console.log('📤 Valeur finale situationFam:', situationFam);
                               
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
