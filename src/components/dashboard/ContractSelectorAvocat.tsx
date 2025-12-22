@@ -74,7 +74,7 @@ export const AVOCAT_CONTRACT_CATEGORIES = [
     label: "🧠 Propriété intellectuelle & Numérique",
     key: "Propriété intellectuelle & Numérique",
     contracts: [
-      "Contrat de cession de droits d’auteur",
+      "Contrat de cession de droits d'auteur",
       "Licence logicielle",
       "Contrat de développement web / application",
       "Politique de confidentialité / mentions légales / RGPD",
