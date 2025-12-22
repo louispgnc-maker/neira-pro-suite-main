@@ -6005,6 +6005,146 @@ export default function Contrats() {
   const [medRapportHuissier, setMedRapportHuissier] = useState<File[]>([]);
   const [medTableauCalcul, setMedTableauCalcul] = useState<File[]>([]);
   
+  // État pour Pacte de concubinage
+  const [pacteConcubinageData, setPacteConcubinageData] = useState({
+    // 1️⃣ IDENTIFICATION DES PARTIES
+    // Concubin 1
+    concubin1ClientId: "",
+    concubin1Nom: "",
+    concubin1Prenom: "",
+    concubin1DateNaissance: "",
+    concubin1LieuNaissance: "",
+    concubin1Nationalite: "",
+    concubin1Adresse: "",
+    concubin1Profession: "",
+    concubin1SituationFamiliale: "",
+    // Concubin 2
+    concubin2ClientId: "",
+    concubin2Nom: "",
+    concubin2Prenom: "",
+    concubin2DateNaissance: "",
+    concubin2LieuNaissance: "",
+    concubin2Nationalite: "",
+    concubin2Adresse: "",
+    concubin2Profession: "",
+    concubin2SituationFamiliale: "",
+    // Enfants
+    enfantsCommuns: "",
+    nombreEnfantsCommuns: "",
+    enfantsPrecedenteUnion: "",
+    gardeEnfants: "",
+    
+    // 2️⃣ OBJET DU PACTE
+    definitionConcubinage: "oui",
+    aspectsFinanciers: "oui",
+    aspectsMateriels: "oui",
+    proprieteBiens: "oui",
+    obligationsReciproques: "oui",
+    modalitesRupture: "oui",
+    
+    // 3️⃣ ADRESSE RÉSIDENCE COMMUNE
+    adresseResidence: "",
+    dateDebutCohabitation: "",
+    natureLogement: "", // "location" / "propriete" / "fonction"
+    identiteBailleur: "",
+    titulaireBail: "", // "concubin1" / "concubin2" / "les_deux"
+    repartitionLoyer: "",
+    proprietaireLogement: "", // "concubin1" / "concubin2" / "indivision"
+    quotePart1: "",
+    quotePart2: "",
+    clauseRemboursementCredit: "",
+    
+    // 4️⃣ RÉPARTITION DES CHARGES
+    modalitesFinancieres: "", // "50_50" / "proportionnelle" / "personnalisee"
+    detailsPersonnalises: "",
+    chargesLoyer: "oui",
+    chargesLogement: "oui",
+    chargesAlimentation: "oui",
+    chargesTransport: "oui",
+    chargesEnfants: "oui",
+    chargesVoyages: "oui",
+    chargesSante: "oui",
+    autresDepenses: "",
+    compteCommun: "", // "oui" / "non"
+    pouvoirsCompte: "",
+    apportsMensuels: "",
+    
+    // 5️⃣ PROPRIÉTÉ DES BIENS
+    biensAvantCommun: "propriete_exclusive",
+    biensPendantCommun: "", // "indivise" / "achats_ensemble" / "achats_separes"
+    quotepartIndivision: "",
+    inventaireMeubles: "",
+    repartitionMeubles: "",
+    vehicules: "",
+    titulaireCarteGrise: "",
+    financementVehicule: "",
+    
+    // 6️⃣ GESTION DÉPENSES IMPORTANTES
+    decisionsCommunesMontant: "",
+    modalitesAccord: "", // "ecrit" / "oral"
+    remboursementBienCommun: "",
+    
+    // 7️⃣ OBLIGATIONS RESPECTIVES
+    vieComStable: "oui",
+    contributionCharges: "oui",
+    respectPropriete: "oui",
+    informationDifficultesFinancieres: "oui",
+    preservationViePrivee: "oui",
+    
+    // 8️⃣ PRÉVOYANCE DONATIONS PROTECTION
+    testamentExiste: "", // "oui" / "non"
+    typeTestament: "", // "olographe" / "notarie"
+    donationPrevue: "", // "oui" / "non"
+    typeDonation: "", // "present_usage" / "donation_simple" / "donation_charge"
+    assuranceVie: "", // "oui" / "non"
+    beneficiaireAssurance: "",
+    
+    // 9️⃣ GESTION DES DETTES
+    dettesCommunes: "",
+    dettesPersonnelles: "",
+    absenceSolidarite: "oui",
+    
+    // 🔟 SÉPARATION RUPTURE
+    ruptureLibre: "oui",
+    notificationRupture: "", // "recommande" / "accord_mutuel"
+    biensIndivis: "", // "rachat_parts" / "vente"
+    inventaireMeublesRupture: "",
+    vehiculesRupture: "",
+    departLogement: "", // "concubin1" / "concubin2"
+    preavisBailleur: "",
+    remboursementsAvances: "",
+    
+    // 1️⃣1️⃣ ENFANTS
+    enfantsInclus: "", // "oui" / "non"
+    repartitionDepensesEnfants: "",
+    modalitesGarde: "",
+    pensionAlimentaire: "",
+    
+    // 1️⃣2️⃣ CONFIDENTIALITÉ
+    confidentialite: "oui",
+    reglementAmiable: "oui",
+    
+    // 1️⃣3️⃣ LOI APPLICABLE
+    loiApplicable: "Droit français",
+    tribunalCompetent: "",
+    
+    // 1️⃣4️⃣ ANNEXES
+    // Géré par états de fichiers séparés
+    
+    // 1️⃣5️⃣ SIGNATURES
+    signatureConcubin1: "",
+    signatureConcubin2: "",
+    signatureElectronique: "oui",
+    lieuSignature: "",
+    dateSignature: ""
+  });
+  
+  // États fichiers pour pacte de concubinage
+  const [pacteInventaireMeubles, setPacteInventaireMeubles] = useState<File[]>([]);
+  const [pacteJustificatifsAcquisitions, setPacteJustificatifsAcquisitions] = useState<File[]>([]);
+  const [pacteTableauRepartition, setPacteTableauRepartition] = useState<File[]>([]);
+  const [pacteAttestationVieCommune, setPacteAttestationVieCommune] = useState<File[]>([]);
+  
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
     typeContrat: "", // "compromis" ou "promesse_unilaterale"
@@ -8621,6 +8761,71 @@ export default function Contrats() {
       refreshContrats();
     } catch (err: unknown) {
       console.error('Erreur création mise en demeure:', err);
+      toast.error('Erreur lors de la création');
+    }
+  };
+
+  // Handler pour Pacte de concubinage
+  const handlePacteConcubinageSubmit = async () => {
+    if (!user) return;
+
+    // Validation des champs obligatoires
+    if (!pacteConcubinageData.concubin1Nom || !pacteConcubinageData.concubin1Prenom ||
+        !pacteConcubinageData.concubin2Nom || !pacteConcubinageData.concubin2Prenom ||
+        !pacteConcubinageData.adresseResidenceCommune || !pacteConcubinageData.natureLogement ||
+        !pacteConcubinageData.modeRepartitionCharges || !pacteConcubinageData.principeBiens ||
+        !pacteConcubinageData.loiApplicable || !pacteConcubinageData.tribunalCompetent ||
+        !pacteConcubinageData.modeSignature) {
+      toast.error("Champs obligatoires manquants", { 
+        description: "Vérifiez identités concubins, résidence, répartition charges, propriété biens, loi applicable et signatures" 
+      });
+      return;
+    }
+
+    try {
+      const description = `Pacte de concubinage - ${pacteConcubinageData.concubin1Nom} ${pacteConcubinageData.concubin1Prenom} & ${pacteConcubinageData.concubin2Nom} ${pacteConcubinageData.concubin2Prenom}`;
+      
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          owner_id: user.id,
+          name: pendingContractType,
+          type: pendingContractType,
+          category: pendingCategory,
+          role: role,
+          description: description,
+          contenu_json: pacteConcubinageData,
+          client_id: pacteConcubinageData.concubin1ClientId || undefined
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Upload des fichiers annexes
+      for (const file of pacteInventaireMeubles) {
+        const filePath = `${user.id}/${data.id}/inventaire_meubles/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of pacteJustificatifsAcquisitions) {
+        const filePath = `${user.id}/${data.id}/justificatifs_acquisitions/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of pacteTableauRepartition) {
+        const filePath = `${user.id}/${data.id}/tableau_repartition/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+      for (const file of pacteAttestationVieCommune) {
+        const filePath = `${user.id}/${data.id}/attestation_vie_commune/${file.name}`;
+        await supabase.storage.from('contrats').upload(filePath, file);
+      }
+
+      toast.success("Pacte de concubinage créé");
+      setShowQuestionDialog(false);
+      setPendingContractType("");
+      refreshContrats();
+    } catch (err: unknown) {
+      console.error('Erreur création pacte de concubinage:', err);
       toast.error('Erreur lors de la création');
     }
   };
@@ -24277,6 +24482,1130 @@ FIN DE LA CONVENTION
                         </p>
                       </div>
                     )}
+                  </div>
+                  
+                </div>
+              </>
+            )}
+
+            {/* ========== FORMULAIRE PACTE DE CONCUBINAGE ========== */}
+            {pendingContractType === "Pacte de concubinage" && (
+              <>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
+                  
+                  {/* 1️⃣ IDENTIFICATION DES PARTIES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification des parties</h3>
+                    
+                    {/* CONCUBIN 1 */}
+                    <div className="space-y-4 border-l-4 border-blue-300 pl-4">
+                      <h4 className="font-semibold">Concubin 1</h4>
+                      
+                      <ClientSelector
+                        clients={clients}
+                        selectedClientId={pacteConcubinageData.concubin1ClientId}
+                        onClientChange={(value) => {
+                          if (value === '') {
+                            setPacteConcubinageData({
+                              ...pacteConcubinageData,
+                              concubin1ClientId: "",
+                              concubin1Nom: "",
+                              concubin1Prenom: "",
+                            });
+                          } else {
+                            const selectedClient = clients.find(c => c.id === value) as any;
+                            if (selectedClient) {
+                              setPacteConcubinageData({
+                                ...pacteConcubinageData,
+                                concubin1ClientId: value,
+                                concubin1Nom: selectedClient.nom || "",
+                                concubin1Prenom: selectedClient.prenom || "",
+                              });
+                            }
+                          }
+                        }}
+                        label="Sélectionner le concubin 1"
+                        placeholder="Choisir un client"
+                      />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin1Nom} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1Nom: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin1Prenom} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1Prenom: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance *</Label>
+                          <Input 
+                            type="date"
+                            value={pacteConcubinageData.concubin1DateNaissance} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1DateNaissance: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de naissance *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin1LieuNaissance} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1LieuNaissance: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nationalité *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin1Nationalite} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1Nationalite: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Profession</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin1Profession} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1Profession: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse actuelle *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin1Adresse} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1Adresse: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Situation familiale</Label>
+                          <Select 
+                            value={pacteConcubinageData.concubin1SituationFamiliale} 
+                            onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, concubin1SituationFamiliale: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="celibataire">Célibataire</SelectItem>
+                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                              <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                              <SelectItem value="separe">Séparé(e)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CONCUBIN 2 */}
+                    <div className="space-y-4 border-l-4 border-purple-300 pl-4">
+                      <h4 className="font-semibold">Concubin 2</h4>
+                      
+                      <ClientSelector
+                        clients={clients}
+                        selectedClientId={pacteConcubinageData.concubin2ClientId}
+                        onClientChange={(value) => {
+                          if (value === '') {
+                            setPacteConcubinageData({
+                              ...pacteConcubinageData,
+                              concubin2ClientId: "",
+                              concubin2Nom: "",
+                              concubin2Prenom: "",
+                            });
+                          } else {
+                            const selectedClient = clients.find(c => c.id === value) as any;
+                            if (selectedClient) {
+                              setPacteConcubinageData({
+                                ...pacteConcubinageData,
+                                concubin2ClientId: value,
+                                concubin2Nom: selectedClient.nom || "",
+                                concubin2Prenom: selectedClient.prenom || "",
+                              });
+                            }
+                          }
+                        }}
+                        label="Sélectionner le concubin 2"
+                        placeholder="Choisir un client"
+                      />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin2Nom} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2Nom: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin2Prenom} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2Prenom: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance *</Label>
+                          <Input 
+                            type="date"
+                            value={pacteConcubinageData.concubin2DateNaissance} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2DateNaissance: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de naissance *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin2LieuNaissance} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2LieuNaissance: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nationalité *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin2Nationalite} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2Nationalite: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Profession</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin2Profession} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2Profession: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse actuelle *</Label>
+                          <Input 
+                            value={pacteConcubinageData.concubin2Adresse} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2Adresse: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Situation familiale</Label>
+                          <Select 
+                            value={pacteConcubinageData.concubin2SituationFamiliale} 
+                            onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, concubin2SituationFamiliale: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="celibataire">Célibataire</SelectItem>
+                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                              <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                              <SelectItem value="separe">Séparé(e)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ENFANTS */}
+                    <div className="space-y-4 mt-4 pt-4 border-t">
+                      <h4 className="font-semibold">Enfants (facultatif)</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Enfants communs</Label>
+                          <Select 
+                            value={pacteConcubinageData.enfantsCommuns} 
+                            onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, enfantsCommuns: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {pacteConcubinageData.enfantsCommuns === "oui" && (
+                          <div className="space-y-2">
+                            <Label>Nombre d'enfants communs</Label>
+                            <Input 
+                              type="number"
+                              value={pacteConcubinageData.nombreEnfantsCommuns} 
+                              onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, nombreEnfantsCommuns: e.target.value})} 
+                            />
+                          </div>
+                        )}
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Enfants d'une précédente union</Label>
+                          <Textarea
+                            value={pacteConcubinageData.enfantsPrecedenteUnion} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, enfantsPrecedenteUnion: e.target.value})}
+                            placeholder="Précisez si l'un ou les deux concubins ont des enfants d'une précédente union..."
+                            rows={2}
+                          />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Garde actuelle des enfants</Label>
+                          <Input 
+                            value={pacteConcubinageData.gardeEnfants} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, gardeEnfants: e.target.value})}
+                            placeholder="Ex: Garde alternée, garde exclusive..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2️⃣ OBJET DU PACTE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Objet du pacte</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Définition du concubinage *</Label>
+                      <Textarea
+                        value={pacteConcubinageData.definitionConcubinage} 
+                        onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, definitionConcubinage: e.target.value})}
+                        placeholder="Union de fait, stable et continue..."
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Aspects couverts par le pacte</Label>
+                      <div className="space-y-2">
+                        {[
+                          { value: "residence", label: "Organisation de la résidence commune" },
+                          { value: "charges", label: "Répartition des charges quotidiennes" },
+                          { value: "biens", label: "Propriété et gestion des biens" },
+                          { value: "depenses", label: "Gestion des dépenses importantes" },
+                          { value: "prevoyance", label: "Prévoyance et donations" },
+                          { value: "dettes", label: "Gestion des dettes" },
+                          { value: "separation", label: "Modalités de séparation" },
+                        ].map(aspect => (
+                          <div key={aspect.value} className="flex items-center space-x-2">
+                            <input 
+                              type="checkbox"
+                              id={`aspect-${aspect.value}`}
+                              checked={pacteConcubinageData.aspectsCouvert.includes(aspect.value)}
+                              onChange={(e) => {
+                                const newAspects = e.target.checked
+                                  ? [...pacteConcubinageData.aspectsCouvert, aspect.value]
+                                  : pacteConcubinageData.aspectsCouvert.filter(a => a !== aspect.value);
+                                setPacteConcubinageData({...pacteConcubinageData, aspectsCouvert: newAspects});
+                              }}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor={`aspect-${aspect.value}`} className="font-normal cursor-pointer">{aspect.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3️⃣ RÉSIDENCE COMMUNE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Adresse de la résidence commune</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Adresse complète de la résidence *</Label>
+                        <Input 
+                          value={pacteConcubinageData.adresseResidenceCommune} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, adresseResidenceCommune: e.target.value})} 
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Nature du logement *</Label>
+                        <Select 
+                          value={pacteConcubinageData.natureLogement} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, natureLogement: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="location">Location</SelectItem>
+                            <SelectItem value="propriete_commune">Propriété commune</SelectItem>
+                            <SelectItem value="propriete_concubin1">Propriété du concubin 1</SelectItem>
+                            <SelectItem value="propriete_concubin2">Propriété du concubin 2</SelectItem>
+                            <SelectItem value="indivision">Indivision</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Titulaire du bail / propriétaire</Label>
+                        <Input 
+                          value={pacteConcubinageData.titulaireBail} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, titulaireBail: e.target.value})}
+                          placeholder="Nom du/des titulaire(s)"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Détails sur le logement</Label>
+                        <Textarea
+                          value={pacteConcubinageData.detailsLogement} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, detailsLogement: e.target.value})}
+                          placeholder="Surface, nombre de pièces, particularités..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4️⃣ RÉPARTITION DES CHARGES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Répartition des charges quotidiennes</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Mode de répartition *</Label>
+                        <Select 
+                          value={pacteConcubinageData.modeRepartitionCharges} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, modeRepartitionCharges: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="50-50">Répartition égalitaire (50/50)</SelectItem>
+                            <SelectItem value="proportionnelle">Proportionnelle aux revenus</SelectItem>
+                            <SelectItem value="personnalisee">Répartition personnalisée</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.modeRepartitionCharges === "proportionnelle" && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Part concubin 1 (%)</Label>
+                            <Input 
+                              type="number"
+                              value={pacteConcubinageData.partConcubin1Charges} 
+                              onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, partConcubin1Charges: e.target.value})} 
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Part concubin 2 (%)</Label>
+                            <Input 
+                              type="number"
+                              value={pacteConcubinageData.partConcubin2Charges} 
+                              onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, partConcubin2Charges: e.target.value})} 
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {pacteConcubinageData.modeRepartitionCharges === "personnalisee" && (
+                        <div className="space-y-2">
+                          <Label>Détails de la répartition personnalisée</Label>
+                          <Textarea
+                            value={pacteConcubinageData.detailsRepartitionPersonnalisee} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, detailsRepartitionPersonnalisee: e.target.value})}
+                            placeholder="Précisez qui paie quoi..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Charges concernées</Label>
+                        <div className="space-y-2">
+                          {[
+                            { value: "loyer", label: "Loyer ou crédit immobilier" },
+                            { value: "charges_locatives", label: "Charges locatives" },
+                            { value: "electricite_gaz", label: "Électricité et gaz" },
+                            { value: "eau", label: "Eau" },
+                            { value: "internet_tel", label: "Internet et téléphone" },
+                            { value: "courses", label: "Courses alimentaires" },
+                            { value: "entretien", label: "Entretien du logement" },
+                          ].map(charge => (
+                            <div key={charge.value} className="flex items-center space-x-2">
+                              <input 
+                                type="checkbox"
+                                id={`charge-${charge.value}`}
+                                checked={pacteConcubinageData.chargesConcernees.includes(charge.value)}
+                                onChange={(e) => {
+                                  const newCharges = e.target.checked
+                                    ? [...pacteConcubinageData.chargesConcernees, charge.value]
+                                    : pacteConcubinageData.chargesConcernees.filter(c => c !== charge.value);
+                                  setPacteConcubinageData({...pacteConcubinageData, chargesConcernees: newCharges});
+                                }}
+                                className="rounded border-gray-300"
+                              />
+                              <Label htmlFor={`charge-${charge.value}`} className="font-normal cursor-pointer">{charge.label}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Compte commun</Label>
+                        <Select 
+                          value={pacteConcubinageData.compteCommun} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, compteCommun: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, compte commun</SelectItem>
+                            <SelectItem value="non">Non, comptes séparés</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.compteCommun === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Détails du compte commun</Label>
+                          <Textarea
+                            value={pacteConcubinageData.detailsCompteCommun} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, detailsCompteCommun: e.target.value})}
+                            placeholder="Banque, titulaires, montant des versements mensuels..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 5️⃣ PROPRIÉTÉ DES BIENS */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Propriété des biens</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Principe général *</Label>
+                        <Select 
+                          value={pacteConcubinageData.principeBiens} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, principeBiens: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="separation">Chacun reste propriétaire de ses biens</SelectItem>
+                            <SelectItem value="communs">Biens acquis en commun</SelectItem>
+                            <SelectItem value="mixte">Mixte (selon les cas)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Biens acquis avant la vie commune</Label>
+                        <Textarea
+                          value={pacteConcubinageData.biensAvantVieCommune} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, biensAvantVieCommune: e.target.value})}
+                          placeholder="Listez les biens importants appartenant à chacun avant le début de la vie commune..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Biens acquis pendant la vie commune</Label>
+                        <Textarea
+                          value={pacteConcubinageData.biensPendantVieCommune} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, biensPendantVieCommune: e.target.value})}
+                          placeholder="Précisez la règle pour les biens acquis ensemble (communs, indivision, etc.)..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Inventaire des meubles et biens</Label>
+                        <Select 
+                          value={pacteConcubinageData.inventaireBiens} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, inventaireBiens: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, inventaire annexé</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Véhicules</Label>
+                        <Textarea
+                          value={pacteConcubinageData.vehicules} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, vehicules: e.target.value})}
+                          placeholder="Précisez les véhicules et leur propriétaire respectif..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6️⃣ GESTION DES DÉPENSES IMPORTANTES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Gestion des dépenses importantes</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Définition d'une dépense importante</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Montant seuil (€)</Label>
+                            <Input 
+                              type="number"
+                              value={pacteConcubinageData.seuilDepenseImportante} 
+                              onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, seuilDepenseImportante: e.target.value})}
+                              placeholder="Ex: 1000"
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Au-delà de ce montant, l'accord des deux concubins sera nécessaire
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Modalité d'accord *</Label>
+                        <Select 
+                          value={pacteConcubinageData.modaliteAccordDepense} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, modaliteAccordDepense: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unanimite">Accord unanime des deux concubins</SelectItem>
+                            <SelectItem value="ecrit">Accord écrit obligatoire</SelectItem>
+                            <SelectItem value="oral">Accord oral suffisant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Types de dépenses concernées</Label>
+                        <Textarea
+                          value={pacteConcubinageData.typesDepensesImportantes} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, typesDepensesImportantes: e.target.value})}
+                          placeholder="Ex: Achat de voiture, travaux, investissements, emprunts..."
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7️⃣ OBLIGATIONS RESPECTIVES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Obligations respectives des concubins</h3>
+                    
+                    <div className="space-y-2">
+                      <Label>Engagements</Label>
+                      <div className="space-y-2">
+                        {[
+                          { value: "vie_commune", label: "Maintenir une vie commune stable et continue" },
+                          { value: "contribution", label: "Contribuer aux charges selon les modalités prévues" },
+                          { value: "respect", label: "Respect mutuel et assistance morale" },
+                          { value: "fidelite", label: "Fidélité" },
+                          { value: "transparence", label: "Transparence financière" },
+                          { value: "decisions_communes", label: "Décisions communes pour les dépenses importantes" },
+                        ].map(obligation => (
+                          <div key={obligation.value} className="flex items-center space-x-2">
+                            <input 
+                              type="checkbox"
+                              id={`obligation-${obligation.value}`}
+                              checked={pacteConcubinageData.obligationsRespectives.includes(obligation.value)}
+                              onChange={(e) => {
+                                const newObligations = e.target.checked
+                                  ? [...pacteConcubinageData.obligationsRespectives, obligation.value]
+                                  : pacteConcubinageData.obligationsRespectives.filter(o => o !== obligation.value);
+                                setPacteConcubinageData({...pacteConcubinageData, obligationsRespectives: newObligations});
+                              }}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor={`obligation-${obligation.value}`} className="font-normal cursor-pointer">{obligation.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Autres engagements spécifiques</Label>
+                      <Textarea
+                        value={pacteConcubinageData.autresEngagements} 
+                        onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, autresEngagements: e.target.value})}
+                        placeholder="Précisez d'autres engagements particuliers..."
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+
+                  {/* 8️⃣ PRÉVOYANCE ET DONATIONS */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Prévoyance et donations</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Testament</Label>
+                        <Select 
+                          value={pacteConcubinageData.testament} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, testament: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, testament rédigé</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="en_cours">En cours de rédaction</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.testament === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Détails du testament</Label>
+                          <Textarea
+                            value={pacteConcubinageData.detailsTestament} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, detailsTestament: e.target.value})}
+                            placeholder="Précisez les grandes lignes du testament..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Donation entre concubins</Label>
+                        <Select 
+                          value={pacteConcubinageData.donation} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, donation: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, donation effectuée</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="envisagee">Envisagée</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.donation === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Détails de la donation</Label>
+                          <Textarea
+                            value={pacteConcubinageData.detailsDonation} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, detailsDonation: e.target.value})}
+                            placeholder="Précisez l'objet de la donation..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Assurance-vie</Label>
+                        <Select 
+                          value={pacteConcubinageData.assuranceVie} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, assuranceVie: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, bénéficiaire désigné</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="a_modifier">À modifier</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.assuranceVie === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Détails de l'assurance-vie</Label>
+                          <Textarea
+                            value={pacteConcubinageData.detailsAssuranceVie} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, detailsAssuranceVie: e.target.value})}
+                            placeholder="Précisez l'organisme, le montant, le bénéficiaire..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Autres dispositions de prévoyance</Label>
+                        <Textarea
+                          value={pacteConcubinageData.autresPrevoyance} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, autresPrevoyance: e.target.value})}
+                          placeholder="Précisez d'autres dispositions (ex: prévoyance décès, invalidité...)..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 9️⃣ GESTION DES DETTES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Gestion des dettes</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Dettes communes *</Label>
+                        <Textarea
+                          value={pacteConcubinageData.dettesCommunes} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, dettesCommunes: e.target.value})}
+                          placeholder="Liste des dettes contractées ensemble (crédit immobilier, prêt voiture...)..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Dettes personnelles</Label>
+                        <Textarea
+                          value={pacteConcubinageData.dettesPersonnelles} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, dettesPersonnelles: e.target.value})}
+                          placeholder="Dettes contractées individuellement par chaque concubin..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Principe de non-solidarité *</Label>
+                        <Select 
+                          value={pacteConcubinageData.nonSolidariteDettes} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, nonSolidariteDettes: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, pas de solidarité pour dettes personnelles</SelectItem>
+                            <SelectItem value="solidarite_limitee">Solidarité limitée (préciser)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Chacun reste responsable de ses dettes personnelles, l'autre n'est pas solidaire
+                        </p>
+                      </div>
+
+                      {pacteConcubinageData.nonSolidariteDettes === "solidarite_limitee" && (
+                        <div className="space-y-2">
+                          <Label>Précisions sur la solidarité limitée</Label>
+                          <Textarea
+                            value={pacteConcubinageData.precisionsSolidarite} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, precisionsSolidarite: e.target.value})}
+                            placeholder="Dans quels cas la solidarité s'applique-t-elle ?..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 🔟 SÉPARATION ET RUPTURE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Modalités de séparation et rupture</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Modalités de rupture *</Label>
+                        <Select 
+                          value={pacteConcubinageData.modalitesRupture} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, modalitesRupture: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="libre">Rupture libre unilatérale</SelectItem>
+                            <SelectItem value="preavis">Rupture avec préavis (préciser durée)</SelectItem>
+                            <SelectItem value="accord_mutuel">Accord mutuel nécessaire</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.modalitesRupture === "preavis" && (
+                        <div className="space-y-2">
+                          <Label>Durée du préavis (en mois)</Label>
+                          <Input 
+                            type="number"
+                            value={pacteConcubinageData.dureePreavissRupture} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, dureePreavissRupture: e.target.value})}
+                            placeholder="Ex: 3"
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Répartition des biens en cas de rupture *</Label>
+                        <Textarea
+                          value={pacteConcubinageData.repartitionBiensRupture} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, repartitionBiensRupture: e.target.value})}
+                          placeholder="Chacun reprend ses biens personnels, partage des biens communs à 50/50..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Sort du logement commun</Label>
+                        <Textarea
+                          value={pacteConcubinageData.sortLogement} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, sortLogement: e.target.value})}
+                          placeholder="Qui quitte le logement ? Délai pour quitter ? Indemnité éventuelle ?..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Remboursements et soultes éventuels</Label>
+                        <Textarea
+                          value={pacteConcubinageData.remboursements} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, remboursements: e.target.value})}
+                          placeholder="Précisez les modalités de remboursement en cas de créances entre concubins..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Autres modalités de séparation</Label>
+                        <Textarea
+                          value={pacteConcubinageData.autresModalitesSeparation} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, autresModalitesSeparation: e.target.value})}
+                          placeholder="Autres dispositions particulières en cas de séparation..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣1️⃣ ENFANTS (facultatif) */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Dispositions relatives aux enfants (facultatif)</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Inclure des dispositions relatives aux enfants ?</Label>
+                        <Select 
+                          value={pacteConcubinageData.inclureEnfants} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, inclureEnfants: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.inclureEnfants === "oui" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Contribution aux dépenses des enfants</Label>
+                            <Textarea
+                              value={pacteConcubinageData.contributionEnfants} 
+                              onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, contributionEnfants: e.target.value})}
+                              placeholder="Ex: Répartition 50/50, proportionnelle aux revenus..."
+                              rows={3}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Modalités de garde en cas de séparation</Label>
+                            <Textarea
+                              value={pacteConcubinageData.gardeEnfantsSeparation} 
+                              onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, gardeEnfantsSeparation: e.target.value})}
+                              placeholder="Précisez les modalités envisagées (garde alternée, droits de visite...)..."
+                              rows={3}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Pension alimentaire en cas de séparation</Label>
+                            <Textarea
+                              value={pacteConcubinageData.pensionAlimentaire} 
+                              onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, pensionAlimentaire: e.target.value})}
+                              placeholder="Précisez les modalités (montant, indexation...)..."
+                              rows={3}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Autres dispositions concernant les enfants</Label>
+                            <Textarea
+                              value={pacteConcubinageData.autresDispositionsEnfants} 
+                              onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, autresDispositionsEnfants: e.target.value})}
+                              placeholder="Scolarité, santé, activités extrascolaires..."
+                              rows={2}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 1️⃣2️⃣ CONFIDENTIALITÉ */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ Confidentialité et règlement des différends</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Clause de confidentialité *</Label>
+                        <Select 
+                          value={pacteConcubinageData.confidentialite} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, confidentialite: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, informations confidentielles</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Les concubins s'engagent à garder confidentielles les informations personnelles et financières
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Règlement amiable des différends *</Label>
+                        <Select 
+                          value={pacteConcubinageData.reglementAmiable} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, reglementAmiable: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, tentative de médiation obligatoire</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="facultatif">Facultatif</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.reglementAmiable === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Modalités de médiation</Label>
+                          <Textarea
+                            value={pacteConcubinageData.modalitesMediation} 
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, modalitesMediation: e.target.value})}
+                            placeholder="Précisez les modalités (médiateur, délai, coûts...)..."
+                            rows={3}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 1️⃣3️⃣ LOI APPLICABLE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Loi applicable et juridiction</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Loi applicable *</Label>
+                        <Input 
+                          value={pacteConcubinageData.loiApplicable} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, loiApplicable: e.target.value})}
+                          placeholder="Ex: Droit français"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Tribunal compétent *</Label>
+                        <Input 
+                          value={pacteConcubinageData.tribunalCompetent} 
+                          onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, tribunalCompetent: e.target.value})}
+                          placeholder="Ex: Tribunal de grande instance de Paris"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣4️⃣ ANNEXES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣4️⃣ Annexes et justificatifs</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Inventaire des meubles et biens</Label>
+                        <MultiFileUpload
+                          files={pacteInventaireMeubles}
+                          onChange={setPacteInventaireMeubles}
+                          label="Joindre l'inventaire détaillé"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          role="avocat"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Justificatifs d'acquisitions</Label>
+                        <MultiFileUpload
+                          files={pacteJustificatifsAcquisitions}
+                          onChange={setPacteJustificatifsAcquisitions}
+                          label="Factures, actes de propriété, etc."
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          role="avocat"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Tableau de répartition des charges</Label>
+                        <MultiFileUpload
+                          files={pacteTableauRepartition}
+                          onChange={setPacteTableauRepartition}
+                          label="Joindre un tableau récapitulatif"
+                          accept=".pdf,.xlsx,.xls"
+                          role="avocat"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Attestation de vie commune</Label>
+                        <MultiFileUpload
+                          files={pacteAttestationVieCommune}
+                          onChange={setPacteAttestationVieCommune}
+                          label="Attestation sur l'honneur ou justificatifs"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          role="avocat"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣5️⃣ SIGNATURES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ Signatures</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Mode de signature *</Label>
+                        <Select 
+                          value={pacteConcubinageData.modeSignature} 
+                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, modeSignature: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="electronique">Signature électronique (YouSign)</SelectItem>
+                            <SelectItem value="manuscrite">Signature manuscrite</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {pacteConcubinageData.modeSignature === "manuscrite" && (
+                        <>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Lieu de signature *</Label>
+                              <Input 
+                                value={pacteConcubinageData.lieuSignature} 
+                                onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, lieuSignature: e.target.value})}
+                                placeholder="Ex: Paris"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Date de signature *</Label>
+                              <Input 
+                                type="date"
+                                value={pacteConcubinageData.dateSignature} 
+                                onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, dateSignature: e.target.value})}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-4 border-t pt-4">
+                            <div className="space-y-2">
+                              <Label>Signature du concubin 1</Label>
+                              <div className="p-4 border-2 border-dashed rounded-lg text-center text-muted-foreground">
+                                <p className="text-sm">Signature manuscrite à apposer sur le document imprimé</p>
+                                <p className="text-xs mt-2">Précédée de la mention "Lu et approuvé"</p>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Signature du concubin 2</Label>
+                              <div className="p-4 border-2 border-dashed rounded-lg text-center text-muted-foreground">
+                                <p className="text-sm">Signature manuscrite à apposer sur le document imprimé</p>
+                                <p className="text-xs mt-2">Précédée de la mention "Lu et approuvé"</p>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {pacteConcubinageData.modeSignature === "electronique" && (
+                        <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                          <p className="text-sm">
+                            ✅ Les deux concubins recevront un email pour signer électroniquement le document via YouSign après validation.
+                          </p>
+                          <p className="text-xs mt-2 text-muted-foreground">
+                            La signature électronique a la même valeur juridique qu'une signature manuscrite.
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   
                 </div>
@@ -66372,7 +67701,9 @@ FIN DE LA CONVENTION
                   handleEtatLieuxSubmit();
                 } else if (pendingContractType === "Mise en demeure de payer le loyer / autres obligations") {
                   handleMiseEnDemeureSubmit();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Pacte de concubinage", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Pacte de concubinage") {
+                  handlePacteConcubinageSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Convention parentale", "Reconnaissance de dettes", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
