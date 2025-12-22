@@ -24562,18 +24562,11 @@ FIN DE LA CONVENTION
                         </div>
                         <div className="space-y-2">
                           <Label>Situation familiale</Label>
-                          <Select 
+                          <Input 
                             value={pacteConcubinageData.concubin1SituationFamiliale} 
-                            onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, concubin1SituationFamiliale: value})}
-                          >
-                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="celibataire">Célibataire</SelectItem>
-                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                              <SelectItem value="veuf">Veuf/Veuve</SelectItem>
-                              <SelectItem value="separe">Séparé(e)</SelectItem>
-                            </SelectContent>
-                          </Select>
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin1SituationFamiliale: e.target.value})}
+                            placeholder="Ex: Célibataire, Divorcé(e), Veuf/Veuve..."
+                          />
                         </div>
                       </div>
                     </div>
@@ -24668,18 +24661,11 @@ FIN DE LA CONVENTION
                         </div>
                         <div className="space-y-2">
                           <Label>Situation familiale</Label>
-                          <Select 
+                          <Input 
                             value={pacteConcubinageData.concubin2SituationFamiliale} 
-                            onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, concubin2SituationFamiliale: value})}
-                          >
-                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="celibataire">Célibataire</SelectItem>
-                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
-                              <SelectItem value="veuf">Veuf/Veuve</SelectItem>
-                              <SelectItem value="separe">Séparé(e)</SelectItem>
-                            </SelectContent>
-                          </Select>
+                            onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, concubin2SituationFamiliale: e.target.value})}
+                            placeholder="Ex: Célibataire, Divorcé(e), Veuf/Veuve..."
+                          />
                         </div>
                       </div>
                     </div>
