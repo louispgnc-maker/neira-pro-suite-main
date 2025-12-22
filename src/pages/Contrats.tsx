@@ -24278,26 +24278,6 @@ FIN DE LA CONVENTION
                       </div>
                     )}
                   </div>
-
-                  {/* 1️⃣3️⃣ SIGNATURES */}
-                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Signature du bailleur</h3>
-                    
-                    <div className="space-y-2">
-                      <Label>Nom du signataire (bailleur ou mandataire) *</Label>
-                      <Input 
-                        value={miseEnDemeureData.signatureBailleur}
-                        onChange={(e) => setMiseEnDemeureData({...miseEnDemeureData, signatureBailleur: e.target.value})}
-                        placeholder="Nom Prénom du signataire"
-                      />
-                    </div>
-
-                    <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded text-sm">
-                      ℹ️ La signature sera apposée lors de la génération du document PDF final.
-                    </div>
-                  </div>
-
-                  {/* À SUIVRE - Les sections finales seront ajoutées */}
                   
                 </div>
               </>
