@@ -5705,6 +5705,248 @@ export default function Contrats() {
   const [avocatBailHabitationDiagnosticsFiles, setAvocatBailHabitationDiagnosticsFiles] = useState<File[]>([]);
   const [avocatBailHabitationInventaireFiles, setAvocatBailHabitationInventaireFiles] = useState<File[]>([]);
   
+  // ========== ÉTAT DES LIEUX ==========
+  const [etatLieuxData, setEtatLieuxData] = useState({
+    // ========== 1️⃣ IDENTIFICATION DU DOCUMENT ==========
+    typeEtatLieux: "", // "entree" ou "sortie"
+    adresseLogement: "",
+    dateEtatLieux: "",
+    heureEtatLieux: "",
+    
+    // Personne ayant réalisé
+    realisePar: "", // "bailleur", "locataire", "mandataire", "huissier"
+    
+    // Présence des parties
+    bailleurPresent: "", // oui / non
+    locatairePresent: "", // oui / non
+    temoinsRepresentants: "",
+    
+    // ========== 2️⃣ IDENTITÉ DES PARTIES ==========
+    
+    // Bailleur
+    bailleurNom: "",
+    bailleurPrenom: "",
+    bailleurAdresse: "",
+    bailleurEmail: "",
+    bailleurTelephone: "",
+    
+    // Locataire(s)
+    locataireNom: "",
+    locatairePrenom: "",
+    locataireAdresse: "",
+    locataireEmail: "",
+    locataireTelephone: "",
+    
+    // Agence immobilière
+    agencePresente: "", // oui / non
+    agenceRaisonSociale: "",
+    agenceCarteProf: "",
+    agenceAdresse: "",
+    agenceMandataireNom: "",
+    agenceMandataireFonction: "",
+    
+    // ========== 3️⃣ DESCRIPTION GÉNÉRALE DU LOGEMENT ==========
+    typeLogement: "", // studio, T1, T2, T3, T4, T5, maison, etc.
+    etage: "",
+    ascenseur: "", // oui / non
+    nombrePiecesPrincipales: "",
+    superficie: "",
+    orientation: "",
+    typeChauffage: "", // collectif / individuel
+    energieChauffage: "", // gaz, électricité, fioul, etc.
+    typeEauChaude: "", // chaudière, cumulus, etc.
+    detecteursFumee: "", // oui / non
+    ventilation: "", // oui / non (VMC)
+    
+    // ========== 4️⃣ RELEVÉS DES COMPTEURS ==========
+    
+    // Eau
+    eauNumeroCompteur: "",
+    eauIndex: "",
+    
+    // Électricité
+    electriciteNumeroCompteur: "",
+    electriciteIndexHP: "",
+    electriciteIndexHC: "",
+    
+    // Gaz
+    gazNumeroCompteur: "",
+    gazIndex: "",
+    
+    // Chauffage collectif
+    chauffageCollectif: "", // oui / non
+    chauffageCalorimetres: "",
+    
+    // ========== 5️⃣ CLÉS REMISES ==========
+    cles: [] as {
+      id: number;
+      type: string; // porte entrée, boite aux lettres, cave, garage, etc.
+      nombre: string;
+      numero: string;
+    }[],
+    badges: "",
+    
+    // ========== 6️⃣ PIÈCES PAR PIÈCE — TABLEAU DÉTAILLÉ ==========
+    pieces: [] as {
+      id: number;
+      nom: string; // Entrée, Salon, Cuisine, Chambre 1, etc.
+      
+      // Sols
+      solType: string; // carrelage, parquet, moquette, lino
+      solEtat: string; // bon, moyen, mauvais
+      solProprete: string; // propre, à nettoyer
+      solCommentaire: string;
+      
+      // Murs
+      murType: string; // peinture, papier peint
+      murEtat: string;
+      murProprete: string;
+      murCommentaire: string; // traces, trous, impacts, humidité, moisissures
+      
+      // Plafond
+      plafondEtat: string;
+      plafondCommentaire: string; // fissures, auréoles
+      
+      // Fenêtres / Volets
+      fenetresMatériau: string; // PVC, bois, alu
+      fenetresFonctionnement: string; // bon, à réparer
+      fenetresEtancheite: string; // bon, mauvais
+      fenetresSerrures: string; // bon, défectueuses
+      fenetresOccultation: string; // volets, stores, rideaux
+      
+      // Portes
+      portesEtat: string;
+      portesSerrure: string;
+      portesPoignees: string;
+      
+      // Éclairage
+      eclairageAppliques: string;
+      eclairageDouilles: string;
+      eclairageFonctionnement: string;
+      
+      // Chauffage
+      chauffageRadiateurs: string;
+      chauffageThermostats: string;
+      chauffageFonctionnement: string;
+      
+      // Équipements cuisine (si applicable)
+      cuisineEvier: string;
+      cuisineMeublesHauts: string;
+      cuisineMeublesBas: string;
+      cuisineHotte: string;
+      cuisinePlaquesCuisson: string;
+      cuisineFour: string;
+      cuisineRefriger: string;
+      cuisinePlanTravail: string;
+      
+      // Salle de bain (si applicable)
+      sdbLavabo: string;
+      sdbVasque: string;
+      sdbRobinetterie: string;
+      sdbDouche: string;
+      sdbBaignoire: string;
+      sdbEtancheite: string;
+      sdbJointSilicone: string;
+      sdbMiroirs: string;
+      sdbVentilation: string;
+      
+      // Toilettes (si applicable)
+      wcCuvette: string;
+      wcReservoir: string;
+      wcAbattant: string;
+      wcVentilation: string;
+      
+      // Rangements
+      rangementsPortes: string;
+      rangementsInterieur: string;
+      
+      // Photos
+      photos: string; // Liste de chemins ou URLs
+      remarquesGenerales: string;
+    }[],
+    
+    // ========== 7️⃣ ÉTAT DES MEUBLES (POUR MEUBLÉ) ==========
+    logementMeuble: "", // oui / non
+    meubles: [] as {
+      id: number;
+      categorie: string; // lit, table, chaises, etc.
+      description: string;
+      etat: string;
+      marque: string;
+      modele: string;
+      fonctionnement: string;
+      photos: string;
+    }[],
+    
+    // ========== 8️⃣ ANOMALIES / DÉGRADATIONS ==========
+    anomaliesEntree: [] as {
+      id: number;
+      piece: string;
+      description: string;
+      photo: string;
+    }[],
+    
+    degradationsSortie: [] as {
+      id: number;
+      piece: string;
+      description: string;
+      estimation: string;
+      origine: string; // vétusté, usage normal, dégradation
+      photo: string;
+    }[],
+    
+    grilleVetuste: "", // oui / non
+    
+    // ========== 9️⃣ OBSERVATIONS DES PARTIES ==========
+    remarquesBailleur: "",
+    remarquesLocataire: "",
+    desaccords: "",
+    pointsACorriger: "",
+    propositionsTravaux: "",
+    
+    // ========== 🔟 PHOTOS & ANNEXES ==========
+    photosGenerales: "",
+    photosDegradations: "",
+    planLogement: "",
+    listeMeubles: "",
+    facturesReparations: "",
+    
+    // ========== 1️⃣1️⃣ COMPARATIF ENTRÉE / SORTIE ==========
+    comparatif: [] as {
+      id: number;
+      element: string;
+      etatEntree: string;
+      etatSortie: string;
+      degradation: string; // oui / non
+      justification: string;
+      indemnite: string;
+    }[],
+    
+    // ========== 1️⃣2️⃣ RÉCAPITULATIF FINANCIER (SORTIE) ==========
+    depotGarantieVerse: "",
+    totalDegradations: "",
+    totalReparationsLocatives: "",
+    resteDuLocataire: "",
+    sommeConserveeBailleur: "",
+    delaiRestitution: "", // 1 mois ou 2 mois selon meublé/non meublé
+    
+    // ========== 1️⃣3️⃣ SIGNATURES ==========
+    signatureBailleur: "", // oui / non
+    signatureLocataire: "", // oui / non
+    signatureHuissier: "", // oui / non
+    signatureElectronique: "", // oui / non (YouSign)
+  });
+  
+  // États fichiers pour état des lieux
+  const [etatLieuxPhotosFiles, setEtatLieuxPhotosFiles] = useState<File[]>([]);
+  const [etatLieuxDegradationsFiles, setEtatLieuxDegradationsFiles] = useState<File[]>([]);
+  const [etatLieuxPlanFiles, setEtatLieuxPlanFiles] = useState<File[]>([]);
+  const [etatLieuxFacturesFiles, setEtatLieuxFacturesFiles] = useState<File[]>([]);
+  const [etatLieuxBailFiles, setEtatLieuxBailFiles] = useState<File[]>([]);
+  const [etatLieuxEntreeFiles, setEtatLieuxEntreeFiles] = useState<File[]>([]);
+  const [etatLieuxInventaireFiles, setEtatLieuxInventaireFiles] = useState<File[]>([]);
+  const [etatLieuxVetusteFiles, setEtatLieuxVetusteFiles] = useState<File[]>([]);
+  
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
     typeContrat: "", // "compromis" ou "promesse_unilaterale"
@@ -20363,6 +20605,2145 @@ FIN DE LA CONVENTION
                         <p className="text-xs text-muted-foreground">
                           Tribunal compétent en cas de litige
                         </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* ========== FORMULAIRE ÉTAT DES LIEUX ========== */}
+            {pendingContractType === "État des lieux (annexe)" && (
+              <>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm font-medium text-blue-800">📋 État des lieux - Formulaire complet</p>
+                    <p className="text-xs text-blue-600 mt-1">Document obligatoire lors de l'entrée et la sortie du locataire</p>
+                  </div>
+
+                  {/* 1️⃣ IDENTIFICATION DU DOCUMENT */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du document</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type d'état des lieux *</Label>
+                        <Select 
+                          value={etatLieuxData.typeEtatLieux} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, typeEtatLieux: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="entree">État des lieux d'entrée</SelectItem>
+                            <SelectItem value="sortie">État des lieux de sortie</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Adresse complète du logement *</Label>
+                        <Input 
+                          value={etatLieuxData.adresseLogement} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, adresseLogement: e.target.value})} 
+                          placeholder="Numéro, rue, CP, ville"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Date *</Label>
+                        <Input 
+                          type="date"
+                          value={etatLieuxData.dateEtatLieux} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, dateEtatLieux: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Heure</Label>
+                        <Input 
+                          type="time"
+                          value={etatLieuxData.heureEtatLieux} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, heureEtatLieux: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Réalisé par *</Label>
+                        <Select 
+                          value={etatLieuxData.realisePar} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, realisePar: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="bailleur">Bailleur</SelectItem>
+                            <SelectItem value="locataire">Locataire</SelectItem>
+                            <SelectItem value="mandataire">Mandataire / Agence</SelectItem>
+                            <SelectItem value="huissier">Huissier</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Bailleur présent ? *</Label>
+                        <Select 
+                          value={etatLieuxData.bailleurPresent} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, bailleurPresent: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Locataire présent ? *</Label>
+                        <Select 
+                          value={etatLieuxData.locatairePresent} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, locatairePresent: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Témoins / Représentants</Label>
+                        <Textarea 
+                          value={etatLieuxData.temoinsRepresentants} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, temoinsRepresentants: e.target.value})} 
+                          placeholder="Noms et qualités des témoins ou représentants présents"
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2️⃣ IDENTITÉ DES PARTIES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité des parties</h3>
+                    
+                    {/* Bailleur */}
+                    <div className="space-y-3">
+                      <h4 className="font-medium">A. Bailleur</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom *</Label>
+                          <Input 
+                            value={etatLieuxData.bailleurNom} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, bailleurNom: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom *</Label>
+                          <Input 
+                            value={etatLieuxData.bailleurPrenom} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, bailleurPrenom: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse *</Label>
+                          <Input 
+                            value={etatLieuxData.bailleurAdresse} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, bailleurAdresse: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Email</Label>
+                          <Input 
+                            type="email"
+                            value={etatLieuxData.bailleurEmail} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, bailleurEmail: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Téléphone</Label>
+                          <Input 
+                            type="tel"
+                            value={etatLieuxData.bailleurTelephone} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, bailleurTelephone: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Locataire */}
+                    <div className="space-y-3">
+                      <h4 className="font-medium">B. Locataire</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom *</Label>
+                          <Input 
+                            value={etatLieuxData.locataireNom} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, locataireNom: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom *</Label>
+                          <Input 
+                            value={etatLieuxData.locatairePrenom} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, locatairePrenom: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse / Futur domicile *</Label>
+                          <Input 
+                            value={etatLieuxData.locataireAdresse} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, locataireAdresse: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Email</Label>
+                          <Input 
+                            type="email"
+                            value={etatLieuxData.locataireEmail} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, locataireEmail: e.target.value})} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Téléphone</Label>
+                          <Input 
+                            type="tel"
+                            value={etatLieuxData.locataireTelephone} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, locataireTelephone: e.target.value})} 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Agence */}
+                    <div className="space-y-3">
+                      <h4 className="font-medium">C. Agence immobilière (si applicable)</h4>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label>Agence présente ?</Label>
+                          <Select 
+                            value={etatLieuxData.agencePresente} 
+                            onValueChange={(value) => setEtatLieuxData({...etatLieuxData, agencePresente: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {etatLieuxData.agencePresente === "oui" && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Raison sociale</Label>
+                              <Input 
+                                value={etatLieuxData.agenceRaisonSociale} 
+                                onChange={(e) => setEtatLieuxData({...etatLieuxData, agenceRaisonSociale: e.target.value})} 
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>N° carte professionnelle</Label>
+                              <Input 
+                                value={etatLieuxData.agenceCarteProf} 
+                                onChange={(e) => setEtatLieuxData({...etatLieuxData, agenceCarteProf: e.target.value})} 
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Adresse</Label>
+                              <Input 
+                                value={etatLieuxData.agenceAdresse} 
+                                onChange={(e) => setEtatLieuxData({...etatLieuxData, agenceAdresse: e.target.value})} 
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Mandataire - Nom</Label>
+                              <Input 
+                                value={etatLieuxData.agenceMandataireNom} 
+                                onChange={(e) => setEtatLieuxData({...etatLieuxData, agenceMandataireNom: e.target.value})} 
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Fonction</Label>
+                              <Input 
+                                value={etatLieuxData.agenceMandataireFonction} 
+                                onChange={(e) => setEtatLieuxData({...etatLieuxData, agenceMandataireFonction: e.target.value})} 
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3️⃣ DESCRIPTION GÉNÉRALE DU LOGEMENT */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Description générale du logement</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de logement *</Label>
+                        <Select 
+                          value={etatLieuxData.typeLogement} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, typeLogement: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="appartement">Appartement</SelectItem>
+                            <SelectItem value="maison">Maison</SelectItem>
+                            <SelectItem value="studio">Studio</SelectItem>
+                            <SelectItem value="loft">Loft</SelectItem>
+                            <SelectItem value="chambre">Chambre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nombre de pièces *</Label>
+                        <Input 
+                          type="number"
+                          value={etatLieuxData.nombrePieces} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, nombrePieces: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Surface (m²) *</Label>
+                        <Input 
+                          type="number"
+                          value={etatLieuxData.surfaceLogement} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, surfaceLogement: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Étage</Label>
+                        <Input 
+                          value={etatLieuxData.etage} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, etage: e.target.value})} 
+                          placeholder="ex: 2ème, RDC..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Ascenseur ?</Label>
+                        <Select 
+                          value={etatLieuxData.ascenseur} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, ascenseur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Meublé ?</Label>
+                        <Select 
+                          value={etatLieuxData.meuble} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, meuble: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Type de chauffage *</Label>
+                        <Select 
+                          value={etatLieuxData.typeChauffage} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, typeChauffage: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="collectif">Collectif</SelectItem>
+                            <SelectItem value="individuel_gaz">Individuel - Gaz</SelectItem>
+                            <SelectItem value="individuel_electrique">Individuel - Électrique</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Eau chaude *</Label>
+                        <Select 
+                          value={etatLieuxData.eauChaude} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, eauChaude: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="collective">Collective</SelectItem>
+                            <SelectItem value="individuelle">Individuelle</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Type de ventilation</Label>
+                        <Select 
+                          value={etatLieuxData.typeVentilation} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, typeVentilation: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="vmc">VMC</SelectItem>
+                            <SelectItem value="naturelle">Naturelle</SelectItem>
+                            <SelectItem value="aucune">Aucune</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Annexes</Label>
+                        <Input 
+                          value={etatLieuxData.annexes} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, annexes: e.target.value})} 
+                          placeholder="Cave, parking, grenier..."
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Observations générales</Label>
+                        <Textarea 
+                          value={etatLieuxData.observationsGenerales} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, observationsGenerales: e.target.value})} 
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4️⃣ RELEVÉS DE COMPTEURS */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Relevés de compteurs</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Eau froide (m³)</Label>
+                        <Input 
+                          type="number"
+                          step="0.001"
+                          value={etatLieuxData.compteurEauFroide} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, compteurEauFroide: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Eau chaude (m³)</Label>
+                        <Input 
+                          type="number"
+                          step="0.001"
+                          value={etatLieuxData.compteurEauChaude} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, compteurEauChaude: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Électricité (kWh)</Label>
+                        <Input 
+                          type="number"
+                          step="0.001"
+                          value={etatLieuxData.compteurElectricite} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, compteurElectricite: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Gaz (m³)</Label>
+                        <Input 
+                          type="number"
+                          step="0.001"
+                          value={etatLieuxData.compteurGaz} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, compteurGaz: e.target.value})} 
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Chauffage collectif (unités)</Label>
+                        <Input 
+                          type="number"
+                          step="0.001"
+                          value={etatLieuxData.compteurChauffage} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, compteurChauffage: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5️⃣ CLÉS REMISES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Clés remises</h3>
+                    
+                    {etatLieuxData.cles.map((cle, index) => (
+                      <div key={index} className="p-3 bg-white dark:bg-gray-800 rounded border">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="space-y-2">
+                            <Label>Type de clé</Label>
+                            <Select 
+                              value={cle.type} 
+                              onValueChange={(value) => {
+                                const newCles = [...etatLieuxData.cles];
+                                newCles[index].type = value;
+                                setEtatLieuxData({...etatLieuxData, cles: newCles});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="entree_immeuble">Entrée immeuble</SelectItem>
+                                <SelectItem value="porte_appartement">Porte appartement</SelectItem>
+                                <SelectItem value="cave">Cave</SelectItem>
+                                <SelectItem value="boite_lettres">Boîte aux lettres</SelectItem>
+                                <SelectItem value="parking">Parking</SelectItem>
+                                <SelectItem value="portail">Portail</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Quantité</Label>
+                            <Input 
+                              type="number"
+                              min="0"
+                              value={cle.quantite} 
+                              onChange={(e) => {
+                                const newCles = [...etatLieuxData.cles];
+                                newCles[index].quantite = e.target.value;
+                                setEtatLieuxData({...etatLieuxData, cles: newCles});
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Numéro(s)</Label>
+                            <Input 
+                              value={cle.numero} 
+                              onChange={(e) => {
+                                const newCles = [...etatLieuxData.cles];
+                                newCles[index].numero = e.target.value;
+                                setEtatLieuxData({...etatLieuxData, cles: newCles});
+                              }}
+                              placeholder="ex: 123, A25..."
+                            />
+                          </div>
+                        </div>
+
+                        {etatLieuxData.cles.length > 1 && (
+                          <Button 
+                            type="button" 
+                            variant="destructive" 
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => {
+                              const newCles = etatLieuxData.cles.filter((_, i) => i !== index);
+                              setEtatLieuxData({...etatLieuxData, cles: newCles});
+                            }}
+                          >
+                            Supprimer cette clé
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => {
+                        setEtatLieuxData({
+                          ...etatLieuxData, 
+                          cles: [...etatLieuxData.cles, {type: '', quantite: '1', numero: ''}]
+                        });
+                      }}
+                    >
+                      + Ajouter une clé
+                    </Button>
+                  </div>
+
+                  {/* 6️⃣ INVENTAIRE PIÈCE PAR PIÈCE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Inventaire pièce par pièce</h3>
+                    <p className="text-sm text-muted-foreground">Description détaillée de chaque pièce du logement</p>
+                    
+                    {etatLieuxData.pieces.map((piece, index) => (
+                      <div key={index} className="p-4 bg-white dark:bg-gray-800 rounded border space-y-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-semibold text-lg">Pièce #{index + 1}</h4>
+                          {etatLieuxData.pieces.length > 1 && (
+                            <Button 
+                              type="button" 
+                              variant="destructive" 
+                              size="sm"
+                              onClick={() => {
+                                const newPieces = etatLieuxData.pieces.filter((_, i) => i !== index);
+                                setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Nom de la pièce *</Label>
+                            <Select 
+                              value={piece.nomPiece} 
+                              onValueChange={(value) => {
+                                const newPieces = [...etatLieuxData.pieces];
+                                newPieces[index].nomPiece = value;
+                                setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="entree">Entrée</SelectItem>
+                                <SelectItem value="sejour">Séjour</SelectItem>
+                                <SelectItem value="salon">Salon</SelectItem>
+                                <SelectItem value="cuisine">Cuisine</SelectItem>
+                                <SelectItem value="chambre">Chambre</SelectItem>
+                                <SelectItem value="salle_bain">Salle de bain</SelectItem>
+                                <SelectItem value="salle_eau">Salle d'eau</SelectItem>
+                                <SelectItem value="wc">WC</SelectItem>
+                                <SelectItem value="couloir">Couloir</SelectItem>
+                                <SelectItem value="dressing">Dressing</SelectItem>
+                                <SelectItem value="bureau">Bureau</SelectItem>
+                                <SelectItem value="balcon">Balcon</SelectItem>
+                                <SelectItem value="terrasse">Terrasse</SelectItem>
+                                <SelectItem value="cave">Cave</SelectItem>
+                                <SelectItem value="parking">Parking</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Surface (m²)</Label>
+                            <Input 
+                              type="number"
+                              step="0.1"
+                              value={piece.surface} 
+                              onChange={(e) => {
+                                const newPieces = [...etatLieuxData.pieces];
+                                newPieces[index].surface = e.target.value;
+                                setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* SOLS */}
+                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                          <h5 className="font-medium">Sols</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label>Revêtement</Label>
+                              <Select 
+                                value={piece.solRevetement} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].solRevetement = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="parquet">Parquet</SelectItem>
+                                  <SelectItem value="carrelage">Carrelage</SelectItem>
+                                  <SelectItem value="moquette">Moquette</SelectItem>
+                                  <SelectItem value="lino">Lino</SelectItem>
+                                  <SelectItem value="beton">Béton ciré</SelectItem>
+                                  <SelectItem value="autre">Autre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>État</Label>
+                              <Select 
+                                value={piece.solEtat} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].solEtat = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="moyen">Moyen</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Observations sols</Label>
+                              <Textarea 
+                                value={piece.solObservations} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].solObservations = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* MURS */}
+                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                          <h5 className="font-medium">Murs</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label>Revêtement</Label>
+                              <Select 
+                                value={piece.mursRevetement} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].mursRevetement = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="peinture">Peinture</SelectItem>
+                                  <SelectItem value="papier_peint">Papier peint</SelectItem>
+                                  <SelectItem value="carrelage">Carrelage</SelectItem>
+                                  <SelectItem value="lambris">Lambris</SelectItem>
+                                  <SelectItem value="autre">Autre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>État</Label>
+                              <Select 
+                                value={piece.mursEtat} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].mursEtat = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="moyen">Moyen</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Observations murs</Label>
+                              <Textarea 
+                                value={piece.mursObservations} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].mursObservations = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* PLAFONDS */}
+                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                          <h5 className="font-medium">Plafonds</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label>Revêtement</Label>
+                              <Select 
+                                value={piece.plafondsRevetement} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].plafondsRevetement = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="peinture">Peinture</SelectItem>
+                                  <SelectItem value="platre">Plâtre</SelectItem>
+                                  <SelectItem value="lambris">Lambris</SelectItem>
+                                  <SelectItem value="autre">Autre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>État</Label>
+                              <Select 
+                                value={piece.plafondsEtat} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].plafondsEtat = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="moyen">Moyen</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Observations plafonds</Label>
+                              <Textarea 
+                                value={piece.plafondsObservations} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].plafondsObservations = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* FENÊTRES */}
+                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                          <h5 className="font-medium">Fenêtres et vitrages</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label>Nombre de fenêtres</Label>
+                              <Input 
+                                type="number"
+                                min="0"
+                                value={piece.fenetresNombre} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].fenetresNombre = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Type de vitrage</Label>
+                              <Select 
+                                value={piece.fenetresVitrage} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].fenetresVitrage = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="simple">Simple vitrage</SelectItem>
+                                  <SelectItem value="double">Double vitrage</SelectItem>
+                                  <SelectItem value="triple">Triple vitrage</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>État fenêtres</Label>
+                              <Select 
+                                value={piece.fenetresEtat} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].fenetresEtat = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="moyen">Moyen</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Volets</Label>
+                              <Select 
+                                value={piece.fenetresVolets} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].fenetresVolets = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="oui_roulants">Oui - Roulants</SelectItem>
+                                  <SelectItem value="oui_battants">Oui - Battants</SelectItem>
+                                  <SelectItem value="non">Non</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Observations fenêtres</Label>
+                              <Textarea 
+                                value={piece.fenetresObservations} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].fenetresObservations = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* PORTES */}
+                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                          <h5 className="font-medium">Portes</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label>Nombre de portes</Label>
+                              <Input 
+                                type="number"
+                                min="0"
+                                value={piece.portesNombre} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].portesNombre = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>État portes</Label>
+                              <Select 
+                                value={piece.portesEtat} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].portesEtat = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="moyen">Moyen</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Observations portes</Label>
+                              <Textarea 
+                                value={piece.portesObservations} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].portesObservations = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* ÉCLAIRAGE */}
+                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                          <h5 className="font-medium">Éclairage et prises</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label>Points lumineux</Label>
+                              <Input 
+                                type="number"
+                                min="0"
+                                value={piece.eclairagePointsLumineux} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].eclairagePointsLumineux = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Interrupteurs</Label>
+                              <Input 
+                                type="number"
+                                min="0"
+                                value={piece.eclairageInterrupteurs} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].eclairageInterrupteurs = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Prises électriques</Label>
+                              <Input 
+                                type="number"
+                                min="0"
+                                value={piece.eclairagePrises} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].eclairagePrises = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>État électrique</Label>
+                              <Select 
+                                value={piece.eclairageEtat} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].eclairageEtat = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="moyen">Moyen</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* CHAUFFAGE */}
+                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                          <h5 className="font-medium">Chauffage</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label>Type chauffage</Label>
+                              <Select 
+                                value={piece.chauffageType} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].chauffageType = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="radiateur">Radiateur</SelectItem>
+                                  <SelectItem value="plancher_chauffant">Plancher chauffant</SelectItem>
+                                  <SelectItem value="convecteur">Convecteur</SelectItem>
+                                  <SelectItem value="aucun">Aucun</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Nombre</Label>
+                              <Input 
+                                type="number"
+                                min="0"
+                                value={piece.chauffageNombre} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].chauffageNombre = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>État chauffage</Label>
+                              <Select 
+                                value={piece.chauffageEtat} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].chauffageEtat = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="moyen">Moyen</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* ÉQUIPEMENTS CUISINE (si cuisine) */}
+                        {(piece.nomPiece === 'cuisine' || piece.nomPiece === 'sejour') && (
+                          <div className="space-y-3 p-3 bg-yellow-50 dark:bg-yellow-950 rounded">
+                            <h5 className="font-medium">Équipements cuisine</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>Plaque de cuisson</Label>
+                                <Select 
+                                  value={piece.cuisinePlaque} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].cuisinePlaque = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Hotte</Label>
+                                <Select 
+                                  value={piece.cuisineHotte} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].cuisineHotte = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Four</Label>
+                                <Select 
+                                  value={piece.cuisineFour} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].cuisineFour = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Réfrigérateur</Label>
+                                <Select 
+                                  value={piece.cuisineFrigo} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].cuisineFrigo = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Lave-vaisselle</Label>
+                                <Select 
+                                  value={piece.cuisineLaveVaisselle} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].cuisineLaveVaisselle = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Évier</Label>
+                                <Select 
+                                  value={piece.cuisineEvier} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].cuisineEvier = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="simple">Simple bac</SelectItem>
+                                    <SelectItem value="double">Double bac</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Meubles cuisine (nombre)</Label>
+                                <Input 
+                                  type="number"
+                                  min="0"
+                                  value={piece.cuisineMeubles} 
+                                  onChange={(e) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].cuisineMeubles = e.target.value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Observations cuisine</Label>
+                                <Textarea 
+                                  value={piece.cuisineObservations} 
+                                  onChange={(e) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].cuisineObservations = e.target.value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* ÉQUIPEMENTS SALLE DE BAIN (si sdb) */}
+                        {(piece.nomPiece === 'salle_bain' || piece.nomPiece === 'salle_eau') && (
+                          <div className="space-y-3 p-3 bg-green-50 dark:bg-green-950 rounded">
+                            <h5 className="font-medium">Équipements salle de bain</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>Baignoire</Label>
+                                <Select 
+                                  value={piece.sdbBaignoire} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].sdbBaignoire = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Douche</Label>
+                                <Select 
+                                  value={piece.sdbDouche} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].sdbDouche = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Lavabo</Label>
+                                <Select 
+                                  value={piece.sdbLavabo} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].sdbLavabo = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Miroir</Label>
+                                <Select 
+                                  value={piece.sdbMiroir} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].sdbMiroir = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Meubles / Rangements</Label>
+                                <Input 
+                                  type="number"
+                                  min="0"
+                                  value={piece.sdbMeubles} 
+                                  onChange={(e) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].sdbMeubles = e.target.value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>État sanitaires</Label>
+                                <Select 
+                                  value={piece.sdbEtat} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].sdbEtat = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="neuf">Neuf</SelectItem>
+                                    <SelectItem value="tres_bon">Très bon</SelectItem>
+                                    <SelectItem value="bon">Bon</SelectItem>
+                                    <SelectItem value="moyen">Moyen</SelectItem>
+                                    <SelectItem value="mauvais">Mauvais</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2 md:col-span-2">
+                                <Label>Observations salle de bain</Label>
+                                <Textarea 
+                                  value={piece.sdbObservations} 
+                                  onChange={(e) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].sdbObservations = e.target.value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* WC */}
+                        {piece.nomPiece === 'wc' && (
+                          <div className="space-y-3 p-3 bg-purple-50 dark:bg-purple-950 rounded">
+                            <h5 className="font-medium">Toilettes</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>Type de WC</Label>
+                                <Select 
+                                  value={piece.wcType} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].wcType = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="suspendu">Suspendu</SelectItem>
+                                    <SelectItem value="pose">Au sol</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>État WC</Label>
+                                <Select 
+                                  value={piece.wcEtat} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].wcEtat = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="neuf">Neuf</SelectItem>
+                                    <SelectItem value="tres_bon">Très bon</SelectItem>
+                                    <SelectItem value="bon">Bon</SelectItem>
+                                    <SelectItem value="moyen">Moyen</SelectItem>
+                                    <SelectItem value="mauvais">Mauvais</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Lave-mains</Label>
+                                <Select 
+                                  value={piece.wcLaveMains} 
+                                  onValueChange={(value) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].wcLaveMains = value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="oui">Oui</SelectItem>
+                                    <SelectItem value="non">Non</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Observations WC</Label>
+                                <Textarea 
+                                  value={piece.wcObservations} 
+                                  onChange={(e) => {
+                                    const newPieces = [...etatLieuxData.pieces];
+                                    newPieces[index].wcObservations = e.target.value;
+                                    setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                  }}
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* RANGEMENTS */}
+                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                          <h5 className="font-medium">Rangements</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label>Placards</Label>
+                              <Input 
+                                type="number"
+                                min="0"
+                                value={piece.rangementsPlacards} 
+                                onChange={(e) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].rangementsPlacards = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>État rangements</Label>
+                              <Select 
+                                value={piece.rangementsEtat} 
+                                onValueChange={(value) => {
+                                  const newPieces = [...etatLieuxData.pieces];
+                                  newPieces[index].rangementsEtat = value;
+                                  setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="moyen">Moyen</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* OBSERVATIONS GÉNÉRALES PIÈCE */}
+                        <div className="space-y-2">
+                          <Label>Observations générales de la pièce</Label>
+                          <Textarea 
+                            value={piece.observationsGenerales} 
+                            onChange={(e) => {
+                              const newPieces = [...etatLieuxData.pieces];
+                              newPieces[index].observationsGenerales = e.target.value;
+                              setEtatLieuxData({...etatLieuxData, pieces: newPieces});
+                            }}
+                            rows={3}
+                            placeholder="Remarques générales, défauts particuliers, éléments à signaler..."
+                          />
+                        </div>
+                      </div>
+                    ))}
+
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => {
+                        setEtatLieuxData({
+                          ...etatLieuxData, 
+                          pieces: [...etatLieuxData.pieces, {
+                            nomPiece: '', surface: '', 
+                            solRevetement: '', solEtat: '', solObservations: '',
+                            mursRevetement: '', mursEtat: '', mursObservations: '',
+                            plafondsRevetement: '', plafondsEtat: '', plafondsObservations: '',
+                            fenetresNombre: '', fenetresVitrage: '', fenetresEtat: '', fenetresVolets: '', fenetresObservations: '',
+                            portesNombre: '', portesEtat: '', portesObservations: '',
+                            eclairagePointsLumineux: '', eclairageInterrupteurs: '', eclairagePrises: '', eclairageEtat: '',
+                            chauffageType: '', chauffageNombre: '', chauffageEtat: '',
+                            cuisinePlaque: '', cuisineHotte: '', cuisineFour: '', cuisineFrigo: '', cuisineLaveVaisselle: '', 
+                            cuisineEvier: '', cuisineMeubles: '', cuisineObservations: '',
+                            sdbBaignoire: '', sdbDouche: '', sdbLavabo: '', sdbMiroir: '', sdbMeubles: '', sdbEtat: '', sdbObservations: '',
+                            wcType: '', wcEtat: '', wcLaveMains: '', wcObservations: '',
+                            rangementsPlacards: '', rangementsEtat: '',
+                            observationsGenerales: ''
+                          }]
+                        });
+                      }}
+                    >
+                      + Ajouter une pièce
+                    </Button>
+                  </div>
+
+                  {/* 7️⃣ INVENTAIRE MOBILIER (si meublé) */}
+                  {etatLieuxData.meuble === "oui" && (
+                    <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Inventaire du mobilier (logement meublé)</h3>
+                      
+                      {etatLieuxData.meubles.map((meuble, index) => (
+                        <div key={index} className="p-3 bg-white dark:bg-gray-800 rounded border">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <div className="space-y-2">
+                              <Label>Catégorie</Label>
+                              <Select 
+                                value={meuble.categorie} 
+                                onValueChange={(value) => {
+                                  const newMeubles = [...etatLieuxData.meubles];
+                                  newMeubles[index].categorie = value;
+                                  setEtatLieuxData({...etatLieuxData, meubles: newMeubles});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="literie">Literie</SelectItem>
+                                  <SelectItem value="table">Table</SelectItem>
+                                  <SelectItem value="chaise">Chaise / Fauteuil</SelectItem>
+                                  <SelectItem value="rangement">Rangement</SelectItem>
+                                  <SelectItem value="electromenager">Électroménager</SelectItem>
+                                  <SelectItem value="luminaire">Luminaire</SelectItem>
+                                  <SelectItem value="decoration">Décoration</SelectItem>
+                                  <SelectItem value="autre">Autre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Description</Label>
+                              <Input 
+                                value={meuble.description} 
+                                onChange={(e) => {
+                                  const newMeubles = [...etatLieuxData.meubles];
+                                  newMeubles[index].description = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, meubles: newMeubles});
+                                }}
+                                placeholder="ex: Lit 140x190cm"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Quantité</Label>
+                              <Input 
+                                type="number"
+                                min="1"
+                                value={meuble.quantite} 
+                                onChange={(e) => {
+                                  const newMeubles = [...etatLieuxData.meubles];
+                                  newMeubles[index].quantite = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, meubles: newMeubles});
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>État</Label>
+                              <Select 
+                                value={meuble.etat} 
+                                onValueChange={(value) => {
+                                  const newMeubles = [...etatLieuxData.meubles];
+                                  newMeubles[index].etat = value;
+                                  setEtatLieuxData({...etatLieuxData, meubles: newMeubles});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="neuf">Neuf</SelectItem>
+                                  <SelectItem value="tres_bon">Très bon</SelectItem>
+                                  <SelectItem value="bon">Bon</SelectItem>
+                                  <SelectItem value="usage">Usage</SelectItem>
+                                  <SelectItem value="mauvais">Mauvais</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          {etatLieuxData.meubles.length > 1 && (
+                            <Button 
+                              type="button" 
+                              variant="destructive" 
+                              size="sm"
+                              className="mt-2"
+                              onClick={() => {
+                                const newMeubles = etatLieuxData.meubles.filter((_, i) => i !== index);
+                                setEtatLieuxData({...etatLieuxData, meubles: newMeubles});
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={() => {
+                          setEtatLieuxData({
+                            ...etatLieuxData, 
+                            meubles: [...etatLieuxData.meubles, {categorie: '', description: '', quantite: '1', etat: ''}]
+                          });
+                        }}
+                      >
+                        + Ajouter un meuble
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* 8️⃣ ANOMALIES ET DÉGRADATIONS */}
+                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Anomalies et dégradations constatées</h3>
+                    
+                    {etatLieuxData.anomalies.map((anomalie, index) => (
+                      <div key={index} className="p-3 bg-white dark:bg-gray-800 rounded border">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="space-y-2">
+                            <Label>Localisation</Label>
+                            <Input 
+                              value={anomalie.localisation} 
+                              onChange={(e) => {
+                                const newAnomalies = [...etatLieuxData.anomalies];
+                                newAnomalies[index].localisation = e.target.value;
+                                setEtatLieuxData({...etatLieuxData, anomalies: newAnomalies});
+                              }}
+                              placeholder="Ex: Chambre 1, Cuisine..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Type</Label>
+                            <Select 
+                              value={anomalie.type} 
+                              onValueChange={(value) => {
+                                const newAnomalies = [...etatLieuxData.anomalies];
+                                newAnomalies[index].type = value;
+                                setEtatLieuxData({...etatLieuxData, anomalies: newAnomalies});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="fissure">Fissure</SelectItem>
+                                <SelectItem value="tache">Tache</SelectItem>
+                                <SelectItem value="humidite">Humidité</SelectItem>
+                                <SelectItem value="rayure">Rayure</SelectItem>
+                                <SelectItem value="trou">Trou</SelectItem>
+                                <SelectItem value="cassure">Cassure</SelectItem>
+                                <SelectItem value="usure">Usure anormale</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Gravité</Label>
+                            <Select 
+                              value={anomalie.gravite} 
+                              onValueChange={(value) => {
+                                const newAnomalies = [...etatLieuxData.anomalies];
+                                newAnomalies[index].gravite = value;
+                                setEtatLieuxData({...etatLieuxData, anomalies: newAnomalies});
+                              }}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="mineure">Mineure</SelectItem>
+                                <SelectItem value="moyenne">Moyenne</SelectItem>
+                                <SelectItem value="importante">Importante</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2 md:col-span-3">
+                            <Label>Description détaillée</Label>
+                            <Textarea 
+                              value={anomalie.description} 
+                              onChange={(e) => {
+                                const newAnomalies = [...etatLieuxData.anomalies];
+                                newAnomalies[index].description = e.target.value;
+                                setEtatLieuxData({...etatLieuxData, anomalies: newAnomalies});
+                              }}
+                              rows={2}
+                            />
+                          </div>
+                        </div>
+
+                        {etatLieuxData.anomalies.length > 1 && (
+                          <Button 
+                            type="button" 
+                            variant="destructive" 
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => {
+                              const newAnomalies = etatLieuxData.anomalies.filter((_, i) => i !== index);
+                              setEtatLieuxData({...etatLieuxData, anomalies: newAnomalies});
+                            }}
+                          >
+                            Supprimer
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => {
+                        setEtatLieuxData({
+                          ...etatLieuxData, 
+                          anomalies: [...etatLieuxData.anomalies, {localisation: '', type: '', gravite: '', description: ''}]
+                        });
+                      }}
+                    >
+                      + Ajouter une anomalie
+                    </Button>
+                  </div>
+
+                  {/* 9️⃣ OBSERVATIONS DES PARTIES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Observations des parties</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Observations du bailleur</Label>
+                        <Textarea 
+                          value={etatLieuxData.observationsBailleur} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, observationsBailleur: e.target.value})} 
+                          rows={3}
+                          placeholder="Remarques particulières du propriétaire..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Observations du locataire</Label>
+                        <Textarea 
+                          value={etatLieuxData.observationsLocataire} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, observationsLocataire: e.target.value})} 
+                          rows={3}
+                          placeholder="Remarques particulières du locataire..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Réserves éventuelles</Label>
+                        <Textarea 
+                          value={etatLieuxData.reserves} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, reserves: e.target.value})} 
+                          rows={3}
+                          placeholder="Réserves formulées par l'une ou l'autre des parties..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔟 PHOTOS ET ANNEXES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Photos et annexes</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Photos du logement</Label>
+                        <MultiFileUpload
+                          onFilesChange={(files) => setEtatLieuxPhotosLogement(files)}
+                          acceptedFileTypes="image/*"
+                          multiple
+                        />
+                        <p className="text-xs text-muted-foreground">Joindre des photos de chaque pièce et des anomalies constatées</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Photos des compteurs</Label>
+                        <MultiFileUpload
+                          onFilesChange={(files) => setEtatLieuxPhotosCompteurs(files)}
+                          acceptedFileTypes="image/*"
+                          multiple
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Plan du logement</Label>
+                        <MultiFileUpload
+                          onFilesChange={(files) => setEtatLieuxPlanLogement(files)}
+                          acceptedFileTypes="image/*,application/pdf"
+                          multiple
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Diagnostics techniques (DPE, amiante, plomb...)</Label>
+                        <MultiFileUpload
+                          onFilesChange={(files) => setEtatLieuxDiagnostics(files)}
+                          acceptedFileTypes="application/pdf,image/*"
+                          multiple
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nombre total de photos jointes</Label>
+                        <Input 
+                          type="number"
+                          value={etatLieuxData.nombrePhotos} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, nombrePhotos: e.target.value})} 
+                          placeholder="Ex: 25"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Nombre de pages d'annexes</Label>
+                        <Input 
+                          type="number"
+                          value={etatLieuxData.nombreAnnexes} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, nombreAnnexes: e.target.value})} 
+                          placeholder="Ex: 5"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣1️⃣ COMPARATIF ENTRÉE/SORTIE (si sortie) */}
+                  {etatLieuxData.typeEtatLieux === "sortie" && (
+                    <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Comparatif entrée / sortie</h3>
+                      <p className="text-sm text-muted-foreground">Identification des dégradations depuis l'état des lieux d'entrée</p>
+                      
+                      {etatLieuxData.degradations.map((degradation, index) => (
+                        <div key={index} className="p-3 bg-white dark:bg-gray-800 rounded border">
+                          <div className="grid grid-cols-1 gap-3">
+                            <div className="space-y-2">
+                              <Label>Élément dégradé</Label>
+                              <Input 
+                                value={degradation.element} 
+                                onChange={(e) => {
+                                  const newDegradations = [...etatLieuxData.degradations];
+                                  newDegradations[index].element = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, degradations: newDegradations});
+                                }}
+                                placeholder="Ex: Mur chambre 1"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>État à l'entrée</Label>
+                                <Input 
+                                  value={degradation.etatEntree} 
+                                  onChange={(e) => {
+                                    const newDegradations = [...etatLieuxData.degradations];
+                                    newDegradations[index].etatEntree = e.target.value;
+                                    setEtatLieuxData({...etatLieuxData, degradations: newDegradations});
+                                  }}
+                                  placeholder="Ex: Bon état, peinture blanche"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>État à la sortie</Label>
+                                <Input 
+                                  value={degradation.etatSortie} 
+                                  onChange={(e) => {
+                                    const newDegradations = [...etatLieuxData.degradations];
+                                    newDegradations[index].etatSortie = e.target.value;
+                                    setEtatLieuxData({...etatLieuxData, degradations: newDegradations});
+                                  }}
+                                  placeholder="Ex: Trous, rayures"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Responsabilité</Label>
+                              <Select 
+                                value={degradation.responsabilite} 
+                                onValueChange={(value) => {
+                                  const newDegradations = [...etatLieuxData.degradations];
+                                  newDegradations[index].responsabilite = value;
+                                  setEtatLieuxData({...etatLieuxData, degradations: newDegradations});
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="locataire">Locataire</SelectItem>
+                                  <SelectItem value="usure_normale">Usure normale</SelectItem>
+                                  <SelectItem value="vetuste">Vétusté</SelectItem>
+                                  <SelectItem value="litige">Litige à résoudre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Coût estimé de réparation (€)</Label>
+                              <Input 
+                                type="number"
+                                step="0.01"
+                                value={degradation.coutEstime} 
+                                onChange={(e) => {
+                                  const newDegradations = [...etatLieuxData.degradations];
+                                  newDegradations[index].coutEstime = e.target.value;
+                                  setEtatLieuxData({...etatLieuxData, degradations: newDegradations});
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {etatLieuxData.degradations.length > 1 && (
+                            <Button 
+                              type="button" 
+                              variant="destructive" 
+                              size="sm"
+                              className="mt-2"
+                              onClick={() => {
+                                const newDegradations = etatLieuxData.degradations.filter((_, i) => i !== index);
+                                setEtatLieuxData({...etatLieuxData, degradations: newDegradations});
+                              }}
+                            >
+                              Supprimer
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={() => {
+                          setEtatLieuxData({
+                            ...etatLieuxData, 
+                            degradations: [...etatLieuxData.degradations, {
+                              element: '', etatEntree: '', etatSortie: '', responsabilite: '', coutEstime: ''
+                            }]
+                          });
+                        }}
+                      >
+                        + Ajouter une dégradation
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* 1️⃣2️⃣ RÉCAPITULATIF FINANCIER (si sortie) */}
+                  {etatLieuxData.typeEtatLieux === "sortie" && (
+                    <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ Récapitulatif financier</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Montant du dépôt de garantie versé (€)</Label>
+                          <Input 
+                            type="number"
+                            step="0.01"
+                            value={etatLieuxData.depotGarantieVerse} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, depotGarantieVerse: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Total des réparations à la charge du locataire (€)</Label>
+                          <Input 
+                            type="number"
+                            step="0.01"
+                            value={etatLieuxData.totalReparations} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, totalReparations: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Montant restitué au locataire (€)</Label>
+                          <Input 
+                            type="number"
+                            step="0.01"
+                            value={etatLieuxData.montantRestitue} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, montantRestitue: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Montant retenu (€)</Label>
+                          <Input 
+                            type="number"
+                            step="0.01"
+                            value={etatLieuxData.montantRetenu} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, montantRetenu: e.target.value})} 
+                          />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Modalités de restitution</Label>
+                          <Textarea 
+                            value={etatLieuxData.modalitesRestitution} 
+                            onChange={(e) => setEtatLieuxData({...etatLieuxData, modalitesRestitution: e.target.value})} 
+                            rows={2}
+                            placeholder="Ex: Virement sous 2 mois, déduction frais de remise en état..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 1️⃣3️⃣ SIGNATURES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Signatures et validation</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Bailleur a signé ? *</Label>
+                        <Select 
+                          value={etatLieuxData.signatureBailleur} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, signatureBailleur: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="refuse">A refusé de signer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Locataire a signé ? *</Label>
+                        <Select 
+                          value={etatLieuxData.signatureLocataire} 
+                          onValueChange={(value) => setEtatLieuxData({...etatLieuxData, signatureLocataire: value})}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                            <SelectItem value="refuse">A refusé de signer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {etatLieuxData.agencePresente === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Agence a signé ?</Label>
+                          <Select 
+                            value={etatLieuxData.signatureAgence} 
+                            onValueChange={(value) => setEtatLieuxData({...etatLieuxData, signatureAgence: value})}
+                          >
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oui">Oui</SelectItem>
+                              <SelectItem value="non">Non</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label>Nombre d'exemplaires établis *</Label>
+                        <Input 
+                          type="number"
+                          min="2"
+                          value={etatLieuxData.nombreExemplaires} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, nombreExemplaires: e.target.value})} 
+                          placeholder="Minimum 2"
+                        />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Observations sur les signatures</Label>
+                        <Textarea 
+                          value={etatLieuxData.observationsSignatures} 
+                          onChange={(e) => setEtatLieuxData({...etatLieuxData, observationsSignatures: e.target.value})} 
+                          rows={2}
+                          placeholder="Précisions sur les conditions de signature..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣4️⃣ DOCUMENTS COMPLÉMENTAIRES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣4️⃣ Documents complémentaires</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Contrat de location</Label>
+                        <MultiFileUpload
+                          onFilesChange={(files) => setEtatLieuxContratLocation(files)}
+                          acceptedFileTypes="application/pdf,image/*"
+                          multiple
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>État des lieux d'entrée (si état de sortie)</Label>
+                        <MultiFileUpload
+                          onFilesChange={(files) => setEtatLieuxEntreeReference(files)}
+                          acceptedFileTypes="application/pdf,image/*"
+                          multiple
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Devis de réparation</Label>
+                        <MultiFileUpload
+                          onFilesChange={(files) => setEtatLieuxDevisReparation(files)}
+                          acceptedFileTypes="application/pdf,image/*"
+                          multiple
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Autres documents</Label>
+                        <MultiFileUpload
+                          onFilesChange={(files) => setEtatLieuxAutresDocuments(files)}
+                          acceptedFileTypes="*"
+                          multiple
+                        />
                       </div>
                     </div>
                   </div>
