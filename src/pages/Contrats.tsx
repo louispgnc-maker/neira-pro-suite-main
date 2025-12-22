@@ -17200,11 +17200,6 @@ FIN DE LA CONVENTION
             {pendingContractType === "Bail commercial / professionnel" && role === 'avocat' && (
               <>
                 <div className="space-y-6">
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm font-medium text-blue-800">📋 Formulaire Bail Commercial - Espace Avocat</p>
-                    <p className="text-xs text-blue-600 mt-1">Ce formulaire est indépendant de l'espace notaire</p>
-                  </div>
-
                   {/* Sélection du type de bail */}
                   <div className="space-y-4 bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
                     <h3 className="font-semibold text-lg">📋 Type de bail *</h3>
