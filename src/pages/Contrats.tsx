@@ -6392,6 +6392,129 @@ export default function Contrats() {
   const [reconnaissanceReleveBancaire, setReconnaissanceReleveBancaire] = useState<File[]>([]);
   const [reconnaissancePreuveRemise, setReconnaissancePreuveRemise] = useState<File[]>([]);
   
+  // ========== MANDAT DE PROTECTION FUTURE SOUS SEING PRIVÉ ==========
+  const [mandatProtectionSousSeingData, setMandatProtectionSousSeingData] = useState({
+    // 1️⃣ Identification du mandant
+    mandantClientId: "",
+    mandantNom: "",
+    mandantPrenom: "",
+    mandantDateNaissance: "",
+    mandantLieuNaissance: "",
+    mandantNationalite: "",
+    mandantAdresse: "",
+    mandantProfession: "",
+    mandantSituationFamiliale: "",
+    mandantCapaciteJuridique: "Pleine capacité",
+    mandantTypeIdentite: "",
+    mandantNumeroIdentite: "",
+    
+    // 2️⃣ Identification du mandataire
+    mandataireClientId: "",
+    mandataireNom: "",
+    mandatairePrenom: "",
+    mandataireDateNaissance: "",
+    mandataireLieuNaissance: "",
+    mandataireNationalite: "",
+    mandataireAdresse: "",
+    mandataireLienMandant: "", // famille / ami / autre
+    mandataireProfession: "",
+    mandataireTelephone: "",
+    mandataireEmail: "",
+    mandataireAcceptationExpresse: "", // oui / non
+    // Mandataire substitut
+    mandataireSubstitutNom: "",
+    mandataireSubstitutPrenom: "",
+    mandataireSubstitutAdresse: "",
+    mandataireSubstitutTelephone: "",
+    
+    // 3️⃣ Type de mandat
+    typeMandat: "", // personne / patrimoine / global
+    
+    // 4️⃣ Entrée en vigueur
+    entreeVigueurCondition: "Survenance d'une altération des facultés",
+    certificationMedicaleRequise: "oui",
+    medecinsHabilites: "",
+    dateEffet: "Date mentionnée sur certificat médical",
+    
+    // 5️⃣ Pouvoirs du mandataire - Actes d'administration
+    pouvoirPaiementFactures: "non",
+    pouvoirGestionCompteCourant: "non",
+    pouvoirSouscriptionContrats: "non",
+    pouvoirGestionAidesSociales: "non",
+    pouvoirGestionLoyers: "non",
+    pouvoirRenouvellementContrats: "non",
+    pouvoirPlacementFinancier: "non",
+    pouvoirDeclarationFiscale: "non",
+    pouvoirAssurances: "non",
+    pouvoirGestionAdministrative: "non",
+    
+    // Actes interdits (automatiquement exclus)
+    mentionActesInterdits: "oui", // toujours oui
+    
+    // 6️⃣ Pouvoirs personnels
+    pouvoirRdvMedicaux: "non",
+    pouvoirAccesDossiersMedicaux: "non",
+    pouvoirChoixEtablissementMedical: "non",
+    pouvoirChoixLogement: "non",
+    pouvoirOrganisationQuotidien: "non",
+    pouvoirRelationsAdministrations: "non",
+    pouvoirAidesRsaApa: "non",
+    pouvoirCaisseRetraite: "non",
+    
+    // 7️⃣ Obligations du mandataire
+    obligationInteretExclusif: "oui",
+    obligationLoyauteDiligence: "oui",
+    obligationCompteGestion: "oui",
+    obligationRendreCompte: "oui",
+    obligationControleJudiciaire: "oui",
+    
+    // 8️⃣ Rémunération
+    mandatGratuit: "", // oui / non
+    indemniteAnnuelle: "",
+    fraisRemboursables: "", // oui / non
+    modalitesPreuveDepenses: "",
+    
+    // 9️⃣ Durée du mandat
+    dureeMandat: "Jusqu'à amélioration ou décès",
+    suspensionSiTutelle: "oui",
+    caduciteAutomatique: "oui",
+    
+    // �� Contrôle du mandat
+    personneConfianceDesignee: "", // oui / non
+    personneConfianceNom: "",
+    controleAmiableFamille: "", // oui / non
+    possibiliteSaisineJuge: "oui",
+    presentationComptesAnnuelle: "oui",
+    
+    // 1️⃣1️⃣ Révocation
+    revocationParMandant: "oui",
+    revocationParJuge: "oui",
+    demissionMandataire: "oui",
+    obligationInformer: "oui",
+    
+    // 1️⃣2️⃣ Règles spéciales (optionnelles)
+    directivesAnticipees: "",
+    clauseHebergementInstitution: "", // oui / non
+    clauseGestionAnimaux: "",
+    clauseBiensPersonnels: "",
+    
+    // 1️⃣4️⃣ Signatures
+    lieuSignature: "",
+    dateSignature: "",
+    
+    // 1️⃣5️⃣ Mention manuscrite (auto-générée)
+    mentionManuscrite: "",
+  });
+  
+  // États fichiers pour mandat protection
+  const [mandatCarteIdentiteMandant, setMandatCarteIdentiteMandant] = useState<File[]>([]);
+  const [mandatCarteIdentiteMandataire, setMandatCarteIdentiteMandataire] = useState<File[]>([]);
+  const [mandatJustificatifDomicile, setMandatJustificatifDomicile] = useState<File[]>([]);
+  const [mandatCertificatMedical, setMandatCertificatMedical] = useState<File[]>([]);
+  const [mandatListeComptesBancaires, setMandatListeComptesBancaires] = useState<File[]>([]);
+  const [mandatInventaireBiens, setMandatInventaireBiens] = useState<File[]>([]);
+  const [mandatCoordonneesProches, setMandatCoordonneesProches] = useState<File[]>([]);
+
   const [questionnaireData, setQuestionnaireData] = useState({
     // Type de contrat
     typeContrat: "", // "compromis" ou "promesse_unilaterale"
@@ -9214,6 +9337,211 @@ export default function Contrats() {
     } catch (err: unknown) {
       console.error('Erreur création reconnaissance de dettes:', err);
       toast.error('Erreur lors de la création');
+    }
+  };
+
+  // ========== HANDLER MANDAT DE PROTECTION FUTURE SOUS SEING PRIVÉ ==========
+  const handleMandatProtectionSousSeingSubmit = async () => {
+    if (!user) return;
+    
+    try {
+      // Validation des champs obligatoires
+      if (!mandatProtectionSousSeingData.mandantNom || !mandatProtectionSousSeingData.mandantPrenom ||
+          !mandatProtectionSousSeingData.mandataireNom || !mandatProtectionSousSeingData.mandatairePrenom ||
+          !mandatProtectionSousSeingData.typeMandat || !mandatProtectionSousSeingData.mandataireAcceptationExpresse) {
+        toast({
+          title: "Champs manquants",
+          description: "Veuillez remplir tous les champs obligatoires (identités mandant/mandataire, type de mandat, acceptation).",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      // Générer la mention manuscrite automatiquement
+      const mentionAuto = `Je soussigné(e) ${mandatProtectionSousSeingData.mandantNom} ${mandatProtectionSousSeingData.mandantPrenom}, établis le présent mandat de protection future et donne pouvoir à ${mandatProtectionSousSeingData.mandataireNom} ${mandatProtectionSousSeingData.mandatairePrenom} d'agir pour moi dans les conditions prévues ci-dessus.`;
+      
+      // Upload des fichiers
+      let carteIdentiteMandantUrls: string[] = [];
+      let carteIdentiteMandataireUrls: string[] = [];
+      let justificatifDomicileUrls: string[] = [];
+      let certificatMedicalUrls: string[] = [];
+      let listeComptesBancairesUrls: string[] = [];
+      let inventaireBiensUrls: string[] = [];
+      let coordonneesProchesUrls: string[] = [];
+
+      // Upload fichiers Carte identité mandant
+      for (const file of mandatCarteIdentiteMandant) {
+        const filePath = `${user.id}/mandat_protection/carte_identite_mandant/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, file);
+        
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage.from('contrats').getPublicUrl(filePath);
+          carteIdentiteMandantUrls.push(publicUrl);
+        }
+      }
+
+      // Upload fichiers Carte identité mandataire
+      for (const file of mandatCarteIdentiteMandataire) {
+        const filePath = `${user.id}/mandat_protection/carte_identite_mandataire/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, file);
+        
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage.from('contrats').getPublicUrl(filePath);
+          carteIdentiteMandataireUrls.push(publicUrl);
+        }
+      }
+
+      // Upload fichiers Justificatif domicile
+      for (const file of mandatJustificatifDomicile) {
+        const filePath = `${user.id}/mandat_protection/justificatif_domicile/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, file);
+        
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage.from('contrats').getPublicUrl(filePath);
+          justificatifDomicileUrls.push(publicUrl);
+        }
+      }
+
+      // Upload fichiers Certificat médical
+      for (const file of mandatCertificatMedical) {
+        const filePath = `${user.id}/mandat_protection/certificat_medical/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, file);
+        
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage.from('contrats').getPublicUrl(filePath);
+          certificatMedicalUrls.push(publicUrl);
+        }
+      }
+
+      // Upload fichiers Liste comptes bancaires
+      for (const file of mandatListeComptesBancaires) {
+        const filePath = `${user.id}/mandat_protection/liste_comptes_bancaires/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, file);
+        
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage.from('contrats').getPublicUrl(filePath);
+          listeComptesBancairesUrls.push(publicUrl);
+        }
+      }
+
+      // Upload fichiers Inventaire biens
+      for (const file of mandatInventaireBiens) {
+        const filePath = `${user.id}/mandat_protection/inventaire_biens/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, file);
+        
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage.from('contrats').getPublicUrl(filePath);
+          inventaireBiensUrls.push(publicUrl);
+        }
+      }
+
+      // Upload fichiers Coordonnées proches
+      for (const file of mandatCoordonneesProches) {
+        const filePath = `${user.id}/mandat_protection/coordonnees_proches/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('contrats')
+          .upload(filePath, file);
+        
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage.from('contrats').getPublicUrl(filePath);
+          coordonneesProchesUrls.push(publicUrl);
+        }
+      }
+
+      // Créer le contrat avec toutes les données
+      const { data, error } = await supabase
+        .from('contrats')
+        .insert({
+          type: 'Mandat de protection future sous seing privé',
+          name: `Mandat de protection future - ${mandatProtectionSousSeingData.mandantNom} ${mandatProtectionSousSeingData.mandantPrenom}`,
+          description: `Mandat de protection future ${mandatProtectionSousSeingData.typeMandat === 'global' ? 'global (personne + patrimoine)' : mandatProtectionSousSeingData.typeMandat === 'personne' ? 'pour la protection de la personne' : 'pour la protection du patrimoine'} - Mandant: ${mandatProtectionSousSeingData.mandantNom} ${mandatProtectionSousSeingData.mandantPrenom} / Mandataire: ${mandatProtectionSousSeingData.mandataireNom} ${mandatProtectionSousSeingData.mandatairePrenom}`,
+          user_id: user.id,
+          status: 'draft',
+          contenu_json: {
+            ...mandatProtectionSousSeingData,
+            mentionManuscrite: mentionAuto,
+            carteIdentiteMandantUrls,
+            carteIdentiteMandataireUrls,
+            justificatifDomicileUrls,
+            certificatMedicalUrls,
+            listeComptesBancairesUrls,
+            inventaireBiensUrls,
+            coordonneesProchesUrls,
+          }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Mandat de protection future créé",
+        description: "Le mandat a été créé avec succès."
+      });
+
+      setShowContractForm(false);
+      setPendingContractType(null);
+      
+      // Réinitialiser le formulaire
+      setMandatProtectionData({
+        mandantClientId: "", mandantNom: "", mandantPrenom: "", mandantDateNaissance: "", mandantLieuNaissance: "",
+        mandantNationalite: "", mandantAdresse: "", mandantProfession: "", mandantSituationFamiliale: "",
+        mandantCapaciteJuridique: "Pleine capacité", mandantTypeIdentite: "", mandantNumeroIdentite: "",
+        mandataireClientId: "", mandataireNom: "", mandatairePrenom: "", mandataireDateNaissance: "",
+        mandataireLieuNaissance: "", mandataireNationalite: "", mandataireAdresse: "", mandataireLienMandant: "",
+        mandataireProfession: "", mandataireTelephone: "", mandataireEmail: "", mandataireAcceptationExpresse: "",
+        mandataireSubstitutNom: "", mandataireSubstitutPrenom: "", mandataireSubstitutAdresse: "", mandataireSubstitutTelephone: "",
+        typeMandat: "", entreeVigueurCondition: "Survenance d'une altération des facultés", certificationMedicaleRequise: "oui",
+        medecinsHabilites: "", dateEffet: "Date mentionnée sur certificat médical",
+        pouvoirPaiementFactures: "non", pouvoirGestionCompteCourant: "non", pouvoirSouscriptionContrats: "non",
+        pouvoirGestionAidesSociales: "non", pouvoirGestionLoyers: "non", pouvoirRenouvellementContrats: "non",
+        pouvoirPlacementFinancier: "non", pouvoirDeclarationFiscale: "non", pouvoirAssurances: "non",
+        pouvoirGestionAdministrative: "non", mentionActesInterdits: "oui",
+        pouvoirRdvMedicaux: "non", pouvoirAccesDossiersMedicaux: "non", pouvoirChoixEtablissementMedical: "non",
+        pouvoirChoixLogement: "non", pouvoirOrganisationQuotidien: "non", pouvoirRelationsAdministrations: "non",
+        pouvoirAidesRsaApa: "non", pouvoirCaisseRetraite: "non",
+        obligationInteretExclusif: "oui", obligationLoyauteDiligence: "oui", obligationCompteGestion: "oui",
+        obligationRendreCompte: "oui", obligationControleJudiciaire: "oui",
+        mandatGratuit: "", indemniteAnnuelle: "", fraisRemboursables: "", modalitesPreuveDepenses: "",
+        dureeMandat: "Jusqu'à amélioration ou décès", suspensionSiTutelle: "oui", caduciteAutomatique: "oui",
+        personneConfianceDesignee: "", personneConfianceNom: "", controleAmiableFamille: "", possibiliteSaisineJuge: "oui",
+        presentationComptesAnnuelle: "oui", revocationParMandant: "oui", revocationParJuge: "oui",
+        demissionMandataire: "oui", obligationInformer: "oui",
+        directivesAnticipees: "", clauseHebergementInstitution: "", clauseGestionAnimaux: "", clauseBiensPersonnels: "",
+        lieuSignature: "", dateSignature: "", mentionManuscrite: "",
+      });
+      
+      setMandatCarteIdentiteMandant([]);
+      setMandatCarteIdentiteMandataire([]);
+      setMandatJustificatifDomicile([]);
+      setMandatCertificatMedical([]);
+      setMandatListeComptesBancaires([]);
+      setMandatInventaireBiens([]);
+      setMandatCoordonneesProches([]);
+      
+    } catch (error: any) {
+      console.error('Erreur:', error);
+      toast({
+        title: "Erreur",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -27116,6 +27444,640 @@ FIN DE LA CONVENTION
                         <Input type="date" value={reconnaissanceDetteData.dateSignature} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, dateSignature: e.target.value})} />
                       </div>
                     </div>
+                  </div>
+
+                </div>
+              </>
+            )}
+
+            {/* Formulaire spécifique pour Mandat de protection future sous seing privé */}
+            {pendingContractType === "Mandat de protection future sous seing privé" && (
+              <>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-1">
+                  
+                  {/* 1️⃣ MANDANT */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification du Mandant</h3>
+                    <div className="space-y-4">
+                      <ClientSelector
+                        label="Client (Mandant)"
+                        value={mandatProtectionSousSeingData.mandantClientId}
+                        onClientSelect={(client) => {
+                          if (client) {
+                            setMandatProtectionData({
+                              ...mandatProtectionSousSeingData,
+                              mandantClientId: client.id,
+                              mandantNom: client.nom || '',
+                              mandantPrenom: client.prenom || '',
+                              mandantDateNaissance: client.date_naissance || '',
+                              mandantAdresse: client.adresse || '',
+                            });
+                          }
+                        }}
+                      />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom du mandant *</Label>
+                          <Input value={mandatProtectionSousSeingData.mandantNom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantNom: e.target.value})} placeholder="NOM" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom du mandant *</Label>
+                          <Input value={mandatProtectionSousSeingData.mandantPrenom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantPrenom: e.target.value})} placeholder="Prénom" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance *</Label>
+                          <Input type="date" value={mandatProtectionSousSeingData.mandantDateNaissance} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantDateNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lieu de naissance</Label>
+                          <Input value={mandatProtectionSousSeingData.mandantLieuNaissance} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantLieuNaissance: e.target.value})} placeholder="Ville, Pays" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nationalité</Label>
+                          <Input value={mandatProtectionSousSeingData.mandantNationalite} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantNationalite: e.target.value})} placeholder="Ex: Française" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Profession</Label>
+                          <Input value={mandatProtectionSousSeingData.mandantProfession} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantProfession: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse complète *</Label>
+                          <Textarea value={mandatProtectionSousSeingData.mandantAdresse} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantAdresse: e.target.value})} placeholder="Numéro, rue, code postal, ville" rows={2} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Situation familiale</Label>
+                          <Select value={mandatProtectionSousSeingData.mandantSituationFamiliale} onValueChange={(value) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantSituationFamiliale: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="celibataire">Célibataire</SelectItem>
+                              <SelectItem value="marie">Marié(e)</SelectItem>
+                              <SelectItem value="pacse">Pacsé(e)</SelectItem>
+                              <SelectItem value="concubin">Concubin(e)</SelectItem>
+                              <SelectItem value="divorce">Divorcé(e)</SelectItem>
+                              <SelectItem value="veuf">Veuf/Veuve</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Capacité juridique</Label>
+                          <Select value={mandatProtectionSousSeingData.mandantCapaciteJuridique} onValueChange={(value) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantCapaciteJuridique: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pleine">Pleine capacité juridique</SelectItem>
+                              <SelectItem value="reduite">Capacité réduite</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Type d'identité</Label>
+                          <Select value={mandatProtectionSousSeingData.mandantTypeIdentite} onValueChange={(value) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantTypeIdentite: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="cni">Carte nationale d'identité</SelectItem>
+                              <SelectItem value="passeport">Passeport</SelectItem>
+                              <SelectItem value="titre_sejour">Titre de séjour</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Numéro d'identité</Label>
+                          <Input value={mandatProtectionSousSeingData.mandantNumeroIdentite} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantNumeroIdentite: e.target.value})} placeholder="Numéro de la pièce d'identité" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2️⃣ MANDATAIRE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identification du Mandataire</h3>
+                    <div className="space-y-4">
+                      <ClientSelector
+                        label="Client (Mandataire)"
+                        value={mandatProtectionSousSeingData.mandataireClientId}
+                        onClientSelect={(client) => {
+                          if (client) {
+                            setMandatProtectionData({
+                              ...mandatProtectionSousSeingData,
+                              mandataireClientId: client.id,
+                              mandataireNom: client.nom || '',
+                              mandatairePrenom: client.prenom || '',
+                              mandataireAdresse: client.adresse || '',
+                              mandataireTelephone: client.telephone || '',
+                              mandataireEmail: client.email || '',
+                            });
+                          }
+                        }}
+                      />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nom du mandataire *</Label>
+                          <Input value={mandatProtectionSousSeingData.mandataireNom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireNom: e.target.value})} placeholder="NOM" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Prénom du mandataire *</Label>
+                          <Input value={mandatProtectionSousSeingData.mandatairePrenom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandatairePrenom: e.target.value})} placeholder="Prénom" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Date de naissance</Label>
+                          <Input type="date" value={mandatProtectionSousSeingData.mandataireDateNaissance} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireDateNaissance: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Lien avec le mandant</Label>
+                          <Input value={mandatProtectionSousSeingData.mandataireLienMandant} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireLienMandant: e.target.value})} placeholder="Ex: Fils, Fille, Époux/se, Ami(e)" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Profession</Label>
+                          <Input value={mandatProtectionSousSeingData.mandataireProfession} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireProfession: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Téléphone</Label>
+                          <Input value={mandatProtectionSousSeingData.mandataireTelephone} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireTelephone: e.target.value})} placeholder="+33 6 XX XX XX XX" />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Email</Label>
+                          <Input type="email" value={mandatProtectionSousSeingData.mandataireEmail} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireEmail: e.target.value})} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Adresse complète</Label>
+                          <Textarea value={mandatProtectionSousSeingData.mandataireAdresse} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireAdresse: e.target.value})} placeholder="Numéro, rue, code postal, ville" rows={2} />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={mandatProtectionSousSeingData.mandataireAcceptationExpresse === "oui"}
+                              onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireAcceptationExpresse: e.target.checked ? "oui" : "non"})}
+                              className="w-4 h-4"
+                            />
+                            <span>Acceptation expresse du mandataire *</span>
+                          </Label>
+                          <p className="text-xs text-muted-foreground">Le mandataire doit accepter expressément la mission qui lui est confiée</p>
+                        </div>
+                      </div>
+
+                      {/* Mandataire substitut (facultatif) */}
+                      <div className="border-t pt-4 mt-4">
+                        <h4 className="font-medium text-sm mb-3 text-muted-foreground">Mandataire substitut (facultatif)</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Nom du substitut</Label>
+                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutNom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireSubstitutNom: e.target.value})} placeholder="NOM" />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Prénom du substitut</Label>
+                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutPrenom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireSubstitutPrenom: e.target.value})} placeholder="Prénom" />
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Adresse du substitut</Label>
+                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutAdresse} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireSubstitutAdresse: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Téléphone du substitut</Label>
+                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutTelephone} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireSubstitutTelephone: e.target.value})} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3️⃣ TYPE DE MANDAT */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Type de mandat *</h3>
+                    <div className="space-y-2">
+                      {[
+                        { value: "personne", label: "Mandat pour la personne", desc: "Uniquement pouvoirs personnels (santé, logement, vie quotidienne)" },
+                        { value: "patrimoine", label: "Mandat pour le patrimoine", desc: "Uniquement pouvoirs patrimoniaux (gestion finances, contrats, biens)" },
+                        { value: "global", label: "Mandat global", desc: "Pouvoirs personnels ET patrimoniaux" }
+                      ].map(option => (
+                        <div key={option.value} className="border p-3 rounded-lg hover:bg-blue-100/50 dark:hover:bg-blue-900/30">
+                          <Label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="typeMandat"
+                              value={option.value}
+                              checked={mandatProtectionSousSeingData.typeMandat === option.value}
+                              onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, typeMandat: e.target.value})}
+                              className="w-4 h-4 mt-1"
+                            />
+                            <div>
+                              <div className="font-medium">{option.label}</div>
+                              <div className="text-xs text-muted-foreground mt-1">{option.desc}</div>
+                            </div>
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 4️⃣ ENTRÉE EN VIGUEUR */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Conditions d'entrée en vigueur</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Condition déclenchant le mandat</Label>
+                        <Input 
+                          value={mandatProtectionSousSeingData.entreeVigueurCondition} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, entreeVigueurCondition: e.target.value})} 
+                          placeholder="Par défaut: Survenance d'une altération des facultés mentales ou corporelles" 
+                        />
+                        <p className="text-xs text-muted-foreground">Si vide, la condition par défaut sera utilisée</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={mandatProtectionSousSeingData.certificationMedicaleRequise === "oui"}
+                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, certificationMedicaleRequise: e.target.checked ? "oui" : "non"})}
+                            className="w-4 h-4"
+                          />
+                          <span>Certification médicale requise pour activer le mandat</span>
+                        </Label>
+                      </div>
+                      {mandatProtectionSousSeingData.certificationMedicaleRequise === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Médecins habilités à établir le certificat</Label>
+                          <Textarea 
+                            value={mandatProtectionSousSeingData.medecinsHabilites} 
+                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, medecinsHabilites: e.target.value})} 
+                            placeholder="Noms des médecins désignés pour établir le certificat médical constatant l'altération des facultés"
+                            rows={2}
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label>Date d'effet souhaitée (facultatif)</Label>
+                        <Input type="date" value={mandatProtectionSousSeingData.dateEffet} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, dateEffet: e.target.value})} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5️⃣ POUVOIRS ADMINISTRATIFS */}
+                  {(mandatProtectionSousSeingData.typeMandat === "patrimoine" || mandatProtectionSousSeingData.typeMandat === "global") && (
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Pouvoirs pour l'administration du patrimoine</h3>
+                      <div className="space-y-3">
+                        {[
+                          { field: "pouvoirPaiementFactures", label: "Payer factures et dépenses courantes" },
+                          { field: "pouvoirGestionCompteCourant", label: "Gérer compte courant et opérations bancaires" },
+                          { field: "pouvoirSouscriptionContrats", label: "Souscrire contrats (énergie, télécommunications, etc.)" },
+                          { field: "pouvoirGestionAidesSociales", label: "Percevoir et gérer aides sociales" },
+                          { field: "pouvoirGestionLoyers", label: "Percevoir loyers et gérer baux" },
+                          { field: "pouvoirRenouvellementContrats", label: "Renouveler contrats d'assurance" },
+                          { field: "pouvoirPlacementFinancier", label: "Effectuer placements financiers" },
+                          { field: "pouvoirDeclarationFiscale", label: "Effectuer déclarations fiscales" },
+                          { field: "pouvoirGestionAssurances", label: "Gérer contrats d'assurance" },
+                          { field: "pouvoirGestionAdministrative", label: "Représenter auprès des administrations" }
+                        ].map(power => (
+                          <div key={power.field} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={power.field}
+                              checked={mandatProtectionSousSeingData[power.field] === "oui"}
+                              onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, [power.field]: e.target.checked ? "oui" : "non"})}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={power.field} className="cursor-pointer">{power.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="bg-yellow-50 dark:bg-yellow-950 p-3 rounded-lg mt-4">
+                        <p className="text-sm font-medium">⚠️ Actes interdits au mandataire</p>
+                        <p className="text-xs text-muted-foreground mt-1">Vente de biens immobiliers, donations, testaments, modification du régime matrimonial (nécessitent autorisation judiciaire)</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 6️⃣ POUVOIRS PERSONNELS */}
+                  {(mandatProtectionSousSeingData.typeMandat === "personne" || mandatProtectionSousSeingData.typeMandat === "global") && (
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Pouvoirs personnels (santé, vie quotidienne)</h3>
+                      <div className="space-y-3">
+                        {[
+                          { field: "pouvoirRdvMedicaux", label: "Prendre rendez-vous médicaux" },
+                          { field: "pouvoirAccesDossiersMedicaux", label: "Accéder aux dossiers médicaux" },
+                          { field: "pouvoirChoixEtablissementMedical", label: "Choisir établissement médical" },
+                          { field: "pouvoirChoixLogement", label: "Choisir lieu de résidence" },
+                          { field: "pouvoirOrganisationQuotidien", label: "Organiser vie quotidienne (aide à domicile, repas)" },
+                          { field: "pouvoirRelationsAdministrations", label: "Relations avec administrations publiques" },
+                          { field: "pouvoirAidesRsaApa", label: "Demander aides RSA, APA, allocations" },
+                          { field: "pouvoirCaisseRetraite", label: "Relations avec caisse de retraite" }
+                        ].map(power => (
+                          <div key={power.field} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={power.field}
+                              checked={mandatProtectionSousSeingData[power.field] === "oui"}
+                              onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, [power.field]: e.target.checked ? "oui" : "non"})}
+                              className="w-4 h-4"
+                            />
+                            <Label htmlFor={power.field} className="cursor-pointer">{power.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 7️⃣ OBLIGATIONS DU MANDATAIRE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Obligations du mandataire</h3>
+                    <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" checked disabled className="w-4 h-4" />
+                        <span className="text-sm">Agir dans l'intérêt exclusif du mandant</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" checked disabled className="w-4 h-4" />
+                        <span className="text-sm">Loyauté et diligence dans l'exécution du mandat</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" checked disabled className="w-4 h-4" />
+                        <span className="text-sm">Établir un compte de gestion annuel</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" checked disabled className="w-4 h-4" />
+                        <span className="text-sm">Rendre compte au mandant ou à la personne de confiance</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" checked disabled className="w-4 h-4" />
+                        <span className="text-sm">Contrôle judiciaire possible en cas de besoin</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-3">Ces obligations sont obligatoires et automatiques</p>
+                    </div>
+                  </div>
+
+                  {/* 8️⃣ RÉMUNÉRATION */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Rémunération du mandataire</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={mandatProtectionSousSeingData.mandatGratuit === "oui"}
+                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandatGratuit: e.target.checked ? "oui" : "non"})}
+                            className="w-4 h-4"
+                          />
+                          <span>Mandat à titre gratuit</span>
+                        </Label>
+                      </div>
+                      {mandatProtectionSousSeingData.mandatGratuit === "non" && (
+                        <div className="space-y-2">
+                          <Label>Indemnité annuelle (€)</Label>
+                          <Input 
+                            type="number" 
+                            value={mandatProtectionSousSeingData.indemniteAnnuelle} 
+                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, indemniteAnnuelle: e.target.value})} 
+                            placeholder="Montant annuel"
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label>Frais remboursables</Label>
+                        <Textarea 
+                          value={mandatProtectionSousSeingData.fraisRemboursables} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, fraisRemboursables: e.target.value})} 
+                          placeholder="Ex: Frais de déplacement, frais postaux, frais administratifs"
+                          rows={2}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Modalités de preuve des dépenses</Label>
+                        <Input 
+                          value={mandatProtectionSousSeingData.modalitesPreuveDepenses} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, modalitesPreuveDepenses: e.target.value})} 
+                          placeholder="Ex: Factures, tickets, justificatifs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 9️⃣ DURÉE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Durée et fin du mandat</h3>
+                    <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg space-y-2">
+                      <div className="flex items-start gap-2">
+                        <span className="text-2xl">⏳</span>
+                        <div>
+                          <p className="font-medium text-sm">Durée</p>
+                          <p className="text-xs text-muted-foreground">Jusqu'à amélioration de l'état de santé du mandant ou son décès</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-2xl">⏸️</span>
+                        <div>
+                          <p className="font-medium text-sm">Suspension si tutelle/curatelle</p>
+                          <p className="text-xs text-muted-foreground">Le mandat est automatiquement suspendu en cas d'ouverture d'une mesure de protection judiciaire</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-2xl">❌</span>
+                        <div>
+                          <p className="font-medium text-sm">Caducité automatique</p>
+                          <p className="text-xs text-muted-foreground">En cas de décès du mandant ou du mandataire</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔟 CONTRÔLE */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">🔟 Contrôle du mandat</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={mandatProtectionSousSeingData.personneConfianceDesignee === "oui"}
+                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, personneConfianceDesignee: e.target.checked ? "oui" : "non"})}
+                            className="w-4 h-4"
+                          />
+                          <span>Désigner une personne de confiance pour contrôle</span>
+                        </Label>
+                      </div>
+                      {mandatProtectionSousSeingData.personneConfianceDesignee === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Nom et coordonnées de la personne de confiance</Label>
+                          <Textarea 
+                            value={mandatProtectionSousSeingData.personneConfianceNom} 
+                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, personneConfianceNom: e.target.value})} 
+                            placeholder="Nom, prénom, adresse, téléphone"
+                            rows={2}
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={mandatProtectionSousSeingData.controleAmiableFamille === "oui"}
+                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, controleAmiableFamille: e.target.checked ? "oui" : "non"})}
+                            className="w-4 h-4"
+                          />
+                          <span>Contrôle amiable par la famille autorisé</span>
+                        </Label>
+                      </div>
+                      <div className="bg-purple-50 dark:bg-purple-950 p-3 rounded-lg">
+                        <p className="text-sm font-medium">⚖️ Saisine du juge des tutelles</p>
+                        <p className="text-xs text-muted-foreground mt-1">Possibilité pour le mandant, la famille ou le procureur de saisir le juge en cas de difficulté</p>
+                      </div>
+                      <div className="bg-purple-50 dark:bg-purple-950 p-3 rounded-lg">
+                        <p className="text-sm font-medium">📊 Présentation des comptes annuelle obligatoire</p>
+                        <p className="text-xs text-muted-foreground mt-1">Le mandataire doit présenter un compte de gestion chaque année</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣1️⃣ RÉVOCATION */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Modalités de révocation</h3>
+                    <div className="bg-red-50 dark:bg-red-950 p-4 rounded-lg space-y-3">
+                      <div>
+                        <p className="font-medium text-sm">✅ Révocation par le mandant</p>
+                        <p className="text-xs text-muted-foreground">Le mandant peut révoquer le mandat à tout moment s'il a conservé sa capacité</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">⚖️ Révocation par le juge</p>
+                        <p className="text-xs text-muted-foreground">Le juge des tutelles peut révoquer le mandat en cas de manquement grave du mandataire</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">📤 Démission du mandataire</p>
+                        <p className="text-xs text-muted-foreground">Le mandataire peut démissionner sous réserve d'en informer le mandant et le juge</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">📢 Obligation d'informer</p>
+                        <p className="text-xs text-muted-foreground">Toute révocation ou démission doit être notifiée aux parties concernées</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣2️⃣ RÈGLES SPÉCIALES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ Règles spéciales (facultatives)</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Directives anticipées (santé, soins, fin de vie)</Label>
+                        <Textarea 
+                          value={mandatProtectionSousSeingData.directivesAnticipees} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, directivesAnticipees: e.target.value})} 
+                          placeholder="Volontés concernant les soins médicaux, acharnement thérapeutique, dons d'organes..."
+                          rows={3}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Clause sur hébergement en institution</Label>
+                        <Textarea 
+                          value={mandatProtectionSousSeingData.clauseHebergementInstitution} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, clauseHebergementInstitution: e.target.value})} 
+                          placeholder="Préférences sur EHPAD, établissement médicalisé, maintien à domicile..."
+                          rows={2}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Clause sur gestion des animaux domestiques</Label>
+                        <Textarea 
+                          value={mandatProtectionSousSeingData.clauseGestionAnimaux} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, clauseGestionAnimaux: e.target.value})} 
+                          placeholder="Instructions concernant les animaux de compagnie"
+                          rows={2}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Clause sur biens personnels précieux</Label>
+                        <Textarea 
+                          value={mandatProtectionSousSeingData.clauseBiensPersonnels} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, clauseBiensPersonnels: e.target.value})} 
+                          placeholder="Instructions concernant bijoux, œuvres d'art, objets de valeur sentimentale..."
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣3️⃣ ANNEXES (FICHIERS) */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣3️⃣ Annexes et documents justificatifs</h3>
+                    <div className="space-y-4">
+                      <FileUploadAvocat
+                        label="Carte d'identité du mandant"
+                        file={mandatCarteIdentiteMandant}
+                        onFileChange={setMandatCarteIdentiteMandant}
+                        description="Copie recto-verso de la pièce d'identité"
+                      />
+                      <FileUploadAvocat
+                        label="Carte d'identité du mandataire"
+                        file={mandatCarteIdentiteMandataire}
+                        onFileChange={setMandatCarteIdentiteMandataire}
+                        description="Copie recto-verso de la pièce d'identité"
+                      />
+                      <FileUploadAvocat
+                        label="Justificatif de domicile"
+                        file={mandatJustificatifDomicile}
+                        onFileChange={setMandatJustificatifDomicile}
+                        description="Facture récente (moins de 3 mois)"
+                      />
+                      <FileUploadAvocat
+                        label="Certificat médical (si requis)"
+                        file={mandatCertificatMedical}
+                        onFileChange={setMandatCertificatMedical}
+                        description="Certificat établi par médecin inscrit sur liste du procureur"
+                      />
+                      <FileUploadAvocat
+                        label="Liste des comptes bancaires"
+                        file={mandatListeComptesBancaires}
+                        onFileChange={setMandatListeComptesBancaires}
+                        description="Liste complète des comptes, livrets, placements"
+                      />
+                      <FileUploadAvocat
+                        label="Inventaire des biens"
+                        file={mandatInventaireBiens}
+                        onFileChange={setMandatInventaireBiens}
+                        description="Inventaire détaillé du patrimoine (immobilier, mobilier, etc.)"
+                      />
+                      <FileUploadAvocat
+                        label="Coordonnées des proches"
+                        file={mandatCoordonneesProches}
+                        onFileChange={setMandatCoordonneesProches}
+                        description="Liste des personnes à contacter (famille, amis, médecins)"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 1️⃣4️⃣ SIGNATURES */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣4️⃣ Signatures</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Lieu de signature *</Label>
+                        <Input 
+                          value={mandatProtectionSousSeingData.lieuSignature} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, lieuSignature: e.target.value})} 
+                          placeholder="Ville"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de signature *</Label>
+                        <Input 
+                          type="date" 
+                          value={mandatProtectionSousSeingData.dateSignature} 
+                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, dateSignature: e.target.value})} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣5️⃣ MENTION MANUSCRITE */}
+                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg border-2 border-green-300 dark:border-green-700">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ Mention manuscrite (générée automatiquement)</h3>
+                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
+                      <p className="text-sm font-mono italic text-center">
+                        "Je soussigné(e) {mandatProtectionSousSeingData.mandantNom} {mandatProtectionSousSeingData.mandantPrenom}, établis le présent mandat de protection future et donne pouvoir à {mandatProtectionSousSeingData.mandataireNom} {mandatProtectionSousSeingData.mandatairePrenom} d'agir pour moi dans les conditions prévues ci-dessus."
+                      </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center">
+                      ✍️ Cette mention devra être recopiée à la main par le mandant lors de la signature du document final
+                    </p>
                   </div>
 
                 </div>
@@ -69217,7 +70179,9 @@ FIN DE LA CONVENTION
                   handleConventionParentaleSubmit();
                 } else if (pendingContractType === "Reconnaissance de dettes") {
                   handleReconnaissanceDetteSubmit();
-                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Mandat de protection future sous seing privé", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
+                } else if (pendingContractType === "Mandat de protection future sous seing privé") {
+                  handleMandatProtectionSousSeingSubmit();
+                } else if (["Contrat de prestation de services", "Contrat de vente B2B / distribution", "Conditions Générales de Vente (CGV)", "Contrat de franchise", "Contrat de partenariat / coopération", "Testament olographe + accompagnement au dépôt", "Contrat de cession de droits d'auteur", "Licence logicielle", "Contrat de développement web / application", "Politique de confidentialité / mentions légales / RGPD"].includes(pendingContractType)) {
                   handleGenericContractSubmit();
                 } else {
                   // Pour tous les autres types, utiliser le formulaire générique
