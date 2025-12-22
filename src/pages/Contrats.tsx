@@ -90,14 +90,16 @@ interface MultiFileUploadProps {
   role?: 'notaire' | 'avocat';
 }
 
-function ClientSelector({ clients, selectedClientId, onClientChange, label = "Sélectionner votre client", placeholder }: { clients: Array<{id: string, nom: string, prenom: string}>; selectedClientId: string; onClientChange: (clientId: string) => void; label?: string; placeholder?: string }) {
+function ClientSelector({ clients, selectedClientId, value, onClientChange, label = "Sélectionner votre client", placeholder }: { clients: Array<{id: string, nom: string, prenom: string}>; selectedClientId?: string; value?: string; onClientChange: (clientId: string) => void; label?: string; placeholder?: string }) {
+  const clientId = selectedClientId || value || '';
+  
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <Label htmlFor="client-select">
           {label}
         </Label>
-        {selectedClientId && (
+        {clientId && (
           <button
             type="button"
             onClick={() => onClientChange('')}
@@ -107,7 +109,7 @@ function ClientSelector({ clients, selectedClientId, onClientChange, label = "S�
           </button>
         )}
       </div>
-      <Select value={selectedClientId} onValueChange={onClientChange}>
+      <Select value={clientId} onValueChange={onClientChange}>
         <SelectTrigger id="client-select">
           <SelectValue placeholder={placeholder || "Choisir un client"} />
         </SelectTrigger>
