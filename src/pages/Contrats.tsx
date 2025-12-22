@@ -24473,7 +24473,7 @@ FIN DE LA CONVENTION
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣ Identification des parties</h3>
                     
                     {/* CONCUBIN 1 */}
-                    <div className="space-y-4 border-l-4 border-blue-300 pl-4">
+                    <div className="space-y-4">
                       <h4 className="font-semibold">Concubin 1</h4>
                       
                       <ClientSelector
@@ -24495,6 +24495,11 @@ FIN DE LA CONVENTION
                                 concubin1ClientId: value,
                                 concubin1Nom: selectedClient.nom || "",
                                 concubin1Prenom: selectedClient.prenom || "",
+                                concubin1DateNaissance: selectedClient.date_naissance || "",
+                                concubin1LieuNaissance: selectedClient.lieu_naissance || "",
+                                concubin1Nationalite: selectedClient.nationalite || "",
+                                concubin1Adresse: selectedClient.adresse || "",
+                                concubin1Profession: selectedClient.profession || "",
                               });
                             }
                           }
@@ -24573,7 +24578,7 @@ FIN DE LA CONVENTION
                     </div>
 
                     {/* CONCUBIN 2 */}
-                    <div className="space-y-4 border-l-4 border-purple-300 pl-4">
+                    <div className="space-y-4">
                       <h4 className="font-semibold">Concubin 2</h4>
                       
                       <ClientSelector
@@ -24595,6 +24600,11 @@ FIN DE LA CONVENTION
                                 concubin2ClientId: value,
                                 concubin2Nom: selectedClient.nom || "",
                                 concubin2Prenom: selectedClient.prenom || "",
+                                concubin2DateNaissance: selectedClient.date_naissance || "",
+                                concubin2LieuNaissance: selectedClient.lieu_naissance || "",
+                                concubin2Nationalite: selectedClient.nationalite || "",
+                                concubin2Adresse: selectedClient.adresse || "",
+                                concubin2Profession: selectedClient.profession || "",
                               });
                             }
                           }
@@ -25510,79 +25520,6 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* 1️⃣5️⃣ SIGNATURES */}
-                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣5️⃣ Signatures</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label>Mode de signature *</Label>
-                        <Select 
-                          value={pacteConcubinageData.modeSignature} 
-                          onValueChange={(value) => setPacteConcubinageData({...pacteConcubinageData, modeSignature: value})}
-                        >
-                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="electronique">Signature électronique (YouSign)</SelectItem>
-                            <SelectItem value="manuscrite">Signature manuscrite</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {pacteConcubinageData.modeSignature === "manuscrite" && (
-                        <>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Lieu de signature *</Label>
-                              <Input 
-                                value={pacteConcubinageData.lieuSignature} 
-                                onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, lieuSignature: e.target.value})}
-                                placeholder="Ex: Paris"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Date de signature *</Label>
-                              <Input 
-                                type="date"
-                                value={pacteConcubinageData.dateSignature} 
-                                onChange={(e) => setPacteConcubinageData({...pacteConcubinageData, dateSignature: e.target.value})}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="space-y-4 border-t pt-4">
-                            <div className="space-y-2">
-                              <Label>Signature du concubin 1</Label>
-                              <div className="p-4 border-2 border-dashed rounded-lg text-center text-muted-foreground">
-                                <p className="text-sm">Signature manuscrite à apposer sur le document imprimé</p>
-                                <p className="text-xs mt-2">Précédée de la mention "Lu et approuvé"</p>
-                              </div>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label>Signature du concubin 2</Label>
-                              <div className="p-4 border-2 border-dashed rounded-lg text-center text-muted-foreground">
-                                <p className="text-sm">Signature manuscrite à apposer sur le document imprimé</p>
-                                <p className="text-xs mt-2">Précédée de la mention "Lu et approuvé"</p>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-
-                      {pacteConcubinageData.modeSignature === "electronique" && (
-                        <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                          <p className="text-sm">
-                            ✅ Les deux concubins recevront un email pour signer électroniquement le document via YouSign après validation.
-                          </p>
-                          <p className="text-xs mt-2 text-muted-foreground">
-                            La signature électronique a la même valeur juridique qu'une signature manuscrite.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
                 </div>
               </>
             )}
