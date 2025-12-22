@@ -24490,12 +24490,30 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
-                              // Extraire la situation familiale (peut être un objet ou une string)
+                              // Extraire la situation familiale
                               let situationFamiliale = "";
-                              if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
-                                situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
-                              } else if (typeof selectedClient.situation_familiale === 'string') {
-                                situationFamiliale = selectedClient.situation_familiale;
+                              
+                              // Essayer d'abord situation_matrimoniale
+                              if (selectedClient.situation_matrimoniale) {
+                                if (typeof selectedClient.situation_matrimoniale === 'object') {
+                                  situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                } else if (typeof selectedClient.situation_matrimoniale === 'string') {
+                                  situationFamiliale = selectedClient.situation_matrimoniale;
+                                }
+                              }
+                              
+                              // Si pas trouvé, essayer situation_familiale
+                              if (!situationFamiliale && selectedClient.situation_familiale) {
+                                if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                                } else if (typeof selectedClient.situation_familiale === 'string') {
+                                  situationFamiliale = selectedClient.situation_familiale;
+                                }
+                              }
+                              
+                              // Capitaliser
+                              if (situationFamiliale) {
+                                situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                               }
                               
                               setPacteConcubinageData({
@@ -24597,12 +24615,30 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
-                              // Extraire la situation familiale (peut être un objet ou une string)
+                              // Extraire la situation familiale
                               let situationFamiliale = "";
-                              if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
-                                situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
-                              } else if (typeof selectedClient.situation_familiale === 'string') {
-                                situationFamiliale = selectedClient.situation_familiale;
+                              
+                              // Essayer d'abord situation_matrimoniale
+                              if (selectedClient.situation_matrimoniale) {
+                                if (typeof selectedClient.situation_matrimoniale === 'object') {
+                                  situationFamiliale = selectedClient.situation_matrimoniale.situation_familiale || '';
+                                } else if (typeof selectedClient.situation_matrimoniale === 'string') {
+                                  situationFamiliale = selectedClient.situation_matrimoniale;
+                                }
+                              }
+                              
+                              // Si pas trouvé, essayer situation_familiale
+                              if (!situationFamiliale && selectedClient.situation_familiale) {
+                                if (typeof selectedClient.situation_familiale === 'object' && selectedClient.situation_familiale !== null) {
+                                  situationFamiliale = selectedClient.situation_familiale.situation_familiale || "";
+                                } else if (typeof selectedClient.situation_familiale === 'string') {
+                                  situationFamiliale = selectedClient.situation_familiale;
+                                }
+                              }
+                              
+                              // Capitaliser
+                              if (situationFamiliale) {
+                                situationFamiliale = situationFamiliale.charAt(0).toUpperCase() + situationFamiliale.slice(1);
                               }
                               
                               setPacteConcubinageData({
