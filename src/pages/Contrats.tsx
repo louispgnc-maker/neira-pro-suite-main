@@ -16502,7 +16502,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Équipements inclus dans la vente */}
-                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h4 className="font-medium">Équipements inclus dans la vente</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -16832,7 +16832,7 @@ FIN DE LA CONVENTION
                   <h3 className="font-semibold text-lg border-b pb-2">📜 Documents & diagnostics obligatoires</h3>
                   
                   {/* Diagnostics - données essentielles */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <div className="space-y-2">
                       <Label htmlFor="acte_dateDPE">Date du DPE</Label>
                       <Input 
@@ -16994,7 +16994,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* DIA - Déclaration d'Intention d'Aliéner */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <div className="space-y-2">
                       <Label htmlFor="acte_dateEnvoiDIA">Date d'envoi de la DIA</Label>
                       <Input 
@@ -17062,7 +17062,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* Remise des clés anticipée */}
-                  <div className="space-y-4 p-4 bg-teal-50 dark:bg-teal-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h4 className="font-medium">Remise des clés anticipée</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -21955,7 +21955,7 @@ FIN DE LA CONVENTION
                         </div>
 
                         {/* SOLS */}
-                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                        <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                           <h5 className="font-medium">Sols</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="space-y-2">
@@ -22017,7 +22017,7 @@ FIN DE LA CONVENTION
                         </div>
 
                         {/* MURS */}
-                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                        <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                           <h5 className="font-medium">Murs</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="space-y-2">
@@ -22078,7 +22078,7 @@ FIN DE LA CONVENTION
                         </div>
 
                         {/* PLAFONDS */}
-                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                        <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                           <h5 className="font-medium">Plafonds</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="space-y-2">
@@ -22138,7 +22138,7 @@ FIN DE LA CONVENTION
                         </div>
 
                         {/* FENÊTRES */}
-                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                        <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                           <h5 className="font-medium">Fenêtres et vitrages</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="space-y-2">
@@ -22230,7 +22230,7 @@ FIN DE LA CONVENTION
                         </div>
 
                         {/* PORTES */}
-                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                        <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                           <h5 className="font-medium">Portes</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="space-y-2">
@@ -22284,7 +22284,7 @@ FIN DE LA CONVENTION
                         </div>
 
                         {/* ÉCLAIRAGE */}
-                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                        <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                           <h5 className="font-medium">Éclairage et prises</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="space-y-2">
@@ -22353,7 +22353,7 @@ FIN DE LA CONVENTION
                         </div>
 
                         {/* CHAUFFAGE */}
-                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                        <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                           <h5 className="font-medium">Chauffage</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="space-y-2">
@@ -22415,7 +22415,7 @@ FIN DE LA CONVENTION
 
                         {/* ÉQUIPEMENTS CUISINE (si cuisine) */}
                         {(piece.nomPiece === 'cuisine' || piece.nomPiece === 'sejour') && (
-                          <div className="space-y-3 p-3 bg-yellow-50 dark:bg-yellow-950 rounded">
+                          <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                             <h5 className="font-medium">Équipements cuisine</h5>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div className="space-y-2">
@@ -22558,7 +22558,7 @@ FIN DE LA CONVENTION
 
                         {/* ÉQUIPEMENTS SALLE DE BAIN (si sdb) */}
                         {(piece.nomPiece === 'salle_bain' || piece.nomPiece === 'salle_eau') && (
-                          <div className="space-y-3 p-3 bg-green-50 dark:bg-green-950 rounded">
+                          <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                             <h5 className="font-medium">Équipements salle de bain</h5>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div className="space-y-2">
@@ -22686,7 +22686,7 @@ FIN DE LA CONVENTION
 
                         {/* WC */}
                         {piece.nomPiece === 'wc' && (
-                          <div className="space-y-3 p-3 bg-purple-50 dark:bg-purple-950 rounded">
+                          <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                             <h5 className="font-medium">Toilettes</h5>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div className="space-y-2">
@@ -22763,7 +22763,7 @@ FIN DE LA CONVENTION
                         )}
 
                         {/* RANGEMENTS */}
-                        <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                        <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-950 rounded">
                           <h5 className="font-medium">Rangements</h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="space-y-2">
@@ -22851,7 +22851,7 @@ FIN DE LA CONVENTION
 
                   {/* 7️⃣ INVENTAIRE MOBILIER (si meublé) */}
                   {etatLieuxData.meuble === "oui" && (
-                    <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                       <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Inventaire du mobilier (logement meublé)</h3>
                       
                       {etatLieuxData.meubles.map((meuble, index) => (
@@ -22963,7 +22963,7 @@ FIN DE LA CONVENTION
                   )}
 
                   {/* 8️⃣ ANOMALIES ET DÉGRADATIONS */}
-                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Anomalies et dégradations constatées</h3>
                     
                     {etatLieuxData.anomalies.map((anomalie, index) => (
@@ -23177,7 +23177,7 @@ FIN DE LA CONVENTION
 
                   {/* 1️⃣1️⃣ COMPARATIF ENTRÉE/SORTIE (si sortie) */}
                   {etatLieuxData.typeEtatLieux === "sortie" && (
-                    <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                       <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Comparatif entrée / sortie</h3>
                       <p className="text-sm text-muted-foreground">Identification des dégradations depuis l'état des lieux d'entrée</p>
                       
@@ -23296,7 +23296,7 @@ FIN DE LA CONVENTION
 
                   {/* 1️⃣2️⃣ RÉCAPITULATIF FINANCIER (si sortie) */}
                   {etatLieuxData.typeEtatLieux === "sortie" && (
-                    <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                       <h3 className="font-semibold text-lg border-b pb-2">1️⃣2️⃣ Récapitulatif financier</h3>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -25979,31 +25979,7 @@ FIN DE LA CONVENTION
                     
                     {/* PARENT 1 */}
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold">Parent 1</h4>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setConventionParentaleData({
-                              ...conventionParentaleData,
-                              parent1ClientId: "",
-                              parent1Nom: "",
-                              parent1Prenom: "",
-                              parent1DateNaissance: "",
-                              parent1LieuNaissance: "",
-                              parent1Nationalite: "",
-                              parent1Adresse: "",
-                              parent1Profession: "",
-                              parent1Telephone: "",
-                              parent1Email: "",
-                            });
-                          }}
-                        >
-                          Saisie manuelle
-                        </Button>
-                      </div>
+                      <h4 className="font-semibold">Parent 1</h4>
                       
                       <ClientSelector
                         clients={clients}
@@ -26087,31 +26063,7 @@ FIN DE LA CONVENTION
 
                     {/* PARENT 2 */}
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold">Parent 2</h4>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setConventionParentaleData({
-                              ...conventionParentaleData,
-                              parent2ClientId: "",
-                              parent2Nom: "",
-                              parent2Prenom: "",
-                              parent2DateNaissance: "",
-                              parent2LieuNaissance: "",
-                              parent2Nationalite: "",
-                              parent2Adresse: "",
-                              parent2Profession: "",
-                              parent2Telephone: "",
-                              parent2Email: "",
-                            });
-                          }}
-                        >
-                          Saisie manuelle
-                        </Button>
-                      </div>
+                      <h4 className="font-semibold">Parent 2</h4>
                       
                       <ClientSelector
                         clients={clients}
@@ -26226,7 +26178,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 2️⃣ IDENTITÉ DES ENFANTS */}
-                  <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité de l'enfant / des enfants</h3>
                     <div className="space-y-4">
                       <p className="text-sm text-muted-foreground">Renseignez les informations de chaque enfant concerné par cette convention.</p>
@@ -26275,7 +26227,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 3️⃣ AUTORITÉ PARENTALE */}
-                  <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Autorité parentale</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2 md:col-span-2">
@@ -26308,7 +26260,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 4️⃣ RÉSIDENCE HABITUELLE */}
-                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Résidence habituelle de l'enfant</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
@@ -26378,7 +26330,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 6️⃣ VACANCES SCOLAIRES */}
-                  <div className="space-y-4 p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Vacances scolaires</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -26405,7 +26357,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 7️⃣ PENSION ALIMENTAIRE */}
-                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Pension alimentaire</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -26470,7 +26422,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 8️⃣ FRAIS EXTRAORDINAIRES */}
-                  <div className="space-y-4 p-4 bg-pink-50 dark:bg-pink-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Frais extraordinaires</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2 md:col-span-2">
@@ -26499,7 +26451,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 9️⃣ SANTÉ ET ÉDUCATION */}
-                  <div className="space-y-4 p-4 bg-teal-50 dark:bg-teal-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Santé et éducation</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -26526,7 +26478,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* �� COMMUNICATION */}
-                  <div className="space-y-4 p-4 bg-cyan-50 dark:bg-cyan-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">�� Communication entre parents</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -26548,7 +26500,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 1️⃣1️⃣ TRANSPORTS */}
-                  <div className="space-y-4 p-4 bg-lime-50 dark:bg-lime-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣1️⃣ Transports et déplacements</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -26595,7 +26547,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 1️⃣2️⃣ à 1️⃣5️⃣ - Sections compactes */}
-                  <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">Dispositions complémentaires</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -26640,7 +26592,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 1️⃣7️⃣ SIGNATURE */}
-                  <div className="space-y-4 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣7️⃣ Date et lieu de signature</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -26786,7 +26738,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 2️⃣ IDENTIFICATION DU CRÉANCIER */}
-                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identification du créancier (personne qui prête)</h3>
                     
                     <div className="space-y-2">
@@ -26904,7 +26856,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 3️⃣ MONTANT EXACT DE LA DETTE */}
-                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Montant exact de la dette</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -26936,7 +26888,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 4️⃣ ORIGINE DE LA DETTE */}
-                  <div className="space-y-4 p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Origine de la dette</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
@@ -26961,7 +26913,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 5️⃣ DATE ET MODALITÉS DE REMISE DES FONDS */}
-                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Date et modalités de remise des fonds</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -27034,7 +26986,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 7️⃣ INTÉRÊTS */}
-                  <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Intérêts</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -27071,7 +27023,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 8️⃣ GARANTIES */}
-                  <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Garanties</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
@@ -27098,7 +27050,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 9️⃣ CONSÉQUENCES DU NON-PAIEMENT */}
-                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Conséquences du non-paiement</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
@@ -27123,7 +27075,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* �� à 1️⃣3️⃣ CLAUSES LÉGALES */}
-                  <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">Clauses légales et formalités</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
@@ -27156,7 +27108,7 @@ FIN DE LA CONVENTION
                   </div>
 
                   {/* 1️⃣4️⃣ SIGNATURE */}
-                  <div className="space-y-4 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <h3 className="font-semibold text-lg border-b pb-2">1️⃣4️⃣ Date et lieu de signature</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
