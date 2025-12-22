@@ -24490,30 +24490,47 @@ FIN DE LA CONVENTION
                           } else {
                             const selectedClient = clients.find(c => c.id === value) as any;
                             if (selectedClient) {
+                              console.log('=== CONCUBIN 1 ===');
+                              console.log('Client complet:', selectedClient);
+                              console.log('situation_matrimoniale:', selectedClient.situation_matrimoniale);
+                              console.log('Type de situation_matrimoniale:', typeof selectedClient.situation_matrimoniale);
+                              console.log('situation_familiale:', selectedClient.situation_familiale);
+                              console.log('Type de situation_familiale:', typeof selectedClient.situation_familiale);
+                              
                               // Extraire situation familiale - tester toutes les possibilités
                               let situationFam = "";
                               
                               // Test 1: situation_matrimoniale objet
                               if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'object') {
                                 situationFam = selectedClient.situation_matrimoniale.situation_familiale || "";
+                                console.log('Cas 1 (matrimoniale objet) - situationFam:', situationFam);
                               }
                               // Test 2: situation_matrimoniale string
                               else if (selectedClient.situation_matrimoniale && typeof selectedClient.situation_matrimoniale === 'string') {
                                 situationFam = selectedClient.situation_matrimoniale;
+                                console.log('Cas 2 (matrimoniale string) - situationFam:', situationFam);
                               }
                               // Test 3: situation_familiale objet
                               else if (selectedClient.situation_familiale && typeof selectedClient.situation_familiale === 'object') {
                                 situationFam = selectedClient.situation_familiale.situation_familiale || "";
+                                console.log('Cas 3 (familiale objet) - situationFam:', situationFam);
                               }
                               // Test 4: situation_familiale string
                               else if (selectedClient.situation_familiale && typeof selectedClient.situation_familiale === 'string') {
                                 situationFam = selectedClient.situation_familiale;
+                                console.log('Cas 4 (familiale string) - situationFam:', situationFam);
                               }
                               
                               // Capitaliser si trouvé
                               if (situationFam && situationFam.length > 0) {
                                 situationFam = situationFam.charAt(0).toUpperCase() + situationFam.slice(1);
+                                console.log('Après capitalisation:', situationFam);
+                              } else {
+                                console.log('AUCUNE VALEUR TROUVÉE pour situation familiale!');
                               }
+                              
+                              console.log('Valeur finale qui sera mise dans le state:', situationFam);
+                              console.log('===================');
                               
                               setPacteConcubinageData({
                                 ...pacteConcubinageData,
