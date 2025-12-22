@@ -9349,15 +9349,9 @@ export default function Contrats() {
       if (!mandatProtectionSousSeingData.mandantNom || !mandatProtectionSousSeingData.mandantPrenom ||
           !mandatProtectionSousSeingData.mandataireNom || !mandatProtectionSousSeingData.mandatairePrenom ||
           !mandatProtectionSousSeingData.typeMandat || !mandatProtectionSousSeingData.mandataireAcceptationExpresse) {
-        toast({
-          title: "Champs manquants",
-          description: "Veuillez remplir tous les champs obligatoires (identités mandant/mandataire, type de mandat, acceptation).",
-          variant: "destructive"
-        });
+        toast.error("Veuillez remplir tous les champs obligatoires (identités mandant/mandataire, type de mandat, acceptation).");
         return;
       }
-
-      setIsSubmitting(true);
 
       // Générer la mention manuscrite automatiquement
       const mentionAuto = `Je soussigné(e) ${mandatProtectionSousSeingData.mandantNom} ${mandatProtectionSousSeingData.mandantPrenom}, établis le présent mandat de protection future et donne pouvoir à ${mandatProtectionSousSeingData.mandataireNom} ${mandatProtectionSousSeingData.mandatairePrenom} d'agir pour moi dans les conditions prévues ci-dessus.`;
@@ -9488,13 +9482,11 @@ export default function Contrats() {
 
       if (error) throw error;
 
-      toast({
-        title: "Mandat de protection future créé",
-        description: "Le mandat a été créé avec succès."
-      });
+      toast.success("Mandat de protection future créé avec succès");
 
-      setShowContractForm(false);
+      setShowDialog(false);
       setPendingContractType(null);
+      fetchContrats();
       
       // Réinitialiser le formulaire
       setMandatProtectionData({
@@ -9535,13 +9527,7 @@ export default function Contrats() {
       
     } catch (error: any) {
       console.error('Erreur:', error);
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
+      toast.error(error.message || "Erreur lors de la création du mandat");
     }
   };
 
