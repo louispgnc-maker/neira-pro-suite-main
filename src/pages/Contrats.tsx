@@ -17197,22 +17197,8 @@ FIN DE LA CONVENTION
             )}
 
             {/* ========== FORMULAIRE BAIL COMMERCIAL - ESPACE AVOCAT ========== */}
-            {pendingContractType === "Bail commercial / professionnel" && (
+            {pendingContractType === "Bail commercial / professionnel" && role === 'avocat' && (
               <>
-                <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg mb-4">
-                  <p className="text-sm font-medium text-purple-800">🔍 DEBUG - Détection du rôle</p>
-                  <p className="text-xs text-purple-600 mt-1">Rôle actuel : <strong>{role}</strong></p>
-                  <p className="text-xs text-purple-600">URL actuelle : {location.pathname}</p>
-                </div>
-                
-                {role !== 'avocat' && (
-                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <p className="text-sm text-yellow-800">⚠️ Vous devez être sur l'espace avocat pour accéder à ce formulaire complet.</p>
-                    <p className="text-xs text-yellow-600 mt-1">Rôle détecté : {role}</p>
-                  </div>
-                )}
-                
-                {role === 'avocat' && (
                 <div className="space-y-6">
                   {/* Sélection du type de bail */}
                   <div className="space-y-4 bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
@@ -18550,7 +18536,6 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
                 </div>
-                )}
               </>
             )}
 
