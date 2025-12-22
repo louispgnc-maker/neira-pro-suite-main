@@ -16110,11 +16110,6 @@ FIN DE LA CONVENTION
             {/* ========== FORMULAIRE BAIL D'HABITATION - ESPACE AVOCAT ========== */}
             {(pendingContractType === "Bail d'habitation vide" || pendingContractType === "Bail d'habitation meublé") && role === 'avocat' && (
               <>
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-4">
-                  <p className="text-sm font-medium text-blue-800">🏠 Formulaire Bail d'Habitation - Espace Avocat</p>
-                  <p className="text-xs text-blue-600 mt-1">Ce formulaire est indépendant de l'espace notaire</p>
-                </div>
-                
                 {/* Sélection du rôle du client */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-lg border-b pb-2">👤 Votre client</h3>
