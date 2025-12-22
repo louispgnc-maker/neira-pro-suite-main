@@ -27465,35 +27465,35 @@ FIN DE LA CONVENTION
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Nom du mandant *</Label>
-                          <Input value={mandatProtectionSousSeingData.mandantNom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantNom: e.target.value})} placeholder="NOM" />
+                          <Input value={mandatProtectionSousSeingData.mandantNom} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantNom: e.target.value})} placeholder="NOM" />
                         </div>
                         <div className="space-y-2">
                           <Label>Prénom du mandant *</Label>
-                          <Input value={mandatProtectionSousSeingData.mandantPrenom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantPrenom: e.target.value})} placeholder="Prénom" />
+                          <Input value={mandatProtectionSousSeingData.mandantPrenom} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantPrenom: e.target.value})} placeholder="Prénom" />
                         </div>
                         <div className="space-y-2">
                           <Label>Date de naissance *</Label>
-                          <Input type="date" value={mandatProtectionSousSeingData.mandantDateNaissance} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantDateNaissance: e.target.value})} />
+                          <Input type="date" value={mandatProtectionSousSeingData.mandantDateNaissance} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantDateNaissance: e.target.value})} />
                         </div>
                         <div className="space-y-2">
                           <Label>Lieu de naissance</Label>
-                          <Input value={mandatProtectionSousSeingData.mandantLieuNaissance} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantLieuNaissance: e.target.value})} placeholder="Ville, Pays" />
+                          <Input value={mandatProtectionSousSeingData.mandantLieuNaissance} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantLieuNaissance: e.target.value})} placeholder="Ville, Pays" />
                         </div>
                         <div className="space-y-2">
                           <Label>Nationalité</Label>
-                          <Input value={mandatProtectionSousSeingData.mandantNationalite} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantNationalite: e.target.value})} placeholder="Ex: Française" />
+                          <Input value={mandatProtectionSousSeingData.mandantNationalite} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantNationalite: e.target.value})} placeholder="Ex: Française" />
                         </div>
                         <div className="space-y-2">
                           <Label>Profession</Label>
-                          <Input value={mandatProtectionSousSeingData.mandantProfession} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantProfession: e.target.value})} />
+                          <Input value={mandatProtectionSousSeingData.mandantProfession} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantProfession: e.target.value})} />
                         </div>
                         <div className="space-y-2 md:col-span-2">
                           <Label>Adresse complète *</Label>
-                          <Textarea value={mandatProtectionSousSeingData.mandantAdresse} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantAdresse: e.target.value})} placeholder="Numéro, rue, code postal, ville" rows={2} />
+                          <Textarea value={mandatProtectionSousSeingData.mandantAdresse} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantAdresse: e.target.value})} placeholder="Numéro, rue, code postal, ville" rows={2} />
                         </div>
                         <div className="space-y-2">
                           <Label>Situation familiale</Label>
-                          <Select value={mandatProtectionSousSeingData.mandantSituationFamiliale} onValueChange={(value) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantSituationFamiliale: value})}>
+                          <Select value={mandatProtectionSousSeingData.mandantSituationFamiliale} onValueChange={(value) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantSituationFamiliale: value})}>
                             <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="celibataire">Célibataire</SelectItem>
@@ -27507,7 +27507,7 @@ FIN DE LA CONVENTION
                         </div>
                         <div className="space-y-2">
                           <Label>Capacité juridique</Label>
-                          <Select value={mandatProtectionSousSeingData.mandantCapaciteJuridique} onValueChange={(value) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantCapaciteJuridique: value})}>
+                          <Select value={mandatProtectionSousSeingData.mandantCapaciteJuridique} onValueChange={(value) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantCapaciteJuridique: value})}>
                             <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="pleine">Pleine capacité juridique</SelectItem>
@@ -27517,7 +27517,7 @@ FIN DE LA CONVENTION
                         </div>
                         <div className="space-y-2">
                           <Label>Type d'identité</Label>
-                          <Select value={mandatProtectionSousSeingData.mandantTypeIdentite} onValueChange={(value) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantTypeIdentite: value})}>
+                          <Select value={mandatProtectionSousSeingData.mandantTypeIdentite} onValueChange={(value) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantTypeIdentite: value})}>
                             <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="cni">Carte nationale d'identité</SelectItem>
@@ -27528,7 +27528,7 @@ FIN DE LA CONVENTION
                         </div>
                         <div className="space-y-2">
                           <Label>Numéro d'identité</Label>
-                          <Input value={mandatProtectionSousSeingData.mandantNumeroIdentite} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandantNumeroIdentite: e.target.value})} placeholder="Numéro de la pièce d'identité" />
+                          <Input value={mandatProtectionSousSeingData.mandantNumeroIdentite} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandantNumeroIdentite: e.target.value})} placeholder="Numéro de la pièce d'identité" />
                         </div>
                       </div>
                     </div>
@@ -27559,42 +27559,42 @@ FIN DE LA CONVENTION
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Nom du mandataire *</Label>
-                          <Input value={mandatProtectionSousSeingData.mandataireNom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireNom: e.target.value})} placeholder="NOM" />
+                          <Input value={mandatProtectionSousSeingData.mandataireNom} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireNom: e.target.value})} placeholder="NOM" />
                         </div>
                         <div className="space-y-2">
                           <Label>Prénom du mandataire *</Label>
-                          <Input value={mandatProtectionSousSeingData.mandatairePrenom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandatairePrenom: e.target.value})} placeholder="Prénom" />
+                          <Input value={mandatProtectionSousSeingData.mandatairePrenom} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandatairePrenom: e.target.value})} placeholder="Prénom" />
                         </div>
                         <div className="space-y-2">
                           <Label>Date de naissance</Label>
-                          <Input type="date" value={mandatProtectionSousSeingData.mandataireDateNaissance} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireDateNaissance: e.target.value})} />
+                          <Input type="date" value={mandatProtectionSousSeingData.mandataireDateNaissance} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireDateNaissance: e.target.value})} />
                         </div>
                         <div className="space-y-2">
                           <Label>Lien avec le mandant</Label>
-                          <Input value={mandatProtectionSousSeingData.mandataireLienMandant} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireLienMandant: e.target.value})} placeholder="Ex: Fils, Fille, Époux/se, Ami(e)" />
+                          <Input value={mandatProtectionSousSeingData.mandataireLienMandant} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireLienMandant: e.target.value})} placeholder="Ex: Fils, Fille, Époux/se, Ami(e)" />
                         </div>
                         <div className="space-y-2">
                           <Label>Profession</Label>
-                          <Input value={mandatProtectionSousSeingData.mandataireProfession} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireProfession: e.target.value})} />
+                          <Input value={mandatProtectionSousSeingData.mandataireProfession} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireProfession: e.target.value})} />
                         </div>
                         <div className="space-y-2">
                           <Label>Téléphone</Label>
-                          <Input value={mandatProtectionSousSeingData.mandataireTelephone} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireTelephone: e.target.value})} placeholder="+33 6 XX XX XX XX" />
+                          <Input value={mandatProtectionSousSeingData.mandataireTelephone} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireTelephone: e.target.value})} placeholder="+33 6 XX XX XX XX" />
                         </div>
                         <div className="space-y-2 md:col-span-2">
                           <Label>Email</Label>
-                          <Input type="email" value={mandatProtectionSousSeingData.mandataireEmail} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireEmail: e.target.value})} />
+                          <Input type="email" value={mandatProtectionSousSeingData.mandataireEmail} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireEmail: e.target.value})} />
                         </div>
                         <div className="space-y-2 md:col-span-2">
                           <Label>Adresse complète</Label>
-                          <Textarea value={mandatProtectionSousSeingData.mandataireAdresse} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireAdresse: e.target.value})} placeholder="Numéro, rue, code postal, ville" rows={2} />
+                          <Textarea value={mandatProtectionSousSeingData.mandataireAdresse} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireAdresse: e.target.value})} placeholder="Numéro, rue, code postal, ville" rows={2} />
                         </div>
                         <div className="space-y-2 md:col-span-2">
                           <Label className="flex items-center gap-2">
                             <input
                               type="checkbox"
                               checked={mandatProtectionSousSeingData.mandataireAcceptationExpresse === "oui"}
-                              onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireAcceptationExpresse: e.target.checked ? "oui" : "non"})}
+                              onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireAcceptationExpresse: e.target.checked ? "oui" : "non"})}
                               className="w-4 h-4"
                             />
                             <span>Acceptation expresse du mandataire *</span>
@@ -27609,19 +27609,19 @@ FIN DE LA CONVENTION
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label>Nom du substitut</Label>
-                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutNom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireSubstitutNom: e.target.value})} placeholder="NOM" />
+                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutNom} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireSubstitutNom: e.target.value})} placeholder="NOM" />
                           </div>
                           <div className="space-y-2">
                             <Label>Prénom du substitut</Label>
-                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutPrenom} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireSubstitutPrenom: e.target.value})} placeholder="Prénom" />
+                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutPrenom} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireSubstitutPrenom: e.target.value})} placeholder="Prénom" />
                           </div>
                           <div className="space-y-2 md:col-span-2">
                             <Label>Adresse du substitut</Label>
-                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutAdresse} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireSubstitutAdresse: e.target.value})} />
+                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutAdresse} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireSubstitutAdresse: e.target.value})} />
                           </div>
                           <div className="space-y-2">
                             <Label>Téléphone du substitut</Label>
-                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutTelephone} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandataireSubstitutTelephone: e.target.value})} />
+                            <Input value={mandatProtectionSousSeingData.mandataireSubstitutTelephone} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandataireSubstitutTelephone: e.target.value})} />
                           </div>
                         </div>
                       </div>
@@ -27644,7 +27644,7 @@ FIN DE LA CONVENTION
                               name="typeMandat"
                               value={option.value}
                               checked={mandatProtectionSousSeingData.typeMandat === option.value}
-                              onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, typeMandat: e.target.value})}
+                              onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, typeMandat: e.target.value})}
                               className="w-4 h-4 mt-1"
                             />
                             <div>
@@ -27665,7 +27665,7 @@ FIN DE LA CONVENTION
                         <Label>Condition déclenchant le mandat</Label>
                         <Input 
                           value={mandatProtectionSousSeingData.entreeVigueurCondition} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, entreeVigueurCondition: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, entreeVigueurCondition: e.target.value})} 
                           placeholder="Par défaut: Survenance d'une altération des facultés mentales ou corporelles" 
                         />
                         <p className="text-xs text-muted-foreground">Si vide, la condition par défaut sera utilisée</p>
@@ -27675,7 +27675,7 @@ FIN DE LA CONVENTION
                           <input
                             type="checkbox"
                             checked={mandatProtectionSousSeingData.certificationMedicaleRequise === "oui"}
-                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, certificationMedicaleRequise: e.target.checked ? "oui" : "non"})}
+                            onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, certificationMedicaleRequise: e.target.checked ? "oui" : "non"})}
                             className="w-4 h-4"
                           />
                           <span>Certification médicale requise pour activer le mandat</span>
@@ -27686,7 +27686,7 @@ FIN DE LA CONVENTION
                           <Label>Médecins habilités à établir le certificat</Label>
                           <Textarea 
                             value={mandatProtectionSousSeingData.medecinsHabilites} 
-                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, medecinsHabilites: e.target.value})} 
+                            onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, medecinsHabilites: e.target.value})} 
                             placeholder="Noms des médecins désignés pour établir le certificat médical constatant l'altération des facultés"
                             rows={2}
                           />
@@ -27694,7 +27694,7 @@ FIN DE LA CONVENTION
                       )}
                       <div className="space-y-2">
                         <Label>Date d'effet souhaitée (facultatif)</Label>
-                        <Input type="date" value={mandatProtectionSousSeingData.dateEffet} onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, dateEffet: e.target.value})} />
+                        <Input type="date" value={mandatProtectionSousSeingData.dateEffet} onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, dateEffet: e.target.value})} />
                       </div>
                     </div>
                   </div>
@@ -27721,7 +27721,7 @@ FIN DE LA CONVENTION
                               type="checkbox"
                               id={power.field}
                               checked={mandatProtectionSousSeingData[power.field] === "oui"}
-                              onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, [power.field]: e.target.checked ? "oui" : "non"})}
+                              onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, [power.field]: e.target.checked ? "oui" : "non"})}
                               className="w-4 h-4"
                             />
                             <Label htmlFor={power.field} className="cursor-pointer">{power.label}</Label>
@@ -27755,7 +27755,7 @@ FIN DE LA CONVENTION
                               type="checkbox"
                               id={power.field}
                               checked={mandatProtectionSousSeingData[power.field] === "oui"}
-                              onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, [power.field]: e.target.checked ? "oui" : "non"})}
+                              onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, [power.field]: e.target.checked ? "oui" : "non"})}
                               className="w-4 h-4"
                             />
                             <Label htmlFor={power.field} className="cursor-pointer">{power.label}</Label>
@@ -27802,7 +27802,7 @@ FIN DE LA CONVENTION
                           <input
                             type="checkbox"
                             checked={mandatProtectionSousSeingData.mandatGratuit === "oui"}
-                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, mandatGratuit: e.target.checked ? "oui" : "non"})}
+                            onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, mandatGratuit: e.target.checked ? "oui" : "non"})}
                             className="w-4 h-4"
                           />
                           <span>Mandat à titre gratuit</span>
@@ -27814,7 +27814,7 @@ FIN DE LA CONVENTION
                           <Input 
                             type="number" 
                             value={mandatProtectionSousSeingData.indemniteAnnuelle} 
-                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, indemniteAnnuelle: e.target.value})} 
+                            onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, indemniteAnnuelle: e.target.value})} 
                             placeholder="Montant annuel"
                           />
                         </div>
@@ -27823,7 +27823,7 @@ FIN DE LA CONVENTION
                         <Label>Frais remboursables</Label>
                         <Textarea 
                           value={mandatProtectionSousSeingData.fraisRemboursables} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, fraisRemboursables: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, fraisRemboursables: e.target.value})} 
                           placeholder="Ex: Frais de déplacement, frais postaux, frais administratifs"
                           rows={2}
                         />
@@ -27832,7 +27832,7 @@ FIN DE LA CONVENTION
                         <Label>Modalités de preuve des dépenses</Label>
                         <Input 
                           value={mandatProtectionSousSeingData.modalitesPreuveDepenses} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, modalitesPreuveDepenses: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, modalitesPreuveDepenses: e.target.value})} 
                           placeholder="Ex: Factures, tickets, justificatifs"
                         />
                       </div>
@@ -27876,7 +27876,7 @@ FIN DE LA CONVENTION
                           <input
                             type="checkbox"
                             checked={mandatProtectionSousSeingData.personneConfianceDesignee === "oui"}
-                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, personneConfianceDesignee: e.target.checked ? "oui" : "non"})}
+                            onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, personneConfianceDesignee: e.target.checked ? "oui" : "non"})}
                             className="w-4 h-4"
                           />
                           <span>Désigner une personne de confiance pour contrôle</span>
@@ -27887,7 +27887,7 @@ FIN DE LA CONVENTION
                           <Label>Nom et coordonnées de la personne de confiance</Label>
                           <Textarea 
                             value={mandatProtectionSousSeingData.personneConfianceNom} 
-                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, personneConfianceNom: e.target.value})} 
+                            onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, personneConfianceNom: e.target.value})} 
                             placeholder="Nom, prénom, adresse, téléphone"
                             rows={2}
                           />
@@ -27898,7 +27898,7 @@ FIN DE LA CONVENTION
                           <input
                             type="checkbox"
                             checked={mandatProtectionSousSeingData.controleAmiableFamille === "oui"}
-                            onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, controleAmiableFamille: e.target.checked ? "oui" : "non"})}
+                            onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, controleAmiableFamille: e.target.checked ? "oui" : "non"})}
                             className="w-4 h-4"
                           />
                           <span>Contrôle amiable par la famille autorisé</span>
@@ -27946,7 +27946,7 @@ FIN DE LA CONVENTION
                         <Label>Directives anticipées (santé, soins, fin de vie)</Label>
                         <Textarea 
                           value={mandatProtectionSousSeingData.directivesAnticipees} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, directivesAnticipees: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, directivesAnticipees: e.target.value})} 
                           placeholder="Volontés concernant les soins médicaux, acharnement thérapeutique, dons d'organes..."
                           rows={3}
                         />
@@ -27955,7 +27955,7 @@ FIN DE LA CONVENTION
                         <Label>Clause sur hébergement en institution</Label>
                         <Textarea 
                           value={mandatProtectionSousSeingData.clauseHebergementInstitution} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, clauseHebergementInstitution: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, clauseHebergementInstitution: e.target.value})} 
                           placeholder="Préférences sur EHPAD, établissement médicalisé, maintien à domicile..."
                           rows={2}
                         />
@@ -27964,7 +27964,7 @@ FIN DE LA CONVENTION
                         <Label>Clause sur gestion des animaux domestiques</Label>
                         <Textarea 
                           value={mandatProtectionSousSeingData.clauseGestionAnimaux} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, clauseGestionAnimaux: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, clauseGestionAnimaux: e.target.value})} 
                           placeholder="Instructions concernant les animaux de compagnie"
                           rows={2}
                         />
@@ -27973,7 +27973,7 @@ FIN DE LA CONVENTION
                         <Label>Clause sur biens personnels précieux</Label>
                         <Textarea 
                           value={mandatProtectionSousSeingData.clauseBiensPersonnels} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, clauseBiensPersonnels: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, clauseBiensPersonnels: e.target.value})} 
                           placeholder="Instructions concernant bijoux, œuvres d'art, objets de valeur sentimentale..."
                           rows={2}
                         />
@@ -28066,7 +28066,7 @@ FIN DE LA CONVENTION
                         <Label>Lieu de signature *</Label>
                         <Input 
                           value={mandatProtectionSousSeingData.lieuSignature} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, lieuSignature: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, lieuSignature: e.target.value})} 
                           placeholder="Ville"
                         />
                       </div>
@@ -28075,7 +28075,7 @@ FIN DE LA CONVENTION
                         <Input 
                           type="date" 
                           value={mandatProtectionSousSeingData.dateSignature} 
-                          onChange={(e) => setMandatProtectionData({...mandatProtectionSousSeingData, dateSignature: e.target.value})} 
+                          onChange={(e) => setMandatProtectionSousSeingData({...mandatProtectionSousSeingData, dateSignature: e.target.value})} 
                         />
                       </div>
                     </div>
