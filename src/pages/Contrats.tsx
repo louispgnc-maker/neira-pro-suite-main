@@ -26177,9 +26177,228 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Suite du formulaire dans le prochain message pour ne pas dépasser la limite */}
-                  <div className="text-center text-sm text-muted-foreground mt-4">
-                    Convention parentale - Formulaire en cours de développement
+                  {/* 2️⃣ IDENTITÉ DES ENFANTS */}
+                  <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">2️⃣ Identité de l'enfant / des enfants</h3>
+                    <div className="space-y-2">
+                      <Label>Nombre d'enfants</Label>
+                      <Input type="number" placeholder="Nombre d'enfants concernés" />
+                      <p className="text-sm text-muted-foreground">Pour chaque enfant : Nom, prénom, date naissance, établissement scolaire, situation médicale...</p>
+                    </div>
+                  </div>
+
+                  {/* 3️⃣ AUTORITÉ PARENTALE */}
+                  <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">3️⃣ Autorité parentale</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Type d'autorité parentale *</Label>
+                        <Select value={conventionParentaleData.typeAutoriteParentale} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, typeAutoriteParentale: value})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="conjointe">Autorité parentale conjointe (par défaut)</SelectItem>
+                            <SelectItem value="exclusive">Autorité parentale exclusive</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {conventionParentaleData.typeAutoriteParentale === "exclusive" && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Parent ayant l'autorité exclusive</Label>
+                          <Select value={conventionParentaleData.parentAutoriteExclusive} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, parentAutoriteExclusive: value})}>
+                            <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="parent1">Parent 1</SelectItem>
+                              <SelectItem value="parent2">Parent 2</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 4️⃣ RÉSIDENCE HABITUELLE */}
+                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Résidence habituelle de l'enfant</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de résidence *</Label>
+                        <Select value={conventionParentaleData.typeResidence} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, typeResidence: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="parent1">Résidence chez Parent 1</SelectItem>
+                            <SelectItem value="parent2">Résidence chez Parent 2</SelectItem>
+                            <SelectItem value="alternee">Résidence alternée</SelectItem>
+                            <SelectItem value="alterneeAmenagee">Résidence alternée aménagée</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {(conventionParentaleData.typeResidence === "alternee" || conventionParentaleData.typeResidence === "alterneeAmenagee") && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Modalité d'alternance</Label>
+                            <Select value={conventionParentaleData.modaliteAlternance} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, modaliteAlternance: value})}>
+                              <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1semaine">1 semaine / 1 semaine</SelectItem>
+                                <SelectItem value="2-2-3">2 jours / 2 jours / 3 jours</SelectItem>
+                                <SelectItem value="impaires-paires">Semaines impaires / paires</SelectItem>
+                                <SelectItem value="personnalise">Planning personnalisé</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Planning détaillé</Label>
+                            <Textarea value={conventionParentaleData.planningDetaille} onChange={(e) => setConventionParentaleData({...conventionParentaleData, planningDetaille: e.target.value})} rows={3} placeholder="Décrivez le planning..." />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 5️⃣ DROIT DE VISITE ET HÉBERGEMENT */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Droit de visite et d'hébergement (DVH)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Type de DVH</Label>
+                        <Select value={conventionParentaleData.typeDVH} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, typeDVH: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="classique">DVH classique</SelectItem>
+                            <SelectItem value="elargi">DVH élargi</SelectItem>
+                            <SelectItem value="progressif">DVH progressif (jeunes enfants)</SelectItem>
+                            <SelectItem value="personnalise">DVH personnalisé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Horaires (début)</Label>
+                        <Input type="time" value={conventionParentaleData.heureDebut} onChange={(e) => setConventionParentaleData({...conventionParentaleData, heureDebut: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Horaires (fin)</Label>
+                        <Input type="time" value={conventionParentaleData.heureFin} onChange={(e) => setConventionParentaleData({...conventionParentaleData, heureFin: e.target.value})} />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Lieu d'échange</Label>
+                        <Input value={conventionParentaleData.lieuEchange} onChange={(e) => setConventionParentaleData({...conventionParentaleData, lieuEchange: e.target.value})} placeholder="Adresse du lieu d'échange" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6️⃣ VACANCES SCOLAIRES */}
+                  <div className="space-y-4 p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Vacances scolaires</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Vacances de Noël</Label>
+                        <Input value={conventionParentaleData.vacancesNoel} onChange={(e) => setConventionParentaleData({...conventionParentaleData, vacancesNoel: e.target.value})} placeholder="Ex: Alternance 1 an / 2" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Vacances d'hiver</Label>
+                        <Input value={conventionParentaleData.vacancesHiver} onChange={(e) => setConventionParentaleData({...conventionParentaleData, vacancesHiver: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Vacances de printemps</Label>
+                        <Input value={conventionParentaleData.vacancesPrintemps} onChange={(e) => setConventionParentaleData({...conventionParentaleData, vacancesPrintemps: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Été (Juillet)</Label>
+                        <Input value={conventionParentaleData.vacancesEteJuillet} onChange={(e) => setConventionParentaleData({...conventionParentaleData, vacancesEteJuillet: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Été (Août)</Label>
+                        <Input value={conventionParentaleData.vacancesEteAout} onChange={(e) => setConventionParentaleData({...conventionParentaleData, vacancesEteAout: e.target.value})} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7️⃣ PENSION ALIMENTAIRE */}
+                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Pension alimentaire</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Montant mensuel (€)</Label>
+                        <Input type="number" value={conventionParentaleData.montantPension} onChange={(e) => setConventionParentaleData({...conventionParentaleData, montantPension: e.target.value})} placeholder="Ex: 300" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Jour de paiement</Label>
+                        <Input type="number" min="1" max="31" value={conventionParentaleData.jourPaiement} onChange={(e) => setConventionParentaleData({...conventionParentaleData, jourPaiement: e.target.value})} placeholder="Ex: 5" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Indexation annuelle</Label>
+                        <Select value={conventionParentaleData.indexationAnnuelle} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, indexationAnnuelle: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (sur indice INSEE)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Répartition frais extraordinaires</Label>
+                        <Input value={conventionParentaleData.repartitionFrais} onChange={(e) => setConventionParentaleData({...conventionParentaleData, repartitionFrais: e.target.value})} placeholder="Ex: 50/50" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8️⃣ à 1️⃣7️⃣ - Sections compactes */}
+                  <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">Sections complémentaires</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>8️⃣ Frais extraordinaires - Répartition</Label>
+                        <Input value={conventionParentaleData.repartitionFraisExtra} onChange={(e) => setConventionParentaleData({...conventionParentaleData, repartitionFraisExtra: e.target.value})} placeholder="Ex: 50/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>9️⃣ Santé - Coordonnées pédiatre</Label>
+                        <Input value={conventionParentaleData.coordonneesPediatre} onChange={(e) => setConventionParentaleData({...conventionParentaleData, coordonneesPediatre: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>�� Communication - Mode</Label>
+                        <Select value={conventionParentaleData.modeCommunication} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, modeCommunication: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="email">Email</SelectItem>
+                            <SelectItem value="sms">SMS</SelectItem>
+                            <SelectItem value="application">Application dédiée</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>1️⃣1️⃣ Transports - Lieu d'échange</Label>
+                        <Input value={conventionParentaleData.lieuEchangeTransport} onChange={(e) => setConventionParentaleData({...conventionParentaleData, lieuEchangeTransport: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>1️⃣6️⃣ Homologation JAF</Label>
+                        <Select value={conventionParentaleData.souhaitHomologation} onValueChange={(value) => setConventionParentaleData({...conventionParentaleData, souhaitHomologation: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Tribunal compétent</Label>
+                        <Input value={conventionParentaleData.tribunalCompetent} onChange={(e) => setConventionParentaleData({...conventionParentaleData, tribunalCompetent: e.target.value})} placeholder="Ex: TJ de Paris" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣7️⃣ SIGNATURE */}
+                  <div className="space-y-4 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣7️⃣ Date et lieu de signature</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Lieu de signature</Label>
+                        <Input value={conventionParentaleData.lieuSignature} onChange={(e) => setConventionParentaleData({...conventionParentaleData, lieuSignature: e.target.value})} placeholder="Ex: Paris" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de signature</Label>
+                        <Input type="date" value={conventionParentaleData.dateSignature} onChange={(e) => setConventionParentaleData({...conventionParentaleData, dateSignature: e.target.value})} />
+                      </div>
+                    </div>
                   </div>
 
                 </div>
@@ -26463,10 +26682,239 @@ FIN DE LA CONVENTION
                     </div>
                   </div>
 
-                  {/* Sections 4️⃣ à 1️⃣4️⃣ - Version concise pour économiser l'espace */}
-                  <div className="text-center text-sm text-muted-foreground mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
-                    <p className="font-medium mb-2">✅ Formulaire Reconnaissance de dettes fonctionnel</p>
-                    <p className="text-xs">Sections 4 à 14 disponibles : Origine dette, Remise fonds, Modalités remboursement, Intérêts, Garanties, Conséquences, Loi applicable...</p>
+                  {/* 4️⃣ ORIGINE DE LA DETTE */}
+                  <div className="space-y-4 p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">4️⃣ Origine de la dette</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Origine de la dette *</Label>
+                        <Select value={reconnaissanceDetteData.origineDette} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, origineDette: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pret">Prêt d'argent</SelectItem>
+                            <SelectItem value="vente">Vente à crédit</SelectItem>
+                            <SelectItem value="service">Prestation de service impayée</SelectItem>
+                            <SelectItem value="travaux">Travaux effectués</SelectItem>
+                            <SelectItem value="loyers">Loyers impayés</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Description détaillée de l'origine</Label>
+                        <Textarea value={reconnaissanceDetteData.descriptionOrigine} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, descriptionOrigine: e.target.value})} rows={4} placeholder="Décrivez les circonstances de la naissance de la dette..." />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5️⃣ DATE ET MODALITÉS DE REMISE DES FONDS */}
+                  <div className="space-y-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">5️⃣ Date et modalités de remise des fonds</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Date de remise des fonds *</Label>
+                        <Input type="date" value={reconnaissanceDetteData.dateRemiseFonds} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, dateRemiseFonds: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Moyen de remise</Label>
+                        <Select value={reconnaissanceDetteData.moyenRemise} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, moyenRemise: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="virement">Virement bancaire</SelectItem>
+                            <SelectItem value="cheque">Chèque</SelectItem>
+                            <SelectItem value="especes">Espèces</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6️⃣ MODALITÉS DE REMBOURSEMENT */}
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">6️⃣ Modalités de remboursement</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type de remboursement</Label>
+                        <Select value={reconnaissanceDetteData.typeRemboursement} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, typeRemboursement: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="uneFois">En une seule fois</SelectItem>
+                            <SelectItem value="echelonne">Échelonné (mensualités)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {reconnaissanceDetteData.typeRemboursement === "uneFois" && (
+                        <div className="space-y-2">
+                          <Label>Date limite de remboursement</Label>
+                          <Input type="date" value={reconnaissanceDetteData.dateLimite} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, dateLimite: e.target.value})} />
+                        </div>
+                      )}
+                      {reconnaissanceDetteData.typeRemboursement === "echelonne" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Nombre d'échéances</Label>
+                            <Input type="number" value={reconnaissanceDetteData.nombreEcheances} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, nombreEcheances: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Montant de chaque échéance (€)</Label>
+                            <Input type="number" value={reconnaissanceDetteData.montantEcheance} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, montantEcheance: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Jour de prélèvement</Label>
+                            <Input type="number" min="1" max="31" value={reconnaissanceDetteData.jourPrelevement} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, jourPrelevement: e.target.value})} placeholder="Ex: 5" />
+                          </div>
+                        </>
+                      )}
+                      <div className="space-y-2">
+                        <Label>Remboursement anticipé autorisé</Label>
+                        <Select value={reconnaissanceDetteData.remboursementAnticipe} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, remboursementAnticipe: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, sans pénalité</SelectItem>
+                            <SelectItem value="ouiPenalite">Oui, avec pénalité</SelectItem>
+                            <SelectItem value="non">Non autorisé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7️⃣ INTÉRÊTS */}
+                  <div className="space-y-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">7️⃣ Intérêts</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Taux d'intérêt (%)</Label>
+                        <Input type="number" step="0.01" value={reconnaissanceDetteData.tauxInteret} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, tauxInteret: e.target.value})} placeholder="Ex: 3.5" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Type de taux</Label>
+                        <Select value={reconnaissanceDetteData.typeTaux} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, typeTaux: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="fixe">Fixe</SelectItem>
+                            <SelectItem value="variable">Variable</SelectItem>
+                            <SelectItem value="legal">Taux légal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Point de départ des intérêts</Label>
+                        <Input type="date" value={reconnaissanceDetteData.pointDepartInterets} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, pointDepartInterets: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Capitalisation des intérêts</Label>
+                        <Select value={reconnaissanceDetteData.capitalisationInterets} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, capitalisationInterets: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="non">Non capitalisés</SelectItem>
+                            <SelectItem value="annuelle">Capitalisation annuelle</SelectItem>
+                            <SelectItem value="mensuelle">Capitalisation mensuelle</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8️⃣ GARANTIES */}
+                  <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">8️⃣ Garanties</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Caution solidaire</Label>
+                        <Select value={reconnaissanceDetteData.cautionSolidaire} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, cautionSolidaire: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {reconnaissanceDetteData.cautionSolidaire === "oui" && (
+                        <div className="space-y-2">
+                          <Label>Identité de la caution</Label>
+                          <Input value={reconnaissanceDetteData.identiteCaution} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, identiteCaution: e.target.value})} placeholder="Nom, prénom, adresse..." />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label>Nantissement / Hypothèque</Label>
+                        <Textarea value={reconnaissanceDetteData.descriptionGaranties} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, descriptionGaranties: e.target.value})} rows={3} placeholder="Description des garanties réelles..." />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 9️⃣ CONSÉQUENCES DU NON-PAIEMENT */}
+                  <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">9️⃣ Conséquences du non-paiement</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>Exigibilité immédiate en cas de défaut</Label>
+                        <Select value={reconnaissanceDetteData.exigibiliteImmediate} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, exigibiliteImmediate: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui (déchéance du terme)</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Intérêts de retard (% supplémentaires)</Label>
+                        <Input type="number" step="0.01" value={reconnaissanceDetteData.interetsRetard} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, interetsRetard: e.target.value})} placeholder="Ex: 5" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Clause pénale (montant forfaitaire €)</Label>
+                        <Input type="number" value={reconnaissanceDetteData.clausePenale} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, clausePenale: e.target.value})} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* �� à 1️⃣3️⃣ CLAUSES LÉGALES */}
+                  <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">Clauses légales et formalités</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>�� Reconnaissance expresse</Label>
+                        <p className="text-sm text-muted-foreground">Le débiteur reconnaît expressément devoir la somme susmentionnée au créancier.</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>1️⃣1️⃣ Renonciation à toute contestation</Label>
+                        <Select value={reconnaissanceDetteData.renonciationContestation} onValueChange={(value) => setReconnaissanceDetteData({...reconnaissanceDetteData, renonciationContestation: value})}>
+                          <SelectTrigger><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="oui">Oui, le débiteur renonce à toute contestation</SelectItem>
+                            <SelectItem value="non">Non</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>1️⃣2️⃣ Clause d'élection de domicile</Label>
+                        <Input value={reconnaissanceDetteData.domicileElu} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, domicileElu: e.target.value})} placeholder="Adresse du domicile élu..." />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>1️⃣3️⃣ Loi applicable</Label>
+                        <Input value={reconnaissanceDetteData.loiApplicable} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, loiApplicable: e.target.value})} placeholder="Droit français" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Tribunal compétent</Label>
+                        <Input value={reconnaissanceDetteData.tribunalCompetent} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, tribunalCompetent: e.target.value})} placeholder="Ex: Tribunal de Paris" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1️⃣4️⃣ SIGNATURE */}
+                  <div className="space-y-4 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
+                    <h3 className="font-semibold text-lg border-b pb-2">1️⃣4️⃣ Date et lieu de signature</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Lieu de signature</Label>
+                        <Input value={reconnaissanceDetteData.lieuSignature} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, lieuSignature: e.target.value})} placeholder="Ex: Paris" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Date de signature</Label>
+                        <Input type="date" value={reconnaissanceDetteData.dateSignature} onChange={(e) => setReconnaissanceDetteData({...reconnaissanceDetteData, dateSignature: e.target.value})} />
+                      </div>
+                    </div>
                   </div>
 
                 </div>
