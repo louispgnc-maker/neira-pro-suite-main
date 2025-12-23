@@ -122,6 +122,7 @@ export default function CheckoutCabinetPlus() {
   };
 
   return (
+    <TooltipProvider>
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white" style={{ 
       backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)', 
       backgroundSize: 'cover', 
@@ -322,18 +323,16 @@ export default function CheckoutCabinetPlus() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <h4 className="font-semibold text-orange-900 text-sm">Signatures illimitées par utilisateur</h4>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Info className="w-4 h-4 text-orange-600 cursor-help" />
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-xs">
-                                  <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                                  <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                                  <p className="text-xs mt-1 text-orange-300">✨ Aucune limite mensuelle</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="w-4 h-4 text-orange-600 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs">
+                                <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
+                                <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
+                                <p className="text-xs mt-1 text-orange-300">✨ Aucune limite mensuelle</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
                           <p className="text-xs text-orange-700">1 signature = 1 enveloppe (signataires illimités) • Aucun pack nécessaire • Aucune limite mensuelle</p>
                         </div>
@@ -484,5 +483,6 @@ export default function CheckoutCabinetPlus() {
         </div>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

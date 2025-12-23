@@ -62,6 +62,7 @@ export default function Solution() {
   ];
 
   return (
+    <TooltipProvider>
     <div 
       className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background"
       style={{
@@ -125,18 +126,16 @@ export default function Solution() {
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <div className="flex items-center gap-1.5">
                       <span className="text-sm text-gray-700">15 signatures / mois / utilisateur</span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                            <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                            <p className="text-xs mt-1">Quota personnel non mutualisé</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
+                          <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
+                          <p className="text-xs mt-1">Quota personnel non mutualisé</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
@@ -208,19 +207,17 @@ export default function Solution() {
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <div className="flex items-center gap-1.5">
                       <span className="text-sm text-gray-700">80 signatures / mois / utilisateur</span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                            <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                            <p className="text-xs mt-1">Quota personnel non mutualisé</p>
-                            <p className="text-xs mt-1 text-purple-300">💡 Packs optionnels disponibles</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
+                          <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
+                          <p className="text-xs mt-1">Quota personnel non mutualisé</p>
+                          <p className="text-xs mt-1 text-purple-300">💡 Packs optionnels disponibles</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
@@ -278,18 +275,16 @@ export default function Solution() {
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <div className="flex items-center gap-1.5">
                       <span className="text-sm text-gray-700">Signatures illimitées / utilisateur</span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                            <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                            <p className="text-xs mt-1 text-orange-300">✨ Aucune limite mensuelle</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
+                          <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
+                          <p className="text-xs mt-1 text-orange-300">✨ Aucune limite mensuelle</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
@@ -319,5 +314,6 @@ export default function Solution() {
         </div>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

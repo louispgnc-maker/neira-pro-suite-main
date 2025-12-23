@@ -56,6 +56,7 @@ export default function CheckoutEssentiel() {
   };
 
   return (
+    <TooltipProvider>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white" style={{ 
       backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)', 
       backgroundSize: 'cover', 
@@ -178,18 +179,16 @@ export default function CheckoutEssentiel() {
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <Label className="text-gray-900">📋 Signatures incluses : 15/mois</Label>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="w-4 h-4 text-gray-400 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs">
-                              <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                              <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                              <p className="text-xs mt-1">Quota personnel non mutualisé</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
+                            <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
+                            <p className="text-xs mt-1">Quota personnel non mutualisé</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                       <div className="text-xs text-gray-600 mb-2">1 signature = 1 enveloppe (signataires illimités)</div>
                       <div className="space-y-2">
@@ -411,5 +410,6 @@ export default function CheckoutEssentiel() {
         </div>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
