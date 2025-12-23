@@ -517,6 +517,369 @@ Structure:
 - Article 10: Exécution de bonne foi
 - Article 11: Attribution de compétence (tribunal judiciaire)
 - Signatures + mention "Lu et approuvé, bon pour transaction"`,
+
+    // ========== NOTAIRES - FAMILLE / SUCCESSIONS ==========
+    
+    "Contrat de mariage": `${basePrompt}
+
+Tu dois rédiger un CONTRAT DE MARIAGE établi par acte notarié incluant:
+- Comparution des futurs époux avec état civil complet
+- Article 1: Choix du régime matrimonial (séparation de biens, communauté universelle, participation aux acquêts, etc.)
+- Article 2: Apports de chaque époux (biens propres, valeur)
+- Article 3: Clauses particulières (clause d'attribution, avantages matrimoniaux)
+- Article 4: Gestion des biens (pouvoirs, biens professionnels)
+- Article 5: Dettes (responsabilité de chaque époux)
+- Article 6: Dissolution du régime (liquidation, partage)
+- Article 7: Dispositions fiscales
+- Certifications notariales et signatures`,
+
+    "PACS (Pacte civil de solidarité)": `${basePrompt}
+
+Tu dois rédiger une CONVENTION DE PACS conforme aux articles 515-1 et suivants du Code civil incluant:
+- Préambule: Identité complète des partenaires
+- Article 1: Déclaration de PACS (aide mutuelle, assistance matérielle)
+- Article 2: Régime des biens (séparation de biens ou indivision)
+- Article 3: Résidence commune
+- Article 4: Contribution aux charges (proportionnelle aux facultés)
+- Article 5: Solidarité des dettes ménagères
+- Article 6: Biens indivis (si applicable, parts, gestion)
+- Article 7: Modification de la convention
+- Article 8: Dissolution du PACS
+- Date, signatures
+- Mention dépôt au greffe du tribunal`,
+
+    "Donation entre époux (donation au dernier vivant)": `${basePrompt}
+
+Tu dois rédiger une DONATION ENTRE ÉPOUX (donation au dernier vivant) conforme aux articles 1093 et suivants du Code civil.
+
+Structure:
+- Préambule: Identification des époux, date et lieu mariage
+- Article 1: Objet de la donation (quotité disponible)
+- Article 2: Options du conjoint survivant (usufruit universel, 1/4 pleine propriété + 3/4 usufruit, quotité disponible en pleine propriété)
+- Article 3: Révocabilité (donation révocable à tout moment)
+- Article 4: Acceptation du donataire
+- Article 5: Effet de la donation (au décès du donateur)
+- Article 6: Clause de réversion (si les deux époux se donnent mutuellement)
+- Signatures
+- Certification notariale (forme authentique obligatoire)`,
+
+    "Donation simple": `${basePrompt}
+
+Tu dois rédiger une DONATION SIMPLE (donation entre vifs) conforme aux articles 931 et suivants du Code civil.
+
+Structure:
+- Préambule: Identification donateur et donataire
+- Article 1: Objet de la donation (bien(s) donné(s) avec description précise)
+- Article 2: Acceptation du donataire
+- Article 3: Dessaisissement immédiat et irrévocable
+- Article 4: Charges éventuelles (obligations du donataire)
+- Article 5: Réserve d'usufruit (si applicable)
+- Article 6: Droit de retour conventionnel (si applicable)
+- Article 7: Rapport à succession (donation rapportable ou hors part)
+- Article 8: Clause d'inaliénabilité (si applicable, motif légitime)
+- Article 9: Garanties et origine de propriété
+- Article 10: Frais et droits d'enregistrement
+- Certification notariale et signatures`,
+
+    "Testament authentique": `${basePrompt}
+
+Tu dois rédiger un TESTAMENT AUTHENTIQUE reçu par notaire conforme à l'article 971 du Code civil.
+
+Structure notariale:
+- Préambule: Notaire, testateur avec état civil complet
+- Déclaration du testateur quant à sa volonté
+- Article 1: Révocation testaments antérieurs
+- Article 2: Legs universels (désignation légataire(s), parts)
+- Article 3: Legs à titre universel (quote-part de la succession)
+- Article 4: Legs particuliers (biens spécifiques)
+- Article 5: Clause de substitution (si applicable)
+- Article 6: Exécuteur testamentaire (désignation, pouvoirs, rémunération)
+- Article 7: Conditions et charges
+- Article 8: Clause résolutoire
+- Lecture par le notaire, déclaration du testateur
+- Signatures (testateur, notaire, témoins si requis)
+- Mention de conservation au fichier central`,
+
+    "Déclaration de succession": `${basePrompt}
+
+Tu dois rédiger une DÉCLARATION DE SUCCESSION (acte de notoriété + déclaration fiscale) conforme au Code civil et au Code général des impôts.
+
+Structure:
+- ACTE DE NOTORIÉTÉ (article 730 Code civil):
+  * Décès (date, lieu, dernier domicile)
+  * Situation familiale du défunt
+  * Héritiers ou légataires (état civil, vocation successorale, parts)
+  * Existence ou absence de testament
+  * Existence d'une donation entre époux
+  * Option des héritiers (acceptation pure et simple / à concurrence actif net)
+
+- DÉCLARATION FISCALE (formulaire 2705):
+  * Actif successoral détaillé (immobilier, mobilier, comptes, etc.)
+  * Passif déductible (dettes, frais funéraires)
+  * Actif net taxable
+  * Abattements et réductions
+  * Calcul des droits de succession
+  
+- Attestation immobilière (si biens immobiliers)
+- Signatures héritiers et notaire`,
+
+    "Acte de notoriété": `${basePrompt}
+
+Tu dois rédiger un ACTE DE NOTORIÉTÉ conforme à l'article 730 du Code civil établissant la dévolution successorale.
+
+Structure:
+- Préambule: Notaire instrumentant
+- Article 1: Décès (identité défunt, date, lieu, domicile)
+- Article 2: Situation matrimoniale (célibataire, marié, veuf, divorcé)
+- Article 3: Régime matrimonial (si marié)
+- Article 4: Enfants et descendants
+- Article 5: Testament (existence, date, dépositaire)
+- Article 6: Donation entre époux (le cas échéant)
+- Article 7: Qualité et vocation des héritiers
+- Article 8: Parts héréditaires de chacun
+- Article 9: Renonciation éventuelle
+- Article 10: Option des héritiers (acceptation pure et simple)
+- Déclarations des comparants
+- Certification notariale
+- Signatures`,
+
+    "Partage successoral": `${basePrompt}
+
+Tu dois rédiger un ACTE DE PARTAGE SUCCESSORAL conforme aux articles 815 et suivants du Code civil.
+
+Structure notariale:
+- Préambule: Décès, héritiers comparants
+- Article 1: Rappel dévolution (acte de notoriété)
+- Article 2: Actif successoral (inventaire détaillé)
+- Article 3: Passif (dettes, charges, frais)
+- Article 4: Masse à partager (actif net)
+- Article 5: Rapport des donations (si applicable)
+- Article 6: Formation des lots (description de chaque lot, valeur)
+- Article 7: Attribution des lots (tirage au sort ou accord)
+- Article 8: Soultes éventuelles (montant, modalités paiement)
+- Article 9: Garantie des lots
+- Article 10: Publicité foncière (si biens immobiliers)
+- Article 11: Frais d'acte
+- Signatures héritiers et certification notariale`,
+
+    "Changement de régime matrimonial": `${basePrompt}
+
+Tu dois rédiger un acte de CHANGEMENT DE RÉGIME MATRIMONIAL conforme à l'article 1397 du Code civil.
+
+Structure:
+- Préambule: Époux, mariage initial, régime actuel
+- Article 1: Motif du changement (intérêt familial, adaptation situation)
+- Article 2: Nouveau régime choisi (description complète)
+- Article 3: Liquidation du régime antérieur
+- Article 4: Effet du changement (opposabilité date acte)
+- Article 5: Information des enfants majeurs (preuve)
+- Article 6: Information des créanciers (publication, opposition)
+- Article 7: Homologation judiciaire (si nécessaire)
+- Déclarations des époux
+- Certification notariale
+- Signatures
+
+Note: Opposable aux tiers 3 mois après mention en marge acte mariage`,
+
+    // ========== NOTAIRES - IMMOBILIER ==========
+
+    "Promesse unilatérale de vente": `${basePrompt}
+
+Tu dois rédiger une PROMESSE UNILATÉRALE DE VENTE immobilière incluant:
+- Préambule: Promettant (vendeur) et bénéficiaire (acquéreur potentiel)
+- Article 1: Engagement unilatéral de vendre
+- Article 2: Désignation du bien (cadastre, surface, adresse)
+- Article 3: Prix de vente
+- Article 4: Durée de l'option (délai levée option)
+- Article 5: Indemnité d'immobilisation (montant, sort en cas levée/non levée)
+- Article 6: Conditions suspensives (prêt, permis, etc.)
+- Article 7: Conditions de levée de l'option
+- Article 8: Sanction (si vente à un tiers pendant durée option)
+- Article 9: Frais
+- Signatures
+- Enregistrement obligatoire`,
+
+    "Bail emphytéotique": `${basePrompt}
+
+Tu dois rédiger un BAIL EMPHYTÉOTIQUE conforme aux articles L451-1 et suivants du Code rural.
+
+Structure:
+- Préambule: Bailleur et preneur (emphytéote)
+- Article 1: Objet (droit réel immobilier de longue durée)
+- Article 2: Désignation du bien
+- Article 3: Durée (minimum 18 ans, maximum 99 ans)
+- Article 4: Redevance emphytéotique (montant, révision)
+- Article 5: Droits du preneur (amélioration, construction, hypothèque)
+- Article 6: Obligations du preneur (entretien, assurances, impôts)
+- Article 7: Travaux et améliorations (propriété au terme)
+- Article 8: Cession et sous-location
+- Article 9: Fin du bail (renouvellement, sort des constructions)
+- Article 10: Résiliation anticipée
+- Acte notarié obligatoire, publicité foncière`,
+
+    "Convention d'indivision": `${basePrompt}
+
+Tu dois rédiger une CONVENTION D'INDIVISION conforme aux articles 1873-1 et suivants du Code civil.
+
+Structure:
+- Préambule: Indivisaires et origine de l'indivision
+- Article 1: Objet de l'indivision (biens concernés, quotes-parts)
+- Article 2: Durée de l'indivision (maximum 5 ans, renouvelable)
+- Article 3: Gérant de l'indivision (désignation, pouvoirs)
+- Article 4: Règles de gestion (unanimité, majorité 2/3)
+- Article 5: Jouissance des biens (répartition, indemnités d'occupation)
+- Article 6: Contribution aux charges (proportion des droits)
+- Article 7: Travaux et améliorations
+- Article 8: Cession de parts (droit de préemption des coindivisaires)
+- Article 9: Partage provisionnel
+- Article 10: Sortie de l'indivision
+- Article 11: Liquidation
+- Signatures, publicité si bien immobilier`,
+
+    "Mainlevée d'hypothèque": `${basePrompt}
+
+Tu dois rédiger une MAINLEVÉE D'HYPOTHÈQUE conforme à l'article 2440 du Code civil.
+
+Structure:
+- Préambule: Créancier hypothécaire et débiteur
+- Article 1: Rappel de l'inscription hypothécaire (date, volume, numéro, bureau des hypothèques)
+- Article 2: Extinction de la créance (remboursement total, date)
+- Article 3: Mainlevée totale de l'hypothèque
+- Article 4: Radiation de l'inscription
+- Article 5: Quittance et décharge
+- Article 6: Frais de radiation
+- Signature du créancier (ou représentant)
+- Notification au conservateur des hypothèques`,
+
+    // ========== NOTAIRES - DIVERS ==========
+
+    "Procuration notariée": `${basePrompt}
+
+Tu dois rédiger une PROCURATION NOTARIÉE (mandat) incluant:
+- Préambule: Mandant et mandataire (état civil complet)
+- Article 1: Objet du mandat (actes précisément visés)
+- Article 2: Étendue des pouvoirs (limitation ou généralité)
+- Article 3: Actes autorisés (vente, achat, gestion, représentation administrative, etc.)
+- Article 4: Interdictions ou restrictions
+- Article 5: Durée du mandat
+- Article 6: Révocabilité
+- Article 7: Obligation de reddition de comptes
+- Article 8: Rémunération du mandataire (si applicable)
+- Acceptation du mandataire
+- Certification notariale
+- Signatures`,
+
+    "Quitus de dette": `${basePrompt}
+
+Tu dois rédiger un QUITUS DE DETTE (reconnaissance de paiement et décharge).
+
+Structure:
+- Titre: "QUITUS DE DETTE"
+- Préambule: Créancier et débiteur
+- Article 1: Rappel de la dette (origine, montant initial, titre)
+- Article 2: Reconnaissance du paiement intégral (date, modalités)
+- Article 3: Quittance définitive et libératoire
+- Article 4: Décharge totale et irrévocable
+- Article 5: Renonciation à toute action en paiement
+- Article 6: Annulation du titre de créance (si applicable)
+- Date et lieu
+- Signature du créancier`,
+
+    "Cession de parts sociales": `${basePrompt}
+
+Tu dois rédiger un ACTE DE CESSION DE PARTS SOCIALES (SARL/SCI) conforme aux articles L223-14 et suivants du Code de commerce.
+
+Structure:
+- Préambule: Cédant et cessionnaire (avec qualité d'associé)
+- Article 1: Désignation de la société (dénomination, siège, RCS, capital)
+- Article 2: Parts cédées (nombre, numérotation)
+- Article 3: Prix de cession (montant, modalités de paiement)
+- Article 4: Agrément de la société (si requis, preuve)
+- Article 5: Garanties du cédant (propriété, absence de charges)
+- Article 6: Transfert de propriété (date effet)
+- Article 7: Jouissance (dividendes, droits de vote)
+- Article 8: Formalités (modification des statuts, registre)
+- Article 9: Frais et droits d'enregistrement
+- Signatures
+- Enregistrement obligatoire (droit fixe 5% ou 3%)`,
+
+    "Attestation notariée": `${basePrompt}
+
+Tu dois rédiger une ATTESTATION NOTARIÉE (certification de faits ou situations).
+
+Structure:
+- Titre: "ATTESTATION"
+- Préambule: Notaire instrumentant
+- Article 1: Objet de l'attestation (fait à certifier)
+- Article 2: Déclaration du comparant (identité, qualité)
+- Article 3: Éléments de preuve produits
+- Article 4: Certification du notaire (vu et vérifié)
+- Article 5: Portée de l'attestation
+- Article 6: Destination (utilisation prévue)
+- Date et lieu
+- Signature du déclarant
+- Certification et sceau du notaire
+
+Exemples: attestation de propriété, attestation d'héritier, attestation de vie commune, etc.`,
+
+    "Pacte de concubinage": `${basePrompt}
+
+Tu dois rédiger un PACTE DE CONCUBINAGE (convention de vie commune hors mariage/PACS).
+
+Structure:
+- Préambule: Identification des concubins
+- Article 1: Déclaration de vie commune stable et continue
+- Article 2: Résidence commune (adresse, statut bien)
+- Article 3: Contribution aux charges (répartition, montant)
+- Article 4: Régime des biens (séparation, liste biens propres de chacun)
+- Article 5: Biens acquis en commun (indivision, quotes-parts)
+- Article 6: Solidarité des dettes (limitation)
+- Article 7: Épargne et comptes bancaires
+- Article 8: Modification de la convention
+- Article 9: Rupture (préavis, liquidation des biens communs)
+- Date et signatures
+- Possibilité d'enregistrement pour date certaine`,
+
+    "Mise en demeure": `${basePrompt}
+
+Tu dois rédiger une MISE EN DEMEURE conforme à l'article 1344 du Code civil.
+
+Structure:
+- Expéditeur (créancier/demandeur)
+- Destinataire (débiteur/défaillant)
+- Objet: MISE EN DEMEURE
+- Article 1: Rappel de l'obligation (contrat, date, objet)
+- Article 2: Constatation du manquement (nature, date)
+- Article 3: Sommation d'exécuter (délai précis, généralement 8 jours)
+- Article 4: Modalités d'exécution attendues
+- Article 5: Réserve de tous droits
+- Article 6: Avertissement des conséquences (résiliation, dommages-intérêts, action judiciaire)
+- Article 7: Frais et intérêts de retard
+- Fait à [lieu], le [date]
+- Signature
+
+Envoi recommandé AR obligatoire`,
+
+    "Contrat d'agence commerciale": `${basePrompt}
+
+Tu dois rédiger un CONTRAT D'AGENT COMMERCIAL conforme aux articles L134-1 et suivants du Code de commerce.
+
+Structure:
+- Préambule: Mandant (entreprise) et agent commercial
+- Article 1: Objet du contrat (mandat de négociation et/ou conclusion)
+- Article 2: Produits ou services concernés
+- Article 3: Zone géographique (exclusivité ou non)
+- Article 4: Durée du contrat (déterminée ou indéterminée)
+- Article 5: Obligations de l'agent (prospection, compte-rendu, objectifs)
+- Article 6: Obligations du mandant (fourniture documentation, formation, assistance)
+- Article 7: Rémunération (commission, taux, modalités calcul et paiement)
+- Article 8: Exclusivité (agent et/ou secteur)
+- Article 9: Clientèle (propriété, indemnisation fin de contrat)
+- Article 10: Clause de non-concurrence (durée, périmètre, contrepartie)
+- Article 11: Résiliation (préavis, indemnité compensatrice)
+- Article 12: Inscription au registre des agents commerciaux
+- Signatures`,
+
   };
 
   return contractPrompts[contractType] || basePrompt;
