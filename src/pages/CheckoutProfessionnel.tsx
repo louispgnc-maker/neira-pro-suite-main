@@ -25,7 +25,6 @@ export default function CheckoutProfessionnel() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [userCount, setUserCount] = useState(2);
   const [minMembers, setMinMembers] = useState(2);
-  const [signaturePack, setSignaturePack] = useState<'none' | '40' | '100'>('none');
   
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
 
@@ -95,12 +94,8 @@ export default function CheckoutProfessionnel() {
 
   const monthlyPrice = 59;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
-  
-  const signaturePackPrices = { 'none': 0, '40': 15, '100': 29 };
-  const packPrice = signaturePackPrices[signaturePack];
-  
   const basePrice = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
-  const price = (basePrice * userCount) + (billingPeriod === 'monthly' ? packPrice * userCount : packPrice * userCount * 12);
+  const price = basePrice * userCount;
   const tva = Math.round(price * 0.2 * 100) / 100;
   const total = Math.round((price + tva) * 100) / 100;
 
@@ -262,71 +257,6 @@ export default function CheckoutProfessionnel() {
                       </p>
                     </div>
 
-                    {/* Pack de signatures */}
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-gray-900">📋 Signatures incluses : 80/mois/utilisateur</Label>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="w-4 h-4 text-gray-400 cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                            <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                            <p className="text-xs mt-1">Quota personnel non mutualisé</p>
-                            <p className="text-xs mt-1 text-purple-300">📦 Packs optionnels disponibles</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <div className="text-xs text-gray-600 mb-2">1 signature = 1 enveloppe (signataires illimités)</div>
-                      <div className="space-y-2">
-                        <button
-                          type="button"
-                          onClick={() => setSignaturePack('none')}
-                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                            signaturePack === 'none'
-                              ? 'border-purple-600 bg-purple-50'
-                              : 'border-gray-200 bg-white hover:border-purple-300'
-                          }`}
-                        >
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium">80 signatures/utilisateur (incluses)</span>
-                            {signaturePack === 'none' && <CheckCircle2 className="w-5 h-5 text-purple-600" />}
-                          </div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSignaturePack('40')}
-                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                            signaturePack === '40'
-                              ? 'border-purple-600 bg-purple-50'
-                              : 'border-gray-200 bg-white hover:border-purple-300'
-                          }`}
-                        >
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium">120 signatures/utilisateur (80 + pack +40)</span>
-                            <span className="text-sm font-semibold text-purple-600">+15€/mois/utilisateur</span>
-                          </div>
-                          {signaturePack === '40' && <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1" />}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSignaturePack('100')}
-                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                            signaturePack === '100'
-                              ? 'border-purple-600 bg-purple-50'
-                              : 'border-gray-200 bg-white hover:border-purple-300'
-                          }`}
-                        >
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium">180 signatures/utilisateur (80 + pack +100) ⭐</span>
-                            <span className="text-sm font-semibold text-purple-600">+29€/mois/utilisateur</span>
-                          </div>
-                          {signaturePack === '100' && <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1" />}
-                        </button>
-                      </div>
-                    </div>
-
                     {/* Période de facturation */}
                     <div className="space-y-3">
                       <Label className="text-gray-900">Période de facturation</Label>
@@ -454,12 +384,6 @@ export default function CheckoutProfessionnel() {
                         <span>Abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
                         <span>{basePrice}€ × {userCount}</span>
                       </div>
-                      {signaturePack !== 'none' && (
-                        <div className="flex justify-between text-sm text-gray-900">
-                          <span>Pack +{signaturePack} signatures</span>
-                          <span>{billingPeriod === 'monthly' ? packPrice : packPrice * 12}€ × {userCount}</span>
-                        </div>
-                      )}
                       <div className="flex justify-between text-sm text-gray-900">
                         <span>Sous-total</span>
                         <span>{price}€</span>
