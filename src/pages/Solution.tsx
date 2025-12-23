@@ -135,6 +135,19 @@ export default function Solution() {
                             <p className="text-xs font-bold text-blue-900">1 signature = 1 enveloppe</p>
                             <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
                             <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
+                            <div className="pt-2 border-t border-blue-200 mt-2">
+                              <p className="text-xs font-semibold text-blue-800 mb-1.5">📦 Packs optionnels :</p>
+                              <div className="space-y-1">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-gray-600">+10 signatures</span>
+                                  <span className="text-xs font-semibold text-blue-700">+7€/mois</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-gray-600">+25 signatures</span>
+                                  <span className="text-xs font-semibold text-blue-700">+15€/mois</span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </TooltipContent>
                       </Tooltip>
@@ -218,8 +231,18 @@ export default function Solution() {
                             <p className="text-xs font-bold text-purple-900">1 signature = 1 enveloppe</p>
                             <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
                             <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
-                            <div className="pt-1.5 border-t border-purple-200">
-                              <p className="text-xs text-purple-700 font-medium">📦 Packs optionnels disponibles</p>
+                            <div className="pt-2 border-t border-purple-200 mt-2">
+                              <p className="text-xs font-semibold text-purple-800 mb-1.5">📦 Packs optionnels :</p>
+                              <div className="space-y-1">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-gray-600">+40 signatures</span>
+                                  <span className="text-xs font-semibold text-purple-700">+15€/mois/utilisateur</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-gray-600">+100 signatures ⭐</span>
+                                  <span className="text-xs font-semibold text-purple-700">+29€/mois/utilisateur</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </TooltipContent>
