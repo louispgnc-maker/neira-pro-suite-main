@@ -18,6 +18,8 @@ export default function CheckoutCabinetPlus() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [userCount, setUserCount] = useState(1);
   const [minMembers, setMinMembers] = useState(1);
+  const [customUserCount, setCustomUserCount] = useState('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   console.log('CheckoutCabinetPlus component mounted, user:', user);
 
@@ -226,29 +228,76 @@ export default function CheckoutCabinetPlus() {
                     {/* Sélecteur nombre d'utilisateurs */}
                     <div className="space-y-3">
                       <Label className="text-gray-900">Nombre d'utilisateurs</Label>
-                      <Select value={userCount.toString()} onValueChange={(value) => setUserCount(parseInt(value))}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
-                            <SelectItem key={num} value={num.toString()} disabled={num < minMembers}>
-                              {num} utilisateur{num > 1 ? 's' : ''}
-                              {num < minMembers && ' (minimum requis: ' + minMembers + ')'}
-                            </SelectItem>
-                          ))}
-                          <SelectItem value="contact" disabled>
-                            Plus de 50 ? Contactez-nous
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                      
+                      {!showCustomInput ? (
+                        <>
+                          <Select 
+                            value={userCount <= 50 ? userCount.toString() : '51+'} 
+                            onValueChange={(value) => {
+                              if (value === '51+') {
+                                setShowCustomInput(true);
+                                setUserCount(51);
+                                setCustomUserCount('51');
+                              } else {
+                                setUserCount(parseInt(value));
+                              }
+                            }}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
+                                <SelectItem key={num} value={num.toString()} disabled={num < minMembers}>
+                                  {num} utilisateur{num > 1 ? 's' : ''}
+                                  {num < minMembers && ' (minimum requis: ' + minMembers + ')'}
+                                </SelectItem>
+                              ))}
+                              <SelectItem value="51+">
+                                51+ utilisateurs (saisie personnalisée)
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </>
+                      ) : (
+                        <div className="flex gap-2">
+                          <div className="flex-1">
+                            <Input
+                              type="number"
+                              min={Math.max(51, minMembers)}
+                              value={customUserCount}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setCustomUserCount(value);
+                                const num = parseInt(value);
+                                if (!isNaN(num) && num >= Math.max(51, minMembers)) {
+                                  setUserCount(num);
+                                }
+                              }}
+                              placeholder="Nombre d'utilisateurs (51+)"
+                              className="bg-background"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              setShowCustomInput(false);
+                              setUserCount(Math.min(50, Math.max(minMembers, userCount)));
+                              setCustomUserCount('');
+                            }}
+                          >
+                            Retour
+                          </Button>
+                        </div>
+                      )}
+                      
                       <p className="text-xs text-gray-600">
                         {minMembers > 1 && `Votre cabinet compte actuellement ${minMembers} membres actifs. `}
-                        {userCount >= 50 ? "Plus de 50 utilisateurs ? " : "Prix par utilisateur"}
-                        {userCount >= 50 && (
-                          <a href="/contact" className="text-orange-600 hover:text-orange-700 underline">
-                            Contactez-nous
-                          </a>
+                        {showCustomInput ? (
+                          <>Pour plus de 100 utilisateurs, <a href="/contact" className="text-orange-600 hover:text-orange-700 underline">contactez-nous</a> pour un devis personnalisé.</>
+                        ) : (
+                          <>Prix : {monthlyPrice}€/utilisateur/mois (ou {yearlyPrice}€/utilisateur/an)</>
                         )}
                       </p>
                     </div>
