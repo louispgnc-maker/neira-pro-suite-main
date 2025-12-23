@@ -299,10 +299,7 @@ export default function CheckoutProfessionnel() {
                           }`}
                         >
                           <div className="flex justify-between items-center">
-                            <div>
-                              <span className="text-sm font-medium">180 signatures/utilisateur (80 + pack +100) ⭐</span>
-                              <div className="text-xs text-gray-600 mt-1">💡 Pro +100 = 88€ • Cabinet+ = 89€ → upgrade évident</div>
-                            </div>
+                            <span className="text-sm font-medium">180 signatures/utilisateur (80 + pack +100) ⭐</span>
                             <span className="text-sm font-semibold text-purple-600">+29€/mois/utilisateur</span>
                           </div>
                           {signaturePack === '100' && <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1" />}

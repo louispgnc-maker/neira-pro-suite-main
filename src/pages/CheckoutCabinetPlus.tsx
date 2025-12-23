@@ -173,8 +173,8 @@ export default function CheckoutCabinetPlus() {
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-medium text-gray-900 text-sm">Signatures illimitées par utilisateur</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">À partir d'un certain volume, on ne compte plus</p>
+                        <h4 className="font-medium text-gray-900 text-sm">Signatures illimitées</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Aucune limite mensuelle</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">

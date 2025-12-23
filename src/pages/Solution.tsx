@@ -229,7 +229,6 @@ export default function Solution() {
                     <span className="font-semibold text-purple-600">+29€/mois ⭐</span>
                   </div>
                 </div>
-                <p className="text-xs text-gray-600 mt-2">💡 Pro +100 = 88€ • Cabinet+ = 89€ → upgrade évident</p>
               </div>
 
               <div className="mb-4 pt-4 border-t">
@@ -291,9 +290,31 @@ export default function Solution() {
                 </div>
               </div>
 
-              <div className="mb-4 pt-4 border-t border-orange-200 bg-orange-50 p-3 rounded">
-                <p className="text-sm text-orange-700 font-semibold mb-2">🚀 À partir d'un certain volume, on ne compte plus</p>
-                <p className="text-xs text-gray-700">Signatures illimitées • API & intégrations • Support prioritaire • Pilotage du cabinet</p>
+              <div className="mb-4 pt-4 border-t">
+                <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-300">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-2xl">🚀</span>
+                    <h4 className="font-bold text-orange-900 text-base">Solution premium complète</h4>
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-gray-700">
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
+                      <span>Signatures illimitées</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
+                      <span>API & intégrations avancées</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
+                      <span>Support prioritaire 2h</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
+                      <span>Pilotage & analytics cabinet</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
               
               <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout-cabinet-plus')}>
