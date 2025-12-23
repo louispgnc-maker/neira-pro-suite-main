@@ -89,6 +89,11 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/form/:token" element={<PublicClientForm />} />
             
+            {/* Routes checkout publiques */}
+            <Route path="/checkout-essentiel" element={<CheckoutEssentiel />} />
+            <Route path="/checkout-professionnel" element={<CheckoutProfessionnel />} />
+            <Route path="/checkout-cabinet-plus" element={<CheckoutCabinetPlus />} />
+            
             {/* Routes Avocat */}
             <Route path="/avocats/auth" element={<AvocatAuth />} />
             <Route path="/avocats/metier" element={<RoleProtectedRoute requiredRole="avocat"><AvocatMetier /></RoleProtectedRoute>} />
