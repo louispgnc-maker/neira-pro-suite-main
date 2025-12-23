@@ -62,7 +62,7 @@ export default function Solution() {
   ];
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
     <div 
       className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background"
       style={{
@@ -128,12 +128,14 @@ export default function Solution() {
                       <span className="text-sm text-gray-700">15 signatures / mois / utilisateur</span>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help hover:text-blue-600 transition-colors" />
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
-                          <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                          <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                          <p className="text-xs mt-1">Quota personnel non mutualisé</p>
+                        <TooltipContent className="max-w-xs bg-gradient-to-br from-blue-50 to-white border-blue-200">
+                          <div className="space-y-2">
+                            <p className="text-xs font-bold text-blue-900">1 signature = 1 enveloppe</p>
+                            <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
+                            <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
+                          </div>
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -209,13 +211,17 @@ export default function Solution() {
                       <span className="text-sm text-gray-700">80 signatures / mois / utilisateur</span>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help hover:text-purple-600 transition-colors" />
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
-                          <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                          <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                          <p className="text-xs mt-1">Quota personnel non mutualisé</p>
-                          <p className="text-xs mt-1 text-purple-300">💡 Packs optionnels disponibles</p>
+                        <TooltipContent className="max-w-xs bg-gradient-to-br from-purple-50 to-white border-purple-200">
+                          <div className="space-y-2">
+                            <p className="text-xs font-bold text-purple-900">1 signature = 1 enveloppe</p>
+                            <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
+                            <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
+                            <div className="pt-1.5 border-t border-purple-200">
+                              <p className="text-xs text-purple-700 font-medium">📦 Packs optionnels disponibles</p>
+                            </div>
+                          </div>
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -277,12 +283,16 @@ export default function Solution() {
                       <span className="text-sm text-gray-700">Signatures illimitées / utilisateur</span>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-help hover:text-orange-600 transition-colors" />
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
-                          <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                          <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                          <p className="text-xs mt-1 text-orange-300">✨ Aucune limite mensuelle</p>
+                        <TooltipContent className="max-w-xs bg-gradient-to-br from-orange-50 to-white border-orange-200">
+                          <div className="space-y-2">
+                            <p className="text-xs font-bold text-orange-900">1 signature = 1 enveloppe</p>
+                            <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
+                            <div className="pt-1.5 border-t border-orange-200">
+                              <p className="text-xs text-orange-700 font-medium">✨ Aucune limite mensuelle</p>
+                            </div>
+                          </div>
                         </TooltipContent>
                       </Tooltip>
                     </div>

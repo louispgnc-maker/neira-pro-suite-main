@@ -56,7 +56,7 @@ export default function CheckoutEssentiel() {
   };
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-white" style={{ 
       backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)', 
       backgroundSize: 'cover', 

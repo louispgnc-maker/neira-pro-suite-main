@@ -127,8 +127,8 @@ export default function CheckoutProfessionnel() {
   };
 
   return (
-    <TooltipProvider>
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-purple-100 to-white" style={{ 
+    <TooltipProvider delayDuration={0}>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-purple-100 to-white" style={{
       backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)', 
       backgroundSize: 'cover', 
       backgroundPosition: 'center', 
