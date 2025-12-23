@@ -4,9 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, ArrowLeft, CreditCard, Lock } from "lucide-react";
+import { CheckCircle2, ArrowLeft, CreditCard, Lock, Info } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function CheckoutEssentiel() {
   const navigate = useNavigate();
@@ -170,7 +176,21 @@ export default function CheckoutEssentiel() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Pack de signatures */}
                     <div className="space-y-3">
-                      <Label className="text-gray-900">📋 Signatures incluses : 15/mois</Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-gray-900">📋 Signatures incluses : 15/mois</Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
+                              <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
+                              <p className="text-xs mt-1">Quota personnel non mutualisé</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <div className="text-xs text-gray-600 mb-2">1 signature = 1 enveloppe (signataires illimités)</div>
                       <div className="space-y-2">
                         <button

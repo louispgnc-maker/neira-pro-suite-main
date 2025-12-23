@@ -5,11 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, ArrowLeft, CreditCard, Lock } from "lucide-react";
+import { CheckCircle2, ArrowLeft, CreditCard, Lock, Info } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function CheckoutCabinetPlus() {
   const navigate = useNavigate();
@@ -313,8 +319,22 @@ export default function CheckoutCabinetPlus() {
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                       <div className="flex items-start gap-3">
                         <div className="text-2xl">✨</div>
-                        <div>
-                          <h4 className="font-semibold text-orange-900 text-sm mb-1">Signatures illimitées par utilisateur</h4>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-semibold text-orange-900 text-sm">Signatures illimitées par utilisateur</h4>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className="w-4 h-4 text-orange-600 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                  <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
+                                  <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
+                                  <p className="text-xs mt-1 text-orange-300">✨ Aucune limite mensuelle</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
                           <p className="text-xs text-orange-700">1 signature = 1 enveloppe (signataires illimités) • Aucun pack nécessaire • Aucune limite mensuelle</p>
                         </div>
                       </div>
