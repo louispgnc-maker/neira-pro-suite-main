@@ -150,20 +150,6 @@ export default function Solution() {
                 </div>
               </div>
 
-              <div className="mb-4 pt-4 border-t border-blue-200 bg-blue-50 p-3 rounded">
-                <h4 className="font-semibold text-gray-900 mb-2 text-sm">📦 Packs signatures optionnels :</h4>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-700">+10 signatures</span>
-                    <span className="font-semibold text-blue-600">+7€/mois</span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-700">+25 signatures</span>
-                    <span className="font-semibold text-blue-600">+15€/mois</span>
-                  </div>
-                </div>
-              </div>
-
               <div className="mb-4 pt-4 border-t">
                 <h4 className="font-semibold text-gray-900 mb-3 text-sm">Ne comprend pas :</h4>
                 <div className="space-y-2">
@@ -252,20 +238,6 @@ export default function Solution() {
                 </div>
               </div>
 
-              <div className="mb-4 pt-4 border-t border-purple-200 bg-purple-50 p-3 rounded">
-                <h4 className="font-semibold text-gray-900 mb-2 text-sm">📦 Packs signatures optionnels :</h4>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-700">+40 signatures</span>
-                    <span className="font-semibold text-purple-600">+15€/mois</span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-700">+100 signatures</span>
-                    <span className="font-semibold text-purple-600">+29€/mois ⭐</span>
-                  </div>
-                </div>
-              </div>
-
               <div className="mb-4 pt-4 border-t">
                 <p className="text-sm text-green-700 font-semibold">⚡ Pensé pour les cabinets en croissance</p>
               </div>
@@ -336,33 +308,6 @@ export default function Solution() {
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-700">Accès anticipé aux nouveautés</span>
                   </div>
-                </div>
-              </div>
-
-              <div className="mb-4 pt-4 border-t">
-                <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-300">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-2xl">🚀</span>
-                    <h4 className="font-bold text-orange-900 text-base">Solution premium complète</h4>
-                  </div>
-                  <ul className="space-y-1.5 text-xs text-gray-700">
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
-                      <span>Signatures illimitées</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
-                      <span>API & intégrations avancées</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
-                      <span>Support prioritaire 2h</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
-                      <span>Pilotage & analytics cabinet</span>
-                    </li>
-                  </ul>
                 </div>
               </div>
               
