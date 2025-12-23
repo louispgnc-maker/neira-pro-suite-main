@@ -1,5 +1,4 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import Anthropic from "npm:@anthropic-ai/sdk@0.32.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,14 +21,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY');
-    if (!anthropicApiKey) {
-      throw new Error('ANTHROPIC_API_KEY non configurée');
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      throw new Error('OPENAI_API_KEY non configurée');
     }
-
-    const anthropic = new Anthropic({
-      apiKey: anthropicApiKey,
-    });
 
     // Construction du prompt selon le type de contrat
     const systemPrompt = getSystemPrompt(contractType);
@@ -37,29 +32,43 @@ Deno.serve(async (req) => {
 
     console.log('Génération du contrat:', contractType);
 
-    // Appel à Claude
-    const message = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
-      max_tokens: 16000,
-      temperature: 0.3,
-      system: systemPrompt,
-      messages: [
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ]
+    // Appel à OpenAI (ChatGPT)
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "gpt-4o", // GPT-4o - le plus récent et performant
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt
+          },
+          {
+            role: "user",
+            content: userPrompt
+          }
+        ],
+        max_tokens: 16000,
+        temperature: 0.3,
+      })
     });
 
-    const generatedContract = message.content[0].type === 'text' 
-      ? message.content[0].text 
-      : '';
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`OpenAI API error: ${errorData.error?.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    const generatedContract = data.choices[0]?.message?.content || '';
 
     return new Response(
       JSON.stringify({ 
         success: true,
         contract: generatedContract,
-        tokens: message.usage
+        tokens: data.usage
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
