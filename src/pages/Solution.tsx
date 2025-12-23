@@ -117,7 +117,7 @@ export default function Solution() {
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">15 signatures / mois</span>
+                    <span className="text-sm text-gray-700">15 signatures / mois / utilisateur</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -126,6 +126,20 @@ export default function Solution() {
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-700">Partage sécurisé client</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-4 pt-4 border-t border-blue-200 bg-blue-50 p-3 rounded">
+                <h4 className="font-semibold text-gray-900 mb-2 text-sm">📦 Packs signatures optionnels :</h4>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-700">+10 signatures</span>
+                    <span className="font-semibold text-blue-600">+7€/mois</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-700">+25 signatures</span>
+                    <span className="font-semibold text-blue-600">+15€/mois</span>
                   </div>
                 </div>
               </div>
@@ -186,7 +200,7 @@ export default function Solution() {
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">80 signatures / mois</span>
+                    <span className="text-sm text-gray-700">80 signatures / mois / utilisateur</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -201,6 +215,21 @@ export default function Solution() {
                     <span className="text-sm text-gray-700">Tableaux de bord</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="mb-4 pt-4 border-t border-purple-200 bg-purple-50 p-3 rounded">
+                <h4 className="font-semibold text-gray-900 mb-2 text-sm">📦 Packs signatures optionnels :</h4>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-700">+40 signatures</span>
+                    <span className="font-semibold text-purple-600">+15€/mois</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-700">+100 signatures</span>
+                    <span className="font-semibold text-purple-600">+29€/mois ⭐</span>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 mt-2">💡 Pro +100 = 88€ • Cabinet+ = 89€ → upgrade évident</p>
               </div>
 
               <div className="mb-4 pt-4 border-t">
@@ -241,7 +270,7 @@ export default function Solution() {
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Signatures illimitées</span>
+                    <span className="text-sm text-gray-700">Signatures illimitées / utilisateur</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -262,8 +291,9 @@ export default function Solution() {
                 </div>
               </div>
 
-              <div className="mb-4 pt-4 border-t">
-                <p className="text-sm text-orange-700 font-semibold">🚀 Tout illimité - Solution premium complète</p>
+              <div className="mb-4 pt-4 border-t border-orange-200 bg-orange-50 p-3 rounded">
+                <p className="text-sm text-orange-700 font-semibold mb-2">🚀 À partir d'un certain volume, on ne compte plus</p>
+                <p className="text-xs text-gray-700">Signatures illimitées • API & intégrations • Support prioritaire • Pilotage du cabinet</p>
               </div>
               
               <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout-cabinet-plus')}>

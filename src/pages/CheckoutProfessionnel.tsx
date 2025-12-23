@@ -19,6 +19,7 @@ export default function CheckoutProfessionnel() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [userCount, setUserCount] = useState(2);
   const [minMembers, setMinMembers] = useState(2);
+  const [signaturePack, setSignaturePack] = useState<'none' | '40' | '100'>('none');
   
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
 
@@ -88,8 +89,12 @@ export default function CheckoutProfessionnel() {
 
   const monthlyPrice = 59;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
+  
+  const signaturePackPrices = { 'none': 0, '40': 15, '100': 29 };
+  const packPrice = signaturePackPrices[signaturePack];
+  
   const basePrice = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
-  const price = basePrice * userCount;
+  const price = (basePrice * userCount) + (billingPeriod === 'monthly' ? packPrice * userCount : packPrice * userCount * 12);
   const tva = Math.round(price * 0.2 * 100) / 100;
   const total = Math.round((price + tva) * 100) / 100;
 
@@ -151,7 +156,7 @@ export default function CheckoutProfessionnel() {
             <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
               <CardContent className="p-6">
                 <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
-                <p className="text-sm text-gray-700">Idéal pour cabinets de 2 à 10 utilisateurs • 100 Go • 600 dossiers • 200 clients • Signatures illimitées</p>
+                <p className="text-sm text-gray-700">Idéal pour cabinets de 2 à 10 utilisateurs • 100 Go • 600 dossiers • 200 clients • 80 signatures/mois/utilisateur</p>
               </CardContent>
             </Card>
           </div>
@@ -190,8 +195,8 @@ export default function CheckoutProfessionnel() {
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-medium text-gray-900 text-sm">Signature électronique illimitée</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">Aucune limite mensuelle</p>
+                        <h4 className="font-medium text-gray-900 text-sm">80 signatures / mois / utilisateur</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Packs optionnels disponibles</p>
                       </div>
                     </div>
                   </div>
@@ -248,6 +253,61 @@ export default function CheckoutProfessionnel() {
                         {minMembers > 2 && `Votre cabinet compte actuellement ${minMembers} membres actifs. `}
                         Prix par utilisateur
                       </p>
+                    </div>
+
+                    {/* Pack de signatures */}
+                    <div className="space-y-3">
+                      <Label className="text-gray-900">📋 Signatures incluses : 80/mois/utilisateur</Label>
+                      <div className="text-xs text-gray-600 mb-2">1 signature = 1 enveloppe (signataires illimités)</div>
+                      <div className="space-y-2">
+                        <button
+                          type="button"
+                          onClick={() => setSignaturePack('none')}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                            signaturePack === 'none'
+                              ? 'border-purple-600 bg-purple-50'
+                              : 'border-gray-200 bg-white hover:border-purple-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">80 signatures/utilisateur (incluses)</span>
+                            {signaturePack === 'none' && <CheckCircle2 className="w-5 h-5 text-purple-600" />}
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSignaturePack('40')}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                            signaturePack === '40'
+                              ? 'border-purple-600 bg-purple-50'
+                              : 'border-gray-200 bg-white hover:border-purple-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">120 signatures/utilisateur (80 + pack +40)</span>
+                            <span className="text-sm font-semibold text-purple-600">+15€/mois/utilisateur</span>
+                          </div>
+                          {signaturePack === '40' && <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSignaturePack('100')}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                            signaturePack === '100'
+                              ? 'border-purple-600 bg-purple-50'
+                              : 'border-gray-200 bg-white hover:border-purple-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <span className="text-sm font-medium">180 signatures/utilisateur (80 + pack +100) ⭐</span>
+                              <div className="text-xs text-gray-600 mt-1">💡 Pro +100 = 88€ • Cabinet+ = 89€ → upgrade évident</div>
+                            </div>
+                            <span className="text-sm font-semibold text-purple-600">+29€/mois/utilisateur</span>
+                          </div>
+                          {signaturePack === '100' && <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1" />}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Période de facturation */}
@@ -377,6 +437,12 @@ export default function CheckoutProfessionnel() {
                         <span>Abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
                         <span>{basePrice}€ × {userCount}</span>
                       </div>
+                      {signaturePack !== 'none' && (
+                        <div className="flex justify-between text-sm text-gray-900">
+                          <span>Pack +{signaturePack} signatures</span>
+                          <span>{billingPeriod === 'monthly' ? packPrice : packPrice * 12}€ × {userCount}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between text-sm text-gray-900">
                         <span>Sous-total</span>
                         <span>{price}€</span>

@@ -13,12 +13,17 @@ export default function CheckoutEssentiel() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [signaturePack, setSignaturePack] = useState<'none' | '10' | '25'>('none');
   
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
 
   const monthlyPrice = 39;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
-  const price = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
+  
+  const signaturePackPrices = { 'none': 0, '10': 7, '25': 15 };
+  const packPrice = signaturePackPrices[signaturePack];
+  
+  const price = billingPeriod === 'monthly' ? monthlyPrice + packPrice : yearlyPrice + (packPrice * 12);
   const tva = Math.round(price * 0.2 * 100) / 100;
   const total = Math.round((price + tva) * 100) / 100;
 
@@ -163,6 +168,59 @@ export default function CheckoutEssentiel() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Pack de signatures */}
+                    <div className="space-y-3">
+                      <Label className="text-gray-900">📋 Signatures incluses : 15/mois</Label>
+                      <div className="text-xs text-gray-600 mb-2">1 signature = 1 enveloppe (signataires illimités)</div>
+                      <div className="space-y-2">
+                        <button
+                          type="button"
+                          onClick={() => setSignaturePack('none')}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                            signaturePack === 'none'
+                              ? 'border-blue-600 bg-blue-50'
+                              : 'border-gray-200 bg-white hover:border-blue-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">15 signatures (incluses)</span>
+                            {signaturePack === 'none' && <CheckCircle2 className="w-5 h-5 text-blue-600" />}
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSignaturePack('10')}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                            signaturePack === '10'
+                              ? 'border-blue-600 bg-blue-50'
+                              : 'border-gray-200 bg-white hover:border-blue-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">25 signatures (15 + pack +10)</span>
+                            <span className="text-sm font-semibold text-blue-600">+7€/mois</span>
+                          </div>
+                          {signaturePack === '10' && <CheckCircle2 className="w-5 h-5 text-blue-600 mt-1" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSignaturePack('25')}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                            signaturePack === '25'
+                              ? 'border-blue-600 bg-blue-50'
+                              : 'border-gray-200 bg-white hover:border-blue-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">40 signatures (15 + pack +25)</span>
+                            <span className="text-sm font-semibold text-blue-600">+15€/mois</span>
+                          </div>
+                          {signaturePack === '25' && <CheckCircle2 className="w-5 h-5 text-blue-600 mt-1" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-600">💡 Besoin de plus ? Passez à Professionnel (80 signatures/mois)</p>
+                    </div>
+
                     {/* Période de facturation */}
                     <div className="space-y-3">
                       <Label className="text-gray-900">Période de facturation</Label>
@@ -288,6 +346,16 @@ export default function CheckoutEssentiel() {
                     <div className="border-t pt-4 space-y-2">
                       <div className="flex justify-between text-sm text-gray-900">
                         <span>Abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
+                        <span>{billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice}€</span>
+                      </div>
+                      {signaturePack !== 'none' && (
+                        <div className="flex justify-between text-sm text-gray-900">
+                          <span>Pack +{signaturePack} signatures</span>
+                          <span>{billingPeriod === 'monthly' ? packPrice : packPrice * 12}€</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-sm text-gray-900">
+                        <span>Sous-total</span>
                         <span>{price}€</span>
                       </div>
                       <div className="flex justify-between text-sm text-gray-900">

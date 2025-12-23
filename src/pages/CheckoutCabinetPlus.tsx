@@ -173,6 +173,13 @@ export default function CheckoutCabinetPlus() {
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                       <div>
+                        <h4 className="font-medium text-gray-900 text-sm">Signatures illimitées par utilisateur</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">À partir d'un certain volume, on ne compte plus</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <div>
                         <h4 className="font-medium text-gray-900 text-sm">Workflows illimités</h4>
                         <p className="text-xs text-gray-600 mt-0.5">Priorité CPU + files dédiées</p>
                       </div>
@@ -300,6 +307,17 @@ export default function CheckoutCabinetPlus() {
                           <>Prix : {monthlyPrice}€/utilisateur/mois (ou {yearlyPrice}€/utilisateur/an)</>
                         )}
                       </p>
+                    </div>
+
+                    {/* Info signatures illimitées */}
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl">✨</div>
+                        <div>
+                          <h4 className="font-semibold text-orange-900 text-sm mb-1">Signatures illimitées par utilisateur</h4>
+                          <p className="text-xs text-orange-700">1 signature = 1 enveloppe (signataires illimités) • Aucun pack nécessaire • Aucune limite mensuelle</p>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Période de facturation */}
