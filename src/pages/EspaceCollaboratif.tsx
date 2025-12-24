@@ -1100,14 +1100,89 @@ export default function EspaceCollaboratif() {
   }
 
   if (!cabinet) {
+    const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
+    const colorClass = role === 'notaire' 
+      ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+      : 'bg-blue-600 hover:bg-blue-700 text-white';
+    
     return (
       <AppLayout>
         <div className="container mx-auto p-6">
           <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl text-center">Espace Collaboratif</CardTitle>
+              <CardDescription className="text-center">
+                Créez ou rejoignez un cabinet pour collaborer avec votre équipe
+              </CardDescription>
+            </CardHeader>
             <CardContent className="py-8">
-              <p className="text-center text-foreground">
-                Vous devez rejoindre un cabinet pour accéder à l'espace collaboratif.
-              </p>
+              <div className="max-w-2xl mx-auto space-y-6">
+                <div className="text-center mb-8">
+                  <p className="text-foreground mb-2">
+                    Vous n'êtes pas encore membre d'un cabinet collaboratif.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Choisissez une option ci-dessous pour commencer à collaborer :
+                  </p>
+                </div>
+                
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Créer un cabinet */}
+                  <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Plus className="h-5 w-5" />
+                        Créer un cabinet
+                      </CardTitle>
+                      <CardDescription>
+                        Créez votre propre cabinet et invitez des collaborateurs
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className={`w-full ${colorClass}`}
+                        onClick={() => navigate(`/${role}s/cabinet`)}
+                      >
+                        Créer mon cabinet
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  
+                  {/* Rejoindre un cabinet */}
+                  <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <User className="h-5 w-5" />
+                        Rejoindre un cabinet
+                      </CardTitle>
+                      <CardDescription>
+                        Rejoignez un cabinet existant via une invitation
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => navigate(`/${role}s/cabinet`)}
+                      >
+                        Voir les invitations
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                <div className="text-center text-sm text-muted-foreground mt-6 p-4 bg-muted/50 rounded-lg">
+                  <p className="font-medium mb-2">💡 Pourquoi utiliser l'espace collaboratif ?</p>
+                  <ul className="text-left max-w-md mx-auto space-y-1">
+                    <li>• Partagez des documents, dossiers et contrats</li>
+                    <li>• Gérez les clients en équipe</li>
+                    <li>• Suivez les tâches et les échéances</li>
+                    <li>• Communiquez en temps réel via le chat</li>
+                  </ul>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
