@@ -1,5 +1,5 @@
 -- Modification de get_user_cabinets pour retourner aussi le status du membre
--- Fix: Les membres actifs voyaient "pas de cabinet" car le status n'était pas retourné
+-- Plus de filtre status='active' - un membre est un membre, point
 
 drop function if exists public.get_user_cabinets();
 
@@ -18,7 +18,7 @@ returns table (
   max_members integer,
   created_at timestamptz,
   updated_at timestamptz,
-  status text  -- Status du membre (active/inactive) depuis cabinet_members
+  status text  -- Status du membre depuis cabinet_members (conservé pour compatibilité)
 )
 language plpgsql
 security definer
@@ -41,7 +41,7 @@ begin
     c.max_members,
     c.created_at,
     c.updated_at,
-    COALESCE(cm.status, 'active') as status  -- Si owner sans entrée cabinet_members, considérer comme active
+    COALESCE(cm.status, 'active') as status
   from cabinets c
   left join cabinet_members cm on cm.cabinet_id = c.id and cm.user_id = auth.uid()
   where c.owner_id = auth.uid()
@@ -49,10 +49,9 @@ begin
        select cm2.cabinet_id
        from cabinet_members cm2
        where cm2.user_id = auth.uid()
-         and cm2.status = 'active'
      );
 end;
 $$;
 
 COMMENT ON FUNCTION public.get_user_cabinets() IS 
-'Retourne tous les cabinets dont l''utilisateur est propriétaire ou membre actif, incluant le status du membre';
+'Retourne tous les cabinets dont l''utilisateur est propriétaire ou membre (peu importe le status)';
