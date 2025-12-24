@@ -17,10 +17,12 @@ export default function CreateCabinet() {
   if (location.pathname.includes('/avocats')) role = 'avocat';
 
   const [refreshKey, setRefreshKey] = useState(0);
-  const { hasCabinet, cabinet, loading } = useUserCabinet(user?.id, role);
+  const [localRefresh, setLocalRefresh] = useState(0);
+  const { hasCabinet, cabinet, loading } = useUserCabinet(user?.id, role, localRefresh);
 
   const refreshCabinet = () => {
     setRefreshKey(prev => prev + 1);
+    setLocalRefresh(prev => prev + 1);
   };
 
   if (loading) {

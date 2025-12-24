@@ -1,126 +1,95 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { ManageCabinet } from "@/components/cabinet/ManageCabinet";
-import { CreateCabinetDialog } from "@/components/cabinet/CreateCabinetDialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabaseClient";
+import { useUserCabinet } from "@/hooks/useUserCabinet";
+import { Plus, LogIn } from "lucide-react";
 
 export default function Cabinet() {
   const { user } = useAuth();
   const location = useLocation();
-  const { toast } = useToast();
+  const navigate = useNavigate();
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
 
-  const [inviteCode, setInviteCode] = useState("");
-  const [joiningCabinet, setJoiningCabinet] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [localRefresh, setLocalRefresh] = useState(0);
+  const { hasCabinet, cabinet, loading } = useUserCabinet(user?.id, role, localRefresh);
   const colorClass = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
 
-  const refreshCabinet = () => {
-    setRefreshKey(prev => prev + 1);
-  };
-
-  // Scroll automatique vers la section ciblée par l'ancre dans l'URL
-  useEffect(() => {
-    const hash = location.hash.replace('#', '');
-    if (hash) {
-      setTimeout(() => {
-        const element = document.getElementById(hash);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Highlight temporaire de la section
-          element.style.backgroundColor = role === 'notaire' ? '#fed7aa' : '#dbeafe';
-          setTimeout(() => {
-            element.style.backgroundColor = '';
-          }, 2000);
-        }
-      }, 100);
-    }
-  }, [location.hash, role]);
-
-  const handleJoinCabinet = async () => {
-    if (!inviteCode.trim()) return;
-    setJoiningCabinet(true);
-
-    try {
-      const { data, error } = await supabase.rpc('join_cabinet_by_code', {
-        code: inviteCode.trim(),
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: 'Cabinet rejoint !',
-        description: 'Vous avez rejoint le cabinet avec succès.',
-      });
-
-      setInviteCode('');
-      refreshCabinet(); // Recharger le composant ManageCabinet
-    } catch (error: unknown) {
-      console.error('Erreur rejoindre cabinet:', error);
-      const message = error instanceof Error ? error.message : String(error);
-      toast({
-        title: 'Erreur',
-        description: message || 'Code invalide ou cabinet non trouvé',
-        variant: 'destructive',
-      });
-    } finally {
-      setJoiningCabinet(false);
-    }
-  };
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="p-6 max-w-5xl mx-auto">
+          <p className="text-center text-foreground">Chargement...</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
       <div className="p-6 max-w-5xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold">Mon cabinet</h1>
-
-        {/* Sections Rejoindre et Créer un cabinet */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Gestion de cabinet</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div id="join">
-              <div className="text-sm font-medium mb-2">Rejoindre un cabinet</div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Code d'invitation cabinet"
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleJoinCabinet()}
-                />
-                <Button 
-                  className={colorClass} 
-                  disabled={!inviteCode.trim() || joiningCabinet} 
-                  onClick={handleJoinCabinet}
-                >
-                  {joiningCabinet ? 'Vérification...' : 'Rejoindre'}
-                </Button>
-              </div>
-              <p className="text-xs text-foreground mt-2">
-                Saisissez le code d'invitation fourni par votre cabinet pour relier votre compte.
-              </p>
+        {hasCabinet ? (
+          // L'utilisateur a un cabinet - Afficher ManageCabinet
+          <>
+            <h1 className="text-3xl font-bold">Mon cabinet</h1>
+            {user && <ManageCabinet key={refreshKey} role={role} userId={user.id} />}
+          </>
+        ) : (
+          // L'utilisateur n'a pas de cabinet - Proposer création ou join
+          <>
+            <h1 className="text-3xl font-bold">Gestion de cabinet</h1>
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Créer un cabinet */}
+              <Card className="border-2 hover:border-primary/50 transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Plus className="h-5 w-5" />
+                    Créer un cabinet
+                  </CardTitle>
+                  <CardDescription>
+                    Créez votre propre cabinet et invitez vos collaborateurs
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button 
+                    className={`w-full ${colorClass}`}
+                    onClick={() => navigate(`/${role}s/create-cabinet`)}
+                  >
+                    Créer mon cabinet
+                  </Button>
+                </CardContent>
+              </Card>
+              
+              {/* Rejoindre un cabinet */}
+              <Card className="border-2 hover:border-primary/50 transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <LogIn className="h-5 w-5" />
+                    Rejoindre un cabinet
+                  </CardTitle>
+                  <CardDescription>
+                    Rejoignez un cabinet existant avec un code d'invitation
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button 
+                    className={`w-full ${colorClass}`}
+                    onClick={() => navigate(`/${role}s/join-cabinet`)}
+                  >
+                    Rejoindre un cabinet
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
-
-            <div id="create" className="border-t pt-4">
-              <div className="text-sm font-medium mb-2">Créer un cabinet</div>
-              <CreateCabinetDialog role={role} onSuccess={refreshCabinet} />
-              <p className="text-xs text-foreground mt-2">
-                Créez votre propre cabinet et invitez vos collaborateurs.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Composant ManageCabinet */}
-        {user && <ManageCabinet key={refreshKey} role={role} userId={user.id} />}
+          </>
+        )}
       </div>
     </AppLayout>
   );

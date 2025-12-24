@@ -576,9 +576,17 @@ export default function EspaceCollaboratif() {
       // Fetch user's cabinets and pick one matching the current role
       const { data: cabinetsData, error: cabinetsError } = await supabase.rpc('get_user_cabinets');
       if (cabinetsError) throw cabinetsError;
-  const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
-  const filtered = cabinets.filter((c) => ((c as unknown as { role?: string }).role) === cabinetRole);
-  let userCabinet = (filtered[0] as unknown as Cabinet) || null;
+      
+      const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
+      
+      // IMPORTANT: Filtrer uniquement les cabinets ACTIFS avec le bon rôle
+      const filtered = cabinets.filter((c) => {
+        const cRole = ((c as unknown as { role?: string }).role);
+        const cStatus = ((c as unknown as { status?: string }).status);
+        return cRole === cabinetRole && cStatus === 'active';
+      });
+      
+      let userCabinet = (filtered[0] as unknown as Cabinet) || null;
   
       // Load subscription_plan from cabinets table
       if (userCabinet && userCabinet.id) {

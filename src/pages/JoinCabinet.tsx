@@ -23,11 +23,13 @@ export default function JoinCabinet() {
   const [inviteCode, setInviteCode] = useState("");
   const [joiningCabinet, setJoiningCabinet] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const { hasCabinet, cabinet, loading } = useUserCabinet(user?.id, role);
+  const [localRefresh, setLocalRefresh] = useState(0);
+  const { hasCabinet, cabinet, loading } = useUserCabinet(user?.id, role, localRefresh);
   const colorClass = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   const refreshCabinet = () => {
     setRefreshKey(prev => prev + 1);
+    setLocalRefresh(prev => prev + 1);
   };
 
   const handleJoinCabinet = async () => {
@@ -48,6 +50,11 @@ export default function JoinCabinet() {
 
       setInviteCode('');
       refreshCabinet(); // Recharger le composant ManageCabinet
+      
+      // Rafraîchir la page après un court délai pour charger le cabinet
+      setTimeout(() => {
+        setLocalRefresh(prev => prev + 1);
+      }, 500);
     } catch (error: unknown) {
       console.error('Erreur rejoindre cabinet:', error);
       const message = error instanceof Error ? error.message : String(error);

@@ -8,7 +8,7 @@ interface CabinetInfo {
   status: string;
 }
 
-export function useUserCabinet(userId: string | undefined, role: 'avocat' | 'notaire') {
+export function useUserCabinet(userId: string | undefined, role: 'avocat' | 'notaire', refreshTrigger: number = 0) {
   const [hasCabinet, setHasCabinet] = useState<boolean>(false);
   const [cabinet, setCabinet] = useState<CabinetInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,7 +58,7 @@ export function useUserCabinet(userId: string | undefined, role: 'avocat' | 'not
     }
 
     checkCabinet();
-  }, [userId, role]);
+  }, [userId, role, refreshTrigger]);
 
   return { hasCabinet, cabinet, loading };
 }
