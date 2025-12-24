@@ -1141,7 +1141,7 @@ export default function EspaceCollaboratif() {
                     <CardContent>
                       <Button 
                         className={`w-full ${colorClass}`}
-                        onClick={() => navigate(`/${role}s/cabinet`)}
+                        onClick={() => navigate(`/${role}s/cabinet#create`)}
                       >
                         Créer mon cabinet
                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -1162,11 +1162,10 @@ export default function EspaceCollaboratif() {
                     </CardHeader>
                     <CardContent>
                       <Button 
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => navigate(`/${role}s/cabinet`)}
+                        className={`w-full ${colorClass}`}
+                        onClick={() => navigate(`/${role}s/cabinet#join`)}
                       >
-                        Voir les invitations
+                        Entrer le code d'invitation
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </CardContent>

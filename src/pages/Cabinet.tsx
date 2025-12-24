@@ -1,7 +1,7 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ManageCabinet } from "@/components/cabinet/ManageCabinet";
 import { CreateCabinetDialog } from "@/components/cabinet/CreateCabinetDialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +26,24 @@ export default function Cabinet() {
   const refreshCabinet = () => {
     setRefreshKey(prev => prev + 1);
   };
+
+  // Scroll automatique vers la section ciblée par l'ancre dans l'URL
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Highlight temporaire de la section
+          element.style.backgroundColor = role === 'notaire' ? '#fed7aa' : '#dbeafe';
+          setTimeout(() => {
+            element.style.backgroundColor = '';
+          }, 2000);
+        }
+      }, 100);
+    }
+  }, [location.hash, role]);
 
   const handleJoinCabinet = async () => {
     if (!inviteCode.trim()) return;
@@ -69,7 +87,7 @@ export default function Cabinet() {
             <CardTitle>Gestion de cabinet</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
+            <div id="join">
               <div className="text-sm font-medium mb-2">Rejoindre un cabinet</div>
               <div className="flex gap-2">
                 <Input
@@ -91,7 +109,7 @@ export default function Cabinet() {
               </p>
             </div>
 
-            <div className="border-t pt-4">
+            <div id="create" className="border-t pt-4">
               <div className="text-sm font-medium mb-2">Créer un cabinet</div>
               <CreateCabinetDialog role={role} onSuccess={refreshCabinet} />
               <p className="text-xs text-foreground mt-2">
