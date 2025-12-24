@@ -30,6 +30,8 @@ import DossierDetail from "./pages/DossierDetail";
 import ProfileView from "./pages/ProfileView";
 import ProfileEdit from "./pages/Profile";
 import Cabinet from "./pages/Cabinet";
+import CreateCabinet from "./pages/CreateCabinet";
+import JoinCabinet from "./pages/JoinCabinet";
 import EspaceCollaboratif from "./pages/EspaceCollaboratif";
 import Subscription from "./pages/Subscription";
 import ContactSupport from "./pages/ContactSupport";
@@ -112,6 +114,8 @@ const App = () => (
             <Route path="/avocats/profile" element={<RoleProtectedRoute requiredRole="avocat"><ProfileView /></RoleProtectedRoute>} />
             <Route path="/avocats/profile/edit" element={<RoleProtectedRoute requiredRole="avocat"><ProfileEdit /></RoleProtectedRoute>} />
             <Route path="/avocats/cabinet" element={<RoleProtectedRoute requiredRole="avocat"><Cabinet /></RoleProtectedRoute>} />
+            <Route path="/avocats/create-cabinet" element={<RoleProtectedRoute requiredRole="avocat"><CreateCabinet /></RoleProtectedRoute>} />
+            <Route path="/avocats/join-cabinet" element={<RoleProtectedRoute requiredRole="avocat"><JoinCabinet /></RoleProtectedRoute>} />
             <Route path="/avocats/espace-collaboratif" element={<RoleProtectedRoute requiredRole="avocat"><EspaceCollaboratif /></RoleProtectedRoute>} />
             <Route path="/avocats/email-integration" element={<RoleProtectedRoute requiredRole="avocat"><EmailIntegration /></RoleProtectedRoute>} />
             <Route path="/avocats/messagerie" element={<RoleProtectedRoute requiredRole="avocat"><EmailInbox /></RoleProtectedRoute>} />
@@ -139,6 +143,8 @@ const App = () => (
             <Route path="/notaires/profile" element={<RoleProtectedRoute requiredRole="notaire"><ProfileView /></RoleProtectedRoute>} />
             <Route path="/notaires/profile/edit" element={<RoleProtectedRoute requiredRole="notaire"><ProfileEdit /></RoleProtectedRoute>} />
             <Route path="/notaires/cabinet" element={<RoleProtectedRoute requiredRole="notaire"><Cabinet /></RoleProtectedRoute>} />
+            <Route path="/notaires/create-cabinet" element={<RoleProtectedRoute requiredRole="notaire"><CreateCabinet /></RoleProtectedRoute>} />
+            <Route path="/notaires/join-cabinet" element={<RoleProtectedRoute requiredRole="notaire"><JoinCabinet /></RoleProtectedRoute>} />
             <Route path="/notaires/espace-collaboratif" element={<RoleProtectedRoute requiredRole="notaire"><EspaceCollaboratif /></RoleProtectedRoute>} />
             <Route path="/notaires/email-integration" element={<RoleProtectedRoute requiredRole="notaire"><EmailIntegration /></RoleProtectedRoute>} />
             <Route path="/notaires/messagerie" element={<RoleProtectedRoute requiredRole="notaire"><EmailInbox /></RoleProtectedRoute>} />

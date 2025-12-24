@@ -184,7 +184,13 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
       if (cabinetError) throw cabinetError;
 
       const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
-      const filtered = cabinets.filter((c) => String((c as Record<string, unknown>)['role']) === role);
+      
+      // IMPORTANT: Filtrer uniquement les cabinets ACTIFS avec le bon rôle
+      const filtered = cabinets.filter((c) => {
+        const cabinetRole = String((c as Record<string, unknown>)['role']);
+        const memberStatus = String((c as Record<string, unknown>)['status'] || '');
+        return cabinetRole === role && memberStatus === 'active';
+      });
 
       // Choisir cabinet: owner en priorité, sinon premier cabinet où l'utilisateur est membre
       const ownedCabinet = filtered?.find((c) => String((c as Record<string, unknown>)['owner_id']) === userId);
