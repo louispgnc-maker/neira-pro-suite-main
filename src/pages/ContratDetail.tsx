@@ -14,6 +14,7 @@ interface Contrat {
   category?: string | null;
   type?: string | null;
   description?: string | null;
+  content?: string | null;
   created_at?: string | null;
 }
 
@@ -39,7 +40,7 @@ export default function ContratDetail() {
       // Try loading as owner first
       const { data: cData, error } = await supabase
         .from('contrats')
-        .select('id,name,category,type,created_at,description')
+        .select('id,name,category,type,created_at,description,content')
         .eq('owner_id', user.id)
         .eq('role', role)
         .eq('id', id)
@@ -153,6 +154,19 @@ export default function ContratDetail() {
                 </div>
               </CardContent>
             </Card>
+
+            {contrat.content && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>2. Contenu du contrat</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-sm max-w-none whitespace-pre-wrap bg-gray-50 p-6 rounded-lg border">
+                    {contrat.content}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {sharedBy && (
               <Card>
