@@ -35,9 +35,9 @@ BEGIN
     RETURN;
   END IF;
 
-  -- allow active members: return active members of the cabinet
+  -- allow active members: return ALL members of the cabinet (not just active)
   IF EXISTS (SELECT 1 FROM public.cabinet_members cm WHERE cm.cabinet_id = cabinet_id_param AND cm.user_id = auth.uid() AND cm.status = 'active') THEN
-    RETURN QUERY SELECT cm.* FROM public.cabinet_members cm WHERE cm.cabinet_id = cabinet_id_param AND cm.status = 'active' ORDER BY cm.created_at;
+    RETURN QUERY SELECT cm.* FROM public.cabinet_members cm WHERE cm.cabinet_id = cabinet_id_param ORDER BY cm.created_at;
     RETURN;
   END IF;
 
