@@ -1304,11 +1304,11 @@ export default function EspaceCollaboratif() {
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Membres actifs</CardTitle>
+                <CardTitle className="text-sm font-medium">Membres du cabinet</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{members.filter(m => m.status === 'active').length}</div>
-                <p className="text-xs text-foreground">membres du cabinet</p>
+                <div className="text-2xl font-bold">{members.length}</div>
+                <p className="text-xs text-foreground">membres au total</p>
               </CardContent>
             </Card>
           </div>
