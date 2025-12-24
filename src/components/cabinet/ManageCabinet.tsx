@@ -69,9 +69,10 @@ interface CabinetMember {
 interface ManageCabinetProps {
   role: 'avocat' | 'notaire';
   userId: string;
+  cabinetId?: string;  // Si spécifié, charge ce cabinet spécifique au lieu de chercher
 }
 
-export function ManageCabinet({ role, userId }: ManageCabinetProps) {
+export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
   const [cabinet, setCabinet] = useState<Cabinet | null>(null);
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -185,15 +186,21 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
       const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
       
-      // Filtrer par rôle uniquement (plus de filtre sur le statut)
-      const filtered = cabinets.filter((c) => {
-        const cabinetRole = String((c as Record<string, unknown>)['role']);
-        return cabinetRole === role;
-      });
-
-      // Choisir cabinet: owner en priorité, sinon premier cabinet où l'utilisateur est membre
-      const ownedCabinet = filtered?.find((c) => String((c as Record<string, unknown>)['owner_id']) === userId);
-      const firstCabinet = ownedCabinet || (filtered && filtered.length > 0 ? filtered[0] : null);
+      let firstCabinet: unknown | null = null;
+      
+      if (cabinetId) {
+        // Si cabinetId est spécifié, chercher ce cabinet spécifique
+        firstCabinet = cabinets.find((c) => String((c as Record<string, unknown>)['id']) === cabinetId);
+      } else {
+        // Sinon, logique par défaut: filtrer par rôle
+        const filtered = cabinets.filter((c) => {
+          const cabinetRole = String((c as Record<string, unknown>)['role']);
+          return cabinetRole === role;
+        });
+        // Choisir cabinet: owner en priorité, sinon premier cabinet où l'utilisateur est membre
+        const ownedCabinet = filtered?.find((c) => String((c as Record<string, unknown>)['owner_id']) === userId);
+        firstCabinet = ownedCabinet || (filtered && filtered.length > 0 ? filtered[0] : null);
+      }
 
       if (firstCabinet) {
         // Load subscription details from cabinets table

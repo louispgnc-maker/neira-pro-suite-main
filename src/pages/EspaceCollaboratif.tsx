@@ -1226,7 +1226,7 @@ export default function EspaceCollaboratif() {
           {/* Management button for cabinet founder and Associé */}
           {(isCabinetOwner || currentUserRole === 'Associé') && (
             <Button
-              onClick={() => navigate(`/${cabinetRole}s/cabinet`)}
+              onClick={() => navigate(`/${cabinetRole}s/cabinet?id=${cabinet?.id}`)}
               className={colorClass}
             >
               <Settings className="h-4 w-4 mr-2" />

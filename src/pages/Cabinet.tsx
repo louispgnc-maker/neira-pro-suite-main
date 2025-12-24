@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { ManageCabinet } from "@/components/cabinet/ManageCabinet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,9 @@ export default function Cabinet() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const cabinetIdFromUrl = searchParams.get('id') || undefined;
+  
   let role: 'avocat' | 'notaire' = 'avocat';
   if (location.pathname.includes('/notaires')) role = 'notaire';
   if (location.pathname.includes('/avocats')) role = 'avocat';
@@ -38,7 +41,7 @@ export default function Cabinet() {
           // L'utilisateur a un cabinet - Afficher ManageCabinet
           <>
             <h1 className="text-3xl font-bold">Mon cabinet</h1>
-            {user && <ManageCabinet key={refreshKey} role={role} userId={user.id} />}
+            {user && <ManageCabinet key={refreshKey} role={role} userId={user.id} cabinetId={cabinetIdFromUrl || cabinet?.id} />}
           </>
         ) : (
           // L'utilisateur n'a pas de cabinet - Proposer création ou join
