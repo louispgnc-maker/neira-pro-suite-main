@@ -579,11 +579,10 @@ export default function EspaceCollaboratif() {
       
       const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
       
-      // IMPORTANT: Filtrer uniquement les cabinets ACTIFS avec le bon rôle
+      // Filtrer par rôle uniquement (plus de filtre sur le statut)
       const filtered = cabinets.filter((c) => {
         const cRole = ((c as unknown as { role?: string }).role);
-        const cStatus = ((c as unknown as { status?: string }).status);
-        return cRole === cabinetRole && cStatus === 'active';
+        return cRole === cabinetRole;
       });
       
       let userCabinet = (filtered[0] as unknown as Cabinet) || null;
@@ -1885,18 +1884,18 @@ export default function EspaceCollaboratif() {
                         />
                         <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 space-y-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                           {members
-                            .filter(m => m.status === 'active' && m.user_id)
+                            .filter(m => m.user_id)
                             .filter(m => {
                               const searchLower = taskMemberSearch.toLowerCase();
                               return (m.nom || m.email).toLowerCase().includes(searchLower);
                             })
                             .length === 0 ? (
                             <p className="text-sm text-muted-foreground">
-                              {taskMemberSearch ? 'Aucun membre trouvé' : 'Aucun membre actif'}
+                              {taskMemberSearch ? 'Aucun membre trouvé' : 'Aucun membre'}
                             </p>
                           ) : (
                             members
-                              .filter(m => m.status === 'active' && m.user_id)
+                              .filter(m => m.user_id)
                               .filter(m => {
                                 const searchLower = taskMemberSearch.toLowerCase();
                                 return (m.nom || m.email).toLowerCase().includes(searchLower);
@@ -1975,18 +1974,18 @@ export default function EspaceCollaboratif() {
                           />
                           <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 space-y-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                             {members
-                              .filter(m => m.status === 'active' && m.user_id)
+                              .filter(m => m.user_id)
                               .filter(m => {
                                 const searchLower = editTaskMemberSearch.toLowerCase();
                                 return (m.nom || m.email).toLowerCase().includes(searchLower);
                               })
                               .length === 0 ? (
                               <p className="text-sm text-muted-foreground">
-                                {editTaskMemberSearch ? 'Aucun membre trouvé' : 'Aucun membre actif'}
+                                {editTaskMemberSearch ? 'Aucun membre trouvé' : 'Aucun membre'}
                               </p>
                             ) : (
                               members
-                                .filter(m => m.status === 'active' && m.user_id)
+                                .filter(m => m.user_id)
                                 .filter(m => {
                                   const searchLower = editTaskMemberSearch.toLowerCase();
                                   return (m.nom || m.email).toLowerCase().includes(searchLower);

@@ -185,11 +185,10 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
 
       const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
       
-      // IMPORTANT: Filtrer uniquement les cabinets ACTIFS avec le bon rôle
+      // Filtrer par rôle uniquement (plus de filtre sur le statut)
       const filtered = cabinets.filter((c) => {
         const cabinetRole = String((c as Record<string, unknown>)['role']);
-        const memberStatus = String((c as Record<string, unknown>)['status'] || '');
-        return cabinetRole === role && memberStatus === 'active';
+        return cabinetRole === role;
       });
 
       // Choisir cabinet: owner en priorité, sinon premier cabinet où l'utilisateur est membre
@@ -756,12 +755,12 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                       className={colorClass}
                       disabled={
                         cabinet.subscription_plan === 'essentiel' || 
-                        (cabinet.max_members && members.filter(m => m.status === 'active').length >= cabinet.max_members)
+                        (cabinet.max_members && members.length >= cabinet.max_members)
                       }
                       title={
                         cabinet.subscription_plan === 'essentiel' 
                           ? "L'abonnement Essentiel ne permet qu'un seul membre"
-                          : (cabinet.max_members && members.filter(m => m.status === 'active').length >= cabinet.max_members)
+                          : (cabinet.max_members && members.length >= cabinet.max_members)
                           ? `Limite de ${cabinet.max_members} membre${cabinet.max_members > 1 ? 's' : ''} atteinte - Augmentez votre abonnement`
                           : 'Inviter un membre'
                       }
@@ -892,16 +891,14 @@ export function ManageCabinet({ role, userId }: ManageCabinetProps) {
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant={member.status === 'active' ? 'default' : 'secondary'}
+                        variant="default"
                         className={
-                          member.status === 'active'
-                            ? role === 'notaire'
-                              ? 'bg-orange-600'
-                              : 'bg-blue-600'
-                            : ''
+                          role === 'notaire'
+                            ? 'bg-orange-600'
+                            : 'bg-blue-600'
                         }
                       >
-                        {member.status === 'active' ? 'Actif' : 'En attente'}
+                        Membre
                       </Badge>
                     </TableCell>
                     {currentUserRole && canRemoveMembers(currentUserRole) && (

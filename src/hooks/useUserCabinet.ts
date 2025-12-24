@@ -29,11 +29,10 @@ export function useUserCabinet(userId: string | undefined, role: 'avocat' | 'not
 
         const cabinets = Array.isArray(data) ? (data as unknown[]) : [];
         
-        // Filtrer par rôle et status actif
+        // Filtrer par rôle (plus de filtre sur le statut)
         const activeCabinet = cabinets.find((c) => {
           const cabinetRole = String((c as Record<string, unknown>)['role']);
-          const memberStatus = String((c as Record<string, unknown>)['status'] || '');
-          return cabinetRole === role && memberStatus === 'active';
+          return cabinetRole === role;
         });
 
         if (activeCabinet) {

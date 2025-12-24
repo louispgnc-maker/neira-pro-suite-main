@@ -1,6 +1,6 @@
--- Simple, minimal RPC to return cabinet members when caller is member/owner
--- Safe and easy: checks caller is owner OR active member OR pending invite by JWT email
--- Use this if you just want "chaque membre voit les autres" without the extra diagnostics/indexing.
+-- Simplification complète: un membre est un membre, point.
+-- Tout membre du cabinet voit TOUS les autres membres
+-- Plus de distinction actif/inactif, owner/non-owner
 
 BEGIN;
 
@@ -25,35 +25,27 @@ SECURITY DEFINER
 STABLE
 SET search_path = public
 AS $$
-DECLARE
-  v_jwt json := NULLIF(current_setting('request.jwt.claims', true), '')::json;
-  v_email text := lower(coalesce(v_jwt ->> 'email', ''));
 BEGIN
-  -- allow owner: return all members of the cabinet
-  IF EXISTS (SELECT 1 FROM public.cabinets c WHERE c.id = cabinet_id_param AND c.owner_id = auth.uid()) THEN
-    RETURN QUERY SELECT cm.* FROM public.cabinet_members cm WHERE cm.cabinet_id = cabinet_id_param ORDER BY cm.created_at;
+  -- Si l'utilisateur est membre du cabinet (peu importe le statut) OU owner
+  -- → retourne TOUS les membres
+  IF EXISTS (
+    SELECT 1 FROM public.cabinet_members cm 
+    WHERE cm.cabinet_id = cabinet_id_param 
+    AND cm.user_id = auth.uid()
+  ) OR EXISTS (
+    SELECT 1 FROM public.cabinets c 
+    WHERE c.id = cabinet_id_param 
+    AND c.owner_id = auth.uid()
+  ) THEN
+    RETURN QUERY 
+    SELECT cm.* 
+    FROM public.cabinet_members cm 
+    WHERE cm.cabinet_id = cabinet_id_param 
+    ORDER BY cm.created_at;
     RETURN;
   END IF;
 
-  -- allow active members: return ALL members of the cabinet (not just active)
-  IF EXISTS (SELECT 1 FROM public.cabinet_members cm WHERE cm.cabinet_id = cabinet_id_param AND cm.user_id = auth.uid() AND cm.status = 'active') THEN
-    RETURN QUERY SELECT cm.* FROM public.cabinet_members cm WHERE cm.cabinet_id = cabinet_id_param ORDER BY cm.created_at;
-    RETURN;
-  END IF;
-
-  -- allow invited email: return active + that pending invitation row
-  IF v_email IS NOT NULL AND v_email <> '' THEN
-    IF EXISTS (SELECT 1 FROM public.cabinet_members cm WHERE cm.cabinet_id = cabinet_id_param AND cm.status = 'pending' AND lower(cm.email) = v_email) THEN
-      RETURN QUERY
-      SELECT cm.* FROM public.cabinet_members cm
-      WHERE cm.cabinet_id = cabinet_id_param
-        AND (cm.status = 'active' OR (cm.status = 'pending' AND lower(cm.email) = v_email))
-      ORDER BY cm.created_at;
-      RETURN;
-    END IF;
-  END IF;
-
-  -- otherwise nothing
+  -- Sinon rien
   RETURN;
 END;
 $$;

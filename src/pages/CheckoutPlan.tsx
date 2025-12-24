@@ -122,18 +122,18 @@ export default function CheckoutPlan() {
         .eq('role', role)
         .single();
 
-      // Si cabinet existant, vérifier le nombre de membres actifs
+      // Si cabinet existant, vérifier le nombre de membres
       if (existingCabinets) {
         const { data: membersData } = await supabase
           .rpc('get_cabinet_members_simple', { cabinet_id_param: existingCabinets.id });
         
-        const activeMembersCount = membersData?.filter((m: any) => m.status === 'active').length || 0;
+        const activeMembersCount = membersData?.length || 0;
         const maxMembersForPlan = planId === 'essentiel' ? 1 : numberOfUsers;
         
         if (activeMembersCount > maxMembersForPlan) {
           setLoading(false);
           toast.error("Nombre de membres insuffisant", {
-            description: `Votre cabinet compte actuellement ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''} actif${activeMembersCount > 1 ? 's' : ''}. Vous devez sélectionner au moins ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''} pour ce plan ou retirer des membres avant de changer d'offre.`,
+            description: `Votre cabinet compte actuellement ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''}. Vous devez sélectionner au moins ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''} pour ce plan ou retirer des membres avant de changer d'offre.`,
             duration: 6000
           });
           return;

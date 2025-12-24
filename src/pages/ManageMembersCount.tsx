@@ -94,10 +94,10 @@ export default function ManageMembersCount() {
           console.log('max_members from DB:', maxMembers, 'type:', typeof maxMembers);
           
           if (maxMembers === null || maxMembers === undefined) {
-            // Compter les membres actifs d'abord
+            // Compter les membres d'abord
             const { data: tempMembersData } = await supabase
               .rpc('get_cabinet_members_simple', { cabinet_id_param: cabinet.cabinet_id });
-            const tempActiveCount = tempMembersData?.filter((m: any) => m.status === 'active').length || 0;
+            const tempActiveCount = tempMembersData?.length || 0;
             maxMembers = Math.max(tempActiveCount, plan === 'professionnel' ? 2 : 1);
             console.log('max_members was null, using:', maxMembers);
           }
@@ -107,12 +107,12 @@ export default function ManageMembersCount() {
           setNewMembersCount(maxMembers);
           setBillingPeriod(cabinet.billing_period || 'monthly');
 
-          // Compter les membres actifs
+          // Compter les membres
           const { data: membersData } = await supabase
             .rpc('get_cabinet_members_simple', { cabinet_id_param: cabinet.cabinet_id });
 
           console.log('Members data:', membersData);
-          const activeCount = membersData?.filter((m: any) => m.status === 'active').length || 0;
+          const activeCount = membersData?.length || 0;
           console.log('Active members count:', activeCount);
           setActiveMembersCount(activeCount);
         }
