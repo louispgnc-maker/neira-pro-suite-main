@@ -534,15 +534,28 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         return;
       }
 
-      // Load sender profiles
+      // Load sender profiles WITH emails from cabinet_members
       const senderIds = [...new Set(data?.map(m => m.sender_id) || [])];
+      
+      // Get profiles
       const { data: profilesData } = await supabase
         .from('profiles')
         .select('id, first_name, last_name, photo_url')
         .in('id', senderIds);
 
+      // Get emails from cabinet_members
+      const { data: memberEmails } = await supabase
+        .from('cabinet_members')
+        .select('user_id, email')
+        .eq('cabinet_id', cabinetId)
+        .in('user_id', senderIds);
+
+      const emailsMap = new Map(
+        memberEmails?.map(m => [m.user_id, m.email]) || []
+      );
+
       const profilesMap = new Map(
-        profilesData?.map(p => [p.id, p]) || []
+        profilesData?.map(p => [p.id, { ...p, email: emailsMap.get(p.id) }]) || []
       );
 
       const messagesWithProfiles = (data || []).map(m => ({
@@ -1814,7 +1827,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                         <span className={`text-sm font-medium ${isOwnMessage ? 'order-2' : 'order-1'}`}>
                           {isOwnMessage 
                             ? 'Vous' 
-                            : `${msg.sender_profile?.first_name || ''} ${msg.sender_profile?.last_name || ''}`.trim() || 'Utilisateur'
+                            : getDisplayName(msg.sender_profile)
                           }
                         </span>
                         <span className={`text-xs text-muted-foreground ${isOwnMessage ? 'order-1' : 'order-2'}`}>
