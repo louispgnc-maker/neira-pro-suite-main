@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { BarChart3, FileText, Users as UsersIcon, FileSignature, HardDrive, AlertTriangle, TrendingUp, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react';
 import { BuySignaturesDialog } from './BuySignaturesDialog';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 
 interface CabinetMember {
   id: string;
@@ -32,19 +33,23 @@ interface CabinetStatsProps {
   members: CabinetMember[];
 }
 
-const PLAN_LIMITS: Record<string, { dossiers: number; clients: number; signatures: number; storage: number }> = {
-  'essentiel': { dossiers: 100, clients: 30, signatures: 15, storage: 20 },
-  'professionnel': { dossiers: 600, clients: 200, signatures: 80, storage: 100 },
-  'cabinet-plus': { dossiers: 999999, clients: 999999, signatures: 999999, storage: 999999 }
-};
-
 export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: CabinetStatsProps) {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<MemberStats[]>([]);
   const [expandedMembers, setExpandedMembers] = useState<Set<string>>(new Set());
   const [buyDialogOpen, setBuyDialogOpen] = useState(false);
 
-  const limits = PLAN_LIMITS[subscriptionPlan] || PLAN_LIMITS['essentiel'];
+  // Utiliser le hook pour récupérer les vraies limites depuis la DB (incluant les add-ons)
+  const subscriptionLimits = useSubscriptionLimits(role);
+  
+  // Convertir les limites pour l'utilisation locale
+  const limits = {
+    dossiers: subscriptionLimits.max_dossiers || 999999,
+    clients: subscriptionLimits.max_clients || 999999,
+    signatures: subscriptionLimits.max_signatures_per_month || 999999,
+    storage: subscriptionLimits.max_storage_bytes ? Math.round(subscriptionLimits.max_storage_bytes / (1024 * 1024 * 1024)) : 999999
+  };
+
   const colorClass = role === 'notaire' ? 'text-orange-600' : 'text-blue-600';
   const bgClass = role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600';
   const borderClass = role === 'notaire' ? 'border-orange-200' : 'border-blue-200';
