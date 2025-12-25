@@ -77,7 +77,7 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
         // Récupérer les détails du cabinet avec les limites réelles
         const { data: cabinetDetails } = await supabase
           .from('cabinets')
-          .select('subscription_plan, max_storage_go, max_dossiers, max_clients, max_signatures_per_month, signature_addon_quantity')
+          .select('subscription_plan, max_storage_go, max_dossiers, max_clients, max_signatures_per_month')
           .eq('id', cabinet.id)
           .single();
 
@@ -91,9 +91,17 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
         // Utiliser les valeurs de la base de données, avec fallback sur PLAN_LIMITS
         const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.essentiel;
         
-        // Calculer la limite totale de signatures (plan de base + addon)
+        // Récupérer l'addon de signatures pour CE membre spécifique
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('signature_addon_quantity')
+          .eq('cabinet_id', cabinet.id)
+          .eq('user_id', user.id)
+          .single();
+        
+        // Calculer la limite totale de signatures (plan de base + addon personnel)
         const baseSignatures = cabinetDetails.max_signatures_per_month ?? planLimits.max_signatures_per_month;
-        const addonSignatures = cabinetDetails.signature_addon_quantity || 0;
+        const addonSignatures = memberData?.signature_addon_quantity || 0;
         const totalSignatures = baseSignatures !== null ? baseSignatures + addonSignatures : null;
         
         console.log('📊 Subscription limits loaded:', {

@@ -89,18 +89,19 @@ export function BuySignaturesDialog({
         throw new Error(`Aucun cabinet ${role} trouvé`);
       }
 
-      // 2. Mettre à jour le cabinet avec le nouveau forfait de signatures
+      // 2. Mettre à jour le membre du cabinet avec le nouveau forfait de signatures (PAR UTILISATEUR)
       const { error: updateError } = await supabase
-        .from('cabinets')
+        .from('cabinet_members')
         .update({
           signature_addon_quantity: selectedPackage.quantity,
           signature_addon_price: selectedPackage.price,
           signature_addon_purchased_at: new Date().toISOString()
         })
-        .eq('id', cabinet.id);
+        .eq('cabinet_id', cabinet.id)
+        .eq('user_id', user.id);
 
       if (updateError) {
-        console.error('Erreur mise à jour cabinet:', updateError);
+        console.error('Erreur mise à jour membre:', updateError);
         throw new Error('Erreur lors de la mise à jour du forfait');
       }
 
@@ -110,8 +111,9 @@ export function BuySignaturesDialog({
       //   description: `Forfait ${selectedPackage.label} - Prorata mois en cours`
       // });
 
-      console.log('✅ Forfait signatures ajouté:', {
+      console.log('✅ Forfait signatures ajouté pour l\'utilisateur:', {
         cabinet_id: cabinet.id,
+        user_id: user.id,
         quantity: selectedPackage.quantity,
         price: selectedPackage.price,
         new_monthly_price: newMonthlyPrice,
