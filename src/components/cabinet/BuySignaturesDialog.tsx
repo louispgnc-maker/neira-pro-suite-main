@@ -51,7 +51,7 @@ export function BuySignaturesDialog({
 
   const packages = packagesConfig[subscriptionPlan] || [];
 
-  // Calculer la date d'expiration dès l'ouverture du dialogue
+  // Calculer la date d'expiration et le prorata dès l'ouverture du dialogue
   useEffect(() => {
     if (!open) return;
     
@@ -90,20 +90,21 @@ export function BuySignaturesDialog({
     calculateExpiration();
   }, [open, role]);
 
-  // Calcul du prorata pour le mois en cours (basé sur les jours restants du mois)
-  const calculateProrata = (monthlyAddon: number) => {
-    const now = new Date();
-    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-    const daysRemaining = daysInMonth - now.getDate() + 1;
-    return Math.round((monthlyAddon * daysRemaining / daysInMonth) * 100) / 100;
-  };
-
-  const newMonthlyPrice = selectedPackage 
-    ? currentMonthlyPrice + selectedPackage.price 
-    : currentMonthlyPrice;
-  
-  const prorataAmount = selectedPackage 
-    ? calculateProrata(selectedPackage.price)
+  // Calcul du prorata basé sur le cycle d'abonnement (pas le mois calendaire)
+  const prorataAmount = selectedPackage && expirationDate 
+    ? (() => {
+        const now = new Date();
+        const totalDaysInCycle = Math.ceil((expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // Calculer le début du cycle actuel (expirationDate - 1 mois)
+        const cycleStart = new Date(expirationDate);
+        cycleStart.setMonth(cycleStart.getMonth() - 1);
+        
+        const totalCycleDays = Math.ceil((expirationDate.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.max(1, totalDaysInCycle);
+        
+        return Math.round((selectedPackage.price * daysRemaining / totalCycleDays) * 100) / 100;
+      })()
     : 0;
 
   const handlePurchase = async () => {
