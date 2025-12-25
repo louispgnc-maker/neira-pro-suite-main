@@ -61,7 +61,6 @@ export function DashboardNotaire() {
           .from('cabinet_members')
           .select('cabinet_id')
           .eq('user_id', user.id)
-          .eq('status', 'active')
           .single();
         
         cabinetId = memberData?.cabinet_id;

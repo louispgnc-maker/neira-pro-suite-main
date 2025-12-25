@@ -302,8 +302,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       const { data: membersData, error: membersError } = await supabase
         .from('cabinet_members')
         .select('id, user_id, role_cabinet, status, email')
-        .eq('cabinet_id', cabinetId)
-        .eq('status', 'active');
+        .eq('cabinet_id', cabinetId);
 
       if (membersError) {
         console.error('Error loading members:', membersError);

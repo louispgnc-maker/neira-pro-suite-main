@@ -172,13 +172,12 @@ export default function Subscription() {
 
         console.log('Profile data:', profileData, 'Error:', profileError);
 
-        // TOUJOURS récupérer le membership ACTIF (un seul possible grâce à la contrainte DB)
+        // TOUJOURS récupérer le membership (un seul possible grâce à la contrainte DB)
         // Le cabinet_id du profil peut être obsolète si l'utilisateur a changé de cabinet
         const { data: memberData, error: memberError } = await supabase
           .from('cabinet_members')
           .select('cabinet_id, role_cabinet')
           .eq('user_id', user.id)
-          .eq('status', 'active')
           .single();
         
         console.log('Active member data:', memberData, 'Error:', memberError);
@@ -204,12 +203,11 @@ export default function Subscription() {
         if (cabinetId) {
           console.log('Found cabinet:', cabinetId);
           
-          // Charger le nombre de membres actifs
+          // Charger le nombre de membres
           const { data: membersData } = await supabase
             .from('cabinet_members')
             .select('id', { count: 'exact' })
-            .eq('cabinet_id', cabinetId)
-            .eq('status', 'active');
+            .eq('cabinet_id', cabinetId);
           
           const memberCount = membersData?.length || 0;
           setActiveMembersCount(memberCount);

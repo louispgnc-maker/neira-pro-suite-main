@@ -49,7 +49,6 @@ export default function ManageMembersCount() {
           .from('cabinet_members')
           .select('cabinet_id, cabinets!inner(role)')
           .eq('user_id', user.id)
-          .eq('status', 'active')
           .eq('cabinets.role', role);
 
         console.log('Member data for role', role, ':', memberData);
@@ -153,7 +152,6 @@ export default function ManageMembersCount() {
         .from('cabinet_members')
         .select('cabinet_id, cabinets!inner(role)')
         .eq('user_id', user?.id)
-        .eq('status', 'active')
         .eq('cabinets.role', role);
 
       if (!memberData || memberData.length === 0) {

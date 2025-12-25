@@ -62,7 +62,6 @@ export default function CheckoutProfessionnel() {
           .from('cabinet_members')
           .select('cabinet_id')
           .eq('user_id', userId)
-          .eq('status', 'active')
           .single();
         
         console.log('CheckoutProfessionnel: Member data:', memberData, 'Error:', memberError);
@@ -71,8 +70,7 @@ export default function CheckoutProfessionnel() {
           const { data: membersData, error: membersError } = await supabase
             .from('cabinet_members')
             .select('id', { count: 'exact' })
-            .eq('cabinet_id', memberData.cabinet_id)
-            .eq('status', 'active');
+            .eq('cabinet_id', memberData.cabinet_id);
           
           console.log('CheckoutProfessionnel: Members data:', membersData, 'Count:', membersData?.length, 'Error:', membersError);
           

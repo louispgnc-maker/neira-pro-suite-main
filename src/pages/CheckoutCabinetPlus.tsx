@@ -62,18 +62,16 @@ export default function CheckoutCabinetPlus() {
           .from('cabinet_members')
           .select('cabinet_id')
           .eq('user_id', userId)
-          .eq('status', 'active')
           .single();
         
         console.log('CheckoutCabinetPlus: Member data:', memberData, 'Error:', memberError);
         
         if (memberData?.cabinet_id) {
-          // Compter les membres actifs
+          // Compter les membres
           const { data: membersData, error: membersError } = await supabase
             .from('cabinet_members')
             .select('id', { count: 'exact' })
-            .eq('cabinet_id', memberData.cabinet_id)
-            .eq('status', 'active');
+            .eq('cabinet_id', memberData.cabinet_id);
           
           console.log('CheckoutCabinetPlus: Members data:', membersData, 'Count:', membersData?.length, 'Error:', membersError);
           

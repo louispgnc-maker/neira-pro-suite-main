@@ -116,7 +116,6 @@ export function AppSidebar() {
           .from('cabinet_members')
           .select('cabinet_id, cabinets!inner(role)')
           .eq('user_id', user.id)
-          .eq('status', 'active')
           .limit(1)
           .single();
         
