@@ -322,15 +322,17 @@ export function BuySignaturesDialog({
               
               <div className="space-y-2 bg-gray-50 rounded-lg p-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Forfait</span>
+                  <span className="text-gray-600">Prix du forfait</span>
                   <span className="font-medium">{selectedPackage.price}€</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Prorata</span>
-                  <span className="font-medium">-{(selectedPackage.price - prorataAmount).toFixed(2)}€</span>
-                </div>
+                {prorataAmount < selectedPackage.price && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Réduction (prorata)</span>
+                    <span className="font-medium">-{(selectedPackage.price - prorataAmount).toFixed(2)}€</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-base font-bold border-t pt-2">
-                  <span>Total</span>
+                  <span>À payer aujourd'hui</span>
                   <span className={
                     selectedPackage.isEmergency
                       ? 'text-red-600'
@@ -352,7 +354,13 @@ export function BuySignaturesDialog({
                 onOpenChange(false);
                 setSelectedPackage(null);
               }}
-              className="flex-1"
+              className={`flex-1 ${
+                selectedPackage?.isEmergency
+                  ? 'bg-red-100 border-red-600 text-red-700 hover:bg-red-200'
+                  : role === 'notaire'
+                    ? 'bg-orange-100 border-orange-600 text-orange-700 hover:bg-orange-200'
+                    : 'bg-blue-100 border-blue-600 text-blue-700 hover:bg-blue-200'
+              }`}
               disabled={loading}
             >
               Annuler
