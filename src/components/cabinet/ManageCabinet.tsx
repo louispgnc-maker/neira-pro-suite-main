@@ -11,6 +11,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { canChangeRoles, canInviteMembers, canRemoveMembers, canAssignRole, canModifyMemberRole } from '@/lib/cabinetPermissions';
 import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight } from 'lucide-react';
 import { MemberUsageStats } from './MemberUsageStats';
+import { CabinetStats } from './CabinetStats';
 import {
   Table,
   TableBody,
@@ -957,6 +958,16 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Statistiques globales du cabinet - visible seulement pour le fondateur */}
+      {isOwner && cabinet && (
+        <CabinetStats
+          cabinetId={cabinet.id}
+          subscriptionPlan={cabinet.subscription_plan || 'essentiel'}
+          role={role}
+          members={members}
+        />
+      )}
       
     </div>
   );

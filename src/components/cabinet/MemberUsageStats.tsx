@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/lib/supabaseClient';
-import { BarChart3, FileText, Users, FileSignature, HardDrive, AlertTriangle } from 'lucide-react';
+import { BarChart3, FileText, Users, FileSignature, HardDrive, AlertTriangle, ShoppingCart } from 'lucide-react';
 
 interface MemberUsageStatsProps {
   userId: string;
@@ -34,6 +35,7 @@ const PLAN_LIMITS: Record<string, { dossiers: number; clients: number; signature
 };
 
 export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: MemberUsageStatsProps) {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [usage, setUsage] = useState<UsageData>({
@@ -51,51 +53,64 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
     if (open) {
       loadUsageData();
     }
-  }, [open, userId, cabinetId]);
+  }, [open, userId, cabinetId, role]);
 
   const loadUsageData = async () => {
     setLoading(true);
     try {
+      console.log('🔍 Chargement stats pour:', { userId, role, cabinetId });
+
       // Compter les dossiers créés par cet utilisateur pour ce rôle (notaire/avocat)
-      const { count: dossiersCount } = await supabase
+      const { count: dossiersCount, error: dossiersError } = await supabase
         .from('dossiers')
         .select('*', { count: 'exact', head: true })
         .eq('owner_id', userId)
         .eq('role', role);
 
+      console.log('📁 Dossiers count:', dossiersCount, dossiersError);
+
       // Compter les clients créés par cet utilisateur pour ce rôle
-      const { count: clientsCount } = await supabase
+      const { count: clientsCount, error: clientsError } = await supabase
         .from('clients')
         .select('*', { count: 'exact', head: true })
         .eq('owner_id', userId)
         .eq('role', role);
 
+      console.log('👥 Clients count:', clientsCount, clientsError);
+
       // Récupérer les signatures utilisées depuis cabinet_members
-      const { data: memberData } = await supabase
+      const { data: memberData, error: sigError } = await supabase
         .from('cabinet_members')
         .select('signatures_used')
         .eq('user_id', userId)
         .eq('cabinet_id', cabinetId)
         .single();
 
+      console.log('✍️ Signatures:', memberData?.signatures_used, sigError);
+
       // Pour le stockage, on va compter les documents pour ce rôle
-      const { count: documentsCount } = await supabase
+      const { count: documentsCount, error: docsError } = await supabase
         .from('documents')
         .select('*', { count: 'exact', head: true })
         .eq('owner_id', userId)
         .eq('role', role);
 
+      console.log('📄 Documents count:', documentsCount, docsError);
+
       // Approximation: 1 document = ~500 KB en moyenne
       const storageGB = ((documentsCount || 0) * 0.5) / 1024;
 
-      setUsage({
+      const newUsage = {
         dossiers: dossiersCount || 0,
         clients: clientsCount || 0,
         signatures: memberData?.signatures_used || 0,
         storage: Math.round(storageGB * 100) / 100
-      });
+      };
+
+      console.log('📊 Usage final:', newUsage);
+      setUsage(newUsage);
     } catch (error) {
-      console.error('Error loading usage data:', error);
+      console.error('❌ Error loading usage data:', error);
     } finally {
       setLoading(false);
     }
@@ -259,6 +274,62 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
             <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground">
               <p><strong>Note :</strong> Les statistiques sont calculées individuellement pour chaque membre du cabinet.</p>
             </div>
+
+            {/* Section d'achat de crédits pour plan professionnel */}
+            {subscriptionPlan === 'professionnel' && (
+              <div className="border-t pt-4 space-y-3">
+                <h4 className="text-sm font-semibold flex items-center gap-2">
+                  <ShoppingCart className="h-4 w-4" />
+                  Acheter des crédits supplémentaires
+                </h4>
+                <div className="grid gap-2">
+                  <Button
+                    variant="outline"
+                    className={`justify-between ${
+                      role === 'notaire' 
+                        ? 'hover:bg-orange-50 hover:border-orange-600' 
+                        : 'hover:bg-blue-50 hover:border-blue-600'
+                    }`}
+                  >
+                    <span className="text-sm">+50 Dossiers</span>
+                    <span className="font-semibold">29€</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className={`justify-between ${
+                      role === 'notaire' 
+                        ? 'hover:bg-orange-50 hover:border-orange-600' 
+                        : 'hover:bg-blue-50 hover:border-blue-600'
+                    }`}
+                  >
+                    <span className="text-sm">+50 Clients</span>
+                    <span className="font-semibold">19€</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className={`justify-between ${
+                      role === 'notaire' 
+                        ? 'hover:bg-orange-50 hover:border-orange-600' 
+                        : 'hover:bg-blue-50 hover:border-blue-600'
+                    }`}
+                  >
+                    <span className="text-sm">+50 Signatures</span>
+                    <span className="font-semibold">39€</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className={`justify-between ${
+                      role === 'notaire' 
+                        ? 'hover:bg-orange-50 hover:border-orange-600' 
+                        : 'hover:bg-blue-50 hover:border-blue-600'
+                    }`}
+                  >
+                    <span className="text-sm">+50 Go Stockage</span>
+                    <span className="font-semibold">15€</span>
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </DialogContent>
