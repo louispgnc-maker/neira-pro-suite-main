@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabaseClient';
-import { BarChart3, FileText, Users as UsersIcon, FileSignature, HardDrive, AlertTriangle, TrendingUp } from 'lucide-react';
+import { BarChart3, FileText, Users as UsersIcon, FileSignature, HardDrive, AlertTriangle, TrendingUp, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CabinetMember {
   id: string;
@@ -39,11 +40,24 @@ const PLAN_LIMITS: Record<string, { dossiers: number; clients: number; signature
 export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: CabinetStatsProps) {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<MemberStats[]>([]);
+  const [expandedMembers, setExpandedMembers] = useState<Set<string>>(new Set());
 
   const limits = PLAN_LIMITS[subscriptionPlan] || PLAN_LIMITS['essentiel'];
   const colorClass = role === 'notaire' ? 'text-orange-600' : 'text-blue-600';
   const bgClass = role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600';
   const borderClass = role === 'notaire' ? 'border-orange-200' : 'border-blue-200';
+
+  const toggleMemberExpanded = (userId: string) => {
+    setExpandedMembers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(userId)) {
+        newSet.delete(userId);
+      } else {
+        newSet.add(userId);
+      }
+      return newSet;
+    });
+  };
 
   useEffect(() => {
     loadAllStats();
@@ -210,33 +224,204 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
             <TrendingUp className="h-4 w-4" />
             Détail par membre
           </h4>
-          <div className="space-y-2">
-            {stats.map((member) => (
-              <div key={member.user_id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{member.nom || member.email}</p>
-                  <p className="text-xs text-muted-foreground">{member.email}</p>
+          <div className="space-y-3">
+            {stats.map((member) => {
+              const isExpanded = expandedMembers.has(member.user_id);
+              const memberStorageGB = (member.documents * 0.5) / 1024;
+              
+              return (
+                <div key={member.user_id} className="border rounded-lg overflow-hidden">
+                  {/* En-tête du membre - toujours visible */}
+                  <div 
+                    className="flex items-center justify-between p-3 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => toggleMemberExpanded(member.user_id)}
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{member.nom || member.email}</p>
+                      <p className="text-xs text-muted-foreground">{member.email}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex gap-4 text-xs">
+                        <div className="text-center">
+                          <p className="font-semibold">{member.dossiers}</p>
+                          <p className="text-muted-foreground">dossiers</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-semibold">{member.clients}</p>
+                          <p className="text-muted-foreground">clients</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-semibold">{member.signatures}</p>
+                          <p className="text-muted-foreground">signatures</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-semibold">{member.documents}</p>
+                          <p className="text-muted-foreground">docs</p>
+                        </div>
+                      </div>
+                      {isExpanded ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+                    </div>
+                  </div>
+
+                  {/* Détails expandables */}
+                  {isExpanded && (
+                    <div className="p-4 bg-background space-y-4 border-t">
+                      {/* Dossiers */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">Dossiers</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(member.dossiers, limits.dossiers))}`}>
+                              {member.dossiers}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              / {limits.dossiers >= 999999 ? '∞' : limits.dossiers}
+                            </span>
+                          </div>
+                        </div>
+                        {limits.dossiers < 999999 && (
+                          <Progress 
+                            value={getUsagePercentage(member.dossiers, limits.dossiers)} 
+                            className="h-2"
+                          />
+                        )}
+                      </div>
+
+                      {/* Clients */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">Clients</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(member.clients, limits.clients))}`}>
+                              {member.clients}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              / {limits.clients >= 999999 ? '∞' : limits.clients}
+                            </span>
+                          </div>
+                        </div>
+                        {limits.clients < 999999 && (
+                          <Progress 
+                            value={getUsagePercentage(member.clients, limits.clients)} 
+                            className="h-2"
+                          />
+                        )}
+                      </div>
+
+                      {/* Signatures */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <FileSignature className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">Signatures (ce mois)</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(member.signatures, limits.signatures))}`}>
+                              {member.signatures}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              / {limits.signatures >= 999999 ? '∞' : limits.signatures}
+                            </span>
+                          </div>
+                        </div>
+                        {limits.signatures < 999999 && (
+                          <Progress 
+                            value={getUsagePercentage(member.signatures, limits.signatures)} 
+                            className="h-2"
+                          />
+                        )}
+                      </div>
+
+                      {/* Stockage */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <HardDrive className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">Stockage</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(memberStorageGB, limits.storage))}`}>
+                              {memberStorageGB.toFixed(2)} Go
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              / {limits.storage >= 999999 ? '∞' : `${limits.storage} Go`}
+                            </span>
+                          </div>
+                        </div>
+                        {limits.storage < 999999 && (
+                          <Progress 
+                            value={getUsagePercentage(memberStorageGB, limits.storage)} 
+                            className="h-2"
+                          />
+                        )}
+                      </div>
+
+                      {/* Section d'achat de crédits pour plan professionnel */}
+                      {subscriptionPlan === 'professionnel' && (
+                        <div className="border-t pt-4 space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <ShoppingCart className="h-4 w-4" />
+                            Acheter des crédits supplémentaires
+                          </h4>
+                          <div className="grid gap-2">
+                            <Button
+                              variant="outline"
+                              className={`justify-between ${
+                                role === 'notaire' 
+                                  ? 'hover:bg-orange-50 hover:border-orange-600' 
+                                  : 'hover:bg-blue-50 hover:border-blue-600'
+                              }`}
+                            >
+                              <span className="text-sm">+50 Dossiers</span>
+                              <span className="font-semibold">29€</span>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className={`justify-between ${
+                                role === 'notaire' 
+                                  ? 'hover:bg-orange-50 hover:border-orange-600' 
+                                  : 'hover:bg-blue-50 hover:border-blue-600'
+                              }`}
+                            >
+                              <span className="text-sm">+50 Clients</span>
+                              <span className="font-semibold">19€</span>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className={`justify-between ${
+                                role === 'notaire' 
+                                  ? 'hover:bg-orange-50 hover:border-orange-600' 
+                                  : 'hover:bg-blue-50 hover:border-blue-600'
+                              }`}
+                            >
+                              <span className="text-sm">+50 Signatures</span>
+                              <span className="font-semibold">39€</span>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className={`justify-between ${
+                                role === 'notaire' 
+                                  ? 'hover:bg-orange-50 hover:border-orange-600' 
+                                  : 'hover:bg-blue-50 hover:border-blue-600'
+                              }`}
+                            >
+                              <span className="text-sm">+50 Go Stockage</span>
+                              <span className="font-semibold">15€</span>
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <div className="flex gap-4 text-xs">
-                  <div className="text-center">
-                    <p className="font-semibold">{member.dossiers}</p>
-                    <p className="text-muted-foreground">dossiers</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-semibold">{member.clients}</p>
-                    <p className="text-muted-foreground">clients</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-semibold">{member.signatures}</p>
-                    <p className="text-muted-foreground">signatures</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-semibold">{member.documents}</p>
-                    <p className="text-muted-foreground">docs</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

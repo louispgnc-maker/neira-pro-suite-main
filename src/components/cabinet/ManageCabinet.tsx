@@ -10,7 +10,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { canChangeRoles, canInviteMembers, canRemoveMembers, canAssignRole, canModifyMemberRole } from '@/lib/cabinetPermissions';
 import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight } from 'lucide-react';
-import { MemberUsageStats } from './MemberUsageStats';
 import { CabinetStats } from './CabinetStats';
 import {
   Table,
@@ -833,7 +832,6 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                   <TableHead>Email</TableHead>
                   <TableHead>Nom</TableHead>
                   <TableHead>Rôle</TableHead>
-                  {isOwner && <TableHead>Utilisation</TableHead>}
                   {currentUserRole && canRemoveMembers(currentUserRole) && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
@@ -898,20 +896,6 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                           </Badge>
                         )}
                     </TableCell>
-                    {isOwner && (
-                      <TableCell>
-                        {member.user_id && cabinet ? (
-                          <MemberUsageStats
-                            userId={member.user_id}
-                            cabinetId={cabinet.id}
-                            subscriptionPlan={cabinet.subscription_plan || 'essentiel'}
-                            role={role}
-                          />
-                        ) : (
-                          <span className="text-xs text-muted-foreground">Invitation en attente</span>
-                        )}
-                      </TableCell>
-                    )}
                     {currentUserRole && canRemoveMembers(currentUserRole) && (
                       <TableCell className="text-right">
                         {member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
@@ -948,7 +932,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                 ))}
                 {members.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={(currentUserRole && canRemoveMembers(currentUserRole)) ? 5 : 4} className="text-center text-muted-foreground">
+                    <TableCell colSpan={(currentUserRole && canRemoveMembers(currentUserRole)) ? 4 : 3} className="text-center text-muted-foreground">
                       Aucun membre pour le moment
                     </TableCell>
                   </TableRow>
