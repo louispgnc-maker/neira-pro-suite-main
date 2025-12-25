@@ -77,7 +77,7 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
         // Récupérer les détails du cabinet avec les limites réelles
         const { data: cabinetDetails } = await supabase
           .from('cabinets')
-          .select('subscription_plan, max_storage_go, max_dossiers, max_clients, max_signatures_per_month')
+          .select('subscription_plan, max_storage_go, max_dossiers, max_clients, max_signatures_per_month, signature_addon_quantity')
           .eq('id', cabinet.id)
           .single();
 
@@ -91,12 +91,19 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
         // Utiliser les valeurs de la base de données, avec fallback sur PLAN_LIMITS
         const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.essentiel;
         
+        // Calculer la limite totale de signatures (plan de base + addon)
+        const baseSignatures = cabinetDetails.max_signatures_per_month ?? planLimits.max_signatures_per_month;
+        const addonSignatures = cabinetDetails.signature_addon_quantity || 0;
+        const totalSignatures = baseSignatures !== null ? baseSignatures + addonSignatures : null;
+        
         console.log('📊 Subscription limits loaded:', {
           plan,
           max_storage_go: cabinetDetails.max_storage_go,
           max_dossiers: cabinetDetails.max_dossiers,
           max_clients: cabinetDetails.max_clients,
-          max_signatures: cabinetDetails.max_signatures_per_month,
+          base_signatures: baseSignatures,
+          addon_signatures: addonSignatures,
+          total_signatures: totalSignatures,
           cabinet_id: cabinet.id
         });
         
@@ -108,7 +115,7 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
             : null,
           max_dossiers: cabinetDetails.max_dossiers ?? planLimits.max_dossiers,
           max_clients: cabinetDetails.max_clients ?? planLimits.max_clients,
-          max_signatures_per_month: cabinetDetails.max_signatures_per_month ?? planLimits.max_signatures_per_month,
+          max_signatures_per_month: totalSignatures,
           loading: false,
         });
       } catch (error) {

@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CheckCircle2, ShoppingCart, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/contexts/AuthContext';
 
 type SignaturePackage = {
   quantity: number;
@@ -38,6 +40,7 @@ export function BuySignaturesDialog({
   currentMonthlyPrice,
   role
 }: BuySignaturesDialogProps) {
+  const { user } = useAuth();
   const [selectedPackage, setSelectedPackage] = useState<SignaturePackage | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -65,29 +68,72 @@ export function BuySignaturesDialog({
       return;
     }
 
+    if (!user) {
+      toast.error('Vous devez être connecté');
+      return;
+    }
+
     setLoading(true);
     
     try {
-      // TODO: Implémenter l'API d'achat
-      // 1. Créer une transaction Stripe pour le prorata
-      // 2. Mettre à jour l'abonnement avec le nouveau forfait
-      // 3. Enregistrer dans la base de données
+      // 1. Récupérer le cabinet de l'utilisateur pour le rôle actuel
+      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
       
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulation
+      if (!cabinetsData || !Array.isArray(cabinetsData)) {
+        throw new Error('Cabinet introuvable');
+      }
+
+      const cabinet = cabinetsData.find((c: any) => String(c.role) === role);
+      
+      if (!cabinet) {
+        throw new Error(`Aucun cabinet ${role} trouvé`);
+      }
+
+      // 2. Mettre à jour le cabinet avec le nouveau forfait de signatures
+      const { error: updateError } = await supabase
+        .from('cabinets')
+        .update({
+          signature_addon_quantity: selectedPackage.quantity,
+          signature_addon_price: selectedPackage.price,
+          signature_addon_purchased_at: new Date().toISOString()
+        })
+        .eq('id', cabinet.id);
+
+      if (updateError) {
+        console.error('Erreur mise à jour cabinet:', updateError);
+        throw new Error('Erreur lors de la mise à jour du forfait');
+      }
+
+      // TODO: Implémenter le paiement Stripe pour le prorata
+      // const prorataPayment = await createStripePayment({
+      //   amount: prorataAmount,
+      //   description: `Forfait ${selectedPackage.label} - Prorata mois en cours`
+      // });
+
+      console.log('✅ Forfait signatures ajouté:', {
+        cabinet_id: cabinet.id,
+        quantity: selectedPackage.quantity,
+        price: selectedPackage.price,
+        new_monthly_price: newMonthlyPrice,
+        prorata_paid: prorataAmount
+      });
       
       toast.success('Forfait signatures ajouté !', {
-        description: `Votre nouvel abonnement mensuel est de ${newMonthlyPrice}€/mois`
+        description: `${selectedPackage.quantity} signatures supplémentaires ajoutées. Nouveau prix: ${newMonthlyPrice}€/mois`
       });
+      
+      // Déclencher un événement pour rafraîchir les limites
+      window.dispatchEvent(new Event('subscription-updated'));
       
       onOpenChange(false);
       setSelectedPackage(null);
       
-      // Recharger la page pour mettre à jour les limites
+      // Recharger la page pour mettre à jour les limites partout
       setTimeout(() => window.location.reload(), 1000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de l\'achat:', error);
       toast.error('Erreur lors de l\'achat', {
-        description: 'Veuillez réessayer ou contacter le support'
+        description: error.message || 'Veuillez réessayer ou contacter le support'
       });
     } finally {
       setLoading(false);
