@@ -435,7 +435,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         }
       }
 
-      // Add direct conversations (existing private messages)
+      // Add direct conversations (only those with actual messages)
       const otherMembers = members.filter(m => m.user_id !== user.id);
       
       // Deduplicate members by user_id to avoid showing duplicate conversations
@@ -454,14 +454,17 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           .limit(1)
           .maybeSingle();
 
-        conversationsWithMembers.push({
-          id: `direct-${member.user_id}`,
-          name: getDisplayName(member.profile),
-          is_group: false,
-          member_ids: [user.id, member.user_id],
-          member_profiles: [member.profile] as any,
-          last_message_at: directLastMsg?.created_at || new Date(0).toISOString()
-        });
+        // Only show conversation if there's at least one message
+        if (directLastMsg) {
+          conversationsWithMembers.push({
+            id: `direct-${member.user_id}`,
+            name: getDisplayName(member.profile),
+            is_group: false,
+            member_ids: [user.id, member.user_id],
+            member_profiles: [member.profile] as any,
+            last_message_at: directLastMsg.created_at
+          });
+        }
       }
 
       // Sort conversations by last message time (most recent first)
