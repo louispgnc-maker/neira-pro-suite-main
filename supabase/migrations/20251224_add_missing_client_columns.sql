@@ -1,8 +1,16 @@
 -- Migration: Ajout des colonnes manquantes dans la table clients
 -- Date: 2024-12-24
 -- Fix: Erreur "Could not find the 'acceptation_conservation' column" lors de la création de clients
+-- Update: Ajout code_postal, ville, pays, prenom
 
 BEGIN;
+
+-- Colonnes d'adresse
+ALTER TABLE public.clients 
+  ADD COLUMN IF NOT EXISTS code_postal text,
+  ADD COLUMN IF NOT EXISTS ville text,
+  ADD COLUMN IF NOT EXISTS pays text DEFAULT 'France',
+  ADD COLUMN IF NOT EXISTS prenom text;
 
 -- Colonnes de consentement RGPD
 ALTER TABLE public.clients 
@@ -44,6 +52,18 @@ ALTER TABLE public.clients
   ADD COLUMN IF NOT EXISTS notes text;
 
 -- Commentaires
+COMMENT ON COLUMN public.clients.code_postal IS 
+'Code postal de l''adresse principale';
+
+COMMENT ON COLUMN public.clients.ville IS 
+'Ville de l''adresse principale';
+
+COMMENT ON COLUMN public.clients.pays IS 
+'Pays de l''adresse principale';
+
+COMMENT ON COLUMN public.clients.prenom IS 
+'Prénom du client (séparé du nom)';
+
 COMMENT ON COLUMN public.clients.acceptation_conservation IS 
 'Consentement du client pour la conservation de ses données personnelles';
 
