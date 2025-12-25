@@ -367,7 +367,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                         <div className="border-t pt-4 space-y-3">
                           <h4 className="text-sm font-semibold flex items-center gap-2">
                             <ShoppingCart className="h-4 w-4" />
-                            Acheter des crédits supplémentaires
+                            Acheter des signatures supplémentaires
                           </h4>
                           <div className="grid gap-2">
                             <Button
@@ -378,18 +378,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                                   : 'hover:bg-blue-50 hover:border-blue-600'
                               }`}
                             >
-                              <span className="text-sm">+50 Dossiers</span>
-                              <span className="font-semibold">29€</span>
-                            </Button>
-                            <Button
-                              variant="outline"
-                              className={`justify-between ${
-                                role === 'notaire' 
-                                  ? 'hover:bg-orange-50 hover:border-orange-600' 
-                                  : 'hover:bg-blue-50 hover:border-blue-600'
-                              }`}
-                            >
-                              <span className="text-sm">+50 Clients</span>
+                              <span className="text-sm">+20 Signatures</span>
                               <span className="font-semibold">19€</span>
                             </Button>
                             <Button
@@ -411,8 +400,8 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                                   : 'hover:bg-blue-50 hover:border-blue-600'
                               }`}
                             >
-                              <span className="text-sm">+50 Go Stockage</span>
-                              <span className="font-semibold">15€</span>
+                              <span className="text-sm">+100 Signatures</span>
+                              <span className="font-semibold">69€</span>
                             </Button>
                           </div>
                         </div>
