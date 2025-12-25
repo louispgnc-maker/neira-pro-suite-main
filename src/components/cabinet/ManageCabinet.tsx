@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { canChangeRoles, canInviteMembers, canRemoveMembers, canAssignRole, canModifyMemberRole } from '@/lib/cabinetPermissions';
 import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight } from 'lucide-react';
+import { MemberUsageStats } from './MemberUsageStats';
 import {
   Table,
   TableBody,
@@ -831,7 +832,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                   <TableHead>Email</TableHead>
                   <TableHead>Nom</TableHead>
                   <TableHead>Rôle</TableHead>
-                  <TableHead>Statut</TableHead>
+                  <TableHead>Utilisation</TableHead>
                   {currentUserRole && canRemoveMembers(currentUserRole) && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
@@ -897,16 +898,16 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                         )}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="default"
-                        className={
-                          role === 'notaire'
-                            ? 'bg-orange-600'
-                            : 'bg-blue-600'
-                        }
-                      >
-                        Membre
-                      </Badge>
+                      {member.user_id && cabinet ? (
+                        <MemberUsageStats
+                          userId={member.user_id}
+                          cabinetId={cabinet.id}
+                          subscriptionPlan={cabinet.subscription_plan || 'essentiel'}
+                          role={role}
+                        />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Invitation en attente</span>
+                      )}
                     </TableCell>
                     {currentUserRole && canRemoveMembers(currentUserRole) && (
                       <TableCell className="text-right">
