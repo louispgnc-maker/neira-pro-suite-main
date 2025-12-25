@@ -10,7 +10,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { canChangeRoles, canInviteMembers, canRemoveMembers, canAssignRole, canModifyMemberRole } from '@/lib/cabinetPermissions';
 import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight } from 'lucide-react';
-import { BuySignatures } from './BuySignatures';
 import {
   Table,
   TableBody,
@@ -955,15 +954,6 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
           </div>
         </CardContent>
       </Card>
-
-      {/* Acheter des signatures supplémentaires - Seulement pour le fondateur */}
-      {isOwner && cabinet && (cabinet.subscription_plan === 'essentiel' || cabinet.subscription_plan === 'professionnel') && (
-        <BuySignatures 
-          cabinetId={cabinet.id}
-          subscriptionPlan={cabinet.subscription_plan}
-          role={role}
-        />
-      )}
       
     </div>
   );
