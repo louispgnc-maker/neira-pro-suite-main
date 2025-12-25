@@ -5,9 +5,15 @@ import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Crown, Zap, Users, ArrowLeft, Calendar, HardDrive, CreditCard, Clock, X } from 'lucide-react';
+import { Check, Crown, Zap, Users, ArrowLeft, Calendar, HardDrive, CreditCard, Clock, X, CheckCircle2, Info } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { toast } from 'sonner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type SubscriptionData = {
   tier: string;
@@ -291,7 +297,7 @@ export default function Subscription() {
   }
 
   return (
-    <>
+    <TooltipProvider delayDuration={0}>
       <AppLayout>
         <div className="container mx-auto p-8 max-w-6xl">
           {/* Bouton retour */}
@@ -465,62 +471,157 @@ export default function Subscription() {
                 En tant que gérant du cabinet, vous pouvez modifier l'abonnement ci-dessous.
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {plans.filter(p => p.id !== subscriptionData?.tier).map((plan) => {
                   const Icon = plan.icon;
+                  const isProfessionnel = plan.id === 'professionnel';
+                  const isEssentiel = plan.id === 'essentiel';
+                  const isCabinetPlus = plan.id === 'cabinet-plus';
+                  
                   return (
-                    <Card key={plan.id} className="border-2 border-primary/30 hover:border-primary transition-all hover:shadow-lg bg-card">
-                      <CardHeader className="pb-3">
-                        <div className={`w-12 h-12 rounded-lg ${plan.bgColor} bg-opacity-20 flex items-center justify-center mb-3`}>
-                          <Icon className={`h-6 w-6 ${plan.color}`} />
+                    <Card 
+                      key={plan.id} 
+                      className={`p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+                        isProfessionnel ? 'border-2 border-purple-500 relative' : 
+                        isEssentiel ? 'hover:border-2 hover:border-blue-500' :
+                        'hover:border-2 hover:border-orange-500'
+                      }`}
+                    >
+                      {isProfessionnel && (
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-xs font-semibold">
+                          POPULAIRE
                         </div>
-                        {plan.popular && (
-                          <Badge className="mb-2 w-fit bg-purple-600 text-white">Populaire</Badge>
-                        )}
-                        <CardTitle className="text-xl text-black">Neira {plan.name}</CardTitle>
-                        <CardDescription className="text-black">{plan.description}</CardDescription>
-                        <div className="mt-4">
-                          <span className="text-3xl font-bold text-black">{plan.price}</span>
-                          <span className="text-black">/mois</span>
+                      )}
+                      
+                      <div className="text-center mb-6">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA {plan.name.toUpperCase()}</h3>
+                        <div className={`text-4xl font-bold mb-2 ${
+                          isEssentiel ? 'text-blue-600' : isProfessionnel ? 'text-purple-600' : 'text-orange-600'
+                        }`}>
+                          {plan.price}
                         </div>
-                        {plan.limits && (
-                          <div className="mt-3 p-2 bg-muted/50 rounded-md">
-                            <p className="text-xs text-black font-medium">{plan.limits}</p>
-                          </div>
-                        )}
-                      </CardHeader>
-                      <CardContent>
-                        <div className="mb-4">
-                          <h4 className="font-semibold text-black mb-3 text-sm">Inclus :</h4>
-                          <ul className="space-y-2">
-                            {plan.features.map((feature, idx) => (
-                              <li key={idx} className="flex items-start gap-2 text-sm">
-                                <Check className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
-                                <span className="text-black">{feature}</span>
-                              </li>
+                        <p className="text-sm text-gray-600">par mois / utilisateur</p>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <h4 className="font-semibold text-gray-900 mb-3 text-sm">Comprend :</h4>
+                        <div className="space-y-2">
+                          {plan.features.map((feature, idx) => {
+                            const isSignatureFeature = feature.toLowerCase().includes('signature');
+                            
+                            return (
+                              <div key={idx} className="flex items-start gap-2">
+                                <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                                {isSignatureFeature ? (
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-sm text-gray-700">{feature}</span>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Info className={`w-3.5 h-3.5 text-gray-400 cursor-help transition-colors ${
+                                          isEssentiel ? 'hover:text-blue-600' : isProfessionnel ? 'hover:text-purple-600' : 'hover:text-orange-600'
+                                        }`} />
+                                      </TooltipTrigger>
+                                      <TooltipContent className={`max-w-xs bg-gradient-to-br ${
+                                        isEssentiel ? 'from-blue-50 to-white border-blue-200' :
+                                        isProfessionnel ? 'from-purple-50 to-white border-purple-200' :
+                                        'from-orange-50 to-white border-orange-200'
+                                      }`}>
+                                        <div className="space-y-2">
+                                          <p className={`text-xs font-bold ${
+                                            isEssentiel ? 'text-blue-900' : isProfessionnel ? 'text-purple-900' : 'text-orange-900'
+                                          }`}>
+                                            1 signature = 1 enveloppe
+                                          </p>
+                                          <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
+                                          {!isCabinetPlus && (
+                                            <>
+                                              <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
+                                              <div className={`pt-2 border-t mt-2 ${
+                                                isEssentiel ? 'border-blue-200' : 'border-purple-200'
+                                              }`}>
+                                                <p className={`text-xs font-semibold mb-1.5 ${
+                                                  isEssentiel ? 'text-blue-800' : 'text-purple-800'
+                                                }`}>
+                                                  📦 Packs optionnels :
+                                                </p>
+                                                <div className="space-y-1">
+                                                  {isEssentiel ? (
+                                                    <>
+                                                      <div className="flex justify-between items-center">
+                                                        <span className="text-xs text-gray-600">+10 signatures</span>
+                                                        <span className="text-xs font-semibold text-blue-700">+7€/mois</span>
+                                                      </div>
+                                                      <div className="flex justify-between items-center">
+                                                        <span className="text-xs text-gray-600">+25 signatures</span>
+                                                        <span className="text-xs font-semibold text-blue-700">+15€/mois</span>
+                                                      </div>
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <div className="flex justify-between items-center">
+                                                        <span className="text-xs text-gray-600">+40 signatures</span>
+                                                        <span className="text-xs font-semibold text-purple-700">+15€/mois/utilisateur</span>
+                                                      </div>
+                                                      <div className="flex justify-between items-center">
+                                                        <span className="text-xs text-gray-600">+100 signatures ⭐</span>
+                                                        <span className="text-xs font-semibold text-purple-700">+29€/mois/utilisateur</span>
+                                                      </div>
+                                                    </>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </>
+                                          )}
+                                          {isCabinetPlus && (
+                                            <div className="pt-1.5 border-t border-orange-200">
+                                              <p className="text-xs text-orange-700 font-medium">✨ Aucune limite mensuelle</p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </div>
+                                ) : (
+                                  <span className="text-sm text-gray-700">{feature}</span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {plan.notIncluded && plan.notIncluded.length > 0 && (
+                        <div className="mb-4 pt-4 border-t">
+                          <h4 className="font-semibold text-gray-900 mb-3 text-sm">Ne comprend pas :</h4>
+                          <div className="space-y-2">
+                            {plan.notIncluded.map((item, idx) => (
+                              <div key={idx} className="flex items-start gap-2">
+                                <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                                </div>
+                                <span className="text-sm text-gray-500">{item}</span>
+                              </div>
                             ))}
-                          </ul>
-                        </div>
-                        {plan.notIncluded && plan.notIncluded.length > 0 && (
-                          <div className="mb-4 pt-4 border-t">
-                            <h4 className="font-semibold text-black mb-3 text-sm">Non inclus :</h4>
-                            <ul className="space-y-2">
-                              {plan.notIncluded.map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2 text-sm">
-                                  <X className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
-                                  <span className="text-muted-foreground">{item}</span>
-                                </li>
-                              ))}
-                            </ul>
                           </div>
-                        )}
-                        <Button 
-                          className={`w-full ${plan.buttonClass}`}
-                          onClick={() => handleUpgrade(plan.id)}
-                        >
-                          Passer à cette offre
-                        </Button>
-                      </CardContent>
+                        </div>
+                      )}
+
+                      {isProfessionnel && (
+                        <div className="mb-4 pt-4 border-t">
+                          <p className="text-sm text-green-700 font-semibold">⚡ Pensé pour les cabinets en croissance</p>
+                        </div>
+                      )}
+                      
+                      <Button 
+                        className={`w-full ${
+                          isEssentiel ? 'bg-blue-600 hover:bg-blue-700' :
+                          isProfessionnel ? 'bg-purple-600 hover:bg-purple-700' :
+                          'bg-orange-600 hover:bg-orange-700'
+                        } text-white`}
+                        onClick={() => handleUpgrade(plan.id)}
+                      >
+                        Passer à cette offre
+                      </Button>
                     </Card>
                   );
                 })}
@@ -560,6 +661,6 @@ export default function Subscription() {
           )}
         </div>
       </AppLayout>
-    </>
+    </TooltipProvider>
   );
 }
