@@ -173,13 +173,15 @@ export default function Subscription() {
 
         // TOUJOURS récupérer le membership (un seul possible grâce à la contrainte DB)
         // Le cabinet_id du profil peut être obsolète si l'utilisateur a changé de cabinet
+        // IMPORTANT: Filtrer par rôle (notaire/avocat) car un user peut avoir 1 cabinet de chaque type
         const { data: memberData, error: memberError } = await supabase
           .from('cabinet_members')
-          .select('cabinet_id, role_cabinet')
+          .select('cabinet_id, role_cabinet, cabinets!inner(role)')
           .eq('user_id', user.id)
+          .eq('cabinets.role', role)
           .single();
         
-        console.log('Active member data:', memberData, 'Error:', memberError);
+        console.log('Active member data for role', role, ':', memberData, 'Error:', memberError);
         
         if (!memberData) {
           console.warn('⚠️ NO MEMBER DATA - User is not in any cabinet!');
