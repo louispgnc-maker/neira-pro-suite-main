@@ -181,9 +181,19 @@ export default function Subscription() {
         
         console.log('Active member data:', memberData, 'Error:', memberError);
         
+        if (!memberData) {
+          console.warn('⚠️ NO MEMBER DATA - User is not in any cabinet!');
+          console.log('This user will not be able to manage subscriptions.');
+        }
+        
         let cabinetId = memberData?.cabinet_id;
         
         if (memberData) {
+          console.log('🔍 DEBUGGING ROLE:');
+          console.log('  - role_cabinet value:', memberData.role_cabinet);
+          console.log('  - role_cabinet type:', typeof memberData.role_cabinet);
+          console.log('  - Exact comparison:', memberData.role_cabinet === 'Fondateur');
+          
           setUserRole(memberData.role_cabinet);
           const isFounder = memberData.role_cabinet === 'Fondateur';
           setIsManager(isFounder);
