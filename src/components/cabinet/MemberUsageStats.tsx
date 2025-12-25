@@ -60,15 +60,13 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
       const { count: dossiersCount } = await supabase
         .from('dossiers')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .eq('cabinet_id', cabinetId);
+        .eq('owner_id', userId);
 
       // Compter les clients créés par cet utilisateur
       const { count: clientsCount } = await supabase
         .from('clients')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .eq('cabinet_id', cabinetId);
+        .eq('owner_id', userId);
 
       // Récupérer les signatures utilisées depuis cabinet_members
       const { data: memberData } = await supabase
@@ -78,15 +76,15 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
         .eq('cabinet_id', cabinetId)
         .single();
 
-      // Calculer le stockage utilisé par cet utilisateur
-      const { data: storageData } = await supabase
+      // Pour le stockage, on va compter les documents (pas de file_size disponible)
+      // On va juste compter le nombre de documents comme approximation
+      const { count: documentsCount } = await supabase
         .from('documents')
-        .select('file_size')
-        .eq('user_id', userId)
-        .eq('cabinet_id', cabinetId);
+        .select('*', { count: 'exact', head: true })
+        .eq('owner_id', userId);
 
-      const totalStorage = storageData?.reduce((sum, doc) => sum + (doc.file_size || 0), 0) || 0;
-      const storageGB = totalStorage / (1024 * 1024 * 1024);
+      // Approximation: 1 document = ~500 KB en moyenne
+      const storageGB = ((documentsCount || 0) * 0.5) / 1024;
 
       setUsage({
         dossiers: dossiersCount || 0,
