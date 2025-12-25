@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/lib/supabaseClient';
 import { BarChart3, FileText, Users, FileSignature, HardDrive, AlertTriangle, ShoppingCart } from 'lucide-react';
+import { BuySignaturesDialog } from './BuySignaturesDialog';
 
 interface MemberUsageStatsProps {
   userId: string;
@@ -38,6 +39,7 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [buyDialogOpen, setBuyDialogOpen] = useState(false);
   const [usage, setUsage] = useState<UsageData>({
     dossiers: 0,
     clients: 0,
@@ -275,53 +277,35 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
               <p><strong>Note :</strong> Les statistiques sont calculées individuellement pour chaque membre du cabinet.</p>
             </div>
 
-            {/* Section d'achat de crédits pour plan professionnel */}
-            {subscriptionPlan === 'professionnel' && (
-              <div className="border-t pt-4 space-y-3">
-                <h4 className="text-sm font-semibold flex items-center gap-2">
-                  <ShoppingCart className="h-4 w-4" />
-                  Acheter des signatures supplémentaires
-                </h4>
-                <div className="grid gap-2">
-                  <Button
-                    variant="outline"
-                    className={`justify-between ${
-                      role === 'notaire' 
-                        ? 'hover:bg-orange-50 hover:border-orange-600' 
-                        : 'hover:bg-blue-50 hover:border-blue-600'
-                    }`}
-                  >
-                    <span className="text-sm">+20 Signatures</span>
-                    <span className="font-semibold">19€</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className={`justify-between ${
-                      role === 'notaire' 
-                        ? 'hover:bg-orange-50 hover:border-orange-600' 
-                        : 'hover:bg-blue-50 hover:border-blue-600'
-                    }`}
-                  >
-                    <span className="text-sm">+50 Signatures</span>
-                    <span className="font-semibold">39€</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className={`justify-between ${
-                      role === 'notaire' 
-                        ? 'hover:bg-orange-50 hover:border-orange-600' 
-                        : 'hover:bg-blue-50 hover:border-blue-600'
-                    }`}
-                  >
-                    <span className="text-sm">+100 Signatures</span>
-                    <span className="font-semibold">69€</span>
-                  </Button>
-                </div>
+            {/* Section d'achat de forfaits signatures pour plan essentiel ou professionnel */}
+            {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel') && (
+              <div className="border-t pt-4">
+                <Button
+                  onClick={() => setBuyDialogOpen(true)}
+                  className={`w-full justify-between ${
+                    role === 'notaire' 
+                      ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <ShoppingCart className="h-4 w-4" />
+                    Acheter des signatures supplémentaires
+                  </span>
+                </Button>
               </div>
             )}
           </div>
         )}
       </DialogContent>
+
+      <BuySignaturesDialog
+        open={buyDialogOpen}
+        onOpenChange={setBuyDialogOpen}
+        subscriptionPlan={subscriptionPlan as 'essentiel' | 'professionnel' | 'cabinet-plus'}
+        currentMonthlyPrice={subscriptionPlan === 'essentiel' ? 39 : subscriptionPlan === 'professionnel' ? 59 : 89}
+        role={role}
+      />
     </Dialog>
   );
 }
