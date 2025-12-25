@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -47,8 +47,48 @@ export function BuySignaturesDialog({
   const { user } = useAuth();
   const [selectedPackage, setSelectedPackage] = useState<SignaturePackage | null>(null);
   const [loading, setLoading] = useState(false);
+  const [expirationDate, setExpirationDate] = useState<Date | null>(null);
 
   const packages = packagesConfig[subscriptionPlan] || [];
+
+  // Calculer la date d'expiration dès l'ouverture du dialogue
+  useEffect(() => {
+    if (!open) return;
+    
+    const calculateExpiration = async () => {
+      try {
+        const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+        if (!cabinetsData || !Array.isArray(cabinetsData)) return;
+        
+        const cabinet = cabinetsData.find((c: any) => String(c.role) === role);
+        if (!cabinet) return;
+        
+        const { data: cabinetDetails } = await supabase
+          .from('cabinets')
+          .select('subscription_started_at')
+          .eq('id', cabinet.id)
+          .single();
+        
+        let expires = new Date();
+        if (cabinetDetails?.subscription_started_at) {
+          const startDate = new Date(cabinetDetails.subscription_started_at);
+          const now = new Date();
+          let monthsDiff = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
+          if (now.getDate() < startDate.getDate()) monthsDiff--;
+          expires = new Date(startDate);
+          expires.setMonth(expires.getMonth() + monthsDiff + 1);
+        } else {
+          expires.setMonth(expires.getMonth() + 1);
+        }
+        
+        setExpirationDate(expires);
+      } catch (error) {
+        console.error('Error calculating expiration:', error);
+      }
+    };
+    
+    calculateExpiration();
+  }, [open, role]);
 
   // Calcul du prorata pour le mois en cours (basé sur les jours restants du mois)
   const calculateProrata = (monthlyAddon: number) => {
@@ -156,7 +196,7 @@ export function BuySignaturesDialog({
       });
       
       toast.success('Forfait signatures ajouté !', {
-        description: `${selectedPackage.quantity} signatures supplémentaires ajoutées. Nouveau prix: ${newMonthlyPrice}€/mois`
+        description: `${selectedPackage.quantity} signatures supplémentaires ajoutées jusqu'au ${expiresAt.toLocaleDateString('fr-FR')}`
       });
       
       // Déclencher un événement pour rafraîchir les limites
@@ -238,7 +278,10 @@ export function BuySignaturesDialog({
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">{pkg.label}</p>
-                      <p className="text-xs text-gray-600">Par mois, renouvelé automatiquement</p>
+                      <p className="text-xs text-gray-600">
+                        Valable uniquement pour le cycle en cours
+                        {expirationDate && ` • Expire le ${expirationDate.toLocaleDateString('fr-FR')}`}
+                      </p>
                     </div>
                   </div>
                   <div className={`text-xl font-bold ${
@@ -262,34 +305,36 @@ export function BuySignaturesDialog({
               
               <div className="space-y-2 bg-gray-50 rounded-lg p-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Abonnement actuel</span>
-                  <span className="font-medium">{currentMonthlyPrice}€/mois</span>
+                  <span className="text-gray-600">Forfait {selectedPackage.label}</span>
+                  <span className="font-medium">{selectedPackage.price}€</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Forfait signatures</span>
-                  <span className="font-medium">+{selectedPackage.price}€/mois</span>
+                  <span className="text-gray-600">Prorata (jours restants)</span>
+                  <span className="font-medium">-{(selectedPackage.price - prorataAmount).toFixed(2)}€</span>
                 </div>
                 <div className="flex justify-between text-base font-bold border-t pt-2">
-                  <span>Nouveau prix mensuel</span>
+                  <span>Total à payer aujourd'hui</span>
                   <span className={role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}>
-                    {newMonthlyPrice}€/mois
+                    {prorataAmount}€
                   </span>
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold text-blue-900 text-sm">À payer aujourd'hui</p>
-                    <p className="text-xs text-blue-700">Prorata pour le mois en cours</p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <div className="text-amber-600 mt-0.5">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
                   </div>
-                  <div className="text-2xl font-bold text-blue-900">
-                    {prorataAmount}€
+                  <div className="flex-1">
+                    <p className="font-semibold text-amber-900 text-sm">Achat ponctuel - Cycle en cours uniquement</p>
+                    <p className="text-xs text-amber-700 mt-1">
+                      Ces crédits expireront le {expirationDate?.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}.
+                      Pour continuer à bénéficier de signatures supplémentaires au prochain cycle, vous devrez effectuer un nouvel achat.
+                    </p>
                   </div>
                 </div>
-                <p className="text-xs text-blue-600 mt-2">
-                  À partir du mois prochain : {newMonthlyPrice}€/mois
-                </p>
               </div>
             </div>
           )}
@@ -322,7 +367,7 @@ export function BuySignaturesDialog({
 
           {/* Note */}
           <p className="text-xs text-gray-500 text-center">
-            Paiement sécurisé • Résiliation possible à tout moment • Les signatures seront ajoutées immédiatement
+            Paiement sécurisé • Achat unique pour le cycle actuel • Les signatures seront ajoutées immédiatement
           </p>
         </div>
       </DialogContent>
