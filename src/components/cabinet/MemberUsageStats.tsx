@@ -120,7 +120,15 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className={`gap-2 ${
+            role === 'notaire' 
+              ? 'border-orange-600 text-orange-600 hover:bg-orange-50 hover:text-orange-700' 
+              : 'border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700'
+          }`}
+        >
           <BarChart3 className="h-4 w-4" />
           Voir limites
           {hasWarning && <AlertTriangle className="h-3 w-3 text-orange-500" />}

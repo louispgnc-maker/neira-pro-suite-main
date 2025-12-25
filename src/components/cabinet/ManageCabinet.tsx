@@ -832,7 +832,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                   <TableHead>Email</TableHead>
                   <TableHead>Nom</TableHead>
                   <TableHead>Rôle</TableHead>
-                  <TableHead>Utilisation</TableHead>
+                  {isOwner && <TableHead>Utilisation</TableHead>}
                   {currentUserRole && canRemoveMembers(currentUserRole) && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
@@ -897,18 +897,20 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                           </Badge>
                         )}
                     </TableCell>
-                    <TableCell>
-                      {member.user_id && cabinet ? (
-                        <MemberUsageStats
-                          userId={member.user_id}
-                          cabinetId={cabinet.id}
-                          subscriptionPlan={cabinet.subscription_plan || 'essentiel'}
-                          role={role}
-                        />
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Invitation en attente</span>
-                      )}
-                    </TableCell>
+                    {isOwner && (
+                      <TableCell>
+                        {member.user_id && cabinet ? (
+                          <MemberUsageStats
+                            userId={member.user_id}
+                            cabinetId={cabinet.id}
+                            subscriptionPlan={cabinet.subscription_plan || 'essentiel'}
+                            role={role}
+                          />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Invitation en attente</span>
+                        )}
+                      </TableCell>
+                    )}
                     {currentUserRole && canRemoveMembers(currentUserRole) && (
                       <TableCell className="text-right">
                         {member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
