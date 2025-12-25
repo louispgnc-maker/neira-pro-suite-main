@@ -93,6 +93,35 @@ export function BuySignaturesDialog({
         throw new Error(`Aucun cabinet ${role} trouvé`);
       }
 
+      // Récupérer la date de début du cycle d'abonnement pour calculer l'expiration
+      const { data: cabinetDetails } = await supabase
+        .from('cabinets')
+        .select('subscription_started_at')
+        .eq('id', cabinet.id)
+        .single();
+
+      // Calculer la date d'expiration = prochain renouvellement (fin du cycle actuel)
+      let expiresAt = new Date();
+      if (cabinetDetails?.subscription_started_at) {
+        const startDate = new Date(cabinetDetails.subscription_started_at);
+        const now = new Date();
+        
+        // Calculer le nombre de mois écoulés depuis le début
+        let monthsDiff = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
+        
+        // Si on est avant le jour de renouvellement ce mois-ci, on est toujours dans le cycle précédent
+        if (now.getDate() < startDate.getDate()) {
+          monthsDiff--;
+        }
+        
+        // La date d'expiration = début + (mois écoulés + 1) mois
+        expiresAt = new Date(startDate);
+        expiresAt.setMonth(expiresAt.getMonth() + monthsDiff + 1);
+      } else {
+        // Fallback: expiration dans 1 mois si pas de date de début
+        expiresAt.setMonth(expiresAt.getMonth() + 1);
+      }
+
       // 2. Mettre à jour le membre du cabinet avec le nouveau forfait de signatures (PAR UTILISATEUR)
       const userIdToUpdate = targetUserId || user.id;
       const { error: updateError } = await supabase
@@ -100,7 +129,8 @@ export function BuySignaturesDialog({
         .update({
           signature_addon_quantity: selectedPackage.quantity,
           signature_addon_price: selectedPackage.price,
-          signature_addon_purchased_at: new Date().toISOString()
+          signature_addon_purchased_at: new Date().toISOString(),
+          signature_addon_expires_at: expiresAt.toISOString()
         })
         .eq('cabinet_id', cabinet.id)
         .eq('user_id', userIdToUpdate);

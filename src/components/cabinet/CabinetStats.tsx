@@ -94,10 +94,10 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           .eq('owner_id', member.user_id)
           .eq('role', role);
 
-        // Récupérer les signatures utilisées et l'addon personnel
+        // Récupérer les signatures utilisées et l'addon personnel + date d'expiration
         const { data: memberData } = await supabase
           .from('cabinet_members')
-          .select('signatures_used, signature_addon_quantity')
+          .select('signatures_used, signature_addon_quantity, signature_addon_expires_at')
           .eq('user_id', member.user_id)
           .eq('cabinet_id', cabinetId)
           .single();
@@ -109,9 +109,21 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           .eq('id', cabinetId)
           .single();
 
+        // Vérifier si l'addon est toujours valide (pas expiré)
+        let addonSignatures = 0;
+        if (memberData?.signature_addon_quantity && memberData?.signature_addon_expires_at) {
+          const expiresAt = new Date(memberData.signature_addon_expires_at);
+          const now = new Date();
+          if (expiresAt > now) {
+            addonSignatures = memberData.signature_addon_quantity;
+          }
+        } else if (memberData?.signature_addon_quantity && !memberData?.signature_addon_expires_at) {
+          // Ancien addon sans date d'expiration (backward compatibility)
+          addonSignatures = memberData.signature_addon_quantity;
+        }
+
         // Calculer la limite totale de signatures pour ce membre
         const baseSignatures = cabinetData?.max_signatures_per_month ?? limits.signatures;
-        const addonSignatures = memberData?.signature_addon_quantity || 0;
         const memberSignatureLimit = baseSignatures !== null ? baseSignatures + addonSignatures : 999999;
 
         // Compter les documents

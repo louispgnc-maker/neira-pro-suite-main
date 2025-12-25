@@ -91,17 +91,33 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
         // Utiliser les valeurs de la base de données, avec fallback sur PLAN_LIMITS
         const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.essentiel;
         
-        // Récupérer l'addon de signatures pour CE membre spécifique
+        // Récupérer l'addon de signatures pour CE membre spécifique + date d'expiration
         const { data: memberData } = await supabase
           .from('cabinet_members')
-          .select('signature_addon_quantity')
+          .select('signature_addon_quantity, signature_addon_expires_at')
           .eq('cabinet_id', cabinet.id)
           .eq('user_id', user.id)
           .single();
         
-        // Calculer la limite totale de signatures (plan de base + addon personnel)
+        // Vérifier si l'addon est toujours valide (pas expiré)
+        let addonSignatures = 0;
+        if (memberData?.signature_addon_quantity && memberData?.signature_addon_expires_at) {
+          const expiresAt = new Date(memberData.signature_addon_expires_at);
+          const now = new Date();
+          if (expiresAt > now) {
+            // Addon encore valide
+            addonSignatures = memberData.signature_addon_quantity;
+          } else {
+            // Addon expiré - on pourrait le réinitialiser ici
+            console.log('⚠️ Signature addon expired at', expiresAt.toISOString());
+          }
+        } else if (memberData?.signature_addon_quantity && !memberData?.signature_addon_expires_at) {
+          // Ancien addon sans date d'expiration (backward compatibility)
+          addonSignatures = memberData.signature_addon_quantity;
+        }
+        
+        // Calculer la limite totale de signatures (plan de base + addon personnel valide)
         const baseSignatures = cabinetDetails.max_signatures_per_month ?? planLimits.max_signatures_per_month;
-        const addonSignatures = memberData?.signature_addon_quantity || 0;
         const totalSignatures = baseSignatures !== null ? baseSignatures + addonSignatures : null;
         
         console.log('📊 Subscription limits loaded:', {
@@ -111,6 +127,7 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
           max_clients: cabinetDetails.max_clients,
           base_signatures: baseSignatures,
           addon_signatures: addonSignatures,
+          addon_expires_at: memberData?.signature_addon_expires_at,
           total_signatures: totalSignatures,
           cabinet_id: cabinet.id
         });
