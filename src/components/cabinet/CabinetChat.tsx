@@ -443,6 +443,15 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
         new Map(otherMembers.map(m => [m.user_id, m])).values()
       );
       
+      // Detect duplicate names to add email disambiguation
+      const nameCount = new Map<string, number>();
+      uniqueMembers.forEach(m => {
+        const name = getDisplayName(m.profile);
+        if (name !== 'Inconnu' && name !== 'Membre du cabinet') {
+          nameCount.set(name, (nameCount.get(name) || 0) + 1);
+        }
+      });
+      
       for (const member of uniqueMembers) {
         // Get last message time for this direct conversation
         const { data: directLastMsg } = await supabase
@@ -456,10 +465,17 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
         // Only show conversation if there's at least one message
         if (directLastMsg) {
-          // Ensure we have a profile with at least the email as fallback
-          const displayName = getDisplayName(member.profile) !== 'Inconnu' 
-            ? getDisplayName(member.profile)
-            : member.email || `Membre ${member.user_id.slice(0, 8)}`;
+          // Get base display name
+          let displayName = getDisplayName(member.profile);
+          if (displayName === 'Inconnu') {
+            displayName = member.email || `Membre ${member.user_id.slice(0, 8)}`;
+          }
+          
+          // Add email in parentheses if there are duplicate names
+          const baseName = getDisplayName(member.profile);
+          if (baseName !== 'Inconnu' && baseName !== 'Membre du cabinet' && (nameCount.get(baseName) || 0) > 1 && member.email) {
+            displayName = `${baseName} (${member.email})`;
+          }
           
           conversationsWithMembers.push({
             id: `direct-${member.user_id}`,
