@@ -454,8 +454,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           .limit(1)
           .maybeSingle();
 
-        // Only show conversation if there's at least one message
-        if (directLastMsg) {
+        // Only show conversation if there's at least one message AND the member has a valid profile
+        if (directLastMsg && member.profile && (member.profile.first_name || member.profile.last_name)) {
           conversationsWithMembers.push({
             id: `direct-${member.user_id}`,
             name: getDisplayName(member.profile),
@@ -463,6 +463,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             member_ids: [user.id, member.user_id],
             member_profiles: [member.profile] as any,
             last_message_at: directLastMsg.created_at
+          });
+        } else if (directLastMsg) {
+          console.log('Skipping conversation with incomplete profile:', {
+            user_id: member.user_id,
+            has_profile: !!member.profile,
+            first_name: member.profile?.first_name,
+            last_name: member.profile?.last_name
           });
         }
       }
