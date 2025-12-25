@@ -23,6 +23,7 @@ interface MemberStats {
   dossiers: number;
   clients: number;
   signatures: number;
+  signature_limit: number; // Limite personnelle (base + addon)
   documents: number;
 }
 
@@ -38,6 +39,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
   const [stats, setStats] = useState<MemberStats[]>([]);
   const [expandedMembers, setExpandedMembers] = useState<Set<string>>(new Set());
   const [buyDialogOpen, setBuyDialogOpen] = useState(false);
+  const [selectedMemberForPurchase, setSelectedMemberForPurchase] = useState<{ userId: string; name: string } | null>(null);
 
   // Utiliser le hook pour récupérer les vraies limites depuis la DB (incluant les add-ons)
   const subscriptionLimits = useSubscriptionLimits(role);
@@ -92,13 +94,25 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           .eq('owner_id', member.user_id)
           .eq('role', role);
 
-        // Récupérer les signatures utilisées
+        // Récupérer les signatures utilisées et l'addon personnel
         const { data: memberData } = await supabase
           .from('cabinet_members')
-          .select('signatures_used')
+          .select('signatures_used, signature_addon_quantity')
           .eq('user_id', member.user_id)
           .eq('cabinet_id', cabinetId)
           .single();
+
+        // Récupérer le plan de base du cabinet pour ce membre
+        const { data: cabinetData } = await supabase
+          .from('cabinets')
+          .select('max_signatures_per_month')
+          .eq('id', cabinetId)
+          .single();
+
+        // Calculer la limite totale de signatures pour ce membre
+        const baseSignatures = cabinetData?.max_signatures_per_month ?? limits.signatures;
+        const addonSignatures = memberData?.signature_addon_quantity || 0;
+        const memberSignatureLimit = baseSignatures !== null ? baseSignatures + addonSignatures : 999999;
 
         // Compter les documents
         const { count: documentsCount } = await supabase
@@ -114,6 +128,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           dossiers: dossiersCount || 0,
           clients: clientsCount || 0,
           signatures: memberData?.signatures_used || 0,
+          signature_limit: memberSignatureLimit,
           documents: documentsCount || 0
         });
       }
@@ -329,17 +344,17 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                             <span className="text-sm font-medium">Signatures (ce mois)</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(member.signatures, limits.signatures))}`}>
+                            <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(member.signatures, member.signature_limit))}`}>
                               {member.signatures}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              / {limits.signatures >= 999999 ? '∞' : limits.signatures}
+                              / {member.signature_limit >= 999999 ? '∞' : member.signature_limit}
                             </span>
                           </div>
                         </div>
-                        {limits.signatures < 999999 && (
+                        {member.signature_limit < 999999 && (
                           <Progress 
-                            value={getUsagePercentage(member.signatures, limits.signatures)} 
+                            value={getUsagePercentage(member.signatures, member.signature_limit)} 
                             className="h-2"
                           />
                         )}
@@ -373,7 +388,13 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                       {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel') && (
                         <div className="border-t pt-4">
                           <Button
-                            onClick={() => setBuyDialogOpen(true)}
+                            onClick={() => {
+                              setSelectedMemberForPurchase({
+                                userId: member.user_id,
+                                name: member.nom || member.email
+                              });
+                              setBuyDialogOpen(true);
+                            }}
                             className={`w-full justify-between ${
                               role === 'notaire' 
                                 ? 'bg-orange-600 hover:bg-orange-700 text-white' 
@@ -419,6 +440,8 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         subscriptionPlan={subscriptionPlan as 'essentiel' | 'professionnel' | 'cabinet-plus'}
         currentMonthlyPrice={subscriptionPlan === 'essentiel' ? 39 : subscriptionPlan === 'professionnel' ? 59 : 89}
         role={role}
+        targetUserId={selectedMemberForPurchase?.userId}
+        targetUserName={selectedMemberForPurchase?.name}
       />
     </Card>
   );

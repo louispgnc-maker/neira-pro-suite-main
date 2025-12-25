@@ -19,6 +19,8 @@ type BuySignaturesDialogProps = {
   subscriptionPlan: 'essentiel' | 'professionnel' | 'cabinet-plus';
   currentMonthlyPrice: number; // Prix actuel de l'abonnement par mois
   role: 'avocat' | 'notaire';
+  targetUserId?: string; // ID de l'utilisateur pour qui acheter (si différent de l'utilisateur connecté)
+  targetUserName?: string; // Nom de l'utilisateur pour affichage
 };
 
 const packagesConfig = {
@@ -38,7 +40,9 @@ export function BuySignaturesDialog({
   onOpenChange,
   subscriptionPlan,
   currentMonthlyPrice,
-  role
+  role,
+  targetUserId,
+  targetUserName
 }: BuySignaturesDialogProps) {
   const { user } = useAuth();
   const [selectedPackage, setSelectedPackage] = useState<SignaturePackage | null>(null);
@@ -90,6 +94,7 @@ export function BuySignaturesDialog({
       }
 
       // 2. Mettre à jour le membre du cabinet avec le nouveau forfait de signatures (PAR UTILISATEUR)
+      const userIdToUpdate = targetUserId || user.id;
       const { error: updateError } = await supabase
         .from('cabinet_members')
         .update({
@@ -98,7 +103,7 @@ export function BuySignaturesDialog({
           signature_addon_purchased_at: new Date().toISOString()
         })
         .eq('cabinet_id', cabinet.id)
-        .eq('user_id', user.id);
+        .eq('user_id', userIdToUpdate);
 
       if (updateError) {
         console.error('Erreur mise à jour membre:', updateError);
@@ -166,7 +171,7 @@ export function BuySignaturesDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
-            Acheter des signatures supplémentaires
+            Acheter des signatures supplémentaires{targetUserName ? ` pour ${targetUserName}` : ''}
           </DialogTitle>
           <DialogDescription>
             Sélectionnez un forfait pour augmenter votre quota mensuel de signatures
