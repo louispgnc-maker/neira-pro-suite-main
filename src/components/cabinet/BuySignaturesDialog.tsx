@@ -173,47 +173,33 @@ export function BuySignaturesDialog({
         expiresAt.setMonth(expiresAt.getMonth() + 1);
       }
 
-      const userIdToUpdate = targetUserId || user.id;
-      const { error: updateError } = await supabase
-        .from('cabinet_members')
-        .update({
-          signature_addon_quantity: selectedPackage.quantity,
-          signature_addon_price: selectedPackage.price,
-          signature_addon_purchased_at: new Date().toISOString(),
-          signature_addon_expires_at: expiresAt.toISOString()
-        })
-        .eq('cabinet_id', cabinet.id)
-        .eq('user_id', userIdToUpdate);
+      // Appeler l'Edge Function pour créer une session Stripe
+      const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
+        'create-signature-checkout',
+        {
+          body: {
+            quantity: selectedPackage.quantity,
+            price: selectedPackage.price,
+            prorataAmount,
+            cabinetId: cabinet.id,
+            targetUserId: targetUserId || user.id,
+            expiresAt: expiresAt.toISOString(),
+            role,
+          },
+        }
+      );
 
-      if (updateError) {
-        console.error('Erreur mise à jour membre:', updateError);
-        throw new Error('Erreur lors de la mise à jour du forfait');
+      if (sessionError || !sessionData?.url) {
+        throw new Error(sessionError?.message || 'Erreur lors de la création de la session de paiement');
       }
 
-      console.log('✅ Forfait signatures ajouté pour l\'utilisateur:', {
-        cabinet_id: cabinet.id,
-        user_id: user.id,
-        quantity: selectedPackage.quantity,
-        price: selectedPackage.price,
-        prorata_paid: prorataAmount
-      });
-      
-      toast.success('Forfait signatures ajouté !', {
-        description: `${selectedPackage.quantity} signatures supplémentaires ajoutées jusqu'au ${expiresAt.toLocaleDateString('fr-FR')}`
-      });
-      
-      window.dispatchEvent(new Event('subscription-updated'));
-      
-      onOpenChange(false);
-      setSelectedPackage(null);
-      
-      setTimeout(() => window.location.reload(), 1000);
+      // Rediriger vers Stripe Checkout
+      window.location.href = sessionData.url;
     } catch (error: any) {
       console.error('Erreur lors de l\'achat:', error);
       toast.error('Erreur lors de l\'achat', {
         description: error.message || 'Veuillez réessayer ou contacter le support'
       });
-    } finally {
       setLoading(false);
     }
   };
