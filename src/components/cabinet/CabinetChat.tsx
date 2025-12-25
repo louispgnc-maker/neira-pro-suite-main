@@ -538,17 +538,28 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       const senderIds = [...new Set(data?.map(m => m.sender_id) || [])];
       
       // Get profiles
-      const { data: profilesData } = await supabase
+      const { data: profilesData, error: profileError } = await supabase
         .from('profiles')
         .select('id, first_name, last_name, photo_url')
         .in('id', senderIds);
 
+      if (profileError) {
+        console.error('Error loading profiles for messages:', profileError);
+      }
+
       // Get emails from cabinet_members
-      const { data: memberEmails } = await supabase
+      const { data: memberEmails, error: emailError } = await supabase
         .from('cabinet_members')
         .select('user_id, email')
         .eq('cabinet_id', cabinetId)
         .in('user_id', senderIds);
+
+      if (emailError) {
+        console.error('Error loading emails for messages:', emailError);
+      }
+
+      console.log('Messages - Loaded profiles:', profilesData);
+      console.log('Messages - Loaded emails:', memberEmails);
 
       const emailsMap = new Map(
         memberEmails?.map(m => [m.user_id, m.email]) || []
@@ -557,6 +568,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       const profilesMap = new Map(
         profilesData?.map(p => [p.id, { ...p, email: emailsMap.get(p.id) }]) || []
       );
+
+      console.log('Messages - Profiles map:', Array.from(profilesMap.entries()));
 
       const messagesWithProfiles = (data || []).map(m => ({
         ...m,
