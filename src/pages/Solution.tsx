@@ -204,10 +204,6 @@ export default function Solution() {
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">Idéal pour cabinets de 2 à 10 utilisateurs</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-700">100 Go de stockage</span>
                   </div>
                   <div className="flex items-start gap-2">

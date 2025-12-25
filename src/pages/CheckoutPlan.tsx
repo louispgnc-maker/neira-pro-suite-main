@@ -40,9 +40,8 @@ const planConfigs = {
     description: 'Idéal pour cabinets de 2 à 10 utilisateurs',
     icon: Crown,
     color: 'purple',
-    limits: 'Jusqu\'à 10 utilisateurs • 100 Go • 600 dossiers • 200 clients • 80 signatures/mois',
+    limits: '100 Go • 600 dossiers • 200 clients • 80 signatures/mois',
     features: [
-      { title: 'Jusqu\'à 10 utilisateurs', description: 'Pour votre équipe' },
       { title: '100 Go de stockage', description: 'Espace confortable' },
       { title: '600 dossiers actifs', description: 'Gérez plus de dossiers' },
       { title: '200 clients actifs', description: 'Portefeuille client étendu' },

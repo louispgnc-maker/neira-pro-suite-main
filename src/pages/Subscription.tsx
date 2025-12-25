@@ -60,7 +60,6 @@ const plans = [
     description: 'Idéal pour cabinets de 2 à 10 utilisateurs',
     summary: 'Idéal pour les cabinets qui veulent structurer leurs workflows avec espace collaboratif complet.',
     features: [
-      'Jusqu\'à 10 utilisateurs',
       '100 Go de stockage',
       '600 dossiers actifs',
       '200 clients actifs',
@@ -69,7 +68,7 @@ const plans = [
       'Gestion documentaire avancée',
       'Tableaux de bord'
     ],
-    limits: 'Jusqu\'à 10 utilisateurs • 100 Go • 600 dossiers • 200 clients • 80 signatures/mois',
+    limits: '100 Go • 600 dossiers • 200 clients • 80 signatures/mois',
     notIncluded: [],
     icon: Crown,
     color: 'text-purple-600',
