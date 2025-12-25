@@ -114,6 +114,7 @@ export default function Subscription() {
   const [isManager, setIsManager] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeMembersCount, setActiveMembersCount] = useState<number>(0);
+  const [cabinetId, setCabinetId] = useState<string | null>(null);
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -199,6 +200,7 @@ export default function Subscription() {
           setUserRole(memberData.role_cabinet);
           const isFounder = memberData.role_cabinet === 'Fondateur';
           setIsManager(isFounder);
+          setCabinetId(cabinetId);
           console.log('User role:', memberData.role_cabinet, 'isManager:', isFounder);
           
           // Si le cabinet_id du profil ne correspond pas au cabinet actif, le mettre à jour
@@ -312,7 +314,7 @@ export default function Subscription() {
           {/* Bouton retour */}
           <div className="mb-8">
             <Button
-              onClick={() => navigate(-1)}
+              onClick={() => cabinetId ? navigate(`${prefix}/cabinet?id=${cabinetId}`) : navigate(`${prefix}/dashboard`)}
               className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
