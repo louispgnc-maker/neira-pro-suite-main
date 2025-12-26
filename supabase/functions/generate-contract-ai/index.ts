@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { contractType, formData, clientInfo } = await req.json();
+    const { contractType, formData, clientInfo, attachments } = await req.json();
 
     if (!contractType || !formData) {
       return new Response(
@@ -31,10 +31,11 @@ Deno.serve(async (req) => {
     console.log('📦 Données du formulaire:', JSON.stringify(formData, null, 2));
     console.log('👤 Infos client:', JSON.stringify(clientInfo, null, 2));
     console.log('📊 Nombre de champs:', Object.keys(formData).length);
+    console.log('📎 Pièces jointes:', attachments?.length || 0, 'fichiers');
 
     // Construction du prompt selon le type de contrat
     const systemPrompt = getSystemPrompt(contractType);
-    const userPrompt = buildUserPrompt(contractType, formData, clientInfo);
+    const userPrompt = buildUserPrompt(contractType, formData, clientInfo, attachments);
 
     console.log('💬 Prompt utilisateur (premier 500 chars):', userPrompt.substring(0, 500));
 
@@ -904,7 +905,7 @@ Structure:
   return contractPrompts[contractType] || basePrompt;
 }
 
-function buildUserPrompt(contractType: string, formData: any, clientInfo: any): string {
+function buildUserPrompt(contractType: string, formData: any, clientInfo: any, attachments?: any[]): string {
   let prompt = `Génère le contrat suivant en respectant STRICTEMENT les instructions du system prompt.\n\n`;
   
   prompt += `TYPE DE DOCUMENT: ${contractType}\n\n`;
@@ -917,6 +918,19 @@ function buildUserPrompt(contractType: string, formData: any, clientInfo: any): 
     prompt += `INFORMATIONS CLIENT:\n`;
     prompt += JSON.stringify(clientInfo, null, 2);
     prompt += `\n\n`;
+  }
+  
+  if (attachments && attachments.length > 0) {
+    prompt += `PIÈCES JOINTES UPLOADÉES PAR LE CLIENT:\n`;
+    attachments.forEach(file => {
+      const sizeKb = (file.size / 1024).toFixed(2);
+      prompt += `- ${file.name} (${file.type || 'type inconnu'}, ${sizeKb} Ko)`;
+      if (file.category) {
+        prompt += ` [Catégorie: ${file.category}]`;
+      }
+      prompt += `\n`;
+    });
+    prompt += `\nCes fichiers ont été fournis par le client et sont stockés dans le système. Tu dois MENTIONNER leur existence dans le contrat si pertinent (ex: "Les diagnostics techniques ont été fournis et sont annexés au présent contrat").\n\n`;
   }
   
   prompt += `INSTRUCTIONS FINALES:

@@ -32,6 +32,12 @@ interface GenerateContractParams {
   formData: any;
   clientInfo?: any;
   user: any;
+  attachments?: {
+    name: string;
+    type: string;
+    size: number;
+    category?: string;
+  }[];
 }
 
 /**
@@ -42,19 +48,25 @@ export async function generateContractWithAI({
   contractType,
   formData,
   clientInfo = {},
-  user
+  user,
+  attachments = []
 }: GenerateContractParams): Promise<string> {
   try {
     console.log(`🤖 Génération IA pour: ${contractType}`);
     console.log('📦 FormData envoyé:', formData);
     console.log('📊 Nombre de champs formData:', Object.keys(formData || {}).length);
     console.log('👤 ClientInfo:', clientInfo);
+    console.log('📎 Pièces jointes:', attachments.length, 'fichiers');
+    if (attachments.length > 0) {
+      console.log('📎 Détails fichiers:', attachments.map(f => `${f.name} (${f.type}, ${(f.size / 1024).toFixed(2)} Ko)`).join(', '));
+    }
     
     const { data: aiResponse, error: aiError } = await supabaseAI.functions.invoke('generate-contract-ai', {
       body: {
         contractType,
         formData,
-        clientInfo
+        clientInfo,
+        attachments
       }
     });
 
@@ -130,4 +142,16 @@ export function getClientInfo(clientId: string, clients: any[]): any {
     numero_identite: client.numero_identite,
     date_expiration_identite: client.date_expiration_identite,
   };
+}
+
+/**
+ * Extrait les métadonnées des fichiers pour l'IA (ne lit pas le contenu)
+ */
+export function extractFileMetadata(files: File[], category?: string) {
+  return files.map(file => ({
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    category: category
+  }));
 }
