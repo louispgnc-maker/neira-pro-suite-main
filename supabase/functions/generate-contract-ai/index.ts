@@ -100,19 +100,24 @@ Deno.serve(async (req) => {
 function getSystemPrompt(contractType: string): string {
   const basePrompt = `Tu es un expert juridique français spécialisé dans la rédaction de documents juridiques. 
 
-RÈGLES ABSOLUES:
+RÈGLES ABSOLUES - IMPÉRATIF:
 1. Rédige en français juridique formel et précis
 2. N'INVENTE AUCUNE INFORMATION - utilise UNIQUEMENT les données fournies dans le formulaire et les informations client
 3. Si un champ n'est pas fourni ou est vide, écris EXACTEMENT "[À COMPLÉTER]" à sa place
 4. Ne mets JAMAIS de valeurs d'exemple, de placeholders fictifs, ou d'informations génériques
-5. Respecte scrupuleusement le droit français en vigueur
-6. Structure le document avec des articles numérotés
-7. Inclus tous les éléments obligatoires selon le type de document
-8. Utilise un ton professionnel et juridiquement approprié
-9. Ajoute les clauses de protection nécessaires
-10. Format: texte brut prêt à l'impression (pas de markdown)
+5. NE GÉNÈRE QUE CE QUI EST DEMANDÉ DANS LE FORMULAIRE - pas plus, pas moins
+6. N'AJOUTE AUCUNE CLAUSE, ARTICLE OU SECTION qui ne correspond pas aux données fournies
+7. Si le formulaire ne contient que 5 champs remplis, génère UNIQUEMENT ces 5 informations
+8. Respecte scrupuleusement le droit français en vigueur
+9. Structure le document avec des articles numérotés seulement si les données le permettent
+10. Utilise un ton professionnel et juridiquement approprié
+11. Format: texte brut prêt à l'impression (pas de markdown)
 
-IMPORTANT: Tu ne dois utiliser QUE les informations présentes dans DONNÉES DU FORMULAIRE et INFORMATIONS CLIENT. Toute autre information doit être remplacée par "[À COMPLÉTER]".`;
+⚠️ RÈGLE CRITIQUE: 
+- Si une information n'est PAS dans "DONNÉES DU FORMULAIRE" ou "INFORMATIONS CLIENT", elle ne doit PAS apparaître dans le contrat
+- Rédige un contrat MINIMAL basé UNIQUEMENT sur les données fournies
+- Un contrat incomplet vaut mieux qu'un contrat avec des informations inventées ou génériques
+- Chaque phrase, chaque article, chaque clause DOIT provenir des données fournies`;
 
   const contractPrompts: { [key: string]: string } = {
     "Contrat de développement web/application": `${basePrompt}
@@ -910,6 +915,11 @@ function buildUserPrompt(contractType: string, formData: any, clientInfo: any, a
   
   prompt += `TYPE DE DOCUMENT: ${contractType}\n\n`;
   
+  prompt += `⚠️ RAPPEL CRITIQUE: NE GÉNÈRE QUE CE QUI EST DANS LES DONNÉES CI-DESSOUS\n`;
+  prompt += `- Si une section/clause n'a pas de données correspondantes → NE LA GÉNÈRE PAS\n`;
+  prompt += `- Si un champ est vide → "[À COMPLÉTER]"\n`;
+  prompt += `- Zéro invention, zéro exemple, zéro hypothèse\n\n`;
+  
   prompt += `DONNÉES DU FORMULAIRE:\n`;
   prompt += JSON.stringify(formData, null, 2);
   prompt += `\n\n`;
@@ -936,12 +946,15 @@ function buildUserPrompt(contractType: string, formData: any, clientInfo: any, a
   prompt += `INSTRUCTIONS FINALES:
 - Utilise UNIQUEMENT les données présentes dans "DONNÉES DU FORMULAIRE" et "INFORMATIONS CLIENT"
 - N'INVENTE AUCUNE information, même pour rendre le document plus complet
+- NE GÉNÈRE PAS de clauses/articles pour lesquels tu n'as PAS de données
 - Pour CHAQUE champ vide, manquant ou undefined: écris EXACTEMENT "[À COMPLÉTER]"
 - Ne mets JAMAIS de valeurs d'exemple (ex: "Jean Dupont", "Paris", "01/01/2000", etc.)
 - Ne génère JAMAIS de données fictives ou de placeholders génériques
+- Un contrat court mais précis vaut MIEUX qu'un contrat long mais inventé
+- Limite-toi strictement aux informations fournies
 - Structure le document de manière professionnelle
 - Respecte le formalisme juridique français
-- Ne demande JAMAIS de confirmation, génère directement le document complet
+- Ne demande JAMAIS de confirmation, génère directement le document
 - Format: texte brut (pas de markdown, pas de balises)
 - Le document doit être prêt à l'impression/signature
 
