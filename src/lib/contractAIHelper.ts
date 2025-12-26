@@ -46,6 +46,9 @@ export async function generateContractWithAI({
 }: GenerateContractParams): Promise<string> {
   try {
     console.log(`🤖 Génération IA pour: ${contractType}`);
+    console.log('📦 FormData envoyé:', formData);
+    console.log('📊 Nombre de champs formData:', Object.keys(formData || {}).length);
+    console.log('👤 ClientInfo:', clientInfo);
     
     const { data: aiResponse, error: aiError } = await supabaseAI.functions.invoke('generate-contract-ai', {
       body: {
