@@ -517,7 +517,8 @@ export default function ContratDetail() {
                           onClick={() => navigate(role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats', { 
                             state: { 
                               scrollToType: contrat.type,
-                              contratData: contrat.contenu_json 
+                              contratData: contrat.contenu_json,
+                              contratId: contrat.id
                             } 
                           })}
                           size="sm"
