@@ -45,17 +45,24 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
 
   // Charger les clients
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      console.log('⚠️ userId manquant pour charger les clients');
+      return;
+    }
     
     const fetchClients = async () => {
+      console.log('🔍 Chargement des clients pour userId:', userId);
       const { data, error } = await supabase
         .from('clients')
         .select('id, nom, prenom')
         .eq('user_id', userId)
         .order('nom', { ascending: true });
       
-      if (data && !error) {
-        setClients(data);
+      if (error) {
+        console.error('❌ Erreur chargement clients:', error);
+      } else {
+        console.log('✅ Clients chargés:', data?.length, data);
+        setClients(data || []);
       }
     };
     
@@ -197,18 +204,31 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
             </div>
 
             {mode === 'existing' ? (
-              <Select value={formData[field.id] || ''} onValueChange={(val) => updateFormData(field.id, val)}>
-                <SelectTrigger id={field.id}>
-                  <SelectValue placeholder="Sélectionner un client..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {clients.map((client) => (
-                    <SelectItem key={client.id} value={client.id}>
-                      {client.nom} {client.prenom}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Select value={formData[field.id] || ''} onValueChange={(val) => updateFormData(field.id, val)}>
+                  <SelectTrigger id={field.id}>
+                    <SelectValue placeholder={clients.length > 0 ? "Sélectionner un client..." : "Aucun client enregistré"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients.length > 0 ? (
+                      clients.map((client) => (
+                        <SelectItem key={client.id} value={client.id}>
+                          {client.nom} {client.prenom}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-sm text-muted-foreground">
+                        Aucun client trouvé. Ajoutez d'abord un client dans la section "Clients".
+                      </div>
+                    )}
+                  </SelectContent>
+                </Select>
+                {clients.length === 0 && (
+                  <p className="text-xs text-orange-600">
+                    💡 Astuce : Créez vos clients dans la section "Clients" ou utilisez "Nouvelle personne"
+                  </p>
+                )}
+              </div>
             ) : (
               <div className="space-y-3 bg-white dark:bg-gray-900 p-3 rounded">
                 <div className="grid grid-cols-2 gap-3">
