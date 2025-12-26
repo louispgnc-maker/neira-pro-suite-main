@@ -205,11 +205,8 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
             </div>
             <div className="flex items-baseline gap-2">
               <span className={`text-2xl font-bold ${colorClass}`}>{totalStats.dossiers}</span>
-              <span className="text-xs text-muted-foreground">/ {limits.dossiers >= 999999 ? '∞' : limits.dossiers}</span>
+              <span className="text-xs text-muted-foreground">/ {limits.dossiers >= 999999 ? '∞' : `${limits.dossiers} par membre`}</span>
             </div>
-            {limits.dossiers < 999999 && (
-              <Progress value={getUsagePercentage(totalStats.dossiers, limits.dossiers)} className="h-1 mt-2" />
-            )}
           </div>
 
           <div className="bg-muted/50 rounded-lg p-4">
@@ -219,11 +216,8 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
             </div>
             <div className="flex items-baseline gap-2">
               <span className={`text-2xl font-bold ${colorClass}`}>{totalStats.clients}</span>
-              <span className="text-xs text-muted-foreground">/ {limits.clients >= 999999 ? '∞' : limits.clients}</span>
+              <span className="text-xs text-muted-foreground">/ {limits.clients >= 999999 ? '∞' : `${limits.clients} par membre`}</span>
             </div>
-            {limits.clients < 999999 && (
-              <Progress value={getUsagePercentage(totalStats.clients, limits.clients)} className="h-1 mt-2" />
-            )}
           </div>
 
           <div className="bg-muted/50 rounded-lg p-4">
@@ -244,11 +238,8 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
             </div>
             <div className="flex items-baseline gap-2">
               <span className={`text-2xl font-bold ${colorClass}`}>{totalStorageGB.toFixed(1)}</span>
-              <span className="text-xs text-muted-foreground">Go</span>
+              <span className="text-xs text-muted-foreground">Go / {limits.storage >= 999999 ? '∞' : `${limits.storage} Go par membre`}</span>
             </div>
-            {limits.storage < 999999 && (
-              <Progress value={getUsagePercentage(totalStorageGB, limits.storage)} className="h-1 mt-2" />
-            )}
           </div>
         </div>
 
