@@ -8,7 +8,7 @@ import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { generateContractWithAI } from "@/lib/contractAIHelper";
+import { generateContractWithAI, getClientInfo } from "@/lib/contractAIHelper";
 
 interface Contrat {
   id: string;
@@ -34,6 +34,7 @@ export default function ContratDetail() {
   const [sharedBy, setSharedBy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
+  const [clients, setClients] = useState<any[]>([]);
 
   // Fonction pour régénérer le contrat avec l'IA
   const handleRegenerate = async () => {
@@ -43,11 +44,36 @@ export default function ContratDetail() {
     toast.info("Régénération du contrat avec l'IA...");
     
     try {
+      // Extraire le clientId du contenu_json (essayer plusieurs champs possibles)
+      const formData = contrat.contenu_json || {};
+      const clientId = formData.clientId || 
+                       formData.bailleurClientId || 
+                       formData.locataireClientId ||
+                       formData.defuntClientId ||
+                       formData.licencieClientId ||
+                       formData.cedant?.clientId ||
+                       formData.cessionnaire?.clientId ||
+                       formData.donateur?.clientId ||
+                       formData.donataire?.clientId ||
+                       formData.epoux?.[0]?.clientId ||
+                       formData.epoux?.[1]?.clientId ||
+                       formData.partenaires?.[0]?.clientId ||
+                       formData.partenaires?.[1]?.clientId ||
+                       formData.indivisaires?.find((i: any) => i.clientId)?.clientId ||
+                       formData.debiteurs?.find((d: any) => d.clientId)?.clientId ||
+                       formData.heritiers?.[0]?.clientId;
+      
+      // Récupérer les infos client si un clientId existe
+      const clientInfo = clientId ? getClientInfo(clientId, clients) : {};
+      
+      // Note: Les fichiers ne sont pas re-transmis lors de la régénération
+      // car ils sont déjà uploadés et stockés. L'IA reçoit les données du formulaire uniquement.
+      
       // Générer le nouveau contenu avec l'IA en utilisant les données du formulaire
       const generatedContract = await generateContractWithAI({
         contractType: contrat.type || contrat.name,
-        formData: contrat.contenu_json || {}, // Récupérer les données du formulaire
-        clientInfo: {},
+        formData: formData,
+        clientInfo: clientInfo,
         user
       });
 
@@ -79,6 +105,21 @@ export default function ContratDetail() {
     async function load() {
       if (!user || !id) return;
       setLoading(true);
+
+      // Charger les clients pour la régénération
+      try {
+        const { data: clientsData } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('owner_id', user.id)
+          .eq('role', role);
+        
+        if (clientsData && mounted) {
+          setClients(clientsData);
+        }
+      } catch (error) {
+        console.error('Erreur chargement clients:', error);
+      }
 
       // Try loading as owner first
       const { data: cData, error } = await supabase
