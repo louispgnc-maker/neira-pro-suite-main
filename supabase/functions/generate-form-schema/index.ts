@@ -34,19 +34,28 @@ serve(async (req) => {
 Ton rôle est de créer un schéma de formulaire JSON optimal pour un type de contrat donné.
 
 RÈGLES CRITIQUES:
-1. MINIMALISME : Ne demande QUE les informations ESSENTIELLES et LÉGALEMENT REQUISES
-2. PAS DE SUPERFLU : Évite les champs optionnels ou "nice to have"
-3. PERTINENCE : Adapte-toi à la description fournie par le professionnel
-4. CLARTÉ : Champs avec labels clairs en français
-5. VALIDATION : Marque les champs obligatoires
+1. ⚠️ OBLIGATOIRE - PREMIER CHAMP : Un champ "client_id" de type "client_select" pour sélectionner le client (TOUJOURS EN PREMIER)
+2. 🚫 INTERDICTION ABSOLUE : NE JAMAIS inclure de champs pour signatures, tampons, ou validation électronique
+3. MINIMALISME : Ne demande QUE les informations ESSENTIELLES et LÉGALEMENT REQUISES
+4. DOCUMENTS : Ajoute des champs "file" pour les documents importants (identité, justificatifs, diagnostics)
+5. PERTINENCE : Adapte-toi à la description fournie par le professionnel
+6. CLARTÉ : Champs avec labels clairs en français
+7. VALIDATION : Marque les champs obligatoires
 
 Structure du schéma JSON à retourner:
 {
   "fields": [
     {
+      "id": "client_id",
+      "label": "Client concerné",
+      "type": "client_select",
+      "required": true,
+      "description": "Sélectionnez le client pour ce contrat"
+    },
+    {
       "id": "unique_field_id",
       "label": "Libellé du champ",
-      "type": "text|textarea|number|date|select|checkbox|file",
+      "type": "text|textarea|number|date|select|checkbox|file|client_select",
       "required": true|false,
       "placeholder": "Texte d'aide (optionnel)",
       "options": ["option1", "option2"], // Pour les select
@@ -64,6 +73,7 @@ Structure du schéma JSON à retourner:
 }
 
 Types de champs disponibles:
+- client_select: Sélection du client (OBLIGATOIRE EN PREMIER)
 - text: Champ texte court
 - textarea: Texte long
 - number: Nombre
@@ -73,10 +83,13 @@ Types de champs disponibles:
 - file: Upload de fichier(s)
 
 IMPORTANT:
-- Si le contrat nécessite des pièces jointes (documents d'identité, diagnostics, etc.), ajoute des champs "file"
-- Organise en sections logiques pour faciliter la saisie
-- Maximum 15-20 champs pour éviter la surcharge
-- Adapte-toi au contexte français et à la législation française`
+- ✅ Le premier champ DOIT TOUJOURS être "client_id" de type "client_select"
+- 🚫 N'INCLUS JAMAIS de champs pour : signature, paraphe, tampon, validation électronique, ou toute mention de signature
+- 📎 Si le contrat nécessite des pièces jointes (documents d'identité, diagnostics, justificatifs, etc.), ajoute des champs "file"
+- 📑 Organise en sections logiques pour faciliter la saisie
+- ⚡ Maximum 15-20 champs pour éviter la surcharge
+- 🇫🇷 Adapte-toi au contexte français et à la législation française
+- ⚠️ Les signatures seront ajoutées APRÈS, ne t'en préoccupe PAS dans le formulaire`
 
     const userPrompt = `Type de contrat: ${contractType}
 Rôle du professionnel: ${role === 'notaire' ? 'Notaire' : 'Avocat'}

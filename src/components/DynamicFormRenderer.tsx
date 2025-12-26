@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Upload } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
 interface FormField {
   id: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'file';
+  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'file' | 'client_select';
   required?: boolean;
   placeholder?: string;
   options?: string[];
@@ -33,10 +34,31 @@ interface DynamicFormRendererProps {
   formData: Record<string, any>;
   onFormDataChange: (data: Record<string, any>) => void;
   role?: 'notaire' | 'avocat';
+  userId?: string;
 }
 
-export function DynamicFormRenderer({ schema, formData, onFormDataChange, role = 'avocat' }: DynamicFormRendererProps) {
+export function DynamicFormRenderer({ schema, formData, onFormDataChange, role = 'avocat', userId }: DynamicFormRendererProps) {
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, File[]>>({});
+  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string}>>([]);
+
+  // Charger les clients
+  useEffect(() => {
+    if (!userId) return;
+    
+    const fetchClients = async () => {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, nom, prenom')
+        .eq('user_id', userId)
+        .order('nom', { ascending: true });
+      
+      if (data && !error) {
+        setClients(data);
+      }
+    };
+    
+    fetchClients();
+  }, [userId]);
 
   const updateFormData = (fieldId: string, value: any) => {
     onFormDataChange({
@@ -117,6 +139,30 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
                 {field.options?.map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {field.description && (
+              <p className="text-sm text-muted-foreground">{field.description}</p>
+            )}
+          </div>
+        );
+
+      case 'client_select':
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label htmlFor={field.id}>
+              {field.label} {field.required && <span className="text-red-500">*</span>}
+            </Label>
+            <Select value={value} onValueChange={(val) => updateFormData(field.id, val)}>
+              <SelectTrigger id={field.id}>
+                <SelectValue placeholder="Sélectionner un client..." />
+              </SelectTrigger>
+              <SelectContent>
+                {clients.map((client) => (
+                  <SelectItem key={client.id} value={client.id}>
+                    {client.nom} {client.prenom}
                   </SelectItem>
                 ))}
               </SelectContent>
