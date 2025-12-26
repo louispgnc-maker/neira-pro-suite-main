@@ -62,6 +62,15 @@ export default function ContratDetail() {
     try {
       // Extraire le clientId du contenu_json (essayer plusieurs champs possibles)
       const formData = contrat.contenu_json || {};
+      
+      console.log('🔍 DEBUG Régénération:', {
+        contrat_id: contrat.id,
+        contrat_name: contrat.name,
+        contenu_json_exists: !!contrat.contenu_json,
+        formData_keys: Object.keys(formData),
+        formData: formData
+      });
+      
       const clientId = formData.clientId || 
                        formData.bailleurClientId || 
                        formData.locataireClientId ||
@@ -79,8 +88,16 @@ export default function ContratDetail() {
                        formData.debiteurs?.find((d: any) => d.clientId)?.clientId ||
                        formData.heritiers?.[0]?.clientId;
       
+      console.log('👤 Client ID extrait:', clientId);
+      
       // Récupérer les infos client si un clientId existe
       const clientInfo = clientId ? getClientInfo(clientId, clients) : {};
+      
+      console.log('📋 Données envoyées à l\'IA:', {
+        contractType: contrat.type || contrat.name,
+        formData_is_empty: Object.keys(formData).length === 0,
+        clientInfo_is_empty: Object.keys(clientInfo).length === 0
+      });
       
       // Note: Les fichiers ne sont pas re-transmis lors de la régénération
       // car ils sont déjà uploadés et stockés. L'IA reçoit les données du formulaire uniquement.
