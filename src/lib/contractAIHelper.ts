@@ -35,6 +35,13 @@ export async function generateContractWithAI({
 
     if (aiError) {
       console.error('❌ Erreur génération IA:', aiError);
+      
+      // Message d'erreur plus explicite selon le type d'erreur
+      if (aiError.message?.includes('Failed to send a request')) {
+        console.error('⚠️ L\'Edge Function n\'est pas accessible. Vérifiez qu\'elle est déployée sur Supabase.');
+        return "[ERREUR: La fonction de génération IA n'est pas disponible. Veuillez contacter l'administrateur pour déployer l'Edge Function 'generate-contract-ai'.]";
+      }
+      
       throw aiError;
     }
 
@@ -45,6 +52,12 @@ export async function generateContractWithAI({
     
   } catch (error: any) {
     console.error('💥 Erreur critique génération IA:', error);
+    
+    // Message détaillé selon le type d'erreur
+    if (error.message?.includes('Failed to send a request')) {
+      return "[ERREUR DE CONFIGURATION]\n\nLa fonction de génération automatique n'est pas disponible.\n\nActions requises:\n1. Déployer l'Edge Function 'generate-contract-ai' sur Supabase\n2. Configurer la variable d'environnement OPENAI_API_KEY\n3. Vérifier que l'Edge Function est activée\n\nEn attendant, vous pouvez créer le contrat manuellement ou contacter le support technique.";
+    }
+    
     return "[Erreur de génération - L'IA n'a pas pu générer le contrat. Veuillez réessayer ou contacter le support.]";
   }
 }
