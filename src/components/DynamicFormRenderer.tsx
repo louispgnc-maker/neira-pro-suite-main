@@ -5,13 +5,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Upload, Eye } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 
 interface FormField {
   id: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'file' | 'client_select';
+  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'file';
   required?: boolean;
   placeholder?: string;
   options?: string[];
@@ -40,10 +41,13 @@ interface DynamicFormRendererProps {
 
 export function DynamicFormRenderer({ schema, formData, onFormDataChange, role = 'avocat', userId }: DynamicFormRendererProps) {
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, File[]>>({});
-  const [clients, setClients] = useState<Array<{id: string, name: string, nom?: string, prenom?: string}>>([]);
-  const [clientModes, setClientModes] = useState<Record<string, 'existing' | 'manual'>>({});
-  const [personTypes, setPersonTypes] = useState<Record<string, 'physique' | 'morale'>>({});
-  // Charger les clients
+  const [clients, setClients] = useState<Array<{id: string, name: string, nom?: string, prenom?: string, id_doc_path?: string}>>([]);
+  const [clientMode, setClientMode] = useState<'existing' | 'manual'>('existing');
+  const [personType, setPersonType] = useState<'physique' | 'morale'>('physique');
+  const [selectedClientData, setSelectedClientData] = useState<any>(null);
+  const [clientIdentiteUrl, setClientIdentiteUrl] = useState<string | null>(null);
+  
+  // Charger les clients avec leurs pièces d'identité
   useEffect(() => {
     if (!userId) {
       console.log('⚠️ userId manquant pour charger les clients');
@@ -54,7 +58,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
       console.log('🔍 Chargement des clients pour userId:', userId);
       const { data, error } = await supabase
         .from('clients')
-        .select('id, name, nom, prenom')
+        .select('id, name, nom, prenom, id_doc_path, email, telephone, adresse, date_naissance, lieu_naissance, nationalite, profession, type_identite, numero_identite')
         .eq('owner_id', userId)
         .order('name', { ascending: true });
       
@@ -68,6 +72,38 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
     
     fetchClients();
   }, [userId]);
+
+  // Charger les détails du client sélectionné
+  useEffect(() => {
+    const loadClientDetails = async () => {
+      const clientId = formData['main_client_id'];
+      if (!clientId || clientMode !== 'existing') {
+        setSelectedClientData(null);
+        setClientIdentiteUrl(null);
+        return;
+      }
+
+      const client = clients.find(c => c.id === clientId);
+      if (client) {
+        setSelectedClientData(client);
+        
+        // Charger l'URL de la pièce d'identité si elle existe
+        if (client.id_doc_path) {
+          const { data } = await supabase.storage
+            .from('documents')
+            .createSignedUrl(client.id_doc_path, 3600);
+          
+          if (data) {
+            setClientIdentiteUrl(data.signedUrl);
+          }
+        } else {
+          setClientIdentiteUrl(null);
+        }
+      }
+    };
+
+    loadClientDetails();
+  }, [formData['main_client_id'], clientMode, clients]);
 
   const updateFormData = (fieldId: string, value: any) => {
     onFormDataChange({
@@ -158,265 +194,6 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
           </div>
         );
 
-      case 'client_select':
-        const mode = clientModes[field.id] || 'existing';
-        const manualPrefix = `${field.id}_manual_`;
-        
-        return (
-          <div key={field.id} className="space-y-4 bg-blue-50 dark:bg-blue-950 p-4 rounded-lg border-2 border-blue-200">
-            <div className="space-y-2">
-              <Label htmlFor={field.id}>
-                {field.label} {field.required && <span className="text-red-500">*</span>}
-              </Label>
-              
-              <RadioGroup 
-                value={mode} 
-                onValueChange={(val: 'existing' | 'manual') => {
-                  setClientModes(prev => ({ ...prev, [field.id]: val }));
-                  // Réinitialiser les données selon le mode
-                  if (val === 'existing') {
-                    // Supprimer les champs manuels
-                    const newFormData = { ...formData };
-                    delete newFormData[`${manualPrefix}nom`];
-                    delete newFormData[`${manualPrefix}prenom`];
-                    delete newFormData[`${manualPrefix}email`];
-                    delete newFormData[`${manualPrefix}telephone`];
-                    delete newFormData[`${manualPrefix}adresse`];
-                    onFormDataChange(newFormData);
-                  } else {
-                    // Supprimer l'ID client
-                    const newFormData = { ...formData };
-                    delete newFormData[field.id];
-                    onFormDataChange(newFormData);
-                  }
-                }}
-                className="flex gap-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="existing" id={`${field.id}_existing`} />
-                  <Label htmlFor={`${field.id}_existing`} className="cursor-pointer">Client existant</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="manual" id={`${field.id}_manual`} />
-                  <Label htmlFor={`${field.id}_manual`} className="cursor-pointer">Nouvelle personne</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {mode === 'existing' ? (
-              <div className="space-y-2">
-                <Select value={formData[field.id] || ''} onValueChange={(val) => updateFormData(field.id, val)}>
-                  <SelectTrigger id={field.id}>
-                    <SelectValue placeholder={clients.length > 0 ? "Sélectionner un client..." : "Aucun client enregistré"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.length > 0 ? (
-                      clients.map((client) => (
-                        <SelectItem key={client.id} value={client.id}>
-                          {client.name || `${client.nom || ''} ${client.prenom || ''}`.trim()}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <div className="p-2 text-sm text-muted-foreground">
-                        Aucun client trouvé. Ajoutez d'abord un client dans la section "Clients".
-                      </div>
-                    )}
-                  </SelectContent>
-                </Select>
-                {clients.length === 0 && (
-                  <p className="text-xs text-orange-600">
-                    💡 Astuce : Créez vos clients dans la section "Clients" ou utilisez "Nouvelle personne"
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-3 bg-white dark:bg-gray-900 p-3 rounded">
-                {/* Choix Personne physique / Société */}
-                <div className="space-y-2">
-                  <Label>Type</Label>
-                  <RadioGroup 
-                    value={personTypes[field.id] || 'physique'} 
-                    onValueChange={(val: 'physique' | 'morale') => {
-                      setPersonTypes(prev => ({ ...prev, [field.id]: val }));
-                      // Réinitialiser les champs selon le type
-                      const newFormData = { ...formData };
-                      if (val === 'physique') {
-                        // Supprimer champs société
-                        delete newFormData[`${manualPrefix}raison_sociale`];
-                        delete newFormData[`${manualPrefix}siret`];
-                        delete newFormData[`${manualPrefix}forme_juridique`];
-                        delete newFormData[`${manualPrefix}representant_nom`];
-                        delete newFormData[`${manualPrefix}representant_prenom`];
-                      } else {
-                        // Supprimer champs personne physique
-                        delete newFormData[`${manualPrefix}nom`];
-                        delete newFormData[`${manualPrefix}prenom`];
-                      }
-                      onFormDataChange(newFormData);
-                    }}
-                    className="flex gap-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="physique" id={`${field.id}_physique`} />
-                      <Label htmlFor={`${field.id}_physique`} className="cursor-pointer">Personne physique</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="morale" id={`${field.id}_morale`} />
-                      <Label htmlFor={`${field.id}_morale`} className="cursor-pointer">Société</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                {personTypes[field.id] === 'morale' ? (
-                  /* Formulaire Société */
-                  <>
-                    <div>
-                      <Label htmlFor={`${manualPrefix}raison_sociale`}>Raison sociale *</Label>
-                      <Input
-                        id={`${manualPrefix}raison_sociale`}
-                        value={formData[`${manualPrefix}raison_sociale`] || ''}
-                        onChange={(e) => updateFormData(`${manualPrefix}raison_sociale`, e.target.value)}
-                        placeholder="SARL Exemple, SAS MonEntreprise..."
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label htmlFor={`${manualPrefix}siret`}>SIRET</Label>
-                        <Input
-                          id={`${manualPrefix}siret`}
-                          value={formData[`${manualPrefix}siret`] || ''}
-                          onChange={(e) => updateFormData(`${manualPrefix}siret`, e.target.value)}
-                          placeholder="123 456 789 00010"
-                          maxLength={14}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`${manualPrefix}forme_juridique`}>Forme juridique</Label>
-                        <Input
-                          id={`${manualPrefix}forme_juridique`}
-                          value={formData[`${manualPrefix}forme_juridique`] || ''}
-                          onChange={(e) => updateFormData(`${manualPrefix}forme_juridique`, e.target.value)}
-                          placeholder="SARL, SAS, SA, EURL..."
-                        />
-                      </div>
-                    </div>
-                    <div className="border-t pt-3 mt-2">
-                      <Label className="text-sm font-semibold">Représentant légal</Label>
-                      <div className="grid grid-cols-2 gap-3 mt-2">
-                        <div>
-                          <Label htmlFor={`${manualPrefix}representant_nom`}>Nom</Label>
-                          <Input
-                            id={`${manualPrefix}representant_nom`}
-                            value={formData[`${manualPrefix}representant_nom`] || ''}
-                            onChange={(e) => updateFormData(`${manualPrefix}representant_nom`, e.target.value)}
-                            placeholder="Nom"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor={`${manualPrefix}representant_prenom`}>Prénom</Label>
-                          <Input
-                            id={`${manualPrefix}representant_prenom`}
-                            value={formData[`${manualPrefix}representant_prenom`] || ''}
-                            onChange={(e) => updateFormData(`${manualPrefix}representant_prenom`, e.target.value)}
-                            placeholder="Prénom"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor={`${manualPrefix}email`}>Email de contact</Label>
-                      <Input
-                        id={`${manualPrefix}email`}
-                        type="email"
-                        value={formData[`${manualPrefix}email`] || ''}
-                        onChange={(e) => updateFormData(`${manualPrefix}email`, e.target.value)}
-                        placeholder="contact@entreprise.fr"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor={`${manualPrefix}telephone`}>Téléphone</Label>
-                      <Input
-                        id={`${manualPrefix}telephone`}
-                        type="tel"
-                        value={formData[`${manualPrefix}telephone`] || ''}
-                        onChange={(e) => updateFormData(`${manualPrefix}telephone`, e.target.value)}
-                        placeholder="01 23 45 67 89"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor={`${manualPrefix}adresse`}>Siège social</Label>
-                      <Textarea
-                        id={`${manualPrefix}adresse`}
-                        value={formData[`${manualPrefix}adresse`] || ''}
-                        onChange={(e) => updateFormData(`${manualPrefix}adresse`, e.target.value)}
-                        placeholder="Adresse complète du siège social"
-                        rows={2}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  /* Formulaire Personne Physique */
-                  <>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor={`${manualPrefix}nom`}>Nom *</Label>
-                    <Input
-                      id={`${manualPrefix}nom`}
-                      value={formData[`${manualPrefix}nom`] || ''}
-                      onChange={(e) => updateFormData(`${manualPrefix}nom`, e.target.value)}
-                      placeholder="Nom"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor={`${manualPrefix}prenom`}>Prénom *</Label>
-                    <Input
-                      id={`${manualPrefix}prenom`}
-                      value={formData[`${manualPrefix}prenom`] || ''}
-                      onChange={(e) => updateFormData(`${manualPrefix}prenom`, e.target.value)}
-                      placeholder="Prénom"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor={`${manualPrefix}email`}>Email</Label>
-                  <Input
-                    id={`${manualPrefix}email`}
-                    type="email"
-                    value={formData[`${manualPrefix}email`] || ''}
-                    onChange={(e) => updateFormData(`${manualPrefix}email`, e.target.value)}
-                    placeholder="email@exemple.fr"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor={`${manualPrefix}telephone`}>Téléphone</Label>
-                  <Input
-                    id={`${manualPrefix}telephone`}
-                    type="tel"
-                    value={formData[`${manualPrefix}telephone`] || ''}
-                    onChange={(e) => updateFormData(`${manualPrefix}telephone`, e.target.value)}
-                    placeholder="06 12 34 56 78"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor={`${manualPrefix}adresse`}>Adresse complète</Label>
-                  <Textarea
-                    id={`${manualPrefix}adresse`}
-                    value={formData[`${manualPrefix}adresse`] || ''}
-                    onChange={(e) => updateFormData(`${manualPrefix}adresse`, e.target.value)}
-                    placeholder="Adresse, code postal, ville"
-                    rows={2}
-                  />
-                </div>
-                  </>
-                )}
-              </div>
-            )}
-            
-            {field.description && (
-              <p className="text-sm text-muted-foreground">{field.description}</p>
-            )}
-          </div>
-        );
 
       case 'checkbox':
         return (

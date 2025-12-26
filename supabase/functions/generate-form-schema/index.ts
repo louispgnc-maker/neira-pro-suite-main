@@ -34,44 +34,30 @@ serve(async (req) => {
 Ton rôle est de créer un schéma de formulaire JSON optimal pour un type de contrat donné.
 
 RÈGLES CRITIQUES:
-1. ⚠️ OBLIGATOIRE - PARTIES DU CONTRAT : TOUJOURS commencer par des champs "client_select" pour TOUTES les parties prenantes
-   Exemples selon le type de contrat:
-   - Vente immobilière → vendeur_id + acheteur_id
-   - Bail d'habitation → bailleur_id + locataire_id
-   - Contrat de travail → employeur_id + employe_id
-   - Compromis de vente → vendeur_id + acquereur_id
-   - Prêt → preteur_id + emprunteur_id
-   - Mandat → mandant_id + mandataire_id
-   → ADAPTE les parties selon le type de contrat, mais TOUJOURS inclure les champs client_select pour CHAQUE partie
-
+1. ⚠️ NE PAS INCLURE de champs pour sélectionner les clients/parties
+   → Le système gère déjà une section fixe pour le client principal
+   → Tu dois UNIQUEMENT générer les champs spécifiques AU CONTRAT lui-même
+   
 2. 🚫 INTERDICTION ABSOLUE : NE JAMAIS inclure de champs pour signatures, tampons, ou validation électronique
-3. MINIMALISME : Ne demande QUE les informations ESSENTIELLES et LÉGALEMENT REQUISES
-4. DOCUMENTS : Ajoute des champs "file" pour les documents importants (identité, justificatifs, diagnostics)
+
+3. MINIMALISME : Ne demande QUE les informations ESSENTIELLES et LÉGALEMENT REQUISES pour LE CONTRAT
+
+4. DOCUMENTS : Ajoute des champs "file" pour les documents importants LIÉS AU CONTRAT (diagnostics, justificatifs, annexes techniques, etc.)
+   ⚠️ NE PAS demander de pièce d'identité (déjà dans la section fixe)
+
 5. PERTINENCE : Adapte-toi à la description fournie par le professionnel
+
 6. CLARTÉ : Champs avec labels clairs en français
+
 7. VALIDATION : Marque les champs obligatoires
 
 Structure du schéma JSON à retourner:
 {
   "fields": [
     {
-      "id": "vendeur_id",
-      "label": "Vendeur",
-      "type": "client_select",
-      "required": true,
-      "description": "Sélectionnez le client vendeur"
-    },
-    {
-      "id": "acheteur_id",
-      "label": "Acheteur",
-      "type": "client_select",
-      "required": true,
-      "description": "Sélectionnez le client acheteur"
-    },
-    {
       "id": "unique_field_id",
       "label": "Libellé du champ",
-      "type": "text|textarea|number|date|select|checkbox|file|client_select",
+      "type": "text|textarea|number|date|select|checkbox|file",
       "required": true|false,
       "placeholder": "Texte d'aide (optionnel)",
       "options": ["option1", "option2"], // Pour les select
@@ -82,18 +68,13 @@ Structure du schéma JSON à retourner:
   ],
   "sections": [
     {
-      "title": "Parties au contrat",
-      "fields": ["vendeur_id", "acheteur_id"]
-    },
-    {
-      "title": "Informations du bien",
+      "title": "Titre de la section",
       "fields": ["field_id_1", "field_id_2"]
     }
   ]
 }
 
 Types de champs disponibles:
-- client_select: Sélection du client (OBLIGATOIRE pour chaque partie du contrat)
 - text: Champ texte court
 - textarea: Texte long
 - number: Nombre
@@ -103,14 +84,20 @@ Types de champs disponibles:
 - file: Upload de fichier(s)
 
 IMPORTANT:
-- ✅ Les PREMIERS champs DOIVENT TOUJOURS être des "client_select" pour identifier TOUTES les parties (vendeur/acheteur, bailleur/locataire, etc.)
-- ✅ Crée une section "Parties au contrat" ou "Identité des parties" en premier avec ces champs
-- 🚫 N'INCLUS JAMAIS de champs pour : signature, paraphe, tampon, validation électronique, ou toute mention de signature
-- 📎 Si le contrat nécessite des pièces jointes (documents d'identité, diagnostics, justificatifs, etc.), ajoute des champs "file"
+- 🚫 NE JAMAIS inclure de champs client/parties (vendeur, acheteur, bailleur, locataire, etc.) - déjà géré par le système
+- 🚫 NE JAMAIS inclure de pièce d'identité - déjà dans section fixe
+- 🚫 N'INCLUS JAMAIS de champs pour : signature, paraphe, tampon, validation électronique
+- ✅ CONCENTRE-TOI sur les informations SPÉCIFIQUES AU TYPE DE CONTRAT (bien immobilier, montants, durées, conditions particulières, etc.)
+- 📎 Documents justificatifs liés AU CONTRAT (pas aux personnes)
 - 📑 Organise en sections logiques pour faciliter la saisie
 - ⚡ Maximum 15-20 champs pour éviter la surcharge
 - 🇫🇷 Adapte-toi au contexte français et à la législation française
-- ⚠️ Les signatures seront ajoutées APRÈS, ne t'en préoccupe PAS dans le formulaire`
+- ⚠️ Les signatures seront ajoutées APRÈS, ne t'en préoccupe PAS dans le formulaire
+
+EXEMPLES de ce qu'il faut générer:
+- Compromis de vente → adresse bien, surface, prix, date signature promesse, conditions suspensives, délai rétractation
+- Bail d'habitation → adresse logement, loyer, charges, dépôt garantie, durée bail, date effet
+- Contrat de travail → poste, salaire, horaires, lieu de travail, date début, type contrat (CDI/CDD)`
 
     const userPrompt = `Type de contrat: ${contractType}
 Rôle du professionnel: ${role === 'notaire' ? 'Notaire' : 'Avocat'}
