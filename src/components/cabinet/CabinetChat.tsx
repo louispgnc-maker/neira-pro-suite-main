@@ -1483,8 +1483,12 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                               .map(member => (
                                 <Button
                                   key={member.id}
-                                  variant={selectedDirectMember === member.user_id ? 'default' : 'outline'}
-                                  className="w-full justify-start"
+                                  variant="outline"
+                                  className={`w-full justify-start ${
+                                    selectedDirectMember === member.user_id 
+                                      ? role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                      : role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-600' : 'hover:bg-blue-100 hover:text-blue-600'
+                                  }`}
                                   onClick={() => setSelectedDirectMember(member.user_id)}
                                 >
                                   <Avatar className="h-6 w-6 mr-2">
